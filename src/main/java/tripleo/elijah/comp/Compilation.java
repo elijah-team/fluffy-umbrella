@@ -75,11 +75,7 @@ public class Compilation {
 	}
 
 	public void feedCmdLine(final List<String> args) {
-		try {
-			main(args, eee == null ? new StdErrSink() : eee);
-		} catch (Exception aE) {
-			throw new RuntimeException(aE);
-		}
+		main(args, eee == null ? new StdErrSink() : eee);
 	}
 
 	public IO getIO() {

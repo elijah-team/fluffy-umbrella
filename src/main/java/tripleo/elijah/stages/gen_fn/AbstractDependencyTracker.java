@@ -16,7 +16,6 @@ import tripleo.elijah.stages.deduce.FunctionInvocation;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Created 6/21/21 11:36 PM
  */
@@ -24,12 +23,12 @@ public abstract class AbstractDependencyTracker implements DependencyTracker {
 	private List<FunctionInvocation> dependentFunctions = new ArrayList<FunctionInvocation>();
 	private List<GenType> dependentTypes = new ArrayList<GenType>();
 
-//	@Override
+	@Override
 	public List<GenType> dependentTypes() {
 		return dependentTypes;
 	}
 
-//	@Override
+	@Override
 	public List<FunctionInvocation> dependentFunctions() {
 		return dependentFunctions;
 	}

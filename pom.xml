@@ -29,6 +29,14 @@
             <version>3.1.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>me.friwi</groupId>
+            <artifactId>jcefmaven</artifactId>
+            <version>105.3.36</version>
+        </dependency>
+
+
+
         <!-- https://mvnrepository.com/artifact/org.reactivestreams/reactive-streams -->
         <dependency>
             <groupId>org.reactivestreams</groupId>
@@ -180,41 +188,23 @@
     </distributionManagement>
 
     <build>
+        <!--
         <plugins>
-            <!--
-            <plugin>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr4-maven-plugin</artifactId>
-                <version>4.7.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>antlr4</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/main/java-compiler-gen/</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+        <plugin>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-maven-plugin</artifactId>
+            <version>4.7.1</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>antlr4</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+        </plugins>
+        -->
+        <plugins>
             <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

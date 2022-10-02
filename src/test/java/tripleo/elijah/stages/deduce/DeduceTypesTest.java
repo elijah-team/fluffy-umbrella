@@ -66,7 +66,7 @@ public class DeduceTypesTest {
 		final PipelineLogic pl = new PipelineLogic(verbosity);
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity, pl);
 		DeducePhase dp = new DeducePhase(generatePhase, pl, verbosity);
-		DeduceTypes2 d = dp.deduceModule(mod, dp.generatedClasses, verbosity);
+		DeduceTypes2 d = dp.deduceModule(mod, verbosity);
 //		final DeduceTypes d = new DeduceTypes(mod);
 		this.x = DeduceLookupUtils.deduceExpression(d, x1, fc);
 		System.out.println(this.x);

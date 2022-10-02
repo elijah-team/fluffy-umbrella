@@ -25,7 +25,11 @@ import tripleo.elijah.stages.instructions.VariableTableType;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
 
+<<<<<<< HEAD
 import static org.easymock.EasyMock.*;
+=======
+import static org.easymock.EasyMock.mock;
+>>>>>>> 451b657 (A new take. Based on problemset 1-004. Good luck self...)
 
 public class GetRealTargetNameTest {
 
@@ -39,6 +43,7 @@ public class GetRealTargetNameTest {
 		gf = new GeneratedFunction(fd);
 	}
 
+	@Test
 //	@Test // too complicated
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testManualXDotFoo() {

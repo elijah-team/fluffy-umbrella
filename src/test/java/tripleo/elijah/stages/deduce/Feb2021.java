@@ -51,6 +51,7 @@ public class Feb2021 {
 
 //	@Test
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
+	@Test
 	public void testHier() {
 		Compilation c = new Compilation(new StdErrSink(), new IO());
 
