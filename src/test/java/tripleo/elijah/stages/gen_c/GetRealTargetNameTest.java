@@ -67,9 +67,13 @@ public class GetRealTargetNameTest {
 		int int_index = gf.addVariableTableEntry("x", VariableTableType.VAR, tte, x_var);
 		int ite_index = gf.addIdentTableEntry(foo_ident, null);
 		IdentIA ident_ia = new IdentIA(ite_index, gf);
-		final IntegerIA integerIA = new IntegerIA(int_index, gf);
-		ident_ia.setPrev(integerIA);
-
+		ident_ia.setPrev(new IntegerIA(int_index, gf));
+		//
+		StdErrSink errSink = new StdErrSink();
+		Compilation compilation = new Compilation(errSink, new IO());
+		final PipelineLogic pipelineLogic = new PipelineLogic(new AccessBus(compilation));
+		GenerateC c = new GenerateC(mod, errSink, ElLog.Verbosity.SILENT, pipelineLogic); // TODO do we want silent?
+		//
 		Emit.emitting = false;
 
 		//
