@@ -12,10 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.*;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.gen_c.CReference;
 import tripleo.elijah.stages.gen_c.Emit;
@@ -92,8 +89,9 @@ public class GetIdentIAPathTest_ForC {
 
 		//		el1.add(vsq);
 		//
-		final ElLog.Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final PipelineLogic pl = new PipelineLogic(verbosity1);
+		Compilation compilation = new Compilation(new StdErrSink(), new IO());
+		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		GenerateFunctions gen = generatePhase.getGenerateFunctions(mod);
 		Context ctx = mock(Context.class);
@@ -118,8 +116,9 @@ public class GetIdentIAPathTest_ForC {
 		IdentExpression x_ident = Helpers.string_to_ident("x");
 		@NotNull IdentExpression foo_ident = Helpers.string_to_ident("foo");
 		//
-		final ElLog.Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final PipelineLogic pl = new PipelineLogic(verbosity1);
+		Compilation compilation = new Compilation(new StdErrSink(), new IO());
+		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		GenerateFunctions gen = generatePhase.getGenerateFunctions(mod);
 		Context ctx = mock(Context.class);
@@ -199,8 +198,9 @@ public class GetIdentIAPathTest_ForC {
 		//
 		DotExpression expr = new DotExpression(x_ident, foo_ident);
 		//
-		final ElLog.Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final PipelineLogic pl = new PipelineLogic(verbosity1);
+		Compilation compilation = new Compilation(new StdErrSink(), new IO());
+		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		GenerateFunctions gen = generatePhase.getGenerateFunctions(mod);
 		InstructionArgument xx = gen.simplify_expression(expr, gf, ctx);
