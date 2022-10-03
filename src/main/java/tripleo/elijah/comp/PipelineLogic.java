@@ -111,59 +111,13 @@ public class PipelineLogic {
 		DeducePhase.@NotNull GeneratedClasses lgc = dp.generatedClasses;
 		List<GeneratedNode> resolved_nodes = new ArrayList<GeneratedNode>();
 
+		final Coder coder = new Coder();
+
 		for (final GeneratedNode generatedNode : lgc) {
-			if (generatedNode instanceof GeneratedFunction) {
-				GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
-				if (generatedFunction.getCode() == 0)
-					generatedFunction.setCode(mod.parent.nextFunctionCode());
-			} else if (generatedNode instanceof GeneratedClass) {
-				final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-//				if (generatedClass.getCode() == 0)
-//					generatedClass.setCode(mod.parent.nextClassCode());
-				for (GeneratedClass generatedClass2 : generatedClass.classMap.values()) {
-					generatedClass2.setCode(mod.parent.nextClassCode());
-				}
-				for (GeneratedFunction generatedFunction : generatedClass.functionMap.values()) {
-					for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
-						if (identTableEntry.isResolved()) {
-							GeneratedNode node = identTableEntry.resolvedType();
-							resolved_nodes.add(node);
-						}
-					}
-				}
-			} else if (generatedNode instanceof GeneratedNamespace) {
-				final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
-				if (generatedNamespace.getCode() == 0)
-					generatedNamespace.setCode(mod.parent.nextClassCode());
-				for (GeneratedClass generatedClass : generatedNamespace.classMap.values()) {
-					generatedClass.setCode(mod.parent.nextClassCode());
-				}
-				for (GeneratedFunction generatedFunction : generatedNamespace.functionMap.values()) {
-					for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
-						if (identTableEntry.isResolved()) {
-							GeneratedNode node = identTableEntry.resolvedType();
-							resolved_nodes.add(node);
-						}
-					}
-				}
-			}
+			coder.codeNodes(mod, resolved_nodes, generatedNode);
 		}
 
-		for (final GeneratedNode generatedNode : resolved_nodes) {
-			if (generatedNode instanceof GeneratedFunction) {
-				GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
-				if (generatedFunction.getCode() == 0)
-					generatedFunction.setCode(mod.parent.nextFunctionCode());
-			} else if (generatedNode instanceof GeneratedClass) {
-				final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-				if (generatedClass.getCode() == 0)
-					generatedClass.setCode(mod.parent.nextClassCode());
-			} else if (generatedNode instanceof GeneratedNamespace) {
-				final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
-				if (generatedNamespace.getCode() == 0)
-					generatedNamespace.setCode(mod.parent.nextClassCode());
-			}
-		}
+		resolved_nodes.forEach(generatedNode -> coder.codeNode(generatedNode, mod));
 
 		dp.deduceModule(mod, lgc, true, getVerbosity());
 
