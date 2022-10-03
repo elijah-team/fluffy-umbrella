@@ -17,7 +17,6 @@ import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.elijah.stages.logging.ElLog;
-import tripleo.elijah.stages.post_deduce.PostDeduce;
 import tripleo.elijah.work.WorkManager;
 
 import java.io.PrintStream;
@@ -32,6 +31,7 @@ import java.util.List;
 public class PipelineLogic {
 	public final GeneratePhase generatePhase;
 	public final DeducePhase dp;
+	private final AccessBus __ab;
 
 	public GenerateResult gr = new GenerateResult();
 	public List<ElLog> elLogs = new LinkedList<ElLog>();
@@ -41,31 +41,39 @@ public class PipelineLogic {
 
 	final List<OS_Module> mods = new ArrayList<OS_Module>();
 
-	public boolean postDeduceEnabled = false;
+	public PipelineLogic(final AccessBus ab) {
+		__ab = ab;
 
-	public PipelineLogic(ElLog.Verbosity aVerbosity) {
-		verbosity = aVerbosity;
-		generatePhase = new GeneratePhase(aVerbosity, this);
+		boolean sil = ab.getCompilation().getSilence();
+		ElLog.Verbosity silence = sil ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
+
+		verbosity = silence;
+		generatePhase = new GeneratePhase(verbosity, this);
 		dp = new DeducePhase(generatePhase, this, verbosity);
 	}
 
-	public void everythingBeforeGenerate(List<GeneratedNode> lgc) {
+	public void subscribeMods(AccessBus.AB_ModuleListListener l) {
+		__ab.subscribe_moduleList(l);
+	}
+
+	public void resolveMods() {
+		__ab.resolveModuleList(mods);
+	}
+
+	public void everythingBeforeGenerate() {
+//		resolveMods();
+
+
 		for (OS_Module mod : mods) {
 			run2(mod, mod.entryPoints);
 		}
-//		List<List<EntryPoint>> entryPoints = mods.stream().map(mod -> mod.entryPoints).collect(Collectors.toList());
+
+		//List<List<EntryPoint>> entryPoints = mods.stream().map(mod -> mod.entryPoints).collect(Collectors.toList());
 		dp.finish();
 
-		dp.generatedClasses.addAll(lgc);
+//		int y = lgc.size();
 
-		if (postDeduceEnabled) {
-			for (OS_Module mod : mods) {
-				PostDeduce pd = new PostDeduce(mod.parent.getErrSink(), dp);
-				pd.analyze();
-			}
-		}
-
-//		elLogs = dp.deduceLogs;
+//		dp.generatedClasses.addAll(lgc);
 	}
 
 	public void generate(List<GeneratedNode> lgc) {
@@ -77,6 +85,8 @@ public class PipelineLogic {
 			wm.drain();
 			gr.results().addAll(ggr.results());
 		}
+
+		__ab.resolveGenerateResult(gr);
 	}
 
 	public static void debug_buffers(GenerateResult gr, PrintStream stream) {
