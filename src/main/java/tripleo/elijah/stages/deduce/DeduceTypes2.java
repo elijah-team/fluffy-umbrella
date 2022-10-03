@@ -534,7 +534,7 @@ public class DeduceTypes2 {
 				{
 					final @NotNull IdentIA identIA = (IdentIA) pte.expression_num;
 					final String x = generatedFunction.getIdentIAPathNormal(identIA);
-					LOG.info("298 Calling "+x);
+//					LOG.info("298 Calling "+x);
 					resolveIdentIA_(context, identIA, generatedFunction, new FoundElement(phase) {
 
 						@SuppressWarnings("unused") final String xx = x;
@@ -560,7 +560,7 @@ public class DeduceTypes2 {
 
 						@Override
 						public void noFoundElement() {
-							errSink.reportError("370 Can't find callsite "+x);
+//							errSink.reportError("370 Can't find callsite "+x);
 							// TODO don't know if this is right
 							@NotNull IdentTableEntry entry = identIA.getEntry();
 							if (entry.getStatus() != BaseTableEntry.Status.UNKNOWN)
@@ -1076,7 +1076,7 @@ public class DeduceTypes2 {
 								if (identIA2 != null) {
 									@NotNull IdentTableEntry idte2 = identIA.getEntry();
 									@Nullable ProcTableEntry procTableEntry = idte2.getCallablePTE();
-									if (procTableEntry == pte) System.err.println("940 procTableEntry == pte");
+//									if (procTableEntry == pte) System.err.println("940 procTableEntry == pte");
 									if (procTableEntry != null) {
 										// TODO doesn't seem like we need this
 										procTableEntry.onFunctionInvocation(new DoneCallback<FunctionInvocation>() {
@@ -1145,6 +1145,37 @@ public class DeduceTypes2 {
 					throw new NotImplementedException();
 			}
 		}
+	}
+
+	private @NotNull String getPTEString(@Nullable ProcTableEntry pte) {
+		String pte_string;
+		if (pte == null)
+			pte_string = "[]";
+		else {
+			@NotNull List<String> l = new ArrayList<String>();
+
+			for (@NotNull TypeTableEntry typeTableEntry : pte.getArgs()) {
+				OS_Type attached = typeTableEntry.getAttached();
+
+				if (attached != null)
+					l.add(attached.toString());
+				else {
+//					LOG.err("267 attached == null for "+typeTableEntry);
+
+					if (typeTableEntry.expression != null)
+						l.add(String.format("<Unknown expression: %s>", typeTableEntry.expression));
+					else
+						l.add("<Unknkown>");
+				}
+			}
+
+			@NotNull StringBuilder sb2 = new StringBuilder();
+			sb2.append("[");
+			sb2.append(Helpers.String_join(", ", l));
+			sb2.append("]");
+			pte_string = sb2.toString();
+		}
+		return pte_string;
 	}
 
 	/**
@@ -2500,12 +2531,12 @@ public class DeduceTypes2 {
 				assert false;
 			result = aResult;
 			satisfied = true;
-			LOG.info(String.format("Expectation (%s, %d)%s met: %s %s", DeduceTypes2.this, counter, satisfied_already, desc, base.expectationString()));
+//			LOG.info(String.format("Expectation (%s, %d)%s met: %s %s", DeduceTypes2.this, counter, satisfied_already, desc, base.expectationString()));
 		}
 
 		public void fail() {
 			if (!_printed) {
-				LOG.err(String.format("Expectation (%s, %d) not met", DeduceTypes2.this, counter));
+//				LOG.err(String.format("Expectation (%s, %d) not met", DeduceTypes2.this, counter));
 				_printed = true;
 			}
 		}
@@ -2517,7 +2548,7 @@ public class DeduceTypes2 {
 		public void setCounter(long aCounter) {
 			counter = aCounter;
 
-			LOG.info(String.format("Expectation (%s, %d) set: %s %s", DeduceTypes2.this, counter, desc, base.expectationString()));
+//			LOG.info(String.format("Expectation (%s, %d) set: %s %s", DeduceTypes2.this, counter, desc, base.expectationString()));
 		}
 	}
 
@@ -3116,7 +3147,7 @@ public class DeduceTypes2 {
 						break;
 					}
 				} else {
-					LOG.err("1696");
+					int y=2;//LOG.err("1696");
 				}
 			}
 		}

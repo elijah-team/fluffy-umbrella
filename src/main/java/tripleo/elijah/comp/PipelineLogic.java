@@ -89,7 +89,7 @@ public class PipelineLogic {
 		__ab.resolveGenerateResult(gr);
 	}
 
-	public static void debug_buffers(GenerateResult gr, PrintStream stream) {
+	public static void debug_buffers(@NotNull GenerateResult gr, PrintStream stream) {
 		for (GenerateResultItem ab : gr.results()) {
 			stream.println("---------------------------------------------------------------");
 			stream.println(ab.counter);
@@ -212,7 +212,7 @@ public class PipelineLogic {
 		return generatePhase.getGenerateFunctions(mod);
 	}
 
-	protected GenerateResult run3(OS_Module mod, List<GeneratedNode> lgc, WorkManager wm, GenerateC ggc) {
+	protected GenerateResult run3(OS_Module mod, @NotNull List<GeneratedNode> lgc, WorkManager wm, GenerateC ggc) {
 		GenerateResult gr = new GenerateResult();
 
 		for (GeneratedNode generatedNode : lgc) {
@@ -247,7 +247,7 @@ public class PipelineLogic {
 		mods.add(m);
 	}
 
-	private void resolveCheck(DeducePhase.GeneratedClasses lgc) {
+	private void resolveCheck(DeducePhase.@NotNull GeneratedClasses lgc) {
 		for (final GeneratedNode generatedNode : lgc) {
 			if (generatedNode instanceof GeneratedFunction) {
 

@@ -381,7 +381,7 @@ public class GenerateFunctions {
 			final Label label_bottom = gf.addLabel("bottom"+label_top.getIndex(), false);
 			add_i(gf, InstructionName.JE, List_of(new IntegerIA(iter_temp, gf), simplify_expression(loop.getToPart(), gf, cctx), label_bottom), cctx);
 			for (final StatementItem statementItem : loop.getItems()) {
-				LOG.info("705 "+statementItem);
+//				LOG.info("705 "+statementItem);
 				generate_item((OS_Element)statementItem, gf, cctx);
 			}
 			final IdentExpression pre_inc_name = Helpers.string_to_ident("__preinc__");
@@ -607,7 +607,7 @@ public class GenerateFunctions {
 		} else if (item instanceof IfConditional) {
 			gi.generate_if((IfConditional)item, gf);
 		} else if (item instanceof Loop) {
-			LOG.err("800 -- generateLoop");
+//			LOG.err("800 -- generateLoop");
 			gi.generate_loop((Loop) item, gf);
 		} else if (item instanceof MatchConditional) {
 			gi.generate_match_conditional((MatchConditional) item, gf);

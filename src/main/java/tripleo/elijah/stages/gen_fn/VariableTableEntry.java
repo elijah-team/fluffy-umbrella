@@ -63,7 +63,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 
 	public void addPotentialType(final int instructionIndex, final TypeTableEntry tte) {
 		if (!typeDeferred.isPending()) {
-			System.err.println("62 addPotentialType while typeDeferred is already resolved "+this);//throw new AssertionError();
+//			System.err.println("62 addPotentialType while typeDeferred is already resolved "+this);//throw new AssertionError();
 			return;
 		}
 		//
