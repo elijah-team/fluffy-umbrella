@@ -269,7 +269,7 @@ class Resolve_Ident_IA {
 	private @NotNull RIA_STATE action_IdentIA(@NotNull IdentIA ia) {
 		final @NotNull IdentTableEntry idte = ia.getEntry();
 		if (idte.getStatus() == BaseTableEntry.Status.UNKNOWN) {
-			LOG.info("1257 Not found for " + generatedFunction.getIdentIAPathNormal(ia));
+//			LOG.info("1257 Not found for " + generatedFunction.getIdentIAPathNormal(ia));
 			// No need checking more than once
 			idte.resolveExpectation.fail();
 			foundElement.doNoFoundElement();
@@ -331,7 +331,7 @@ class Resolve_Ident_IA {
 
 					ectx = el.getContext();
 				} else {
-					errSink.reportError("1179 Can't resolve " + text);
+//					errSink.reportError("1179 Can't resolve " + text);
 					idte.setStatus(BaseTableEntry.Status.UNKNOWN, null);
 					foundElement.doNoFoundElement();
 					return RIA_STATE.RETURN;

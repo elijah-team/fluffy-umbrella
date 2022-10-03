@@ -93,7 +93,7 @@ public class Compilation {
 	public String stage = "O"; // Output
 
 	public void main(final List<String> args, final ErrSink errSink) {
-		boolean do_out = false, silent = false;
+		boolean do_out = false /*, silent = false*/;
 		try {
 			if (args.size() > 0) {
 				final Options options = new Options();

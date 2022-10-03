@@ -202,7 +202,7 @@ public class DeducePhase {
 		{
 			final ArrayList<GeneratedNode> p = new ArrayList<GeneratedNode>();
 			Iterables.addAll(p, lgf);
-			LOG.info("197 lgf.size " + p.size());
+//			LOG.info("197 lgf.size " + p.size());
 		}
 		deduceTypes2.deduceFunctions(lgf);
 		deduceTypes2.deduceClasses(generatedClasses.copy().stream()
@@ -520,21 +520,21 @@ public class DeducePhase {
 				switch (identTableEntry.getStatus()) {
 					case UNKNOWN:
 						assert identTableEntry.getResolvedElement() == null;
-						LOG.err(String.format("250 UNKNOWN idte %s in %s", identTableEntry, generatedFunction));
+//						LOG.err(String.format("250 UNKNOWN idte %s in %s", identTableEntry, generatedFunction));
 						break;
 					case KNOWN:
 						assert identTableEntry.getResolvedElement() != null;
 						if (identTableEntry.type == null) {
-							LOG.err(String.format("258 null type in KNOWN idte %s in %s", identTableEntry, generatedFunction));
+//							LOG.err(String.format("258 null type in KNOWN idte %s in %s", identTableEntry, generatedFunction));
 						}
 						break;
 					case UNCHECKED:
-						LOG.err(String.format("255 UNCHECKED idte %s in %s", identTableEntry, generatedFunction));
+//						LOG.err(String.format("255 UNCHECKED idte %s in %s", identTableEntry, generatedFunction));
 						break;
 				}
 				for (@NotNull TypeTableEntry pot_tte : identTableEntry.potentialTypes()) {
 					if (pot_tte.getAttached() == null) {
-						LOG.err(String.format("267 null potential attached in %s in %s in %s", pot_tte, identTableEntry, generatedFunction));
+//						LOG.err(String.format("267 null potential attached in %s in %s in %s", pot_tte, identTableEntry, generatedFunction));
 					}
 				}
 			}

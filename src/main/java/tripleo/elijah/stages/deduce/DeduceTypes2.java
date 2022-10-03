@@ -587,7 +587,7 @@ public class DeduceTypes2 {
 									}
 									//vte.el = best;
 									// NOTE we called resolve_var_table_entry above
-									LOG.err("200 "+best);
+//									LOG.err("200 "+best);
 									if (vte.getResolvedElement() != null)
 										assert vte.getStatus() == BaseTableEntry.Status.KNOWN;
 //									vte.setStatus(BaseTableEntry.Status.KNOWN, best/*vte.el*/);
@@ -755,7 +755,7 @@ public class DeduceTypes2 {
 				{
 					final @NotNull IdentIA identIA = (IdentIA) pte.expression_num;
 					final String x = generatedFunction.getIdentIAPathNormal(identIA);
-					LOG.info("298 Calling "+x);
+//					LOG.info("298 Calling "+x);
 					resolveIdentIA_(context, identIA, generatedFunction, new FoundElement(phase) {
 
 						@SuppressWarnings("unused") final String xx = x;
@@ -778,7 +778,7 @@ public class DeduceTypes2 {
 
 						@Override
 						public void noFoundElement() {
-							errSink.reportError("370 Can't find callsite "+x);
+//							errSink.reportError("370 Can't find callsite "+x);
 							// TODO don't know if this is right
 							@NotNull IdentTableEntry entry = identIA.getEntry();
 							if (entry.getStatus() != BaseTableEntry.Status.UNKNOWN)
@@ -928,7 +928,7 @@ public class DeduceTypes2 {
 								if (identIA2 != null) {
 									@NotNull IdentTableEntry idte2 = identIA.getEntry();
 									@Nullable ProcTableEntry procTableEntry = idte2.getCallablePTE();
-									if (procTableEntry == pte) System.err.println("940 procTableEntry == pte");
+//									if (procTableEntry == pte) System.err.println("940 procTableEntry == pte");
 									if (procTableEntry != null) {
 										// TODO doesn't seem like we need this
 										procTableEntry.onFunctionInvocation(new DoneCallback<FunctionInvocation>() {
@@ -1006,7 +1006,7 @@ public class DeduceTypes2 {
 				if (attached != null)
 					l.add(attached.toString());
 				else {
-					LOG.err("267 attached == null for "+typeTableEntry);
+//					LOG.err("267 attached == null for "+typeTableEntry);
 
 					if (typeTableEntry.expression != null)
 						l.add(String.format("<Unknown expression: %s>", typeTableEntry.expression));
@@ -2110,7 +2110,7 @@ public class DeduceTypes2 {
 				case NORMAL:
 					{
 						final Qualident tn = ((NormalTypeName) tn1).getRealName();
-						LOG.info("799 [resolving USER type named] " + tn);
+//						LOG.info("799 [resolving USER type named] " + tn);
 						final LookupResultList lrl = DeduceLookupUtils.lookupExpression(tn, tn1.getContext(), this);
 						@Nullable OS_Element best = lrl.chooseBest(null);
 						while (best instanceof AliasStatement) {
@@ -2478,12 +2478,12 @@ public class DeduceTypes2 {
 		public void satisfy(B aResult) {
 			result = aResult;
 			satisfied = true;
-			LOG.info(String.format("Expectation (%s, %d) met: %s %s", DeduceTypes2.this, counter, desc, base.expectationString()));
+//			LOG.info(String.format("Expectation (%s, %d) met: %s %s", DeduceTypes2.this, counter, desc, base.expectationString()));
 		}
 
 		public void fail() {
 			if (!_printed) {
-				LOG.err(String.format("Expectation (%s, %d) not met", DeduceTypes2.this, counter));
+//				LOG.err(String.format("Expectation (%s, %d) not met", DeduceTypes2.this, counter));
 				_printed = true;
 			}
 		}
@@ -2495,7 +2495,7 @@ public class DeduceTypes2 {
 		public void setCounter(long aCounter) {
 			counter = aCounter;
 
-			LOG.info(String.format("Expectation (%s, %d) set: %s %s", DeduceTypes2.this, counter, desc, base.expectationString()));
+//			LOG.info(String.format("Expectation (%s, %d) set: %s %s", DeduceTypes2.this, counter, desc, base.expectationString()));
 		}
 	}
 
@@ -2551,9 +2551,9 @@ public class DeduceTypes2 {
 						case 1:
 //							tte.attached = ll.get(0).attached;
 //							vte.addPotentialType(instructionIndex, ll.get(0));
-							if (p.isResolved())
-								LOG.info(String.format("1047 (vte already resolved) %s vte1.type = %s, gf = %s, tte1 = %s %n", vte1.getName(), vte1.type, generatedFunction, potentialTypes.get(0)));
-							else {
+							if (p.isResolved()) {
+//								LOG.info(String.format("1047 (vte already resolved) %s vte1.type = %s, gf = %s, tte1 = %s %n", vte1.getName(), vte1.type, generatedFunction, potentialTypes.get(0)));
+							} else {
 								final OS_Type attached = potentialTypes.get(0).getAttached();
 								if (attached == null) return;
 								switch (attached.getType()) {
@@ -3390,7 +3390,7 @@ public class DeduceTypes2 {
 						break;
 					}
 				} else {
-					LOG.err("1696");
+					int y=2;//LOG.err("1696");
 				}
 			}
 		}
