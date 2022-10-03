@@ -86,7 +86,7 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 			@NotNull FunctionDef fd = (FunctionDef) e;
 			resolved_element_pte_FunctionDef(co, pte, depTracker, fd);
 		} else {
-			LOG.err("845 Unknown element for ProcTableEntry " + e);
+//			LOG.err("845 Unknown element for ProcTableEntry " + e);
 			return;
 		}
 	}

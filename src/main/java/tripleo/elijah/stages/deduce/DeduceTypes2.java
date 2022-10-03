@@ -484,7 +484,7 @@ public class DeduceTypes2 {
 		{
 			ProcTableEntry pte = generatedFunction.fi.pte;
 			final @NotNull String pte_string = getPTEString(pte);
-			LOG.err("** deduce_generated_function "+ fd.name()+" "+pte_string);//+" "+((OS_Container)((FunctionDef)fd).getParent()).name());
+//			LOG.err("** deduce_generated_function "+ fd.name()+" "+pte_string);//+" "+((OS_Container)((FunctionDef)fd).getParent()).name());
 		}
 		//
 		//
@@ -829,7 +829,7 @@ public class DeduceTypes2 {
 					vte.type.setAttached(getPotentialTypesVte(vte).get(0).getAttached());
 				else if (potential_size > 1) {
 					// TODO Check type compatibility
-					LOG.err("703 "+vte.getName()+" "+vte.potentialTypes());
+//					LOG.err("703 "+vte.getName()+" "+vte.potentialTypes());
 					errSink.reportDiagnostic(new CantDecideType(vte, vte.potentialTypes()));
 				} else {
 					// potential_size == 0
@@ -936,9 +936,9 @@ public class DeduceTypes2 {
 												{
 													if (functionInvocation.getClassInvocation() == fi.getClassInvocation() &&
 														functionInvocation.getFunction() == fi.getFunction() &&
-														functionInvocation.pte == fi.pte)
-														System.err.println("955 It seems like we are generating the same thing...");
-													else {
+														functionInvocation.pte == fi.pte) {
+//														System.err.println("955 It seems like we are generating the same thing...");
+													} else {
 														int ok=2;
 													}
 
@@ -951,7 +951,7 @@ public class DeduceTypes2 {
 								}
 								break;
 							default:
-								LOG.err(String.format("228 Don't know what to do %s %s", type, el));
+//								LOG.err(String.format("228 Don't know what to do %s %s", type, el));
 								break;
 							}
 						}
@@ -2015,7 +2015,7 @@ public class DeduceTypes2 {
 						case 0:
 							// README moved up here to elimiate work
 							if (p.isResolved()) {
-								System.out.printf("890-1 Already resolved type: vte1.type = %s, gf = %s %n", vte1.type, generatedFunction);
+//								System.out.printf("890-1 Already resolved type: vte1.type = %s, gf = %s %n", vte1.type, generatedFunction);
 								break;
 							}
 							LookupResultList lrl = ctx.lookup(e_text);

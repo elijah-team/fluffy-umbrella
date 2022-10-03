@@ -285,7 +285,7 @@ class Do_assign_call {
 
 					@Override
 					public void noFoundElement() {
-						deduceTypes2.LOG.err("IdentIA path cannot be resolved " + x);
+//						deduceTypes2.LOG.err("IdentIA path cannot be resolved " + x);
 					}
 				});
 			}

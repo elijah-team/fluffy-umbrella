@@ -13,13 +13,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.ConstructorDef;
-import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.FormalArgListItem;
-import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.NormalTypeName;
-import tripleo.elijah.lang.OS_Type;
-import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
@@ -696,7 +690,7 @@ public class Generate_Code_For_Method {
 				// Get it from type.attached
 				type = tte.getAttached();
 
-				LOG.info("228 "+ type);
+//				LOG.info("228 "+ type);
 				if (type.isUnitType()) {
 					returnType = "void/*Unit*/";
 				} else if (type != null) {
