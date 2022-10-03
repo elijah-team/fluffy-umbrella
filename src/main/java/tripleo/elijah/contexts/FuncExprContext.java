@@ -9,9 +9,6 @@
 package tripleo.elijah.contexts;
 
 import tripleo.elijah.lang.*;
-import tripleo.elijah.stages.expand.*;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,8 +18,6 @@ public class FuncExprContext extends FunctionContext {
 
 	private final FuncExpr carrier;
 	private final Context _parent;
-	public List<FunctionPrelimInstruction> functionPrelimInstructions = new ArrayList<FunctionPrelimInstruction>();
-	private int functionPrelimInstructionsNumber = 1;
 
 	public FuncExprContext(final Context cur, final FuncExpr pc) {
 		super(cur, pc);
