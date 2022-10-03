@@ -111,84 +111,13 @@ public class PipelineLogic {
 		DeducePhase.@NotNull GeneratedClasses lgc = dp.generatedClasses;
 		List<GeneratedNode> resolved_nodes = new ArrayList<GeneratedNode>();
 
+		final Coder coder = new Coder();
+
 		for (final GeneratedNode generatedNode : lgc) {
-			if (generatedNode instanceof GNCoded) {
-				final GNCoded coded = (GNCoded) generatedNode;
-
-				switch (coded.getRole()) {
-				case FUNCTION: {
-//					GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
-					if (coded.getCode() == 0)
-						coded.setCode(mod.parent.nextFunctionCode());
-					break;
-				}
-				case CLASS: {
-					final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-//					if (generatedClass.getCode() == 0)
-//						generatedClass.setCode(mod.parent.nextClassCode());
-					for (GeneratedClass generatedClass2 : generatedClass.classMap.values()) {
-						if (generatedClass2.getCode() == 0)
-							generatedClass2.setCode(mod.parent.nextClassCode());
-					}
-					for (GeneratedFunction generatedFunction : generatedClass.functionMap.values()) {
-						for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
-							if (identTableEntry.isResolved()) {
-								GeneratedNode node = identTableEntry.resolvedType();
-								resolved_nodes.add(node);
-							}
-						}
-					}
-					break;
-				}
-				case NAMESPACE:
-				{
-					final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
-					if (coded.getCode() == 0)
-						coded.setCode(mod.parent.nextClassCode());
-					for (GeneratedClass generatedClass : generatedNamespace.classMap.values()) {
-						if (generatedClass.getCode() == 0)
-							generatedClass.setCode(mod.parent.nextClassCode());
-					}
-					for (GeneratedFunction generatedFunction : generatedNamespace.functionMap.values()) {
-						for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
-							if (identTableEntry.isResolved()) {
-								GeneratedNode node = identTableEntry.resolvedType();
-								resolved_nodes.add(node);
-							}
-						}
-					}
-					break;
-				}
-				default:
-					throw new IllegalStateException("Unexpected value: " + coded.getRole());
-				}
-
-			} else {
-				throw new IllegalStateException("node must be coded");
-			}
+			coder.codeNodes(mod, resolved_nodes, generatedNode);
 		}
 
-		for (final GeneratedNode generatedNode : resolved_nodes) {
-			if (generatedNode instanceof GNCoded) {
-				final GNCoded coded = (GNCoded) generatedNode;
-				final int code;
-				if (coded.getCode() == 0) {
-					switch (coded.getRole()) {
-					case FUNCTION:
-						code = (mod.parent.nextFunctionCode());
-						break;
-					case NAMESPACE:
-					case CLASS:
-						code = mod.parent.nextClassCode();
-						break;
-					default:
-						throw new IllegalStateException("Invalid coded role");
-					}
-					coded.setCode(code);
-				}
-			} else
-				throw new IllegalStateException("node is not coded");
-		}
+		resolved_nodes.forEach(generatedNode -> coder.codeNode(generatedNode, mod));
 
 		dp.deduceModule(mod, lgc, getVerbosity());
 
@@ -222,13 +151,6 @@ public class PipelineLogic {
 				final GeneratedContainerNC nc = (GeneratedContainerNC) generatedNode;
 
 				nc.generateCode(ggc, gr);
-				if (nc instanceof GeneratedClass) {
-					final GeneratedClass generatedClass = (GeneratedClass) nc;
-
-					final @NotNull Collection<GeneratedNode> gn2 = ggc.constructors_to_list_of_generated_nodes(generatedClass.constructors.values());
-					GenerateResult gr3 = ggc.generateCode(gn2, wm);
-					gr.results().addAll(gr3.results());
-				}
 				final @NotNull Collection<GeneratedNode> gn1 = ggc.functions_to_list_of_generated_nodes(nc.functionMap.values());
 				GenerateResult gr2 = ggc.generateCode(gn1, wm);
 				gr.results().addAll(gr2.results());
