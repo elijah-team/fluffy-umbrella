@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.comp;
 
+import org.jdeferred2.DoneCallback;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.stages.gen_fn.GeneratedNode;
 
@@ -17,38 +19,61 @@ import java.util.List;
 /**
  * Created 8/21/21 10:10 PM
  */
-public class DeducePipeline implements PipelineMember {
-	private final Compilation c;
+public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListListener {
+	private final AccessBus __ab;
+	//	private final Compilation c;
 	List<GeneratedNode> lgc = new ArrayList<GeneratedNode>();
 
-	public DeducePipeline(Compilation aCompilation) {
-		c = aCompilation;
+	//
+	//
+	//
+	private PipelineLogic pipelineLogic;
+	private List<OS_Module> ms;
+	//
+	//
+	//
 
-		for (final OS_Module module : c.modules) {
-			if (false) {
-/*
-				new DeduceTypes(module).deduce();
-				for (final OS_Element2 item : module.items()) {
-					if (item instanceof ClassStatement || item instanceof NamespaceStatement) {
-						System.err.println("8001 "+item);
-					}
-				}
-				new TranslateModule(module).translate();
-*/
-//				new ExpandFunctions(module).expand();
-//
-//  			final JavaCodeGen visit = new JavaCodeGen();
-//	       		module.visitGen(visit);
-			} else {
-				c.pipelineLogic.addModule(module);
+	public DeducePipeline(final @NotNull AccessBus ab) {
+//		c = ab.getCompilation();
+
+		__ab = ab;
+
+		ab.subscribePipelineLogic(new DoneCallback<PipelineLogic>() {
+			@Override
+			public void onDone(final PipelineLogic result) {
+				pipelineLogic = result;
 			}
-		}
+		});
+
+//		ab.subscribe_moduleList(this);
 	}
 
 	@Override
 	public void run() {
-		c.pipelineLogic.everythingBeforeGenerate(lgc);
-		lgc = c.pipelineLogic.dp.generatedClasses.copy();
+		// TODO move this into a latch and wait for pipelineLogic and modules
+
+		List<OS_Module> ms1 = __ab.getCompilation().modules;
+
+		for (final OS_Module module : ms1) {
+			pipelineLogic.addModule(module);
+		}
+
+//		System.err.println(ms.size());
+
+		__ab.resolveModuleList(ms1);
+
+//		assert lgc.size() == 0;
+		pipelineLogic.everythingBeforeGenerate();
+
+//		assert lgc.size() == ms.size();
+		__ab.resolveLgc(lgc);
+
+		lgc = pipelineLogic.dp.generatedClasses.copy();
+	}
+
+	@Override
+	public void mods_slot(List<OS_Module> mods) {
+		ms = mods;
 	}
 }
 

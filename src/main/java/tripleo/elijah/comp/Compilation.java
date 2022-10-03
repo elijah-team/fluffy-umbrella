@@ -152,21 +152,32 @@ public class Compilation {
 					use(ci, do_out);
 				}
 
-				//
+				final AccessBus ab = new AccessBus(this);
+
 				if (stage.equals("E")) {
 					// do nothing. job over
 				} else {
-					pipelineLogic = new PipelineLogic(silent ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE);
-					final DeducePipeline dpl = new DeducePipeline(this);
-					pipelines.add(dpl);
-					final GeneratePipeline gpl = new GeneratePipeline(this, dpl);
-					pipelines.add(gpl);
-					final WritePipeline wpl = new WritePipeline(this, pipelineLogic.gr);
-					pipelines.add(wpl);
+					ab.addPipelineLogic(PipelineLogic::new);
+
+//					pipelineLogic = new PipelineLogic(silent ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE);
+//					ab.resolvePipelineLogic(pipelineLogic);
+
+					ab.add(DeducePipeline::new);
+					ab.add(GeneratePipeline::new);
+					ab.add(WritePipeline::new);
+//					ab.add(WriteMesonPipeline::new);
+
+//					final DeducePipeline dpl = new DeducePipeline(ab);                      pipelines.add(dpl);
+//					final GeneratePipeline gpl = new GeneratePipeline(this, dpl);   		pipelines.add(gpl);
+//					final WritePipeline wpl = new WritePipeline(this, pipelineLogic.gr);	pipelines.add(wpl);
 
 					pipelines.run();
 
-					writeLogs(silent, pipelineLogic.elLogs);
+					final PipelineLogic[] pl = new PipelineLogic[1];
+
+					ab.subscribePipelineLogic(xx -> pl[0]=xx);
+
+					writeLogs(silent, pl[0].elLogs);
 				}
 			} else {
 				System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");

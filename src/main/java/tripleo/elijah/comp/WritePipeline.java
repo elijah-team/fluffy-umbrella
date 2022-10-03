@@ -38,18 +38,19 @@ import java.util.Map;
 /**
  * Created 8/21/21 10:19 PM
  */
-public class WritePipeline implements PipelineMember {
+public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResultListener {
 	private final Compilation c;
-	private final GenerateResult gr;
+	private GenerateResult gr;
 
 	final OutputStrategy os;
 	final ElSystem sys;
 
 	private final File file_prefix;
 
-	public WritePipeline(Compilation aCompilation, GenerateResult aGr) {
-		c = aCompilation;
-		gr = aGr;
+	public WritePipeline(AccessBus ab) {
+		c = ab.getCompilation();
+
+		ab.subscribe_GenerateResult(this);
 
 		file_prefix = new File("COMP", c.getCompilationNumberString());
 
@@ -144,6 +145,10 @@ public class WritePipeline implements PipelineMember {
 		PipelineLogic.debug_buffers(gr, db_stream);
 	}
 
+	@Override
+	public void gr_slot(GenerateResult gr) {
+		this.gr = gr;
+	}
 }
 
 //
