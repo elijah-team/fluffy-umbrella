@@ -30,12 +30,9 @@ import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class OS_Module implements OS_Element, OS_Container {
 
@@ -196,44 +193,7 @@ public class OS_Module implements OS_Element, OS_Container {
 		//
 		// FIND ALL ENTRY POINTS (should only be one per module)
 		//
-		for (final ModuleItem item : items) {
-			if (item instanceof ClassStatement) {
-				ClassStatement classStatement = (ClassStatement) item;
-				if (MainClassEntryPoint.isMainClass(classStatement)) {
-					Collection<ClassItem> x = classStatement.findFunction("main");
-					Collection<ClassItem> found = Collections2.filter(x, new Predicate<ClassItem>() {
-						@Override
-						public boolean apply(@org.checkerframework.checker.nullness.qual.Nullable ClassItem input) {
-							assert input != null;
-							FunctionDef fd = (FunctionDef) input;
-							return MainClassEntryPoint.is_main_function_with_no_args(fd);
-						}
-					});
-//					Iterator<ClassStatement> zz = x.stream()
-//							.filter(ci -> ci instanceof FunctionDef)
-//							.filter(fd -> is_main_function_with_no_args((FunctionDef) fd))
-//							.map(found1 -> (ClassStatement) found1.getParent())
-//							.iterator();
-
-/*
-					List<ClassStatement> entrypoints_stream = x.stream()
-							.filter(ci -> ci instanceof FunctionDef)
-							.filter(fd -> is_main_function_with_no_args((FunctionDef) fd))
-							.map(found1 -> (ClassStatement) found1.getParent())
-							.collect(Collectors.toList());
-*/
-
-					final int eps = entryPoints.size();
-					for (ClassItem classItem : found) {
-						entryPoints.add(new MainClassEntryPoint((ClassStatement) classItem.getParent()));
-					}
-					assert entryPoints.size() == eps || entryPoints.size() == eps+1; // TODO this will fail one day
-
-//					System.out.println("243 " + entryPoints +" "+ _fileName);
-//					break; // allow for "extend" class
-				}
-			}
-		}
+		XX.find_all_entry_points(this);
 	}
 
 	private void find_multiple_items() {
@@ -314,6 +274,49 @@ public class OS_Module implements OS_Element, OS_Container {
 	public Compilation getCompilation() {
 		return parent;
 	}
+
+
+
+	static class XX {
+		private static boolean isMainClassEntryPoint(@NotNull ClassItem input) {
+			final FunctionDef fd = (FunctionDef) input;
+			return MainClassEntryPoint.is_main_function_with_no_args(fd);
+		}
+
+		private static void find_all_entry_points(@NotNull OS_Module aModule) {
+			Consumer<ClassStatement> ccs = (x) -> aModule.entryPoints.add(new MainClassEntryPoint(x));
+
+			aModule.items.stream()
+					.filter(item -> item instanceof ClassStatement)
+					.map(item -> (ClassStatement) item)
+					.forEach(classStatement -> faep_002(classStatement, ccs));
+		}
+
+		/**
+		 * If classStatement is a "main class", send to consumer
+		 *
+		 * @param classStatement
+		 * @param ccs
+		 */
+		private static void faep_002(ClassStatement classStatement, Consumer<ClassStatement> ccs) {
+			if (MainClassEntryPoint.isMainClass(classStatement)) {} else return;
+
+			final Collection<ClassItem> x = classStatement.findFunction("main");
+			final Stream<ClassItem> found = x.stream().filter(XX::isMainClassEntryPoint);
+
+//			final int eps = aModule.entryPoints.size();
+
+			found
+					.map(classItem -> (ClassStatement) classItem.getParent())
+					.forEach(ccs);
+
+//			assert aModule.entryPoints.size() == eps || aModule.entryPoints.size() == eps+1; // TODO this will fail one day
+
+//			System.out.println("243 " + entryPoints +" "+ _fileName);
+//			break; // allow for "extend" class
+		}
+	}
+
 }
 
 //

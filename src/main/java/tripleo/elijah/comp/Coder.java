@@ -18,7 +18,9 @@ class Coder {
 			codeNodeFunction(generatedFunction, mod);
 		} else if (generatedNode instanceof GeneratedClass) {
 			final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-			if (false)
+
+//			assert generatedClass.getCode() == 0;
+			if (generatedClass.getCode() == 0)
 				codeNodeClass(generatedClass, mod);
 
 			setClassmapNodeCodes(generatedClass.classMap, mod);
@@ -27,8 +29,8 @@ class Coder {
 		} else if (generatedNode instanceof GeneratedNamespace) {
 			final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
 
-			assert generatedNamespace.getCode() == 0;
-			codeNodeNamespace(generatedNamespace, mod);
+			if (generatedNamespace.getCode() != 0)
+				codeNodeNamespace(generatedNamespace, mod);
 
 			setClassmapNodeCodes(generatedNamespace.classMap, mod);
 
