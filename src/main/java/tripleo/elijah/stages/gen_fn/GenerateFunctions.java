@@ -222,8 +222,8 @@ public class GenerateFunctions {
 		}
 
 		private void generate_case_conditional(CaseConditional cc) {
-			int y=2;
-			LOG.err("Skip CaseConditional for now");
+			NotImplementedException.raise();
+//			LOG.err("Skip CaseConditional for now");
 //			throw new NotImplementedException();
 		}
 
@@ -634,7 +634,7 @@ public class GenerateFunctions {
 
 		for (ClassItem item : klass.getItems()) {
 			if (item instanceof AliasStatement) {
-				LOG.info("Skip alias statement for now");
+//				LOG.info("Skip alias statement for now");
 //				throw new NotImplementedException();
 			} else if (item instanceof ClassStatement) {
 //				final ClassStatement classStatement = (ClassStatement) item;
@@ -690,7 +690,7 @@ public class GenerateFunctions {
 
 		for (ClassItem item : namespace1.getItems()) {
 			if (item instanceof AliasStatement) {
-				LOG.err("328 Skip AliasStatement for now");
+//				LOG.err("328 Skip AliasStatement for now");
 //				throw new NotImplementedException();
 			} else if (item instanceof ClassStatement) {
 				throw new NotImplementedException();

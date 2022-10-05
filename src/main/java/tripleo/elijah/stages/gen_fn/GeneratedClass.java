@@ -136,7 +136,7 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 					// must be unknown
 				}
 			} else {
-				System.err.println(String.format("108 %s %s", varTableEntry.nameToken, varTableEntry.potentialTypes));
+//				System.err.printf("108 %s %s%n", varTableEntry.nameToken, varTableEntry.potentialTypes);
 				if (varTableEntry.potentialTypes.size() == 1) {
 					TypeTableEntry potentialType = varTableEntry.potentialTypes.get(0);
 					if (potentialType.resolved() == null) {

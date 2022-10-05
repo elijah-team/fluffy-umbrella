@@ -189,8 +189,9 @@ public class OS_Type {
 
 	/*@ ensures type_of_type = Type.USER; */
 	public OS_Type(final @NotNull TypeName typeName) {
-		if (typeName.isNull())
-			System.err.println("170 null typeName in OS_Type");//throw new AssertionError();
+		if (typeName.isNull()) {
+//			System.err.println("170 null typeName in OS_Type");//throw new AssertionError();
+		}
 		this.ttype = typeName;
 		this.type_of_type = Type.USER;
 	}

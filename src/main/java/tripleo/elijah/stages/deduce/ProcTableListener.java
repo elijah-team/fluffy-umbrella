@@ -65,7 +65,9 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 								  final AbstractDependencyTracker depTracker) {
 		@Nullable ClassInvocation ci;
 		FunctionInvocation fi;
+		@Nullable GenType genType = null;
 
+//		pte.setResolvedElement(e); // README already done
 		if (e instanceof ClassStatement) {
 			ci = new ClassInvocation((ClassStatement) e, null);
 			ci = dc.registerClassInvocation(ci);
@@ -85,7 +87,7 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 			@NotNull FunctionDef fd = (FunctionDef) e;
 			resolved_element_pte_FunctionDef(co, pte, depTracker, fd);
 		} else {
-			LOG.err("845 Unknown element for ProcTableEntry " + e);
+//			LOG.err("845 Unknown element for ProcTableEntry " + e);
 		}
 	}
 
@@ -104,16 +106,7 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 				} else if (parent instanceof FormalArgListItem) {
 					resolved_element_pte_FunctionDef_FormalArgListItem(co, pte, depTracker, fd, (FormalArgListItem) parent);
 				} else if (parent instanceof VariableStatement) {
-					@Nullable OS_Element p;
-					@Nullable InstructionArgument ia;
-					if (dp.size() > 2) {
-						p = dp.getElement(dp.size() - 3);
-						ia = dp.getIA(dp.size() - 3);
-					} else {
-						p = null;
-						ia = null;
-					}
-					resolved_element_pte_FunctionDef_VariableStatement(co, depTracker, pte, fd, p, ia, (VariableStatement) parent);
+					resolved_element_pte_FunctionDef_VariableStatement(co, pte, depTracker, fd, (VariableStatement) parent);
 				} else {
 					@NotNull E_Is_FunctionDef e_Is_FunctionDef = new E_Is_FunctionDef(pte, fd, parent).invoke(null);
 					fi = e_Is_FunctionDef.getFi();

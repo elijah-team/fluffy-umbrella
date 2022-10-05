@@ -782,7 +782,7 @@ public class Generate_Code_For_Method {
 				// Get it from type.attached
 				type = tte.getAttached();
 
-				LOG.info("228 "+ type);
+//				LOG.info("228 "+ type);
 				if (type == null) {
 					LOG.err("655 Shouldn't be here (type is null)");
 					returnType = "ERR_type_attached_is_null/*2*/";
