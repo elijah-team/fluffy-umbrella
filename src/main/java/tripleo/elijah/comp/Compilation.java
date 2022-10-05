@@ -67,28 +67,8 @@ public class Compilation {
 		this._compilationNumber = new Random().nextInt(Integer.MAX_VALUE);
 	}
 
-	public void feedCmdLine(final List<String> args) {
-		main(args, eee == null ? new StdErrSink() : eee);
-	}
-
-	public IO getIO() {
-		return io;
-	}
-
-	public void setIO(final IO io) {
-		this.io = io;
-	}
-
-	//
-	//
-	//
-
-	public String stage = "O"; // Output
-
-	private boolean silent = false;
-
-
-	public void main(final List<String> args, final ErrSink errSink) throws Exception {
+	public void feedCmdLine(final List<String> args) throws Exception {
+		final ErrSink errSink = eee == null ? new StdErrSink() : eee;
 		boolean do_out = false /*, silent = false*/;
 		try {
 			if (args.size() > 0) {
@@ -169,12 +149,15 @@ public class Compilation {
 //					final WritePipeline wpl = new WritePipeline(this, pipelineLogic.gr);	pipelines.add(wpl);
 */
 
-					pipelineLogic = new PipelineLogic(silent ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE);
-					final DeducePipeline dpl = new DeducePipeline(this);
+					pipelineLogic = new PipelineLogic(ab);
+
+					ab.addPipelineLogic((bus) -> pipelineLogic);
+
+					final DeducePipeline dpl = new DeducePipeline(ab);
 					pipelines.add(dpl);
-					final GeneratePipeline gpl = new GeneratePipeline(this, dpl);
+					final GeneratePipeline gpl = new GeneratePipeline(ab);
 					pipelines.add(gpl);
-					final WritePipeline wpl = new WritePipeline(this, pipelineLogic.gr);
+					final WritePipeline wpl = new WritePipeline(ab);
 					pipelines.add(wpl);
 
 					pipelines.run();
@@ -184,6 +167,8 @@ public class Compilation {
 					ab.subscribePipelineLogic(xx -> pl[0]=xx);
 
 					final PipelineLogic pipelineLogic1  = pl[0];
+
+					assert pipelineLogic1 == pipelineLogic;
 
 					writeLogs(silent, pipelineLogic1.elLogs);
 				}
@@ -195,6 +180,23 @@ public class Compilation {
 			throw e;
 		}
 	}
+
+	public IO getIO() {
+		return io;
+	}
+
+	public void setIO(final IO io) {
+		this.io = io;
+	}
+
+	//
+	//
+	//
+
+	public String stage = "O"; // Output
+
+	private boolean silent = false;
+
 
 	public static ElLog.Verbosity gitlabCIVerbosity() {
 		final boolean gitlab_ci = isGitlab_ci();
