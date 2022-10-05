@@ -27,7 +27,7 @@ import java.util.List;
 public class FindClassesInDemoElNormal {
 
 	@Test
-	public final void testParseFile() {
+	public final void testParseFile() throws Exception {
 		final List<String> args = tripleo.elijah.util.Helpers.List_of("test/demo-el-normal", "test/demo-el-normal/main2", "-sE");
 		final ErrSink eee = new StdErrSink();
 		final Compilation c = new Compilation(eee, new IO());
@@ -43,7 +43,7 @@ public class FindClassesInDemoElNormal {
 
 
 	@Test
-	public final void testListFolders() {
+	public final void testListFolders() throws Exception {
 		final List<String> args = Helpers.List_of("test/demo-el-normal/listfolders/", "-sE");
 		final ErrSink eee = new StdErrSink();
 		final Compilation c = new Compilation(eee, new IO());

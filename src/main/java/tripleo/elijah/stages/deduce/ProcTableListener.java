@@ -142,6 +142,15 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 		}
 	}
 
+	private void resolved_element_pte_FunctionDef_VariableStatement(Constructable aCo,
+	                                                                ProcTableEntry aPte,
+	                                                                AbstractDependencyTracker aDepTracker,
+	                                                                FunctionDef aFd,
+	                                                                VariableStatement aParent) {
+		throw new IllegalStateException();
+//		resolved_element_pte_FunctionDef_VariableStatement(aCo, aPte, aDepTracker, aPte, aFd, aParent);
+	}
+
 	private void resolved_element_pte_FunctionDef_dunder(Constructable co,
 														 AbstractDependencyTracker depTracker,
 														 @NotNull ProcTableEntry pte,

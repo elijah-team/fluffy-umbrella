@@ -31,7 +31,7 @@ class Resolve_var_table_entry {
 			{
 				final GenType genType = vte.type.genType;
 				if (genType.resolved != null && genType.node == null) {
-					deduceTypes2.genCI(genType, genType.nonGenericTypeName);
+					genType.genCI(genType.nonGenericTypeName, deduceTypes2, deduceTypes2.errSink, deduceTypes2.phase);
 //					genType.node = makeNode(genType);
 					//
 					// registerClassInvocation does the job of makeNode, so results should be immediately available

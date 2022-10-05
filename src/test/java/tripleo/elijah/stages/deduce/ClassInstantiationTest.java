@@ -21,7 +21,7 @@ import static tripleo.elijah.util.Helpers.List_of;
 public class ClassInstantiationTest {
 
 	@Test
-	public void classInstantiation() {
+	public void classInstantiation() throws Exception {
 		String f = "test/basic1/class_instantiation/";
 		Compilation c = new Compilation(new StdErrSink(), new IO());
 
@@ -29,7 +29,7 @@ public class ClassInstantiationTest {
 	}
 
 	@Test
-	public void classInstantiation2() {
+	public void classInstantiation2() throws Exception {
 		String f = "test/basic1/class_instantiation2/";
 		Compilation c = new Compilation(new StdErrSink(), new IO());
 
@@ -37,7 +37,7 @@ public class ClassInstantiationTest {
 	}
 
 	@Test
-	public void classInstantiation3() {
+	public void classInstantiation3() throws Exception {
 		String f = "test/basic1/class_instantiation3/";
 		Compilation c = new Compilation(new StdErrSink(), new IO());
 
@@ -45,7 +45,7 @@ public class ClassInstantiationTest {
 	}
 
 	@Test
-	public void classInstantiation4() {
+	public void classInstantiation4() throws Exception {
 		String f = "test/basic1/class_instantiation4/";
 		Compilation c = new Compilation(new StdErrSink(), new IO());
 

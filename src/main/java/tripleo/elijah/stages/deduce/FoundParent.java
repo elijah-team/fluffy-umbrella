@@ -337,7 +337,7 @@ public class FoundParent implements BaseTableEntry.StatusListener {
 
 			final @NotNull GenType genType = new GenType(klass);
 			final TypeName typeName = vte.type.genType.nonGenericTypeName;
-			final @Nullable ClassInvocation ci = deduceTypes2.genCI(genType, typeName);
+			final @Nullable ClassInvocation ci = genType.genCI(typeName, deduceTypes2, deduceTypes2.errSink, deduceTypes2.phase);
 //							resolve_vte_for_class(vte, klass);
 			ci.resolvePromise().done(new DoneCallback<GeneratedClass>() {
 				@Override

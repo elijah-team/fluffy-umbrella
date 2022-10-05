@@ -8,13 +8,18 @@
  */
 package tripleo.elijah;
 
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.StdErrSink;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
+import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.comp.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Main {
 
@@ -23,7 +28,7 @@ public class Main {
 		final Compilation cc = new Compilation(errSink, new IO());
 		final List<String> ls = new ArrayList<String>();
 		ls.addAll(Arrays.asList(args));
-		cc.main(ls, new StdErrSink());
+		cc.feedCmdLine(ls);
 	}
 }
 

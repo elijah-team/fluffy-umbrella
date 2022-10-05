@@ -9,6 +9,8 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -134,9 +136,17 @@ public class DeduceTypes2 {
 		if (aProcTableEntry == null)
 			pte_string = "[]";
 		else {
-			pte_string = aProcTableEntry.getLoggingString(this);
+			pte_string = aProcTableEntry.getLoggingString(this, LOG);
 		}
 		return pte_string;
+	}
+
+	public void deduceOneFunction(GeneratedFunction aResult) {
+		deduceOneFunction(aResult, phase);
+	}
+
+	public ClassInvocation genCI(GenType aType, Object aO) {
+		throw new NotImplementedException(/*"ooga booga"*/);
 	}
 
 	interface IElementProcessor {
@@ -607,7 +617,7 @@ public class DeduceTypes2 {
 			case NOP:
 				break;
 			case CONSTRUCT:
-				implement_construct(generatedFunction, instruction, context);
+				implement_construct(generatedFunction, instruction/*, context*/);
 				break;
 			default:
 				throw new IllegalStateException("Unexpected value: " + instruction.getName());
@@ -1145,37 +1155,6 @@ public class DeduceTypes2 {
 					throw new NotImplementedException();
 			}
 		}
-	}
-
-	private @NotNull String getPTEString(@Nullable ProcTableEntry pte) {
-		String pte_string;
-		if (pte == null)
-			pte_string = "[]";
-		else {
-			@NotNull List<String> l = new ArrayList<String>();
-
-			for (@NotNull TypeTableEntry typeTableEntry : pte.getArgs()) {
-				OS_Type attached = typeTableEntry.getAttached();
-
-				if (attached != null)
-					l.add(attached.toString());
-				else {
-//					LOG.err("267 attached == null for "+typeTableEntry);
-
-					if (typeTableEntry.expression != null)
-						l.add(String.format("<Unknown expression: %s>", typeTableEntry.expression));
-					else
-						l.add("<Unknkown>");
-				}
-			}
-
-			@NotNull StringBuilder sb2 = new StringBuilder();
-			sb2.append("[");
-			sb2.append(Helpers.String_join(", ", l));
-			sb2.append("]");
-			pte_string = sb2.toString();
-		}
-		return pte_string;
 	}
 
 	/**
@@ -1793,7 +1772,7 @@ public class DeduceTypes2 {
 
 	void implement_construct(BaseGeneratedFunction generatedFunction, Instruction instruction) {
 		final @NotNull Implement_construct ic = newImplement_construct(generatedFunction, instruction);
-		ic.action(aContext);
+		ic.action();
 	}
 
 	@NotNull
@@ -2927,6 +2906,153 @@ public class DeduceTypes2 {
 
 		public GenType resolve_type(final OS_Type aTy, final Context aCtx) throws ResolveError {
 			return deduceTypes2.resolve_type(aTy, aCtx);
+		}
+	}
+
+	public static class ClassInvocationMake {
+		public static ClassInvocation withGenericPart(ClassStatement best,
+		                                              String constructorName,
+		                                              NormalTypeName aTyn1,
+		                                              DeduceTypes2 dt2,
+		                                              final ErrSink aErrSink) {
+			@NotNull GenericPart genericPart = new GenericPart(best, aTyn1);
+
+			@Nullable ClassInvocation clsinv = new ClassInvocation(best, constructorName);
+
+			if (genericPart.hasGenericPart()) {
+				final @NotNull List<TypeName> gp = best.getGenericPart();
+				final @NotNull TypeNameList gp2 = genericPart.getGenericPartFromTypeName();
+
+				for (int i = 0; i < gp.size(); i++) {
+					final TypeName typeName = gp2.get(i);
+					@NotNull GenType typeName2;
+					try {
+						typeName2 = dt2.resolve_type(new OS_Type(typeName), typeName.getContext());
+						// TODO transition to GenType
+						clsinv.set(i, gp.get(i), typeName2.resolved);
+					} catch (ResolveError aResolveError) {
+//						aResolveError.printStackTrace();
+						aErrSink.reportDiagnostic(aResolveError);
+					}
+				}
+			}
+			return clsinv;
+		}
+	}
+
+	static class GenericPart {
+		private final ClassStatement classStatement;
+		private final TypeName genericTypeName;
+
+		@Contract(pure = true)
+		public GenericPart(final ClassStatement aClassStatement, final TypeName aGenericTypeName) {
+			classStatement = aClassStatement;
+			genericTypeName = aGenericTypeName;
+		}
+
+		@Contract(pure = true)
+		public boolean hasGenericPart() {
+			return classStatement.getGenericPart().size() > 0;
+		}
+
+		@Contract(pure = true)
+		private NormalTypeName getGenericTypeName() {
+			assert genericTypeName != null;
+			assert genericTypeName instanceof NormalTypeName;
+
+			return (NormalTypeName) genericTypeName;
+		}
+
+		@Contract(pure = true)
+		public TypeNameList getGenericPartFromTypeName() {
+			final NormalTypeName ntn = getGenericTypeName();
+			return ntn.getGenericPart();
+		}
+	}
+
+	public static class OS_SpecialVariable implements OS_Element {
+		private final VariableTableEntry variableTableEntry;
+		private final VariableTableType type;
+		private final BaseGeneratedFunction generatedFunction;
+		public DeduceLocalVariable.MemberInvocation memberInvocation;
+
+		public OS_SpecialVariable(final VariableTableEntry aVariableTableEntry, final VariableTableType aType, final BaseGeneratedFunction aGeneratedFunction) {
+			variableTableEntry = aVariableTableEntry;
+			type = aType;
+			generatedFunction = aGeneratedFunction;
+		}
+
+		@Override
+		public void visitGen(final ElElementVisitor visit) {
+			throw new IllegalArgumentException("not implemented");
+		}
+
+		@Override
+		public Context getContext() {
+			return generatedFunction.getFD().getContext();
+		}
+
+		@Override
+		public OS_Element getParent() {
+			return generatedFunction.getFD();
+		}
+
+		@Nullable
+		public IInvocation getInvocation(final DeduceTypes2 aDeduceTypes2) {
+			final @Nullable IInvocation aInvocation;
+			final OS_SpecialVariable specialVariable = this;
+			assert specialVariable.type == VariableTableType.SELF;
+			// first parent is always a function
+			switch (DecideElObjectType.getElObjectType(specialVariable.getParent().getParent())) {
+				case CLASS:
+					final ClassStatement classStatement = (ClassStatement) specialVariable.getParent().getParent();
+					aInvocation = aDeduceTypes2.phase.registerClassInvocation(classStatement, null); // TODO generics
+//				ClassInvocationMake.withGenericPart(classStatement, null, null, this);
+					break;
+				case NAMESPACE:
+					throw new NotImplementedException(); // README ha! implemented in
+				default:
+					throw new IllegalArgumentException("Illegal object type for parent");
+			}
+			return aInvocation;
+		}
+	}
+
+	public void genCIForGenType2(final GenType aGenType) {
+		aGenType.genCI(aGenType.nonGenericTypeName, this, errSink, phase);
+		final IInvocation invocation = aGenType.ci;
+		if (invocation instanceof NamespaceInvocation) {
+			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
+			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
+				@Override
+				public void onDone(final GeneratedNamespace result) {
+					aGenType.node = result;
+				}
+			});
+		} else if (invocation instanceof ClassInvocation) {
+			final ClassInvocation classInvocation = (ClassInvocation) invocation;
+			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
+				@Override
+				public void onDone(final GeneratedClass result) {
+					aGenType.node = result;
+				}
+			});
+		} else {
+			if (aGenType.resolved instanceof OS_FuncExprType) {
+				final OS_FuncExprType funcExprType = (OS_FuncExprType) aGenType.resolved;
+				final @NotNull GenerateFunctions genf = getGenerateFunctions(funcExprType.getElement().getContext().module());
+				final FunctionInvocation fi = new FunctionInvocation((BaseFunctionDef) funcExprType.getElement(),
+						null,
+						null,
+						phase.generatePhase);
+				WlGenerateFunction gen = new WlGenerateFunction(genf, fi);
+				gen.run(null);
+				aGenType.node = gen.getResult();
+			} else if (aGenType.resolved instanceof OS_FuncType) {
+				final OS_FuncType funcType = (OS_FuncType) aGenType.resolved;
+				int y=2;
+			} else
+				throw new IllegalStateException("invalid invocation");
 		}
 	}
 }

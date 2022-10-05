@@ -29,21 +29,21 @@ class Resolve_ident_table_entry {
 				@NotNull IdentTableEntry itee = ((IdentIA) itex).getEntry();
 
 				@Nullable BaseTableEntry x = null;
-				if (itee.backlink instanceof IntegerIA) {
-					@NotNull VariableTableEntry vte = ((IntegerIA) itee.backlink).getEntry();
+				if (itee.getBacklink() instanceof IntegerIA) {
+					@NotNull VariableTableEntry vte = ((IntegerIA) itee.getBacklink()).getEntry();
 					x = vte;
 //					if (vte.constructable_pte != null)
 					itex = null;
-				} else if (itee.backlink instanceof IdentIA) {
-					x = ((IdentIA) itee.backlink).getEntry();
-					itex = ((IdentTableEntry) x).backlink;
-				} else if (itee.backlink instanceof ProcIA) {
-					x = ((ProcIA) itee.backlink).getEntry();
+				} else if (itee.getBacklink() instanceof IdentIA) {
+					x = ((IdentIA) itee.getBacklink()).getEntry();
+					itex = ((IdentTableEntry) x).getBacklink();
+				} else if (itee.getBacklink() instanceof ProcIA) {
+					x = ((ProcIA) itee.getBacklink()).getEntry();
 //					if (itee.getCallablePTE() == null)
 //						// turned out to be wrong (by double calling), so let's wrap it
 //						itee.setCallablePTE((ProcTableEntry) x);
 					itex = null; //((ProcTableEntry) x).backlink;
-				} else if (itee.backlink == null) {
+				} else if (itee.getBacklink() == null) {
 					itex = null;
 					x = null;
 				}
@@ -57,7 +57,7 @@ class Resolve_ident_table_entry {
 		}
 		if (ite.getResolvedElement() != null)
 			return;
-		if (true || ite.backlink == null) {
+		if (true || ite.getBacklink() == null) {
 			final @NotNull IdentIA identIA = new IdentIA(ite.getIndex(), generatedFunction);
 			deduceTypes2.resolveIdentIA_(ite.getPC(), identIA, generatedFunction, new FoundElement(deduceTypes2.phase) {
 

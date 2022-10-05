@@ -22,6 +22,7 @@ import tripleo.elijah.stages.deduce.DeduceProcCall;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.instructions.InstructionArgument;
+import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 
@@ -169,7 +170,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	}
 
 	@NotNull
-	public String getLoggingString(final @Nullable DeduceTypes2 aDeduceTypes2) {
+	public String getLoggingString(final @Nullable DeduceTypes2 aDeduceTypes2, final ElLog LOG) {
 		final String pte_string;
 		@NotNull List<String> l = new ArrayList<String>();
 
@@ -179,8 +180,8 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 			if (attached != null)
 				l.add(attached.toString());
 			else {
-				if (aDeduceTypes2 != null)
-					aDeduceTypes2.LOG.err("267 attached == null for "+typeTableEntry);
+//				if (aDeduceTypes2 != null)
+//					LOG.err("267 attached == null for "+typeTableEntry);
 
 				if (typeTableEntry.expression != null)
 					l.add(String.format("<Unknown expression: %s>", typeTableEntry.expression));

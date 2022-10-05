@@ -32,7 +32,7 @@ public class FindBothSourceFiles {
 	 * Test method for {@link tripleo.elijah.Main#parseFile(java.lang.String, java.io.InputStream)}.
 	 */
 	@Test
-	public final void compilerShouldFindBothParseFiles() {
+	public final void compilerShouldFindBothParseFiles() throws Exception {
 		final List<String> args = List_of("test/demo-el-normal", "test/demo-el-normal/main2", "-sE");
 //		ErrSink eee = JMock.of(ErrSink.class);
 		final ErrSink eee = new StdErrSink();

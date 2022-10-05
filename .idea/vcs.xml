@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-<<<<<<< HEAD
   <component name="CommitMessageInspectionProfile">
     <profile version="1.0">
       <inspection_tool class="SubjectBodySeparation" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -11,9 +10,5 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-=======
-  <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="Git" />
->>>>>>> 451b657 (A new take. Based on problemset 1-004. Good luck self...)
   </component>
 </project>

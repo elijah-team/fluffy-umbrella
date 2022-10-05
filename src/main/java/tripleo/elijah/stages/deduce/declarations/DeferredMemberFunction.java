@@ -56,7 +56,7 @@ public class DeferredMemberFunction {
 		functionInvocation.generatePromise().then(new DoneCallback<BaseGeneratedFunction>() {
 			@Override
 			public void onDone(final BaseGeneratedFunction result) {
-				deduceTypes2.deduceOneFunction((GeneratedFunction) result, deduceTypes2.phase); // !!
+				deduceTypes2.deduceOneFunction((GeneratedFunction) result); // !!
 				result.typePromise().then(new DoneCallback<GenType>() {
 					@Override
 					public void onDone(final GenType result) {
