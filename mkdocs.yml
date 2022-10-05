@@ -1,0 +1,12 @@
+site_name: The Elijjah Programming Language
+theme:
+  name: material
+  palette:
+    scheme: preference
+  font: false
+repo_url: https://gitlab.com/elijah-team/elijah-lang/
+repo_name: elijah-team/elijah-lang
+plugins:
+  - git-revision-date-localized
+markdown_extensions:
+  - def_list
