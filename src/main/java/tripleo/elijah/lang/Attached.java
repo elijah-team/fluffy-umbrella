@@ -8,7 +8,7 @@
  */
 package tripleo.elijah.lang;
 
-import tripleo.elijah.gen.Node;
+//import tripleo.elijah.gen.Node;
 
 /*
  * Created on 5/19/2019 at 02:09
@@ -19,7 +19,7 @@ import tripleo.elijah.gen.Node;
 public class Attached {
 	int _code;
 	Context _context;
-	Node _node;
+//	Node _node;
 	
 	public Attached(final Context aContext) {
 		_context = aContext;
@@ -46,13 +46,13 @@ public class Attached {
 		_context = aContext;
 	}
 	
-	public Node getNode() {
-		return _node;
-	}
+//	public Node getNode() {
+//		return _node;
+//	}
 	
-	public void setNode(final Node aNode) {
-		_node = aNode;
-	}
+//	public void setNode(final Node aNode) {
+//		_node = aNode;
+//	}
 	
 }
 
