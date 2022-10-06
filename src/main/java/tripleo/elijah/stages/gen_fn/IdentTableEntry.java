@@ -24,6 +24,7 @@ import tripleo.elijah.stages.deduce.DeducePath;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.OnType;
+import tripleo.elijah.stages.deduce.zero.ITE_Zero;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
@@ -52,6 +53,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	private DeduceElementIdent dei = new DeduceElementIdent(this);
 
 	public DeduceTypes2.PromiseExpectation<String> resolveExpectation;
+	private ITE_Zero _zero;
 
 	public IdentTableEntry(final int index, final IdentExpression ident, Context pc) {
         this.index  = index;
@@ -233,6 +235,11 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 
 	public void makeType(final BaseGeneratedFunction aGeneratedFunction, final TypeTableEntry.Type aType, final IExpression aExpression) {
 		type = aGeneratedFunction.newTypeTableEntry(aType, null, aExpression, this);
+	}
+
+	public ITE_Zero zero() {
+		if (_zero == null) _zero = new ITE_Zero(this);
+		return _zero;
 	}
 }
 

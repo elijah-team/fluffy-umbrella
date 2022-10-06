@@ -16,6 +16,7 @@ import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.DeduceLocalVariable;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.zero.VTE_Zero;
 import tripleo.elijah.stages.instructions.VariableTableType;
 
 import java.util.Collection;
@@ -35,6 +36,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	public ProcTableEntry constructable_pte;
 	public GenType genType = new GenType();
 	private GeneratedNode _resolvedType;
+	private VTE_Zero _zero;
 
 	public VariableTableEntry(final int aIndex, final VariableTableType aVtt, final String aName, final TypeTableEntry aTTE, final OS_Element el) {
 		this.index = aIndex;
@@ -199,6 +201,11 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 
 	public boolean typeDeferred_isResolved() {
 		return typeDeferred.isResolved();
+	}
+
+	public VTE_Zero zero() {
+		if (_zero == null) _zero = new VTE_Zero(this);
+		return _zero;
 	}
 }
 
