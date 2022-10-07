@@ -26,6 +26,7 @@ import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.stages.stage1.S1_Constructor;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkList;
@@ -56,62 +57,35 @@ public class GenerateFunctions {
 		aPipelineLogic.addLog(LOG);
 	}
 
+	public static class S1toG_GC_Processor {
+
+		private GenerateFunctions gf;
+
+		public S1toG_GC_Processor(GenerateFunctions generateFunctions) {
+			this.gf = generateFunctions;
+		}
+
+		public int add_i(GeneratedConstructor gf2, InstructionName e, List<InstructionArgument> lia, Context cctx) {
+			return gf.add_i(gf2, e, lia, cctx);
+		}
+
+		public void generate_item(OS_Element item, GeneratedConstructor gf2, Context cctx) {
+			gf.generate_item(item, gf2, cctx);			
+		}
+		
+	}
+	
 	public @NotNull GeneratedConstructor generateConstructor(ConstructorDef aConstructorDef,
 															 ClassStatement parent, // TODO Namespace constructors
 															 FunctionInvocation aFunctionInvocation) {
-		final GeneratedConstructor gf = new GeneratedConstructor(aConstructorDef);
-		gf.setFunctionInvocation(aFunctionInvocation);
-		if (parent instanceof ClassStatement) {
-			final OS_Type parentType = ((ClassStatement) parent).getOS_Type();
-			final IdentExpression selfIdent = IdentExpression.forString("self");
-			final TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, parentType, selfIdent);
-			gf.addVariableTableEntry("self", VariableTableType.SELF, tte, null);
-		}
 
-		{
-			final List<FormalArgListItem> fali_args = aConstructorDef.fal().falis;
-			final List<TypeTableEntry> fi_args = aFunctionInvocation.getArgs();
+		final S1_Constructor s1c = new S1_Constructor(aConstructorDef, parent, aFunctionInvocation);
 
-			for (int i = 0; i < fali_args.size(); i++) {
-				final FormalArgListItem fali = fali_args.get(i);
+		s1c.process(new S1toG_GC_Processor(this));
+		
+		final GeneratedConstructor gf = s1c.getGenerated();
+		gf.fi = aFunctionInvocation; // TODO smelly
 
-				final TypeTableEntry tte1 = fi_args.get(i);
-				final OS_Type attached = tte1.getAttached();
-
-				// TODO for reference now...
-				final GenType genType = new GenType();
-				final TypeName typeName = fali.typeName();
-				if (typeName != null)
-					genType.typeName = new OS_Type(typeName);
-				genType.resolved = attached;
-
-				final OS_Type attached1;
-				if (attached == null && typeName != null)
-					attached1 = genType.typeName;
-				else
-					attached1 = attached;
-
-				final TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, attached1, fali.getNameToken());
-//				assert attached != null; // TODO this fails
-
-				gf.addVariableTableEntry(fali.name(), VariableTableType.ARG, tte, fali);
-			}
-		}
-
-		final Context cctx = aConstructorDef.getContext();
-		final int e1 = add_i(gf, InstructionName.E, null, cctx);
-		for (final FunctionItem item : aConstructorDef.getItems()) {
-//			LOG.err("7056 aConstructorDef.getItem = "+item);
-			generate_item((OS_Element) item, gf, cctx);
-		}
-		final int x1 = add_i(gf, InstructionName.X, List_of(new IntegerIA(e1, gf)), cctx);
-		gf.addContext(aConstructorDef.getContext(), new Range(e1, x1)); // TODO remove interior contexts
-//		LOG.info(String.format("602.1 %s", aConstructorDef.name()));
-//		for (Instruction instruction : gf.instructionsList) {
-//			LOG.info(instruction);
-//		}
-//		GeneratedFunction.printTables(gf);
-		gf.fi = aFunctionInvocation;
 		return gf;
 	}
 
