@@ -471,6 +471,9 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		elements.put(aElement, aDeduceElement);
 	}
 
+	/*
+	 * Hook in for GeneratedClass 	 
+	 */
 	public void onGenClass(OnGenClass aOnGenClass) {
 		_gcP.then(aOnGenClass::accept);
 	}
