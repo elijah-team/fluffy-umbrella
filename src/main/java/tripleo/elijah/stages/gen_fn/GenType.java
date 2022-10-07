@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
@@ -133,6 +134,49 @@ public class GenType {
 		SetGenCI sgci = new SetGenCI();
 		final ClassInvocation ci = sgci.call(this, aGenericTypeName, deduceTypes2, errSink, phase);
 		return ci;
+	}
+
+	/**
+	 * Sets the invocation ({@code genType#ci}) and the node for a GenType
+	 *
+	 * @param deduceTypes2 TODO
+	 */
+	public void genCIForGenType2(DeduceTypes2 deduceTypes2) {
+		genCI(nonGenericTypeName, deduceTypes2, deduceTypes2.errSink, deduceTypes2.phase);
+		final IInvocation invocation = ci;
+		if (invocation instanceof NamespaceInvocation) {
+			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
+			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
+				@Override
+				public void onDone(final GeneratedNamespace result) {
+					node = result;
+				}
+			});
+		} else if (invocation instanceof ClassInvocation) {
+			final ClassInvocation classInvocation = (ClassInvocation) invocation;
+			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
+				@Override
+				public void onDone(final GeneratedClass result) {
+					node = result;
+				}
+			});
+		} else {
+			if (resolved instanceof OS_FuncExprType) {
+				final OS_FuncExprType funcExprType = (OS_FuncExprType) resolved;
+				final @NotNull GenerateFunctions genf = deduceTypes2.getGenerateFunctions(funcExprType.getElement().getContext().module());
+				final FunctionInvocation fi = new FunctionInvocation((BaseFunctionDef) funcExprType.getElement(),
+						null,
+						null,
+						deduceTypes2.phase.generatePhase);
+				WlGenerateFunction gen = new WlGenerateFunction(genf, fi);
+				gen.run(null);
+				node = gen.getResult();
+			} else if (resolved instanceof OS_FuncType) {
+				final OS_FuncType funcType = (OS_FuncType) resolved;
+				int y=2;
+			} else
+				throw new IllegalStateException("invalid invocation");
+		}
 	}
 
 	static class SetGenCI {
