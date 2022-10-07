@@ -9,6 +9,7 @@
  */
 package tripleo.elijah.stages.gen_c;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
@@ -267,164 +268,7 @@ public class CReference {
 	                                      BaseGeneratedFunction generatedFunction,
 	                                      GeneratedNode aResolved,
 	                                      final String aValue) {
-		return _getIdentIAPath_IdentIAHelper(new CReference_getIdentIAPath_IdentIAHelper(ia_next, sl, i, sSize, resolved_element, generatedFunction, aResolved, aValue));
-	}
-
-	boolean _getIdentIAPath_IdentIAHelper(@NotNull CReference_getIdentIAPath_IdentIAHelper h) {
-		boolean b = false;
-		if (h.getResolved_element() instanceof ClassStatement) {
-			// Assuming constructor call
-			int code;
-			if (h.getResolved() != null) {
-				code = ((GeneratedContainerNC) h.getResolved()).getCode();
-			} else {
-				code = -1;
-			tripleo.elijah.util.Stupidity.println_err("** 31116 not resolved "+h.getResolved_element());
-			}
-			// README might be calling reflect or Type or Name
-			// TODO what about named constructors -- should be called with construct keyword
-			if (h.getIa_next() instanceof IdentIA) {
-				IdentTableEntry ite = ((IdentIA) h.getIa_next()).getEntry();
-				final String text = ite.getIdent().getText();
-				if (text.equals("reflect")) {
-					b = true;
-					String text2 = String.format("ZS%d_reflect", code);
-					addRef(text2, Ref.FUNCTION);
-				} else if (text.equals("Type")) {
-					b = true;
-					String text2 = String.format("ZST%d", code); // return a TypeInfo structure
-					addRef(text2, Ref.FUNCTION);
-				} else if (text.equals("Name")) {
-					b = true;
-					String text2 = String.format("ZSN%d", code);
-					addRef(text2, Ref.FUNCTION); // TODO make this not a function
-				} else {
-					assert h.getI() == h.getsSize() -1; // Make sure we are ending with a constructor call
-					// README Assuming this is for named constructors
-					String text2 = String.format("ZC%d%s", code, text);
-					addRef(text2, Ref.CONSTRUCTOR);
-				}
-			} else {
-				assert h.getI() == h.getsSize() -1; // Make sure we are ending with a constructor call
-				String text2 = String.format("ZC%d", code);
-				addRef(text2, Ref.CONSTRUCTOR);
-			}
-		} else if (h.getResolved_element() instanceof ConstructorDef) {
-			assert h.getI() == h.getsSize() - 1; // Make sure we are ending with a constructor call
-			int code;
-			if (h.getResolved() != null) {
-				code = ((BaseGeneratedFunction) h.getResolved()).getCode();
-			} else {
-				code = -1;
-			tripleo.elijah.util.Stupidity.println_err("** 31161 not resolved " + h.getResolved_element());
-			}
-			// README Assuming this is for named constructors
-			String text = ((ConstructorDef) h.getResolved_element()).name();
-			String text2 = String.format("ZC%d%s", code, text);
-			addRef(text2, Ref.CONSTRUCTOR);
-		} else if (h.getResolved_element() instanceof FunctionDef) {
-			OS_Element parent = h.getResolved_element().getParent();
-			int code = -1;
-			if (h.getResolved() != null) {
-				if (h.getResolved() instanceof BaseGeneratedFunction) {
-					((BaseGeneratedFunction) h.getResolved()).onGenClass(gc -> {
-//						GeneratedNode gc = rf.getGenClass();
-						if (gc instanceof GeneratedContainerNC) // and not another function
-							h.code = ((GeneratedContainerNC) gc).getCode();
-						else
-							h.code = -2;
-					});
-				} else if (h.getResolved() instanceof GeneratedClass) {
-					final GeneratedClass generatedClass = (GeneratedClass) h.getResolved();
-					h.code = generatedClass.getCode();
-				}
-			}
-			// TODO what about overloaded functions
-			assert h.getI() == h.getsSize() -1; // Make sure we are ending with a ProcedureCall
-			h.getSl().clear();
-
-			code = h.code;
-
-			if (code == -1) {
-//				text2 = String.format("ZT%d_%d", enclosing_function._a.getCode(), closure_index);
-			}
-			String text2 = String.format("Z%d%s", code, ((FunctionDef) h.getResolved_element()).name());
-			addRef(text2, Ref.FUNCTION);
-		} else if (h.getResolved_element() instanceof DefFunctionDef) {
-			OS_Element parent = h.getResolved_element().getParent();
-			int code;
-			if (h.getResolved() != null) {
-				assert h.getResolved() instanceof BaseGeneratedFunction;
-				final BaseGeneratedFunction rf = (BaseGeneratedFunction) h.getResolved();
-				GeneratedNode gc = rf.getGenClass();
-				if (gc instanceof GeneratedContainerNC) // and not another function
-					code = ((GeneratedContainerNC) gc).getCode();
-				else
-					code = -2;
-			} else {
-				if (parent instanceof ClassStatement) {
-					code = ((ClassStatement) parent)._a.getCode();
-				} else if (parent instanceof NamespaceStatement) {
-					code = ((NamespaceStatement) parent)._a.getCode();
-				} else {
-					// TODO what about FunctionDef, etc
-					code = -1;
-				}
-			}
-			// TODO what about overloaded functions
-			assert h.getI() == h.getsSize() -1; // Make sure we are ending with a ProcedureCall
-			h.getSl().clear();
-			if (code == -1) {
-//				text2 = String.format("ZT%d_%d", enclosing_function._a.getCode(), closure_index);
-			}
-			final DefFunctionDef defFunctionDef = (DefFunctionDef) h.getResolved_element();
-			String text2 = String.format("Z%d%s", code, defFunctionDef.name());
-			addRef(text2, Ref.FUNCTION);
-		} else if (h.getResolved_element() instanceof VariableStatement) {
-			// first getParent is VariableSequence
-			final String text2 = ((VariableStatement) h.getResolved_element()).getName();
-			if (h.getResolved_element().getParent().getParent() == h.getGeneratedFunction().getFD().getParent()) {
-				// A direct member value. Doesn't handle when indirect
-//				text = Emit.emit("/*124*/")+"vsc->vm" + text2;
-				addRef(text2, Ref.DIRECT_MEMBER, h.getValue());
-			} else {
-				final OS_Element parent = h.getResolved_element().getParent().getParent();
-				if (parent == h.getGeneratedFunction().getFD()) {
-					addRef(text2, Ref.LOCAL);
-				} else {
-//					if (parent instanceof NamespaceStatement) {
-//						int y=2;
-//					}
-					addRef(text2, Ref.MEMBER, h.getValue());
-				}
-			}
-		} else if (h.getResolved_element() instanceof PropertyStatement) {
-			OS_Element parent = h.getResolved_element().getParent();
-			int code;
-			if (parent instanceof ClassStatement) {
-				code = ((ClassStatement) parent)._a.getCode();
-			} else if (parent instanceof NamespaceStatement) {
-				code = ((NamespaceStatement) parent)._a.getCode();
-			} else {
-//							code = -1;
-				throw new IllegalStateException("PropertyStatement cant have other parent than ns or cls. " + h.getResolved_element().getClass().getName());
-			}
-			h.getSl().clear();  // don't we want all the text including from sl?
-//			if (text.equals("")) text = "vsc";
-//			text = String.format("ZP%dget_%s(%s)", code, ((PropertyStatement) resolved_element).name(), text); // TODO Don't know if get or set!
-			String text2 = String.format("ZP%dget_%s", code, ((PropertyStatement) h.getResolved_element()).name()); // TODO Don't know if get or set!
-			addRef(text2, Ref.PROPERTY_GET);
-		} else if (h.getResolved_element() instanceof AliasStatement) {
-			int y=2;
-			NotImplementedException.raise();
-//			text = Emit.emit("/*167*/")+((AliasStatement)resolved_element).name();
-//			return _getIdentIAPath_IdentIAHelper(text, sl, i, sSize, _res)
-		} else {
-//						text = idte.getIdent().getText();
-			tripleo.elijah.util.Stupidity.println_out("1008 "+h.getResolved_element().getClass().getName());
-			throw new NotImplementedException();
-		}
-		return b;
+		return new CReference_getIdentIAPath_IdentIAHelper(ia_next, sl, i, sSize, resolved_element, generatedFunction, aResolved, aValue).action(this);
 	}
 
 	@NotNull static List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
@@ -564,6 +408,8 @@ public class CReference {
 
 		public int code;
 
+
+
 		private CReference_getIdentIAPath_IdentIAHelper(InstructionArgument ia_next, List<String> sl, int i, int sSize, OS_Element resolved_element, BaseGeneratedFunction generatedFunction, GeneratedNode aResolved, String aValue) {
 			this.ia_next = ia_next;
 			this.sl = sl;
@@ -575,36 +421,231 @@ public class CReference {
 			value = aValue;
 		}
 
+		@Contract(pure = true)
 		public InstructionArgument getIa_next() {
 			return ia_next;
 		}
 
+		@Contract(pure = true)
 		public List<String> getSl() {
 			return sl;
 		}
 
+		@Contract(pure = true)
 		public int getI() {
 			return i;
 		}
 
+		@Contract(pure = true)
 		public int getsSize() {
 			return sSize;
 		}
 
+		@Contract(pure = true)
 		public OS_Element getResolved_element() {
 			return resolved_element;
 		}
 
+		@Contract(pure = true)
 		public BaseGeneratedFunction getGeneratedFunction() {
 			return generatedFunction;
 		}
 
+		@Contract(pure = true)
 		public GeneratedNode getResolved() {
 			return resolved;
 		}
 
+		@Contract(pure = true)
 		public String getValue() {
 			return value;
+		}
+
+		boolean action(CReference aCReference) {
+			boolean b = false;
+			if (getResolved_element() instanceof ClassStatement) {
+				b = _act_ClassStatement(aCReference, b);
+			} else if (getResolved_element() instanceof ConstructorDef) {
+				_act_ConstructorDef(aCReference);
+			} else if (getResolved_element() instanceof FunctionDef) {
+				_act_FunctionDef(aCReference);
+			} else if (getResolved_element() instanceof DefFunctionDef) {
+				_act_DefFunctionDef(aCReference);
+			} else if (getResolved_element() instanceof VariableStatement) {
+				_act_VariableStatement(aCReference);
+			} else if (getResolved_element() instanceof PropertyStatement) {
+				_act_PropertyStatement(aCReference);
+			} else if (getResolved_element() instanceof AliasStatement) {
+				_act_AliasStatement();
+			} else {
+	//						text = idte.getIdent().getText();
+				tripleo.elijah.util.Stupidity.println_out("1008 "+ getResolved_element().getClass().getName());
+				throw new NotImplementedException();
+			}
+			return b;
+		}
+
+		@Contract(pure = true)
+		private static void _act_AliasStatement() {
+			int y=2;
+			NotImplementedException.raise();
+			//			text = Emit.emit("/*167*/")+((AliasStatement)resolved_element).name();
+			//			return _getIdentIAPath_IdentIAHelper(text, sl, i, sSize, _res)
+		}
+
+		private void _act_PropertyStatement(CReference aCReference) {
+			OS_Element parent = getResolved_element().getParent();
+			int code;
+			if (parent instanceof ClassStatement) {
+				code = ((ClassStatement) parent)._a.getCode();
+			} else if (parent instanceof NamespaceStatement) {
+				code = ((NamespaceStatement) parent)._a.getCode();
+			} else {
+//							code = -1;
+				throw new IllegalStateException("PropertyStatement cant have other parent than ns or cls. " + getResolved_element().getClass().getName());
+			}
+			getSl().clear();  // don't we want all the text including from sl?
+			//			if (text.equals("")) text = "vsc";
+			//			text = String.format("ZP%dget_%s(%s)", code, ((PropertyStatement) resolved_element).name(), text); // TODO Don't know if get or set!
+			String text2 = String.format("ZP%dget_%s", code, ((PropertyStatement) getResolved_element()).name()); // TODO Don't know if get or set!
+			aCReference.addRef(text2, Ref.PROPERTY_GET);
+		}
+
+		private void _act_VariableStatement(CReference aCReference) {
+			// first getParent is VariableSequence
+			final String text2 = ((VariableStatement) getResolved_element()).getName();
+			if (getResolved_element().getParent().getParent() == getGeneratedFunction().getFD().getParent()) {
+				// A direct member value. Doesn't handle when indirect
+//				text = Emit.emit("/*124*/")+"vsc->vm" + text2;
+				aCReference.addRef(text2, Ref.DIRECT_MEMBER, getValue());
+			} else {
+				final OS_Element parent = getResolved_element().getParent().getParent();
+				if (parent == getGeneratedFunction().getFD()) {
+					aCReference.addRef(text2, Ref.LOCAL);
+				} else {
+//					if (parent instanceof NamespaceStatement) {
+//						int y=2;
+//					}
+					aCReference.addRef(text2, Ref.MEMBER, getValue());
+				}
+			}
+		}
+
+		private void _act_DefFunctionDef(CReference aCReference) {
+			OS_Element parent = getResolved_element().getParent();
+			int code;
+			if (getResolved() != null) {
+				assert getResolved() instanceof BaseGeneratedFunction;
+				final BaseGeneratedFunction rf = (BaseGeneratedFunction) getResolved();
+				GeneratedNode gc = rf.getGenClass();
+				if (gc instanceof GeneratedContainerNC) // and not another function
+					code = ((GeneratedContainerNC) gc).getCode();
+				else
+					code = -2;
+			} else {
+				if (parent instanceof ClassStatement) {
+					code = ((ClassStatement) parent)._a.getCode();
+				} else if (parent instanceof NamespaceStatement) {
+					code = ((NamespaceStatement) parent)._a.getCode();
+				} else {
+					// TODO what about FunctionDef, etc
+					code = -1;
+				}
+			}
+			// TODO what about overloaded functions
+			assert getI() == getsSize() -1; // Make sure we are ending with a ProcedureCall
+			getSl().clear();
+			if (code == -1) {
+//				text2 = String.format("ZT%d_%d", enclosing_function._a.getCode(), closure_index);
+			}
+			final DefFunctionDef defFunctionDef = (DefFunctionDef) getResolved_element();
+			String text2 = String.format("Z%d%s", code, defFunctionDef.name());
+			aCReference.addRef(text2, Ref.FUNCTION);
+		}
+
+		private void _act_FunctionDef(CReference aCReference) {
+			OS_Element parent = getResolved_element().getParent();
+			int code = -1;
+			if (getResolved() != null) {
+				if (getResolved() instanceof BaseGeneratedFunction) {
+					((BaseGeneratedFunction) getResolved()).onGenClass(gc -> {
+//						GeneratedNode gc = rf.getGenClass();
+						if (gc instanceof GeneratedContainerNC) // and not another function
+							this.code = ((GeneratedContainerNC) gc).getCode();
+						else
+							this.code = -2;
+					});
+				} else if (getResolved() instanceof GeneratedClass) {
+					final GeneratedClass generatedClass = (GeneratedClass) getResolved();
+					this.code = generatedClass.getCode();
+				}
+			}
+			// TODO what about overloaded functions
+			assert getI() == getsSize() -1; // Make sure we are ending with a ProcedureCall
+			getSl().clear();
+
+			code = this.code;
+
+			if (code == -1) {
+//				text2 = String.format("ZT%d_%d", enclosing_function._a.getCode(), closure_index);
+			}
+			String text2 = String.format("Z%d%s", code, ((FunctionDef) getResolved_element()).name());
+			aCReference.addRef(text2, Ref.FUNCTION);
+		}
+
+		private void _act_ConstructorDef(CReference aCReference) {
+			assert getI() == getsSize() - 1; // Make sure we are ending with a constructor call
+			int code;
+			if (getResolved() != null) {
+				code = ((BaseGeneratedFunction) getResolved()).getCode();
+			} else {
+				code = -1;
+			tripleo.elijah.util.Stupidity.println_err("** 31161 not resolved " + getResolved_element());
+			}
+			// README Assuming this is for named constructors
+			String text = ((ConstructorDef) getResolved_element()).name();
+			String text2 = String.format("ZC%d%s", code, text);
+			aCReference.addRef(text2, Ref.CONSTRUCTOR);
+		}
+
+		private boolean _act_ClassStatement(CReference aCReference, boolean b) {
+			// Assuming constructor call
+			int code;
+			if (getResolved() != null) {
+				code = ((GeneratedContainerNC) getResolved()).getCode();
+			} else {
+				code = -1;
+			tripleo.elijah.util.Stupidity.println_err("** 31116 not resolved "+ getResolved_element());
+			}
+			// README might be calling reflect or Type or Name
+			// TODO what about named constructors -- should be called with construct keyword
+			if (getIa_next() instanceof IdentIA) {
+				IdentTableEntry ite = ((IdentIA) getIa_next()).getEntry();
+				final String text = ite.getIdent().getText();
+				if (text.equals("reflect")) {
+					b = true;
+					String text2 = String.format("ZS%d_reflect", code);
+					aCReference.addRef(text2, Ref.FUNCTION);
+				} else if (text.equals("Type")) {
+					b = true;
+					String text2 = String.format("ZST%d", code); // return a TypeInfo structure
+					aCReference.addRef(text2, Ref.FUNCTION);
+				} else if (text.equals("Name")) {
+					b = true;
+					String text2 = String.format("ZSN%d", code);
+					aCReference.addRef(text2, Ref.FUNCTION); // TODO make this not a function
+				} else {
+					assert getI() == getsSize() -1; // Make sure we are ending with a constructor call
+					// README Assuming this is for named constructors
+					String text2 = String.format("ZC%d%s", code, text);
+					aCReference.addRef(text2, Ref.CONSTRUCTOR);
+				}
+			} else {
+				assert getI() == getsSize() -1; // Make sure we are ending with a constructor call
+				String text2 = String.format("ZC%d", code);
+				aCReference.addRef(text2, Ref.CONSTRUCTOR);
+			}
+			return b;
 		}
 	}
 }
