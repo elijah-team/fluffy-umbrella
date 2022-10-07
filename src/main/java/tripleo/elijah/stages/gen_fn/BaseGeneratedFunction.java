@@ -24,11 +24,7 @@ import tripleo.elijah.util.Holder;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.util.range.Range;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 
@@ -55,25 +51,25 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	private DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
 
 	public static void printTables(GeneratedFunction gf) {
-		System.out.println("VariableTable ");
+		;//System.out.println("VariableTable ");
 		for (VariableTableEntry variableTableEntry : gf.vte_list) {
-			System.out.println("\t"+variableTableEntry);
+			;//System.out.println("\t"+variableTableEntry);
 		}
-		System.out.println("ConstantTable ");
+		;//System.out.println("ConstantTable ");
 		for (ConstantTableEntry constantTableEntry : gf.cte_list) {
-			System.out.println("\t"+constantTableEntry);
+			;//System.out.println("\t"+constantTableEntry);
 		}
-		System.out.println("ProcTable     ");
+		;//System.out.println("ProcTable     ");
 		for (ProcTableEntry procTableEntry : gf.prte_list) {
-			System.out.println("\t"+procTableEntry);
+			;//System.out.println("\t"+procTableEntry);
 		}
-		System.out.println("TypeTable     ");
+		;//System.out.println("TypeTable     ");
 		for (TypeTableEntry typeTableEntry : gf.tte_list) {
-			System.out.println("\t"+typeTableEntry);
+			;//System.out.println("\t"+typeTableEntry);
 		}
-		System.out.println("IdentTable    ");
+		;//System.out.println("IdentTable    ");
 		for (IdentTableEntry identTableEntry : gf.idte_list) {
-			System.out.println("\t"+identTableEntry);
+			;//System.out.println("\t"+identTableEntry);
 		}
 	}
 
@@ -463,7 +459,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 					holder.set(result);
 				}
 			});
-			System.err.println(String.format("Trying to resolve function twice 1) %s 2) %s", holder.get().asString(), aType.asString()));
+			//System.err.println(String.format("Trying to resolve function twice 1) %s 2) %s", holder.get().asString(), aType.asString()));
 		}
 	}
 

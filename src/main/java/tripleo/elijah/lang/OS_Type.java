@@ -11,8 +11,6 @@ package tripleo.elijah.lang;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang2.BuiltInTypes;
 
-import java.util.Objects;
-
 /**
  *
  * This class represents all the different type of types in the system possible
@@ -79,7 +77,7 @@ public class OS_Type {
 	public ClassStatement getClassOf() {
 		if (etype != null && etype instanceof ClassStatement)
 			return (ClassStatement) etype;
-		System.err.println("3001 "+etype+" "+toString());
+		//System.err.println("3001 "+etype+" "+toString());
 		throw new IllegalArgumentException();
 //		return null;
 	}
@@ -190,7 +188,7 @@ public class OS_Type {
 	/*@ ensures type_of_type = Type.USER; */
 	public OS_Type(final @NotNull TypeName typeName) {
 		if (typeName.isNull())
-			System.err.println("170 null typeName in OS_Type");//throw new AssertionError();
+			//System.err.println("170 null typeName in OS_Type");//throw new AssertionError();
 		this.ttype = typeName;
 		this.type_of_type = Type.USER;
 	}

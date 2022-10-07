@@ -155,7 +155,7 @@ public class CReference {
 						switch (state) {
 						case 1:
 							if (resolved == null) {
-								System.err.println("***88*** resolved is null for "+idte);
+								//System.err.println("***88*** resolved is null for "+idte);
 							}
 							if (sSize >= i + 1) {
 								_getIdentIAPath_IdentIAHelper(null, sl, i, sSize, resolved_element, generatedFunction, resolved, aValue);
@@ -206,7 +206,7 @@ public class CReference {
 						} else {
 							text = Emit.emit("/*152*/") + "vm" + text1;
 						}
-						System.err.println("119 " + idte.getIdent() + " " + idte.getStatus());
+						//System.err.println("119 " + idte.getIdent() + " " + idte.getStatus());
 						String text2 = (Emit.emit("/*114*/") + String.format("%s is UNKNOWN", text1));
 						addRef(text2, Ref.MEMBER);
 						break;
@@ -270,7 +270,7 @@ public class CReference {
 				code = ((GeneratedContainerNC)aResolved).getCode();
 			} else {
 				code = -1;
-				System.err.println("** 31116 not resolved "+resolved_element);
+				//System.err.println("** 31116 not resolved "+resolved_element);
 			}
 			// README might be calling reflect or Type or Name
 			// TODO what about named constructors -- should be called with construct keyword
@@ -307,7 +307,7 @@ public class CReference {
 				code = ((BaseGeneratedFunction) aResolved).getCode();
 			} else {
 				code = -1;
-				System.err.println("** 31161 not resolved " + resolved_element);
+				//System.err.println("** 31161 not resolved " + resolved_element);
 			}
 			// README Assuming this is for named constructors
 			String text = ((ConstructorDef) resolved_element).name();
@@ -408,7 +408,7 @@ public class CReference {
 //			return _getIdentIAPath_IdentIAHelper(text, sl, i, sSize, _res)
 		} else {
 //						text = idte.getIdent().getText();
-			System.out.println("1008 "+resolved_element.getClass().getName());
+			;//System.out.println("1008 "+resolved_element.getClass().getName());
 			throw new NotImplementedException();
 		}
 		return b;

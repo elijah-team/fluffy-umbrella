@@ -9,11 +9,7 @@
 package tripleo.elijah.stages.generate;
 
 import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 
@@ -41,7 +37,7 @@ public class ElSystem {
 		if (verbose) {
 			for (GenerateResultItem ab : gr.results()) {
 				if (ab.node instanceof GeneratedFunction) continue;
-				System.out.println("** "+ab.node+" "+ab.output);
+				;//System.out.println("** "+ab.node+" "+ab.output);
 			}
 		}
 	}
@@ -51,7 +47,7 @@ public class ElSystem {
 		if (node instanceof GeneratedNamespace) {
 			final GeneratedNamespace generatedNamespace = (GeneratedNamespace) node;
 			s = outputStrategyC.nameForNamespace(generatedNamespace, ty);
-//			System.out.println("41 "+generatedNamespace+" "+s);
+//			;//System.out.println("41 "+generatedNamespace+" "+s);
 			for (GeneratedFunction gf : generatedNamespace.functionMap.values()) {
 				ss = generateOutputs_Internal(gf, ty, outputStrategyC);
 				gfm_map.put(gf, ss);
@@ -59,7 +55,7 @@ public class ElSystem {
 		} else if (node instanceof GeneratedClass) {
 			final GeneratedClass generatedClass = (GeneratedClass) node;
 			s = outputStrategyC.nameForClass(generatedClass, ty);
-//			System.out.println("48 "+generatedClass+" "+s);
+//			;//System.out.println("48 "+generatedClass+" "+s);
 			for (GeneratedFunction gf : generatedClass.functionMap.values()) {
 				ss = generateOutputs_Internal(gf, ty, outputStrategyC);
 				gfm_map.put(gf, ss);
@@ -67,11 +63,11 @@ public class ElSystem {
 		} else if (node instanceof GeneratedFunction) {
 			final GeneratedFunction generatedFunction = (GeneratedFunction) node;
 			s = outputStrategyC.nameForFunction(generatedFunction, ty);
-//			System.out.println("55 "+generatedFunction+" "+s);
+//			;//System.out.println("55 "+generatedFunction+" "+s);
 		} else if (node instanceof GeneratedConstructor) {
 			final GeneratedConstructor generatedConstructor = (GeneratedConstructor) node;
 			s = outputStrategyC.nameForConstructor(generatedConstructor, ty);
-//			System.out.println("55 "+generatedConstructor+" "+s);
+//			;//System.out.println("55 "+generatedConstructor+" "+s);
 		} else
 			throw new IllegalStateException("Can't be here.");
 		return s;

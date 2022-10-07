@@ -60,7 +60,7 @@ public class WorkManagerTest {
 
 		workManager.drain();
 
-		System.err.println(sink);
+		//System.err.println(sink);
 	}
 }
 

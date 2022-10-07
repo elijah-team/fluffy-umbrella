@@ -24,7 +24,7 @@
 //			try {
 //				CtClass ctc = cp.makeClass(klass.clsName);
 //				// ctc.setPackagename(pacakageName); // TODO
-//				System.out.println(ctc.toString());
+//				;//System.out.println(ctc.toString());
 //			} catch (Exception e) {
 //				e.printStackTrace();
 //			}
@@ -40,7 +40,7 @@
 //			try {
 //				CtClass ctc = cp.makeClass(("default" /*module.moduleName*/)); //TODO commented out
 //				// ctc.setPackagename(pacakageName); // TODO
-//				System.out.println(ctc.toString());
+//				;//System.out.println(ctc.toString());
 //			} catch (Exception e) {
 //				e.printStackTrace();
 //			}
@@ -74,7 +74,7 @@
 //		// try {
 //		// CtClass ctc = cp.makeClass(element.);
 //		// // ctc.setPackagename(pacakageName); // TODO
-//		// System.out.println(ctc.toString());
+//		// ;//System.out.println(ctc.toString());
 //		// } catch (Exception e) {
 //		// e.printStackTrace();
 //		// }
@@ -121,12 +121,12 @@
 //				} else{
 //					theType = ii.typeName().getName();
 //				}
-//				System.out.println(String.format("%s vv%s;", theType, ii.name));
+//				;//System.out.println(String.format("%s vv%s;", theType, ii.name));
 //
 //			}
 //		else if (element instanceof ProcedureCallExpression) {
 //			ProcedureCallExpression pce = (ProcedureCallExpression) element;
-//			System.out.println(String.format("%s(%s);", pce./*target*/getLeft(), pce.exprList()));
+//			;//System.out.println(String.format("%s(%s);", pce./*target*/getLeft(), pce.exprList()));
 //		} else if (element instanceof Loop) {
 //			Loop loop = (Loop)element;
 //			if (loop.getType() == LoopTypes.FROM_TO_TYPE) {
@@ -135,24 +135,24 @@
 //				if (loop.getToPart() instanceof NumericExpression) {
 //					final NumericExpression toPart = (NumericExpression)loop.getToPart();
 //
-//					System.out.println(String.format("{for (int %s=%d;%s<=%d;%s++){\n\t",
+//					;//System.out.println(String.format("{for (int %s=%d;%s<=%d;%s++){\n\t",
 //							varname, fromPart.getValue(),
 //							varname, toPart.getValue(),  varname));
 //				} else if (loop.getToPart() instanceof IdentExpression) {
 //					final IdentExpression toPart = (IdentExpression)loop.getToPart();
 //
-//					System.out.println(String.format("{for (int %s=%d;%s<=%s;%s++){\n\t",
+//					;//System.out.println(String.format("{for (int %s=%d;%s<=%s;%s++){\n\t",
 //							varname, fromPart.getValue(),
 //							varname, "vv"+toPart.getText(),  varname));
 //
 //				}
 //				for (StatementItem item : loop.getItems()) {
-//					System.out.println("\t"+item);
+//					;//System.out.println("\t"+item);
 //				}
-//				System.out.println("}");
+//				;//System.out.println("}");
 //			} else throw new NotImplementedException();
 //		} else {
-//			System.out.println(element);
+//			;//System.out.println(element);
 //
 //		}
 //	}

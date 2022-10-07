@@ -51,7 +51,7 @@ public class ClassInstantiationTest {
 
 		c.feedCmdLine(List_of(f));
 
-		System.err.println("Errorcount is" + c.errorCount());
+		//System.err.println("Errorcount is" + c.errorCount());
 	}
 }
 

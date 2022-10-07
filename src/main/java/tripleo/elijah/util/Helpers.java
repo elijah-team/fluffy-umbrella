@@ -10,7 +10,6 @@ package tripleo.elijah.util;
 
 import antlr.CommonToken;
 import antlr.Token;
-//import com.thoughtworks.xstream.XStream;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +35,7 @@ import java.util.List;
  */
 public class Helpers {
 	public static void printXML(final Object obj, @NotNull final TabbedOutputStream tos) {
-		System.err.println("** XStream support has been disabled");
+		//System.err.println("** XStream support has been disabled");
 /*
 		final XStream x = new XStream();
 		//x.setMode(XStream.ID_REFERENCES);

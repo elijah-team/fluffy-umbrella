@@ -10,11 +10,7 @@ package tripleo.elijah.lang;
 
 import org.junit.Assert;
 import org.junit.Test;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.*;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.ResolveError;
@@ -74,7 +70,7 @@ public class TypeOfTypeNameTest {
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
 		TypeName tn = t.resolve(ctx, deduceTypes2);
-//		System.out.println(tn);
+//		;//System.out.println(tn);
 		verify(ctx, mod, c);
 		Assert.assertEquals(typeNameString, tn.toString());
 	}
@@ -127,7 +123,7 @@ public class TypeOfTypeNameTest {
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
 		TypeName tn = t.resolve(ctx, deduceTypes2);
-//		System.out.println(tn);
+//		;//System.out.println(tn);
 		verify(ctx, mod, c);
 		Assert.assertEquals(typeNameString, tn.toString());
 	}
@@ -190,7 +186,7 @@ public class TypeOfTypeNameTest {
 //		// VERIFY EXPECTATIONS
 //		//
 //		TypeName tn = t.resolve(ctx);
-////		System.out.println(tn);
+////		;//System.out.println(tn);
 //		verify(ctx);
 //		Assert.assertEquals(typeNameString, tn.toString());
 //	}
@@ -267,7 +263,7 @@ public class TypeOfTypeNameTest {
 		// VERIFY EXPECTATIONS
 		//
 		TypeName tn = t.resolve(ctx, deduceTypes2);
-//		System.out.println(tn);
+//		;//System.out.println(tn);
 		verify(ctx);
 		Assert.assertEquals(typeNameString, tn.toString());
 	}

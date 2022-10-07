@@ -81,7 +81,7 @@ public class VTE_TypePromises {
 			@Override
 			public void onDone(@NotNull GenType result) {
 				if (result.resolved.getClassOf() != fd.getParent()) {
-					System.err.println("** Failed assertion");
+					//System.err.println("** Failed assertion");
 				}
 
 				@NotNull ProcTableListener.E_Is_FunctionDef e_Is_FunctionDef = aProcTableListener.new E_Is_FunctionDef(pte, fd, fd.getParent()).invoke(aVariableTableEntry.type.genType.nonGenericTypeName);
@@ -163,7 +163,7 @@ public class VTE_TypePromises {
 				boolean found1 = aDeduceTypes2.lookup_name_calls(result.resolved.getClassOf().getContext(), pn, pte);
 				if (found1) {
 					int y=2;
-//					System.out.println("3071 "+pte.getStatus());
+//					;//System.out.println("3071 "+pte.getStatus());
 					IInvocation invocation = result.ci;
 //							final BaseFunctionDef fd = gf.getFD();
 					final BaseFunctionDef fd = pte.getFunctionInvocation().getFunction();
@@ -171,11 +171,11 @@ public class VTE_TypePromises {
 						@NotNull FunctionInvocation fi = aDeduceTypes2.newFunctionInvocation(fd, pte, invocation, aDeduceTypes2.phase);
 						pte.setFunctionInvocation(fi);
 					} else
-						System.out.println("175 pte.fi is not null");
+						;//System.out.println("175 pte.fi is not null");
 					aIntegerIA.gf.addDependentFunction(pte.getFunctionInvocation()); // TODO is this needed (here)?
 				} else {
 					int y=3;
-					System.out.println("3074");
+					;//System.out.println("3074");
 				}
 			}
 		});

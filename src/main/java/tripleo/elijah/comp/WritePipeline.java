@@ -22,14 +22,7 @@ import tripleo.util.buffer.TextBuffer;
 import tripleo.util.io.CharSink;
 import tripleo.util.io.FileCharSink;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.io.Writer;
+import java.io.*;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -92,7 +85,7 @@ public class WritePipeline implements PipelineMember {
 			path.getParent().toFile().mkdirs();
 
 			// TODO functionality
-			System.out.println("201 Writing path: "+path);
+			;//System.out.println("201 Writing path: "+path);
 			CharSink x = c.getIO().openWrite(path);
 			for (Buffer buffer : entry.getValue()) {
 				x.accept(buffer.getText());

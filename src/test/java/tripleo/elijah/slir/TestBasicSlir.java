@@ -19,7 +19,6 @@ import tripleo.elijah.util.Helpers;
 import java.io.IOException;
 
 import static org.easymock.EasyMock.mock;
-import static tripleo.elijah.util.Helpers.List_of;
 
 /**
  * Created 11/6/21 8:11 AM
@@ -40,7 +39,7 @@ public class TestBasicSlir {
 //			c.feedCmdLine(List_of(s, "-sO"));
 //
 //			if (c.errorCount() != 0)
-//				System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
+//				//System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
 //			errorCount.put(index, c.errorCount());
 //			index++;
 //		}
@@ -61,7 +60,7 @@ public class TestBasicSlir {
 //		c.feedCmdLine(List_of(s, "-sO"));
 //
 //		if (c.errorCount() != 0)
-//			System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
+//			//System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
 //
 //		Assert.assertEquals(5, c.errorCount()); // TODO Error count obviously should be 0
 //	}
@@ -76,7 +75,7 @@ public class TestBasicSlir {
 //		c.feedCmdLine(List_of(s, "-sO"));
 //
 //		if (c.errorCount() != 0)
-//			System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
+//			//System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
 //
 //		Assert.assertEquals(5, c.errorCount()); // TODO Error count obviously should be 0
 //	}

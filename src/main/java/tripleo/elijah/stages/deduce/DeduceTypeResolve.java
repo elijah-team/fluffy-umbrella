@@ -162,24 +162,25 @@ public class DeduceTypeResolve {
 							} else
 								throw new IllegalStateException("invalid entry (bte) " + bte);
 
-							if (attached != null)
-								System.err.println(
-										String.format("** FormalArgListItem %s attached is not null. Type is %s. Points to %s",
-												aFormalArgListItem.name(), aFormalArgListItem.typeName(), attached));
-							else
-								System.err.println(
-										String.format("** FormalArgListItem %s attached is null. Type is %s.",
-												aFormalArgListItem.name(), aFormalArgListItem.typeName()));
+							if (attached != null) {
+								//System.err.println(
+//										String.format("** FormalArgListItem %s attached is not null. Type is %s. Points to %s",
+//												aFormalArgListItem.name(), aFormalArgListItem.typeName(), attached));
+							} else {
+								//System.err.println(
+//										String.format("** FormalArgListItem %s attached is null. Type is %s.",
+//												aFormalArgListItem.name(), aFormalArgListItem.typeName()));
+							}
 						}
 
 						@Override
 						public void visitAliasStatement(final AliasStatement aAliasStatement) {
-							System.err.println(String.format("** AliasStatement %s points to %s", aAliasStatement.name(), aAliasStatement.getExpression()));
+							//System.err.println(String.format("** AliasStatement %s points to %s", aAliasStatement.name(), aAliasStatement.getExpression()));
 						}
 
 						@Override
 						public void visitDefFunction(final DefFunctionDef aDefFunctionDef) {
-							System.err.println(String.format("** DefFunctionDef %s is %s", aDefFunctionDef.name(), ((StatementWrapper) aDefFunctionDef.getItems().iterator().next()).getExpr()));
+							//System.err.println(String.format("** DefFunctionDef %s is %s", aDefFunctionDef.name(), ((StatementWrapper) aDefFunctionDef.getItems().iterator().next()).getExpr()));
 						}
 
 						@Override
@@ -223,7 +224,7 @@ public class DeduceTypeResolve {
 
 						@Override
 						public void defaultAction(final OS_Element anElement) {
-							System.err.println("158 "+anElement);
+							//System.err.println("158 "+anElement);
 							throw new IllegalStateException();
 						}
 

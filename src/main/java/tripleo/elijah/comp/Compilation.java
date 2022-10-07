@@ -27,8 +27,6 @@ import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
 import tripleo.elijah.lang.Qualident;
 import tripleo.elijah.stages.deduce.FunctionMapHook;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
-import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijjah.ElijjahLexer;
@@ -39,12 +37,7 @@ import tripleo.elijjah.EzParser;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class Compilation {
@@ -149,7 +142,7 @@ public class Compilation {
 					}
 				}
 
-				System.err.println("130 GEN_LANG: "+cis.get(0).genLang());
+				//System.err.println("130 GEN_LANG: "+cis.get(0).genLang());
 				findStdLib("c"); // TODO find a better place for this
 
 				for (final CompilerInstructions ci : cis) {
@@ -176,7 +169,7 @@ public class Compilation {
 					writeLogs(silent, pipelineLogic.elLogs);
 				}
 			} else {
-				System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
+				//System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
 			}
 		} catch (final Exception e) {
 			errSink.exception(e);
@@ -278,7 +271,7 @@ public class Compilation {
 	}
 
 	private CompilerInstructions parseEzFile(final File f, final String file_name, final ErrSink errSink) throws Exception {
-		System.out.println((String.format("   %s", f.getAbsolutePath())));
+		;//System.out.println((String.format("   %s", f.getAbsolutePath())));
 		if (!f.exists()) {
 			errSink.reportError(
 					"File doesn't exist " + f.getAbsolutePath());
@@ -288,7 +281,7 @@ public class Compilation {
 		final CompilerInstructions m = realParseEzFile(file_name, io.readFile(f), f);
 		{
 			String prelude = m.genLang();
-			System.err.println("230 " + prelude);
+			//System.err.println("230 " + prelude);
 			if (prelude == null) prelude = "c"; // TODO should be java for eljc
 		}
 		return m;
@@ -299,7 +292,7 @@ public class Compilation {
 								  final ErrSink errSink,
 								  final boolean do_out,
 								  LibraryStatementPart lsp) throws Exception {
-		System.out.println((String.format("   %s", f.getAbsolutePath())));
+		;//System.out.println((String.format("   %s", f.getAbsolutePath())));
 		if (f.exists()) {
 			final OS_Module m = realParseElijjahFile(file_name, f, do_out);
 			m.setLsp(lsp);
@@ -322,7 +315,7 @@ public class Compilation {
 			s.close();
 			return R;
 		} catch (final ANTLRException e) {
-			System.err.println(("parser exception: " + e));
+			//System.err.println(("parser exception: " + e));
 			e.printStackTrace(System.err);
 			s.close();
 			return null;
@@ -341,7 +334,7 @@ public class Compilation {
 			s.close();
 			return R;
 		} catch (final ANTLRException e) {
-			System.err.println(("parser exception: " + e));
+			//System.err.println(("parser exception: " + e));
 			e.printStackTrace(System.err);
 			s.close();
 			return null;

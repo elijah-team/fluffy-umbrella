@@ -103,7 +103,7 @@ public class GenType {
 		case USER_CLASS:
 			resolved = aType;
 		default:
-			System.err.println("48 Unknown in set: "+aType);
+			//System.err.println("48 Unknown in set: "+aType);
 		}
 	}
 

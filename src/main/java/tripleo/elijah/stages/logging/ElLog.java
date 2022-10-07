@@ -26,7 +26,8 @@ public class ElLog {
 
 	public ElLog(String aFileName, Verbosity aVerbose, String aPhase) {
 		fileName = aFileName;
-		verbose = aVerbose;
+//		verbose = aVerbose;
+		verbose = Verbosity.SILENT;
 		phase = aPhase;
 	}
 
@@ -34,14 +35,14 @@ public class ElLog {
 		long time = System.currentTimeMillis();
 		entries.add(new LogEntry(time, LogEntry.Level.ERROR, aMessage));
 		if (verbose == Verbosity.VERBOSE)
-			System.err.println(aMessage);
+			;//System.err.println(aMessage);
 	}
 
 	public void info(String aMessage) {
 		long time = System.currentTimeMillis();
 		entries.add(new LogEntry(time, LogEntry.Level.INFO, aMessage));
 		if (verbose == Verbosity.VERBOSE)
-			System.out.println(aMessage);
+			;//System.out.println(aMessage);
 	}
 
 	public String getFileName() {

@@ -45,7 +45,7 @@ public class FunctionContext extends Context {
 					Result.add(name, level, (OS_Element) item, this);
 				}
 			} else if (item instanceof VariableSequence) {
-//				System.out.println("[FunctionContext#lookup] VariableSequence "+item);
+//				;//System.out.println("[FunctionContext#lookup] VariableSequence "+item);
 				for (final VariableStatement vs : ((VariableSequence) item).items()) {
 					if (vs.getName().equals(name))
 						Result.add(name, level, vs, this);
@@ -71,7 +71,7 @@ public class FunctionContext extends Context {
 	}
 
 	public IntroducedVariable introduceVariable(final IExpression variable) {
-//		System.out.println("[#introduceVariable] "+variable);
+//		;//System.out.println("[#introduceVariable] "+variable);
 		final IntroducedVariable introducedVariable = new IntroducedVariable(variable);
 		variableTable.add(introducedVariable);
 		addPrelimInstruction(introducedVariable);
@@ -79,7 +79,7 @@ public class FunctionContext extends Context {
 	}
 
 	public IntroducedVariable introduceVariable(final VariableStatement variable) {
-//		System.out.println("[#introduceVariable] "+variable);
+//		;//System.out.println("[#introduceVariable] "+variable);
 		final IntroducedVariable introducedVariable = new IntroducedVariable(variable);
 		variableTable.add(introducedVariable);
 		addPrelimInstruction(introducedVariable);
@@ -143,7 +143,7 @@ public class FunctionContext extends Context {
 	}
 
 	public FunctionPrelimInstruction introduceFunction(final IExpression expression) {
-//		System.out.println("[#introduceFunction] "+expression);
+//		;//System.out.println("[#introduceFunction] "+expression);
 		final IntroducedFunction introducedFunction = new IntroducedFunction(expression);
 //		variableTable.add(introducedFunction);
 		addPrelimInstruction(introducedFunction);

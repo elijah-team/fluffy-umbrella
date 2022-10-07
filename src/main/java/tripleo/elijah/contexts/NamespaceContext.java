@@ -50,7 +50,7 @@ public class NamespaceContext extends Context {
 				}
 			}
 			if (item instanceof VariableSequence) {
-//				System.out.println("[NamespaceContext#lookup] VariableSequence "+item);
+//				;//System.out.println("[NamespaceContext#lookup] VariableSequence "+item);
 				for (final VariableStatement vs : ((VariableSequence) item).items()) {
 					if (vs.getName().equals(name))
 						Result.add(name, level, vs, this);

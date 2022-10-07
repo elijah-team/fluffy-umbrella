@@ -22,14 +22,7 @@ import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.gen_c.*;
 import tripleo.elijah.stages.gen_fn.*;
-import tripleo.elijah.stages.instructions.ConstTableIA;
-import tripleo.elijah.stages.instructions.FnCallArgs;
-import tripleo.elijah.stages.instructions.IdentIA;
-import tripleo.elijah.stages.instructions.Instruction;
-import tripleo.elijah.stages.instructions.InstructionArgument;
-import tripleo.elijah.stages.instructions.IntegerIA;
-import tripleo.elijah.stages.instructions.ProcIA;
-import tripleo.elijah.stages.instructions.VariableTableType;
+import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkList;
@@ -154,7 +147,7 @@ public class PostDeduce implements IPostDeduce {
 				} else if (x instanceof GeneratedFunction) {
 					wl.addJob(new WlGenerateFunctionC((GeneratedFunction) x, gr, wl, this));
 				} else {
-					System.err.println(x);
+					//System.err.println(x);
 					throw new NotImplementedException();
 				}
 			}
@@ -307,7 +300,7 @@ public class PostDeduce implements IPostDeduce {
 				break;
 			case USER:
 				final TypeName typeName = ty.getTypeName();
-				System.err.println("Warning: USER TypeName in GenerateC "+ typeName);
+				//System.err.println("Warning: USER TypeName in GenerateC "+ typeName);
 				final String s = typeName.toString();
 				if (s.equals("Unit"))
 					z = "void";
@@ -315,7 +308,7 @@ public class PostDeduce implements IPostDeduce {
 					z = String.format("Z<%s>", s);
 				break;
 			case BUILT_IN:
-				System.err.println("Warning: BUILT_IN TypeName in GenerateC");
+				//System.err.println("Warning: BUILT_IN TypeName in GenerateC");
 				z = "Z"+ty.getBType().getCode();  // README should not even be here, but look at .name() for other code gen schemes
 				break;
 			case UNIT_TYPE:
@@ -398,10 +391,10 @@ public class PostDeduce implements IPostDeduce {
 				sl3.add(s);
 				int y = 2;
 			} else if (ia instanceof ProcIA) {
-				System.err.println("740 ProcIA");
+				//System.err.println("740 ProcIA");
 				throw new NotImplementedException();
 			} else {
-				System.err.println(ia.getClass().getName());
+				//System.err.println(ia.getClass().getName());
 				throw new IllegalStateException("Invalid InstructionArgument");
 			}
 		}
@@ -413,11 +406,11 @@ public class PostDeduce implements IPostDeduce {
 		public String FnCallArgs(FnCallArgs fca, GeneratedFunction gf) {
 			final StringBuilder sb = new StringBuilder();
 			final Instruction inst = fca.getExpression();
-//			System.err.println("9000 "+inst.getName());
+//			//System.err.println("9000 "+inst.getName());
 			final InstructionArgument x = inst.getArg(0);
 			assert x instanceof ProcIA;
 			final ProcTableEntry pte = gf.getProcTableEntry(to_int(x));
-//			System.err.println("9000-2 "+pte);
+//			//System.err.println("9000-2 "+pte);
 			switch (inst.getName()) {
 			case CALL:
 			{
@@ -505,7 +498,7 @@ public class PostDeduce implements IPostDeduce {
 
 		public String ConstTableIA(ConstTableIA constTableIA, GeneratedFunction gf) {
 			final ConstantTableEntry cte = gf.getConstTableEntry(constTableIA.getIndex());
-//			System.err.println(("9001-3 "+cte.initialValue));
+//			//System.err.println(("9001-3 "+cte.initialValue));
 			switch (cte.initialValue.getKind()) {
 			case NUMERIC:
 				return const_to_string(cte.initialValue);
@@ -529,7 +522,7 @@ public class PostDeduce implements IPostDeduce {
 			for (int i = 1; i < args_size; i++) {
 				final InstructionArgument ia = inst.getArg(i);
 				final int y=2;
-//			System.err.println("7777 " +ia);
+//			//System.err.println("7777 " +ia);
 				if (ia instanceof ConstTableIA) {
 					final ConstantTableEntry constTableEntry = gf.getConstTableEntry(((ConstTableIA) ia).getIndex());
 					sll.add(""+ const_to_string(constTableEntry.initialValue));
@@ -548,16 +541,16 @@ public class PostDeduce implements IPostDeduce {
 						if (path.equals(path2)) {
 							// should always fail
 							//throw new AssertionError();
-							System.err.println(String.format("864 should always fail but didn't %s %s", path, path2));
+							//System.err.println(String.format("864 should always fail but didn't %s %s", path, path2));
 						}
 //					assert ident != null;
 //					IdentTableEntry ite = gf.getIdentTableEntry(((IdentIA) ia).getIndex());
 //					sll.add(Emit.emit("/*748*/")+""+ite.getIdent().getText());
 						sll.add(Emit.emit("/*748*/") + "" + path2);
-						System.out.println("743 " + path2 + " " + path);
+						;//System.out.println("743 " + path2 + " " + path);
 					}
 				} else if (ia instanceof ProcIA) {
-					System.err.println("863 ProcIA");
+					//System.err.println("863 ProcIA");
 					throw new NotImplementedException();
 				} else {
 					throw new IllegalStateException("Cant be here: Invalid InstructionArgument");
@@ -636,7 +629,7 @@ public class PostDeduce implements IPostDeduce {
 			return gav.IdentIA(identIA, gf);
 		}
 
-		System.err.println(String.format("783 %s %s", value.getClass().getName(), value));
+		//System.err.println(String.format("783 %s %s", value.getClass().getName(), value));
 		return ""+value;
 	}
 
@@ -724,9 +717,9 @@ public class PostDeduce implements IPostDeduce {
 		final CReference reference = new CReference();
 		reference.getIdentIAPath(target, gf, Generate_Code_For_Method.AOG.GET, null);
 		String path = reference.build();
-		System.out.println("932 "+path);
+		;//System.out.println("932 "+path);
 		String s = Helpers.String_join("->", ls);
-		System.out.println("933 "+s);
+		;//System.out.println("933 "+s);
 		if (identTableEntry.getResolvedElement() instanceof ConstructorDef)
 			return path;
 		else

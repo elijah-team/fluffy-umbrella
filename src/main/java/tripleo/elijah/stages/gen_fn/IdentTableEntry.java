@@ -14,16 +14,8 @@ import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.IExpression;
-import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_Type;
-import tripleo.elijah.stages.deduce.DeduceElementIdent;
-import tripleo.elijah.stages.deduce.DeducePath;
-import tripleo.elijah.stages.deduce.DeducePhase;
-import tripleo.elijah.stages.deduce.DeduceTypes2;
-import tripleo.elijah.stages.deduce.OnType;
+import tripleo.elijah.lang.*;
+import tripleo.elijah.stages.deduce.*;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
@@ -126,7 +118,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 			type.genType.copy(aGenType);
 		} else {
 			throw new IllegalStateException("idte-102 Attempting to set a null type");
-//			System.err.println("idte-102 Attempting to set a null type");
+//			//System.err.println("idte-102 Attempting to set a null type");
 		}
 	}
 
@@ -169,7 +161,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 					holder.set(result);
 				}
 			});
-			System.err.println(String.format("Setting constructable_pte twice 1) %s and 2) %s", holder.get(), aPte));
+			//System.err.println(String.format("Setting constructable_pte twice 1) %s and 2) %s", holder.get(), aPte));
 		}
 
 	}

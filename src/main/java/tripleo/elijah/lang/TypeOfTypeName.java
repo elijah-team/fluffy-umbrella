@@ -3,7 +3,6 @@ package tripleo.elijah.lang;
 import tripleo.elijah.stages.deduce.DeduceLookupUtils;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.ResolveError;
-import tripleo.elijah.util.NotImplementedException;
 
 import java.io.File;
 
@@ -52,7 +51,7 @@ public class TypeOfTypeName implements TypeName {
 	}
 
 	public TypeName resolve(Context ctx, DeduceTypes2 deduceTypes2) throws ResolveError {
-//		System.out.println(_typeOf.toString());
+//		;//System.out.println(_typeOf.toString());
 		LookupResultList lrl = DeduceLookupUtils.lookupExpression(_typeOf, ctx, deduceTypes2);
 		OS_Element best = lrl.chooseBest(null);
 		if (best instanceof VariableStatement)

@@ -85,7 +85,7 @@ public class TypeTableEntry {
 			break;
 		default:
 //			throw new NotImplementedException();
-			System.err.println("73 "+aAttached);
+			//System.err.println("73 "+aAttached);
 			break;
 		}
 	}

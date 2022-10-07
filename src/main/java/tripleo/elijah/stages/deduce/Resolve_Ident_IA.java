@@ -421,7 +421,7 @@ class Resolve_Ident_IA {
 //				assert idte.getStatus() != BaseTableEntry.Status.UNCHECKED;
 			final String normal_path = generatedFunction.getIdentIAPathNormal(identIA);
 			if (idte.resolveExpectation == null) {
-				System.err.println("385 idte.resolveExpectation is null for "+idte);
+				//System.err.println("385 idte.resolveExpectation is null for "+idte);
 			} else
 				idte.resolveExpectation.satisfy(normal_path);
 		} else if (idte.getStatus() == BaseTableEntry.Status.KNOWN) {
@@ -587,7 +587,7 @@ class Resolve_Ident_IA {
 				if (ci != null) {
 					pte.setClassInvocation(ci);
 				} else
-					System.err.println("542 Null ClassInvocation");
+					;//System.err.println("542 Null ClassInvocation");
 			}
 
 			pte.setFunctionInvocation(fi);

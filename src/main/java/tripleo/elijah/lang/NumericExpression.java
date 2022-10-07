@@ -55,7 +55,7 @@ public class NumericExpression implements IExpression, Locatable {
 	@Override  // IExpression
 	public void setKind(final ExpressionKind aType) {
 		// log and ignore
-		System.err.println("Trying to set ExpressionType of NumericExpression to "+aType.toString());
+		//System.err.println("Trying to set ExpressionType of NumericExpression to "+aType.toString());
 	}
 
 	// endregion

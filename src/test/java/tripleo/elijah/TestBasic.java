@@ -61,7 +61,7 @@ public class TestBasic {
 			c.feedCmdLine(List_of(s, "-sO"));
 
 			if (c.errorCount() != 0)
-				System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
+				//System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
 			errorCount.put(index, c.errorCount());
 			index++;
 		}
@@ -83,7 +83,7 @@ public class TestBasic {
 		c.feedCmdLine(List_of(s, "-sO"));
 
 		if (c.errorCount() != 0)
-			System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
+			//System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
 
 		Assert.assertEquals(13, c.errorCount()); // TODO Error count obviously should be 0
 	}
@@ -98,7 +98,7 @@ public class TestBasic {
 		c.feedCmdLine(List_of(s, "-sO"));
 
 		if (c.errorCount() != 0)
-			System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
+			//System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
 
 		Assert.assertEquals(3, c.errorCount()); // TODO Error count obviously should be 0
 	}
@@ -113,7 +113,7 @@ public class TestBasic {
 		c.feedCmdLine(List_of(s, "-sO"));
 
 		if (c.errorCount() != 0)
-			System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
+			//System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
 
 		Assert.assertEquals(175, c.errorCount()); // TODO Error count obviously should be 0
 	}

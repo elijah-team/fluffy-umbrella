@@ -20,8 +20,9 @@ public abstract class AbstractBlockScope implements Scope {
 	public void add(final StatementItem aItem) {
 		if (aItem instanceof FunctionItem)
 			_element.add((OS_Element) aItem);
-		else
-			System.err.println(String.format("adding false FunctionItem %s", aItem.getClass().getName()));
+		else {
+			//System.err.println(String.format("adding false FunctionItem %s", aItem.getClass().getName()));
+		}
 	}
 
 	@Override

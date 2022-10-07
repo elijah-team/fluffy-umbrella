@@ -30,12 +30,7 @@ import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 public class OS_Module implements OS_Element, OS_Container {
 
@@ -114,7 +109,7 @@ public class OS_Module implements OS_Element, OS_Container {
 
 //	public void modify_namespace(Qualident q, NamespaceModify aModification) { // TODO aModification is unused
 ////		NotImplementedException.raise();
-//		System.err.println("[OS_Module#modify_namespace] " + q + " " + aModification);
+//		//System.err.println("[OS_Module#modify_namespace] " + q + " " + aModification);
 //		//
 //		// DON'T MODIFY  NAMETABLE
 //		//
@@ -125,7 +120,7 @@ public class OS_Module implements OS_Element, OS_Container {
 //
 //	public void modify_namespace(ImportStatement imp, Qualident q, NamespaceModify aModification) { // TODO aModification is unused
 ////		NotImplementedException.raise();
-//		System.err.println("[OS_Module#modify_namespace] " + imp + " " + q + " " + aModification);
+//		//System.err.println("[OS_Module#modify_namespace] " + imp + " " + q + " " + aModification);
 ///*
 //		getContext().add(imp, q); // TODO prolly wrong; do a second pass later to add definition...?
 //*/
@@ -229,7 +224,7 @@ public class OS_Module implements OS_Element, OS_Container {
 					}
 					assert entryPoints.size() == eps || entryPoints.size() == eps+1; // TODO this will fail one day
 
-					System.out.println("243 " + entryPoints +" "+ _fileName);
+					;//System.out.println("243 " + entryPoints +" "+ _fileName);
 //					break; // allow for "extend" class
 				}
 			}

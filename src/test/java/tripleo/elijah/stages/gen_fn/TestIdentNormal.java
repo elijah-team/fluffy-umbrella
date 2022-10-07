@@ -14,11 +14,7 @@ import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.lang.*;
-import tripleo.elijah.stages.deduce.ClassInvocation;
-import tripleo.elijah.stages.deduce.DeducePhase;
-import tripleo.elijah.stages.deduce.DeduceTypes2;
-import tripleo.elijah.stages.deduce.FoundElement;
-import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.deduce.*;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.logging.ElLog;
@@ -57,8 +53,8 @@ public class TestIdentNormal {
 
 		InstructionArgument s = generateFunctions.simplify_expression(pce, generatedFunction, ctx2);
 		@NotNull List<InstructionArgument> l = generatedFunction._getIdentIAPathList(s);
-		System.out.println(l);
-//      System.out.println(generatedFunction.getIdentIAPathNormal());
+		;//System.out.println(l);
+//      ;//System.out.println(generatedFunction.getIdentIAPathNormal());
 
 		//
 		//
@@ -83,7 +79,7 @@ public class TestIdentNormal {
 		d2.resolveIdentIA2_(ctx2, null, ss/*identIA*/, generatedFunction, new FoundElement(phase) {
 			@Override
 			public void foundElement(OS_Element e) {
-				System.out.println(e);
+				;//System.out.println(e);
 			}
 
 			@Override

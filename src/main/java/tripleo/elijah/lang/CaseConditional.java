@@ -69,7 +69,7 @@ public class CaseConditional implements OS_Element, StatementItem, FunctionItem 
 
 	private void addScopeFor(final IExpression expression, final CaseScope caseScope) {
 		if (scopes.containsKey(expression))
-			System.err.println("already has an expression" + expression); // TODO put in some verify step
+			//System.err.println("already has an expression" + expression); // TODO put in some verify step
 		scopes.put(expression, caseScope);
 	}
 

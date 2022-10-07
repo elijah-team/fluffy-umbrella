@@ -57,7 +57,7 @@ public class TabbedOutputStream {
 
 			tos.close();
 		} catch (final IOException ex) {
-			System.out.println("error");
+			;//System.out.println("error");
 		}
 	}
 
