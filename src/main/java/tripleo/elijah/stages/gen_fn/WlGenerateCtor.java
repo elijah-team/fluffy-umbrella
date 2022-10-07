@@ -14,8 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.ClassInvocation;
-import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.util.Holder;
 import tripleo.elijah.work.WorkJob;
 import tripleo.elijah.work.WorkManager;
 
@@ -31,6 +31,7 @@ public class WlGenerateCtor implements WorkJob {
 	private final FunctionInvocation functionInvocation;
 	private final IdentExpression constructorName;
 	private boolean _isDone = false;
+	private GeneratedConstructor result;
 
 	@Contract(pure = true)
 	public WlGenerateCtor(@NotNull  GenerateFunctions  aGenerateFunctions,
@@ -45,7 +46,7 @@ public class WlGenerateCtor implements WorkJob {
 	public void run(WorkManager aWorkManager) {
 		if (functionInvocation.generateDeferred().isPending()) {
 			final ClassStatement klass = functionInvocation.getClassInvocation().getKlass();
-			DeduceTypes2.Holder<GeneratedClass> hGenClass = new DeduceTypes2.Holder<>();
+			Holder<GeneratedClass> hGenClass = new Holder<>();
 			functionInvocation.getClassInvocation().resolvePromise().then(new DoneCallback<GeneratedClass>() {
 				@Override
 				public void onDone(GeneratedClass result) {
@@ -55,22 +56,37 @@ public class WlGenerateCtor implements WorkJob {
 			GeneratedClass genClass = hGenClass.get();
 			assert genClass != null;
 
-			ConstructorDef cd = new ConstructorDef(constructorName, klass, klass.getContext());
-			Scope3 scope3 = new Scope3(cd);
-			cd.scope(scope3);
-			for (GeneratedContainer.VarTableEntry varTableEntry : genClass.varTable) {
-				if (varTableEntry.initialValue != IExpression.UNASSIGNED) {
-					IExpression left = varTableEntry.nameToken;
-					IExpression right = varTableEntry.initialValue;
-
-					IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
-					scope3.add(new StatementWrapper(e, cd.getContext(), cd));
-				} else {
-					if (true || getPragma("auto_construct")) {
-						scope3.add(new ConstructStatement(cd, cd.getContext(), varTableEntry.nameToken, null, null));
+			ConstructorDef ccc = null;
+			if (constructorName != null) {
+				Collection<ConstructorDef> cs = klass.getConstructors();
+				for (@NotNull ConstructorDef c : cs) {
+					if (c.name().equals(constructorName.getText())) {
+						ccc = c;
+						break;
 					}
 				}
 			}
+
+			ConstructorDef cd;
+			if (ccc == null) {
+				cd = new ConstructorDef(constructorName, klass, klass.getContext());
+				Scope3 scope3 = new Scope3(cd);
+				cd.scope(scope3);
+				for (GeneratedContainer.VarTableEntry varTableEntry : genClass.varTable) {
+					if (varTableEntry.initialValue != IExpression.UNASSIGNED) {
+						IExpression left = varTableEntry.nameToken;
+						IExpression right = varTableEntry.initialValue;
+
+						IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
+						scope3.add(new StatementWrapper(e, cd.getContext(), cd));
+					} else {
+						if (true || getPragma("auto_construct")) {
+							scope3.add(new ConstructStatement(cd, cd.getContext(), varTableEntry.nameToken, null, null));
+						}
+					}
+				}
+			} else
+				cd = ccc;
 
 			OS_Element classStatement_ = cd.getParent();
 			assert classStatement_ instanceof ClassStatement;
@@ -80,8 +96,10 @@ public class WlGenerateCtor implements WorkJob {
 			ConstructorDef c = null;
 			if (constructorName != null) {
 				for (ConstructorDef cc : cs) {
-					if (cc.name().equals(constructorName.getText()))
+					if (cc.name().equals(constructorName.getText())) {
 						c = cc;
+						break;
+					}
 				}
 			} else {
 				// TODO match based on arguments
@@ -106,7 +124,7 @@ public class WlGenerateCtor implements WorkJob {
 				// add inherit statement, if any
 
 				// add code from c
-				if (c != null) {
+				if (c != null && c != cd) {
 					ArrayList<FunctionItem> is = new ArrayList<>(c.getItems());
 
 					// skip initializers (already present in cd)
@@ -137,6 +155,8 @@ public class WlGenerateCtor implements WorkJob {
 
 			functionInvocation.generateDeferred().resolve(gf);
 			functionInvocation.setGenerated(gf);
+
+			result = gf;
 		}
 
 		_isDone = true;
@@ -149,6 +169,10 @@ public class WlGenerateCtor implements WorkJob {
 	@Override
 	public boolean isDone() {
 		return _isDone;
+	}
+
+	public GeneratedConstructor getResult() {
+		return result;
 	}
 }
 

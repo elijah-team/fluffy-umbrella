@@ -8,22 +8,27 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.stages.deduce.DeduceElement;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FoundElement;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.util.Helpers;
+import tripleo.elijah.util.Holder;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.util.range.Range;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 
@@ -85,7 +90,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 			} else if (oo instanceof IdentIA) {
 				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
 				s.addFirst(oo);
-				oo = ite1.backlink;
+				oo = ite1.getBacklink();
 			} else if (oo instanceof ProcIA) {
 				s.addFirst(oo);
 				oo = null;
@@ -378,7 +383,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	public IdentTableEntry getIdentTableEntryFor(IExpression expression) {
 		for (IdentTableEntry identTableEntry : idte_list) {
 			// TODO make this work for Qualidents and DotExpressions
-			if (identTableEntry.getIdent().getText().equals(((IdentExpression) expression).getText()) && identTableEntry.backlink == null) {
+			if (identTableEntry.getIdent().getText().equals(((IdentExpression) expression).getText()) && identTableEntry.getBacklink() == null) {
 				return identTableEntry;
 			}
 		}
@@ -447,7 +452,42 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return toString();
 	}
 
+	public void resolveTypeDeferred(final GenType aType) {
+		if (typeDeferred.isPending())
+			typeDeferred.resolve(aType);
+		else {
+			final Holder<GenType> holder = new Holder<GenType>();
+			typeDeferred.then(new DoneCallback<GenType>() {
+				@Override
+				public void onDone(final GenType result) {
+					holder.set(result);
+				}
+			});
+			System.err.println(String.format("Trying to resolve function twice 1) %s 2) %s", holder.get().asString(), aType.asString()));
+		}
+	}
 
+	Map<OS_Element, DeduceElement> elements = new HashMap<OS_Element, DeduceElement>();
+	public void addElement(final OS_Element aElement, final DeduceElement aDeduceElement) {
+		elements.put(aElement, aDeduceElement);
+	}
+
+	public String getFunctionName() {
+		// TODO change to abstract with override??
+		if (this instanceof GeneratedConstructor) {
+			int y = 2;
+			final IdentExpression constructorName = this.getFD().getNameNode();
+			final String constructorNameText;
+			if (constructorName == ConstructorDef.emptyConstructorName) {
+				constructorNameText = "";
+			} else {
+				constructorNameText = constructorName.getText();
+			}
+			return constructorNameText;
+		} else {
+			return getFD().getNameNode().getText();
+		}
+	}
 }
 
 //

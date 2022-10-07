@@ -75,15 +75,26 @@ class Resolve_Ident_IA2 {
 			// ia2 is not == equals to identIA, but functionally equivalent
 			if (ia2 instanceof IdentIA) {
 				final @NotNull IdentTableEntry ite = ((IdentIA) ia2).getEntry();
-				if (ite.backlink != null) {
-					InstructionArgument backlink = ite.backlink;
+				if (ite.getBacklink() != null) {
+					InstructionArgument backlink = ite.getBacklink();
 					if (backlink instanceof IntegerIA) {
 						final @NotNull IntegerIA integerIA = (IntegerIA) backlink;
 						@NotNull VariableTableEntry vte = integerIA.getEntry();
+						final DeduceTypes2.PromiseExpectation<GenType> pe = deduceTypes2.promiseExpectation(vte, "TypePromise for vte "+vte);
 						vte.typePromise().then(new DoneCallback<GenType>() {
 							@Override
 							public void onDone(@NotNull GenType result) {
-								ectx = result.resolved.getClassOf().getContext();
+								pe.satisfy(result);
+								switch (result.resolved.getType()) {
+								case FUNCTION:
+									ectx = result.resolved.getElement().getContext();
+									break;
+								case USER_CLASS:
+									ectx = result.resolved.getClassOf().getContext();
+									break;
+								default:
+									throw new IllegalStateException("Unexpected value: " + result.resolved.getType());
+								}
 								ia2_IdentIA((IdentIA) ia2, ectx);
 								foundElement.doFoundElement(el);
 							}
@@ -194,12 +205,12 @@ class Resolve_Ident_IA2 {
 		// Set type to something other than Unknown when found
 		@Nullable ProcTableEntry pte = idte2.getCallablePTE();
 		if (pte == null) {
-			int y=2;
+			assert false;
 		} else {
-			assert pte != null;
+//			assert pte != null;
 			@Nullable FunctionInvocation fi = pte.getFunctionInvocation();
 			if (fi == null) {
-				InstructionArgument bl = idte2.backlink;
+				InstructionArgument bl = idte2.getBacklink();
 				@Nullable IInvocation invocation = null;
 				if (bl instanceof IntegerIA) {
 					final @NotNull IntegerIA integerIA = (IntegerIA) bl;
@@ -207,6 +218,18 @@ class Resolve_Ident_IA2 {
 					if (vte.constructable_pte != null) {
 						ProcTableEntry cpte = vte.constructable_pte;
 						invocation = cpte.getFunctionInvocation().getClassInvocation();
+					} else if (vte.typeDeferred_isResolved()) {
+						final IInvocation[] ainvocation = new IInvocation[1];
+						vte.typePromise().then(new DoneCallback<GenType>() {
+							@Override
+							public void onDone(final GenType result) {
+								if (result.ci == null) {
+									deduceTypes2.genCIForGenType2(result);
+								}
+								ainvocation[0] = result.ci;
+							}
+						});
+						invocation = ainvocation[0];
 					}
 				} else if (bl instanceof IdentIA) {
 					final @NotNull IdentIA identIA = (IdentIA) bl;
@@ -217,6 +240,9 @@ class Resolve_Ident_IA2 {
 						@NotNull OS_Type attached1 = ite.type.getAttached();
 						assert attached1.getType() == OS_Type.Type.USER_CLASS;
 						invocation = phase.registerClassInvocation(attached1.getClassOf(), null); // TODO will fail one day
+						// TODO dont know if next line is right
+						final ClassInvocation invocation2 = DeduceTypes2.ClassInvocationMake.withGenericPart(attached1.getClassOf(), null, (NormalTypeName) tte.genType.nonGenericTypeName, deduceTypes2, errSink);
+						int y=2;
 					}
 				} else if (bl instanceof ProcIA) {
 					final @NotNull ProcIA procIA = (ProcIA) bl;
@@ -228,6 +254,10 @@ class Resolve_Ident_IA2 {
 					}
 				}
 
+				if (invocation == null) {
+					int y=2;
+					// assert false;
+				}
 				fi = new FunctionInvocation((BaseFunctionDef) el, pte, invocation, phase.generatePhase);
 				pte.setFunctionInvocation(fi);
 			}

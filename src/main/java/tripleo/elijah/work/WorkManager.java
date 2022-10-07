@@ -32,7 +32,7 @@ public class WorkManager {
 				WorkList workList = workListIterator.next();
 //			for (WorkList workList :jobs) {
 				if (!workList.isDone()) {
-					for (WorkJob w : workList.jobs) {
+					for (WorkJob w : workList.getJobs()) {
 						if (!w.isDone())
 							return w;
 					}
@@ -54,6 +54,47 @@ public class WorkManager {
 			if (w == null) break;
 			w.run(this);
 		}
+	}
+
+	public int totalSize() {
+//		final Integer x = jobs.stream().collect(new Collector<WorkList, List<Integer>, Integer>() {
+//			final List<Integer> li = new ArrayList<Integer>();
+//
+//			@Override
+//			public Supplier<List<Integer>> supplier() {
+//				return () -> li;
+//			}
+//
+//			@Override
+//			public BiConsumer<List<Integer>, WorkList> accumulator() {
+//				return (a, b) -> a.add(b.getJobs().size());
+//			}
+//
+//			@Override
+//			public BinaryOperator<List<Integer>> combiner() {
+//				return null;
+//			}
+//
+//			@Override
+//			public Function<List<Integer>, Integer> finisher() {
+//				return null;
+//			}
+//
+//			@Override
+//			public Set<Characteristics> characteristics() {
+//				return Set.of(Characteristics.UNORDERED);
+//			}
+//		});
+
+//		final int reduce = jobs.stream()
+//				.reduce(0, (Integer a, WorkList b) -> {
+//					return a + b.getJobs().size();
+//				});
+		int totalSize = 0;
+		for (WorkList job : jobs) {
+			totalSize += job.getJobs().size();
+		}
+		return totalSize;
 	}
 }
 

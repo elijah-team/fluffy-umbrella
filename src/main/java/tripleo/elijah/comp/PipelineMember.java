@@ -9,11 +9,16 @@
 
 package tripleo.elijah.comp;
 
+import tripleo.elijah.comp.internal.Attachable;
+
 /**
  * Created 8/21/21 10:10 PM
  */
-public interface PipelineMember {
+public interface PipelineMember extends Attachable {
 	void run() throws Exception;
+
+	@Override
+	void attachCB(final CompilationShit cs);
 }
 
 //

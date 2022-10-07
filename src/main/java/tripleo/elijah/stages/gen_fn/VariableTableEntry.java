@@ -8,11 +8,13 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
-import org.jdeferred2.*;
+import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.stages.deduce.DeduceLocalVariable;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.instructions.VariableTableType;
 
@@ -40,6 +42,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		this.vtt = aVtt;
 		this.type = aTTE;
 		this.setResolvedElement(el);
+		setupResolve();
 	}
 
 	@Override
@@ -105,7 +108,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		return index;
 	}
 
-	private DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
+	private DeferredObject2<GenType, Void, Void> typeDeferred = new DeferredObject2<GenType, Void, Void>();
 
 	public Promise<GenType, Void, Void> typePromise() {
 		return typeDeferred.promise();
@@ -122,18 +125,25 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	GenType _resolveTypeCalled = null;
 	public void resolveType(final @NotNull GenType aGenType) {
 		if (_resolveTypeCalled != null) { // TODO what a hack
-			assert aGenType == _resolveTypeCalled;
+			if (_resolveTypeCalled.resolved != null) {
+				if (!aGenType.equals(_resolveTypeCalled)) {
+					System.err.println(String.format("** 130 Attempting to replace %s with %s in %s", _resolveTypeCalled.asString(), aGenType.asString(), this));
+//					throw new AssertionError();
+				}
+			} else {
+				System.err.printf("134 resetting typeDeferred %s to %s%n", this, aGenType);
+
+				_resolveTypeCalled = aGenType;
+				typeDeferred.reset();
+				typeDeferred.resolve(aGenType);
+			}
 			return;
 		}
 		if (typeDeferred.isResolved()) {
 			System.err.println("126 typeDeferred is resolved "+this);
 		}
+		_resolveTypeCalled = aGenType;
 		typeDeferred.resolve(aGenType);
-	}
-
-	@Override
-	public void setConstructable(ProcTableEntry aPte) {
-		constructable_pte = aPte;
 	}
 
 	@Override
@@ -153,12 +163,44 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		resolveType(aGenType);
 	}
 
+	// region constructable
+
+	@Override
+	public void setConstructable(ProcTableEntry aPte) {
+		if (constructable_pte != aPte) {
+			constructable_pte = aPte;
+			constructableDeferred.resolve(constructable_pte);
+		}
+	}
+
+	@Override
+	public Promise<ProcTableEntry, Void, Void> constructablePromise() {
+		return constructableDeferred.promise();
+	}
+
+	DeferredObject<ProcTableEntry, Void, Void> constructableDeferred = new DeferredObject<>();
+
+	// endregion constructable
+
 	@Override
 	public String expectationString() {
 		return "VariableTableEntry{" +
 				"index=" + index +
 				", name='" + name + '\'' +
 				"}";
+	}
+
+	public DeduceLocalVariable dlv = new DeduceLocalVariable(this);
+	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseGeneratedFunction aGeneratedFunction) {
+		dlv.setDeduceTypes2(aDeduceTypes2, aContext, aGeneratedFunction);
+	}
+
+	public void resolve_var_table_entry_for_exit_function() {
+		dlv.resolve_var_table_entry_for_exit_function();
+	}
+
+	public boolean typeDeferred_isResolved() {
+		return typeDeferred.isResolved();
 	}
 }
 

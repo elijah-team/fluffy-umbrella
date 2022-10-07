@@ -26,6 +26,10 @@ public class OS_GenericTypeNameType extends OS_Type {
 	public OS_Element getElement() {
 		return genericTypename;
 	}
+
+	public TypeName getRealTypeName() {
+		return genericTypename.getTypeName();
+	}
 }
 
 //

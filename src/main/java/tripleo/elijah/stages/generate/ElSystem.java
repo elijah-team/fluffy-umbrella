@@ -10,6 +10,7 @@ package tripleo.elijah.stages.generate;
 
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.stages.gen_fn.GeneratedClass;
+import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
 import tripleo.elijah.stages.gen_fn.GeneratedFunction;
 import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
 import tripleo.elijah.stages.gen_fn.GeneratedNode;
@@ -67,6 +68,10 @@ public class ElSystem {
 			final GeneratedFunction generatedFunction = (GeneratedFunction) node;
 			s = outputStrategyC.nameForFunction(generatedFunction, ty);
 //			System.out.println("55 "+generatedFunction+" "+s);
+		} else if (node instanceof GeneratedConstructor) {
+			final GeneratedConstructor generatedConstructor = (GeneratedConstructor) node;
+			s = outputStrategyC.nameForConstructor(generatedConstructor, ty);
+//			System.out.println("55 "+generatedConstructor+" "+s);
 		} else
 			throw new IllegalStateException("Can't be here.");
 		return s;

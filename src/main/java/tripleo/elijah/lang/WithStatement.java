@@ -10,7 +10,7 @@ package tripleo.elijah.lang;
 
 import antlr.Token;
 import tripleo.elijah.contexts.WithContext;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +37,7 @@ public class WithStatement implements OS_Element, OS_Container, FunctionItem, St
 	}
 
 	@Override
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitWithStatement(this);
 	}
 

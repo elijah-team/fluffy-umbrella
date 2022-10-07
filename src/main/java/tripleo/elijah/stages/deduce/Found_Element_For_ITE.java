@@ -58,7 +58,8 @@ class Found_Element_For_ITE {
 		}
 
 		final String normal_path = generatedFunction.getIdentIAPathNormal(new IdentIA(ite.getIndex(), generatedFunction));
-		ite.resolveExpectation.satisfy(normal_path);
+		if (!ite.resolveExpectation.isSatisfied())
+			ite.resolveExpectation.satisfy(normal_path);
 	}
 
 	public void action_AliasStatement(@NotNull IdentTableEntry ite, @NotNull AliasStatement y) {
@@ -81,7 +82,7 @@ class Found_Element_For_ITE {
 				break;
 			case NORMAL:
 				try {
-					attached = new OS_Type(dc.resolve_type(new OS_Type(ps.getTypeName()), ctx).resolved.getClassOf());
+					attached = (dc.resolve_type(new OS_Type(ps.getTypeName()), ctx).resolved.getClassOf()).getOS_Type();
 				} catch (ResolveError resolveError) {
 					LOG.err("378 resolveError");
 					resolveError.printStackTrace();
@@ -92,24 +93,25 @@ class Found_Element_For_ITE {
 				throw new IllegalStateException("Unexpected value: " + ps.getTypeName().kindOfType());
 		}
 		if (ite.type == null) {
-			ite.type = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, attached, null, ite);
+			ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, attached);
 		} else
 			ite.type.setAttached(attached);
+		dc.genCIForGenType2(ite.type.genType);
 		int yy = 2;
 	}
 
 	public void action_FunctionDef(@NotNull IdentTableEntry ite, FunctionDef functionDef) {
-		@NotNull OS_Type attached = new OS_FuncType(functionDef);
+		@NotNull OS_Type attached = functionDef.getOS_Type();
 		if (ite.type == null) {
-			ite.type = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, attached, null, ite);
+			ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, attached);
 		} else
 			ite.type.setAttached(attached);
 	}
 
 	public void action_ClassStatement(@NotNull IdentTableEntry ite, ClassStatement classStatement) {
-		@NotNull OS_Type attached = new OS_Type(classStatement);
+		@NotNull OS_Type attached = classStatement.getOS_Type();
 		if (ite.type == null) {
-			ite.type = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, attached, null, ite);
+			ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, attached);
 		} else
 			ite.type.setAttached(attached);
 	}
@@ -119,7 +121,7 @@ class Found_Element_For_ITE {
 		if (ite.type == null || ite.type.getAttached() == null) {
 			if (!(typeName.isNull())) {
 				if (ite.type == null)
-					ite.type = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null, vs.initialValue());
+					ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, vs.initialValue());
 				ite.type.setAttached(new OS_Type(typeName));
 			} else {
 				final OS_Element parent = vs.getParent().getParent();
@@ -132,13 +134,14 @@ class Found_Element_For_ITE {
 						state = (parent != ((GeneratedConstructor) generatedFunction).getFD().getParent());
 					}
 					if (state) {
-						@NotNull DeferredMember dm = dc.deferred_member(parent, dc.getInvocationFromBacklink(ite.backlink), vs, ite);
+						final IInvocation invocation = dc.getInvocationFromBacklink(ite.getBacklink());
+						final @NotNull DeferredMember dm = dc.deferred_member(parent, invocation, vs, ite);
 						dm.typePromise().
 								done(new DoneCallback<GenType>() {
 									@Override
 									public void onDone(@NotNull GenType result) {
 										if (ite.type == null)
-											ite.type = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null, vs.initialValue());
+											ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, vs.initialValue());
 										assert result.resolved != null;
 										if (result.ci == null) {
 											genCIForGenType(result);
@@ -154,7 +157,7 @@ class Found_Element_For_ITE {
 								});
 					} else {
 						IInvocation invocation;
-						if (ite.backlink == null) {
+						if (ite.getBacklink() == null) {
 							if (parent instanceof ClassStatement) {
 								final ClassStatement classStatement = (ClassStatement) parent;
 								final @Nullable ClassInvocation ci = dc.registerClassInvocation(classStatement, null);
@@ -164,14 +167,14 @@ class Found_Element_For_ITE {
 								invocation = null; // TODO shouldn't be null
 							}
 						} else {
-							invocation = dc.getInvocationFromBacklink(ite.backlink);
+							invocation = dc.getInvocationFromBacklink(ite.getBacklink());
 						}
-						DeferredMember dm = dc.deferred_member(parent, invocation, vs, ite);
+						final @NotNull DeferredMember dm = dc.deferred_member(parent, invocation, vs, ite);
 						dm.typePromise().then(new DoneCallback<GenType>() {
 							@Override
 							public void onDone(final GenType result) {
 								if (ite.type == null)
-									ite.type = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null, vs.initialValue());
+									ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, vs.initialValue());
 								assert result.resolved != null;
 								ite.setGenType(result);
 //								ite.resolveTypeToClass(result.node); // TODO setting this has no effect on output

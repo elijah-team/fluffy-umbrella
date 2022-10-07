@@ -11,7 +11,7 @@ import java.io.File;
  * Created 8/16/20 7:42 AM
  */
 public class TypeOfTypeName implements TypeName {
-	private final Context _ctx;
+	private Context _ctx;
 	private Qualident _typeOf;
 	private TypeModifiers modifiers;
 
@@ -21,6 +21,10 @@ public class TypeOfTypeName implements TypeName {
 
 	public void typeOf(final Qualident xy) {
 		_typeOf=xy;
+	}
+
+	public Qualident typeOf() {
+		return _typeOf;
 	}
 
 	public void set(final TypeModifiers modifiers_) {
@@ -39,7 +43,7 @@ public class TypeOfTypeName implements TypeName {
 
 	@Override
 	public void setContext(final Context context) {
-		throw new NotImplementedException();
+		_ctx = context;
 	}
 
 	@Override

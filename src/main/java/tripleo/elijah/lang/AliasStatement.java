@@ -9,7 +9,7 @@
 package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
 
 public class AliasStatement implements ModuleItem, ClassItem, FunctionItem, OS_Element2, Resolvable {
@@ -48,7 +48,7 @@ public class AliasStatement implements ModuleItem, ClassItem, FunctionItem, OS_E
 	}
 
 	@Override // OS_Element
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitAliasStatement(this);
 	}
 

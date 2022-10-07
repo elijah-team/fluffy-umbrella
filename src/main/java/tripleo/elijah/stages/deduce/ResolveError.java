@@ -80,6 +80,8 @@ public class ResolveError extends Exception implements Diagnostic {
 	@Override
 	public void report(@NotNull PrintStream stream) {
 		stream.println(String.format("---[%s]---: %s", code(), message()));
+		stream.println("************************************** " + primary());
+
 		// linecache.print(primary);
 		for (Locatable sec : secondary()) {
 			//linecache.print(sec)

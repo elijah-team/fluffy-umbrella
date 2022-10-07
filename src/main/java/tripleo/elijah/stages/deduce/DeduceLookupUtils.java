@@ -23,7 +23,9 @@ import java.util.Stack;
  * Created 3/7/21 1:13 AM
  */
 public class DeduceLookupUtils {
-	public static LookupResultList lookupExpression(final @NotNull IExpression left, final @NotNull Context ctx, @NotNull DeduceTypes2 deduceTypes2) throws ResolveError {
+	public static LookupResultList lookupExpression(final @NotNull IExpression left,
+													final @NotNull Context ctx,
+													final @NotNull DeduceTypes2 deduceTypes2) throws ResolveError {
 		switch (left.getKind()) {
 		case QIDENT:
 			final IExpression de = Helpers.qualidentToDotExpression2((Qualident) left);
@@ -31,14 +33,14 @@ public class DeduceLookupUtils {
 		case DOT_EXP:
 			return lookup_dot_expression(ctx, (DotExpression) left, deduceTypes2);
 		case IDENT:
-			{
-				final @NotNull IdentExpression ident = (IdentExpression) left;
-				final LookupResultList lrl = ctx.lookup(ident.getText());
-				if (lrl.results().size() == 0) {
-					throw new ResolveError(ident,  lrl);
-				}
-				return lrl;
+		{
+			final @NotNull IdentExpression ident = (IdentExpression) left;
+			final LookupResultList lrl = ctx.lookup(ident.getText());
+			if (lrl.results().size() == 0) {
+				throw new ResolveError(ident,  lrl);
 			}
+			return lrl;
+		}
 		default:
 			throw new IllegalArgumentException();
 		}
@@ -193,7 +195,7 @@ public class DeduceLookupUtils {
 			if (best != null) {
 				int y = 2;
 				if (best instanceof ClassStatement) {
-					result.resolved = new OS_Type((ClassStatement) best);
+					result.resolved = ((ClassStatement) best).getOS_Type();
 				} else if (best instanceof FunctionDef) {
 					final @Nullable FunctionDef fd = (FunctionDef) best;
 					if (fd.returnType() != null && !fd.returnType().isNull()) {
@@ -228,7 +230,7 @@ public class DeduceLookupUtils {
 			best = _resolveAlias2((AliasStatement) best, aDeduceTypes2);
 		}
 		if (best instanceof ClassStatement) {
-			R.resolved = new OS_Type((ClassStatement) best);
+			R.resolved = ((ClassStatement) best).getOS_Type();
 			result = R;
 		} else {
 			switch (DecideElObjectType.getElObjectType(best)) {
@@ -252,7 +254,17 @@ public class DeduceLookupUtils {
 					R.typeName = new OS_UnknownType(vs);
 //				return deduceExpression(vs.initialValue(), ctx); // infinite recursion
 				} else {
-					R = deduceExpression(aDeduceTypes2, vs.initialValue(), vs.getContext());
+					final IExpression initialValue = vs.initialValue();
+					switch (initialValue.getKind()) {
+					case PROCEDURE_CALL:
+						final Context vsContext = vs.getContext();
+						final ProcedureCallExpression pce = (ProcedureCallExpression) initialValue;
+						R = deduceExpression(aDeduceTypes2, pce, vsContext);
+						break;
+					default:
+						R = deduceExpression(aDeduceTypes2, initialValue, vs.getContext());
+						break;
+					}
 				}
 				if (result == null) {
 					result = R;
@@ -260,7 +272,7 @@ public class DeduceLookupUtils {
 				break;
 			case FUNCTION:
 				final @NotNull FunctionDef functionDef = (FunctionDef) best;
-				R.resolved = new OS_FuncType(functionDef);
+				R.resolved = functionDef.getOS_Type();
 				result = R;
 				break;
 			case FORMAL_ARG_LIST_ITEM:

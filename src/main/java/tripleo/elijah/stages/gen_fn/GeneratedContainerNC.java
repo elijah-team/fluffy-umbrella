@@ -8,15 +8,20 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.AccessNotation;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.stages.deduce.FunctionMapDeferred;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
+import tripleo.elijah.stages.post_deduce.IPostDeduce;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,8 +59,14 @@ public abstract class GeneratedContainerNC extends AbstractDependencyTracker imp
 
 	public void addFunction(FunctionDef functionDef, GeneratedFunction generatedFunction) {
 		if (functionMap.containsKey(functionDef))
-			throw new IllegalStateException("Function already generated"); // TODO do better than this
+			throw new IllegalStateException("Function already generated"); // TODO there can be overloads, although we don't handle that yet
 		functionMap.put(functionDef, generatedFunction);
+		{
+			final Collection<FunctionMapDeferred> deferreds = functionMapDeferreds.get(functionDef);
+			for (FunctionMapDeferred deferred : deferreds) {
+				deferred.onNotify(generatedFunction);
+			}
+		}
 	}
 
 	/**
@@ -78,6 +89,13 @@ public abstract class GeneratedContainerNC extends AbstractDependencyTracker imp
 	}
 
 	public abstract void generateCode(CodeGenerator aGgc, GenerateResult aGr);
+
+	public abstract void analyzeNode(IPostDeduce aPostDeduce);
+
+	Multimap<FunctionDef, FunctionMapDeferred> functionMapDeferreds = ArrayListMultimap.create();
+	public void functionMapDeferred(final FunctionDef aFunctionDef, final FunctionMapDeferred aFunctionMapDeferred) {
+		functionMapDeferreds.put(aFunctionDef, aFunctionMapDeferred);
+	}
 }
 
 //

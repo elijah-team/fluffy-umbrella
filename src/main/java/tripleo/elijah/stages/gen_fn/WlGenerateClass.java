@@ -14,12 +14,10 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeducePhase;
-import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.util.Holder;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkJob;
 import tripleo.elijah.work.WorkManager;
-
-import java.util.List;
 
 /**
  * Created 5/16/21 12:41 AM
@@ -55,7 +53,7 @@ public class WlGenerateClass implements WorkJob {
 			Result = kl;
 			break;
 		case RESOLVED:
-			DeduceTypes2.Holder<GeneratedClass> hgc = new DeduceTypes2.Holder<GeneratedClass>();
+			Holder<GeneratedClass> hgc = new Holder<GeneratedClass>();
 			resolvePromise.then(new DoneCallback<GeneratedClass>() {
 				@Override
 				public void onDone(GeneratedClass result) {

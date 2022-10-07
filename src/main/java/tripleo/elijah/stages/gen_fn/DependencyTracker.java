@@ -18,8 +18,8 @@ import java.util.List;
  */
 public interface DependencyTracker {
 	// for use in DeduceTypes2
-	List<GenType> dependentTypes();
-	List<FunctionInvocation> dependentFunctions();
+//	List<GenType> dependentTypes();
+//	List<FunctionInvocation> dependentFunctions();
 }
 
 //

@@ -13,8 +13,9 @@ import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.impl.StdErrSink;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
+import tripleo.elijah.factory.comp.CompilationFactory;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.util.Helpers;
 
@@ -27,10 +28,10 @@ import java.util.List;
 public class FindClassesInDemoElNormal {
 
 	@Test
-	public final void testParseFile() {
+	public final void testParseFile() throws Exception {
 		final List<String> args = tripleo.elijah.util.Helpers.List_of("test/demo-el-normal", "test/demo-el-normal/main2", "-sE");
 		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final Compilation c = CompilationFactory.mkCompilation(eee, new IO());
 
 		c.feedCmdLine(args);
 
@@ -43,13 +44,14 @@ public class FindClassesInDemoElNormal {
 
 
 	@Test
-	public final void testListFolders() {
+	public final void testListFolders() throws Exception {
 		final List<String> args = Helpers.List_of("test/demo-el-normal/listfolders/", "-sE");
 		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final Compilation c = CompilationFactory.mkCompilation(eee, new IO());
 
 		c.feedCmdLine(args);
 
+		// searches all modules for top-level Main's that are classes (only the first from each module though)
 		final List<ClassStatement> aClassList = c.findClass("Main");
 		Assert.assertEquals(1, aClassList.size());
 

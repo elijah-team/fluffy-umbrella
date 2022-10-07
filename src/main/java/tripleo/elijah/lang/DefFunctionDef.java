@@ -15,7 +15,7 @@ package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.FunctionContext;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +69,7 @@ public class DefFunctionDef extends BaseFunctionDef {
 
 
 	@Override
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(ElElementVisitor visit) {
 		visit.visitDefFunction(this);
 	}
 

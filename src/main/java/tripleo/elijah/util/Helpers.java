@@ -10,8 +10,9 @@ package tripleo.elijah.util;
 
 import antlr.CommonToken;
 import antlr.Token;
-import com.thoughtworks.xstream.XStream;
+//import com.thoughtworks.xstream.XStream;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
@@ -27,26 +28,26 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import static org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_256;
 
 /**
  * Created 9/10/20 3:44 PM
  */
 public class Helpers {
 	public static void printXML(final Object obj, @NotNull final TabbedOutputStream tos) {
+		System.err.println("** XStream support has been disabled");
+/*
 		final XStream x = new XStream();
 		//x.setMode(XStream.ID_REFERENCES);
 		x.toXML(obj, tos.getStream());
+*/
 	}
 
 	@NotNull
 	public static <E> List<E> List_of(@NotNull final E... e1) {
 		final List<E> r = new ArrayList<E>();
-		for (final E e : e1) {
-			r.add(e);
-		}
+		Collections.addAll(r, e1);
 		return r;
 	}
 
@@ -131,10 +132,11 @@ public class Helpers {
 	}
 
 	public static String getHashForFilename(final String aFilename, final ErrSink aErrSink) throws IOException {
-		String hdigest = new DigestUtils(SHA_256).digestAsHex(new File(aFilename));
+		String hdigest = new DigestUtils(MessageDigestAlgorithms.SHA_256).digestAsHex(new File(aFilename));
 		return hdigest;
 	}
 
+	// TODO this method is just ugly
 	@Nullable
 	public static String getHashForFilenameJava(String aFilename, ErrSink aErrSink) throws IOException {
 		final File file = new File(aFilename);

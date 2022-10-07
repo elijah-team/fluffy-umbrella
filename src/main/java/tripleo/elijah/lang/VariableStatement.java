@@ -10,7 +10,7 @@ package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.diagnostic.Locatable;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -69,7 +69,7 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 	}
 
 	@Override
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitVariableStatement(this);
 	}
 

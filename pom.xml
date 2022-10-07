@@ -1,13 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>tripleo.elijah</groupId>
-    <artifactId>elijah-v1-fluffy-umbrella</artifactId>
+    <artifactId>elijah-v1</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.6</version>
-    <name>eljc-v1-fluffy-umbrella</name>
-    <url>http://github.com/elijah-team/fluffy-umbrella/</url>
+<!--
+    <packaging>pom</packaging>
+-->
+    <version>0.0.9.2022-09-000-SNAPSHOT</version>
+    <name>eljc-v1</name>
+    <url>http://gitlab.com/elijah-team/elijah-lang/</url>
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <jacoco.version>0.8.6</jacoco.version>
@@ -22,13 +28,12 @@
 
     <dependencies>
 
+        <!-- https://search.maven.org/artifact/io.reactivex.rxjava3/rxjava/3.1.0/jar -->
         <dependency>
-            <groupId>me.friwi</groupId>
-            <artifactId>jcefmaven</artifactId>
-            <version>105.3.36</version>
+            <groupId>io.reactivex.rxjava3</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>3.1.0</version>
         </dependency>
-
-
 
         <!-- https://mvnrepository.com/artifact/org.reactivestreams/reactive-streams -->
         <dependency>
@@ -105,11 +110,13 @@
 
 
         <!-- https://mvnrepository.com/artifact/com.thoughtworks.xstream/xstream -->
+        <!--
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
             <version>1.4.11.1</version>
         </dependency>
+        -->
 
         <!-- https://mvnrepository.com/artifact/org.apache.bcel/bcel -->
         <!--
@@ -151,6 +158,21 @@
             <version>${range.version}</version>
         </dependency>
 
+<!--
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.8.1</version>
+            <scope>test</scope>
+        </dependency>
+-->
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -172,26 +194,50 @@
             <id>gitlab-maven</id>
             <url>https://gitlab.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
         </repository>
+<!--
+        <snapshotRepository>
+            <id>gitlab-maven</id>
+            <url>https://gitlab.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
+        </snapshotRepository>
+-->
     </distributionManagement>
 
     <build>
-        <!--
         <plugins>
-        <plugin>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-maven-plugin</artifactId>
-            <version>4.7.1</version>
-            <executions>
-                <execution>
-                    <goals>
-                        <goal>antlr4</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
-        </plugins>
-        -->
-        <plugins>
+            <!--
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>4.7.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/java-compiler-gen/</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -200,7 +246,6 @@
             </plugin>
             -->
             <!-- Setup Javadoc jar -->
-<!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -208,13 +253,41 @@
                     <groups>
                         <group>
                             <title>User packages</title>
-                            <packages>tripleo.elijah:tripleo.elijah.diagnostic:tripleo.elijah.lang2:tripleo.elijah.util</packages>
+                            <packages>tripleo.elijah:tripleo.elijah.diagnostic:tripleo.elijah.lang2:tripleo.elijah.util
+                            </packages>
                         </group>
                         <group>
                             <title>Implementation packages</title>
-                            <packages>tripleo.elijah.ci:tripleo.elijah.comp:tripleo.elijah.contexts:tripleo.elijah.gen:tripleo.elijah.lang:
-                                tripleo.elijah.stages.deduce:tripleo.elijah.stages.expand:tripleo.elijah.stages.gen_c:tripleo.elijah.stages.gen_fn:
-                                tripleo.elijah.stages.generate:tripleo.elijah.stages.instructions:tripleo.elijah.stages.translate
+                            <packages>
+                                tripleo.elijah.util:
+                                tripleo.util:tripleo.util.io:
+                                tripleo.elijjah:tripleo.elijah:
+
+                                tripleo.elijah.lang:tripleo.elijah.lang.imports:tripleo.elijah.lang.builder:
+
+                                tripleo.elijah.nextgen:tripleo.elijah.nextgen.composable:tripleo.elijah.nextgen.diagnostic:
+
+                                tripleo.elijah.ci:
+                                tripleo.elijah.slir:
+                                tripleo.elijah.contexts:
+                                tripleo.elijah.stages:
+                                tripleo.elijah.stages.expand:
+                                tripleo.elijah.stages.deduce:tripleo.elijah.stages.deduce.declarations:
+                                tripleo.elijah.stages.translate:
+                                tripleo.elijah.stages.instructions:
+                                tripleo.elijah.stages.gen_fn:tripleo.elijah.stages.gen_c:tripleo.elijah.stages.gen_generic:
+                                tripleo.elijah.stages.logging:
+                                tripleo.elijah.stages.generate:
+                                tripleo.elijah.stages.post_deduce:
+
+                                tripleo.elijah.work:
+
+                                tripleo.elijah.diagnostic:
+                                tripleo.elijah.comp:
+                                tripleo.elijah.comp.functionality:tripleo.elijah.comp.functionality.f202:
+                                tripleo.elijah.entrypoints:
+
+                                tripleo.elijah.lang2
                             </packages>
                         </group>
                     </groups>
@@ -229,7 +302,6 @@
                     </execution>
                 </executions>
             </plugin>
--->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -316,7 +388,6 @@
 
         </plugins>
 
-<!--
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -324,7 +395,8 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven-javadoc-plugin.version}</version>
                 </plugin>
-                &lt;!&ndash; Setup site with reflow maven skin &ndash;&gt;
+                <!-- Setup site with reflow maven skin -->
+<!--
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
@@ -334,17 +406,16 @@
                     </configuration>
                     <dependencies>
                         <dependency>
-                            <groupId>org.joda.external</groupId>
+                            <groupId>tripleo.elijah</groupId>
                             <artifactId>reflow-velocity-tools</artifactId>
                             <version>1.2</version>
                         </dependency>
                     </dependencies>
                 </plugin>
-
-            </plugins>
-        </pluginManagement>
 -->
+            </plugins>
 
+        </pluginManagement>
     </build>
 
     <reporting>

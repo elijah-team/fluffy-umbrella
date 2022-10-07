@@ -73,6 +73,10 @@ public class WlGenerateNamespace implements WorkJob {
 	public boolean isDone() {
 		return _isDone;
 	}
+
+	public GeneratedNode getResult() {
+		return Result;
+	}
 }
 
 //

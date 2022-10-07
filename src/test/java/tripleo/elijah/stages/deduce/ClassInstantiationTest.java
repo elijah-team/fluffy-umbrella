@@ -11,7 +11,8 @@ package tripleo.elijah.stages.deduce;
 import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.impl.StdErrSink;
+import tripleo.elijah.factory.comp.CompilationFactory;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
@@ -21,27 +22,37 @@ import static tripleo.elijah.util.Helpers.List_of;
 public class ClassInstantiationTest {
 
 	@Test
-	public void classInstantiation() {
+	public void classInstantiation() throws Exception {
 		String f = "test/basic1/class_instantiation/";
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+		Compilation c = CompilationFactory.mkCompilation(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
 	}
 
 	@Test
-	public void classInstantiation2() {
+	public void classInstantiation2() throws Exception {
 		String f = "test/basic1/class_instantiation2/";
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+		Compilation c = CompilationFactory.mkCompilation(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
 	}
 
 	@Test
-	public void classInstantiation3() {
+	public void classInstantiation3() throws Exception {
 		String f = "test/basic1/class_instantiation3/";
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+		Compilation c = CompilationFactory.mkCompilation(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
+	}
+
+	@Test
+	public void classInstantiation4() throws Exception {
+		String f = "test/basic1/class_instantiation4/";
+		Compilation c = CompilationFactory.mkCompilation(new StdErrSink(), new IO());
+
+		c.feedCmdLine(List_of(f));
+
+		System.err.println("Errorcount is" + c.errorCount());
 	}
 }
 

@@ -20,7 +20,7 @@ import tripleo.elijah.lang.OS_Type;
 /**
  * Created 6/27/21 9:40 AM
  */
-public class GeneratedFunction extends BaseGeneratedFunction {
+public class GeneratedFunction extends BaseGeneratedFunction implements GNCoded {
 	public final @Nullable FunctionDef fd;
 
 	public GeneratedFunction(final @Nullable FunctionDef functionDef) {
@@ -33,7 +33,8 @@ public class GeneratedFunction extends BaseGeneratedFunction {
 
 	@Override
 	public String toString() {
-		return String.format("<GeneratedFunction %s>", fd);
+		String pte_string = fd.getArgs().toString(); // TODO wanted PTE.getLoggingString
+		return String.format("<GeneratedFunction %s %s %s>", fd.getParent(), fd.name(), pte_string);
 	}
 
 	public String name() {
@@ -63,6 +64,10 @@ public class GeneratedFunction extends BaseGeneratedFunction {
 		return ""+fd;
 	}
 
+	@Override
+	public Role getRole() {
+		return Role.FUNCTION;
+	}
 }
 
 //

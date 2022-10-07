@@ -12,6 +12,7 @@
 package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.Nullable;
+import tripleo.elijah.contexts.ContextInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +35,14 @@ public class LookupResultList {
 				return; // TODO hack for bad algorithm
 		}
 		_results.add(new LookupResult(name, element, level, aContext));
+	}
+
+	public void add(final String name, final int level, final OS_Element element, final Context aContext, final ContextInfo aImportInfo) {
+		for (final LookupResult result : _results) {
+			if (result.getElement() == element)
+				return; // TODO hack for bad algorithm
+		}
+		_results.add(new LookupResult(name, element, level, aContext, aImportInfo));
 	}
 
 	@Nullable

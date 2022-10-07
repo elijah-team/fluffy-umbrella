@@ -58,16 +58,12 @@ public class ClassInvocation implements IInvocation {
 		return cls;
 	}
 
-	public @NotNull Promise<GeneratedClass, Void, Void> promise() {
-		return resolvePromise;
+	public @NotNull Promise<GeneratedClass, Void, Void> resolvePromise() {
+		return resolvePromise.promise();
 	}
 
 	public String getConstructorName() {
 		return constructorName;
-	}
-
-	public Promise<GeneratedClass, Void, Void> resolvePromise() {
-		return resolvePromise.promise();
 	}
 
 	@Override

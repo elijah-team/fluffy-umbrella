@@ -21,7 +21,7 @@ public class DefaultGetLogNameBehavior implements GetLogNameBehavior {
 		final String s1 = deduceLog.getFileName();
 		final String s2 = s1.replace(System.getProperty("file.separator"), "~~");
 
-		return s2;
+		return s2 + ".log";
 	}
 }
 

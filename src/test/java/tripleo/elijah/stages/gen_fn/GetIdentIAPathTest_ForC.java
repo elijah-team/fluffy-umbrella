@@ -15,10 +15,13 @@ import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.impl.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationShitImpl;
+import tripleo.elijah.factory.comp.CompilationFactory;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.gen_c.CReference;
 import tripleo.elijah.stages.gen_c.Emit;
+import tripleo.elijah.stages.gen_c.Generate_Code_For_Method;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
@@ -33,6 +36,14 @@ public class GetIdentIAPathTest_ForC {
 	GeneratedFunction gf;
 	OS_Module mod;
 
+
+	Compilation c;
+
+	ElLog.Verbosity verbosity1 = Compilation.gitlabCIVerbosity();
+	PipelineLogic pl;
+	GeneratePhase generatePhase;
+
+
 	@Before
 	public void setUp() throws Exception {
 		mod = mock(OS_Module.class);
@@ -40,6 +51,14 @@ public class GetIdentIAPathTest_ForC {
 		gf = new GeneratedFunction(fd);
 
 		Emit.emitting = false;
+
+		//
+
+		c = CompilationFactory.mkCompilation(new StdErrSink(), new IO());
+
+		verbosity1 = Compilation.gitlabCIVerbosity();
+		pl = new PipelineLogic(new CompilationShitImpl(c));
+		generatePhase = new GeneratePhase(verbosity1, pl);
 	}
 
 	@Test
@@ -58,7 +77,7 @@ public class GetIdentIAPathTest_ForC {
 		int ite_index = gf.addIdentTableEntry(foo_ident, null);
 		IdentTableEntry ite = gf.getIdentTableEntry(ite_index);
 		ite.setResolvedElement(foo_vs);
-		ite.backlink = new IntegerIA(int_index, gf);
+		ite.setBacklink(new IntegerIA(int_index, gf));
 		IdentIA ident_ia = new IdentIA(ite_index, gf);
 		String x = getIdentIAPath(ident_ia, gf);
 		Assert.assertEquals("vvx->vmfoo", x);
@@ -90,11 +109,6 @@ public class GetIdentIAPathTest_ForC {
 		ClassStatement el1 = new ClassStatement(mod, null);
 */
 
-		//		el1.add(vsq);
-		//
-		final ElLog.Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final PipelineLogic pl = new PipelineLogic(verbosity1);
-		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		GenerateFunctions gen = generatePhase.getGenerateFunctions(mod);
 		Context ctx = mock(Context.class);
 		//
@@ -118,8 +132,8 @@ public class GetIdentIAPathTest_ForC {
 		IdentExpression x_ident = Helpers.string_to_ident("x");
 		@NotNull IdentExpression foo_ident = Helpers.string_to_ident("foo");
 		//
-		final ElLog.Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final PipelineLogic pl = new PipelineLogic(verbosity1);
+//		final ElLog.Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
+//		final PipelineLogic pl = new PipelineLogic(verbosity1);
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		GenerateFunctions gen = generatePhase.getGenerateFunctions(mod);
 		Context ctx = mock(Context.class);
@@ -193,14 +207,14 @@ public class GetIdentIAPathTest_ForC {
 		//
 
 		//
-		final OS_Type type = new OS_Type(classStatement);
+		final OS_Type type = classStatement.getOS_Type();
 		TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, x_ident);
 		int int_index = gf.addVariableTableEntry("x", VariableTableType.VAR, tte, mock(VariableStatement.class));
 		//
 		DotExpression expr = new DotExpression(x_ident, foo_ident);
 		//
-		final ElLog.Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final PipelineLogic pl = new PipelineLogic(verbosity1);
+//		final ElLog.Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
+//		final PipelineLogic pl = new PipelineLogic(verbosity1);
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		GenerateFunctions gen = generatePhase.getGenerateFunctions(mod);
 		InstructionArgument xx = gen.simplify_expression(expr, gf, ctx);
@@ -225,7 +239,7 @@ public class GetIdentIAPathTest_ForC {
 
 	String getIdentIAPath(final IdentIA ia2, GeneratedFunction generatedFunction) {
 		final CReference reference = new CReference();
-		reference.getIdentIAPath(ia2, generatedFunction);
+		reference.getIdentIAPath(ia2, generatedFunction, Generate_Code_For_Method.AOG.GET, null);
 		return reference.build();
 	}
 

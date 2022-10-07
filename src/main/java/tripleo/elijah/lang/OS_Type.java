@@ -36,28 +36,45 @@ public class OS_Type {
 	}
 
 	@Override
-	public boolean equals(final Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		final OS_Type os_type = (OS_Type) o;
-/*		switch (kind) {
-			case USER: return (((OS_Type) o).getTypeName()).equals(getTypeName());
-			case BUILT_IN: return (((OS_Type) o).type).equals(type);
-			case USER_CLASS: return (((OS_Type) o).etype).equals(etype);
-			default: throw new IllegalStateException("Cant be here");
-		}
-*/
-		final boolean b = type == os_type.type &&
-				type_of_type == os_type.type_of_type &&
-				Objects.equals(etype, os_type.etype) &&
-				Objects.equals(ttype, os_type.ttype);
-		return b;
+	public boolean equals(final Object aO) {
+		if (this == aO) return true;
+		if (aO == null || getClass() != aO.getClass()) return false;
+
+		final OS_Type os_type = (OS_Type) aO;
+
+		if (type != os_type.type) return false;
+		if (type_of_type != os_type.type_of_type) return false;
+		if (etype != null ? !etype.equals(os_type.etype) : os_type.etype != null) return false;
+		return ttype != null ? ttype.equals(os_type.ttype) : os_type.ttype == null;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(type, type_of_type, etype.hashCode(), ttype.hashCode());
+		int result = type != null ? type.hashCode() : 0;
+		result = 31 * result + type_of_type.hashCode();
+		result = 31 * result + (etype != null ? etype.hashCode() : 0);
+		result = 31 * result + (ttype != null ? ttype.hashCode() : 0);
+		return result;
 	}
+
+//	@Override
+//	public boolean equals(final Object o) {
+//		if (this == o) return true;
+//		if (o == null || getClass() != o.getClass()) return false;
+//		final OS_Type os_type = (OS_Type) o;
+///*		switch (kind) {
+//			case USER: return (((OS_Type) o).getTypeName()).equals(getTypeName());
+//			case BUILT_IN: return (((OS_Type) o).type).equals(type);
+//			case USER_CLASS: return (((OS_Type) o).etype).equals(etype);
+//			default: throw new IllegalStateException("Cant be here");
+//		}
+//*/
+//		final boolean b = type == os_type.type &&
+//				type_of_type == os_type.type_of_type &&
+//				Objects.equals(etype, os_type.etype) &&
+//				Objects.equals(ttype, os_type.ttype);
+//		return b;
+//	}
 
 	public ClassStatement getClassOf() {
 		if (etype != null && etype instanceof ClassStatement)
@@ -89,11 +106,16 @@ public class OS_Type {
 				case SystemInteger:
 					{
 						final LookupResultList r;
-						final OS_Element best;
+						OS_Element best;
 
 						r = ctx.lookup("SystemInteger");
 						best = r.chooseBest(null);
-						return new OS_Type((ClassStatement) best);
+						while (best instanceof AliasStatement) {
+							final AliasStatement aliasStatement = (AliasStatement) best;
+							final LookupResultList lrl = aliasStatement.getContext().lookup(((Qualident) aliasStatement.getExpression()).toString());
+							best = lrl.chooseBest(null);
+						}
+						return ((ClassStatement) best).getOS_Type();
 					}
 				case Boolean:
 					{
@@ -102,7 +124,7 @@ public class OS_Type {
 
 						r = ctx.lookup("Boolean");
 						best = r.chooseBest(null);
-						return new OS_Type((ClassStatement) best);
+						return ((ClassStatement) best).getOS_Type();
 					}
 				case Unit:
 					{
@@ -115,7 +137,7 @@ public class OS_Type {
 
 						r = ctx.lookup("String8"); // TODO not sure about this
 						best = r.chooseBest(null);
-						return new OS_Type((ClassStatement) best);
+						return ((ClassStatement) best).getOS_Type();
 					}
 				default:
 					throw new IllegalStateException("Unexpected value: " + getBType());
@@ -125,7 +147,7 @@ public class OS_Type {
 			{
 				final LookupResultList r = ctx.lookup(getTypeName().toString()); // TODO
 				final OS_Element best = r.chooseBest(null);
-				return new OS_Type((ClassStatement) best);
+				return ((ClassStatement) best).getOS_Type();
 			}
 		case USER_CLASS:
 		case FUNCTION:

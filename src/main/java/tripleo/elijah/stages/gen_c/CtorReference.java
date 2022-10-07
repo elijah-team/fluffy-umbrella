@@ -107,51 +107,51 @@ public class CtorReference {
 		String text = "";
 		for (CReference.Reference ref : refs) {
 			switch (ref.type) {
-				case LOCAL:
-					text = "vv" + ref.text;
-					sb.append(text);
-					break;
-				case MEMBER:
-					text = "->vm" + ref.text;
-					sb.append(text);
-					break;
-				case INLINE_MEMBER:
-					text = Emit.emit("/*219*/")+".vm" + ref.text;
-					sb.append(text);
-					break;
-				case DIRECT_MEMBER:
-					text = Emit.emit("/*124*/")+"vsc->vm" + ref.text;
-					sb.append(text);
-					break;
-				case FUNCTION: {
-					final String s = sb.toString();
-					text = String.format("%s(%s", ref.text, s);
-					sb = new StringBuilder();
-					open = true;
-					if (!s.equals("")) needs_comma = true;
-					sb.append(text);
-					break;
-				}
-				case CONSTRUCTOR: {
-					final String s = sb.toString();
-					text = String.format("%s(%s", ref.text, s);
-					sb = new StringBuilder();
-					open = true;
-					if (!s.equals("")) needs_comma = true;
-					sb.append(text);
-					break;
-				}
-				case PROPERTY: {
-					final String s = sb.toString();
-					text = String.format("%s(%s", ref.text, s);
-					sb = new StringBuilder();
-					open = true;
-					if (!s.equals("")) needs_comma = true;
-					sb.append(text);
-					break;
-				}
-				default:
-					throw new IllegalStateException("Unexpected value: " + ref.type);
+			case LOCAL:
+				text = "vv" + ref.text;
+				sb.append(text);
+				break;
+			case MEMBER:
+				text = "->vm" + ref.text;
+				sb.append(text);
+				break;
+			case INLINE_MEMBER:
+				text = Emit.emit("/*2190*/")+".vm" + ref.text;
+				sb.append(text);
+				break;
+			case DIRECT_MEMBER:
+				text = Emit.emit("/*1240*/")+"vsc->vm" + ref.text;
+				sb.append(text);
+				break;
+			case FUNCTION: {
+				final String s = sb.toString();
+				text = String.format("%s(%s", ref.text, s);
+				sb = new StringBuilder();
+				open = true;
+				if (!s.equals("")) needs_comma = true;
+				sb.append(text);
+				break;
+			}
+			case CONSTRUCTOR: {
+				final String s = sb.toString();
+				text = String.format("%s(%s", ref.text, s);
+				sb = new StringBuilder();
+				open = true;
+				if (!s.equals("")) needs_comma = true;
+				sb.append(text);
+				break;
+			}
+			case PROPERTY_GET: {
+				final String s = sb.toString();
+				text = String.format("%s(%s", ref.text, s);
+				sb = new StringBuilder();
+				open = true;
+				if (!s.equals("")) needs_comma = true;
+				sb.append(text);
+				break;
+			}
+			default:
+				throw new IllegalStateException("Unexpected value: " + ref.type);
 			}
 //			sl.add(text);
 		}

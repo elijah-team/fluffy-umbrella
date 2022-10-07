@@ -10,9 +10,12 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.FailCallback;
+import org.jdeferred2.Promise;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.stages.deduce.DeduceTypeResolve;
+import tripleo.elijah.stages.deduce.ResolveError;
 import tripleo.elijah.stages.deduce.ResolveUnknown;
 
 import java.util.ArrayList;
@@ -87,6 +90,16 @@ public abstract class BaseTableEntry {
 	}
 
 	// endregion status
+
+	DeduceTypeResolve typeResolve;
+
+	public Promise<GenType, ResolveError, Void> typeResolvePromise() {
+		return typeResolve.typeResolution();
+	}
+
+	protected void setupResolve() {
+		typeResolve = new DeduceTypeResolve(this);
+	}
 
 
 }

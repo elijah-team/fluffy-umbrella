@@ -10,7 +10,7 @@ package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.PropertyStatementContext;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.Helpers;
 
 /**
@@ -59,7 +59,7 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 	}
 
 	@Override // OS_Element
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(ElElementVisitor visit) {
 		visit.visitPropertyStatement(this);
 	}
 

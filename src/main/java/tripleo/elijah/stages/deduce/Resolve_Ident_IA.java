@@ -36,28 +36,27 @@ class Resolve_Ident_IA {
 	private final @NotNull FoundElement foundElement;
 	private final @NotNull ErrSink errSink;
 
-	private final @NotNull DeduceTypes2 deduceTypes2;
+	private final @NotNull DeduceTypes2.DeduceClient3 dc;
 	private final @NotNull DeducePhase phase;
-	
+
 	private final @NotNull ElLog LOG;
 
 	@Contract(pure = true)
-	public Resolve_Ident_IA(final @NotNull DeduceTypes2 aDeduceTypes2,
-							final @NotNull DeducePhase aPhase,
+	public Resolve_Ident_IA(final @NotNull DeduceTypes2.DeduceClient3 aDeduceClient3,
 							final @NotNull Context aContext,
 							final @NotNull IdentIA aIdentIA,
 							final BaseGeneratedFunction aGeneratedFunction,
 							final @NotNull FoundElement aFoundElement,
 							final @NotNull ErrSink aErrSink) {
-		deduceTypes2 = aDeduceTypes2;
-		phase = aPhase;
+		dc = aDeduceClient3;
+		phase = dc.getPhase();
 		context = aContext;
 		identIA = aIdentIA;
 		generatedFunction = aGeneratedFunction;
 		foundElement = aFoundElement;
 		errSink = aErrSink;
 		//
-		LOG = deduceTypes2.LOG;
+		LOG = dc.getLOG();
 	}
 
 	@Nullable OS_Element el;
@@ -100,17 +99,37 @@ class Resolve_Ident_IA {
 			} else
 				throw new IllegalStateException("Really cant be here");
 */
-		if (!process(s.get(0))) return;
+		if (!process(s.get(0), s)) return;
 
 		preUpdateStatus(s);
 		updateStatus(s);
 	}
 
-	private boolean process(InstructionArgument ia) {
+	private boolean process(InstructionArgument ia, final @NotNull List<InstructionArgument> aS) {
 		if (ia instanceof IntegerIA) {
 			@NotNull RIA_STATE state = action_IntegerIA(ia);
 			if (state == RIA_STATE.RETURN) {
 				return false;
+			} else if (state == RIA_STATE.NEXT) {
+				final IdentIA identIA2 = identIA; //(IdentIA) aS.get(1);
+				final @NotNull IdentTableEntry idte = identIA2.getEntry();
+
+				dc.resolveIdentIA2_(context, identIA2, aS, generatedFunction, new FoundElement(phase) {
+					final String z = generatedFunction.getIdentIAPathNormal(identIA2);
+
+					@Override
+					public void foundElement(OS_Element e) {
+						idte.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(e));
+						foundElement.doFoundElement(e);
+					}
+
+					@Override
+					public void noFoundElement() {
+						foundElement.noFoundElement();
+						LOG.info("2002 Cant resolve " + z);
+						idte.setStatus(BaseTableEntry.Status.UNKNOWN, null);
+					}
+				});
 			}
 		} else if (ia instanceof IdentIA) {
 			@NotNull RIA_STATE state = action_IdentIA((IdentIA) ia);
@@ -134,17 +153,28 @@ class Resolve_Ident_IA {
 				y.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(el));
 			} else if (x instanceof IdentIA) {
 				@NotNull IdentTableEntry y = ((IdentIA) x).getEntry();
-				y.addStatusListener(new BaseTableEntry.StatusListener() {
-					@Override
-					public void onChange(IElementHolder eh, BaseTableEntry.Status newStatus) {
-						if (newStatus == BaseTableEntry.Status.KNOWN) {
-//								assert el2 != eh.getElement();
-							y.resolveExpectation.satisfy(normal_path);
+				if (!y.preUpdateStatusListenerAdded) {
+					y.addStatusListener(new BaseTableEntry.StatusListener() {
+						boolean _called;
+
+						@Override
+						public void onChange(IElementHolder eh, BaseTableEntry.Status newStatus) {
+							if (_called) return;
+
+							if (newStatus == BaseTableEntry.Status.KNOWN) {
+								_called = true;
+//								y.preUpdateStatusListenerAdded = true;
+
+//							assert el2 != eh.getElement();
+								y.resolveExpectation.satisfy(normal_path);
+//							dc.found_element_for_ite(generatedFunction, y, eh.getElement(), null); // No context
 //							LOG.info("1424 Found for " + normal_path);
-							foundElement.doFoundElement(eh.getElement());
+								foundElement.doFoundElement(eh.getElement());
+							}
 						}
-					}
-				});
+					});
+					y.preUpdateStatusListenerAdded = true;
+				}
 			}
 		} else {
 //			LOG.info("1431 Found for " + normal_path);
@@ -152,11 +182,34 @@ class Resolve_Ident_IA {
 		}
 	}
 
+	class GenericElementHolderWithDC implements IElementHolder {
+		private final OS_Element element;
+		private final DeduceTypes2.DeduceClient3 deduceClient3;
+
+		public GenericElementHolderWithDC(final OS_Element aElement, final DeduceTypes2.DeduceClient3 aDeduceClient3) {
+			element = aElement;
+			deduceClient3 = aDeduceClient3;
+		}
+
+		@Override
+		public OS_Element getElement() {
+			return element;
+		}
+
+		public DeduceTypes2.DeduceClient3 getDC() {
+			return deduceClient3;
+		}
+	}
+
 	private void updateStatus(@NotNull List<InstructionArgument> aS) {
 		InstructionArgument x = aS.get(/*aS.size()-1*/0);
 		if (x instanceof IntegerIA) {
 			@NotNull VariableTableEntry y = ((IntegerIA) x).getEntry();
-			y.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(el));
+			if (el instanceof VariableStatement) {
+				final VariableStatement vs = (VariableStatement) el;
+				y.setStatus(BaseTableEntry.Status.KNOWN, dc.newGenericElementHolderWithType(el, vs.typeName()));
+			}
+			y.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolderWithDC(el, dc));
 		} else if (x instanceof IdentIA) {
 			@NotNull IdentTableEntry y = ((IdentIA) x).getEntry();
 			assert y.getStatus() == BaseTableEntry.Status.KNOWN;
@@ -170,18 +223,20 @@ class Resolve_Ident_IA {
 	}
 
 	private void action_ProcIA(@NotNull InstructionArgument ia) {
-		@NotNull ProcTableEntry prte = generatedFunction.getProcTableEntry(DeduceTypes2.to_int(ia));
+		@NotNull ProcTableEntry prte = ((ProcIA)ia).getEntry();
 		if (prte.getResolvedElement() == null) {
 			IExpression exp = prte.expression;
 			if (exp instanceof ProcedureCallExpression) {
 				final @NotNull ProcedureCallExpression pce = (ProcedureCallExpression) exp;
 				exp = pce.getLeft(); // TODO might be another pce??!!
 				if (exp instanceof ProcedureCallExpression)
-					throw new IllegalArgumentException("double pce!");
-			}
+					throw new IllegalStateException("double pce!");
+			} else
+				throw new IllegalStateException("prte resolvedElement not ProcCallExpression");
 			try {
-				LookupResultList lrl = DeduceLookupUtils.lookupExpression(exp, ectx, deduceTypes2);
+				LookupResultList lrl = dc.lookupExpression(exp, ectx);
 				el = lrl.chooseBest(null);
+				assert el != null;
 				ectx = el.getContext();
 //					prte.setResolvedElement(el);
 				prte.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(el));
@@ -219,12 +274,12 @@ class Resolve_Ident_IA {
 				});
 				final @NotNull WorkList wl = new WorkList();
 				final @NotNull OS_Module module = ci.getKlass().getContext().module();
-				final @NotNull GenerateFunctions generateFunctions = deduceTypes2.getGenerateFunctions(module);
+				final @NotNull GenerateFunctions generateFunctions = dc.getGenerateFunctions(module);
 				if (pte.getFunctionInvocation().getFunction() == ConstructorDef.defaultVirtualCtor)
 					wl.addJob(new WlGenerateDefaultCtor(generateFunctions, fi));
 				else
 					wl.addJob(new WlGenerateCtor(generateFunctions, fi, null));
-				deduceTypes2.wm.addJobs(wl);
+				dc.addJobs(wl);
 //				generatedFunction.addDependentType(genType);
 //				generatedFunction.addDependentFunction(fi);
 			}
@@ -269,7 +324,7 @@ class Resolve_Ident_IA {
 	private @NotNull RIA_STATE action_IdentIA(@NotNull IdentIA ia) {
 		final @NotNull IdentTableEntry idte = ia.getEntry();
 		if (idte.getStatus() == BaseTableEntry.Status.UNKNOWN) {
-			LOG.info("1257 Not found for " + generatedFunction.getIdentIAPathNormal(ia));
+//			LOG.info("1257 Not found for " + generatedFunction.getIdentIAPathNormal(ia));
 			// No need checking more than once
 			idte.resolveExpectation.fail();
 			foundElement.doNoFoundElement();
@@ -278,7 +333,7 @@ class Resolve_Ident_IA {
 		//assert idte.backlink == null;
 
 		if (idte.getStatus() == BaseTableEntry.Status.UNCHECKED) {
-			if (idte.backlink == null) {
+			if (idte.getBacklink() == null) {
 				final String text = idte.getIdent().getText();
 				if (idte.getResolvedElement() == null) {
 					final LookupResultList lrl = ectx.lookup(text);
@@ -318,6 +373,14 @@ class Resolve_Ident_IA {
 //								generatedFunction.addDependentFunction(fi); // README program fails if this is included
 							}
 						}
+						final ProcTableEntry callablePTE = idte.getCallablePTE();
+						assert callablePTE != null;
+						final @NotNull FunctionInvocation fi = dc.newFunctionInvocation((BaseFunctionDef) el, callablePTE, invocation);
+						if (invocation instanceof ClassInvocation) {
+							callablePTE.setClassInvocation((ClassInvocation) invocation);
+						}
+						callablePTE.setFunctionInvocation(fi);
+						generatedFunction.addDependentFunction(fi);
 					} else if (el instanceof ClassStatement) {
 						@NotNull GenType genType = new GenType((ClassStatement) el);
 						generatedFunction.addDependentType(genType);
@@ -337,13 +400,14 @@ class Resolve_Ident_IA {
 					return RIA_STATE.RETURN;
 				}
 			} else /*if (false)*/ {
-				deduceTypes2.resolveIdentIA2_(ectx/*context*/, ia, null, generatedFunction, new FoundElement(phase) {
+				dc.resolveIdentIA2_(ectx/*context*/, ia, null, generatedFunction, new FoundElement(phase) {
 					final String z = generatedFunction.getIdentIAPathNormal(ia);
 
 					@Override
 					public void foundElement(OS_Element e) {
 						idte.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(e));
 						foundElement.doFoundElement(e);
+						dc.found_element_for_ite(generatedFunction, idte, e, ectx);
 					}
 
 					@Override
@@ -356,10 +420,15 @@ class Resolve_Ident_IA {
 			}
 //				assert idte.getStatus() != BaseTableEntry.Status.UNCHECKED;
 			final String normal_path = generatedFunction.getIdentIAPathNormal(identIA);
-			idte.resolveExpectation.satisfy(normal_path);
+			if (idte.resolveExpectation == null) {
+				System.err.println("385 idte.resolveExpectation is null for "+idte);
+			} else
+				idte.resolveExpectation.satisfy(normal_path);
 		} else if (idte.getStatus() == BaseTableEntry.Status.KNOWN) {
 			final String normal_path = generatedFunction.getIdentIAPathNormal(identIA);
-			idte.resolveExpectation.satisfy(normal_path);
+ 			assert idte.resolveExpectation.isSatisfied();
+ 			if (!idte.resolveExpectation.isSatisfied())
+				idte.resolveExpectation.satisfy(normal_path);
 
 			el = idte.getResolvedElement();
 			ectx = el.getContext();
@@ -368,7 +437,7 @@ class Resolve_Ident_IA {
 	}
 
 	private @NotNull RIA_STATE action_IntegerIA(@NotNull InstructionArgument ia) {
-		@NotNull VariableTableEntry vte = generatedFunction.getVarTableEntry(DeduceTypes2.to_int(ia));
+		@NotNull VariableTableEntry vte = ((IntegerIA)ia).getEntry();
 		final String text = vte.getName();
 		final LookupResultList lrl = ectx.lookup(text);
 		el = lrl.chooseBest(null);
@@ -386,13 +455,13 @@ class Resolve_Ident_IA {
 			//
 			// OTHERWISE TYPE INFORMATION MAY BE IN POTENTIAL_TYPES
 			//
-			@NotNull List<TypeTableEntry> pot = deduceTypes2.getPotentialTypesVte(vte);
+			@NotNull List<TypeTableEntry> pot = dc.getPotentialTypesVte(vte);
 			if (pot.size() == 1) {
 				OS_Type attached = pot.get(0).getAttached();
 				if (attached != null) {
 					action_001(attached);
 				} else {
-					action_002(pot);
+					action_002(pot.get(0));
 				}
 			}
 		} else {
@@ -403,88 +472,128 @@ class Resolve_Ident_IA {
 		return RIA_STATE.NEXT;
 	}
 
-	private void action_002(@NotNull List<TypeTableEntry> aPot) {
-		TypeTableEntry tte = aPot.get(0);
+	private void action_002(final TypeTableEntry tte) {
+		//>ENTRY
+		//assert vte.potentailTypes().size() == 1;
+		assert tte.getAttached() == null;
+		//<ENTRY
+
 		if (tte.expression instanceof ProcedureCallExpression) {
 			if (tte.tableEntry != null) {
-				assert tte.tableEntry instanceof ProcTableEntry;
-				@NotNull ProcTableEntry pte = (ProcTableEntry) tte.tableEntry;
-				@NotNull IdentIA x = (IdentIA) pte.expression_num;
-				@NotNull IdentTableEntry y = x.getEntry();
-				if (y.getResolvedElement() == null) {
-					if (y.backlink instanceof ProcIA) {
-						final @NotNull ProcIA backlink_ = (ProcIA) y.backlink;
-						@NotNull ProcTableEntry backlink = generatedFunction.getProcTableEntry(backlink_.getIndex());
-						final OS_Element resolvedElement = backlink.getResolvedElement();
-						assert resolvedElement != null;
-						try {
-							LookupResultList lrl2 = DeduceLookupUtils.lookupExpression(y.getIdent(), resolvedElement.getContext(), deduceTypes2);
-							@Nullable OS_Element best = lrl2.chooseBest(null);
-							assert best != null;
-							y.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
-						} catch (ResolveError aResolveError) {
-							errSink.reportDiagnostic(aResolveError);
-							assert false;
-						}
-						action_002_1(pte, y);
-					} else if (y.backlink instanceof IntegerIA) {
-						final @NotNull IntegerIA backlink_ = (IntegerIA) y.backlink;
-						@NotNull VariableTableEntry backlink = backlink_.getEntry();
-						final OS_Element resolvedElement = backlink.getResolvedElement();
-						assert resolvedElement != null;
-						try {
-							if (resolvedElement instanceof IdentExpression) {
-								backlink.typePromise().then(new DoneCallback<GenType>() {
-									@Override
-									public void onDone(@NotNull GenType result) {
-										try {
-											final Context context = result.resolved.getClassOf().getContext();
-											LookupResultList lrl2 = DeduceLookupUtils.lookupExpression(y.getIdent(), context, deduceTypes2);
-											@Nullable OS_Element best = lrl2.chooseBest(null);
-											assert best != null;
-											y.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
-											action_002_1(pte, y);
-										} catch (ResolveError aResolveError) {
-											errSink.reportDiagnostic(aResolveError);
-										}
-									}
-								});
-							} else {
-								LookupResultList lrl2 = DeduceLookupUtils.lookupExpression(y.getIdent(), resolvedElement.getContext(), deduceTypes2);
-								@Nullable OS_Element best = lrl2.chooseBest(null);
-								assert best != null;
-								y.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
-								action_002_1(pte, y);
-							}
-						} catch (ResolveError aResolveError) {
-							errSink.reportDiagnostic(aResolveError);
-							assert false;
-						}
-					} else
-						assert false;
-				}
+				if (tte.tableEntry instanceof ProcTableEntry) {
+					@NotNull ProcTableEntry pte = (ProcTableEntry) tte.tableEntry;
+					@NotNull IdentIA x = (IdentIA) pte.expression_num;
+					@NotNull IdentTableEntry y = x.getEntry();
+					if (y.getResolvedElement() == null) {
+						action_002_no_resolved_element(pte, y);
+					} else {
+						final OS_Element res = y.getResolvedElement();
+						final @NotNull IdentTableEntry ite = identIA.getEntry();
+						action_002_1(pte, y, true);
+					}
+				} else
+					throw new IllegalStateException("tableEntry must be ProcTableEntry");
 			}
 		}
 	}
 
-	private void action_002_1(@NotNull ProcTableEntry aPte, @NotNull IdentTableEntry aY) {
-		@Nullable FunctionInvocation fi = null;
-		if (aY.getResolvedElement() instanceof ClassStatement) {
-			// assuming no constructor name or generic parameters based on function syntax
-			@Nullable ClassInvocation ci = new ClassInvocation((ClassStatement) aY.getResolvedElement(), null);
-			ci = phase.registerClassInvocation(ci);
-			fi = new FunctionInvocation(null, aPte, ci, phase.generatePhase);
-		} else if (aY.getResolvedElement() instanceof FunctionDef) {
-			final IInvocation invocation = deduceTypes2.getInvocation((GeneratedFunction) generatedFunction);
-			fi = new FunctionInvocation((FunctionDef) aY.getResolvedElement(), aPte, invocation, phase.generatePhase);
+	private void action_002_no_resolved_element(final @NotNull ProcTableEntry pte, final @NotNull IdentTableEntry ite) {
+		if (ite.getBacklink() instanceof ProcIA) {
+			final @NotNull ProcIA backlink_ = (ProcIA) ite.getBacklink();
+			@NotNull ProcTableEntry backlink = generatedFunction.getProcTableEntry(backlink_.getIndex());
+			final OS_Element resolvedElement = backlink.getResolvedElement();
+			assert resolvedElement != null;
+			try {
+				LookupResultList lrl2 = dc.lookupExpression(ite.getIdent(), resolvedElement.getContext());
+				@Nullable OS_Element best = lrl2.chooseBest(null);
+				assert best != null;
+				ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
+			} catch (ResolveError aResolveError) {
+				errSink.reportDiagnostic(aResolveError);
+				assert false;
+			}
+			action_002_1(pte, ite);
+		} else if (ite.getBacklink() instanceof IntegerIA) {
+			final @NotNull IntegerIA backlink_ = (IntegerIA) ite.getBacklink();
+			@NotNull VariableTableEntry backlink = backlink_.getEntry();
+			final OS_Element resolvedElement = backlink.getResolvedElement();
+			assert resolvedElement != null;
+
+			if (resolvedElement instanceof IdentExpression) {
+				backlink.typePromise().then(new DoneCallback<GenType>() {
+					@Override
+					public void onDone(@NotNull GenType result) {
+						try {
+							final Context context = result.resolved.getClassOf().getContext();
+							action_002_2(pte, ite, context);
+						} catch (ResolveError aResolveError) {
+							errSink.reportDiagnostic(aResolveError);
+						}
+					}
+				});
+			} else {
+				try {
+					final Context context = resolvedElement.getContext();
+					action_002_2(pte, ite, context);
+				} catch (ResolveError aResolveError) {
+					errSink.reportDiagnostic(aResolveError);
+					assert false;
+				}
+			}
 		} else
 			assert false;
-		if (fi != null) {
-			if (aPte.getFunctionInvocation() == null) {
-				aPte.setFunctionInvocation(fi);
+	}
+
+	private void action_002_2(final @NotNull ProcTableEntry pte, final @NotNull IdentTableEntry ite, final Context aAContext) throws ResolveError {
+		LookupResultList lrl2 = dc.lookupExpression(ite.getIdent(), aAContext);
+		@Nullable OS_Element best = lrl2.chooseBest(null);
+		assert best != null;
+		ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
+		action_002_1(pte, ite);
+	}
+
+	private void action_002_1(@NotNull ProcTableEntry pte, @NotNull IdentTableEntry ite) {
+		action_002_1(pte, ite, false);
+	}
+
+	private void action_002_1(@NotNull ProcTableEntry pte, @NotNull IdentTableEntry ite, boolean setClassInvocation) {
+		final OS_Element resolvedElement = ite.getResolvedElement();
+
+		assert resolvedElement != null;
+
+		ClassInvocation ci = null;
+
+		if (pte.getFunctionInvocation() == null) {
+			@NotNull FunctionInvocation fi;
+
+			if (resolvedElement instanceof ClassStatement) {
+				// assuming no constructor name or generic parameters based on function syntax
+				ci = new ClassInvocation((ClassStatement) resolvedElement, null);
+				ci = phase.registerClassInvocation(ci);
+				fi = new FunctionInvocation(null, pte, ci, phase.generatePhase);
+			} else if (resolvedElement instanceof FunctionDef) {
+				final IInvocation invocation = dc.getInvocation((GeneratedFunction) generatedFunction);
+				fi = new FunctionInvocation((FunctionDef) resolvedElement, pte, invocation, phase.generatePhase);
+				if (fi.getFunction().getParent() instanceof ClassStatement) {
+					final ClassStatement classStatement = (ClassStatement) fi.getFunction().getParent();
+					ci = new ClassInvocation(classStatement, null); // TODO generics
+					ci = phase.registerClassInvocation(ci);
+				}
+			} else {
+				throw new IllegalStateException();
 			}
+
+			if (setClassInvocation) {
+				if (ci != null) {
+					pte.setClassInvocation(ci);
+				} else
+					System.err.println("542 Null ClassInvocation");
+			}
+
+			pte.setFunctionInvocation(fi);
 		}
-		el = aY.getResolvedElement();
+
+		el = resolvedElement;
 		ectx = el.getContext();
 	}
 
@@ -507,7 +616,7 @@ class Resolve_Ident_IA {
 					// for example from match conditional
 					final TypeName tn = ((MatchConditional.MatchArm_TypeMatch) el).getTypeName();
 					try {
-						final @NotNull GenType ty = deduceTypes2.resolve_type(new OS_Type(tn), tn.getContext());
+						final @NotNull GenType ty = dc.resolve_type(new OS_Type(tn), tn.getContext());
 						ectx = ty.resolved.getElement().getContext();
 					} catch (ResolveError resolveError) {
 						resolveError.printStackTrace();

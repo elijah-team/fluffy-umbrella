@@ -24,6 +24,11 @@ public class SubExpression extends AbstractExpression {
 	}
 
 	@Override
+	public ExpressionKind getKind() {
+		return ExpressionKind.SUBEXPRESSION;
+	}
+
+	@Override
 	public boolean is_simple() {
 		return true;
 	}

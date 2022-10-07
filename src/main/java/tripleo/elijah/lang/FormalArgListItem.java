@@ -8,7 +8,7 @@
  */
 package tripleo.elijah.lang;
 
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
 
 public class FormalArgListItem implements OS_Element, OS_Element2 {
@@ -17,7 +17,7 @@ public class FormalArgListItem implements OS_Element, OS_Element2 {
 	private TypeName tn=null;
 
     @Override // OS_Element
-    public void visitGen(final ICodeGen visit) {
+    public void visitGen(final ElElementVisitor visit) {
         visit.visitFormalArgListItem(this);
     }
 

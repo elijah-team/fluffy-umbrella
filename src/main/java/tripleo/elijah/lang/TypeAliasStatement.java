@@ -12,7 +12,7 @@
  */
 package tripleo.elijah.lang;
 
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
 
 /**
@@ -43,7 +43,7 @@ public class TypeAliasStatement implements OS_Element {
 	}
 
 	@Override
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(ElElementVisitor visit) {
 		visit.visitTypeAlias(this);
 	}
 

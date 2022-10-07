@@ -21,6 +21,7 @@ import tripleo.elijah.lang.*;
 import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.lang2.SpecialFunctions;
 import tripleo.elijah.stages.deduce.ClassInvocation;
+import tripleo.elijah.stages.deduce.DeduceConstructStatement;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.instructions.*;
@@ -61,11 +62,42 @@ public class GenerateFunctions {
 		final GeneratedConstructor gf = new GeneratedConstructor(aConstructorDef);
 		gf.setFunctionInvocation(aFunctionInvocation);
 		if (parent instanceof ClassStatement) {
-			final OS_Type parentType = new OS_Type((ClassStatement) parent);
+			final OS_Type parentType = ((ClassStatement) parent).getOS_Type();
 			final IdentExpression selfIdent = IdentExpression.forString("self");
 			final TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, parentType, selfIdent);
 			gf.addVariableTableEntry("self", VariableTableType.SELF, tte, null);
 		}
+
+		{
+			final List<FormalArgListItem> fali_args = aConstructorDef.fal().falis;
+			final List<TypeTableEntry> fi_args = aFunctionInvocation.getArgs();
+
+			for (int i = 0; i < fali_args.size(); i++) {
+				final FormalArgListItem fali = fali_args.get(i);
+
+				final TypeTableEntry tte1 = fi_args.get(i);
+				final OS_Type attached = tte1.getAttached();
+
+				// TODO for reference now...
+				final GenType genType = new GenType();
+				final TypeName typeName = fali.typeName();
+				if (typeName != null)
+					genType.typeName = new OS_Type(typeName);
+				genType.resolved = attached;
+
+				final OS_Type attached1;
+				if (attached == null && typeName != null)
+					attached1 = genType.typeName;
+				else
+					attached1 = attached;
+
+				final TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, attached1, fali.getNameToken());
+//				assert attached != null; // TODO this fails
+
+				gf.addVariableTableEntry(fali.name(), VariableTableType.ARG, tte, fali);
+			}
+		}
+
 		final Context cctx = aConstructorDef.getContext();
 		final int e1 = add_i(gf, InstructionName.E, null, cctx);
 		for (final FunctionItem item : aConstructorDef.getItems()) {
@@ -83,13 +115,15 @@ public class GenerateFunctions {
 		return gf;
 	}
 
-	@NotNull GeneratedFunction generateFunction(@NotNull final FunctionDef fd, final OS_Element parent) {
+	@NotNull GeneratedFunction generateFunction(@NotNull final FunctionDef fd,
+												final OS_Element parent,
+												@NotNull FunctionInvocation aFunctionInvocation) {
 //		LOG.err("601.1 fn "+fd.name() + " " + parent);
 		final GeneratedFunction gf = new GeneratedFunction(fd);
 		if (parent instanceof ClassStatement)
 			gf.addVariableTableEntry("self",
 					VariableTableType.SELF,
-					gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, new OS_Type((ClassStatement) parent), IdentExpression.forString("self")),
+					gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, ((ClassStatement) parent).getOS_Type(), IdentExpression.forString("self")),
 					null);
 		final OS_Type returnType;
 		final TypeName returnType1 = fd.returnType();
@@ -101,16 +135,39 @@ public class GenerateFunctions {
 				VariableTableType.RESULT,
 				gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, returnType, IdentExpression.forString("Result")),
 				null); // TODO what about Unit returns?
-		for (final FormalArgListItem fali : fd.fal().falis) {
-			final TypeName typeName = fali.typeName();
-			final OS_Type type;
-			if (typeName != null)
-				type = new OS_Type(typeName);
-			else
-				type = null;
-			final TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, fali.getNameToken());
-			gf.addVariableTableEntry(fali.name(), VariableTableType.ARG, tte, fali);
-		} // TODO Exception !!??
+
+		{
+			final List<FormalArgListItem> fali_args = fd.fal().falis;
+			final List<TypeTableEntry> fi_args = aFunctionInvocation.getArgs();
+
+			for (int i = 0; i < fali_args.size(); i++) {
+				final FormalArgListItem fali = fali_args.get(i);
+
+				final TypeTableEntry tte1 = fi_args.get(i);
+				final OS_Type attached = tte1.getAttached();
+
+				// TODO for reference now...
+				final GenType genType = new GenType();
+				final TypeName typeName = fali.typeName();
+				if (typeName != null)
+					genType.typeName = new OS_Type(typeName);
+				genType.resolved = attached;
+
+				final OS_Type attached1;
+				if (attached == null && typeName != null)
+					attached1 = genType.typeName;
+				else
+					attached1 = attached;
+
+				final TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, attached1, fali.getNameToken());
+//				assert attached != null; // TODO this fails
+
+				gf.addVariableTableEntry(fali.name(), VariableTableType.ARG, tte, fali);
+			}
+		}
+
+		// TODO Exception !!??
+
 		//
 		final Context cctx = fd.getContext();
 		final int e1 = add_i(gf, InstructionName.E, null, cctx);
@@ -125,6 +182,8 @@ public class GenerateFunctions {
 //			LOG.info(instruction);
 //		}
 //		GeneratedFunction.printTables(gf);
+
+		gf.fi = aFunctionInvocation;
 		return gf;
 	}
 
@@ -141,21 +200,21 @@ public class GenerateFunctions {
 		return Result;
 	}
 
-	/**
-	 * See {@link WlGenerateFunction#run(WorkManager)}
-	 *
-	 * @param aFunctionDef
-	 * @param aClassStatement
-	 * @param aFunctionInvocation
-	 * @return
-	 */
-	public GeneratedFunction generateFunction(@NotNull FunctionDef aFunctionDef,
-											  @NotNull OS_Element aClassStatement,
-											  @NotNull FunctionInvocation aFunctionInvocation) {
-		@NotNull GeneratedFunction Result = generateFunction(aFunctionDef, aClassStatement);
-		Result.fi = aFunctionInvocation;
-		return Result;
-	}
+//	/**
+//	 * See {@link WlGenerateFunction#run(WorkManager)}
+//	 *
+//	 * @param aFunctionDef
+//	 * @param aClassStatement
+//	 * @param aFunctionInvocation
+//	 * @return
+//	 */
+//	public GeneratedFunction generateFunction(@NotNull FunctionDef aFunctionDef,
+//											  @NotNull OS_Element aClassStatement,
+//											  @NotNull FunctionInvocation aFunctionInvocation) {
+//		@NotNull GeneratedFunction Result = generateFunction(aFunctionDef, aClassStatement);
+//		Result.fi = aFunctionInvocation;
+//		return Result;
+//	}
 
 	class Generate_Item {
 		void generate_alias_statement(AliasStatement as) {
@@ -502,9 +561,29 @@ public class GenerateFunctions {
 			}
 			final int i = addProcTableEntry(left, expression_num, get_args_types(args, gf, cctx), gf);
 			final List<InstructionArgument> l = new ArrayList<InstructionArgument>();
-			l.add(new ProcIA(i, gf));
-			l.addAll(simplify_args(args, gf, cctx));
-			add_i(gf, InstructionName.CONSTRUCT, l, cctx);
+			final ProcIA procIA = new ProcIA(i, gf);
+			l.add(procIA);
+			final List<InstructionArgument> args1 = simplify_args(args, gf, cctx);
+			l.addAll(args1);
+			final int instruction_number = add_i(gf, InstructionName.CONSTRUCT, l, cctx);
+
+			{
+				final DeduceConstructStatement dcs = new DeduceConstructStatement(gf, aConstructStatement);
+
+				dcs.target = expression_num;
+				if (expression_num instanceof  IntegerIA || expression_num instanceof IdentIA && ((IdentIA) expression_num).getEntry().backlink == null) {
+				} else {
+					dcs.toEvaluateTarget = true;
+				}
+
+				dcs.call = procIA;
+				dcs.args = args1;
+
+				gf.addElement(aConstructStatement, dcs);
+
+				final Instruction instruction = gf.getInstruction(instruction_number);
+				instruction.deduceElement = dcs;
+			}
 		}
 	}
 
@@ -745,8 +824,46 @@ public class GenerateFunctions {
 			}
 		}
 
+		public void dot(@NotNull BaseGeneratedFunction gf, DotExpression left, IExpression right, Context cctx) {
+			final InstructionArgument simple_left = simplify_expression(left, gf, cctx);
+			final InstructionArgument simple_right = simplify_expression(right, gf, cctx);
+
+/*
+			IExpression left_dot_left_ = left.getLeft();
+			assert left_dot_left_ instanceof IdentExpression;
+			IdentExpression left_dot_left = (IdentExpression) left_dot_left_;
+
+			final InstructionArgument vte_left = gf.vte_lookup(left_dot_left.getText());
+
+			IExpression left_dot_right_ = left.getRight();
+			assert left_dot_right_ instanceof IdentExpression;
+			IdentExpression left_dot_right = (IdentExpression) left_dot_right_;
+
+			final int ident_left;
+			final int ident_lright;
+
+			if (vte_left != null) {
+				ident_lright = gf.addIdentTableEntry(left_dot_right, cctx);
+
+				gf.getIdentTableEntry(ident_lright).setBacklink(vte_left);
+			} else {
+				ident_left = gf.addIdentTableEntry(left_dot_left, cctx);
+				ident_lright = gf.addIdentTableEntry(left_dot_right, cctx);
+
+				gf.getIdentTableEntry(ident_lright).setBacklink(new IdentIA(ident_left, gf));
+			}
+
+			final int ident_right = gf.addIdentTableEntry(right, cctx);
+			final int inst = add_i(gf, InstructionName.AGN, List_of(new IdentIA(ident_lright, gf), new IdentIA(ident_right, gf)), cctx);
+*/
+
+			final int inst2 = add_i(gf, InstructionName.AGN, List_of(simple_left, simple_right), cctx);
+
+			int y=2;
+		}
+
 		public void ident(@NotNull BaseGeneratedFunction gf, IdentExpression left, IdentExpression right, Context cctx) {
-			final InstructionArgument vte_left = gf.vte_lookup(left.getText());
+			final @org.jetbrains.annotations.Nullable InstructionArgument vte_left = gf.vte_lookup(left.getText());
 			final int ident_left;
 			int ident_right;
 			InstructionArgument some_left;
@@ -763,11 +880,13 @@ public class GenerateFunctions {
 			} else {
 				inst = add_i(gf, InstructionName.AGN, List_of(some_left, vte_right), cctx);
 
-				// TODO this will break one day
-				assert vte_left != null;
-				final VariableTableEntry vte = gf.getVarTableEntry(to_int(vte_left));
-				// ^^
-				vte.addPotentialType(inst, gf.getVarTableEntry(to_int(vte_right)).type);
+				if (vte_left != null) {
+					final VariableTableEntry vte = gf.getVarTableEntry(to_int(vte_left));
+					// ^^
+					vte.addPotentialType(inst, gf.getVarTableEntry(to_int(vte_right)).type);
+				} else if (some_left instanceof IdentIA) {
+//					((IdentIA) some_left).getEntry().addPotentialType(inst, unknown_type);
+				}
 			}
 		}
 
@@ -840,7 +959,11 @@ public class GenerateFunctions {
 			gia.procedure_call(aStatementWrapper, gf, bbe, (ProcedureCallExpression) right1, cctx);
 			break;
 		case IDENT:
-			gia.ident(gf, (IdentExpression) bbe.getLeft(), (IdentExpression) right1, cctx);
+			if (bbe.getLeft() instanceof IdentExpression) {
+				gia.ident(gf, (IdentExpression) bbe.getLeft(), (IdentExpression) right1, cctx);
+			} else if (bbe.getLeft() instanceof DotExpression) {
+				gia.dot(gf, (DotExpression) bbe.getLeft(), (IdentExpression) right1, cctx);
+			}
 			break;
 		case NUMERIC:
 			gia.numeric(gf, bbe.getLeft(), (NumericExpression) right1, cctx);
@@ -1008,6 +1131,11 @@ public class GenerateFunctions {
 	public int addProcTableEntry(final IExpression expression, final InstructionArgument expression_num, final List<TypeTableEntry> args, final BaseGeneratedFunction gf) {
 		final ProcTableEntry pte = new ProcTableEntry(gf.prte_list.size(), expression, expression_num, args);
 		gf.prte_list.add(pte);
+		if (expression_num instanceof IdentIA) {
+			final IdentIA identIA = (IdentIA) expression_num;
+			if (identIA.getEntry().getCallablePTE() == null)
+				identIA.getEntry().setCallablePTE(pte);
+		}
 		return pte.index;
 	}
 
@@ -1122,9 +1250,19 @@ public class GenerateFunctions {
 					return new IntegerIA(tmp, gf);
 				}
 			}
+		case SUBEXPRESSION:
+			{
+				final SubExpression subexpression = (SubExpression) expression;
+				final IExpression exp = subexpression.getExpression();
+
+				final InstructionArgument ia = simplify_expression(exp, gf, cctx);
+				return ia;
+			}
 		case LT_: case GT: case GE:
 		case ADDITION: case MULTIPLY: // TODO all BinaryExpressions go here
+		case SUBTRACTION: case DIVIDE:
 		case NOT_EQUAL: case EQUAL:
+		case MODULO:
 			{
 				final BasicBinaryExpression bbe = (BasicBinaryExpression) expression;
 				final IExpression left = bbe.getLeft();
@@ -1136,9 +1274,12 @@ public class GenerateFunctions {
 						left_instruction = simplify_expression(left, gf, cctx);
 					} else {
 						// a constant
-						assert IExpression.isConstant(right);
-						final int left_constant_num = addConstantTableEntry2(null, left, left.getType(), gf);
-						left_instruction = new ConstTableIA(left_constant_num, gf);
+						if (IExpression.isConstant(left)) {
+							final int left_constant_num = addConstantTableEntry2(null, left, left.getType(), gf);
+							left_instruction = new ConstTableIA(left_constant_num, gf);
+						} else {
+							left_instruction = simplify_expression(left, gf, cctx);
+						}
 					}
 				} else {
 					// create a tmp var
@@ -1149,9 +1290,12 @@ public class GenerateFunctions {
 						right_instruction = simplify_expression(right, gf, cctx);
 					} else {
 						// a constant
-						assert IExpression.isConstant(right);
-						final int right_constant_num = addConstantTableEntry2(null, right, right.getType(), gf);
-						right_instruction = new ConstTableIA(right_constant_num, gf);
+						if (IExpression.isConstant(right)) {
+							final int right_constant_num = addConstantTableEntry2(null, right, right.getType(), gf);
+							right_instruction = new ConstTableIA(right_constant_num, gf);
+						} else {
+							right_instruction = simplify_expression(right, gf, cctx);
+						}
 					}
 				} else {
 					// create a tmp var
@@ -1455,7 +1599,8 @@ public class GenerateFunctions {
 			theName = null;
 			num = gf.nextTemp();
 		}
-		final VariableTableEntry vte = new VariableTableEntry(gf.vte_list.size(), VariableTableType.TEMP, theName, tte, el);
+		final int vte_index = gf.addVariableTableEntry(theName, VariableTableType.TEMP, tte, el);
+		final @NotNull VariableTableEntry vte = gf.getVarTableEntry(vte_index);
 		vte.tempNum = num;
 		gf.vte_list.add(vte);
 		return vte.getIndex();

@@ -27,7 +27,7 @@ import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.contexts.ModuleContext;
 import tripleo.elijah.entrypoints.EntryPoint;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
 
 import java.util.ArrayList;
@@ -50,10 +50,10 @@ public class OS_Module implements OS_Element, OS_Container {
 	public @NotNull List<EntryPoint> entryPoints = new ArrayList<EntryPoint>();
 	private IndexingStatement indexingStatement;
 
-	public @org.jetbrains.annotations.Nullable OS_Element findClass(final String className) {
+	public @org.jetbrains.annotations.Nullable OS_Element findClass(final String aClassName) {
 		for (final ModuleItem item : items) {
 			if (item instanceof ClassStatement) {
-				if (((ClassStatement) item).getName().equals(className))
+				if (((ClassStatement) item).getName().equals(aClassName))
 					return item;
 			}
 		}
@@ -132,7 +132,7 @@ public class OS_Module implements OS_Element, OS_Container {
 //	}
 
 	@Override
-	public void visitGen(final @NotNull ICodeGen visit) {
+	public void visitGen(final @NotNull ElElementVisitor visit) {
 		visit.addModule(this); // visitModule
 	}
 

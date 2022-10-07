@@ -13,7 +13,8 @@ import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.impl.StdErrSink;
+import tripleo.elijah.factory.comp.CompilationFactory;
 
 import java.io.File;
 import java.util.List;
@@ -32,11 +33,11 @@ public class FindBothSourceFiles {
 	 * Test method for {@link tripleo.elijah.Main#parseFile(java.lang.String, java.io.InputStream)}.
 	 */
 	@Test
-	public final void compilerShouldFindBothParseFiles() {
+	public final void compilerShouldFindBothParseFiles() throws Exception {
 		final List<String> args = List_of("test/demo-el-normal", "test/demo-el-normal/main2", "-sE");
 //		ErrSink eee = JMock.of(ErrSink.class);
 		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final Compilation c = CompilationFactory.mkCompilation(eee, new IO());
 
 		c.feedCmdLine(args);
 		
