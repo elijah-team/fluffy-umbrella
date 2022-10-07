@@ -70,7 +70,7 @@ public class TypeOfTypeNameTest {
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
 		TypeName tn = t.resolve(ctx, deduceTypes2);
-//		;//System.out.println(tn);
+//		tripleo.elijah.util.Stupidity.println_out(tn);
 		verify(ctx, mod, c);
 		Assert.assertEquals(typeNameString, tn.toString());
 	}
@@ -123,7 +123,7 @@ public class TypeOfTypeNameTest {
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
 		TypeName tn = t.resolve(ctx, deduceTypes2);
-//		;//System.out.println(tn);
+//		tripleo.elijah.util.Stupidity.println_out(tn);
 		verify(ctx, mod, c);
 		Assert.assertEquals(typeNameString, tn.toString());
 	}
@@ -186,7 +186,7 @@ public class TypeOfTypeNameTest {
 //		// VERIFY EXPECTATIONS
 //		//
 //		TypeName tn = t.resolve(ctx);
-////		;//System.out.println(tn);
+////		tripleo.elijah.util.Stupidity.println_out(tn);
 //		verify(ctx);
 //		Assert.assertEquals(typeNameString, tn.toString());
 //	}
@@ -263,7 +263,7 @@ public class TypeOfTypeNameTest {
 		// VERIFY EXPECTATIONS
 		//
 		TypeName tn = t.resolve(ctx, deduceTypes2);
-//		;//System.out.println(tn);
+//		tripleo.elijah.util.Stupidity.println_out(tn);
 		verify(ctx);
 		Assert.assertEquals(typeNameString, tn.toString());
 	}

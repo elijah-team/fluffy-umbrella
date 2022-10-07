@@ -142,7 +142,7 @@ public class Compilation {
 					}
 				}
 
-				//System.err.println("130 GEN_LANG: "+cis.get(0).genLang());
+			tripleo.elijah.util.Stupidity.println_err("130 GEN_LANG: "+cis.get(0).genLang());
 				findStdLib("c"); // TODO find a better place for this
 
 				for (final CompilerInstructions ci : cis) {
@@ -169,7 +169,7 @@ public class Compilation {
 					writeLogs(silent, pipelineLogic.elLogs);
 				}
 			} else {
-				//System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
+			tripleo.elijah.util.Stupidity.println_err("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
 			}
 		} catch (final Exception e) {
 			errSink.exception(e);
@@ -271,7 +271,7 @@ public class Compilation {
 	}
 
 	private CompilerInstructions parseEzFile(final File f, final String file_name, final ErrSink errSink) throws Exception {
-		;//System.out.println((String.format("   %s", f.getAbsolutePath())));
+		tripleo.elijah.util.Stupidity.println_out((String.format("   %s", f.getAbsolutePath())));
 		if (!f.exists()) {
 			errSink.reportError(
 					"File doesn't exist " + f.getAbsolutePath());
@@ -281,7 +281,7 @@ public class Compilation {
 		final CompilerInstructions m = realParseEzFile(file_name, io.readFile(f), f);
 		{
 			String prelude = m.genLang();
-			//System.err.println("230 " + prelude);
+		tripleo.elijah.util.Stupidity.println_err("230 " + prelude);
 			if (prelude == null) prelude = "c"; // TODO should be java for eljc
 		}
 		return m;
@@ -292,7 +292,7 @@ public class Compilation {
 								  final ErrSink errSink,
 								  final boolean do_out,
 								  LibraryStatementPart lsp) throws Exception {
-		;//System.out.println((String.format("   %s", f.getAbsolutePath())));
+		tripleo.elijah.util.Stupidity.println_out((String.format("   %s", f.getAbsolutePath())));
 		if (f.exists()) {
 			final OS_Module m = realParseElijjahFile(file_name, f, do_out);
 			m.setLsp(lsp);
@@ -315,7 +315,7 @@ public class Compilation {
 			s.close();
 			return R;
 		} catch (final ANTLRException e) {
-			//System.err.println(("parser exception: " + e));
+		tripleo.elijah.util.Stupidity.println_err(("parser exception: " + e));
 			e.printStackTrace(System.err);
 			s.close();
 			return null;
@@ -334,7 +334,7 @@ public class Compilation {
 			s.close();
 			return R;
 		} catch (final ANTLRException e) {
-			//System.err.println(("parser exception: " + e));
+		tripleo.elijah.util.Stupidity.println_err(("parser exception: " + e));
 			e.printStackTrace(System.err);
 			s.close();
 			return null;

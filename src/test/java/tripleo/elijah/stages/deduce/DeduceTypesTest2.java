@@ -62,7 +62,8 @@ public class DeduceTypesTest2 {
 		DeduceTypes2 d = dp.deduceModule(mod, dp.generatedClasses, verbosity1);
 //		final DeduceTypes d = new DeduceTypes(mod);
 		final GenType x = DeduceLookupUtils.deduceExpression(d, x1, fc);
-		;//System.out.println(x);
+		;
+	tripleo.elijah.util.Stupidity.println_out(""+x);
 //		Assert.assertEquals(new OS_Type(BuiltInTypes.SystemInteger).getBType(), x.getBType());
 //		final RegularTypeName tn = new RegularTypeName();
 		final VariableTypeName tn = new VariableTypeName();

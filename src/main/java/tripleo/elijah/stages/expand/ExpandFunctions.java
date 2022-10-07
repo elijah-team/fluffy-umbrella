@@ -59,10 +59,10 @@ public class ExpandFunctions {
 //				System.out.print("\n}\n\n");
 			} else if (element instanceof ClassStatement) {
 //				((ClassStatement) element).visitGen(this);
-				//System.err.println("91 " + element.getClass().getName());
+			tripleo.elijah.util.Stupidity.println_err("91 " + element.getClass().getName());
 				//addClassItem(element, parent); // TODO infintie recursion
 			} else {
-				//System.err.println("[ExpandFunctions#addClassItem] "+element.getClass().getName());
+			tripleo.elijah.util.Stupidity.println_err("[ExpandFunctions#addClassItem] "+element.getClass().getName());
 			}
 		}
 	}
@@ -77,7 +77,7 @@ public class ExpandFunctions {
 			}
 		} else if (element instanceof ProcedureCallExpression) {
 			final ProcedureCallExpression pce = (ProcedureCallExpression) element;
-			;//System.out.println(String.format("%s(%s);", pce./*target*/getLeft(), pce.exprList()));
+			tripleo.elijah.util.Stupidity.println_out(String.format("%s(%s);", pce./*target*/getLeft(), pce.exprList()));
 		} else if (element instanceof Loop) {
 			addFunctionItem_Loop((Loop) element, parent, fc);
 		}  else if (element instanceof StatementWrapper) {
@@ -90,7 +90,7 @@ public class ExpandFunctions {
 					final FunctionPrelimInstruction fi3 = fc.assign(fi, /*fi2*/right_side);
 //					fi2.setInstructionNumber(-1); // why introduce in the first place?
 				} else if (right_side.getKind() == ExpressionKind.PROCEDURE_CALL) {
-					//System.err.println("2002 here"); // TODO implement me
+				tripleo.elijah.util.Stupidity.println_err("2002 here"); // TODO implement me
 				} else
 					throw new NotImplementedException();
 			} else if (expr.getKind() == ExpressionKind.PROCEDURE_CALL) {
@@ -106,7 +106,7 @@ public class ExpandFunctions {
 			//
 //			parent._a.getContext().nameTable().add((OS_Element) element, ((ClassStatement) element).getName(), new OS_Type((ClassStatement) element));
 		} else {
-			;//System.out.println("91 "+element);
+			tripleo.elijah.util.Stupidity.println_out("91 "+element);
 			throw new NotImplementedException();
 		}
 	}
@@ -136,21 +136,21 @@ public class ExpandFunctions {
 //			if (loop.getToPart() instanceof NumericExpression) {
 //				final NumericExpression toPart = (NumericExpression)loop.getToPart();
 //
-//				;//System.out.println(String.format("{for (int %s=%d;%s<=%d;%s++){\n\t",
+//				tripleo.elijah.util.Stupidity.println_out(String.format("{for (int %s=%d;%s<=%d;%s++){\n\t",
 //						varname, fromPart.getValue(),
 //						varname, toPart.getValue(),  varname));
 //			} else if (loop.getToPart() instanceof IdentExpression) {
 //				final IdentExpression toPart = (IdentExpression)loop.getToPart();
 //
-//				;//System.out.println(String.format("{for (int %s=%d;%s<=%s;%s++){\n\t",
+//				tripleo.elijah.util.Stupidity.println_out(String.format("{for (int %s=%d;%s<=%s;%s++){\n\t",
 //						varname, fromPart.getValue(),
 //						varname, "vv"+toPart.getText(),  varname));
 //
 //			}
 //			for (StatementItem item : loop.getItems()) {
-//				;//System.out.println("\t"+item);
+//				tripleo.elijah.util.Stupidity.println_out("\t"+item);
 //			}
-//			;//System.out.println("}");
+//			tripleo.elijah.util.Stupidity.println_out("}");
 		} else if (loop.getType() == LoopTypes.EXPR_TYPE) {
 			addFunctionItem_Loop_EXPR_TYPE(loop, parent, fc);
 		} else throw new NotImplementedException();
@@ -170,7 +170,7 @@ public class ExpandFunctions {
 //					ie(loop.getIterName()),
 //					ie(loop.getIterName()));
 		} else {
-			;//System.out.println("loop.getIterName() == null");
+			tripleo.elijah.util.Stupidity.println_out("loop.getIterName() == null");
 //				String varname="vt"+loop.getIterName();
 		}
 		final ToExpression toex;
@@ -187,18 +187,18 @@ public class ExpandFunctions {
 			//
 //			loop.getContext().add((OS_Element) toex.getLeft(), ie(loop.getIterName()), toex.getLeft().getType());
 		} else if (loop.getFromPart() == null) {
-			;//System.out.println("88 loop.getFromPart() == null");
+			tripleo.elijah.util.Stupidity.println_out("88 loop.getFromPart() == null");
 		} else
 			throw new NotImplementedException();
 //			if (loop.getToPart() instanceof NumericExpression) {
 //				String varname="vt0_TODO";
 //				final NumericExpression toPart = (NumericExpression)loop.getToPart();
 //
-//				;//System.out.println(String.format("{for (int %s=%d;%s<=%d;%s++){\n\t",
+//				tripleo.elijah.util.Stupidity.println_out(String.format("{for (int %s=%d;%s<=%d;%s++){\n\t",
 //						varname, 0,
 //						varname, toPart.getValue(),  varname));
 				for (final StatementItem item : loop.getItems()) {
-					;//System.out.println("\t"+item);
+					tripleo.elijah.util.Stupidity.println_out("\t"+item);
 					if (item instanceof VariableSequence) {
 //						fd._a.setCode(nextFunctionCode());
 //						parent._a.getContext().add(element, null);
@@ -214,12 +214,12 @@ public class ExpandFunctions {
 					}
 
 				}
-//				;//System.out.println("}");
+//				tripleo.elijah.util.Stupidity.println_out("}");
 //			} else if (loop.getToPart() instanceof DotExpression) {
-//				;//System.out.println("94 "+loop.getToPart().getClass().getName());
+//				tripleo.elijah.util.Stupidity.println_out("94 "+loop.getToPart().getClass().getName());
 //				NotImplementedException.raise();
 //			} else {
-//				;//System.out.println("95 "+loop.getToPart().getClass().getName());
+//				tripleo.elijah.util.Stupidity.println_out("95 "+loop.getToPart().getClass().getName());
 //				throw new NotImplementedException();
 //			}
 	}
@@ -267,7 +267,7 @@ public class ExpandFunctions {
 					} else if (iv instanceof IdentExpression) {
 						final LookupResultList lrl = parent.getContext().lookup(((IdentExpression) iv).getText());
 						for (final LookupResult n: lrl.results()) {
-							;//System.out.println("99 "+n);
+							tripleo.elijah.util.Stupidity.println_out("99 "+n);
 						}
 					} else if (iv instanceof ProcedureCallExpression) {
 						final ProcedureCallExpression pce = (ProcedureCallExpression) iv;
@@ -288,7 +288,7 @@ public class ExpandFunctions {
 //				} else{
 //					theType = ii.typeName().getName();
 //				}
-			;//System.out.println(String.format("[#addFunctionItem_deduceVariableStatement] %s %s;", vs.getName(), dtype));
+			tripleo.elijah.util.Stupidity.println_out(String.format("[#addFunctionItem_deduceVariableStatement] %s %s;", vs.getName(), dtype));
 
 		}
 	}
@@ -298,18 +298,18 @@ public class ExpandFunctions {
 			final ProcedureCallExpression pce, @NotNull final IdentExpression left, final FunctionContext fc) {
 		final String text = left.getText();
 		final LookupResultList lrl = parent.getContext().lookup(text);
-		;//System.out.println("98 "+/*n*/iv);
+		tripleo.elijah.util.Stupidity.println_out("98 "+/*n*/iv);
 		if (lrl.results().size() == 0 )
-			//System.err.println("596 no results for "+text);
+		tripleo.elijah.util.Stupidity.println_err("596 no results for "+text);
 		for (final LookupResult n: lrl.results()) {
-			;//System.out.println("597 "+n);
+			tripleo.elijah.util.Stupidity.println_out("597 "+n);
 //			Helpers.printXML(iv, new TabbedOutputStream(System.out));
 		}
 		final Collection<IExpression> expressions = pce.getArgs().expressions();
 		final List<FunctionPrelimInstruction> q = expressions.stream()
 				.map(n -> expandExpression(n, fc))
 				.collect(Collectors.toList());
-		;//System.out.println("590 "+q);
+		tripleo.elijah.util.Stupidity.println_out("590 "+q);
 		NotImplementedException.raise();
 	}
 
@@ -340,7 +340,7 @@ public class ExpandFunctions {
 //						return new OS_Type(typeName);
 					}
 				}
-				//System.err.println("89 "+n);//element.getClass().getName());
+			tripleo.elijah.util.Stupidity.println_err("89 "+n);//element.getClass().getName());
 				errSink.reportError("type not specified: "+ getElementName(element));
 				return null;
 			}
@@ -398,7 +398,7 @@ public class ExpandFunctions {
 	}
 
 	public void expand() {
-		;//System.out.println("-- [ExpandFunctions#expand] ----------------------------");
+		tripleo.elijah.util.Stupidity.println_out("-- [ExpandFunctions#expand] ----------------------------");
 		for (final ModuleItem element : module.items) {
 			addModuleItem(element);
 		}

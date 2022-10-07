@@ -162,16 +162,17 @@ public class TestGenFunction {
 
 				GeneratedFunction gf = aGeneratedFunctions.iterator().next();
 
-				;//System.out.println("main\n====");
+				;
+			tripleo.elijah.util.Stupidity.println_out("main\n====");
 				for (int i = 0; i < gf.vte_list.size(); i++) {
 					final VariableTableEntry vte = gf.getVarTableEntry(i);
-					;//System.out.println(String.format("8007 %s %s %s", vte.getName(), vte.type, vte.potentialTypes()));
+					tripleo.elijah.util.Stupidity.println_out(String.format("8007 %s %s %s", vte.getName(), vte.type, vte.potentialTypes()));
 					if (vte.type.getAttached() != null) {
 						Assert.assertNotEquals(OS_Type.Type.BUILT_IN, vte.type.getAttached().getType());
 						Assert.assertNotEquals(OS_Type.Type.USER, vte.type.getAttached().getType());
 					}
 				}
-				;//System.out.println();
+				tripleo.elijah.util.Stupidity.println_out("");
 
 				ran_hooks.add(this);
 			}
@@ -190,16 +191,16 @@ public class TestGenFunction {
 
 				GeneratedFunction gf = aGeneratedFunctions.iterator().next();
 
-				;//System.out.println("factorial\n=========");
+				tripleo.elijah.util.Stupidity.println_out("factorial\n=========");
 				for (int i = 0; i < gf.vte_list.size(); i++) {
 					final VariableTableEntry vte = gf.getVarTableEntry(i);
-					;//System.out.println(String.format("8008 %s %s %s", vte.getName(), vte.type, vte.potentialTypes()));
+					tripleo.elijah.util.Stupidity.println_out(String.format("8008 %s %s %s", vte.getName(), vte.type, vte.potentialTypes()));
 					if (vte.type.getAttached() != null) {
 						Assert.assertNotEquals(OS_Type.Type.BUILT_IN, vte.type.getAttached().getType());
 						Assert.assertNotEquals(OS_Type.Type.USER, vte.type.getAttached().getType());
 					}
 				}
-				;//System.out.println();
+				tripleo.elijah.util.Stupidity.println_out("");
 
 				ran_hooks.add(this);
 			}
@@ -265,7 +266,7 @@ public class TestGenFunction {
 			if (gn instanceof GeneratedFunction) {
 				GeneratedFunction gf = (GeneratedFunction) gn;
 				for (final Instruction instruction : gf.instructions()) {
-					;//System.out.println("8100 " + instruction);
+					tripleo.elijah.util.Stupidity.println_out("8100 " + instruction);
 				}
 			}
 		}
@@ -277,11 +278,11 @@ public class TestGenFunction {
 		for (final GeneratedNode gn : lgf) {
 			if (gn instanceof GeneratedFunction) {
 				GeneratedFunction gf = (GeneratedFunction) gn;
-				;//System.out.println("----------------------------------------------------------");
-				;//System.out.println(gf.name());
-				;//System.out.println("----------------------------------------------------------");
+				tripleo.elijah.util.Stupidity.println_out("----------------------------------------------------------");
+				tripleo.elijah.util.Stupidity.println_out(gf.name());
+				tripleo.elijah.util.Stupidity.println_out("----------------------------------------------------------");
 				GeneratedFunction.printTables(gf);
-//				;//System.out.println("----------------------------------------------------------");
+//				tripleo.elijah.util.Stupidity.println_out("----------------------------------------------------------");
 			}
 		}
 
@@ -295,7 +296,7 @@ public class TestGenFunction {
 			if (generatedNode instanceof GeneratedClass) {
 				ggc.generate_class((GeneratedClass) generatedNode, gr);
 			} else {
-				;//System.out.println(lgc.getClass().getName());
+				tripleo.elijah.util.Stupidity.println_out(lgc.getClass().getName());
 			}
 		}
 	}

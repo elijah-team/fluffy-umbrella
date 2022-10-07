@@ -50,7 +50,7 @@ public class FloatExpression implements IExpression {
 	@Override
 	public void setKind(final ExpressionKind aType) {
 		// log and ignore
-		//System.err.println("Trying to set ExpressionType of FloatExpression to "+aType.toString());
+	tripleo.elijah.util.Stupidity.println_err("Trying to set ExpressionType of FloatExpression to "+aType.toString());
 	}
 	
 	@Override

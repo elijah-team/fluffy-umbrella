@@ -103,7 +103,7 @@ public class GenType {
 		case USER_CLASS:
 			resolved = aType;
 		default:
-			//System.err.println("48 Unknown in set: "+aType);
+		tripleo.elijah.util.Stupidity.println_err("48 Unknown in set: "+aType);
 		}
 	}
 

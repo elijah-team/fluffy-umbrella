@@ -15,7 +15,8 @@ public class QualidentToDotExpresstionTest {
         q.append(tripleo.elijah.util.Helpers.string_to_ident("b"));
         q.append(tripleo.elijah.util.Helpers.string_to_ident("c"));
         final IExpression e = Helpers.qualidentToDotExpression2(q);
-        ;//System.out.println(e);
+        ;
+       tripleo.elijah.util.Stupidity.println_out(String.valueOf(e));
         Assert.assertEquals("a.b.c", e.toString());
     }
 }

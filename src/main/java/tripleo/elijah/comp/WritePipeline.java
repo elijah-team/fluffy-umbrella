@@ -85,7 +85,7 @@ public class WritePipeline implements PipelineMember {
 			path.getParent().toFile().mkdirs();
 
 			// TODO functionality
-			;//System.out.println("201 Writing path: "+path);
+			tripleo.elijah.util.Stupidity.println_out("201 Writing path: "+path);
 			CharSink x = c.getIO().openWrite(path);
 			for (Buffer buffer : entry.getValue()) {
 				x.accept(buffer.getText());

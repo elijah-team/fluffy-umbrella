@@ -60,7 +60,7 @@ public class WorkManagerTest {
 
 		workManager.drain();
 
-		//System.err.println(sink);
+	tripleo.elijah.util.Stupidity.println_err(sink.toString());
 	}
 }
 

@@ -61,7 +61,7 @@ public class Out {
 	}
 
 	public static void println(final String s) {
-		;//System.out.println(s);
+		tripleo.elijah.util.Stupidity.println_out(s);
 	}
 
 	private final ParserClosure pc;

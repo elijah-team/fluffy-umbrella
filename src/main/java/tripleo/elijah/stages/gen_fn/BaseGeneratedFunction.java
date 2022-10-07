@@ -14,10 +14,7 @@ import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
-import tripleo.elijah.stages.deduce.DeduceElement;
-import tripleo.elijah.stages.deduce.DeduceTypes2;
-import tripleo.elijah.stages.deduce.FoundElement;
-import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.deduce.*;
 import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.Holder;
@@ -49,27 +46,28 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	private GeneratedNode genClass;
 	private GeneratedContainerNC parent;
 	private DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
+	private DeferredObject<GeneratedClass, Void, Void> _gcP = new DeferredObject<>();
 
 	public static void printTables(GeneratedFunction gf) {
-		;//System.out.println("VariableTable ");
+		tripleo.elijah.util.Stupidity.println_out("VariableTable ");
 		for (VariableTableEntry variableTableEntry : gf.vte_list) {
-			;//System.out.println("\t"+variableTableEntry);
+			tripleo.elijah.util.Stupidity.println_out("\t"+variableTableEntry);
 		}
-		;//System.out.println("ConstantTable ");
+		tripleo.elijah.util.Stupidity.println_out("ConstantTable ");
 		for (ConstantTableEntry constantTableEntry : gf.cte_list) {
-			;//System.out.println("\t"+constantTableEntry);
+			tripleo.elijah.util.Stupidity.println_out("\t"+constantTableEntry);
 		}
-		;//System.out.println("ProcTable     ");
+		tripleo.elijah.util.Stupidity.println_out("ProcTable     ");
 		for (ProcTableEntry procTableEntry : gf.prte_list) {
-			;//System.out.println("\t"+procTableEntry);
+			tripleo.elijah.util.Stupidity.println_out("\t"+procTableEntry);
 		}
-		;//System.out.println("TypeTable     ");
+		tripleo.elijah.util.Stupidity.println_out("TypeTable     ");
 		for (TypeTableEntry typeTableEntry : gf.tte_list) {
-			;//System.out.println("\t"+typeTableEntry);
+			tripleo.elijah.util.Stupidity.println_out("\t"+typeTableEntry);
 		}
-		;//System.out.println("IdentTable    ");
+		tripleo.elijah.util.Stupidity.println_out("IdentTable    ");
 		for (IdentTableEntry identTableEntry : gf.idte_list) {
-			;//System.out.println("\t"+identTableEntry);
+			tripleo.elijah.util.Stupidity.println_out("\t"+identTableEntry);
 		}
 	}
 
@@ -459,13 +457,17 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 					holder.set(result);
 				}
 			});
-			//System.err.println(String.format("Trying to resolve function twice 1) %s 2) %s", holder.get().asString(), aType.asString()));
+		tripleo.elijah.util.Stupidity.println_err(String.format("Trying to resolve function twice 1) %s 2) %s", holder.get().asString(), aType.asString()));
 		}
 	}
 
 	Map<OS_Element, DeduceElement> elements = new HashMap<OS_Element, DeduceElement>();
 	public void addElement(final OS_Element aElement, final DeduceElement aDeduceElement) {
 		elements.put(aElement, aDeduceElement);
+	}
+
+	public void onGenClass(OnGenClass aOnGenClass) {
+		_gcP.then(aOnGenClass::accept);
 	}
 }
 

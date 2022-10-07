@@ -52,7 +52,7 @@ public class DeduceElementIdent {
 				}
 			});
 		} else
-			;//System.err.println("5454 Should never happen. gf is not deduced.");
+			tripleo.elijah.util.Stupidity.println_err("5454 Should never happen. gf is not deduced.");
 		return holder.get();
 	}
 }

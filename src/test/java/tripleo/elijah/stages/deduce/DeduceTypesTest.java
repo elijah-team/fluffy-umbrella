@@ -69,7 +69,8 @@ public class DeduceTypesTest {
 		DeduceTypes2 d = dp.deduceModule(mod, dp.generatedClasses, verbosity);
 //		final DeduceTypes d = new DeduceTypes(mod);
 		this.x = DeduceLookupUtils.deduceExpression(d, x1, fc);
-		;//System.out.println(this.x);
+		;
+	tripleo.elijah.util.Stupidity.println_out(String.valueOf(this.x));
 	}
 	/** TODO This test fails beacause we are comparing a BUILT_IN vs a USER OS_Type.
 	 *   It fails because Integer is an interface and not a BUILT_IN

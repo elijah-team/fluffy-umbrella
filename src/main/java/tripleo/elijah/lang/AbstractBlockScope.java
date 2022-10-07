@@ -21,7 +21,7 @@ public abstract class AbstractBlockScope implements Scope {
 		if (aItem instanceof FunctionItem)
 			_element.add((OS_Element) aItem);
 		else {
-			//System.err.println(String.format("adding false FunctionItem %s", aItem.getClass().getName()));
+		tripleo.elijah.util.Stupidity.println_err(String.format("adding false FunctionItem %s", aItem.getClass().getName()));
 		}
 	}
 

@@ -6,15 +6,13 @@
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
  * 
  */
-/**
- * Created Mar 25, 2019 at 3:00:39 PM
- *
- */
 package tripleo.elijah.comp;
 
 import tripleo.elijah.diagnostic.Diagnostic;
 
 /**
+ * Created Mar 25, 2019 at 3:00:39 PM
+ *
  * @author tripleo(sb)
  *
  */
@@ -25,20 +23,20 @@ public class StdErrSink implements ErrSink {
 	@Override
 	public void exception(final Exception e) {
 		_errorCount++;
-		//System.err.println((new StringBuilder("exception: ")).append(e)
-//				.toString());
+	tripleo.elijah.util.Stupidity.println_err((new StringBuilder("exception: ")).append(e)
+				.toString());
 		e.printStackTrace(System.err);
 	}
 
 	@Override
 	public void reportError(final String s) {
 		_errorCount++;
-		//System.err.println(String.format("ERROR: %s", s));
+	tripleo.elijah.util.Stupidity.println_err(String.format("ERROR: %s", s));
 	}
 
 	@Override
 	public void reportWarning(final String s) {
-		//System.err.println(String.format("WARNING: %s", s));
+	tripleo.elijah.util.Stupidity.println_err(String.format("WARNING: %s", s));
 	}
 
 	@Override
@@ -48,7 +46,7 @@ public class StdErrSink implements ErrSink {
 
 	@Override
 	public void info(final String message) {
-		//System.err.println(String.format("INFO: %s", message));
+	tripleo.elijah.util.Stupidity.println_err(String.format("INFO: %s", message));
 	}
 
 	@Override

@@ -1025,13 +1025,17 @@ public class DeduceTypes2 {
 
 		@Override
 		public void connect(final VariableTableEntry aVte, final String aName) {
-			final List<GeneratedContainer.VarTableEntry> vt = ((GeneratedClass) generatedConstructor.getGenClass()).varTable;
-			for (GeneratedContainer.VarTableEntry gc_vte : vt) {
-				if (gc_vte.nameToken.getText().equals(aName)) {
-					gc_vte.connect(aVte, generatedConstructor);
-					break;
+			generatedConstructor.onGenClass(new OnGenClass() {
+				public void accept(final GeneratedClass genClass) {
+					final List<GeneratedContainer.VarTableEntry> vt = genClass.varTable;
+					for (GeneratedContainer.VarTableEntry gc_vte : vt) {
+						if (gc_vte.nameToken.getText().equals(aName)) {
+							gc_vte.connect(aVte, generatedConstructor);
+							break;
+						}
+					}
 				}
-			}
+			});
 		}
 	}
 
@@ -1076,7 +1080,7 @@ public class DeduceTypes2 {
 								if (identIA2 != null) {
 									@NotNull IdentTableEntry idte2 = identIA.getEntry();
 									@Nullable ProcTableEntry procTableEntry = idte2.getCallablePTE();
-									if (procTableEntry == pte) //System.err.println("940 procTableEntry == pte");
+									if (procTableEntry == pte)tripleo.elijah.util.Stupidity.println_err("940 procTableEntry == pte");
 									if (procTableEntry != null) {
 										// TODO doesn't seem like we need this
 										procTableEntry.onFunctionInvocation(new DoneCallback<FunctionInvocation>() {
@@ -1093,7 +1097,7 @@ public class DeduceTypes2 {
 													if (functionInvocation.getClassInvocation() == fi.getClassInvocation() &&
 														functionInvocation.getFunction() == fi.getFunction() &&
 														functionInvocation.pte == fi.pte) {
-														;//System.err.println("955 It seems like we are generating the same thing...");
+														tripleo.elijah.util.Stupidity.println_err("955 It seems like we are generating the same thing...");
 													} else {
 														int ok=2;
 													}
@@ -1471,7 +1475,7 @@ public class DeduceTypes2 {
 			try {
 				cte.getTypeTableEntry().setAttached(resolve_type(new OS_Type(aBuiltInType), aContext));
 			} catch (ResolveError resolveError) {
-				;//System.out.println("117 Can't be here");
+				tripleo.elijah.util.Stupidity.println_out("117 Can't be here");
 //				resolveError.printStackTrace(); // TODO print diagnostic
 			}
 		}
@@ -1679,7 +1683,7 @@ public class DeduceTypes2 {
 										cpte.typePromise().then(new DoneCallback<GenType>() {
 											@Override
 											public void onDone(@NotNull GenType result) {
-												;//System.out.println("1483 "+result.resolved+" "+result.node);
+												tripleo.elijah.util.Stupidity.println_out("1483 "+result.resolved+" "+result.node);
 											}
 										});
 									}
@@ -1728,7 +1732,7 @@ public class DeduceTypes2 {
 					final ClassStatement cs = aType.getClassOf();
 					if (aEntry.constructable_pte != null) {
 						int yyy=3;
-						;//System.out.println("use_user_class: "+cs);
+						tripleo.elijah.util.Stupidity.println_out("use_user_class: "+cs);
 					}
 				}
 
@@ -2379,7 +2383,7 @@ public class DeduceTypes2 {
 
 	void found_element_for_ite(BaseGeneratedFunction generatedFunction, @NotNull IdentTableEntry ite, @Nullable OS_Element y, Context ctx) {
 		if (y != ite.getResolvedElement())
-			;//System.err.println(String.form at("2571 Setting FoundElement for ite %s to %s when it is already %s", ite, y, ite.getResolvedElement()));
+		tripleo.elijah.util.Stupidity.println_err(String.format("2571 Setting FoundElement for ite %s to %s when it is already %s", ite, y, ite.getResolvedElement()));
 
 		@NotNull Found_Element_For_ITE fefi = new Found_Element_For_ITE(generatedFunction, ctx, LOG, errSink, new DeduceClient1(this));
 		fefi.action(ite);

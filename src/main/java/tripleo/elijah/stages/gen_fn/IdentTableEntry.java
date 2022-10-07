@@ -118,7 +118,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 			type.genType.copy(aGenType);
 		} else {
 			throw new IllegalStateException("idte-102 Attempting to set a null type");
-//			//System.err.println("idte-102 Attempting to set a null type");
+//			tripleo.elijah.util.Stupidity.println_err("idte-102 Attempting to set a null type");
 		}
 	}
 
@@ -161,7 +161,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 					holder.set(result);
 				}
 			});
-			//System.err.println(String.format("Setting constructable_pte twice 1) %s and 2) %s", holder.get(), aPte));
+			tripleo.elijah.util.Stupidity.println_err(String.format("Setting constructable_pte twice 1) %s and 2) %s", holder.get(), aPte));
 		}
 
 	}

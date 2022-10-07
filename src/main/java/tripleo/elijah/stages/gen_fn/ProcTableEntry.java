@@ -114,10 +114,10 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 			case 0:
 				throw new IllegalStateException();
 			case 1:
-				//System.err.println("136 pte not finished resolving "+this);
+			tripleo.elijah.util.Stupidity.println_err("136 pte not finished resolving "+this);
 				break;
 			case 2:
-				//System.err.println("138 Internal compiler error");
+			tripleo.elijah.util.Stupidity.println_err("138 Internal compiler error");
 				break;
 			case 3:
 				if (completeDeferred.isPending())

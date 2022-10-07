@@ -137,7 +137,7 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 					// must be unknown
 				}
 			} else {
-				//System.err.println(String.format("108 %s %s", varTableEntry.nameToken, varTableEntry.potentialTypes));
+			tripleo.elijah.util.Stupidity.println_err(String.format("108 %s %s", varTableEntry.nameToken, varTableEntry.potentialTypes));
 				if (varTableEntry.potentialTypes.size() == 1) {
 					TypeTableEntry potentialType = varTableEntry.potentialTypes.get(0);
 					if (potentialType.resolved() == null) {
@@ -178,13 +178,13 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 							Result = true;
 						} else {
 							int y=2;
-							//System.err.println("177 not a USER_CLASS "+potentialType.getAttached());
+						tripleo.elijah.util.Stupidity.println_err("177 not a USER_CLASS "+potentialType.getAttached());
 						}
 					}
 					if (potentialType.resolved() != null)
 						varTableEntry.resolve(potentialType.resolved());
 					else {
-						//System.err.println("114 Can't resolve "+varTableEntry);
+					tripleo.elijah.util.Stupidity.println_err("114 Can't resolve "+varTableEntry);
 					}
 				}
 			}

@@ -38,13 +38,13 @@ public class IntroducedVariable implements FunctionPrelimInstruction {
     public void makeIntoFunctionCall(final ExpressionList args) {
         this.args = args == null ? new ExpressionList() : args; // TODO is this really necessary?
         this.kind = Type.PROCEDURE_CALL;
-        ;//System.out.println("[#makeIntoFunctionCall] " + this + " " + args);
+        tripleo.elijah.util.Stupidity.println_out("[#makeIntoFunctionCall] " + this + " " + args);
     }
 
     public void makeIntoFunctionCall(final IntroducedExpressionList expressionList) {
         this.args2 = expressionList;// == null ? new IntroducedExpressionList() : expressionList; // TODO is this really necessary?
         this.kind = Type.PROCEDURE_CALL;
-        ;//System.out.println("[#makeIntoFunctionCall] " + this + " " + expressionList);
+        tripleo.elijah.util.Stupidity.println_out("[#makeIntoFunctionCall] " + this + " " + expressionList);
     }
 
     public enum Type {

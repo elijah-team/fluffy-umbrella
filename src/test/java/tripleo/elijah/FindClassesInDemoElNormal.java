@@ -36,7 +36,7 @@ public class FindClassesInDemoElNormal {
 
 		final List<ClassStatement> aClassList = c.findClass("Main");
 		for (final ClassStatement classStatement : aClassList) {
-			;//System.out.println(classStatement.getPackageName().getName());
+			tripleo.elijah.util.Stupidity.println_out(classStatement.getPackageName().getName());
 		}
 		Assert.assertEquals(3, aClassList.size());  // NOTE this may change. be aware
 	}

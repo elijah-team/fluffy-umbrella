@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class Helpers {
 	public static void printXML(final Object obj, @NotNull final TabbedOutputStream tos) {
-		//System.err.println("** XStream support has been disabled");
+	tripleo.elijah.util.Stupidity.println_err("** XStream support has been disabled");
 /*
 		final XStream x = new XStream();
 		//x.setMode(XStream.ID_REFERENCES);

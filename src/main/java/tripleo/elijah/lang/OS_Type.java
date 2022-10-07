@@ -77,7 +77,7 @@ public class OS_Type {
 	public ClassStatement getClassOf() {
 		if (etype != null && etype instanceof ClassStatement)
 			return (ClassStatement) etype;
-		//System.err.println("3001 "+etype+" "+toString());
+	tripleo.elijah.util.Stupidity.println_err("3001 "+etype+" "+toString());
 		throw new IllegalArgumentException();
 //		return null;
 	}
