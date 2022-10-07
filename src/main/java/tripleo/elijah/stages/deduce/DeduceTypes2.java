@@ -47,7 +47,7 @@ public class DeduceTypes2 {
 	private static final String PHASE = "DeduceTypes2";
 	private final @NotNull OS_Module module;
 	public final @NotNull DeducePhase phase;
-	final ErrSink errSink;
+	public final ErrSink errSink;
 	public final @NotNull ElLog LOG;
 	@NotNull WorkManager wm = new WorkManager();
 
@@ -1814,43 +1814,10 @@ public class DeduceTypes2 {
 	 * Sets the invocation ({@code genType#ci}) and the node for a GenType
 	 *
 	 * @param aGenType the GenType to modify. doesn't care about  nonGenericTypeName
+	 * @deprecated Use {@link tripleo.elijah.stages.gen_fn.GenType#genCIForGenType2(tripleo.elijah.stages.deduce.DeduceTypes2)} instead
 	 */
 	public void genCIForGenType2(final GenType aGenType) {
-		aGenType.genCI(aGenType.nonGenericTypeName, this, errSink, phase);
-		final IInvocation invocation = aGenType.ci;
-		if (invocation instanceof NamespaceInvocation) {
-			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
-			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
-				@Override
-				public void onDone(final GeneratedNamespace result) {
-					aGenType.node = result;
-				}
-			});
-		} else if (invocation instanceof ClassInvocation) {
-			final ClassInvocation classInvocation = (ClassInvocation) invocation;
-			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
-				@Override
-				public void onDone(final GeneratedClass result) {
-					aGenType.node = result;
-				}
-			});
-		} else {
-			if (aGenType.resolved instanceof OS_FuncExprType) {
-				final OS_FuncExprType funcExprType = (OS_FuncExprType) aGenType.resolved;
-				final @NotNull GenerateFunctions genf = getGenerateFunctions(funcExprType.getElement().getContext().module());
-				final FunctionInvocation fi = new FunctionInvocation((BaseFunctionDef) funcExprType.getElement(),
-						null,
-						null,
-						phase.generatePhase);
-				WlGenerateFunction gen = new WlGenerateFunction(genf, fi);
-				gen.run(null);
-				aGenType.node = gen.getResult();
-			} else if (aGenType.resolved instanceof OS_FuncType) {
-				final OS_FuncType funcType = (OS_FuncType) aGenType.resolved;
-				int y=2;
-			} else
-				throw new IllegalStateException("invalid invocation");
-		}
+		aGenType.genCIForGenType2(this);
 	}
 
 	public static class OS_SpecialVariable implements OS_Element {
