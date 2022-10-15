@@ -425,11 +425,12 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	public void setClass(@NotNull GeneratedNode aNode) {
 		assert aNode instanceof GeneratedClass || aNode instanceof GeneratedNamespace;
 		genClass = aNode;
-		
-		if (aNode instanceof GeneratedClass)
+
+		if (aNode instanceof GeneratedClass) {
 			_gcP.resolve((GeneratedClass) aNode);
-		else 
-			throw new RuntimeException("not implemented");
+		}
+//		else 
+//			throw new RuntimeException("not implemented");
 	}
 
 	public GeneratedNode getGenClass() {

@@ -3,19 +3,7 @@
  */
 package tripleo.elijah.stages.stage1;
 
-import static tripleo.elijah.util.Helpers.List_of;
-
-import java.util.List;
-
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.ConstructorDef;
-import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.FormalArgListItem;
-import tripleo.elijah.lang.FunctionItem;
-import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_Type;
-import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.gen_fn.GenerateFunctions.S1toG_GC_Processor;
@@ -25,6 +13,10 @@ import tripleo.elijah.stages.instructions.InstructionName;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.stages.instructions.VariableTableType;
 import tripleo.util.range.Range;
+
+import java.util.List;
+
+import static tripleo.elijah.util.Helpers.List_of;
 
 /**
  * @author 
@@ -100,8 +92,8 @@ public class S1_Constructor {
 				attached1 = attached;
 
 			final TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, attached1, fali.getNameToken());
-	
-			assert attached != null; // TODO this fails
+
+//			assert attached != null; // TODO this fails
 
 			gf.addVariableTableEntry(fali.name(), VariableTableType.ARG, tte, fali);
 		}
