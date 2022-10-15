@@ -15,9 +15,11 @@ import tripleo.elijah.gen.ModuleRef;
 import tripleo.elijah.gen.TypeRef;
 import tripleo.elijah.gen.nodes.*;
 import tripleo.elijah.lang.NumericExpression;
-import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.util.NotImplementedException;
-import tripleo.util.buffer.*;
+import tripleo.util.buffer.DefaultBuffer;
+import tripleo.util.buffer.TextBuffer;
+import tripleo.util.buffer.Transform;
+import tripleo.util.buffer.XX;
 
 import java.util.List;
 
@@ -46,51 +48,51 @@ public class FactorialR /* extends TestCase */ {
 	}
 
 	void main2_el(final CompilerContext cctx, final GenBuffer gbn) {
-		final ModuleRef prelude = new ModuleRef(null, -1);
-		final TypeRef   sys_int = new TypeRef(prelude, prelude, "SystemInteger", BuiltInTypes.SystemInteger.getCode());
-		final ModuleRef main2   = new ModuleRef("main2/main2.elijjah", 10000);
-		final TypeRef   main    = new TypeRef(main2, main2, "Main", 100);
-				
-		gbn.InitMod(cctx, "main2/main2.elijjah");
-		final ImportNode impn = new ImportNode("wprust.demo.fact");
-		gbn.GenImportStmt(cctx, impn);
-		
-		final ClassDeclNode cdn = new ClassDeclNode("Main", null,
-				List_of(new Inherited("Arguments", false))); // gen inh code 
-		cdn.GenClassDecl(cctx, gbn);
-		
-		final MethHdrNode mhn = new MethHdrNode(null, cdn.type(), "main", null, 1000);
-		mhn.GenMethHdr(cctx, gbn);
-		mhn.BeginMeth(cctx, gbn);
-		
-		final LocalDeclAgnNode ldan1 = new LocalDeclAgnNode("b1", ExpressionNodeBuilder.integer(3));
-		gbn.GenLocalDeclAgn(cctx, ldan1);
-		
-		final LocalDeclAgnNode ldan_a1 = new LocalDeclAgnNode("a1", sys_int,
-				ExpressionNodeBuilder.fncall("argument", 
-						convertToLocalAgnTmpNode(List_of(ExpressionNodeBuilder.integer(1)))));
-		gbn.GenLocalDeclAgn(cctx, ldan_a1);
-		
-		final TmpSSACtxNode latn = new TmpSSACtxNode(cctx);
-		latn.GenLocalAgn(cctx, gbn);
-		
-		final IfNode ifn = new IfNode(latn);
-		ifn.BeginIfCtx(cctx, gbn);
-		
-		final LocalAgnNode lan_b1 = new LocalAgnNode(
-				ExpressionNodeBuilder.fncall("a1.toInt", null));
-		lan_b1.GenLocalAgn(cctx, gbn);
-		ifn.CloseIfCtx(cctx, gbn);
-		
-		final LocalDeclAgnNode ldan_f1 = new LocalDeclAgnNode("f1",
-				convertToLocalAgnTmpNode2(ExpressionNodeBuilder.fncall("factorial",  List_of(new LocalAgnTmpNode("b1")))));
-		gbn.GenLocalAgn(cctx, ldan_f1);
-		
-		final SimpleFnCall sfc = new SimpleFnCall("print", List_of("f1"));
-		sfc.GenFnCall(cctx, gbn);
-		mhn.EndMeth(cctx, gbn);
-		cdn.CloseClassDecl(cctx, gbn);
-		
+//		final ModuleRef prelude = new ModuleRef(null, -1);
+//		final TypeRef   sys_int = new TypeRef(prelude, prelude, "SystemInteger", BuiltInTypes.SystemInteger.getCode());
+//		final ModuleRef main2   = new ModuleRef("main2/main2.elijjah", 10000);
+//		final TypeRef   main    = new TypeRef(main2, main2, "Main", 100);
+//
+//		gbn.InitMod(cctx, "main2/main2.elijjah");
+//		final ImportNode impn = new ImportNode("wprust.demo.fact");
+//		gbn.GenImportStmt(cctx, impn);
+//
+//		final ClassDeclNode cdn = new ClassDeclNode("Main", null,
+//				List_of(new Inherited("Arguments", false))); // gen inh code
+//		cdn.GenClassDecl(cctx, gbn);
+//
+//		final MethHdrNode mhn = new MethHdrNode(null, cdn.type(), "main", null, 1000);
+//		mhn.GenMethHdr(cctx, gbn);
+//		mhn.BeginMeth(cctx, gbn);
+//
+//		final LocalDeclAgnNode ldan1 = new LocalDeclAgnNode("b1", ExpressionNodeBuilder.integer(3));
+//		gbn.GenLocalDeclAgn(cctx, ldan1);
+//
+//		final LocalDeclAgnNode ldan_a1 = new LocalDeclAgnNode("a1", sys_int,
+//				ExpressionNodeBuilder.fncall("argument",
+//						convertToLocalAgnTmpNode(List_of(ExpressionNodeBuilder.integer(1)))));
+//		gbn.GenLocalDeclAgn(cctx, ldan_a1);
+//
+//		final TmpSSACtxNode latn = new TmpSSACtxNode(cctx);
+//		latn.GenLocalAgn(cctx, gbn);
+//
+//		final IfNode ifn = new IfNode(latn);
+//		ifn.BeginIfCtx(cctx, gbn);
+//
+//		final LocalAgnNode lan_b1 = new LocalAgnNode(
+//				ExpressionNodeBuilder.fncall("a1.toInt", null));
+//		lan_b1.GenLocalAgn(cctx, gbn);
+//		ifn.CloseIfCtx(cctx, gbn);
+//
+//		final LocalDeclAgnNode ldan_f1 = new LocalDeclAgnNode("f1",
+//				convertToLocalAgnTmpNode2(ExpressionNodeBuilder.fncall("factorial",  List_of(new LocalAgnTmpNode("b1")))));
+//		gbn.GenLocalAgn(cctx, ldan_f1);
+//
+//		final SimpleFnCall sfc = new SimpleFnCall("print", List_of("f1"));
+//		sfc.GenFnCall(cctx, gbn);
+//		mhn.EndMeth(cctx, gbn);
+//		cdn.CloseClassDecl(cctx, gbn);
+
 	}
 	
 	
