@@ -14,6 +14,7 @@ import org.junit.Test;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.*;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
+import tripleo.elijah.factory.comp.CompilationFactory;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.OS_Module;
@@ -25,6 +26,7 @@ import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.instructions.Instruction;
 import tripleo.elijah.stages.instructions.InstructionName;
 import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.testing.comp.IFunctionMapHook;
 import tripleo.elijah.work.WorkManager;
 
 import java.io.File;
@@ -62,34 +64,9 @@ public class TestGenFunction {
 
 		List<FunctionMapHook> ran_hooks = new ArrayList<>();
 
+		List<IFunctionMapHook> mapHooks = new ArrayList<>();
 
-		Compilation compilation = new Compilation(new StdErrSink(), new IO());
-		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
-		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
-		c.pipelineLogic = pl;
-		final GeneratePhase generatePhase1 = c.pipelineLogic.generatePhase;//new GeneratePhase();
-		final GenerateFunctions gfm = generatePhase1.getGenerateFunctions(m);
-		DeducePhase dp = c.pipelineLogic.dp;//new DeducePhase(generatePhase1);
-		gfm.generateFromEntryPoints(m.entryPoints, dp);
-
-		final DeducePhase.@NotNull GeneratedClasses lgc = dp.generatedClasses; //new ArrayList<>();
-
-/*
-		List<GeneratedNode> lgf = new ArrayList<>();
-		for (GeneratedNode generatedNode : lgc) {
-			if (generatedNode instanceof GeneratedClass)
-				lgf.addAll(((GeneratedClass) generatedNode).functionMap.values());
-			if (generatedNode instanceof GeneratedNamespace)
-				lgf.addAll(((GeneratedNamespace) generatedNode).functionMap.values());
-			// TODO enum
-		}
-*/
-
-//		Assert.assertEquals(2, lgf.size());
-
-		WorkManager wm = new WorkManager();
-
-		c.addFunctionMapHook(new FunctionMapHook(){
+		mapHooks.add(new FunctionMapHook() {
 			@Override
 			public boolean matches(FunctionDef fd) {
 				final boolean b = fd.name().equals("main") && fd.getParent() == main_class;
@@ -115,7 +92,8 @@ public class TestGenFunction {
 			}
 		});
 
-		c.addFunctionMapHook(new FunctionMapHook(){
+		//		c.addFunctionMapHook
+		mapHooks.add(new FunctionMapHook() {
 			@Override
 			public boolean matches(FunctionDef fd) {
 				final boolean b = fd.name().equals("factorial") && fd.getParent() == main_class;
@@ -147,7 +125,8 @@ public class TestGenFunction {
 			}
 		});
 
-		c.addFunctionMapHook(new FunctionMapHook(){
+		//		c.addFunctionMapHook
+		mapHooks.add(new FunctionMapHook() {
 			@Override
 			public boolean matches(FunctionDef fd) {
 				final boolean b = fd.name().equals("main") && fd.getParent() == main_class;
@@ -175,7 +154,8 @@ public class TestGenFunction {
 			}
 		});
 
-		c.addFunctionMapHook(new FunctionMapHook(){
+		//		c.addFunctionMapHook
+		mapHooks.add(new FunctionMapHook() {
 			@Override
 			public boolean matches(FunctionDef fd) {
 				final boolean b = fd.name().equals("factorial") && fd.getParent() == main_class;
@@ -202,6 +182,38 @@ public class TestGenFunction {
 				ran_hooks.add(this);
 			}
 		});
+
+
+		final Compilation compilation = CompilationFactory.mkCompilation2(mapHooks);
+
+/*
+		Compilation compilation = new Compilation(new StdErrSink(), new IO());
+		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
+		c.pipelineLogic = pl;
+		final GeneratePhase generatePhase1 = c.pipelineLogic.generatePhase;//new GeneratePhase();
+		final GenerateFunctions gfm = generatePhase1.getGenerateFunctions(m);
+		DeducePhase dp = c.pipelineLogic.dp;//new DeducePhase(generatePhase1);
+		gfm.generateFromEntryPoints(m.entryPoints, dp);
+
+		final DeducePhase.@NotNull GeneratedClasses lgc = dp.generatedClasses; //new ArrayList<>();
+*/
+
+/*
+		List<GeneratedNode> lgf = new ArrayList<>();
+		for (GeneratedNode generatedNode : lgc) {
+			if (generatedNode instanceof GeneratedClass)
+				lgf.addAll(((GeneratedClass) generatedNode).functionMap.values());
+			if (generatedNode instanceof GeneratedNamespace)
+				lgf.addAll(((GeneratedNamespace) generatedNode).functionMap.values());
+			// TODO enum
+		}
+*/
+
+//		Assert.assertEquals(2, lgf.size());
+
+		final @NotNull DeducePhase dp = compilation.getDeducePhase();
+		final @NotNull List<GeneratedNode> lgc = compilation.getLGC();
 
 		dp.deduceModule(m, lgc, c.gitlabCIVerbosity());
 		dp.finish();

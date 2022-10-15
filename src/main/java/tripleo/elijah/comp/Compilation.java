@@ -26,7 +26,9 @@ import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
 import tripleo.elijah.lang.Qualident;
+import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.FunctionMapHook;
+import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijjah.ElijjahLexer;
@@ -507,6 +509,14 @@ public class Compilation {
 
 	public boolean getSilence() {
 		return silent;
+	}
+
+	public @NotNull DeducePhase getDeducePhase() {
+		return pipelineLogic.dp;
+	}
+
+	public @NotNull List<GeneratedNode> getLGC() {
+		return pipelineLogic.dp.generatedClasses.copy();
 	}
 }
 
