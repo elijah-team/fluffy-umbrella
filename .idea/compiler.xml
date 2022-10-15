@@ -10,6 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="elijah-v1-fluffy-umbrella" target="1.8" />
       <module name="fluffy-umbrella" target="1.8" />
     </bytecodeTargetLevel>
   </component>

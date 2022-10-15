@@ -8,7 +8,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="main" />
     <orderEntry type="library" name="org.eclipse.jdt.annotation_2.2.200.v20180921-1416" level="project" />
     <orderEntry type="library" name="annotations-16.0.2" level="project" />
     <orderEntry type="module-library" scope="TEST">
