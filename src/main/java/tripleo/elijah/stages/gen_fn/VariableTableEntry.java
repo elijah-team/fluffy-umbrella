@@ -16,6 +16,9 @@ import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.DeduceLocalVariable;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VariableTableEntry;
+import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
+import tripleo.elijah.stages.deduce.post_bytecode.PostBC_Processor;
 import tripleo.elijah.stages.instructions.VariableTableType;
 
 import java.util.Collection;
@@ -35,6 +38,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	public ProcTableEntry constructable_pte;
 	public GenType genType = new GenType();
 	private GeneratedNode _resolvedType;
+	private DeduceElement3_VariableTableEntry _de3;
 
 	public VariableTableEntry(final int aIndex, final VariableTableType aVtt, final String aName, final TypeTableEntry aTTE, final OS_Element el) {
 		this.index = aIndex;
@@ -200,6 +204,19 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	public boolean typeDeferred_isResolved() {
 		return typeDeferred.isResolved();
 	}
+
+	public PostBC_Processor getPostBC_Processor(Context aFd_ctx, DeduceTypes2.DeduceClient1 aDeduceClient1) {
+		return PostBC_Processor.make_VTE(this, aFd_ctx, aDeduceClient1);
+	}
+
+	public IDeduceElement3 getDeduceElement3() {
+		if (_de3 == null) {
+			_de3 = new DeduceElement3_VariableTableEntry(this);
+//			_de3.
+		}
+		return _de3;
+	}
+
 }
 
 //

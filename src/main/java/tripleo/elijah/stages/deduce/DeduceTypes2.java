@@ -1825,7 +1825,7 @@ public class DeduceTypes2 {
 		return null;
 	}
 
-	static class DeduceClient1 {
+	public static class DeduceClient1 {
 		private final DeduceTypes2 dt2;
 
 		@Contract(pure = true)
@@ -1863,6 +1863,15 @@ public class DeduceTypes2 {
 
 		public void genCIForGenType2(final GenType genType) {
 			dt2.genCIForGenType2(genType);
+		}
+
+
+		public void LOG_err(String aS) {
+			dt2.LOG.err(aS);
+		}
+
+		public @NotNull ArrayList<TypeTableEntry> getPotentialTypesVte(VariableTableEntry aVte) {
+			return dt2.getPotentialTypesVte(aVte);
 		}
 	}
 

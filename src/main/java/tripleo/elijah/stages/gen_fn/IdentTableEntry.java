@@ -24,6 +24,8 @@ import tripleo.elijah.stages.deduce.DeducePath;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.OnType;
+import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
+import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
@@ -52,6 +54,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	private DeduceElementIdent dei = new DeduceElementIdent(this);
 
 	public DeduceTypes2.PromiseExpectation<String> resolveExpectation;
+	private DeduceElement3_IdentTableEntry _de3;
 
 	public IdentTableEntry(final int index, final IdentExpression ident, Context pc) {
         this.index  = index;
@@ -234,6 +237,16 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	public void makeType(final BaseGeneratedFunction aGeneratedFunction, final TypeTableEntry.Type aType, final IExpression aExpression) {
 		type = aGeneratedFunction.newTypeTableEntry(aType, null, aExpression, this);
 	}
+
+	public IDeduceElement3 getDeduceElement3(DeduceTypes2 aDeduceTypes2, BaseGeneratedFunction aGeneratedFunction) {
+		if (_de3 == null) {
+			_de3 = new DeduceElement3_IdentTableEntry(this);
+			_de3.deduceTypes2 = aDeduceTypes2;
+			_de3.generatedFunction = aGeneratedFunction;
+		}
+		return _de3;
+	}
+
 }
 
 //
