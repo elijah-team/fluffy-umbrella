@@ -84,7 +84,7 @@ public class PipelineLogic {
 			final GenerateC generateC = new GenerateC(mod, mod.parent.getErrSink(), verbosity, this);
 			final GenerateResult ggr = run3(mod, lgc, wm, generateC);
 			wm.drain();
-			gr.results().addAll(ggr.results());
+			gr.additional(ggr);
 		}
 
 		__ab.resolveGenerateResult(gr);

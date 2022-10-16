@@ -8,11 +8,8 @@
  */
 package tripleo.elijah.stages.gen_generic;
 
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
-import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.stages.gen_fn.*;
 import tripleo.util.buffer.Buffer;
 
 import java.util.ArrayList;
@@ -40,6 +37,10 @@ public class GenerateResult {
 
 	public void addConstructor(GeneratedConstructor aGeneratedFunction, Buffer aBuffer, TY aTY) {
 		addFunction(aGeneratedFunction, aBuffer, aTY);
+	}
+
+	public void additional(@NotNull GenerateResult aGgr) {
+		res.addAll(aGgr.results());
 	}
 
 	public enum TY {
