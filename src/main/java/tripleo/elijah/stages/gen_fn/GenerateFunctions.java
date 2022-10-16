@@ -736,33 +736,8 @@ public class GenerateFunctions {
 //		return R;
 //	}
 
-	public void generateFromEntryPoints(List<EntryPoint> epl, DeducePhase deducePhase) {
-		final WorkList wl = new WorkList();
-		for (EntryPoint entryPoint : epl) {
-			if (entryPoint instanceof MainClassEntryPoint) {
-				final MainClassEntryPoint mcep = (MainClassEntryPoint) entryPoint;
-				@NotNull final ClassStatement cs = mcep.getKlass();
-				final FunctionDef f = mcep.getMainFunction();
-				ClassInvocation ci = deducePhase.registerClassInvocation(cs, null);
-				wl.addJob(new WlGenerateClass(this, ci, deducePhase.generatedClasses));
-				final FunctionInvocation fi = new FunctionInvocation(f, null, ci, deducePhase.generatePhase);
-//				fi.setPhase(phase);
-				wl.addJob(new WlGenerateFunction(this, fi));
-			} else if (entryPoint instanceof ArbitraryFunctionEntryPoint) {
-				final ArbitraryFunctionEntryPoint afep = (ArbitraryFunctionEntryPoint) entryPoint;
-
-				final FunctionDef f = afep.getFunction();
-				ClassInvocation ci = new ClassInvocation((ClassStatement) afep.getParent(), null);
-				ci = deducePhase.registerClassInvocation(ci);
-				wl.addJob(new WlGenerateClass(this, ci, deducePhase.generatedClasses));
-				final FunctionInvocation fi = new FunctionInvocation(f, null, ci, deducePhase.generatePhase);
-//				fi.setPhase(phase);
-				wl.addJob(new WlGenerateFunction(this, fi));
-
-			}
-		}
-		phase.wm.addJobs(wl);
-		phase.wm.drain();
+	public void generateFromEntryPoints(@NotNull List<EntryPoint> epl, DeducePhase deducePhase) {
+		new EntryPointList(epl).generateFromEntryPoints(deducePhase, this, phase.wm);
 	}
 
 	public void generateAllTopLevelClasses(List<GeneratedNode> lgc) {
