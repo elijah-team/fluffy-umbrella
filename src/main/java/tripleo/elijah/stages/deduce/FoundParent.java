@@ -221,22 +221,31 @@ public class FoundParent implements BaseTableEntry.StatusListener {
 
 			@Nullable OS_Element ele2 = null;
 
+			@Nullable LookupResultList lrl = null;
+			@Nullable LookupResultList lrl2 = null;
+
 			try {
-				if (ty.getType() == OS_Type.Type.USER) {
-					@NotNull GenType ty2 = deduceTypes2.resolve_type(ty, ty.getTypeName().getContext());
-					OS_Element ele;
+				switch (ty.getType()) {
+				case USER:
+					final @NotNull GenType ty2 = deduceTypes2.resolve_type(ty, ty.getTypeName().getContext());
+
 					if (vte.type.genType.resolved == null) {
 						if (ty2.resolved.getType() == OS_Type.Type.USER_CLASS) {
 							vte.type.genType.copy(ty2);
 						}
 					}
-					ele = ty2.resolved.getElement();
-					LookupResultList lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
-					ele2 = lrl.chooseBest(null);
-				} else
-					ele2 = ty.getClassOf(); // TODO might fail later (use getElement?)
 
-				@Nullable LookupResultList lrl = null;
+					OS_Element ele = ty2.resolved.getElement();
+					lrl2 = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
+					ele2 = lrl2.chooseBest(null);
+					break;
+				case USER_CLASS:
+					ele2 = ty.getClassOf(); // TODO might fail later (use getElement?)
+					break;
+				default:
+					ele2 = ty.getElement();
+					break;
+				}
 
 				lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele2.getContext(), deduceTypes2);
 				@Nullable OS_Element best = lrl.chooseBest(null);
