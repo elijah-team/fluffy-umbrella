@@ -4,7 +4,11 @@ import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.stages.deduce.zero.ITE_Zero;
+import tripleo.elijah.stages.deduce.zero.VTE_Zero;
+import tripleo.elijah.stages.deduce.zero.Zero_PotentialTypes;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.util.NotImplementedException;
 
@@ -37,7 +41,10 @@ public class FoundParent implements BaseTableEntry.StatusListener {
 				onChangePTE(pte);
 			} else if (bte instanceof IdentTableEntry) {
 				final @NotNull IdentTableEntry ite = (IdentTableEntry) bte;
-				onChangeITE(ite);
+
+				ErrSink errSink = deduceTypes2.errSink;
+
+				onChangeITE(ite.zero(), ite, errSink);
 			}
 			postOnChange(eh);
 		}
@@ -215,97 +222,25 @@ public class FoundParent implements BaseTableEntry.StatusListener {
 
 	private void onChangeVTE(@NotNull VariableTableEntry vte) {
 		@NotNull ArrayList<TypeTableEntry> pot = deduceTypes2.getPotentialTypesVte(vte);
+
+		VTE_Zero zero = vte.zero();
+		Zero_PotentialTypes pot1 = zero.potentialTypes();
+
+		ErrSink errSink = deduceTypes2.errSink;
+		@NotNull DeducePhase phase = deduceTypes2.phase;
+
 		if (vte.getStatus() == BaseTableEntry.Status.KNOWN && vte.type.getAttached() != null && vte.getResolvedElement() != null) {
-
-			final OS_Type ty = vte.type.getAttached();
-
-			@Nullable OS_Element ele2 = null;
-
-			@Nullable LookupResultList lrl = null;
-			@Nullable LookupResultList lrl2 = null;
-
-			try {
-				switch (ty.getType()) {
-				case USER:
-					final @NotNull GenType ty2 = deduceTypes2.resolve_type(ty, ty.getTypeName().getContext());
-
-					if (vte.type.genType.resolved == null) {
-						if (ty2.resolved.getType() == OS_Type.Type.USER_CLASS) {
-							vte.type.genType.copy(ty2);
-						}
-					}
-
-					OS_Element ele = ty2.resolved.getElement();
-					lrl2 = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
-					ele2 = lrl2.chooseBest(null);
-					break;
-				case USER_CLASS:
-					ele2 = ty.getClassOf(); // TODO might fail later (use getElement?)
-					break;
-				default:
-					ele2 = ty.getElement();
-					break;
-				}
-
-				lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele2.getContext(), deduceTypes2);
-				@Nullable OS_Element best = lrl.chooseBest(null);
-				// README commented out because only firing for dir.listFiles, and we always use `best'
-//					if (best != ele2) LOG.err(String.format("2824 Divergent for %s, %s and %s", ite, best, ele2));;
-				ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
-			} catch (ResolveError aResolveError) {
-				aResolveError.printStackTrace();
-				deduceTypes2.errSink.reportDiagnostic(aResolveError);
-			}
+			zero.fp_onChange__001(vte.type, ite, deduceTypes2, errSink);
 		} else if (pot.size() == 1) {
 			TypeTableEntry tte = pot.get(0);
 			@Nullable OS_Type ty = tte.getAttached();
-			if (ty != null) {
-				switch (ty.getType()) {
-					case USER:
-						vte_pot_size_is_1_USER_TYPE(vte, ty);
-						break;
-					case USER_CLASS:
-						vte_pot_size_is_1_USER_CLASS_TYPE(vte, ty);
-						break;
-				}
-			} else {
-				int y = 2;//LOG.err("1696");
-			}
+			zero.fp_onChange__002(vte, ty, deduceTypes2, ite, errSink, phase);
 		}
 	}
 
-	private void onChangeITE(@NotNull IdentTableEntry identTableEntry) {
+	private void onChangeITE(ITE_Zero zero, @NotNull IdentTableEntry identTableEntry, ErrSink errSink) {
 		if (identTableEntry.type != null) {
-			final OS_Type ty = identTableEntry.type.getAttached();
-
-			@Nullable OS_Element ele2 = null;
-
-			try {
-				if (ty.getType() == OS_Type.Type.USER) {
-					@NotNull GenType ty2 = deduceTypes2.resolve_type(ty, ty.getTypeName().getContext());
-					OS_Element ele;
-					if (identTableEntry.type.genType.resolved == null) {
-						if (ty2.resolved.getType() == OS_Type.Type.USER_CLASS) {
-							identTableEntry.type.genType.copy(ty2);
-						}
-					}
-					ele = ty2.resolved.getElement();
-					LookupResultList lrl = DeduceLookupUtils.lookupExpression(this.ite.getIdent(), ele.getContext(), deduceTypes2);
-					ele2 = lrl.chooseBest(null);
-				} else
-					ele2 = ty.getClassOf(); // TODO might fail later (use getElement?)
-
-				@Nullable LookupResultList lrl = null;
-
-				lrl = DeduceLookupUtils.lookupExpression(this.ite.getIdent(), ele2.getContext(), deduceTypes2);
-				@Nullable OS_Element best = lrl.chooseBest(null);
-				// README commented out because only firing for dir.listFiles, and we always use `best'
-//					if (best != ele2) LOG.err(String.format("2824 Divergent for %s, %s and %s", identTableEntry, best, ele2));;
-				this.ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
-			} catch (ResolveError aResolveError) {
-				aResolveError.printStackTrace();
-				deduceTypes2.errSink.reportDiagnostic(aResolveError);
-			}
+			zero.fp_onChange__001(identTableEntry.type, this.ite, deduceTypes2, errSink);
 		} else {
 			if (!identTableEntry.fefi) {
 				final Found_Element_For_ITE fefi = new Found_Element_For_ITE(generatedFunction, ctx, deduceTypes2.LOG, deduceTypes2.errSink, new DeduceTypes2.DeduceClient1(deduceTypes2));
@@ -331,49 +266,6 @@ public class FoundParent implements BaseTableEntry.StatusListener {
 				});
 			}
 			// TODO we want to setStatus but have no USER or USER_CLASS to perform lookup with
-		}
-	}
-
-	private void vte_pot_size_is_1_USER_CLASS_TYPE(@NotNull VariableTableEntry vte, @Nullable OS_Type aTy) {
-		ClassStatement klass = aTy.getClassOf();
-		@Nullable LookupResultList lrl = null;
-		try {
-			lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), klass.getContext(), deduceTypes2);
-			@Nullable OS_Element best = lrl.chooseBest(null);
-//							ite.setStatus(BaseTableEntry.Status.KNOWN, best);
-			assert best != null;
-			ite.setResolvedElement(best);
-
-			final @NotNull GenType genType = new GenType(klass);
-			final TypeName typeName = vte.type.genType.nonGenericTypeName;
-			final @Nullable ClassInvocation ci = genType.genCI(typeName, deduceTypes2, deduceTypes2.errSink, deduceTypes2.phase);
-//							resolve_vte_for_class(vte, klass);
-			ci.resolvePromise().done(new DoneCallback<GeneratedClass>() {
-				@Override
-				public void onDone(GeneratedClass result) {
-					vte.resolveTypeToClass(result);
-				}
-			});
-		} catch (ResolveError aResolveError) {
-			deduceTypes2.errSink.reportDiagnostic(aResolveError);
-		}
-	}
-
-	private void vte_pot_size_is_1_USER_TYPE(@NotNull VariableTableEntry vte, @Nullable OS_Type aTy) {
-		try {
-			@NotNull GenType ty2 = deduceTypes2.resolve_type(aTy, aTy.getTypeName().getContext());
-			// TODO ite.setAttached(ty2) ??
-			OS_Element ele = ty2.resolved.getElement();
-			LookupResultList lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
-			@Nullable OS_Element best = lrl.chooseBest(null);
-			ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
-//									ite.setResolvedElement(best);
-
-			final @NotNull ClassStatement klass = (ClassStatement) ele;
-
-			deduceTypes2.register_and_resolve(vte, klass);
-		} catch (ResolveError resolveError) {
-			deduceTypes2.errSink.reportDiagnostic(resolveError);
 		}
 	}
 }

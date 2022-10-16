@@ -8,7 +8,7 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
-import org.jdeferred2.*;
+import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.Context;
@@ -19,6 +19,7 @@ import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VariableTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.deduce.post_bytecode.PostBC_Processor;
+import tripleo.elijah.stages.deduce.zero.VTE_Zero;
 import tripleo.elijah.stages.instructions.VariableTableType;
 
 import java.util.Collection;
@@ -39,6 +40,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	public GenType genType = new GenType();
 	private GeneratedNode _resolvedType;
 	private DeduceElement3_VariableTableEntry _de3;
+	private VTE_Zero _zero;
 
 	public VariableTableEntry(final int aIndex, final VariableTableType aVtt, final String aName, final TypeTableEntry aTTE, final OS_Element el) {
 		this.index = aIndex;
@@ -215,6 +217,13 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 //			_de3.
 		}
 		return _de3;
+	}
+
+	public VTE_Zero zero() {
+		if (_zero == null) {
+			_zero = new VTE_Zero(this);
+		}
+		return _zero;
 	}
 
 }

@@ -14,18 +14,11 @@ import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.IExpression;
-import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_Type;
-import tripleo.elijah.stages.deduce.DeduceElementIdent;
-import tripleo.elijah.stages.deduce.DeducePath;
-import tripleo.elijah.stages.deduce.DeducePhase;
-import tripleo.elijah.stages.deduce.DeduceTypes2;
-import tripleo.elijah.stages.deduce.OnType;
+import tripleo.elijah.lang.*;
+import tripleo.elijah.stages.deduce.*;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
+import tripleo.elijah.stages.deduce.zero.ITE_Zero;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
@@ -55,6 +48,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 
 	public DeduceTypes2.PromiseExpectation<String> resolveExpectation;
 	private DeduceElement3_IdentTableEntry _de3;
+	private ITE_Zero _zero;
 
 	public IdentTableEntry(final int index, final IdentExpression ident, Context pc) {
         this.index  = index;
@@ -247,6 +241,12 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		return _de3;
 	}
 
+	public ITE_Zero zero() {
+		if (_zero == null) {
+			_zero = new ITE_Zero(this);
+		}
+		return _zero;
+	}
 }
 
 //
