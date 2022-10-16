@@ -52,7 +52,7 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 	public void run() {
 		// TODO move this into a latch and wait for pipelineLogic and modules
 
-		List<OS_Module> ms1 = __ab.getCompilation().modules;
+		List<OS_Module> ms1 = __ab.getCompilation().getModules();
 
 		for (final OS_Module module : ms1) {
 			pipelineLogic.addModule(module);

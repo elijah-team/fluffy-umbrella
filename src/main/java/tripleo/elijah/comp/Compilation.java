@@ -524,6 +524,16 @@ public class Compilation {
 	public EOT_OutputTree getOutputTree() {
 		throw new NotImplementedException();
 	}
+
+	@Deprecated
+	public int modules_size() {
+		return modules.size();
+	}
+
+	@Deprecated
+	public List<OS_Module> getModules() {
+		return modules;
+	}
 }
 
 //

@@ -38,7 +38,7 @@ public class CompilationTest {
 		Assert.assertTrue(c.getIO().recordedRead(new File("test/comp_test/main3/main3.elijah")));
 		Assert.assertTrue(c.getIO().recordedRead(new File("test/comp_test/fact1.elijah")));
 		Assert.assertTrue(c.cis.size() > 0);
-		Assert.assertTrue(c.modules.size() > 2);
+		Assert.assertTrue(c.modules_size() > 2);
 	}
 
 }
