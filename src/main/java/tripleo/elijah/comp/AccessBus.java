@@ -4,6 +4,7 @@ import org.jdeferred2.DoneCallback;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 
@@ -14,7 +15,7 @@ public class AccessBus {
 	private final Compilation _c;
 	private final DeferredObject<PipelineLogic,Void,Void> pipeLineLogicPromise = new DeferredObject<>();
 	private final DeferredObject<List<GeneratedNode>, Void, Void> lgcPromise = new DeferredObject<>();
-	private final DeferredObject<List<OS_Module>, Void, Void> moduleListPromise = new DeferredObject<>();
+	private final DeferredObject<EIT_ModuleList, Void, Void> moduleListPromise = new DeferredObject<>();
 	private final DeferredObject<GenerateResult, Void, Void> generateResultPromise = new DeferredObject<>();
 
 	public AccessBus(Compilation aC) {
@@ -33,7 +34,12 @@ public class AccessBus {
 		pipeLineLogicPromise.resolve(pl);
 	}
 
+	@Deprecated
 	public void resolveModuleList(List<OS_Module> aModuleList) {
+		resolveModuleList(new EIT_ModuleList(aModuleList)); // TODO
+	}
+
+	public void resolveModuleList(final EIT_ModuleList aModuleList) {
 		moduleListPromise.resolve(aModuleList);
 	}
 
@@ -68,7 +74,8 @@ public class AccessBus {
 	}
 
 	public interface AB_ModuleListListener {
-		void mods_slot(List<OS_Module> mods);
+		//		void mods_slot(List<OS_Module> mods);
+		void mods_slot(final EIT_ModuleList aModuleList);
 	}
 
 	public interface AB_LgcListener {

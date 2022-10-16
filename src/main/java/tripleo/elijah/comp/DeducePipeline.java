@@ -11,6 +11,7 @@ package tripleo.elijah.comp;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.gen_fn.GeneratedNode;
 
 import java.util.ArrayList;
@@ -54,6 +55,8 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 
 		List<OS_Module> ms1 = __ab.getCompilation().getModules();
 
+		assert ms1 == ms && ms != null;
+
 		for (final OS_Module module : ms1) {
 			pipelineLogic.addModule(module);
 		}
@@ -72,7 +75,9 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 	}
 
 	@Override
-	public void mods_slot(List<OS_Module> mods) {
+	public void mods_slot(final EIT_ModuleList aModuleList) {
+		List<OS_Module> mods = aModuleList.getMods();
+
 		ms = mods;
 	}
 }
