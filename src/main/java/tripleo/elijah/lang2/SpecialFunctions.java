@@ -8,7 +8,9 @@
  */
 package tripleo.elijah.lang2;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.ExpressionKind;
+import tripleo.elijah.util.Stupidity;
 
 /**
  * Created 10/2/20 10:16 AM
@@ -37,12 +39,14 @@ public class SpecialFunctions {
 		}
 	}
 
-	public static String reverse_name(final String pn) {
+	public static String reverse_name(final @NotNull String pn) {
 		if (pn.equals("__gt__")) // README  explicitly disallow
+		{
 			return null;
+		}
 //		if (pn.equals("__eq__"))
 //			return "__req__";
-//		System.out.println("reverse_name: "+pn);
+		Stupidity.println_out("reverse_name: " + pn);
 //		assert false;
 		return null;
 	}
