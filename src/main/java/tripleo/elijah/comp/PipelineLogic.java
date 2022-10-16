@@ -11,6 +11,7 @@ package tripleo.elijah.comp;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.entrypoints.EntryPoint;
 import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.gen_c.GenerateC;
 import tripleo.elijah.stages.gen_fn.*;
@@ -65,7 +66,7 @@ public class PipelineLogic {
 
 
 		for (OS_Module mod : mods) {
-			run2(mod, mod.entryPoints);
+			_processByEntryPoint(mod, mod.entryPoints);
 		}
 
 		//List<List<EntryPoint>> entryPoints = mods.stream().map(mod -> mod.entryPoints).collect(Collectors.toList());
@@ -144,6 +145,9 @@ public class PipelineLogic {
 	protected GenerateResult run3(OS_Module mod, @NotNull List<GeneratedNode> lgc, WorkManager wm, GenerateC ggc) {
 		GenerateResult gr = new GenerateResult();
 
+		Compilation ccc = mod.parent;
+		@NotNull EOT_OutputTree cot = ccc.getOutputTree();
+
 		for (GeneratedNode generatedNode : lgc) {
 			if (generatedNode.module() != mod) continue; // README curious
 
@@ -211,6 +215,139 @@ public class PipelineLogic {
 
 	public void addLog(ElLog aLog) {
 		elLogs.add(aLog);
+	}
+
+
+	class EntryPointList {
+		private final List<EntryPoint> epl; // = new ArrayList<>();
+		private final OS_Module mod;
+
+		public EntryPointList(OS_Module amod, List<EntryPoint> aepl) {
+			this.mod = amod;
+			this.epl = aepl;
+		}
+
+		void _processByEntryPoint(final @NotNull GenerateFunctions gfm) {
+			DeducePhase.@NotNull GeneratedClasses lgc = dp.generatedClasses;
+			List<GeneratedNode> resolved_nodes = new ArrayList<GeneratedNode>();
+
+//			assert lgc.size() == 0;
+			if (lgc.size() != 0) {
+				int y = 2;
+			}
+
+			//Iterable<? extends GeneratedNode> lgc1 = ;
+			gfm.generateFromEntryPoints(this.epl, dp);
+
+			//assert lgc.size() == epl.size(); //hmm
+
+			for (final GeneratedNode generatedNode : lgc) {
+				if (generatedNode instanceof GNCoded) {
+					final GNCoded coded = (GNCoded) generatedNode;
+
+					switch (coded.getRole()) {
+						case FUNCTION: {
+//						GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
+							if (coded.getCode() == 0) {
+								coded.setCode(mod.parent.nextFunctionCode());
+							}
+							break;
+						}
+						case CLASS: {
+							final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
+//						if (generatedClass.getCode() == 0)
+//							generatedClass.setCode(mod.parent.nextClassCode());
+							for (GeneratedClass generatedClass2 : generatedClass.classMap.values()) {
+								if (generatedClass2.getCode() == 0) {
+									generatedClass2.setCode(mod.parent.nextClassCode());
+								}
+							}
+							for (GeneratedFunction generatedFunction : generatedClass.functionMap.values()) {
+								for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
+									if (identTableEntry.isResolved()) {
+										GeneratedNode node = identTableEntry.resolvedType();
+										resolved_nodes.add(node);
+									}
+								}
+							}
+							break;
+						}
+						case NAMESPACE: {
+							final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
+							if (coded.getCode() == 0) {
+								coded.setCode(mod.parent.nextClassCode());
+							}
+							for (GeneratedClass generatedClass : generatedNamespace.classMap.values()) {
+								if (generatedClass.getCode() == 0) {
+									generatedClass.setCode(mod.parent.nextClassCode());
+								}
+							}
+							for (GeneratedFunction generatedFunction : generatedNamespace.functionMap.values()) {
+								for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
+									if (identTableEntry.isResolved()) {
+										GeneratedNode node = identTableEntry.resolvedType();
+										resolved_nodes.add(node);
+									}
+								}
+							}
+							break;
+						}
+						default:
+							throw new IllegalStateException("Unexpected value: " + coded.getRole());
+					}
+
+				} else {
+					throw new IllegalStateException("node must be coded");
+				}
+			}
+
+			for (final GeneratedNode generatedNode : resolved_nodes) {
+				if (generatedNode instanceof GNCoded) {
+					final GNCoded coded = (GNCoded) generatedNode;
+					final int code;
+					if (coded.getCode() == 0) {
+						switch (coded.getRole()) {
+							case FUNCTION:
+								code = mod.parent.nextFunctionCode();
+								break;
+							case NAMESPACE:
+							case CLASS:
+								code = mod.parent.nextClassCode();
+								break;
+							default:
+								throw new IllegalStateException("Invalid coded role");
+						}
+						coded.setCode(code);
+					}
+				} else {
+					throw new IllegalStateException("node is not coded");
+				}
+			}
+
+			dp.deduceModule(mod, lgc, getVerbosity());
+
+			resolveCheck(lgc);
+
+//			for (final GeneratedNode gn : lgf) {
+//				if (gn instanceof GeneratedFunction) {
+//					GeneratedFunction gf = (GeneratedFunction) gn;
+//					System.out.println("----------------------------------------------------------");
+//					System.out.println(gf.name());
+//					System.out.println("----------------------------------------------------------");
+//					GeneratedFunction.printTables(gf);
+//					System.out.println("----------------------------------------------------------");
+//				}
+//			}
+		}
+	}
+
+	protected void _processByEntryPoint(OS_Module mod, @NotNull List<EntryPoint> epl) {
+		final GenerateFunctions gfm = getGenerateFunctions(mod);
+		final EntryPointList epl1 = new EntryPointList(mod, epl);
+		epl1._processByEntryPoint(gfm);
+
+		//final GenerateFunctions gfm = getGenerateFunctions(mod);
+		//gfm.generateFromEntryPoints(epl, dp);
 	}
 
 }

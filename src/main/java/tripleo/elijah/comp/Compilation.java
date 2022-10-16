@@ -26,11 +26,13 @@ import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
 import tripleo.elijah.lang.Qualident;
+import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.FunctionMapHook;
 import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
+import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijjah.ElijjahLexer;
 import tripleo.elijjah.ElijjahParser;
 import tripleo.elijjah.EzLexer;
@@ -517,6 +519,10 @@ public class Compilation {
 
 	public @NotNull List<GeneratedNode> getLGC() {
 		return pipelineLogic.dp.generatedClasses.copy();
+	}
+
+	public EOT_OutputTree getOutputTree() {
+		throw new NotImplementedException();
 	}
 }
 

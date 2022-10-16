@@ -8,9 +8,11 @@
  */
 package tripleo.elijah.comp.internal;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.IO;
+import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 import tripleo.elijah.testing.comp.IFunctionMapHook;
 import tripleo.elijah.util.NotImplementedException;
 
@@ -24,6 +26,20 @@ public class CompilationImpl extends Compilation {
 
 	public void testMapHooks(List<IFunctionMapHook> aMapHooks) {
 		throw new NotImplementedException();
+	}
+
+	private EOT_OutputTree _output_tree = null;
+
+	@Override
+	@NotNull
+	public EOT_OutputTree getOutputTree() {
+		if (_output_tree == null) {
+			_output_tree = new EOT_OutputTree();
+		}
+
+		assert _output_tree != null;
+
+		return _output_tree;
 	}
 
 }
