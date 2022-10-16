@@ -14,9 +14,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.entrypoints.ArbitraryFunctionEntryPoint;
 import tripleo.elijah.entrypoints.EntryPoint;
-import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.lang2.SpecialFunctions;
@@ -26,9 +24,9 @@ import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.stages.stage1.S1_Constructor;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
-import tripleo.elijah.work.WorkList;
 import tripleo.elijah.work.WorkManager;
 import tripleo.util.range.Range;
 
@@ -56,9 +54,41 @@ public class GenerateFunctions {
 		aPipelineLogic.addLog(LOG);
 	}
 
+	public static class S1toG_GC_Processor {
+
+		private GenerateFunctions gf;
+
+		public S1toG_GC_Processor(GenerateFunctions generateFunctions) {
+			this.gf = generateFunctions;
+		}
+
+		public int add_i(GeneratedConstructor gf2, InstructionName e, List<InstructionArgument> lia, Context cctx) {
+			return gf.add_i(gf2, e, lia, cctx);
+		}
+
+		public void generate_item(OS_Element item, GeneratedConstructor gf2, Context cctx) {
+			gf.generate_item(item, gf2, cctx);
+		}
+
+	}
+
 	public @NotNull GeneratedConstructor generateConstructor(ConstructorDef aConstructorDef,
-															 ClassStatement parent, // TODO Namespace constructors
-															 FunctionInvocation aFunctionInvocation) {
+	                                                         ClassStatement parent, // TODO Namespace constructors
+	                                                         FunctionInvocation aFunctionInvocation) {
+
+		final S1_Constructor s1c = new S1_Constructor(aConstructorDef, parent, aFunctionInvocation);
+
+		s1c.process(new S1toG_GC_Processor(this));
+
+		final GeneratedConstructor gf = s1c.getGenerated();
+		gf.fi = aFunctionInvocation; // TODO smelly
+
+		return gf;
+	}
+
+	public @NotNull GeneratedConstructor generateConstructor_000(ConstructorDef aConstructorDef,
+	                                                             ClassStatement parent, // TODO Namespace constructors
+	                                                             FunctionInvocation aFunctionInvocation) {
 		final GeneratedConstructor gf = new GeneratedConstructor(aConstructorDef);
 		gf.setFunctionInvocation(aFunctionInvocation);
 		if (parent instanceof ClassStatement) {
