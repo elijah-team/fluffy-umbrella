@@ -1,43 +1,27 @@
-Home Page
-=========
+.. Elijah Fluffy Umbrella (fluff-5 branch) documentation master file, created by
+   sphinx-quickstart on Sat Oct 15 21:08:42 2022.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
 
-Elijjah is a high-level language suitable for replacement of Java and
-C++. It is meant to integrate into current C and Java projects. It will
-feature a REPL and a graphical environment as well, along the lines
-Smalltalk/Tunes Slate.
+Welcome to Elijah Fluffy Umbrella (fluff-5 branch)'s documentation!
+===================================================================
 
-It is free software intended for use on all systems, including
-GNU/Linux.
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
 
-Other Software Required:
 
--  antlr (included)
--  javassist (not used yet, but included)
--  python (not yet)
--  java-compiler (java8)
 
-The repo is currently buildable from maven. You can also import into
-Eclipse and IDEA and get up and running. The tests need to run run from
-the root directory, which is done automatically in maven but not IDEA.
+Indices and tables
+==================
 
-Much work is needed.
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
 
-See `Language Overview <language-overview.md>`__ for more details on the
-language.
 
-All of this is a work in progress and your support would be appreciated.
 
-oluoluolu+elijah (at) gmail.com
+(Index)[index.md] (Language Overview)[language-overview.md]
 
-`google group <https://groups.google.com/forum/#!forum/elijjah>`__
-
-`Technical
-Wiki <https://gitlab.com/elijah-team/elijah-lang/-/wikis/home>`__
-
-`GitBook: The Elijjah
-Book <https://oluoluolu-gh.gitbook.io/elijjah-book/>`__
-
-`Elijjah by Example <https://elijjah-by-example.github.io>`__
-
-`GitBook: Elijjah by
-Example <https://oluoluolu-gh.gitbook.io/elijjah-by-example/>`__
+(Access Notation)[access_notation.md] (Aliases)[aliases.md]
+(Keywords)[keywords.md] (Type Names)[type_names.md]
