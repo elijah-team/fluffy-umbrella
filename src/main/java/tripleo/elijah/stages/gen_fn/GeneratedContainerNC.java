@@ -82,7 +82,7 @@ public abstract class GeneratedContainerNC extends AbstractDependencyTracker imp
 
 	public abstract void generateCode(CodeGenerator aGgc, GenerateResult aGr);
 
-	Multimap<FunctionDef, FunctionMapDeferred> functionMapDeferreds = ArrayListMultimap.create();
+	private final Multimap<FunctionDef, FunctionMapDeferred> functionMapDeferreds = ArrayListMultimap.create();
 	public void functionMapDeferred(final FunctionDef aFunctionDef, final FunctionMapDeferred aFunctionMapDeferred) {
 		functionMapDeferreds.put(aFunctionDef, aFunctionMapDeferred);
 	}

@@ -49,7 +49,7 @@ public class Compilation {
 	private final int _compilationNumber;
 	private IO io;
 	private ErrSink eee;
-	public final List<OS_Module> modules = new ArrayList<OS_Module>();
+	private final List<OS_Module> modules = new ArrayList<OS_Module>();
 	private final Map<String, OS_Module> fn2m = new HashMap<String, OS_Module>();
 	private final Map<String, CompilerInstructions> fn2ci = new HashMap<String, CompilerInstructions>();
 	private final Map<String, OS_Package> _packages = new HashMap<String, OS_Package>();

@@ -168,7 +168,7 @@ public interface PostBC_Processor {
 			return r;
 		}
 	}
-}
+//}
 
 	class PostBC_Processor__VTE_SELF extends PostBC_Processor.__PostBC_Processor__VTE {
 		private final VariableTableEntry         variableTableEntry;
@@ -451,4 +451,4 @@ public interface PostBC_Processor {
 			return fd_ctx;
 		}
 	}
-//}
+}
