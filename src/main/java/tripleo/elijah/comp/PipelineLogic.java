@@ -8,24 +8,23 @@
  */
 package tripleo.elijah.comp;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.entrypoints.EntryPoint;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
-import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 import tripleo.elijah.stages.deduce.DeducePhase;
-import tripleo.elijah.stages.gen_c.GenerateC;
-import tripleo.elijah.stages.gen_fn.*;
+import tripleo.elijah.stages.gen_fn.GenerateFunctions;
+import tripleo.elijah.stages.gen_fn.GeneratePhase;
+import tripleo.elijah.stages.gen_fn.GeneratedClass;
+import tripleo.elijah.stages.gen_fn.GeneratedFunction;
+import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
+import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.elijah.stages.logging.ElLog;
-import tripleo.elijah.util.Stupidity;
 import tripleo.elijah.work.WorkManager;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,13 +36,13 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	public final DeducePhase dp;
 	private final AccessBus __ab;
 
-	public GenerateResult gr = new GenerateResult();
-	public List<ElLog> elLogs = new LinkedList<ElLog>();
-	public boolean verbose = true;
+	public GenerateResult gr     = new GenerateResult();
+	public List<ElLog>    elLogs = new LinkedList<ElLog>();
 
 	private final ElLog.Verbosity verbosity;
 
-	final List<OS_Module> mods = new ArrayList<OS_Module>();
+	private final List<OS_Module> __mods_BACKING = new ArrayList<OS_Module>();
+	final         EIT_ModuleList  mods           = new EIT_ModuleList(__mods_BACKING);
 
 	public PipelineLogic(final AccessBus ab) {
 		__ab = ab;
@@ -74,11 +73,8 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	public void generate(List<GeneratedNode> lgc) {
 		final WorkManager wm = new WorkManager();
 		// README use any errSink, they should all be the same
-		for (OS_Module mod : mods) {
-			final GenerateC generateC = new GenerateC(mod, mod.parent.getErrSink(), verbosity, this);
-			final GenerateResult ggr = run3(mod, lgc, wm, generateC);
-			wm.drain();
-			gr.additional(ggr);
+		for (OS_Module mod : mods.getMods()) {
+			__ab.doModule(lgc, wm, mod, this);
 		}
 
 		__ab.resolveGenerateResult(gr);
@@ -99,33 +95,6 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	@NotNull
 	private GenerateFunctions getGenerateFunctions(OS_Module mod) {
 		return generatePhase.getGenerateFunctions(mod);
-	}
-
-	protected GenerateResult run3(OS_Module mod, @NotNull List<GeneratedNode> lgc, WorkManager wm, GenerateC ggc) {
-		GenerateResult gr = new GenerateResult();
-
-		Compilation ccc = mod.parent;
-		@NotNull EOT_OutputTree cot = ccc.getOutputTree();
-
-		for (GeneratedNode generatedNode : lgc) {
-			if (generatedNode.module() != mod) continue; // README curious
-
-			if (generatedNode instanceof GeneratedContainerNC) {
-				final GeneratedContainerNC nc = (GeneratedContainerNC) generatedNode;
-
-				nc.generateCode(ggc, gr);
-				final @NotNull Collection<GeneratedNode> gn1 = ggc.functions_to_list_of_generated_nodes(nc.functionMap.values());
-				GenerateResult gr2 = ggc.generateCode(gn1, wm);
-				gr.results().addAll(gr2.results());
-				final @NotNull Collection<GeneratedNode> gn2 = ggc.classes_to_list_of_generated_nodes(nc.classMap.values());
-				GenerateResult gr3 = ggc.generateCode(gn2, wm);
-				gr.results().addAll(gr3.results());
-			} else {
-				System.out.println("2009 " + generatedNode.getClass().getName());
-			}
-		}
-
-		return gr;
 	}
 
 	public void addModule(OS_Module m) {
@@ -177,160 +146,11 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	}
 
 	@Override
-	public void mods_slot(final EIT_ModuleList aModuleList) {
-		final List<OS_Module> mods1 = aModuleList.getMods();
+	public void mods_slot(final @NotNull EIT_ModuleList aModuleList) {
+		aModuleList.process__PL(this::getGenerateFunctions, this);
 
-		for (OS_Module mod : mods1) {
-			final GenerateFunctions gfm = getGenerateFunctions(mod);
-			final EntryPointList epl1 = new EntryPointList(mod, mod.entryPoints);
-			epl1._processByEntryPoint(gfm);
-
-			//final GenerateFunctions gfm = getGenerateFunctions(mod);
-			//gfm.generateFromEntryPoints(epl, dp);
-		}
-
-		//List<List<EntryPoint>> entryPoints = mods.stream().map(mod -> mod.entryPoints).collect(Collectors.toList());
 		dp.finish();
-
-//		int y = lgc.size();
-
 //		dp.generatedClasses.addAll(lgc);
-	}
-
-
-	class EntryPointList {
-		private final List<EntryPoint> epl; // = new ArrayList<>();
-		private final OS_Module mod;
-
-		@Contract(pure = true)
-		public EntryPointList(OS_Module amod, List<EntryPoint> aepl) {
-			this.mod = amod;
-			this.epl = aepl;
-		}
-
-		void _processByEntryPoint(final @NotNull GenerateFunctions gfm) {
-			DeducePhase.@NotNull GeneratedClasses lgc = dp.generatedClasses;
-			List<GeneratedNode> resolved_nodes = new ArrayList<GeneratedNode>();
-
-//			assert lgc.size() == 0;
-			if (lgc.size() != 0) {
-				int y = 2;
-				Stupidity.println_err(String.format("lgc.size() != 0: %d", lgc.size()));
-			}
-
-			//Iterable<? extends GeneratedNode> lgc1 = ;
-			gfm.generateFromEntryPoints(this.epl, dp);
-
-			//assert lgc.size() == epl.size(); //hmm
-
-			if (false) {
-				for (final GeneratedNode generatedNode : lgc) {
-					if (generatedNode instanceof GNCoded) {
-						final GNCoded coded = (GNCoded) generatedNode;
-
-						switch (coded.getRole()) {
-							case FUNCTION: {
-								//						GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
-								if (coded.getCode() == 0) {
-									coded.setCode(mod.parent.nextFunctionCode());
-								}
-								break;
-							}
-							case CLASS: {
-								final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-								//						if (generatedClass.getCode() == 0)
-								//							generatedClass.setCode(mod.parent.nextClassCode());
-								for (GeneratedClass generatedClass2 : generatedClass.classMap.values()) {
-									if (generatedClass2.getCode() == 0) {
-										generatedClass2.setCode(mod.parent.nextClassCode());
-									}
-								}
-								for (GeneratedFunction generatedFunction : generatedClass.functionMap.values()) {
-									for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
-										if (identTableEntry.isResolved()) {
-											GeneratedNode node = identTableEntry.resolvedType();
-											resolved_nodes.add(node);
-										}
-									}
-								}
-								break;
-							}
-							case NAMESPACE: {
-								final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
-								if (coded.getCode() == 0) {
-									coded.setCode(mod.parent.nextClassCode());
-								}
-								for (GeneratedClass generatedClass : generatedNamespace.classMap.values()) {
-									if (generatedClass.getCode() == 0) {
-										generatedClass.setCode(mod.parent.nextClassCode());
-									}
-								}
-								for (GeneratedFunction generatedFunction : generatedNamespace.functionMap.values()) {
-									for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
-										if (identTableEntry.isResolved()) {
-											GeneratedNode node = identTableEntry.resolvedType();
-											resolved_nodes.add(node);
-										}
-									}
-								}
-								break;
-							}
-							default:
-								throw new IllegalStateException("Unexpected value: " + coded.getRole());
-						}
-
-					} else {
-						throw new IllegalStateException("node must be coded");
-					}
-				}
-
-				for (final GeneratedNode generatedNode : resolved_nodes) {
-					if (generatedNode instanceof GNCoded) {
-						final GNCoded coded = (GNCoded) generatedNode;
-						final int code;
-						if (coded.getCode() == 0) {
-							switch (coded.getRole()) {
-								case FUNCTION:
-									code = mod.parent.nextFunctionCode();
-									break;
-								case NAMESPACE:
-								case CLASS:
-									code = mod.parent.nextClassCode();
-									break;
-								default:
-									throw new IllegalStateException("Invalid coded role");
-							}
-							coded.setCode(code);
-						}
-					} else {
-						throw new IllegalStateException("node is not coded");
-					}
-				}
-			} else {
-				final Coder coder = new Coder();
-
-				for (final GeneratedNode generatedNode : lgc) {
-					coder.codeNodes(mod, resolved_nodes, generatedNode);
-				}
-
-				resolved_nodes.forEach(generatedNode -> coder.codeNode(generatedNode, mod));
-			}
-
-			dp.deduceModule(mod, lgc, getVerbosity());
-
-			resolveCheck(lgc);
-
-//			for (final GeneratedNode gn : lgf) {
-//				if (gn instanceof GeneratedFunction) {
-//					GeneratedFunction gf = (GeneratedFunction) gn;
-//					System.out.println("----------------------------------------------------------");
-//					System.out.println(gf.name());
-//					System.out.println("----------------------------------------------------------");
-//					GeneratedFunction.printTables(gf);
-//					System.out.println("----------------------------------------------------------");
-//				}
-//			}
-		}
 	}
 
 }

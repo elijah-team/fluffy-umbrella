@@ -14,13 +14,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.entrypoints.EntryPoint;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.lang2.SpecialFunctions;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeduceConstructStatement;
-import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.stages.logging.ElLog;
@@ -766,9 +764,11 @@ public class GenerateFunctions {
 //		return R;
 //	}
 
+/*
 	public void generateFromEntryPoints(@NotNull List<EntryPoint> epl, DeducePhase deducePhase) {
 		new EntryPointList(epl).generateFromEntryPoints(deducePhase, this, phase.wm);
 	}
+*/
 
 	public void generateAllTopLevelClasses(List<GeneratedNode> lgc) {
 		for (final ModuleItem item : module.getItems()) {

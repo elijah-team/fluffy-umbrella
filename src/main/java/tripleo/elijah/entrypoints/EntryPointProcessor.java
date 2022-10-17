@@ -1,17 +1,17 @@
-package tripleo.elijah.stages.gen_fn;
+package tripleo.elijah.entrypoints;
 
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.entrypoints.ArbitraryFunctionEntryPoint;
-import tripleo.elijah.entrypoints.EntryPoint;
-import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.gen_fn.GenerateFunctions;
+import tripleo.elijah.stages.gen_fn.WlGenerateClass;
+import tripleo.elijah.stages.gen_fn.WlGenerateFunction;
 import tripleo.elijah.work.WorkList;
 
-interface EntryPointProcessor {
+public interface EntryPointProcessor {
 	void process();
 
 	static EntryPointProcessor dispatch(final EntryPoint ep, DeducePhase aDeducePhase, WorkList aWl, GenerateFunctions aGenerateFunctions) {
