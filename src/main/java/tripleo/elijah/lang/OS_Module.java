@@ -15,24 +15,23 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
-import com.google.common.base.Function;
 import com.google.common.base.Predicate;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Multimap;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.contexts.ModuleContext;
-import tripleo.elijah.entrypoints.EntryPoint;
-import tripleo.elijah.entrypoints.MainClassEntryPoint;
+import tripleo.elijah.entrypoints.EntryPointList;
 import tripleo.elijah.lang2.ElElementVisitor;
+import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
+import tripleo.elijah.stages.deduce.fluffy.i.FluffyModule;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Stack;
 
 public class OS_Module implements OS_Element, OS_Container {
 
@@ -41,11 +40,11 @@ public class OS_Module implements OS_Element, OS_Container {
 	public @NotNull Attached _a = new Attached();
 	public OS_Module prelude;
 
-	public Compilation parent;
-	private LibraryStatementPart lsp;
-	private String _fileName;
-	public @NotNull List<EntryPoint> entryPoints = new ArrayList<EntryPoint>();
-	private IndexingStatement indexingStatement;
+	public          Compilation          parent;
+	private         LibraryStatementPart lsp;
+	private         String               _fileName;
+	public @NotNull EntryPointList       entryPoints = new EntryPointList();
+	private         IndexingStatement    indexingStatement;
 
 	public @org.jetbrains.annotations.Nullable OS_Element findClass(final String aClassName) {
 		for (final ModuleItem item : items) {
@@ -189,57 +188,12 @@ public class OS_Module implements OS_Element, OS_Container {
 	}
 
 	public void postConstruct() {
-		find_multiple_items();
-		//
-		// FIND ALL ENTRY POINTS (should only be one per module)
-		//
-		XX.find_all_entry_points(this);
-	}
+		final FluffyComp fc = getContext().module().getCompilation().getFluffy();
 
-	private void find_multiple_items() {
-		Multimap<String, ModuleItem> items_map = ArrayListMultimap.create(items.size(), 1);
-		for (final ModuleItem item : items) {
-			if (!(item instanceof OS_Element2/* && item != anElement*/))
-				continue;
-			final String item_name = ((OS_Element2) item).name();
-			items_map.put(item_name, item);
-		}
-		for (String key : items_map.keys()) {
-			boolean warn = false;
+		final FluffyModule fm = fc.module(this);
 
-			Collection<ModuleItem> moduleItems = items_map.get(key);
-			if (moduleItems.size() < 2) // README really 1
-				continue;
-
-			Collection<ElObjectType> t = Collections2.transform(moduleItems, new Function<ModuleItem, ElObjectType>() {
-				@Override
-				public ElObjectType apply(@org.checkerframework.checker.nullness.qual.Nullable ModuleItem input) {
-					assert input != null;
-					return DecideElObjectType.getElObjectType(input);
-				}
-			});
-
-			Set<ElObjectType> st = new HashSet<ElObjectType>(t);
-			if (st.size() > 1)
-				warn = true;
-			if (moduleItems.size() > 1)
-				if (moduleItems.iterator().next() instanceof NamespaceStatement && st.size() == 1)
-					;
-				else
-					warn = true;
-
-			//
-			//
-			//
-
-			if (warn) {
-				final String module_name = this.toString(); // TODO print module name or something
-				final String s = String.format(
-						"[Module#add] %s Already has a member by the name of %s",
-						module_name, key);
-				parent.getErrSink().reportWarning(s);
-			}
-		}
+		fm.find_multiple_items(fc);
+		fm.find_all_entry_points();
 	}
 
 	public void setContext(final ModuleContext mctx) {
@@ -278,43 +232,7 @@ public class OS_Module implements OS_Element, OS_Container {
 
 
 	static class XX {
-		private static boolean isMainClassEntryPoint(@NotNull ClassItem input) {
-			final FunctionDef fd = (FunctionDef) input;
-			return MainClassEntryPoint.is_main_function_with_no_args(fd);
-		}
 
-		private static void find_all_entry_points(@NotNull OS_Module aModule) {
-			Consumer<ClassStatement> ccs = (x) -> aModule.entryPoints.add(new MainClassEntryPoint(x));
-
-			aModule.items.stream()
-					.filter(item -> item instanceof ClassStatement)
-					.map(item -> (ClassStatement) item)
-					.forEach(classStatement -> faep_002(classStatement, ccs));
-		}
-
-		/**
-		 * If classStatement is a "main class", send to consumer
-		 *
-		 * @param classStatement
-		 * @param ccs
-		 */
-		private static void faep_002(ClassStatement classStatement, Consumer<ClassStatement> ccs) {
-			if (MainClassEntryPoint.isMainClass(classStatement)) {} else return;
-
-			final Collection<ClassItem> x = classStatement.findFunction("main");
-			final Stream<ClassItem> found = x.stream().filter(XX::isMainClassEntryPoint);
-
-//			final int eps = aModule.entryPoints.size();
-
-			found
-					.map(classItem -> (ClassStatement) classItem.getParent())
-					.forEach(ccs);
-
-//			assert aModule.entryPoints.size() == eps || aModule.entryPoints.size() == eps+1; // TODO this will fail one day
-
-//			System.out.println("243 " + entryPoints +" "+ _fileName);
-//			break; // allow for "extend" class
-		}
 	}
 
 }

@@ -8,4 +8,8 @@ public interface FluffyModule {
 	String name();
 
 	List<FluffyMember> members();
+
+	void find_multiple_items(FluffyComp aFc);
+
+	void find_all_entry_points();
 }
