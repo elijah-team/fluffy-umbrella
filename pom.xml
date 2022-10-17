@@ -4,7 +4,7 @@
     <groupId>tripleo.elijah</groupId>
     <artifactId>elijah-v1-fluffy-umbrella</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.6</version>
+    <version>0.0.9-flum-main-221017-001-rel</version>
     <name>eljc-v1-fluffy-umbrella</name>
     <url>http://github.com/elijah-team/fluffy-umbrella/</url>
     <properties>
