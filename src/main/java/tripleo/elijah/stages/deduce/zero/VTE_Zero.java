@@ -4,9 +4,23 @@ import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.lang.*;
-import tripleo.elijah.stages.deduce.*;
-import tripleo.elijah.stages.gen_fn.*;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.stages.deduce.ClassInvocation;
+import tripleo.elijah.stages.deduce.DeduceLookupUtils;
+import tripleo.elijah.stages.deduce.DeducePhase;
+import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.ResolveError;
+import tripleo.elijah.stages.gen_fn.BaseTableEntry;
+import tripleo.elijah.stages.gen_fn.GenType;
+import tripleo.elijah.stages.gen_fn.GeneratedClass;
+import tripleo.elijah.stages.gen_fn.GenericElementHolder;
+import tripleo.elijah.stages.gen_fn.IdentTableEntry;
+import tripleo.elijah.stages.gen_fn.TypeTableEntry;
+import tripleo.elijah.stages.gen_fn.VariableTableEntry;
 
 public class VTE_Zero {
 	private final VariableTableEntry vte;
@@ -53,7 +67,14 @@ public class VTE_Zero {
 				LookupResultList lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
 				ele2 = lrl.chooseBest(null);
 			} else {
-				ele2 = ty.getClassOf(); // TODO might fail later (use getElement?)
+				switch (ty.getType()) {
+					case USER_CLASS:
+						ele2 = ty.getClassOf();
+						break;
+					default:
+						ele2 = ty.getElement();
+						break;
+				}
 			}
 
 			@Nullable LookupResultList lrl = null;
