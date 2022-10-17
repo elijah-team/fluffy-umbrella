@@ -55,7 +55,7 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 
 		List<OS_Module> ms1 = __ab.getCompilation().getModules();
 
-		assert ms1 == ms && ms != null;
+//		assert ms1 == ms && ms != null;
 
 		for (final OS_Module module : ms1) {
 			pipelineLogic.addModule(module);
@@ -63,7 +63,9 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 
 //		System.err.println(ms.size());
 
-		__ab.resolveModuleList(ms1);
+		final EIT_ModuleList eml = new EIT_ModuleList(ms1);
+
+		__ab.resolveModuleList(eml);
 
 //		assert lgc.size() == 0;
 		pipelineLogic.everythingBeforeGenerate();
