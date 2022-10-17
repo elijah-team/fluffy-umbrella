@@ -12,7 +12,13 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.AccessBus;
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.IO;
+import tripleo.elijah.comp.PipelineLogic;
+import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationImpl;
+import tripleo.elijah.entrypoints.EntryPointList;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.factory.comp.CompilationFactory;
 import tripleo.elijah.lang.ClassStatement;
@@ -43,12 +49,12 @@ public class TestGenFunction {
 
 	@Test
 	public void testDemoElNormalFact1Elijah() throws Exception {
-		final StdErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final StdErrSink  eee = new StdErrSink();
+		final Compilation c   = new CompilationImpl(eee, new IO());
 
-		final String f = "test/demo-el-normal/fact1.elijah";
-		final File file = new File(f);
-		final OS_Module m = c.realParseElijjahFile(f, file, false);
+		final String    f    = "test/demo-el-normal/fact1.elijah";
+		final File      file = new File(f);
+		final OS_Module m    = c.realParseElijjahFile(f, file, false);
 		Assert.assertTrue("Method parsed correctly", m != null);
 		m.prelude = c.findPrelude("c"); // TODO we dont know which prelude to find yet
 
@@ -57,7 +63,11 @@ public class TestGenFunction {
 		//
 		final ClassStatement main_class = (ClassStatement) m.findClass("Main");
 		assert main_class != null;
-		m.entryPoints = List_of(new MainClassEntryPoint(main_class));
+
+		EntryPointList epl = new EntryPointList();
+		epl.add(new MainClassEntryPoint(main_class));
+
+		m.entryPoints = epl;
 		//
 		//
 		//
@@ -187,7 +197,7 @@ public class TestGenFunction {
 		final Compilation compilation = CompilationFactory.mkCompilation2(mapHooks);
 
 /*
-		Compilation compilation = new Compilation(new StdErrSink(), new IO());
+		Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
 		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
 		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
 		c.pipelineLogic = pl;
@@ -225,8 +235,8 @@ public class TestGenFunction {
 //	@Test
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testGenericA() throws Exception {
-		final StdErrSink errSink = new StdErrSink();
-		final Compilation c = new Compilation(errSink, new IO());
+		final StdErrSink  errSink = new StdErrSink();
+		final Compilation c       = new CompilationImpl(errSink, new IO());
 
 		final String f = "test/basic1/genericA/";
 
@@ -236,8 +246,8 @@ public class TestGenFunction {
 //	@Test // ignore because of generateAllTopLevelClasses
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testBasic1Backlink1Elijah() throws Exception {
-		final StdErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final StdErrSink  eee = new StdErrSink();
+		final Compilation c   = new CompilationImpl(eee, new IO());
 
 		final String f = "test/basic1/backlink1.elijah";
 		final File file = new File(f);
@@ -251,12 +261,12 @@ public class TestGenFunction {
 			c.use(ci, false);
 		}
 
-		Compilation compilation = new Compilation(new StdErrSink(), new IO());
-		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
-		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
-		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
-		final GenerateFunctions gfm = generatePhase.getGenerateFunctions(m);
-		final List<GeneratedNode> lgc = new ArrayList<>();
+		Compilation               compilation   = new CompilationImpl(new StdErrSink(), new IO());
+		final ElLog.Verbosity     verbosity1    = compilation.gitlabCIVerbosity();
+		final PipelineLogic       pl            = new PipelineLogic(new AccessBus(compilation));
+		final GeneratePhase       generatePhase = new GeneratePhase(verbosity1, pl);
+		final GenerateFunctions   gfm           = generatePhase.getGenerateFunctions(m);
+		final List<GeneratedNode> lgc           = new ArrayList<>();
 		gfm.generateAllTopLevelClasses(lgc);
 
 		DeducePhase dp = new DeducePhase(generatePhase, pl, verbosity1);
@@ -296,7 +306,7 @@ public class TestGenFunction {
 			}
 		}
 
-//		Compilation compilation = new Compilation(new StdErrSink(), new IO());
+//		Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
 		final PipelineLogic pipelineLogic = new PipelineLogic(new AccessBus(compilation));
 		GenerateC ggc = new GenerateC(m, eee, c.gitlabCIVerbosity(), pipelineLogic);
 		ggc.generateCode(lgf, wm);
@@ -314,8 +324,8 @@ public class TestGenFunction {
 
 	@Test
 	public void testBasic1Backlink3Elijah() throws Exception {
-		final StdErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final StdErrSink  eee = new StdErrSink();
+		final Compilation c   = new CompilationImpl(eee, new IO());
 
 		final String ff = "test/basic1/backlink3/";
 		c.feedCmdLine(List_of(ff));

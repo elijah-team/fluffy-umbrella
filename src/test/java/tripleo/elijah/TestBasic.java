@@ -16,9 +16,9 @@ import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationImpl;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,8 +38,8 @@ public class TestBasic {
 		final List<String> args = new ArrayList<String>();
 		args.addAll(ez_files);
 		args.add("-sE");
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final ErrSink     eee = new StdErrSink();
+		final Compilation c   = new CompilationImpl(eee, new IO());
 
 		c.feedCmdLine(args);
 
@@ -55,8 +55,8 @@ public class TestBasic {
 
 		for (String s : ez_files) {
 //			List<String> args = List_of("test/basic", "-sO"/*, "-out"*/);
-			final ErrSink eee = new StdErrSink();
-			final Compilation c = new Compilation(eee, new IO());
+			final ErrSink     eee = new StdErrSink();
+			final Compilation c   = new CompilationImpl(eee, new IO());
 
 			c.feedCmdLine(List_of(s, "-sO"));
 
@@ -77,8 +77,8 @@ public class TestBasic {
 	public final void testBasic_listfolders3() throws Exception {
 		String s = "test/basic/listfolders3/listfolders3.ez";
 
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final ErrSink     eee = new StdErrSink();
+		final Compilation c   = new CompilationImpl(eee, new IO());
 
 		c.feedCmdLine(List_of(s, "-sO"));
 
@@ -92,8 +92,8 @@ public class TestBasic {
 	public final void testBasic_listfolders4() throws Exception {
 		String s = "test/basic/listfolders4/listfolders4.ez";
 
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final ErrSink     eee = new StdErrSink();
+		final Compilation c   = new CompilationImpl(eee, new IO());
 
 		c.feedCmdLine(List_of(s, "-sO"));
 
@@ -107,8 +107,8 @@ public class TestBasic {
 	public final void testBasic_fact1() throws Exception {
 		String s = "test/basic/fact1/main2";
 
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final ErrSink     eee = new StdErrSink();
+		final Compilation c   = new CompilationImpl(eee, new IO());
 
 		c.feedCmdLine(List_of(s, "-sO"));
 

@@ -9,9 +9,18 @@
 package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.AccessBus;
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.IO;
+import tripleo.elijah.comp.PipelineLogic;
+import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.lang.*;
-import tripleo.elijah.stages.deduce.*;
+import tripleo.elijah.stages.deduce.ClassInvocation;
+import tripleo.elijah.stages.deduce.DeducePhase;
+import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.FoundElement;
+import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.logging.ElLog;
@@ -27,8 +36,8 @@ public class TestIdentNormal {
 
 //	@Test(expected = IllegalStateException.class) // TODO proves nothing
 	public void test() {
-		Compilation compilation = new Compilation(new StdErrSink(), new IO());
-		OS_Module mod = new OS_Module();//mock(OS_Module.class);
+		Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
+		OS_Module   mod         = new OS_Module();//mock(OS_Module.class);
 		mod.setParent(compilation);
 		FunctionDef fd = mock(FunctionDef.class);
 		Context ctx1 = mock(Context.class);
@@ -88,9 +97,9 @@ public class TestIdentNormal {
 
 //	@Test // TODO just a mess
 	public void test2() {
-		Compilation compilation = new Compilation(new StdErrSink(), new IO());
-		Compilation comp = compilation;
-		OS_Module mod = new OS_Module();
+		Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
+		Compilation comp        = compilation;
+		OS_Module   mod         = new OS_Module();
 		mod.setParent(comp);
 //		FunctionDef fd = mock(FunctionDef.class);
 		Context ctx2 = mock(Context.class);

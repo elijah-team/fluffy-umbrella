@@ -14,6 +14,7 @@ import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.util.Helpers;
 
 public class ElSystemTest {
@@ -24,7 +25,7 @@ public class ElSystemTest {
 	@Before
 	public void setUp() throws Exception {
 		final StdErrSink eee = new StdErrSink();
-		c = new Compilation(eee, new IO());
+		c = new CompilationImpl(eee, new IO());
 
 		final String f = "test/basic1/backlink3";
 

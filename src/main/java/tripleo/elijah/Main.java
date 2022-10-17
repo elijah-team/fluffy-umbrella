@@ -8,25 +8,21 @@
  */
 package tripleo.elijah;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
-import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.IO;
+import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationImpl;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class Main {
 
 	public static void main(final String[] args) throws Exception {
-		final StdErrSink errSink = new StdErrSink();
-		final Compilation cc = new Compilation(errSink, new IO());
-		final List<String> ls = new ArrayList<String>();
+		final StdErrSink   errSink = new StdErrSink();
+		final Compilation  cc      = new CompilationImpl(errSink, new IO());
+		final List<String> ls      = new ArrayList<String>();
 		ls.addAll(Arrays.asList(args));
 		cc.feedCmdLine(ls);
 	}
