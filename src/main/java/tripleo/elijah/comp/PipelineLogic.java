@@ -32,9 +32,9 @@ import java.util.List;
  * Created 12/30/20 2:14 AM
  */
 public class PipelineLogic implements AccessBus.AB_ModuleListListener {
-	public final GeneratePhase generatePhase;
-	public final DeducePhase dp;
-	private final AccessBus __ab;
+	public final  GeneratePhase generatePhase;
+	public final  DeducePhase   dp;
+	private final AccessBus     __ab;
 
 	public GenerateResult gr     = new GenerateResult();
 	public List<ElLog>    elLogs = new LinkedList<ElLog>();
@@ -47,7 +47,7 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	public PipelineLogic(final AccessBus ab) {
 		__ab = ab;
 
-		boolean sil = ab.getCompilation().getSilence();
+		boolean         sil     = ab.getCompilation().getSilence();
 		ElLog.Verbosity silence = sil ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
 
 		verbosity = silence;
@@ -101,7 +101,7 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 		mods.add(m);
 	}
 
-	private void resolveCheck(DeducePhase.@NotNull GeneratedClasses lgc) {
+	public void resolveCheck(DeducePhase.@NotNull GeneratedClasses lgc) {
 		for (final GeneratedNode generatedNode : lgc) {
 			if (generatedNode instanceof GeneratedFunction) {
 
@@ -138,7 +138,7 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	}
 
 	public ElLog.Verbosity getVerbosity() {
-		return verbose ? ElLog.Verbosity.VERBOSE : ElLog.Verbosity.SILENT;
+		return verbosity;
 	}
 
 	public void addLog(ElLog aLog) {
