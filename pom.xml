@@ -167,12 +167,24 @@
             <url>https://gitlab.com/api/v4/projects/21223510/packages/maven</url>
         </repository>
     </repositories>
+    
+    <distributionManagement>
+   <repository>
+     <id>github</id>
+     <name>GitHub elijah-team/fluffy-umbrella Apache Maven Packages</name>
+     <url>https://maven.pkg.github.com/elijah-team/fluffy-umbrella</url>
+   </repository>
+</distributionManagement>
+
+    
+    <!--
     <distributionManagement>
         <repository>
             <id>gitlab-maven</id>
             <url>https://gitlab.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
         </repository>
     </distributionManagement>
+-->
 
     <build>
         <!--
