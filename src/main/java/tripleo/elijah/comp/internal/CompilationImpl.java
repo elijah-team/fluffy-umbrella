@@ -13,6 +13,8 @@ import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
+import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
+import tripleo.elijah.stages.deduce.fluffy.impl.FluffyCompImpl;
 import tripleo.elijah.testing.comp.IFunctionMapHook;
 import tripleo.elijah.util.NotImplementedException;
 
@@ -22,6 +24,7 @@ public class CompilationImpl extends Compilation {
 
 	public CompilationImpl(ErrSink aEee, IO aIo) {
 		super(aEee, aIo);
+		_fluffyComp = new FluffyCompImpl(this);
 	}
 
 	public void testMapHooks(List<IFunctionMapHook> aMapHooks) {
@@ -41,6 +44,13 @@ public class CompilationImpl extends Compilation {
 
 		return _output_tree;
 	}
+
+	@Override
+	public @NotNull FluffyComp getFluffy() {
+		return _fluffyComp;
+	}
+
+	private final @NotNull FluffyCompImpl _fluffyComp;
 
 }
 

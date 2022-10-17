@@ -4,13 +4,18 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.stages.gen_fn.*;
+import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.GeneratedClass;
+import tripleo.elijah.stages.gen_fn.GeneratedFunction;
+import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
+import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-class Coder {
+public class Coder {
 
 	public void codeNodes(OS_Module mod, List<GeneratedNode> resolved_nodes, GeneratedNode generatedNode) {
 		if (generatedNode instanceof GeneratedFunction) {
@@ -50,7 +55,7 @@ class Coder {
 				.collect(Collectors.toList())).forEach(resolved_nodes::addAll);
 	}
 
-	void codeNode(GeneratedNode generatedNode, OS_Module mod) {
+	public void codeNode(GeneratedNode generatedNode, OS_Module mod) {
 		final Coder coder = this;
 
 		if (generatedNode instanceof GeneratedFunction) {

@@ -29,6 +29,7 @@ import tripleo.elijah.lang.Qualident;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.FunctionMapHook;
+import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
 import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
@@ -41,20 +42,25 @@ import tripleo.elijjah.EzParser;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 
-public class Compilation {
+public abstract class Compilation {
 
-	private final int _compilationNumber;
-	private IO io;
-	private ErrSink eee;
-	private final List<OS_Module> modules = new ArrayList<OS_Module>();
-	private final Map<String, OS_Module> fn2m = new HashMap<String, OS_Module>();
-	private final Map<String, CompilerInstructions> fn2ci = new HashMap<String, CompilerInstructions>();
-	private final Map<String, OS_Package> _packages = new HashMap<String, OS_Package>();
-	private int _packageCode = 1;
-	public final List<CompilerInstructions> cis = new ArrayList<CompilerInstructions>();
+	private final int                               _compilationNumber;
+	private       IO                                io;
+	private       ErrSink                           eee;
+	private final List<OS_Module>                   modules      = new ArrayList<OS_Module>();
+	private final Map<String, OS_Module>            fn2m         = new HashMap<String, OS_Module>();
+	private final Map<String, CompilerInstructions> fn2ci        = new HashMap<String, CompilerInstructions>();
+	private final Map<String, OS_Package>           _packages    = new HashMap<String, OS_Package>();
+	private       int                               _packageCode = 1;
+	public final  List<CompilerInstructions>        cis          = new ArrayList<CompilerInstructions>();
 
 	//
 	//
@@ -534,6 +540,8 @@ public class Compilation {
 	public List<OS_Module> getModules() {
 		return modules;
 	}
+
+	public abstract FluffyComp getFluffy();
 }
 
 //
