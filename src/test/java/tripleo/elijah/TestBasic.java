@@ -83,7 +83,7 @@ public class TestBasic {
 		if (c.errorCount() != 0)
 			System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
 
-		Assert.assertEquals(5, c.errorCount()); // TODO Error count obviously should be 0
+		Assert.assertEquals(5-1, c.errorCount()); // TODO Error count obviously should be 0
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public class TestBasic {
 		if (c.errorCount() != 0)
 			System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
 
-		Assert.assertEquals(13, c.errorCount()); // TODO Error count obviously should be 0
+		Assert.assertEquals(13-4, c.errorCount()); // TODO Error count obviously should be 0
 	}
 
 }

@@ -10,7 +10,7 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.*;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
@@ -39,6 +39,7 @@ import static tripleo.elijah.util.Helpers.List_of;
  */
 public class TestGenFunction {
 
+	@Ignore
 	@Test
 	public void testDemoElNormalFact1Elijah() throws Exception {
 		final StdErrSink eee = new StdErrSink();
@@ -220,7 +221,8 @@ public class TestGenFunction {
 		c.feedCmdLine(List_of(f));
 	}
 
-//	@Test // ignore because of generateAllTopLevelClasses
+	@Ignore
+	@Test // ignore because of generateAllTopLevelClasses
 	public void testBasic1Backlink1Elijah() throws Exception {
 		final StdErrSink eee = new StdErrSink();
 		final Compilation c = new Compilation(eee, new IO());
