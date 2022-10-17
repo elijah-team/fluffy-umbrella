@@ -11,47 +11,51 @@ package tripleo.elijah;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.ParserClosure;
-import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.TabbedOutputStream;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Out {
 
-	private final Compilation compilation;
-	private boolean do_out = false;
+//	private final Compilation compilation;
+//	private boolean do_out = false;
 
 	public Out(final String fn, final Compilation compilation, final boolean do_out) {
 		pc = new ParserClosure(fn, compilation);
-		this.compilation = compilation;
-		this.do_out = do_out;
+//		this.compilation = compilation;
+//		this.do_out = do_out;
 	}
-	
+
 	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings("NM_METHOD_NAMING_CONVENTION")
 	public void FinishModule() {
+/*
 		final TabbedOutputStream tos;
 		println("** FinishModule");
 		try {
+*/
 //			pc.module.print_osi(tos);
 			pc.module.finish();
 			//
+/*
 			if (do_out) {
 				tos = getTOSLog();
 	    		tos.put_string_ln(pc.module.getFileName());
 				Helpers.printXML(pc.module, tos);
 				tos.close();
 			}
+*/
 			//
 			//
+/*
 		} catch (final FileNotFoundException fnfe) {
 			println("&& FileNotFoundException");
 		} catch (final IOException ioe) {
 			println("&& IOException");
 		}
+*/
 	}
 
 	private static TabbedOutputStream getTOSLog() throws FileNotFoundException {
