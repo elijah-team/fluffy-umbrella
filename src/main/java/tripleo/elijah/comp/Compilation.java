@@ -91,7 +91,7 @@ public abstract class Compilation {
 				final CommandLine cmd = clp.parse(options, args.toArray(new String[args.size()]));
 
 				if (cmd.hasOption("s")) {
-					stage = cmd.getOptionValue('s');
+					stage = Stages.valueOf(cmd.getOptionValue('s'));
 				}
 				if (cmd.hasOption("showtree")) {
 					showTree = true;
@@ -140,7 +140,7 @@ public abstract class Compilation {
 
 				final AccessBus ab = new AccessBus(this);
 
-				if (stage.equals("E")) {
+				if (stage == Stages.E) {
 					// do nothing. job over
 				} else {
 /*
@@ -203,7 +203,7 @@ public abstract class Compilation {
 	//
 	//
 
-	public String stage = "O"; // Output
+	public Stages stage = Stages.O; // Output
 
 	private boolean silent = false;
 
