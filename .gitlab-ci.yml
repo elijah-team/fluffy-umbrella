@@ -1,0 +1,61 @@
+#image: java:8
+image: maven:latest
+
+stages:
+#  - build
+  - test
+  - deploy
+
+#build:
+#  stage: build
+#  image: alpine
+#  script:
+#    - echo Skipping because this doesn\'t do anything anyway
+#    #- mvn $MAVEN_CLI_OPTS -e compile
+
+test:
+  stage: test
+  script:
+    - mvn $MAVEN_CLI_OPTS test
+    - curl -s https://codecov.io/bash | bash -s - -t d63d15e4-247f-4588-b8bf-b31e34529ef5
+  artifacts:
+    paths: [ COMP ]
+
+deploy:
+  stage: deploy
+  image: maven:latest
+  script:
+    - mvn $MAVEN_CLI_OPTS deploy -s ci_settings.xml
+  only:
+    - master
+
+#sast:
+#  image: docker:stable
+#  variables:
+#    DOCKER_DRIVER: overlay2
+#  allow_failure: true
+#  services:
+#    - docker:stable-dind
+#  script:
+#    - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
+#    - docker run
+#        --env SAST_CONFIDENCE_LEVEL="${SAST_CONFIDENCE_LEVEL:-3}"
+#        --volume "$PWD:/code"
+#        --volume /var/run/docker.sock:/var/run/docker.sock
+#        "registry.gitlab.com/gitlab-org/security-products/sast:$SP_VERSION" /app/bin/run /code
+#  artifacts:
+#    reports:
+#      sast: gl-sast-report.json
+
+pages:
+  image: python:latest
+  stage: deploy
+  only:
+    - master
+    - docs
+  script:
+    - pip install mkdocs-material  mkdocs-git-revision-date-plugin mkdocs-git-revision-date-localized-plugin
+    - mkdocs build --site-dir public
+  artifacts:
+    paths:
+      - public

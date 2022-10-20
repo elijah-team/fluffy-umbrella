@@ -1,0 +1,390 @@
+.
+├── ci
+│   ├── CompilerInstructions.java
+│   ├── GenerateStatement.java
+│   ├── IndexingStatement.java
+│   └── LibraryStatementPart.java
+├── comp
+│   ├── Compilation.java
+│   ├── CompilationShit.java
+│   ├── ErrSink.java
+│   ├── FileOption.java
+│   ├── functionality
+│   │   └── f202
+│   │       ├── DefaultGetLogDirectoryBehavior.java
+│   │       ├── DefaultGetLogNameBehavior.java
+│   │       ├── DefaultProcessLogEntryBehavior.java
+│   │       ├── DefaultProgressBehavior.java
+│   │       ├── F202.java
+│   │       ├── GetLogDirectoryBehavior.java
+│   │       ├── GetLogNameBehavior.java
+│   │       ├── ProcessLogEntryBehavior.java
+│   │       └── ProgressBehavior.java
+│   ├── GenBuffer.java
+│   ├── impl
+│   │   └── StdErrSink.java
+│   ├── internal
+│   │   ├── Attachable.java
+│   │   ├── CCA.java
+│   │   ├── CompilationImpl.java
+│   │   ├── CompilationShitImpl.java
+│   │   ├── ModuleListener.java
+│   │   ├── RegistryImpl.java
+│   │   └── Registry.java
+│   ├── IO.java
+│   ├── PipelineLogic.java
+│   ├── PipelineMember.java
+│   └── pipelines
+│       ├── DeducePipeline.java
+│       ├── GeneratePipeline.java
+│       └── WritePipeline.java
+├── contexts
+│   ├── CaseContext.java
+│   ├── ClassContext.java
+│   ├── ClassInfo.java
+│   ├── ContextInfo.java
+│   ├── DefFunctionContext.java
+│   ├── FuncExprContext.java
+│   ├── FunctionContext.java
+│   ├── IfConditionalContext.java
+│   ├── ImportContext.java
+│   ├── ImportInfo.java
+│   ├── LoopContext.java
+│   ├── MatchConditionalContext.java
+│   ├── MatchContext.java
+│   ├── ModuleContext.java
+│   ├── NamespaceContext.java
+│   ├── PackageContext.java
+│   ├── PropertyStatementContext.java
+│   ├── SingleIdentContext.java
+│   ├── SyntacticBlockContext.java
+│   ├── VarContext.java
+│   └── WithContext.java
+├── diagnostic
+│   ├── Diagnostic.java
+│   └── Locatable.java
+├── entrypoints
+│   ├── ArbitraryFunctionEntryPoint.java
+│   ├── EntryPoint.java
+│   └── MainClassEntryPoint.java
+├── factory
+│   └── comp
+│       └── CompilationFactory.java
+├── lang
+│   ├── AbstractBlockScope.java
+│   ├── AbstractCodeGen.java
+│   ├── AbstractExpression.java
+│   ├── AbstractScope2.java
+│   ├── AbstractStatementClosure.java
+│   ├── AbstractTypeName2.java
+│   ├── AbstractTypeName.java
+│   ├── AccessNotation.java
+│   ├── AliasStatement.java
+│   ├── AnnotationClause.java
+│   ├── AnnotationPart.java
+│   ├── AnnotationWalker.java
+│   ├── Attached.java
+│   ├── BaseFunctionDef.java
+│   ├── BasicBinaryExpression.java
+│   ├── BlockStatement.java
+│   ├── builder
+│   │   ├── AliasStatementBuilder.java
+│   │   ├── BaseFunctionDefBuilder.java
+│   │   ├── BaseFunctionDefScope.java
+│   │   ├── BaseScope2.java
+│   │   ├── BaseScope.java
+│   │   ├── CaseConditionalBuilder.java
+│   │   ├── ClassBuilder.java
+│   │   ├── ClassOrNamespaceScope.java
+│   │   ├── ClassScope.java
+│   │   ├── ConstructorDefBuilder.java
+│   │   ├── ConstructorDefScope.java
+│   │   ├── ConstructStatementBuilder.java
+│   │   ├── DestructorDefBuilder.java
+│   │   ├── DestructorDefScope.java
+│   │   ├── ElBuilder.java
+│   │   ├── FunctionDefBuilder.java
+│   │   ├── FunctionDefScope.java
+│   │   ├── IfConditionalBuilder.java
+│   │   ├── ImportStatementBuilder.java
+│   │   ├── LoopBuilder.java
+│   │   ├── LoopScope.java
+│   │   ├── MatchConditionalBuilder.java
+│   │   ├── NamespaceScope.java
+│   │   ├── NamespaceStatementBuilder.java
+│   │   ├── PropertyStatementBuilder.java
+│   │   ├── StatementWrapperBuilder.java
+│   │   ├── SyntacticBlockBuilder.java
+│   │   ├── SyntacticBlockScope.java
+│   │   ├── TypeAliasBuilder.java
+│   │   ├── VariableSequenceBuilder.java
+│   │   ├── WithStatementBuilder.java
+│   │   └── WithStatementScope.java
+│   ├── CaseConditional.java
+│   ├── CharLitExpression.java
+│   ├── ClassInheritance.java
+│   ├── ClassItem.java
+│   ├── ClassStatement.java
+│   ├── ClassTypes.java
+│   ├── _CommonNC.java
+│   ├── ConstructorDef.java
+│   ├── ConstructStatement.java
+│   ├── Context.java
+│   ├── DecideElObjectType.java
+│   ├── DefFunctionDef.java
+│   ├── DestructorDef.java
+│   ├── Documentable.java
+│   ├── DotExpression.java
+│   ├── El_Category.java
+│   ├── ElObjectType.java
+│   ├── ExpressionBuilder.java
+│   ├── ExpressionKind.java
+│   ├── ExpressionList.java
+│   ├── FloatExpression.java
+│   ├── FormalArgListItem.java
+│   ├── FormalArgList.java
+│   ├── FuncExpr.java
+│   ├── FunctionDef.java
+│   ├── FunctionItem.java
+│   ├── FunctionModifiers.java
+│   ├── FuncTypeName.java
+│   ├── GenericTypeName.java
+│   ├── GetItemExpression.java
+│   ├── IBinaryExpression.java
+│   ├── IdentExpression.java
+│   ├── IdentList.java
+│   ├── IExpression.java
+│   ├── IfConditional.java
+│   ├── imports
+│   │   ├── AssigningImportStatement.java
+│   │   ├── _BaseImportStatement.java
+│   │   ├── NormalImportStatement.java
+│   │   ├── QualifiedImportStatement.java
+│   │   └── RootedImportStatement.java
+│   ├── ImportStatement.java
+│   ├── IndexingItem.java
+│   ├── IndexingStatement.java
+│   ├── InvariantStatement.java
+│   ├── InvariantStatementPart.java
+│   ├── ListExpression.java
+│   ├── LookupResult.java
+│   ├── LookupResultList.java
+│   ├── Loop.java
+│   ├── LoopTypes.java
+│   ├── MatchConditional.java
+│   ├── ModuleItem.java
+│   ├── NamespaceModify.java
+│   ├── NamespaceStatement.java
+│   ├── NamespaceTypes.java
+│   ├── NameTable.java
+│   ├── NormalTypeName.java
+│   ├── NumericExpression.java
+│   ├── OS_AnyType.java
+│   ├── OS_Container.java
+│   ├── OS_Element2.java
+│   ├── OS_Element.java
+│   ├── OS_Expression.java
+│   ├── OS_FuncExprType.java
+│   ├── OS_FuncType.java
+│   ├── OS_GenericTypeNameType.java
+│   ├── OS_Module.java
+│   ├── OS_Package.java
+│   ├── OS_Type.java
+│   ├── OS_UnknownType.java
+│   ├── ParserClosure.java
+│   ├── Postcondition.java
+│   ├── Precondition.java
+│   ├── ProcedureCallExpression.java
+│   ├── ProgramClosure.java
+│   ├── PropertyStatement.java
+│   ├── Qualident.java
+│   ├── QualidentList.java
+│   ├── RegularTypeName.java
+│   ├── Resolvable.java
+│   ├── Scope3.java
+│   ├── Scope.java
+│   ├── SetItemExpression.java
+│   ├── StatementClosure.java
+│   ├── StatementItem.java
+│   ├── StatementWrapper.java
+│   ├── StringExpression.java
+│   ├── SubExpression.java
+│   ├── SyntacticBlock.java
+│   ├── ToExpression.java
+│   ├── TypeAliasStatement.java
+│   ├── TypeCastExpression.java
+│   ├── TypeCheckExpression.java
+│   ├── TypeModifiers.java
+│   ├── TypeNameExpression.java
+│   ├── TypeName.java
+│   ├── TypeNameList.java
+│   ├── TypeOfTypeName.java
+│   ├── UnaryExpression.java
+│   ├── VariableReference.java
+│   ├── VariableSequence.java
+│   ├── VariableStatement.java
+│   ├── VariableTypeName.java
+│   ├── WithStatement.java
+│   └── YieldExpression.java
+├── lang2
+│   ├── BuiltInTypes.java
+│   ├── ElElementVisitor.java
+│   ├── SpecialFunctions.java
+│   └── SpecialVariables.java
+├── Main.java
+├── nextgen
+│   ├── ClassDefinition.java
+│   ├── ClassExpectation.java
+│   ├── ClassExpectationMatch.java
+│   ├── composable
+│   │   └── IComposable.java
+│   ├── diagnostic
+│   │   └── CouldntGenerateClass.java
+│   ├── outputstatement
+│   │   ├── EG_CompoundStatement.java
+│   │   ├── EG_SingleStatement.java
+│   │   ├── EG_Statement.java
+│   │   └── EG_SyntheticStatement.java
+│   └── outputtree
+│       └── EOT_OutputTree.java
+├── Out.java
+├── slir
+│   ├── package-info.java
+│   ├── RootSlirNode.java
+│   ├── SlirAbstractElement.java
+│   ├── SlirAlias.java
+│   ├── SlirAnnotations.java
+│   ├── SlirClass.java
+│   ├── SlirElement.java
+│   ├── SlirFunctionNode.java
+│   ├── SlirImportNode.java
+│   ├── SlirNamespaceNode.java
+│   ├── SlirPackageNode.java
+│   ├── SlirPos.java
+│   ├── SlirSourceFile.java
+│   └── SlirSourceNode.java
+├── stages
+│   ├── deduce
+│   │   ├── CantDecideType.java
+│   │   ├── ClassInvocation.java
+│   │   ├── ConstructableElementHolder.java
+│   │   ├── DeclAnchor.java
+│   │   ├── declarations
+│   │   │   ├── DeferredMemberFunction.java
+│   │   │   └── DeferredMember.java
+│   │   ├── DeduceConstructStatement.java
+│   │   ├── DeduceElementIdent.java
+│   │   ├── DeduceElement.java
+│   │   ├── DeduceLocalVariable.java
+│   │   ├── DeduceLookupUtils.java
+│   │   ├── DeducePath.java
+│   │   ├── DeducePhase.java
+│   │   ├── DeduceProcCall.java
+│   │   ├── DeduceTypeResolve.java
+│   │   ├── DeduceTypes2.java
+│   │   ├── DeduceUtils.java
+│   │   ├── DerivedClassInvocation.java
+│   │   ├── DoAssignCall.java
+│   │   ├── ForFunction.java
+│   │   ├── Found_Element_For_ITE.java
+│   │   ├── FoundElement.java
+│   │   ├── FunctionInvocation.java
+│   │   ├── FunctionMapDeferred.java
+│   │   ├── FunctionMapHook.java
+│   │   ├── IInvocation.java
+│   │   ├── NamespaceInvocation.java
+│   │   ├── OnClass.java
+│   │   ├── OnType.java
+│   │   ├── ProcTableListener.java
+│   │   ├── ResolveError.java
+│   │   ├── Resolve_Ident_IA2.java
+│   │   ├── Resolve_Ident_IA.java
+│   │   ├── ResolveType.java
+│   │   ├── ResolveUnknown.java
+│   │   ├── Resolve_Variable_Table_Entry.java
+│   │   └── VTE_TypePromises.java
+│   ├── gen_c
+│   │   ├── CClassDecl.java
+│   │   ├── CReference.java
+│   │   ├── CtorReference.java
+│   │   ├── Emit.java
+│   │   ├── GenerateC.java
+│   │   └── Generate_Code_For_Method.java
+│   ├── generate
+│   │   ├── ElSystem.java
+│   │   ├── OutputStrategyC.java
+│   │   └── OutputStrategy.java
+│   ├── gen_fn
+│   │   ├── AbstractDependencyTracker.java
+│   │   ├── BaseGeneratedFunction.java
+│   │   ├── BaseTableEntry1.java
+│   │   ├── BaseTableEntry.java
+│   │   ├── ConstantTableEntry.java
+│   │   ├── Constructable.java
+│   │   ├── DeferredObject2.java
+│   │   ├── DependencyTracker.java
+│   │   ├── GeneratedClass.java
+│   │   ├── GeneratedConstructor.java
+│   │   ├── GeneratedContainer.java
+│   │   ├── GeneratedContainerNC.java
+│   │   ├── GeneratedFunction.java
+│   │   ├── GeneratedNamespace.java
+│   │   ├── GeneratedNode.java
+│   │   ├── GenerateFunctions.java
+│   │   ├── GeneratePhase.java
+│   │   ├── GenericElementHolder.java
+│   │   ├── GenericElementHolderWithIntegerIA.java
+│   │   ├── GenericElementHolderWithType.java
+│   │   ├── GenType.java
+│   │   ├── GNCoded.java
+│   │   ├── IdentTableEntry.java
+│   │   ├── IElementHolder.java
+│   │   ├── ProcTableEntry.java
+│   │   ├── TableEntryIV.java
+│   │   ├── TypeTableEntry.java
+│   │   ├── VariableTableEntry.java
+│   │   ├── WlGenerateClass.java
+│   │   ├── WlGenerateCtor.java
+│   │   ├── WlGenerateDefaultCtor.java
+│   │   ├── WlGenerateFunction.java
+│   │   ├── WlGenerateNamespace.java
+│   │   └── WrappedStatementWrapper.java
+│   ├── gen_generic
+│   │   ├── CodeGenerator.java
+│   │   ├── GenerateResultItem.java
+│   │   └── GenerateResult.java
+│   ├── instructions
+│   │   ├── ConstTableIA.java
+│   │   ├── FnCallArgs.java
+│   │   ├── IdentIA.java
+│   │   ├── InstructionArgument.java
+│   │   ├── Instruction.java
+│   │   ├── InstructionName.java
+│   │   ├── IntegerIA.java
+│   │   ├── LabelIA.java
+│   │   ├── Label.java
+│   │   ├── ProcIA.java
+│   │   ├── SymbolIA.java
+│   │   └── VariableTableType.java
+│   ├── logging
+│   │   ├── ElLog.java
+│   │   └── LogEntry.java
+│   ├── post_deduce
+│   │   └── IPostDeduce.java
+│   └── translate
+│       └── TranslateModule.java
+├── TREE.2022_10Oct06_19.34.47.txt
+├── util
+│   ├── BufferTabbedOutputStream.java
+│   ├── Helpers.java
+│   ├── Holder.java
+│   ├── HolderPromise.java
+│   ├── LogEvent.java
+│   ├── NotImplementedException.java
+│   └── TabbedOutputStream.java
+└── work
+    ├── WorkJob.java
+    ├── WorkList.java
+    └── WorkManager.java
+
+35 directories, 352 files

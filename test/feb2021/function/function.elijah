@@ -1,0 +1,12 @@
+indexing
+	date: "0205212147"
+
+class Main {
+	main() {
+		val e = f()()
+	}
+	f() {
+		return function() { Value = 4 }
+	}
+}
+

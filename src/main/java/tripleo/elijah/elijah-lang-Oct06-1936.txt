@@ -1,0 +1,2661 @@
+       
+       
+     1	2022-10-06 03:37            comp/CompilationShit.java             Page 1
+       
+       
+     2	package tripleo.elijah.comp;
+       
+     3	import tripleo.elijah.stages.logging.ElLog;
+       
+     4	import java.util.List;
+       
+     5	public interface CompilationShit {
+     6		Compilation getComp();
+       
+     7		boolean getSilent();
+       
+     8		void addLog(ElLog aLog);
+       
+     9		void writeLogs(boolean aSilent);
+       
+    10		PipelineLogic getPipelineLogic();
+       
+    11		List<ElLog> getLogs();
+    12	}
+    13	---------=---------=---------=---------=---------=---------=---------=---------
+       
+    14	2022-10-06 12:23             comp/PipelineLogic.java              Page 1
+       
+       
+    15	/*
+    16	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+    17	 *
+    18	 * The contents of this library are released under the LGPL licence v3,
+    19	 * the GNU Lesser General Public License text was downloaded from
+    20	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+    21	 *
+    22	 */
+    23	package tripleo.elijah.comp;
+       
+    24	import org.jdeferred2.DoneCallback;
+    25	import org.jdeferred2.Promise;
+    26	import org.jdeferred2.impl.DeferredObject;
+    27	import org.jetbrains.annotations.NotNull;
+    28	import tripleo.elijah.comp.internal.Attachable;
+    29	import tripleo.elijah.comp.internal.CompilationImpl;
+    30	import tripleo.elijah.entrypoints.EntryPoint;
+    31	import tripleo.elijah.lang.OS_Module;
+    32	import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
+    33	import tripleo.elijah.stages.deduce.DeducePhase;
+    34	import tripleo.elijah.stages.gen_c.GenerateC;
+    35	import tripleo.elijah.stages.gen_fn.*;
+    36	import tripleo.elijah.stages.gen_generic.GenerateResult;
+    37	import tripleo.elijah.stages.logging.ElLog;
+    38	import tripleo.elijah.work.WorkManager;
+       
+    39	import java.util.ArrayList;
+    40	import java.util.Collection;
+    41	import java.util.List;
+    42	import java.util.function.Consumer;
+       
+    43	/**
+    44	 * Created 12/30/20 2:14 AM
+    45	 */
+    46	public class PipelineLogic implements Attachable {
+    47		public final GeneratePhase generatePhase;
+    48		public final DeducePhase dp;
+       
+    49		public GenerateResult gr = new GenerateResult();
+    50		public boolean verbose = true;
+    51		private final ElLog.Verbosity verbosity;
+       
+    52		final List<OS_Module> mods; // = new ArrayList<OS_Module>();
+       
+    53		public PipelineLogic(CompilationShit cs) {
+    54			// FIXME hardcoded silence
+    55			boolean silent = cs.getSilent();
+       
+    56			verbosity = silent ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
+    57			generatePhase = new GeneratePhase(verbosity, this);
+    58			dp = new DeducePhase(generatePhase, this, verbosity);
+       
+    59			mods = ((CompilationImpl) cs.getComp()).modules; // TODO
+    60		}
+       
+    61		private Promise<GenerateResult, Void, Void> _gr_p = new DeferredObject<>();
+       
+    62		public Promise<GenerateResult, Void, Void> gr_promise() {
+    63			return _gr_p;
+    64		}
+       
+    65		public void addGrWatch(final DoneCallback<GenerateResult> grcb) {
+    66			gr_promise().then(grcb);
+    67		}
+       
+    68		public void everythingBeforeGenerate(List<GeneratedNode> lgc) {
+    69			for (OS_Module mod : mods) {
+    70				_processByEntryPoint(mod, mod.entryPoints);
+    71			}
+       
+    72	---------=---------=---------=---------=---------=---------=---------=---------
+       
+    73	2022-10-06 12:23             comp/PipelineLogic.java              Page 2
+       
+       
+    74			dp.finish();
+       
+    75			dp.generatedClasses.addAll(lgc);
+    76		}
+       
+    77		public void generate(List<GeneratedNode> lgc) {
+    78			final WorkManager wm = new WorkManager();
+    79			// README use any errSink, they should all be the same
+    80			for (OS_Module mod : mods) {
+    81				final GenerateC generateC = new GenerateC(mod, mod.parent.getErrSink(), verbosity, this);
+    82				final GenerateResult ggr = run3(mod, lgc, wm, generateC);
+    83				wm.drain();
+    84				gr.results().addAll(ggr.results()); // code smell
+    85			}
+    86			((DeferredObject<GenerateResult, Void, Void>) _gr_p).resolve(gr);
+    87		}
+       
+    88		class EntryPointList {
+    89			private final List<EntryPoint> epl; // = new ArrayList<>();
+    90			private final OS_Module mod;
+       
+    91			public EntryPointList(OS_Module amod, List<EntryPoint> aepl) {
+    92				this.mod = amod;
+    93				this.epl = aepl;
+    94			}
+       
+    95			void _processByEntryPoint(final @NotNull GenerateFunctions gfm) {
+    96				DeducePhase.@NotNull GeneratedClasses lgc = dp.generatedClasses;
+    97				List<GeneratedNode> resolved_nodes = new ArrayList<GeneratedNode>();
+       
+    98	//			assert lgc.size() == 0;
+    99				if (lgc.size() != 0) {
+   100					int y = 2;
+   101				}
+       
+   102				//Iterable<? extends GeneratedNode> lgc1 = ;
+   103				gfm.generateFromEntryPoints(this.epl, dp);
+       
+   104				//assert lgc.size() == epl.size(); //hmm
+       
+   105				for (final GeneratedNode generatedNode : lgc) {
+   106					if (generatedNode instanceof GNCoded) {
+   107						final GNCoded coded = (GNCoded) generatedNode;
+       
+   108						switch (coded.getRole()) {
+   109							case FUNCTION: {
+   110	//						GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
+   111								if (coded.getCode() == 0)
+   112									coded.setCode(mod.parent.nextFunctionCode());
+   113								break;
+   114							}
+   115							case CLASS: {
+   116								final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
+   117	//						if (generatedClass.getCode() == 0)
+   118	//							generatedClass.setCode(mod.parent.nextClassCode());
+   119								for (GeneratedClass generatedClass2 : generatedClass.classMap.values()) {
+   120									if (generatedClass2.getCode() == 0)
+   121										generatedClass2.setCode(mod.parent.nextClassCode());
+   122								}
+   123								for (GeneratedFunction generatedFunction : generatedClass.functionMap.values()) {
+   124									for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
+   125										if (identTableEntry.isResolved()) {
+   126											GeneratedNode node = identTableEntry.resolvedType();
+   127											resolved_nodes.add(node);
+   128										}
+   129									}
+   130								}
+   131								break;
+   132							}
+   133							case NAMESPACE: {
+   134	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   135	2022-10-06 12:23             comp/PipelineLogic.java              Page 3
+       
+       
+   136								final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
+   137								if (coded.getCode() == 0)
+   138									coded.setCode(mod.parent.nextClassCode());
+   139								for (GeneratedClass generatedClass : generatedNamespace.classMap.values()) {
+   140									if (generatedClass.getCode() == 0)
+   141										generatedClass.setCode(mod.parent.nextClassCode());
+   142								}
+   143								for (GeneratedFunction generatedFunction : generatedNamespace.functionMap.values()) {
+   144									for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
+   145										if (identTableEntry.isResolved()) {
+   146											GeneratedNode node = identTableEntry.resolvedType();
+   147											resolved_nodes.add(node);
+   148										}
+   149									}
+   150								}
+   151								break;
+   152							}
+   153							default:
+   154								throw new IllegalStateException("Unexpected value: " + coded.getRole());
+   155						}
+       
+   156					} else {
+   157						throw new IllegalStateException("node must be coded");
+   158					}
+   159				}
+       
+   160				for (final GeneratedNode generatedNode : resolved_nodes) {
+   161					if (generatedNode instanceof GNCoded) {
+   162						final GNCoded coded = (GNCoded) generatedNode;
+   163						final int code;
+   164						if (coded.getCode() == 0) {
+   165							switch (coded.getRole()) {
+   166								case FUNCTION:
+   167									code = mod.parent.nextFunctionCode();
+   168									break;
+   169								case NAMESPACE:
+   170								case CLASS:
+   171									code = mod.parent.nextClassCode();
+   172									break;
+   173								default:
+   174									throw new IllegalStateException("Invalid coded role");
+   175							}
+   176							coded.setCode(code);
+   177						}
+   178					} else
+   179						throw new IllegalStateException("node is not coded");
+   180				}
+       
+   181				dp.deduceModule(mod, lgc, getVerbosity());
+       
+   182				resolveCheck(lgc);
+       
+   183	//			for (final GeneratedNode gn : lgf) {
+   184	//				if (gn instanceof GeneratedFunction) {
+   185	//					GeneratedFunction gf = (GeneratedFunction) gn;
+   186	//					System.out.println("----------------------------------------------------------");
+   187	//					System.out.println(gf.name());
+   188	//					System.out.println("----------------------------------------------------------");
+   189	//					GeneratedFunction.printTables(gf);
+   190	//					System.out.println("----------------------------------------------------------");
+   191	//				}
+   192	//			}
+   193			}
+   194		}
+       
+   195		protected void _processByEntryPoint(OS_Module mod, @NotNull List<EntryPoint> epl) {
+   196			final GenerateFunctions gfm = getGenerateFunctions(mod);
+   197			final EntryPointList epl1 = new EntryPointList(mod, epl);
+   198			epl1._processByEntryPoint(gfm);
+       
+   199	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   200	2022-10-06 12:23             comp/PipelineLogic.java              Page 4
+       
+       
+   201			//final GenerateFunctions gfm = getGenerateFunctions(mod);
+   202			//gfm.generateFromEntryPoints(epl, dp);
+   203		}
+       
+   204		@NotNull
+   205		private GenerateFunctions getGenerateFunctions(OS_Module mod) {
+   206			return generatePhase.getGenerateFunctions(mod);
+   207		}
+       
+   208		protected GenerateResult run3(@NotNull OS_Module mod, @NotNull List<GeneratedNode> lgc, WorkManager wm, GenerateC ggc) {
+   209			GenerateResult gr = new GenerateResult();
+       
+   210			Compilation ccc = mod.parent;
+   211			@NotNull EOT_OutputTree cot = ccc.getOutputTree();
+       
+   212			for (GeneratedNode generatedNode : lgc) {
+   213				if (generatedNode.module() != mod) continue; // README curious
+       
+   214				if (generatedNode instanceof GeneratedContainerNC) {
+   215					final GeneratedContainerNC nc = (GeneratedContainerNC) generatedNode;
+       
+   216					nc.generateCode(ggc, gr);
+   217					if (nc instanceof GeneratedClass) {
+   218						final GeneratedClass generatedClass = (GeneratedClass) nc;
+       
+   219						final @NotNull Collection<GeneratedNode> gn2 = ggc.constructors_to_list_of_generated_nodes(generatedClass.constructors.values());
+   220						GenerateResult gr3 = ggc.generateCode(gn2, wm);
+   221						gr.results().addAll(gr3.results());
+   222					}
+   223					final @NotNull Collection<GeneratedNode> gn1 = ggc.functions_to_list_of_generated_nodes(nc.functionMap.values());
+   224					GenerateResult gr2 = ggc.generateCode(gn1, wm);
+   225					gr.results().addAll(gr2.results());
+   226					final @NotNull Collection<GeneratedNode> gn2 = ggc.classes_to_list_of_generated_nodes(nc.classMap.values());
+   227					GenerateResult gr3 = ggc.generateCode(gn2, wm);
+   228					gr.results().addAll(gr3.results());
+   229				} else {
+   230					System.out.println("2009 " + generatedNode.getClass().getName());
+   231				}
+   232			}
+       
+   233			return gr;
+   234		}
+       
+   235		public void addModule(OS_Module m) {
+   236			mods.add(m);
+   237		}
+       
+   238		private void resolveCheck(DeducePhase.GeneratedClasses lgc) {
+   239			for (final GeneratedNode generatedNode : lgc) {
+   240				if (generatedNode instanceof GeneratedFunction) {
+       
+   241				} else if (generatedNode instanceof GeneratedClass) {
+   242	//				final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
+   243	//				for (GeneratedFunction generatedFunction : generatedClass.functionMap.values()) {
+   244	//					for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
+   245	//						final IdentIA ia2 = new IdentIA(identTableEntry.getIndex(), generatedFunction);
+   246	//						final String s = generatedFunction.getIdentIAPathNormal(ia2);
+   247	//						if (identTableEntry/*.isResolved()*/.getStatus() == BaseTableEntry.Status.KNOWN) {
+   248	////							GeneratedNode node = identTableEntry.resolved();
+   249	////							resolved_nodes.add(node);
+   250	//							System.out.println("91 Resolved IDENT "+ s);
+   251	//						} else {
+   252	////							assert identTableEntry.getStatus() == BaseTableEntry.Status.UNKNOWN;
+   253	////							identTableEntry.setStatus(BaseTableEntry.Status.UNKNOWN, null);
+   254	//							System.out.println("92 Unresolved IDENT "+ s);
+   255	//						}
+   256	//					}
+   257	//				}
+   258				} else if (generatedNode instanceof GeneratedNamespace) {
+   259	//				final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
+   260	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   261	2022-10-06 12:23             comp/PipelineLogic.java              Page 5
+       
+       
+   262	//				NamespaceStatement namespaceStatement = generatedNamespace.getNamespaceStatement();
+   263	//				for (GeneratedFunction generatedFunction : generatedNamespace.functionMap.values()) {
+   264	//					for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
+   265	//						if (identTableEntry.isResolved()) {
+   266	//							GeneratedNode node = identTableEntry.resolved();
+   267	//							resolved_nodes.add(node);
+   268	//						}
+   269	//					}
+   270	//				}
+   271				}
+   272			}
+   273		}
+       
+   274		public ElLog.Verbosity getVerbosity() {
+   275			return verbose ? ElLog.Verbosity.VERBOSE : ElLog.Verbosity.SILENT;
+   276		}
+       
+   277		private final DeferredObject<Consumer<ElLog>, Void, Void> _csP = new DeferredObject<>();
+       
+   278		public void addLog(ElLog aLog) {
+   279			_csP.then(new DoneCallback<Consumer<ElLog>>() {
+   280				@Override
+   281				public void onDone(final Consumer<ElLog> x) {
+   282					x.accept(aLog);
+   283				}
+   284			});
+   285		}
+       
+   286	//	private /*@NotNull*/ CompilationShit __cs;
+       
+   287		@Override
+   288		public void attachCB(final @NotNull CompilationShit cs) {
+   289	//		__cs = cs;
+       
+   290			_csP.resolve(new Consumer<ElLog>() {
+   291				@Override
+   292				public void accept(ElLog aElLog) {
+   293					cs.addLog(aElLog);
+   294	//				__cs.addLog(aElLog);
+   295				}
+   296			});
+   297		}
+       
+   298	}
+       
+   299	//
+   300	//
+   301	//
+   302	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   303	2022-10-06 09:59            comp/impl/StdErrSink.java             Page 1
+       
+       
+   304	/*
+   305	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   306	 * 
+   307	 * The contents of this library are released under the LGPL licence v3, 
+   308	 * the GNU Lesser General Public License text was downloaded from
+   309	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   310	 * 
+   311	 */
+   312	/**
+   313	 * Created Mar 25, 2019 at 3:00:39 PM
+   314	 *
+   315	 */
+   316	package tripleo.elijah.comp.impl;
+       
+   317	import tripleo.elijah.comp.ErrSink;
+   318	import tripleo.elijah.diagnostic.Diagnostic;
+       
+   319	/**
+   320	 * @author tripleo(sb)
+   321	 *
+   322	 */
+   323	public class StdErrSink implements ErrSink {
+       
+   324		private int _errorCount;
+       
+   325		@Override
+   326		public void exception(final Exception e) {
+   327			_errorCount++;
+   328			System.err.println((new StringBuilder("exception: ")).append(e)
+   329					.toString());
+   330			e.printStackTrace(System.err);
+   331		}
+       
+   332		@Override
+   333		public void reportError(final String s) {
+   334			_errorCount++;
+   335			System.err.println(String.format("ERROR: %s", s));
+   336		}
+       
+   337		@Override
+   338		public void reportWarning(final String s) {
+   339			System.err.println(String.format("WARNING: %s", s));
+   340		}
+       
+   341		@Override
+   342		public int errorCount() {
+   343			return _errorCount;
+   344		}
+       
+   345		@Override
+   346		public void info(final String message) {
+   347			System.err.println(String.format("INFO: %s", message));
+   348		}
+       
+   349		@Override
+   350		public void reportDiagnostic(Diagnostic diagnostic) {
+   351			if (diagnostic.severity() == Diagnostic.Severity.ERROR)
+   352				_errorCount++;
+   353			diagnostic.report(System.err);
+   354		}
+   355	}
+       
+   356	//
+   357	//
+   358	//
+   359	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   360	2022-03-20 03:53                comp/ErrSink.java                 Page 1
+       
+       
+   361	/*
+   362	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   363	 * 
+   364	 * The contents of this library are released under the LGPL licence v3, 
+   365	 * the GNU Lesser General Public License text was downloaded from
+   366	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   367	 * 
+   368	 */
+   369	package tripleo.elijah.comp;
+       
+   370	import tripleo.elijah.diagnostic.Diagnostic;
+       
+   371	public interface ErrSink {
+   372		
+   373		void exception(Exception exception);
+       
+   374	    /*@ ensures errorCount() == \old errorCount + 1*/
+   375	    void reportError(String s);
+       
+   376	    void reportWarning(String s);
+       
+   377	    int errorCount();
+       
+   378	    void info(String format);
+       
+   379		void reportDiagnostic(Diagnostic diagnostic);
+       
+   380		enum Errors {
+   381	        ERROR, WARNING, INFO
+   382	    }
+   383	}
+       
+   384	//
+   385	//
+   386	//
+   387	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   388	2022-10-06 12:23             comp/PipelineMember.java             Page 1
+       
+       
+   389	/*
+   390	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   391	 *
+   392	 * The contents of this library are released under the LGPL licence v3,
+   393	 * the GNU Lesser General Public License text was downloaded from
+   394	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   395	 *
+   396	 */
+       
+   397	package tripleo.elijah.comp;
+       
+   398	import tripleo.elijah.comp.internal.Attachable;
+       
+   399	/**
+   400	 * Created 8/21/21 10:10 PM
+   401	 */
+   402	public interface PipelineMember extends Attachable {
+   403		void run() throws Exception;
+       
+   404		@Override
+   405		void attachCB(final CompilationShit cs);
+   406	}
+       
+   407	//
+   408	//
+   409	//
+   410	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   411	2022-03-20 03:53  comp/functionality/f202/ProgressBehavior.java   Page 1
+       
+       
+   412	/*
+   413	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   414	 *
+   415	 * The contents of this library are released under the LGPL licence v3,
+   416	 * the GNU Lesser General Public License text was downloaded from
+   417	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   418	 *
+   419	 */
+       
+   420	package tripleo.elijah.comp.functionality.f202;
+       
+   421	/**
+   422	 * Created 8/11/21 5:51 AM
+   423	 */
+   424	public interface ProgressBehavior {
+   425		void reportProgress(String a);
+   426	}
+       
+   427	//
+   428	//
+   429	//
+   430	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   431	2022-03-20 03:53 comp/functionality/f202/DefaultProgressBehavior.java Page 1
+       
+       
+   432	/*
+   433	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   434	 *
+   435	 * The contents of this library are released under the LGPL licence v3,
+   436	 * the GNU Lesser General Public License text was downloaded from
+   437	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   438	 *
+   439	 */
+   440	package tripleo.elijah.comp.functionality.f202;
+       
+   441	/**
+   442	 * Created 8/11/21 6:01 AM
+   443	 */
+   444	public class DefaultProgressBehavior implements ProgressBehavior {
+   445		@Override
+   446		public void reportProgress(String a) {
+   447			System.out.println("202 Writing " + a);
+   448		}
+   449	}
+       
+   450	//
+   451	//
+   452	//
+   453	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   454	2022-03-20 03:53 comp/functionality/f202/GetLogDirectoryBehavior.java Page 1
+       
+       
+   455	/*
+   456	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   457	 *
+   458	 * The contents of this library are released under the LGPL licence v3,
+   459	 * the GNU Lesser General Public License text was downloaded from
+   460	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   461	 *
+   462	 */
+       
+   463	package tripleo.elijah.comp.functionality.f202;
+       
+   464	import java.io.File;
+       
+   465	/**
+   466	 * Created 8/11/21 5:48 AM
+   467	 */
+   468	public interface GetLogDirectoryBehavior {
+   469		File getLogDirectory();
+   470	}
+       
+   471	//
+   472	//
+   473	//
+   474	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   475	2022-10-06 02:34 comp/functionality/f202/DefaultGetLogDirectoryBehavior.java Page 1
+       
+       
+   476	/*
+   477	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   478	 *
+   479	 * The contents of this library are released under the LGPL licence v3,
+   480	 * the GNU Lesser General Public License text was downloaded from
+   481	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   482	 *
+   483	 */
+   484	package tripleo.elijah.comp.functionality.f202;
+       
+   485	import tripleo.elijah.comp.Compilation;
+       
+   486	import java.io.File;
+       
+   487	/**
+   488	 * Created 8/11/21 5:55 AM
+   489	 */
+   490	public class DefaultGetLogDirectoryBehavior implements GetLogDirectoryBehavior {
+   491		private final Compilation c;
+       
+   492		public DefaultGetLogDirectoryBehavior(Compilation aCompilation) {
+   493			c = aCompilation;
+   494		}
+       
+   495		@Override
+   496		public File getLogDirectory() {
+   497			final File file1 = new File("COMP", c.getCompilationNumberString());
+   498			final File file2 = new File(file1, "logs");
+   499			file2.mkdirs();
+       
+   500			return file2;
+   501		}
+   502	}
+       
+   503	//
+   504	//
+   505	//
+   506	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   507	2022-10-06 12:23        comp/functionality/f202/F202.java         Page 1
+       
+       
+   508	/*
+   509	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   510	 *
+   511	 * The contents of this library are released under the LGPL licence v3,
+   512	 * the GNU Lesser General Public License text was downloaded from
+   513	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   514	 *
+   515	 */
+   516	package tripleo.elijah.comp.functionality.f202;
+       
+   517	import tripleo.elijah.comp.Compilation;
+   518	import tripleo.elijah.comp.ErrSink;
+   519	import tripleo.elijah.stages.logging.ElLog;
+   520	import tripleo.elijah.stages.logging.LogEntry;
+       
+   521	import java.io.File;
+   522	import java.util.Collection;
+       
+   523	/**
+   524	 * Created 8/11/21 5:46 AM
+   525	 */
+   526	public class F202 {
+   527		private final ErrSink errSink;
+   528		GetLogDirectoryBehavior gld;
+   529		GetLogNameBehavior      gln;
+   530		ProcessLogEntryBehavior ple;
+   531		ProgressBehavior        pre;
+       
+   532		public F202(ErrSink aErrSink, Compilation c) {
+   533			errSink = aErrSink;
+   534			gld = new DefaultGetLogDirectoryBehavior(c);
+   535			gln = new DefaultGetLogNameBehavior();
+   536			ple = new DefaultProcessLogEntryBehavior();
+   537			pre = new DefaultProgressBehavior();
+   538		}
+       
+   539		public void processLogs(Collection<ElLog> aElLogs) {
+   540			if (aElLogs.size() == 0) return; // TODO progress message? should be impossible anyway
+       
+   541			ElLog firstLog = aElLogs.iterator().next();
+       
+   542			final String s2  = gln.getLogName(firstLog);
+   543			final File file2 = gld.getLogDirectory();
+       
+   544			final File psf   = new File(file2, s2);
+   545			final String s1  = firstLog.getFileName();
+   546			pre.reportProgress(psf.toString());
+       
+   547			ple.initialize(psf, s1, errSink);
+   548			ple.start();
+   549			for (ElLog elLog : aElLogs) {
+   550				ple.processPhase(elLog.getPhase());
+       
+   551				for (LogEntry entry : elLog.getEntries()) {
+   552					ple.processLogEntry(entry);
+   553				}
+       
+   554				ple.donePhase();
+   555			}
+   556			ple.finish();
+   557		}
+   558	}
+       
+   559	//
+   560	//
+   561	//
+   562	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   563	2022-03-20 03:53 comp/functionality/f202/GetLogNameBehavior.java  Page 1
+       
+       
+   564	/*
+   565	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   566	 *
+   567	 * The contents of this library are released under the LGPL licence v3,
+   568	 * the GNU Lesser General Public License text was downloaded from
+   569	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   570	 *
+   571	 */
+       
+   572	package tripleo.elijah.comp.functionality.f202;
+       
+   573	import tripleo.elijah.stages.logging.ElLog;
+       
+   574	/**
+   575	 * Created 8/11/21 5:49 AM
+   576	 */
+   577	public interface GetLogNameBehavior {
+   578		String getLogName(ElLog deduceLog);
+   579	}
+       
+   580	//
+   581	//
+   582	//
+   583	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   584	2022-03-20 03:53 comp/functionality/f202/DefaultGetLogNameBehavior.java Page 1
+       
+       
+   585	/*
+   586	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   587	 *
+   588	 * The contents of this library are released under the LGPL licence v3,
+   589	 * the GNU Lesser General Public License text was downloaded from
+   590	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   591	 *
+   592	 */
+   593	package tripleo.elijah.comp.functionality.f202;
+       
+   594	import org.jetbrains.annotations.Contract;
+   595	import tripleo.elijah.stages.logging.ElLog;
+       
+   596	/**
+   597	 * Created 8/11/21 5:58 AM
+   598	 */
+   599	public class DefaultGetLogNameBehavior implements GetLogNameBehavior {
+   600		@Contract(pure = true)
+   601		@Override
+   602		public String getLogName(ElLog deduceLog) {
+   603			final String s1 = deduceLog.getFileName();
+   604			final String s2 = s1.replace(System.getProperty("file.separator"), "~~");
+       
+   605			return s2 + ".log";
+   606		}
+   607	}
+       
+   608	//
+   609	//
+   610	//
+   611	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   612	2022-03-20 03:53 comp/functionality/f202/DefaultProcessLogEntryBehavior.java Page 1
+       
+       
+   613	/*
+   614	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   615	 *
+   616	 * The contents of this library are released under the LGPL licence v3,
+   617	 * the GNU Lesser General Public License text was downloaded from
+   618	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   619	 *
+   620	 */
+   621	package tripleo.elijah.comp.functionality.f202;
+       
+   622	import tripleo.elijah.comp.ErrSink;
+   623	import tripleo.elijah.stages.logging.LogEntry;
+       
+   624	import java.io.File;
+   625	import java.io.FileNotFoundException;
+   626	import java.io.PrintStream;
+       
+   627	/**
+   628	 * Created 8/11/21 6:04 AM
+   629	 */
+   630	public class DefaultProcessLogEntryBehavior implements ProcessLogEntryBehavior {
+   631		private PrintStream ps;
+   632		private String s1;
+       
+   633		@Override
+   634		public void processLogEntry(LogEntry entry) {
+   635			final String logentry = String.format("[%s] [%tD %tT] %s %s", s1, entry.time, entry.time, entry.level, entry.message);
+   636			ps.println(logentry);
+   637		}
+       
+   638		@Override
+   639		public void initialize(File aLogFile, String aElLogFileName, ErrSink aErrSink) {
+   640			try {
+   641				ps = new PrintStream(aLogFile);
+   642				s1 = aElLogFileName;
+   643			} catch (FileNotFoundException exception) {
+   644				aErrSink.exception(exception);
+   645			}
+   646		}
+       
+   647		@Override
+   648		public void start() {
+       
+   649		}
+       
+   650		@Override
+   651		public void finish() {
+       
+   652		}
+       
+   653		@Override
+   654		public void processPhase(String aPhase) {
+   655			ps.println(aPhase);
+   656			StringBuilder sb = new StringBuilder(aPhase.length());
+   657			for (int i = 0; i < aPhase.length(); i++) {
+   658				sb.append('=');
+   659			}
+   660			ps.println(sb.toString());
+   661		}
+       
+   662		@Override
+   663		public void donePhase() {
+   664			ps.println();
+   665		}
+   666	}
+       
+   667	//
+   668	//
+   669	//
+   670	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   671	2022-03-20 03:53 comp/functionality/f202/ProcessLogEntryBehavior.java Page 1
+       
+       
+   672	/*
+   673	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   674	 *
+   675	 * The contents of this library are released under the LGPL licence v3,
+   676	 * the GNU Lesser General Public License text was downloaded from
+   677	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   678	 *
+   679	 */
+       
+   680	package tripleo.elijah.comp.functionality.f202;
+       
+   681	import tripleo.elijah.comp.ErrSink;
+   682	import tripleo.elijah.stages.logging.LogEntry;
+       
+   683	import java.io.File;
+       
+   684	/**
+   685	 * Created 8/11/21 5:50 AM
+   686	 */
+   687	public interface ProcessLogEntryBehavior {
+   688		void processLogEntry(LogEntry aLogEntry);
+       
+   689		void initialize(File aLogFile, String aElLogFileName, ErrSink aErrSink);
+       
+   690		void start();
+       
+   691		void finish();
+       
+   692		void processPhase(String aPhase);
+       
+   693		void donePhase();
+   694	}
+       
+   695	//
+   696	//
+   697	//
+   698	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   699	2022-10-06 12:23       comp/pipelines/GeneratePipeline.java       Page 1
+       
+       
+   700	/*
+   701	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   702	 *
+   703	 * The contents of this library are released under the LGPL licence v3,
+   704	 * the GNU Lesser General Public License text was downloaded from
+   705	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   706	 *
+   707	 */
+   708	package tripleo.elijah.comp.pipelines;
+       
+   709	import org.jdeferred2.DoneCallback;
+   710	import org.jdeferred2.Promise;
+   711	import tripleo.elijah.comp.CompilationShit;
+   712	import tripleo.elijah.comp.PipelineLogic;
+   713	import tripleo.elijah.comp.PipelineMember;
+   714	import tripleo.elijah.comp.internal.CCA;
+   715	import tripleo.elijah.stages.gen_fn.GeneratedNode;
+       
+   716	import java.util.List;
+       
+   717	/**
+   718	 * Created 8/21/21 10:16 PM
+   719	 */
+   720	public class GeneratePipeline implements PipelineMember {
+   721		private final PipelineLogic pipelineLogic;
+   722		private Promise<List<GeneratedNode>, Void, Void> lgcp;
+       
+   723		public GeneratePipeline(CCA cca1) {
+   724			lgcp = cca1.lgcp();
+       
+   725			pipelineLogic = cca1.getPipelineLogic();
+       
+   726			cca1.getPipelineAcceptor().accept(this);
+   727		}
+       
+   728		@Override
+   729		public void run() {
+   730			lgcp.then(new DoneCallback<List<GeneratedNode>>() {
+   731				@Override
+   732				public void onDone(List<GeneratedNode> result) {
+   733					pipelineLogic.generate(result);
+   734				}
+   735			});
+   736		}
+       
+   737		@Override
+   738		public void attachCB(CompilationShit cs) {
+   739			int y = 2;
+   740		}
+   741	}
+       
+   742	//
+   743	//
+   744	//
+   745	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   746	2022-10-06 12:23        comp/pipelines/WritePipeline.java         Page 1
+       
+       
+   747	/*
+   748	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   749	 *
+   750	 * The contents of this library are released under the LGPL licence v3,
+   751	 * the GNU Lesser General Public License text was downloaded from
+   752	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   753	 *
+   754	 */
+   755	package tripleo.elijah.comp.pipelines;
+       
+   756	import com.google.common.collect.ArrayListMultimap;
+   757	import com.google.common.collect.Multimap;
+   758	import io.reactivex.rxjava3.core.Observer;
+   759	import io.reactivex.rxjava3.disposables.Disposable;
+   760	import io.reactivex.rxjava3.subjects.ReplaySubject;
+   761	import io.reactivex.rxjava3.subjects.Subject;
+   762	import org.apache.commons.lang3.tuple.Pair;
+   763	import org.jdeferred2.Deferred;
+   764	import org.jdeferred2.DoneCallback;
+   765	import org.jdeferred2.impl.DeferredObject;
+   766	import org.jetbrains.annotations.Nullable;
+   767	import tripleo.elijah.comp.*;
+   768	import tripleo.elijah.comp.internal.CCA;
+   769	import tripleo.elijah.stages.gen_generic.GenerateResult;
+   770	import tripleo.elijah.stages.gen_generic.GenerateResultItem;
+   771	import tripleo.elijah.stages.generate.ElSystem;
+   772	import tripleo.elijah.stages.generate.OutputStrategy;
+   773	import tripleo.elijah.util.Helpers;
+   774	import tripleo.util.buffer.Buffer;
+   775	import tripleo.util.buffer.DefaultBuffer;
+   776	import tripleo.util.buffer.TextBuffer;
+   777	import tripleo.util.io.CharSink;
+   778	import tripleo.util.io.FileCharSink;
+       
+   779	import java.io.*;
+   780	import java.nio.charset.StandardCharsets;
+   781	import java.nio.file.FileSystems;
+   782	import java.nio.file.Files;
+   783	import java.nio.file.Path;
+   784	import java.util.ArrayList;
+   785	import java.util.Collection;
+   786	import java.util.List;
+   787	import java.util.Map;
+   788	import java.util.logging.Level;
+   789	import java.util.logging.Logger;
+       
+   790	/**
+   791	 * Created 8/21/21 10:19 PM
+   792	 */
+   793	public class WritePipeline implements PipelineMember {
+   794		final OutputStrategy os;
+   795		final ElSystem sys;
+       
+   796		private final File file_prefix;
+       
+   797		private final Deferred<GenerateResult, Void, Void> event_hasGr; //= new DeferredObject<>();
+   798		private final IO io;
+   799		private final ErrSink errSink;
+       
+   800		public WritePipeline(CCA cca1) {
+   801			// TODO extra work: fix type
+   802			event_hasGr = (Deferred<GenerateResult, Void, Void>) cca1.getPipelineLogic().gr_promise();
+       
+   803			event_hasGr.done(new DoneCallback<GenerateResult>() {
+   804				@Override
+   805				public void onDone(GenerateResult result) {
+   806					GenerateResult gr = result;
+   807	//				throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+   808				}
+   809			});
+   810	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   811	2022-10-06 12:23        comp/pipelines/WritePipeline.java         Page 2
+       
+       
+       
+   812			final Compilation c = cca1.getComp();
+       
+   813			file_prefix = new File("COMP", c.getCompilationNumberString());
+       
+   814			os = new OutputStrategy();
+   815			os.per(OutputStrategy.Per.PER_CLASS); // TODO this needs to be configured per lsp
+       
+   816			sys = new ElSystem();
+   817			sys.verbose = false; // TODO flag? ie CompilationOptions
+   818			sys.setCompilation(c);
+   819			sys.setOutputStrategy(os);
+       
+   820			cca1.getPipelineAcceptor().accept(this);
+       
+   821			errSink = c.getErrSink();
+   822			io = c.getIO();
+   823		}
+       
+   824		enum RunStages {
+   825			GENERATE_OUTPUTS,
+   826			WRITE_FILES,
+   827			WRITE_BUFFERS
+   828		}
+       
+   829		static class RunResult {
+   830			List<Pair<RunStages, Exception>> _l = new ArrayList<>();
+       
+   831			void addResult(RunStages rs, Exception exc) {
+   832				_l.add(Pair.<RunStages, Exception>of(rs, exc)); // wierd as f...
+   833			}
+   834		}
+       
+   835		RunResult rr = new RunResult();
+       
+   836		@Override
+   837		public void run() throws Exception {
+   838			event_hasGr.done(new DoneCallback<GenerateResult>() {
+   839				@Override
+   840				public void onDone(final GenerateResult gr) {
+   841					int flag = 0;
+       
+   842					sys.generateOutputs(gr);
+   843					rr.addResult(RunStages.GENERATE_OUTPUTS, null);
+       
+   844					try {
+   845						write_files();
+   846						rr.addResult(RunStages.WRITE_FILES, null);
+   847					} catch (IOException ex) {
+   848						Logger.getLogger(WritePipeline.class.getName()).log(Level.SEVERE, null, ex);
+   849						rr.addResult(RunStages.WRITE_FILES, ex);
+   850						flag = 1;
+   851					}
+       
+   852					if (flag == 0) {
+   853						Exception exc = null;
+   854						try {
+   855							// TODO control latch?
+   856							write_buffers();
+   857							exc = null;
+   858						} catch (FileNotFoundException ex) {
+   859							Logger.getLogger(WritePipeline.class.getName()).log(Level.SEVERE, null, ex);
+   860							exc = ex;
+   861						}
+   862						rr.addResult(RunStages.WRITE_BUFFERS, exc);
+   863					}
+       
+   864					System.err.println(rr._l);
+   865				}
+   866			});
+   867	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   868	2022-10-06 12:23        comp/pipelines/WritePipeline.java         Page 3
+       
+       
+   869		}
+       
+   870		@Override
+   871		public void attachCB(CompilationShit cs) {
+   872			int y = 2;
+   873		}
+       
+   874		private final Subject<List<GenerateResultItem>> rslgri = ReplaySubject.create(2);
+   875	//	<List<GenerateResultItem>>() {
+   876	//		
+   877	//	};
+       
+   878		public void write_files() throws IOException {
+   879			Multimap<String, Buffer> mb = ArrayListMultimap.create();
+       
+   880			Deferred<List<GenerateResultItem>, Void, Void> pgril = new DeferredObject<>();
+   881			event_hasGr.then((gr) -> {
+   882				pgril.resolve(gr.results());
+   883			});
+       
+   884			pgril.done(new DoneCallback<List<GenerateResultItem>>() {
+   885				@Override
+   886				public void onDone(List<GenerateResultItem> result) {
+   887					rslgri.subscribe(new Observer<List<GenerateResultItem>>() {
+   888						@Override
+   889						public void onSubscribe(Disposable d) {
+   890							throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+   891						}
+       
+   892						@Override
+   893						public void onNext(List<GenerateResultItem> t) {
+   894							for (final GenerateResultItem ab : t) {
+   895								mb.put(ab.output, ab.buffer);
+   896							}
+   897						}
+       
+   898						@Override
+   899						public void onError(Throwable e) {
+   900							throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+   901						}
+       
+   902						@Override
+   903						public void onComplete() {
+   904							file_prefix.mkdirs();
+   905							String prefix = file_prefix.toString();
+       
+   906							try {
+   907								// TODO flag?
+   908								write_inputs(file_prefix);
+   909							} catch (IOException ex) {
+   910								Logger.getLogger(WritePipeline.class.getName()).log(Level.SEVERE, null, ex);
+   911								return;
+   912	//							throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+   913							}
+       
+   914							for (final Map.Entry<String, Collection<Buffer>> entry : mb.asMap().entrySet()) {
+   915								final String key = entry.getKey();
+   916								final Collection<Buffer> value = entry.getValue();
+   917								
+   918	/*
+   919								Maybe<FileCharSink> mfcs = Maybe.create(new MaybeOnSubscribe<FileCharSink>() {
+   920									@Override
+   921									public void subscribe(MaybeEmitter<FileCharSink> emitter) throws Throwable {
+   922										emitter.onSuccess(t);
+   923	//									return new MaybeEmitter<FileCharSink>() {
+   924	//										@Override
+   925	//										public void onSuccess(FileCharSink t) {
+   926	//											throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+   927	//										}
+   928	//
+   929	---------=---------=---------=---------=---------=---------=---------=---------
+       
+   930	2022-10-06 12:23        comp/pipelines/WritePipeline.java         Page 4
+       
+       
+   931	//										@Override
+   932	//										public void onError(Throwable t) {
+   933	//											throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+   934	//										}
+   935	//
+   936	//										@Override
+   937	//										public void onComplete() {
+   938	//											throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+   939	//										}
+   940	//
+   941	//										@Override
+   942	//										public void setDisposable(Disposable d) {
+   943	//											throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+   944	//										}
+   945	//
+   946	//										@Override
+   947	//										public void setCancellable(Cancellable c) {
+   948	//											throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+   949	//										}
+   950	//
+   951	//										@Override
+   952	//										public boolean isDisposed() {
+   953	//											throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+   954	//										}
+   955	//
+   956	//										@Override
+   957	//										public boolean tryOnError(Throwable t) {
+   958	//											throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+   959	//										}
+   960	//									};
+   961									}
+   962								});
+   963	*/
+   964								doIt(key, value, prefix);
+   965							}
+   966						}
+       
+   967						private void doIt(String key, Collection<Buffer> value, String prefix) {
+   968							BufferedReader reader = null;
+   969							try {
+   970								Path path = FileSystems.getDefault().getPath(prefix, key);
+   971								reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
+   972								path.getParent().toFile().mkdirs();
+   973								// TODO functionality
+   974								System.out.println("201 Writing path: " + path);
+   975								CharSink x;
+   976								try {
+   977									x = io.openWrite(path);
+   978								} catch (IOException ex) {
+   979									Logger.getLogger(WritePipeline.class.getName()).log(Level.SEVERE, null, ex);
+   980									return;
+   981								}
+   982								for (Buffer buffer : value) {
+   983									x.accept(buffer.getText());
+   984								}
+   985								((FileCharSink) x).close();
+   986							} catch (IOException ex) {
+   987								Logger.getLogger(WritePipeline.class.getName()).log(Level.SEVERE, null, ex);
+   988							} finally {
+   989								try {
+   990									reader.close();
+   991								} catch (IOException ex) {
+   992									Logger.getLogger(WritePipeline.class.getName()).log(Level.SEVERE, null, ex);
+   993								}
+   994							}
+   995						}
+       
+   996					});
+   997	//				throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+   998				}
+   999	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1000	2022-10-06 12:23        comp/pipelines/WritePipeline.java         Page 5
+       
+       
+  1001			});
+       
+  1002			event_hasGr.done(new DoneCallback<GenerateResult>() {
+  1003				@Override
+  1004				public void onDone(GenerateResult result) {
+  1005					for (final GenerateResultItem ab : result.results()) {
+  1006						mb.put(ab.output, ab.buffer);
+  1007					}
+  1008					//throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+  1009				}
+  1010			});
+  1011		}
+       
+  1012		private void write_inputs(File file_prefix) throws IOException {
+  1013			final String fn1 = new File(file_prefix, "inputs.txt").toString();
+       
+  1014			DefaultBuffer buf = new DefaultBuffer("");
+  1015	//			FileBackedBuffer buf = new FileBackedBuffer(fn1);
+  1016	//			for (OS_Module module : modules) {
+  1017	//				final String fn = module.getFileName();
+  1018	//
+  1019	//				append_hash(buf, fn);
+  1020	//			}
+  1021	//
+  1022	//			for (CompilerInstructions ci : cis) {
+  1023	//				final String fn = ci.getFilename();
+  1024	//
+  1025	//				append_hash(buf, fn);
+  1026	//			}
+  1027			for (final File file : io.recordedreads) {
+  1028				final String fn = file.toString();
+       
+  1029				append_hash(buf, fn, errSink);
+  1030			}
+  1031			String s = buf.getText();
+  1032			Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn1, true)));
+  1033			w.write(s);
+  1034			w.close();
+  1035		}
+       
+  1036		private void append_hash(TextBuffer aBuf, String aFilename, ErrSink errSink) throws IOException {
+  1037			@Nullable final String hh = Helpers.getHashForFilename(aFilename, errSink);
+  1038			if (hh != null) {
+  1039				aBuf.append(hh);
+  1040				aBuf.append(" ");
+  1041				aBuf.append_ln(aFilename);
+  1042			}
+  1043		}
+       
+  1044		public void write_buffers() throws FileNotFoundException {
+  1045			file_prefix.mkdirs();
+       
+  1046			PrintStream db_stream = new PrintStream(new File(file_prefix, "buffers.txt"));
+  1047			//PipelineLogic.
+  1048			event_hasGr.done((gr) -> debug_buffers(gr, db_stream));
+  1049		}
+       
+  1050		private static void debug_buffers(GenerateResult gr, PrintStream stream) {
+  1051			for (GenerateResultItem ab : gr.results()) {
+  1052				stream.println("---------------------------------------------------------------");
+  1053				stream.println(ab.counter);
+  1054				stream.println(ab.ty);
+  1055				stream.println(ab.output);
+  1056				stream.println(ab.node.identityString());
+  1057				stream.println(ab.buffer.getText());
+  1058				stream.println("---------------------------------------------------------------");
+  1059			}
+  1060		}
+  1061	}
+       
+  1062	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1063	2022-10-06 12:23        comp/pipelines/WritePipeline.java         Page 6
+       
+       
+  1064	//
+  1065	//
+  1066	//
+  1067	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1068	2022-10-06 12:23        comp/pipelines/DeducePipeline.java        Page 1
+       
+       
+  1069	/*
+  1070	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  1071	 *
+  1072	 * The contents of this library are released under the LGPL licence v3,
+  1073	 * the GNU Lesser General Public License text was downloaded from
+  1074	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  1075	 *
+  1076	 */
+  1077	package tripleo.elijah.comp.pipelines;
+       
+  1078	import org.jdeferred2.impl.DeferredObject;
+  1079	import org.jetbrains.annotations.NotNull;
+  1080	import tripleo.elijah.comp.CompilationShit;
+  1081	import tripleo.elijah.comp.PipelineLogic;
+  1082	import tripleo.elijah.comp.PipelineMember;
+  1083	import tripleo.elijah.comp.internal.CCA;
+  1084	import tripleo.elijah.comp.internal.ModuleListener;
+  1085	import tripleo.elijah.lang.OS_Module;
+  1086	import tripleo.elijah.stages.gen_fn.GeneratedNode;
+       
+  1087	import java.util.ArrayList;
+  1088	import java.util.List;
+  1089	import java.util.function.Consumer;
+       
+  1090	/**
+  1091	 * Created 8/21/21 10:10 PM
+  1092	 */
+  1093	public class DeducePipeline implements PipelineMember, ModuleListener {
+  1094		private final PipelineLogic pipelineLogic;
+  1095		private final DeferredObject<List<GeneratedNode>, Void, Void> lgcp;
+  1096		private List<GeneratedNode> lgc = new ArrayList<GeneratedNode>();
+  1097		private final Consumer<OS_Module> ms;
+       
+  1098		@Override
+  1099		public void onModules(final List<OS_Module> modules) {
+  1100			for (final OS_Module module : modules) {
+  1101				if (false) {
+  1102	/*
+  1103					new DeduceTypes(module).deduce();
+  1104					for (final OS_Element2 item : module.items()) {
+  1105						if (item instanceof ClassStatement || item instanceof NamespaceStatement) {
+  1106							System.err.println("8001 "+item);
+  1107						}
+  1108					}
+  1109					new TranslateModule(module).translate();
+  1110	*/
+  1111	//				new ExpandFunctions(module).expand();
+  1112	//
+  1113	//  			final JavaCodeGen visit = new JavaCodeGen();
+  1114	//	       		module.visitGen(visit);
+  1115				} else {
+  1116	//				cca.addModule(module);
+  1117					ms.accept(module);
+  1118				}
+  1119			}
+  1120		}
+       
+  1121		public DeducePipeline(@NotNull CCA cca) {
+  1122			cca.addModuleListener(this);
+       
+  1123			cca.getPipelineAcceptor().accept(this);
+       
+  1124			this.pipelineLogic = cca.getPL();
+       
+  1125			ms = cca::addModule;
+       
+  1126			lgcp = (DeferredObject<List<GeneratedNode>, Void, Void>) cca.lgcp();
+  1127		}
+       
+  1128		@Override
+  1129	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1130	2022-10-06 12:23        comp/pipelines/DeducePipeline.java        Page 2
+       
+       
+  1131		public void run() {
+  1132			System.err.println("****** dp [RUN   ]");
+       
+  1133			pipelineLogic.everythingBeforeGenerate(lgc);
+  1134			lgc = pipelineLogic.dp.generatedClasses.copy(); // TODO special case 0-length
+       
+  1135	//		lgcp.resolve(lgc);
+  1136		}
+       
+  1137		@Override
+  1138		public void attachCB(CompilationShit cs) {
+  1139			int y = 2;
+  1140		}
+       
+  1141		public List<GeneratedNode> _______lgc() {
+  1142			return lgc;
+  1143		}
+  1144	}
+       
+  1145	//
+  1146	//
+  1147	//
+  1148	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1149	2022-10-06 09:59               comp/GenBuffer.java                Page 1
+       
+       
+  1150	///*
+  1151	// * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  1152	// *
+  1153	// * The contents of this library are released under the LGPL licence v3,
+  1154	// * the GNU Lesser General Public License text was downloaded from
+  1155	// * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  1156	// *
+  1157	// */
+  1158	//package tripleo.elijah.comp;
+  1159	//
+  1160	//import tripleo.elijah.gen.CompilerContext;
+  1161	//import tripleo.elijah.gen.nodes.ImportNode;
+  1162	//import tripleo.elijah.gen.nodes.LocalDeclAgnNode;
+  1163	//import tripleo.util.NotImplementedException;
+  1164	//import tripleo.util.buffer.FileBackedBuffer;
+  1165	//import tripleo.util.buffer.TextBuffer;
+  1166	//
+  1167	//import java.io.FileOutputStream;
+  1168	//import java.io.IOException;
+  1169	//import java.util.HashMap;
+  1170	//import java.util.Map;
+  1171	//
+  1172	//public class GenBuffer {
+  1173	//
+  1174	//	private final Map<String, TextBuffer> hdr_bufs = new HashMap<String, TextBuffer>();
+  1175	//	private final Map<String, TextBuffer> reg_bufs = new HashMap<String, TextBuffer>();
+  1176	//
+  1177	//	public void GenImportStmt(final CompilerContext cctx, final ImportNode impn) {
+  1178	//		// TODO Auto-generated method stub
+  1179	//		NotImplementedException.raise();
+  1180	//
+  1181	//	}
+  1182	//
+  1183	//	public void InitMod(final CompilerContext cctx, final String string) {
+  1184	//		// TODO Auto-generated method stub
+  1185	//		NotImplementedException.raise();
+  1186	//
+  1187	//	}
+  1188	//
+  1189	//	public TextBuffer moduleBufHdr(final String module) {
+  1190	////		NotImplementedException.raise();
+  1191	//		if (hdr_bufs.containsKey(module)) {
+  1192	//			return hdr_bufs.get(module);
+  1193	//		} else {
+  1194	//			final TextBuffer buf = new FileBackedBuffer(module + ".h");
+  1195	//			hdr_bufs.put(module, buf);
+  1196	//			return buf;
+  1197	//		}
+  1198	//	}
+  1199	//
+  1200	//	public TextBuffer moduleBufImpl(final String module) {
+  1201	//		// TODO Auto-generated method stub
+  1202	////		NotImplementedException.raise();
+  1203	//		if (reg_bufs.containsKey(module)) {
+  1204	//			return reg_bufs.get(module);
+  1205	//		} else {
+  1206	//			final TextBuffer buf = new FileBackedBuffer(module + ".c");
+  1207	//			reg_bufs.put(module, buf);
+  1208	//			return buf;
+  1209	//		}
+  1210	//	}
+  1211	//
+  1212	////	public CodeGen getCodeGen() {
+  1213	////		// TODO Auto-generated method stub
+  1214	////		return new CodeGen() {
+  1215	////
+  1216	////			@Override
+  1217	////			public void appendHeader(String module, String build) {
+  1218	////				// TODO Auto-generated method stub
+  1219	////				super.appendHeader(module, build);
+  1220	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1221	2022-10-06 09:59               comp/GenBuffer.java                Page 2
+       
+       
+  1222	////			}
+  1223	////
+  1224	////		};
+  1225	////	}
+  1226	//
+  1227	//	public void writeBuffers() throws IOException {
+  1228	//		for (final Map.Entry<String, TextBuffer> entry : reg_bufs.entrySet()) {
+  1229	//			final String module = entry.getKey();
+  1230	//			final TextBuffer build  = entry.getValue();
+  1231	//			//
+  1232	//			final FileOutputStream fileOutputStream;
+  1233	//			fileOutputStream = new FileOutputStream(module + ".c", true); // append
+  1234	//			final String buildText = build.getText();
+  1235	//			fileOutputStream.write(buildText.getBytes());
+  1236	//			fileOutputStream.close();
+  1237	//
+  1238	//		}
+  1239	//	}
+  1240	//
+  1241	//	public void GenLocalDeclAgn(final CompilerContext cctx, final LocalDeclAgnNode ldan1) {
+  1242	//		// TODO Auto-generated method stub
+  1243	//		NotImplementedException.raise();
+  1244	//	}
+  1245	//
+  1246	//	public void GenLocalAgn(final CompilerContext cctx, final LocalDeclAgnNode ldan_f1) {
+  1247	//		// TODO Auto-generated method stub
+  1248	//		NotImplementedException.raise();
+  1249	//	}
+  1250	//}
+  1251	//
+  1252	////
+  1253	////
+  1254	////
+  1255	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1256	2022-10-06 12:23                   comp/IO.java                   Page 1
+       
+       
+  1257	/*
+  1258	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  1259	 * 
+  1260	 * The contents of this library are released under the LGPL licence v3, 
+  1261	 * the GNU Lesser General Public License text was downloaded from
+  1262	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  1263	 * 
+  1264	 */
+  1265	package tripleo.elijah.comp;
+       
+  1266	import org.jetbrains.annotations.NotNull;
+  1267	import tripleo.util.io.CharSink;
+  1268	import tripleo.util.io.CharSource;
+  1269	import tripleo.util.io.FileCharSink;
+       
+  1270	import java.io.*;
+  1271	import java.nio.file.Files;
+  1272	import java.nio.file.Path;
+  1273	import java.util.ArrayList;
+  1274	import java.util.List;
+       
+  1275	public class IO {
+       
+  1276		// exists, delete, isType ....
+       
+  1277		public final List<File> recordedreads = new ArrayList<File>();
+  1278		final List<File> recordedwrites = new ArrayList<File>();
+  1279		
+  1280		public boolean recordedRead(final File file) {
+  1281			return recordedreads.contains(file);
+  1282		}
+       
+  1283		public boolean recordedWrite(final File file) {
+  1284			return recordedwrites.contains(file);
+  1285		}
+       
+  1286		public CharSource openRead(final Path p) {
+  1287			record(FileOption.READ, p);
+  1288			return null;
+  1289		}
+       
+  1290		public CharSink openWrite(final Path p) throws IOException {
+  1291			record(FileOption.WRITE, p);				
+  1292			return new FileCharSink(Files.newOutputStream(p));
+  1293		}
+       
+  1294		private void record(final FileOption read, @NotNull final Path p) {
+  1295			record(read, p.toFile());
+  1296		}
+       
+  1297		private void record(@NotNull final FileOption read, @NotNull final File file) {
+  1298			switch (read) {
+  1299				case WRITE:
+  1300					recordedwrites.add(file);
+  1301					break;
+  1302				case READ:
+  1303					recordedreads.add(file);
+  1304					break;
+  1305				default:
+  1306					throw new IllegalStateException("Cant be here");
+  1307			}
+  1308		}
+       
+  1309		public InputStream readFile(final File f) throws FileNotFoundException {
+  1310			record(FileOption.READ, f);
+  1311			return new FileInputStream(f);
+  1312		}
+  1313	}
+       
+  1314	//
+  1315	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1316	2022-10-06 12:23                   comp/IO.java                   Page 2
+       
+       
+  1317	//
+  1318	//
+  1319	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1320	2022-03-20 03:53               comp/FileOption.java               Page 1
+       
+       
+  1321	/*
+  1322	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  1323	 * 
+  1324	 * The contents of this library are released under the LGPL licence v3, 
+  1325	 * the GNU Lesser General Public License text was downloaded from
+  1326	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  1327	 * 
+  1328	 */
+  1329	package tripleo.elijah.comp;
+       
+  1330	public enum FileOption  { READ, WRITE }
+       
+  1331	//
+  1332	//
+  1333	//
+  1334	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1335	2022-10-06 03:31              comp/Compilation.java               Page 1
+       
+       
+  1336	package tripleo.elijah.comp;
+       
+  1337	import org.jetbrains.annotations.NotNull;
+  1338	import tripleo.elijah.lang.ClassStatement;
+  1339	import tripleo.elijah.lang.OS_Module;
+  1340	import tripleo.elijah.lang.OS_Package;
+  1341	import tripleo.elijah.lang.Qualident;
+  1342	import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
+  1343	import tripleo.elijah.stages.deduce.FunctionMapHook;
+  1344	import tripleo.elijah.stages.logging.ElLog;
+       
+  1345	import java.util.List;
+       
+  1346	public interface Compilation {
+  1347		static ElLog.Verbosity gitlabCIVerbosity() {
+  1348			final boolean gitlab_ci = isGitlab_ci();
+  1349			return gitlab_ci ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
+  1350		}
+       
+  1351		static boolean isGitlab_ci() {
+  1352			return System.getenv("GITLAB_CI") != null;
+  1353		}
+       
+  1354		void feedCmdLine(@NotNull List<String> args) throws Exception;
+       
+  1355		void feedCmdLine(String @NotNull [] args) throws Exception /* finally!! */;
+       
+  1356		IO getIO();
+       
+  1357		void setIO(IO io);
+       
+  1358		List<ClassStatement> findClass(String aClassName);
+       
+  1359		int errorCount();
+       
+  1360		boolean findStdLib(String prelude_name);
+       
+  1361		void addModule(OS_Module module, String fn);
+       
+  1362		int nextClassCode();
+       
+  1363		int nextFunctionCode();
+       
+  1364		boolean isPackage(String pkg);
+       
+  1365		OS_Package getPackage(Qualident pkg_name);
+       
+  1366		OS_Package makePackage(Qualident pkg_name);
+       
+  1367		int compilationNumber();
+       
+  1368		String getCompilationNumberString();
+       
+  1369		ErrSink getErrSink();
+       
+  1370		void addFunctionMapHook(@NotNull FunctionMapHook aFunctionMapHook);
+       
+  1371		@NotNull EOT_OutputTree getOutputTree();
+  1372	}
+  1373	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1374	2022-10-06 17:15              comp/internal/CCA.java              Page 1
+       
+       
+  1375	package tripleo.elijah.comp.internal;
+       
+  1376	import org.jdeferred2.Promise;
+  1377	import org.jdeferred2.impl.DeferredObject;
+  1378	import org.jetbrains.annotations.Contract;
+  1379	import org.jetbrains.annotations.NotNull;
+  1380	import tripleo.elijah.comp.Compilation;
+  1381	import tripleo.elijah.comp.CompilationShit;
+  1382	import tripleo.elijah.comp.PipelineLogic;
+  1383	import tripleo.elijah.comp.PipelineMember;
+  1384	import tripleo.elijah.lang.OS_Module;
+  1385	import tripleo.elijah.stages.gen_fn.GeneratedNode;
+       
+  1386	import java.util.LinkedList;
+  1387	import java.util.List;
+  1388	import java.util.function.Consumer;
+       
+  1389	public class CCA {
+  1390		private final RegistryImpl registry;
+  1391		private final CompilationShit cs;
+  1392		private final PipelineLogic _pl;
+       
+  1393		@Contract(pure = true)
+  1394		public CCA(RegistryImpl aRegistry, CompilationShit aCs) {
+  1395			registry = aRegistry;
+  1396			cs = aCs;
+       
+  1397			_pl = new PipelineLogic(aCs);
+  1398		}
+       
+  1399		public Compilation getComp() {
+  1400			return cs.getComp();
+  1401		}
+       
+  1402		public Consumer<Attachable> getPipelineAcceptor() {
+  1403			// TODO stop passing lambdas around
+  1404			//  ?? or does he?
+  1405			return (att) -> registry.addPipeline((PipelineMember) att);
+  1406		}
+       
+  1407		public PipelineLogic getPipelineLogic() {
+  1408			return _pl;
+  1409		}
+       
+  1410		public Promise<List<GeneratedNode>, Void, Void> lgcp() {
+  1411			return _lgcp;
+  1412		}
+       
+  1413		private DeferredObject<List<GeneratedNode>, Void, Void> _lgcp = new DeferredObject<>();
+  1414		private DeferredObject<List<OS_Module>, Void, Void> _modsP = new DeferredObject<>();
+       
+  1415		public void addModuleListener(final ModuleListener aModuleListener) {
+  1416			_modsP.then((ms) -> aModuleListener.onModules(ms));
+  1417		}
+       
+  1418		public void resolveModules(final List<OS_Module> mods) {
+  1419			_modsP.resolve(mods);
+  1420		}
+       
+  1421		public void resolveLGN(final List<GeneratedNode> lgn) {
+  1422			_lgcp.resolve(lgn);
+  1423		}
+       
+  1424		public @NotNull PipelineLogic getPL() {
+  1425			return _pl;
+  1426		}
+       
+  1427		public void addModule(OS_Module aModule) {
+  1428			modules.add(aModule);
+  1429		}
+  1430	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1431	2022-10-06 17:15              comp/internal/CCA.java              Page 2
+       
+       
+       
+  1432		private final List<OS_Module> modules = new LinkedList<>();
+  1433	}
+  1434	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1435	2022-10-06 02:43          comp/internal/Attachable.java           Page 1
+       
+       
+  1436	package tripleo.elijah.comp.internal;
+       
+  1437	import org.jetbrains.annotations.NotNull;
+  1438	import tripleo.elijah.comp.CompilationShit;
+       
+  1439	public interface Attachable {
+  1440		void attachCB(@NotNull CompilationShit cs);
+  1441	}
+  1442	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1443	2022-10-06 12:23        comp/internal/CompilationImpl.java        Page 1
+       
+       
+  1444	/*
+  1445	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  1446	 *
+  1447	 * The contents of this library are released under the LGPL licence v3,
+  1448	 * the GNU Lesser General Public License text was downloaded from
+  1449	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  1450	 *
+  1451	 */
+  1452	package tripleo.elijah.comp.internal;
+       
+  1453	import antlr.ANTLRException;
+  1454	import antlr.RecognitionException;
+  1455	import antlr.TokenStreamException;
+  1456	import org.apache.commons.cli.CommandLine;
+  1457	import org.apache.commons.cli.CommandLineParser;
+  1458	import org.apache.commons.cli.DefaultParser;
+  1459	import org.apache.commons.cli.Options;
+  1460	import org.jetbrains.annotations.NotNull;
+  1461	import tripleo.elijah.Out;
+  1462	import tripleo.elijah.ci.CompilerInstructions;
+  1463	import tripleo.elijah.ci.LibraryStatementPart;
+  1464	import tripleo.elijah.comp.Compilation;
+  1465	import tripleo.elijah.comp.CompilationShit;
+  1466	import tripleo.elijah.comp.ErrSink;
+  1467	import tripleo.elijah.comp.IO;
+  1468	import tripleo.elijah.lang.ClassStatement;
+  1469	import tripleo.elijah.lang.OS_Module;
+  1470	import tripleo.elijah.lang.OS_Package;
+  1471	import tripleo.elijah.lang.Qualident;
+  1472	import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
+  1473	import tripleo.elijah.stages.deduce.FunctionMapHook;
+  1474	import tripleo.elijah.util.Helpers;
+  1475	import tripleo.elijjah.ElijjahLexer;
+  1476	import tripleo.elijjah.ElijjahParser;
+  1477	import tripleo.elijjah.EzLexer;
+  1478	import tripleo.elijjah.EzParser;
+       
+  1479	import java.io.File;
+  1480	import java.io.FilenameFilter;
+  1481	import java.io.InputStream;
+  1482	import java.util.*;
+  1483	import java.util.regex.Pattern;
+  1484	import java.util.stream.Collectors;
+       
+  1485	public class CompilationImpl implements Compilation {
+       
+  1486		private final int _compilationNumber;
+  1487		private IO io;
+  1488		private ErrSink eee;
+  1489		public final List<OS_Module> modules = new ArrayList<OS_Module>();
+  1490		private final Map<String, OS_Module> fn2m = new HashMap<String, OS_Module>();
+  1491		private final Map<String, CompilerInstructions> fn2ci = new HashMap<String, CompilerInstructions>();
+  1492		private final Map<String, OS_Package> _packages = new HashMap<String, OS_Package>();
+  1493		private int _packageCode = 1;
+  1494		public final List<CompilerInstructions> cis = new ArrayList<CompilerInstructions>();
+       
+  1495		//
+  1496		//
+  1497		//
+  1498	//	private PipelineLogic pipelineLogic; // why not final => set by "plugin" ...
+       
+  1499	//	CompilationShit cs;
+  1500	//	Registry reg;
+       
+  1501		//
+  1502		//
+  1503		//
+       
+  1504		public CompilationImpl(final ErrSink eee, final IO io) {
+  1505			this.eee = eee;
+  1506	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1507	2022-10-06 12:23        comp/internal/CompilationImpl.java        Page 2
+       
+       
+  1508			this.io = io;
+  1509			this._compilationNumber = new Random().nextInt(Integer.MAX_VALUE);
+  1510		}
+       
+  1511		@Override
+  1512		public void feedCmdLine(final @NotNull List<String> args) throws Exception {
+  1513			String[] argl = new String[args.size()];
+       
+  1514			int i = 0;
+  1515			for (String arg : args) {
+  1516				argl[i++] = arg;
+  1517			}
+       
+  1518			feedCmdLine(argl);
+  1519		}
+       
+  1520		@Override
+  1521		public void feedCmdLine(final String @NotNull [] args) throws Exception /* finally!! */ {
+  1522			final ErrSink errSink = getErrSink();
+       
+  1523			boolean do_out = false;
+       
+  1524			if (args.length < 1) { // Somehow guaranteed never to be negative
+  1525				System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
+  1526				return;
+  1527			}
+       
+  1528			// 1. build options extractor
+  1529			final Options options = new Options();
+  1530			options.addOption("s", true, "stage: E: parse; O: output");
+  1531			options.addOption("showtree", false, "show tree");
+  1532			options.addOption("out", false, "make debug files");
+  1533			options.addOption("silent", false, "suppress DeduceType output to console");
+  1534			final CommandLineParser clp = new DefaultParser();
+  1535			final CommandLine cmd = clp.parse(options, args);
+       
+  1536			// 2. extract options
+  1537			if (cmd.hasOption("s")) {
+  1538				stage = cmd.getOptionValue('s');
+  1539			}
+  1540			if (cmd.hasOption("showtree")) {
+  1541				showTree = true;
+  1542			}
+  1543			if (cmd.hasOption("out")) {
+  1544				do_out = true;
+  1545			}
+  1546			if (Compilation.isGitlab_ci() || cmd.hasOption("silent")) {
+  1547				silent = true;
+  1548			}
+       
+  1549			CompilerInstructions ez_file = null;
+  1550			final String[] args2 = cmd.getArgs();
+       
+  1551			// 3. find ezs
+  1552			List<Object> k = find_ezs(args2, errSink)
+  1553					.stream()
+  1554					.map(x -> add_ci2(x))
+  1555					.collect(Collectors.toList());
+  1556	/*
+  1557			for (int i = 0; i < args2.length; i++) {
+  1558				final String file_name = args2[i];
+  1559				final File f = new File(file_name);
+  1560				final boolean matches2 = Pattern.matches(".+\\.ez$", file_name);
+  1561				if (matches2)
+  1562					add_ci(parseEzFile(f, file_name, eee));
+  1563				else {
+  1564	//						eee.reportError("9996 Not an .ez file "+file_name);
+  1565					if (f.isDirectory()) {
+  1566						final List<CompilerInstructions> ezs = searchEzFiles(f);
+  1567						if (ezs.size() > 1) {
+  1568	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1569	2022-10-06 12:23        comp/internal/CompilationImpl.java        Page 3
+       
+       
+  1570	//								eee.reportError("9998 Too many .ez files, using first.");
+  1571							eee.reportError("9997 Too many .ez files, be specific.");
+  1572	//								add_ci(ezs.get(0));
+  1573						} else if (ezs.size() == 0) {
+  1574							eee.reportError("9999 No .ez files found.");
+  1575						} else {
+  1576							ez_file = ezs.get(0);
+  1577							add_ci(ez_file);
+  1578						}
+  1579					} else
+  1580						eee.reportError("9995 Not a directory "+f.getAbsolutePath());
+  1581				}
+  1582			}
+  1583	*/
+  1584			// 4. find stdlib (wow, this late?)
+  1585			System.err.println("130 GEN_LANG: " + cis.get(0).genLang());
+  1586			findStdLib("c"); // TODO find a better place for this
+       
+  1587			// 5. "use" (build/integrate/...) cis
+  1588			for (final CompilerInstructions ci : cis) {
+  1589				use(ci, do_out);
+  1590			}
+       
+  1591			// 6. build-driver logic
+  1592			CompilationShit cs = new CompilationShitImpl(this);
+  1593			Registry reg = new RegistryImpl(cs, stage, silent);
+       
+  1594			reg.loadPlan();
+  1595			reg.runPlan();
+  1596		}
+       
+  1597		@Override
+  1598		public IO getIO() {
+  1599			return io;
+  1600		}
+       
+  1601		@Override
+  1602		public void setIO(final IO io) {
+  1603			this.io = io;
+  1604		}
+       
+  1605		//
+  1606		//
+  1607		//
+       
+  1608		public String stage = "O"; // Output
+       
+  1609		// TODO return list of discrim. union result type (aka remove errSink direct reporting)
+  1610		public List<CompilerInstructions> find_ezs(String[] args2, final ErrSink errSink) throws Exception {
+  1611			final List<CompilerInstructions> r = new ArrayList<>();
+       
+  1612			for (int i = 0; i < args2.length; i++) {
+  1613				final String file_name = args2[i];
+  1614				final File f = new File(file_name);
+  1615				final boolean matches2 = Pattern.matches(".+\\.ez$", file_name);
+  1616				if (matches2) {
+  1617					final CompilerInstructions ez_file0 = parseEzFile(f, file_name, errSink);
+  1618					r.add(ez_file0);
+  1619				} else {
+  1620	//				eee.reportError("9996 Not an .ez file "+file_name);
+  1621					if (f.isDirectory()) {
+  1622						final List<CompilerInstructions> ezs = searchEzFiles(f);
+  1623						if (ezs.size() > 1) {
+  1624	//						eee.reportError("9998 Too many .ez files, using first.");
+  1625							errSink.reportError("9997 Too many .ez files, be specific.");
+  1626	//						add_ci(ezs.get(0));
+  1627						} else if (ezs.isEmpty()) {
+  1628							errSink.reportError("9999 No .ez files found.");
+  1629						} else {
+  1630							final CompilerInstructions ez_file1 = ezs.get(0);
+  1631	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1632	2022-10-06 12:23        comp/internal/CompilationImpl.java        Page 4
+       
+       
+  1633							r.add(ez_file1);
+  1634						}
+  1635					} else
+  1636						errSink.reportError("9995 Not a directory " + f.getAbsolutePath());
+  1637				}
+  1638			}
+       
+  1639			return r;
+  1640		}
+       
+  1641		public Object add_ci2(final CompilerInstructions ci) {
+  1642			add_ci(ci);
+  1643			return null;
+  1644		}
+       
+  1645		private boolean silent = false;
+       
+  1646		boolean silent() {
+  1647			return silent;
+  1648		}
+       
+  1649		private List<CompilerInstructions> searchEzFiles(final File directory) {
+  1650			final List<CompilerInstructions> R = new ArrayList<CompilerInstructions>();
+  1651			final FilenameFilter filter = new FilenameFilter() {
+  1652				@Override
+  1653				public boolean accept(final File file, final String s) {
+  1654					final boolean matches2 = Pattern.matches(".+\\.ez$", s);
+  1655					return matches2;
+  1656				}
+  1657			};
+  1658			final String[] list = directory.list(filter);
+  1659			if (list != null) {
+  1660				for (final String file_name : list) {
+  1661					try {
+  1662						final File file = new File(directory, file_name);
+  1663						final CompilerInstructions ezFile = parseEzFile(file, file.toString(), eee);
+  1664						if (ezFile != null)
+  1665							R.add(ezFile);
+  1666						else
+  1667							eee.reportError("9995 ezFile is null " + file.toString());
+  1668					} catch (final Exception e) {
+  1669						eee.exception(e);
+  1670					}
+  1671				}
+  1672			}
+  1673			return R;
+  1674		}
+       
+  1675		private void add_ci(final CompilerInstructions ci) {
+  1676			cis.add(ci);
+  1677		}
+       
+  1678		public void use(final CompilerInstructions compilerInstructions, final boolean do_out) throws Exception {
+  1679			final File instruction_dir = new File(compilerInstructions.getFilename()).getParentFile();
+  1680			for (final LibraryStatementPart lsp : compilerInstructions.lsps) {
+  1681				final String dir_name = Helpers.remove_single_quotes_from_string(lsp.getDirName());
+  1682				final @NotNull File dir;
+  1683				if (dir_name.equals(".."))
+  1684					dir = instruction_dir/*.getAbsoluteFile()*/.getParentFile();
+  1685				else
+  1686					dir = new File(instruction_dir, dir_name);
+  1687				use_internal(dir, do_out, lsp);
+  1688			}
+  1689			final LibraryStatementPart lsp = new LibraryStatementPart();
+  1690			lsp.setName(Helpers.makeToken("default")); // TODO: make sure this doesn't conflict
+  1691			lsp.setDirName(Helpers.makeToken(String.format("\"%s\"", instruction_dir)));
+  1692			lsp.setInstructions(compilerInstructions);
+  1693			use_internal(instruction_dir, do_out, lsp);
+  1694		}
+       
+  1695	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1696	2022-10-06 12:23        comp/internal/CompilationImpl.java        Page 5
+       
+       
+  1697		private void use_internal(final File dir, final boolean do_out, LibraryStatementPart lsp) throws Exception {
+  1698			if (!dir.isDirectory()) {
+  1699				eee.reportError("9997 Not a directory " + dir.toString());
+  1700				return;
+  1701			}
+  1702			//
+  1703			final FilenameFilter accept_source_files = new FilenameFilter() {
+  1704				@Override
+  1705				public boolean accept(final File directory, final String file_name) {
+  1706					final boolean matches = Pattern.matches(".+\\.elijah$", file_name)
+  1707							|| Pattern.matches(".+\\.elijjah$", file_name);
+  1708					return matches;
+  1709				}
+  1710			};
+  1711			final File[] files = dir.listFiles(accept_source_files);
+  1712			if (files != null) {
+  1713				for (final File file : files) {
+  1714					parseElijjahFile(file, file.toString(), eee, do_out, lsp);
+  1715				}
+  1716			}
+  1717		}
+       
+  1718		private CompilerInstructions parseEzFile(final File f, final String file_name, final ErrSink errSink) throws Exception {
+  1719			System.out.println((String.format("   %s", f.getAbsolutePath())));
+  1720			if (!f.exists()) {
+  1721				errSink.reportError(
+  1722						"File doesn't exist " + f.getAbsolutePath());
+  1723				return null;
+  1724			}
+       
+  1725			final CompilerInstructions m = realParseEzFile(file_name, io.readFile(f), f);
+  1726			{
+  1727				String prelude = m.genLang();
+  1728				System.err.println("230 " + prelude);
+  1729				if (prelude == null) prelude = "c"; // TODO should be java for eljc
+  1730			}
+  1731			return m;
+  1732		}
+       
+  1733		private void parseElijjahFile(@NotNull final File f,
+  1734		                              final String file_name,
+  1735		                              final ErrSink errSink,
+  1736		                              final boolean do_out,
+  1737		                              LibraryStatementPart lsp) throws Exception {
+  1738			System.out.println((String.format("   %s", f.getAbsolutePath())));
+  1739			if (f.exists()) {
+  1740				final OS_Module m = realParseElijjahFile(file_name, f, do_out);
+  1741				m.setLsp(lsp);
+  1742				m.prelude = this.findPrelude("c"); // TODO we dont know which prelude to find yet
+  1743			} else {
+  1744				errSink.reportError(
+  1745						"File doesn't exist " + f.getAbsolutePath()); // TODO getPath?? and use a Diagnostic
+  1746			}
+  1747		}
+       
+  1748		public OS_Module realParseElijjahFile(final String f, final File file, final boolean do_out) throws Exception {
+  1749			final String absolutePath = file.getCanonicalFile().toString();
+  1750			if (fn2m.containsKey(absolutePath)) { // don't parse twice
+  1751				return fn2m.get(absolutePath);
+  1752			}
+  1753			final InputStream s = io.readFile(file);
+  1754			try {
+  1755				final OS_Module R = parseFile_(f, s, do_out);
+  1756				fn2m.put(absolutePath, R);
+  1757				s.close();
+  1758				return R;
+  1759			} catch (final ANTLRException e) {
+  1760				System.err.println(("parser exception: " + e));
+  1761				e.printStackTrace(System.err);
+  1762				s.close();
+  1763	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1764	2022-10-06 12:23        comp/internal/CompilationImpl.java        Page 6
+       
+       
+  1765				return null;
+  1766			}
+  1767		}
+       
+  1768		public CompilerInstructions realParseEzFile(final String f, final InputStream s, final File file) throws Exception {
+  1769			final String absolutePath = file.getCanonicalFile().toString();
+  1770			if (fn2ci.containsKey(absolutePath)) { // don't parse twice
+  1771				return fn2ci.get(absolutePath);
+  1772			}
+  1773			try {
+  1774				final CompilerInstructions R = parseEzFile_(f, s);
+  1775				R.setFilename(file.toString());
+  1776				fn2ci.put(absolutePath, R);
+  1777				s.close();
+  1778				return R;
+  1779			} catch (final ANTLRException e) {
+  1780				System.err.println(("parser exception: " + e));
+  1781				e.printStackTrace(System.err);
+  1782				s.close();
+  1783				return null;
+  1784			}
+  1785		}
+       
+  1786		private OS_Module parseFile_(final String f, final InputStream s, final boolean do_out) throws RecognitionException, TokenStreamException {
+  1787			final ElijjahLexer lexer = new ElijjahLexer(s);
+  1788			lexer.setFilename(f);
+  1789			final ElijjahParser parser = new ElijjahParser(lexer);
+  1790			parser.out = new Out(f, this, do_out);
+  1791			parser.setFilename(f);
+  1792			parser.program();
+  1793			final OS_Module module = parser.out.module();
+  1794			parser.out = null;
+  1795			return module;
+  1796		}
+       
+  1797		private CompilerInstructions parseEzFile_(final String f, final InputStream s) throws RecognitionException, TokenStreamException {
+  1798			final EzLexer lexer = new EzLexer(s);
+  1799			lexer.setFilename(f);
+  1800			final EzParser parser = new EzParser(lexer);
+  1801			parser.setFilename(f);
+  1802			parser.program();
+  1803			final CompilerInstructions instructions = parser.ci;
+  1804			return instructions;
+  1805		}
+       
+  1806		boolean showTree = false;
+       
+  1807		@Override
+  1808		public List<ClassStatement> findClass(final String aClassName) {
+  1809			final List<ClassStatement> l = new ArrayList<ClassStatement>();
+  1810			for (final OS_Module module : modules) {
+  1811				if (module.hasClass(aClassName)) {
+  1812					l.add((ClassStatement) module.findClass(aClassName));
+  1813				}
+  1814			}
+  1815			return l;
+  1816		}
+       
+  1817		@Override
+  1818		public int errorCount() {
+  1819			return eee.errorCount();
+  1820		}
+       
+  1821		public OS_Module findPrelude(final String prelude_name) {
+  1822			final File local_prelude = new File("lib_elijjah/lib-" + prelude_name + "/Prelude.elijjah");
+  1823			if (local_prelude.exists()) {
+  1824				try {
+  1825					return realParseElijjahFile(local_prelude.getName(), local_prelude, false);
+  1826				} catch (final Exception e) {
+  1827					eee.exception(e);
+  1828	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1829	2022-10-06 12:23        comp/internal/CompilationImpl.java        Page 7
+       
+       
+  1830					return null;
+  1831				}
+  1832			}
+  1833			return null;
+  1834		}
+       
+  1835		@Override
+  1836		public boolean findStdLib(final String prelude_name) {
+  1837			final File local_stdlib = new File("lib_elijjah/lib-" + prelude_name + "/stdlib.ez");
+  1838			if (local_stdlib.exists()) {
+  1839				try {
+  1840					final CompilerInstructions ci = realParseEzFile(local_stdlib.getName(), io.readFile(local_stdlib), local_stdlib);
+  1841					add_ci(ci);
+  1842					return true;
+  1843				} catch (final Exception e) {
+  1844					eee.exception(e);
+  1845				}
+  1846			}
+  1847			return false;
+  1848		}
+       
+  1849		//
+  1850		// region MODULE STUFF
+  1851		//
+       
+  1852		@Override
+  1853		public void addModule(final OS_Module module, final String fn) {
+  1854			modules.add(module);
+  1855			fn2m.put(fn, module);
+  1856		}
+       
+  1857		public OS_Module fileNameToModule(final String fileName) {
+  1858			if (fn2m.containsKey(fileName)) {
+  1859				return fn2m.get(fileName);
+  1860			}
+  1861			return null;
+  1862		}
+       
+  1863		// endregion
+       
+  1864		//
+  1865		// region CLASS AND FUNCTION CODES
+  1866		//
+       
+  1867		private int _classCode = 101;
+  1868		private int _functionCode = 1001;
+       
+  1869		@Override
+  1870		public int nextClassCode() {
+  1871			return _classCode++;
+  1872		}
+       
+  1873		@Override
+  1874		public int nextFunctionCode() {
+  1875			return _functionCode++;
+  1876		}
+       
+  1877		// endregion
+       
+  1878		//
+  1879		// region PACKAGES
+  1880		//
+       
+  1881		@Override
+  1882		public boolean isPackage(final String pkg) {
+  1883			return _packages.containsKey(pkg);
+  1884		}
+       
+  1885		@Override
+  1886		public OS_Package getPackage(final Qualident pkg_name) {
+  1887	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1888	2022-10-06 12:23        comp/internal/CompilationImpl.java        Page 8
+       
+       
+  1889			return _packages.get(pkg_name.toString());
+  1890		}
+       
+  1891		@Override
+  1892		public OS_Package makePackage(final Qualident pkg_name) {
+  1893			if (!isPackage(pkg_name.toString())) {
+  1894				final OS_Package newPackage = new OS_Package(pkg_name, nextPackageCode());
+  1895				_packages.put(pkg_name.toString(), newPackage);
+  1896				return newPackage;
+  1897			} else
+  1898				return _packages.get(pkg_name.toString());
+  1899		}
+       
+  1900		private int nextPackageCode() {
+  1901			return _packageCode++;
+  1902		}
+       
+  1903		// endregion
+       
+  1904		@Override
+  1905		public int compilationNumber() {
+  1906			return _compilationNumber;
+  1907		}
+       
+  1908		@Override
+  1909		public String getCompilationNumberString() {
+  1910			return String.format("%08x", _compilationNumber);
+  1911		}
+       
+  1912		@Override
+  1913		public ErrSink getErrSink() {
+  1914			return eee;
+  1915		}
+       
+  1916		@Override
+  1917		public void addFunctionMapHook(@NotNull FunctionMapHook aFunctionMapHook) {
+  1918	/*
+       
+       
+  1919			Preconditions.checkNotNull(pipelineLogic != null);
+  1920			Preconditions.checkNotNull(pipelineLogic.dp != null);
+       
+  1921			pipelineLogic.dp.addFunctionMapHook(aFunctionMapHook);
+  1922	*/
+  1923		}
+       
+  1924		private EOT_OutputTree _output_tree = null;
+       
+  1925		@Override
+  1926		@NotNull
+  1927		public EOT_OutputTree getOutputTree() {
+  1928			if (_output_tree == null) {
+  1929				_output_tree = new EOT_OutputTree();
+  1930			}
+       
+  1931			assert _output_tree != null;
+       
+  1932			return _output_tree;
+  1933		}
+  1934	}
+       
+  1935	//
+  1936	//
+  1937	//
+  1938	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1939	2022-10-06 03:19      comp/internal/CompilationShitImpl.java      Page 1
+       
+       
+  1940	package tripleo.elijah.comp.internal;
+       
+  1941	import com.google.common.collect.ArrayListMultimap;
+  1942	import com.google.common.collect.Multimap;
+  1943	import tripleo.elijah.comp.Compilation;
+  1944	import tripleo.elijah.comp.CompilationShit;
+  1945	import tripleo.elijah.comp.ErrSink;
+  1946	import tripleo.elijah.comp.PipelineLogic;
+  1947	import tripleo.elijah.comp.functionality.f202.F202;
+  1948	import tripleo.elijah.stages.logging.ElLog;
+       
+  1949	import java.util.ArrayList;
+  1950	import java.util.Collection;
+  1951	import java.util.List;
+  1952	import java.util.Map;
+       
+  1953	public class CompilationShitImpl implements CompilationShit {
+  1954		private final Compilation c;
+       
+  1955		public CompilationShitImpl(final Compilation aC) {
+  1956			this.c = aC;
+  1957		}
+       
+  1958		@Override
+  1959		public Compilation getComp() {
+  1960			return c;
+  1961		}
+       
+  1962		@Override
+  1963		public boolean getSilent() {
+  1964			return ((CompilationImpl) c).silent();
+  1965		}
+       
+  1966		@Override
+  1967		public void addLog(ElLog aLog) {
+  1968			logs.add(aLog);
+  1969		}
+       
+  1970		@Override
+  1971		public void writeLogs(boolean aSilent) {
+  1972			final ErrSink errSink = getComp().getErrSink();
+  1973			final Multimap<String, ElLog> logMap = ArrayListMultimap.create();
+  1974			final boolean cond = true || aSilent; // TODO
+       
+  1975			if (!cond) return;
+       
+  1976			// TODO huh?
+  1977			for (final ElLog deduceLog : logs) {
+  1978				logMap.put(deduceLog.getFileName(), deduceLog);
+  1979			}
+       
+  1980			final F202 f202 = new F202(errSink, getComp());
+  1981			for (Map.Entry<String, Collection<ElLog>> stringCollectionEntry : logMap.asMap().entrySet()) {
+  1982				f202.processLogs(stringCollectionEntry.getValue());
+  1983			}
+  1984		}
+       
+  1985		@Override
+  1986		public PipelineLogic getPipelineLogic() {
+  1987			throw new IllegalArgumentException();
+  1988	//		return null;
+  1989		}
+       
+  1990		@Override
+  1991		public List<ElLog> getLogs() {
+  1992			return logs;
+  1993		}
+       
+  1994		private final List<ElLog> logs = new ArrayList<>();
+  1995	}
+  1996	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  1997	2022-10-06 12:23         comp/internal/RegistryImpl.java          Page 1
+       
+       
+  1998	/*
+  1999	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  2000	 *
+  2001	 * The contents of this library are released under the LGPL licence v3,
+  2002	 * the GNU Lesser General Public License text was downloaded from
+  2003	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  2004	 *
+  2005	 */
+  2006	package tripleo.elijah.comp.internal;
+       
+  2007	import org.jetbrains.annotations.NotNull;
+  2008	import tripleo.elijah.comp.Compilation;
+  2009	import tripleo.elijah.comp.CompilationShit;
+  2010	import tripleo.elijah.comp.PipelineLogic;
+  2011	import tripleo.elijah.comp.PipelineMember;
+  2012	import tripleo.elijah.comp.pipelines.DeducePipeline;
+  2013	import tripleo.elijah.comp.pipelines.GeneratePipeline;
+  2014	import tripleo.elijah.comp.pipelines.WritePipeline;
+  2015	import tripleo.elijah.stages.gen_fn.GeneratedNode;
+  2016	import tripleo.elijah.stages.logging.ElLog;
+       
+  2017	import java.util.ArrayList;
+  2018	import java.util.List;
+  2019	import java.util.stream.Collectors;
+       
+  2020	public class RegistryImpl implements Registry {
+  2021		// TODO "scope" of pipelines ??
+  2022		private final Pipeline pipelines = new Pipeline();
+  2023		private final List<Attachable> las = new ArrayList<>();
+  2024		private final Compilation c;
+  2025		private final CompilationShit cs;
+  2026		private final String stage;
+  2027		private final boolean silent;
+  2028		private PipelineLogic pipelineLogic;
+  2029		private CCA cca;
+       
+  2030		public RegistryImpl(final @NotNull CompilationShit acs, String aStage, boolean aSilent) {
+  2031			c = acs.getComp();
+  2032			cs = acs;
+       
+       
+  2033			stage = aStage;
+  2034			silent = aSilent;
+  2035		}
+       
+  2036		public void addPipeline(final PipelineMember plm) {
+  2037			pipelines.add(plm);
+  2038		}
+       
+  2039		@Override
+  2040		public void loadPlan() {
+  2041			final Attachable itm;
+       
+  2042	//		pipelineLogic = new PipelineLogic(cs);
+       
+  2043			final CCA cca1 = new CCA(this, cs);
+  2044			pipelineLogic = cca1.getPipelineLogic();
+  2045			itm = pipelineLogic;
+  2046			las.add(itm);
+       
+  2047			assert ((CompilationImpl) c).modules.size() > 0;
+       
+  2048			final DeducePipeline dpl = new DeducePipeline(cca1);
+  2049			if (stage.equals("O")) {
+  2050				final GeneratePipeline gpl = new GeneratePipeline(cca1);
+  2051				final WritePipeline wpl = new WritePipeline(cca1);
+  2052			} else if (stage.equals("E")) {
+  2053				int y = 2;
+  2054			} else
+  2055				assert stage.equals("D");
+  2056	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  2057	2022-10-06 12:23         comp/internal/RegistryImpl.java          Page 2
+       
+       
+       
+  2058			cca1.resolveModules(((CompilationImpl) c).modules);
+  2059	//		cca1.resolveLGN(null);
+       
+  2060			cca = cca1;
+  2061		}
+       
+  2062		@Override
+  2063		public void runPlan(List<ElLog> elLogs) throws Exception { // TODO result-type or errSink
+  2064			for (Attachable la : las) {
+  2065				la.attachCB(cs);
+  2066			}
+  2067			for (Attachable la : pipelines.pls) {
+  2068				la.attachCB(cs);
+  2069			}
+       
+  2070			pipelines.run();
+       
+  2071			{
+  2072				DeducePipeline deducePipeline = (DeducePipeline) pipelines.pls
+  2073						.stream()
+  2074						.filter(x -> x instanceof DeducePipeline)
+  2075						.collect(Collectors.toList())
+  2076						.get(0);
+  2077				List<GeneratedNode> generatedNodes = deducePipeline._______lgc();
+  2078				cca.resolveLGN(generatedNodes);
+  2079			}
+       
+  2080	//		((DeferredObject<List<GeneratedNode>,Void,Void>) cca.lgcp())
+  2081	//				.resolve(generatedNodes);
+       
+  2082			cs.writeLogs(silent);
+  2083		}
+       
+  2084		@Override
+  2085		public void GodsPlan() {
+  2086			throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+  2087		}
+       
+  2088		@Override
+  2089		public void runPlan() throws Exception {
+  2090			runPlan(cs.getLogs());
+  2091		}
+       
+  2092		/**
+  2093		 * Created 8/21/21 10:09 PM
+  2094		 */
+  2095		class Pipeline {
+  2096			private final List<PipelineMember> pls = new ArrayList<>();
+       
+  2097			public void add(PipelineMember aPipelineMember) {
+  2098				pls.add(aPipelineMember);
+  2099			}
+       
+  2100			public void run() throws Exception {
+  2101				for (PipelineMember pl : pls) {
+  2102					pl.run();
+  2103				}
+  2104			}
+  2105		}
+  2106	}
+       
+  2107	//
+  2108	//
+  2109	//
+  2110	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  2111	2022-10-06 06:26           comp/internal/Registry.java            Page 1
+       
+       
+  2112	package tripleo.elijah.comp.internal;
+       
+  2113	import tripleo.elijah.stages.logging.ElLog;
+       
+  2114	import java.util.List;
+       
+  2115	public interface Registry {
+  2116		// TODO: (java) excveptions ;)
+       
+  2117		void loadPlan() throws Exception;
+       
+  2118		void runPlan(final List<ElLog> elLogs) throws Exception;
+       
+  2119		void GodsPlan();
+       
+  2120		void runPlan() throws Exception;
+  2121	}
+  2122	---------=---------=---------=---------=---------=---------=---------=---------
+       
+  2123	2022-10-06 09:59        comp/internal/ModuleListener.java         Page 1
+       
+       
+  2124	package tripleo.elijah.comp.internal;
+       
+  2125	import tripleo.elijah.lang.OS_Module;
+       
+  2126	import java.util.List;
+       
+  2127	public interface ModuleListener {
+  2128		void onModules(List<OS_Module> aModules);
+  2129	}
+  2130	---------=---------=---------=---------=---------=---------=---------=---------
