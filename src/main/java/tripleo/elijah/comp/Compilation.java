@@ -144,31 +144,21 @@ public abstract class Compilation {
 					// do nothing. job over
 				} else {
 /*
-					ab.addPipelineLogic(PipelineLogic::new);
+					pipelineLogic = new PipelineLogic(ab);
 
-//					pipelineLogic = new PipelineLogic(silent ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE);
-//					ab.resolvePipelineLogic(pipelineLogic);
+					ab.addPipelineLogic((bus) -> pipelineLogic);
+
+					final DeducePipeline dpl = new DeducePipeline(ab);					pipelines.add(dpl);
+					final GeneratePipeline gpl = new GeneratePipeline(ab);				pipelines.add(gpl);
+					final WritePipeline wpl = new WritePipeline(ab);					pipelines.add(wpl);
+*/
+
+					ab.addPipelineLogic(PipelineLogic::new);
 
 					ab.add(DeducePipeline::new);
 					ab.add(GeneratePipeline::new);
 					ab.add(WritePipeline::new);
 //					ab.add(WriteMesonPipeline::new);
-
-//					final DeducePipeline dpl = new DeducePipeline(ab);                      pipelines.add(dpl);
-//					final GeneratePipeline gpl = new GeneratePipeline(this, dpl);   		pipelines.add(gpl);
-//					final WritePipeline wpl = new WritePipeline(this, pipelineLogic.gr);	pipelines.add(wpl);
-*/
-
-					pipelineLogic = new PipelineLogic(ab);
-
-					ab.addPipelineLogic((bus) -> pipelineLogic);
-
-					final DeducePipeline dpl = new DeducePipeline(ab);
-					pipelines.add(dpl);
-					final GeneratePipeline gpl = new GeneratePipeline(ab);
-					pipelines.add(gpl);
-					final WritePipeline wpl = new WritePipeline(ab);
-					pipelines.add(wpl);
 
 					pipelines.run();
 
@@ -205,7 +195,7 @@ public abstract class Compilation {
 
 	public Stages stage = Stages.O; // Output
 
-	private boolean silent = false;
+	protected boolean silent = false;
 
 
 	public static ElLog.Verbosity gitlabCIVerbosity() {
