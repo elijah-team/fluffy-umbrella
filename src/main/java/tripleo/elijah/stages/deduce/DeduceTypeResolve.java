@@ -12,30 +12,14 @@ package tripleo.elijah.stages.deduce;
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.AliasStatement;
-import tripleo.elijah.lang.BaseFunctionDef;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.ConstructorDef;
-import tripleo.elijah.lang.DefFunctionDef;
-import tripleo.elijah.lang.FormalArgListItem;
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.LookupResultList;
-import tripleo.elijah.lang.MatchConditional;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_Type;
-import tripleo.elijah.lang.PropertyStatement;
-import tripleo.elijah.lang.StatementWrapper;
-import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.lang2.AbstractCodeGen;
 import tripleo.elijah.stages.gen_fn.BaseTableEntry;
 import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.gen_fn.GeneratedClass;
 import tripleo.elijah.stages.gen_fn.GeneratedFunction;
 import tripleo.elijah.stages.gen_fn.GenericElementHolder;
-import tripleo.elijah.stages.gen_fn.GenericElementHolderWithIntegerIA;
 import tripleo.elijah.stages.gen_fn.IElementHolder;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
@@ -136,22 +120,7 @@ public class DeduceTypeResolve {
 
 						@Override
 						public void visitIdentExpression(final IdentExpression aIdentExpression) {
-							if (eh instanceof GenericElementHolderWithIntegerIA) {
-								final GenericElementHolderWithIntegerIA eh1 = (GenericElementHolderWithIntegerIA) eh;
-								final IntegerIA integerIA = eh1.getIntegerIA();
-								final @NotNull VariableTableEntry variableTableEntry = integerIA.getEntry();
-								assert variableTableEntry == bte;
-								variableTableEntry.typeResolvePromise().then(
-										new DoneCallback<GenType>() {
-											@Override
-											public void onDone(final GenType result) {
-												genType.copy(result); // TODO genType = result?? because we want updates...
-											}
-										});
-							} else {
-								final DeduceLocalVariable dlv = ((VariableTableEntry) bte).dlv;
-								int y=2;
-							}
+							new DTR_IdentExpresssion(DeduceTypeResolve.this, aIdentExpression, bte).run(eh, genType);
 						}
 
 						@Override
