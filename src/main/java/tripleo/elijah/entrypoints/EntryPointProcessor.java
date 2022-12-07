@@ -39,13 +39,19 @@ public interface EntryPointProcessor {
 
 		@Override
 		public void process() {
-			@NotNull final ClassStatement cs = mcep.getKlass();
-			final FunctionDef f = mcep.getMainFunction();
-			ClassInvocation ci = deducePhase.registerClassInvocation(cs, null);
-			wl.addJob(new WlGenerateClass(generateFunctions, ci, deducePhase.generatedClasses));
-			final FunctionInvocation fi = new FunctionInvocation(f, null, ci, deducePhase.generatePhase);
-//				fi.setPhase(phase);
-			wl.addJob(new WlGenerateFunction(generateFunctions, fi));
+			final @NotNull ClassStatement cs = mcep.getKlass();
+			final @NotNull FunctionDef    f  = mcep.getMainFunction();
+			final ClassInvocation         ci = deducePhase.registerClassInvocation(cs, null);
+
+			assert ci != null;
+
+			final @NotNull WlGenerateClass job = new WlGenerateClass(generateFunctions, ci, deducePhase.generatedClasses);
+			wl.addJob(job);
+
+			final @NotNull FunctionInvocation fi = new FunctionInvocation(f, null, ci, deducePhase.generatePhase);
+//			fi.setPhase(phase);
+			final @NotNull WlGenerateFunction job1 = new WlGenerateFunction(generateFunctions, fi);
+			wl.addJob(job1);
 		}
 	}
 
@@ -65,13 +71,16 @@ public interface EntryPointProcessor {
 
 		@Override
 		public void process() {
-			final FunctionDef f = afep.getFunction();
-			ClassInvocation ci = new ClassInvocation((ClassStatement) afep.getParent(), null);
-			ci = deducePhase.registerClassInvocation(ci);
-			wl.addJob(new WlGenerateClass(generateFunctions, ci, deducePhase.generatedClasses));
-			final FunctionInvocation fi = new FunctionInvocation(f, null, ci, deducePhase.generatePhase);
+			final @NotNull FunctionDef f  = afep.getFunction();
+			@NotNull ClassInvocation   ci = deducePhase.registerClassInvocation((ClassStatement) afep.getParent());
+
+			final WlGenerateClass job = new WlGenerateClass(generateFunctions, ci, deducePhase.generatedClasses);
+			wl.addJob(job);
+
+			final @NotNull FunctionInvocation fi = new FunctionInvocation(f, null, ci, deducePhase.generatePhase);
 //				fi.setPhase(phase);
-			wl.addJob(new WlGenerateFunction(generateFunctions, fi));
+			final WlGenerateFunction job1 = new WlGenerateFunction(generateFunctions, fi);
+			wl.addJob(job1);
 		}
 	}
 }
