@@ -19,7 +19,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.diagnostic.Diagnostic;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.NamespaceStatement;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.OS_UnknownType;
+import tripleo.elijah.lang.TypeName;
 import tripleo.elijah.nextgen.ClassDefinition;
 import tripleo.elijah.nextgen.diagnostic.CouldntGenerateClass;
 import tripleo.elijah.stages.deduce.declarations.DeferredMember;
@@ -29,7 +36,12 @@ import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -117,12 +129,17 @@ public class DeducePhase {
 		return ret;
 	}
 
+	public @NotNull ClassInvocation registerClassInvocation(ClassStatement aParent) {
+		ClassInvocation ci = new ClassInvocation(aParent, null);
+		return registerClassInvocation(ci);
+	}
+
 	class RegisterClassInvocation {
 		// TODO this class is a mess
 
 		public @NotNull ClassInvocation registerClassInvocation(@NotNull ClassInvocation aClassInvocation) {
 			// 1. select which to return
-			ClassStatement c = aClassInvocation.getKlass();
+			ClassStatement              c   = aClassInvocation.getKlass();
 			Collection<ClassInvocation> cis = classInvocationMultimap.get(c);
 			for (@NotNull ClassInvocation ci : cis) {
 				// don't lose information
