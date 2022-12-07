@@ -54,6 +54,7 @@ public class FluffyModuleImpl implements FluffyModule {
 
 		module.items.stream()
 				.filter(item -> item instanceof ClassStatement)
+				.filter(classStatement -> MainClassEntryPoint.isMainClass((ClassStatement) classStatement))
 				.forEach(classStatement -> faep_002((ClassStatement) classStatement, ccs));
 	}
 
@@ -64,9 +65,6 @@ public class FluffyModuleImpl implements FluffyModule {
 	 * @param ccs
 	 */
 	private static void faep_002(ClassStatement classStatement, Consumer<ClassStatement> ccs) {
-		if (MainClassEntryPoint.isMainClass(classStatement)) {
-		} else return;
-
 		final Collection<ClassItem> x     = classStatement.findFunction("main");
 		final Stream<FunctionDef>   found = x.stream().filter(FluffyCompImpl::isMainClassEntryPoint).map(x7 -> (FunctionDef) x7);
 
