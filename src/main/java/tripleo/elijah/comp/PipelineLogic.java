@@ -44,17 +44,18 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	private final List<OS_Module> __mods_BACKING = new ArrayList<OS_Module>();
 	final         EIT_ModuleList  mods           = new EIT_ModuleList(__mods_BACKING);
 
-	public PipelineLogic(final AccessBus ab) {
-		__ab = ab;
+	public PipelineLogic(final AccessBus iab) {
+		__ab = iab; // we're watching you
 
-		boolean         sil     = ab.getCompilation().getSilence();
+		boolean         sil     = __ab.getCompilation().getSilence();
 		ElLog.Verbosity silence = sil ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
 
 		verbosity = silence;
 		generatePhase = new GeneratePhase(verbosity, this);
 		dp = new DeducePhase(generatePhase, this, verbosity);
 
-
+		// FIXME examine if this is necessary and possibly or actually elsewhere
+		//  and/or just another section
 		subscribeMods(this);
 	}
 
@@ -98,7 +99,7 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	}
 
 	public void addModule(OS_Module m) {
-		mods.add(m);
+//		mods.add(m);
 	}
 
 	public void resolveCheck(DeducePhase.@NotNull GeneratedClasses lgc) {
@@ -147,6 +148,10 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 
 	@Override
 	public void mods_slot(final @NotNull EIT_ModuleList aModuleList) {
+		//
+		__ab.subscribePipelineLogic((x) -> aModuleList._set_PL(x));
+
+		//
 		aModuleList.process__PL(this::getGenerateFunctions, this);
 
 		dp.finish();

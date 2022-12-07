@@ -77,7 +77,7 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 	}
 
 	@Override
-	public void mods_slot(final EIT_ModuleList aModuleList) {
+	public void mods_slot(final @NotNull EIT_ModuleList aModuleList) {
 		List<OS_Module> mods = aModuleList.getMods();
 
 		ms = mods;
