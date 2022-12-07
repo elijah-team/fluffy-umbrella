@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.lang.LookupResultList;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
@@ -21,6 +22,7 @@ import tripleo.elijah.stages.gen_fn.GenericElementHolder;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.gen_fn.TypeTableEntry;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
+import tripleo.elijah.util.Stupidity;
 
 public class VTE_Zero {
 	private final VariableTableEntry vte;
@@ -55,37 +57,60 @@ public class VTE_Zero {
 		@Nullable OS_Element ele2 = null;
 
 		try {
-			if (ty.getType() == OS_Type.Type.USER) {
-				@NotNull GenType ty2 = deduceTypes2.resolve_type(ty, ty.getTypeName().getContext());
-				OS_Element ele;
-				if (tte.genType.resolved == null) {
-					if (ty2.resolved.getType() == OS_Type.Type.USER_CLASS) {
-						tte.genType.copy(ty2);
+			final IdentExpression iteIdent = ite.getIdent();
+
+			Stupidity.println_out("*** Looking for " + iteIdent.getText());
+
+			switch (ty.getType()) {
+				case USER:
+					final @NotNull GenType ty2 = deduceTypes2.resolve_type(ty, ty.getTypeName().getContext());
+
+					if (tte.genType.resolved == null) {
+						if (ty2.resolved.getType() == OS_Type.Type.USER_CLASS) {
+							tte.genType.copy(ty2);
+						}
 					}
-				}
-				ele = ty2.resolved.getElement();
-				LookupResultList lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
-				ele2 = lrl.chooseBest(null);
-			} else {
-				switch (ty.getType()) {
-					case USER_CLASS:
-						ele2 = ty.getClassOf();
-						break;
-					default:
-						ele2 = ty.getElement();
-						break;
-				}
+
+					final OS_Element ele = ty2.resolved.getElement();
+					final LookupResultList lrl = DeduceLookupUtils.lookupExpression(iteIdent, ele.getContext(), deduceTypes2);
+
+					ele2 = lrl.chooseBest(null);
+					break;
+				case USER_CLASS:
+					ele2 = ty.getClassOf();
+					break;
+				default:
+					ele2 = ty.getElement();
+					break;
 			}
+
+			//
+			//
+
+			Stupidity.println_out("*** Looking for " + iteIdent.getText() + " ; found " + ele2);
+
+			//
+			//
 
 			@Nullable LookupResultList lrl = null;
 
-			lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele2.getContext(), deduceTypes2);
+			lrl = DeduceLookupUtils.lookupExpression(iteIdent, ele2.getContext(), deduceTypes2);
 			@Nullable OS_Element best = lrl.chooseBest(null);
 			// README commented out because only firing for dir.listFiles, and we always use `best'
 //					if (best != ele2) LOG.err(String.format("2824 Divergent for %s, %s and %s", ite, best, ele2));;
 			ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
 		} catch (ResolveError aResolveError) {
-			aResolveError.printStackTrace();
+			//
+			//
+
+//			Stupidity.println_out("*** Looking for " + iteIdent.getText() + " ; found "+ ele2);
+			Stupidity.println_out("*** Second lookup failed");
+
+			//
+			//
+
+
+//			aResolveError.printStackTrace();
 			errSink.reportDiagnostic(aResolveError);
 		}
 	}
