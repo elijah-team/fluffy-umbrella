@@ -9,6 +9,7 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
@@ -18,15 +19,22 @@ import tripleo.elijah.stages.deduce.DeduceTypes2;
  * Created 11/18/21 8:43 PM
  */
 public class GenericElementHolderWithType implements IElementHolder {
-	private final @NotNull OS_Element element;
-	private final OS_Type type;
-	private final DeduceTypes2 dt2;
+	private final @NotNull OS_Element   element;
+	private final          OS_Type      type;
+	private final          DeduceTypes2 dt2;
 
 	public GenericElementHolderWithType(final @NotNull OS_Element aElement,
 										final OS_Type aType,
 										final DeduceTypes2 aDeduceTypes2) {
 		element = aElement;
 		type = aType;
+		dt2 = aDeduceTypes2;
+	}
+
+	@Contract(pure = true)
+	public GenericElementHolderWithType(OS_Element aEle2, @NotNull GenType aResult, DeduceTypes2 aDeduceTypes2) {
+		element = aEle2;
+		type = aResult.typeName; // TODO may be something stupid
 		dt2 = aDeduceTypes2;
 	}
 

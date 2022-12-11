@@ -5,7 +5,15 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.BaseFunctionDef;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.ConstructorDef;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.deduce.zero.ITE_Zero;
 import tripleo.elijah.stages.deduce.zero.VTE_Zero;
 import tripleo.elijah.stages.deduce.zero.Zero_PotentialTypes;
@@ -260,7 +268,7 @@ public class FoundParent implements BaseTableEntry.StatusListener {
 
 
 							if (ele2 != null) {
-								ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(ele2));
+								ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolderWithType(ele2, result, deduceTypes2));
 								ite.resolveTypeToClass(result.node);
 							}
 						} catch (ResolveError aResolveError) {
