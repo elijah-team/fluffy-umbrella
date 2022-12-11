@@ -52,7 +52,9 @@ public class EIT_ModuleList {
 
 	private void __process__PL__each(final @NotNull _ProcessParams plp) {
 
-		plp.pipelineLogic = __pl;
+		assert plp.pipelineLogic == __pl; // TODO see if this holds
+
+		//plp.pipelineLogic = __pl;
 
 		final List<GeneratedNode> resolved_nodes = new ArrayList<GeneratedNode>();
 
