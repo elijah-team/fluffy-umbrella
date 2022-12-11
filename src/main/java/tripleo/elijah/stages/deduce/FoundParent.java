@@ -249,23 +249,29 @@ public class FoundParent implements BaseTableEntry.StatusListener {
 				identTableEntry.onFefiDone(new DoneCallback<GenType>() {
 					@Override
 					public void onDone(final GenType result) {
-						LookupResultList lrl = null;
-						OS_Element ele2;
+
 						try {
-							lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), result.resolved.getClassOf().getContext(), deduceTypes2);
-							ele2 = lrl.chooseBest(null);
+							final ClassStatement   resolvedClassOf = result.resolved.getClassOf();
+							final LookupResultList lrl             = DeduceLookupUtils.lookupExpression(ite.getIdent(), resolvedClassOf.getContext(), deduceTypes2);
+
+							assert ite.getIdent().getText().equals(resolvedClassOf.getName());
+
+							final OS_Element ele2 = lrl.chooseBest(null);
+
 
 							if (ele2 != null) {
 								ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(ele2));
 								ite.resolveTypeToClass(result.node);
 							}
 						} catch (ResolveError aResolveError) {
-							aResolveError.printStackTrace();
+//							aResolveError.printStackTrace();
+							errSink.reportDiagnostic(aResolveError);
 						}
 					}
 				});
 			}
 			// TODO we want to setStatus but have no USER or USER_CLASS to perform lookup with
+//			identTableEntry.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(null));
 		}
 	}
 }
