@@ -115,12 +115,16 @@ public class VTE_Zero {
 		}
 	}
 
-	private void vte_pot_size_is_1_USER_TYPE(@NotNull VariableTableEntry vte, @Nullable OS_Type aTy, @NotNull DeduceTypes2 deduceTypes2, IdentTableEntry ite, ErrSink errSink) {
+	private void vte_pot_size_is_1_USER_TYPE(final @NotNull VariableTableEntry vte,
+											 final @Nullable OS_Type aTy,
+											 final @NotNull DeduceTypes2 deduceTypes2,
+											 final @NotNull IdentTableEntry ite,
+											 final @NotNull ErrSink errSink) {
 		try {
 			@NotNull GenType ty2 = deduceTypes2.resolve_type(aTy, aTy.getTypeName().getContext());
 			// TODO ite.setAttached(ty2) ??
-			OS_Element ele = ty2.resolved.getElement();
-			LookupResultList lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
+			OS_Element           ele  = ty2.resolved.getElement();
+			LookupResultList     lrl  = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
 			@Nullable OS_Element best = lrl.chooseBest(null);
 			ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
 //									ite.setResolvedElement(best);
