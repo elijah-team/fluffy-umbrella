@@ -68,7 +68,7 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	}
 
 	public void everythingBeforeGenerate() {
-		resolveMods();
+//		resolveMods();
 	}
 
 	public void generate(List<GeneratedNode> lgc) {
