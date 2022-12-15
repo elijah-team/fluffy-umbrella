@@ -1988,12 +1988,12 @@ public class DeduceTypes2 {
 		return dm;
 	}
 
-	private @Nullable DeferredMember deferred_member(OS_Element aParent, @Nullable IInvocation aInvocation, VariableStatement aVariableStatement) {
+	private @NotNull DeferredMember deferred_member(OS_Element aParent, @Nullable IInvocation aInvocation, VariableStatement aVariableStatement) {
 		if (aInvocation == null) {
 			if (aParent instanceof NamespaceStatement)
 				aInvocation = phase.registerNamespaceInvocation((NamespaceStatement) aParent);
 		}
-		@Nullable DeferredMember dm = new DeferredMember(aParent, aInvocation, aVariableStatement);
+		final DeferredMember dm = new DeferredMember(aParent, aInvocation, aVariableStatement);
 		phase.addDeferredMember(dm);
 		return dm;
 	}
