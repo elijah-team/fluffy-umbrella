@@ -17,11 +17,8 @@ import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.elijah.stages.logging.ElLog;
-import tripleo.elijah.stages.post_deduce.PostDeduce;
 import tripleo.elijah.work.WorkManager;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,13 +56,6 @@ public class PipelineLogic {
 		dp.finish();
 
 		dp.generatedClasses.addAll(lgc);
-
-		if (postDeduceEnabled) {
-			for (OS_Module mod : mods) {
-				PostDeduce pd = new PostDeduce(mod.parent.getErrSink(), dp);
-				pd.analyze();
-			}
-		}
 
 //		elLogs = dp.deduceLogs;
 	}
