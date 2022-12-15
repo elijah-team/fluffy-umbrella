@@ -8,21 +8,39 @@
  */
 package tripleo.elijah.comp;
 
+import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.stages.gen_fn.GeneratedNode;
+
+import java.util.List;
+
 /**
  * Created 8/21/21 10:16 PM
  */
-public class GeneratePipeline implements PipelineMember {
-	private final Compilation c;
-	private final DeducePipeline dpl;
+public class GeneratePipeline implements PipelineMember, AccessBus.AB_LgcListener {
+//	private final Compilation c;
+//	private final DeducePipeline dpl;
+	private PipelineLogic pipelineLogic;
+	private List<GeneratedNode> lgc;
 
-	public GeneratePipeline(Compilation aCompilation, DeducePipeline aDpl) {
-		c = aCompilation;
-		dpl = aDpl;
+	public GeneratePipeline(@NotNull AccessBus ab) {
+//		c = ab.getCompilation();
+
+		ab.subscribePipelineLogic(pll -> pipelineLogic = pll);
+		ab.subscribe_lgc(this);
 	}
 
 	@Override
 	public void run() {
-		c.pipelineLogic.generate(dpl.lgc);
+		Preconditions.checkNotNull(pipelineLogic);
+		Preconditions.checkNotNull(lgc);
+
+		pipelineLogic.generate(lgc);
+	}
+
+	@Override
+	public void lgc_slot(List<GeneratedNode> aX) {
+		lgc = aX;
 	}
 }
 

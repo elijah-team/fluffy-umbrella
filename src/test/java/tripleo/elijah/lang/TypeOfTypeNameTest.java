@@ -10,11 +10,7 @@ package tripleo.elijah.lang;
 
 import org.junit.Assert;
 import org.junit.Test;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.*;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.ResolveError;
@@ -69,8 +65,9 @@ public class TypeOfTypeNameTest {
 		//
 		// VERIFY EXPECTATIONS
 		//
-		final ElLog.Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final PipelineLogic pl = new PipelineLogic(verbosity1);
+		Compilation compilation = new Compilation(new StdErrSink(), new IO());
+		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
 		TypeName tn = t.resolve(ctx, deduceTypes2);
@@ -122,8 +119,9 @@ public class TypeOfTypeNameTest {
 		//
 		// VERIFY EXPECTATIONS
 		//
-		final ElLog.Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final PipelineLogic pl = new PipelineLogic(verbosity1);
+		Compilation compilation = new Compilation(new StdErrSink(), new IO());
+		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
 		TypeName tn = t.resolve(ctx, deduceTypes2);
@@ -252,8 +250,9 @@ public class TypeOfTypeNameTest {
 		// SET UP EXPECTATIONS
 		//
 //		OS_Module mod = mock(OS_Module.class);
-		final ElLog.Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final PipelineLogic pl = new PipelineLogic(verbosity1);
+		Compilation compilation = new Compilation(new StdErrSink(), new IO());
+		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
 //		expect(mod.getFileName()).andReturn("foo.elijah");

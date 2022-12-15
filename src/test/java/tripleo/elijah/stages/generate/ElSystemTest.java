@@ -10,7 +10,7 @@
 package tripleo.elijah.stages.generate;
 
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
@@ -34,6 +34,7 @@ public class ElSystemTest {
 		c.feedCmdLine(Helpers.List_of(f));
 	}
 
+	@Ignore
 	@Test
 	public void generateOutputs() {
 		OutputStrategy os = new OutputStrategy();

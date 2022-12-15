@@ -10,10 +10,7 @@ package tripleo.elijah.stages.deduce;
 
 import org.junit.Assert;
 import org.junit.Test;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.*;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.contexts.ModuleContext;
 import tripleo.elijah.lang.*;
@@ -56,7 +53,7 @@ public class DeduceTypesTest2 {
 		//
 		//
 		final ElLog.Verbosity verbosity1 = c.gitlabCIVerbosity();
-		final PipelineLogic pl = new PipelineLogic(verbosity1);
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(c));
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		DeducePhase dp = new DeducePhase(generatePhase, pl, verbosity1);
 		DeduceTypes2 d = dp.deduceModule(mod, verbosity1);

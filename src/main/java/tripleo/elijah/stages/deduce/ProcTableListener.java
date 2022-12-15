@@ -86,7 +86,7 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 			@NotNull FunctionDef fd = (FunctionDef) e;
 			resolved_element_pte_FunctionDef(co, pte, depTracker, fd);
 		} else {
-			LOG.err("845 Unknown element for ProcTableEntry " + e);
+//			LOG.err("845 Unknown element for ProcTableEntry " + e);
 			return;
 		}
 	}
@@ -187,7 +187,11 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 		// TODO lookupVariableStatement?
 		//  we really want DeduceVariableStatement < DeduceElement (with type/promise)
 		@Nullable InstructionArgument vte_ia = generatedFunction.vte_lookup(variableStatement.getName());
-		assert vte_ia != null;
+//		assert vte_ia != null;
+		if (vte_ia == null) {
+			return;
+//			throw new AssertionError();
+		}
 		final @NotNull VariableTableEntry variableTableEntry = ((IntegerIA) vte_ia).getEntry();
 		variableTableEntry.typePromise().then(new DoneCallback<GenType>() {
 			@Override

@@ -31,6 +31,7 @@ import java.util.List;
 public class PipelineLogic {
 	public final GeneratePhase generatePhase;
 	public final DeducePhase dp;
+	private final AccessBus __ab;
 
 	public GenerateResult gr = new GenerateResult();
 	public List<ElLog> elLogs = new LinkedList<ElLog>();
@@ -40,24 +41,40 @@ public class PipelineLogic {
 
 	final List<OS_Module> mods = new ArrayList<OS_Module>();
 
-	public boolean postDeduceEnabled = false;
+	public PipelineLogic(final AccessBus ab) {
+		__ab = ab;
 
-	public PipelineLogic(ElLog.Verbosity aVerbosity) {
-		verbosity = aVerbosity;
-		generatePhase = new GeneratePhase(aVerbosity, this);
+		boolean sil = ab.getCompilation().getSilence();
+		ElLog.Verbosity silence = sil ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
+
+		verbosity = silence;
+		generatePhase = new GeneratePhase(verbosity, this);
 		dp = new DeducePhase(generatePhase, this, verbosity);
 	}
 
-	public void everythingBeforeGenerate(List<GeneratedNode> lgc) {
+	public void subscribeMods(AccessBus.AB_ModuleListListener l) {
+		__ab.subscribe_moduleList(l);
+	}
+
+	public void resolveMods() {
+		__ab.resolveModuleList(mods);
+	}
+
+	public void everythingBeforeGenerate() {
+//		resolveMods();
+
+
 		for (OS_Module mod : mods) {
 			run2(mod, mod.entryPoints);
 		}
-//		List<List<EntryPoint>> entryPoints = mods.stream().map(mod -> mod.entryPoints).collect(Collectors.toList());
+
+		//List<List<EntryPoint>> entryPoints = mods.stream().map(mod -> mod.entryPoints).collect(Collectors.toList());
 		dp.finish();
 
-		dp.generatedClasses.addAll(lgc);
-
 //		elLogs = dp.deduceLogs;
+//		int y = lgc.size();
+
+//		dp.generatedClasses.addAll(lgc);
 	}
 
 	public void generate(List<GeneratedNode> lgc) {
@@ -69,9 +86,11 @@ public class PipelineLogic {
 			wm.drain();
 			gr.results().addAll(ggr.results());
 		}
+
+		__ab.resolveGenerateResult(gr);
 	}
 
-	public static void debug_buffers(GenerateResult gr, PrintStream stream) {
+	public static void debug_buffers(@NotNull GenerateResult gr, PrintStream stream) {
 		for (GenerateResultItem ab : gr.results()) {
 			stream.println("---------------------------------------------------------------");
 			stream.println(ab.counter);
@@ -93,59 +112,13 @@ public class PipelineLogic {
 		DeducePhase.@NotNull GeneratedClasses lgc = dp.generatedClasses;
 		List<GeneratedNode> resolved_nodes = new ArrayList<GeneratedNode>();
 
+		final Coder coder = new Coder();
+
 		for (final GeneratedNode generatedNode : lgc) {
-			if (generatedNode instanceof GeneratedFunction) {
-				GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
-				if (generatedFunction.getCode() == 0)
-					generatedFunction.setCode(mod.parent.nextFunctionCode());
-			} else if (generatedNode instanceof GeneratedClass) {
-				final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-//				if (generatedClass.getCode() == 0)
-//					generatedClass.setCode(mod.parent.nextClassCode());
-				for (GeneratedClass generatedClass2 : generatedClass.classMap.values()) {
-					generatedClass2.setCode(mod.parent.nextClassCode());
-				}
-				for (GeneratedFunction generatedFunction : generatedClass.functionMap.values()) {
-					for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
-						if (identTableEntry.isResolved()) {
-							GeneratedNode node = identTableEntry.resolvedType();
-							resolved_nodes.add(node);
-						}
-					}
-				}
-			} else if (generatedNode instanceof GeneratedNamespace) {
-				final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
-				if (generatedNamespace.getCode() == 0)
-					generatedNamespace.setCode(mod.parent.nextClassCode());
-				for (GeneratedClass generatedClass : generatedNamespace.classMap.values()) {
-					generatedClass.setCode(mod.parent.nextClassCode());
-				}
-				for (GeneratedFunction generatedFunction : generatedNamespace.functionMap.values()) {
-					for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
-						if (identTableEntry.isResolved()) {
-							GeneratedNode node = identTableEntry.resolvedType();
-							resolved_nodes.add(node);
-						}
-					}
-				}
-			}
+			coder.codeNodes(mod, resolved_nodes, generatedNode);
 		}
 
-		for (final GeneratedNode generatedNode : resolved_nodes) {
-			if (generatedNode instanceof GeneratedFunction) {
-				GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
-				if (generatedFunction.getCode() == 0)
-					generatedFunction.setCode(mod.parent.nextFunctionCode());
-			} else if (generatedNode instanceof GeneratedClass) {
-				final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-				if (generatedClass.getCode() == 0)
-					generatedClass.setCode(mod.parent.nextClassCode());
-			} else if (generatedNode instanceof GeneratedNamespace) {
-				final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
-				if (generatedNamespace.getCode() == 0)
-					generatedNamespace.setCode(mod.parent.nextClassCode());
-			}
-		}
+		resolved_nodes.forEach(generatedNode -> coder.codeNode(generatedNode, mod));
 
 		dp.deduceModule(mod, lgc, true, getVerbosity());
 
@@ -169,7 +142,7 @@ public class PipelineLogic {
 		return generatePhase.getGenerateFunctions(mod);
 	}
 
-	protected GenerateResult run3(OS_Module mod, List<GeneratedNode> lgc, WorkManager wm, GenerateC ggc) {
+	protected GenerateResult run3(OS_Module mod, @NotNull List<GeneratedNode> lgc, WorkManager wm, GenerateC ggc) {
 		GenerateResult gr = new GenerateResult();
 
 		for (GeneratedNode generatedNode : lgc) {
@@ -197,7 +170,7 @@ public class PipelineLogic {
 		mods.add(m);
 	}
 
-	private void resolveCheck(DeducePhase.GeneratedClasses lgc) {
+	private void resolveCheck(DeducePhase.@NotNull GeneratedClasses lgc) {
 		for (final GeneratedNode generatedNode : lgc) {
 			if (generatedNode instanceof GeneratedFunction) {
 

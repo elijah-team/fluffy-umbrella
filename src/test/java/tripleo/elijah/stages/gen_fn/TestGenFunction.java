@@ -10,12 +10,9 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
 import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.*;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
@@ -42,6 +39,7 @@ import static tripleo.elijah.util.Helpers.List_of;
  */
 public class TestGenFunction {
 
+	@Ignore
 	@Test
 	public void testDemoElNormalFact1Elijah() throws Exception {
 		final StdErrSink eee = new StdErrSink();
@@ -66,8 +64,10 @@ public class TestGenFunction {
 		List<FunctionMapHook> ran_hooks = new ArrayList<>();
 
 
-		final ElLog.Verbosity verbosity1 = c.gitlabCIVerbosity();
-		c.pipelineLogic = new PipelineLogic(verbosity1);
+		Compilation compilation = new Compilation(new StdErrSink(), new IO());
+		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
+		c.pipelineLogic = pl;
 		final GeneratePhase generatePhase1 = c.pipelineLogic.generatePhase;//new GeneratePhase();
 		final GenerateFunctions gfm = generatePhase1.getGenerateFunctions(m);
 		DeducePhase dp = c.pipelineLogic.dp;//new DeducePhase(generatePhase1);
@@ -221,7 +221,8 @@ public class TestGenFunction {
 		c.feedCmdLine(List_of(f));
 	}
 
-//	@Test // ignore because of generateAllTopLevelClasses
+	@Ignore
+	@Test // ignore because of generateAllTopLevelClasses
 	public void testBasic1Backlink1Elijah() throws Exception {
 		final StdErrSink eee = new StdErrSink();
 		final Compilation c = new Compilation(eee, new IO());
@@ -238,8 +239,9 @@ public class TestGenFunction {
 			c.use(ci, false);
 		}
 
-		final ElLog.Verbosity verbosity1 = c.gitlabCIVerbosity();
-		final PipelineLogic pl = new PipelineLogic(verbosity1);
+		Compilation compilation = new Compilation(new StdErrSink(), new IO());
+		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		final GenerateFunctions gfm = generatePhase.getGenerateFunctions(m);
 		final List<GeneratedNode> lgc = new ArrayList<>();
@@ -282,7 +284,8 @@ public class TestGenFunction {
 			}
 		}
 
-		PipelineLogic pipelineLogic = new PipelineLogic(Compilation.gitlabCIVerbosity());
+//		Compilation compilation = new Compilation(new StdErrSink(), new IO());
+		final PipelineLogic pipelineLogic = new PipelineLogic(new AccessBus(compilation));
 		GenerateC ggc = new GenerateC(m, eee, c.gitlabCIVerbosity(), pipelineLogic);
 		ggc.generateCode(lgf, wm);
 

@@ -141,7 +141,7 @@ public class GeneratedClass extends GeneratedContainerNC {
 					// must be unknown
 				}
 			} else {
-				System.err.println(String.format("108 %s %s", this, varTableEntry.potentialTypes));
+//				System.err.printf("108 %s %s%n", this, varTableEntry.potentialTypes);
 				if (varTableEntry.potentialTypes.size() == 1) {
 					TypeTableEntry varType1 = varTableEntry.potentialTypes.get(0);
 					if (varType1.resolved() == null) {

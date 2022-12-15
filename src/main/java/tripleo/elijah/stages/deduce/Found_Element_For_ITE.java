@@ -62,7 +62,7 @@ class Found_Element_For_ITE {
 	}
 
 	public void action_AliasStatement(@NotNull IdentTableEntry ite, @NotNull AliasStatement y) {
-		LOG.err("396 AliasStatement");
+//		LOG.err("396 AliasStatement");
 		@Nullable OS_Element x = dc._resolveAlias(y);
 		if (x == null) {
 			ite.setStatus(BaseTableEntry.Status.UNKNOWN, null);
