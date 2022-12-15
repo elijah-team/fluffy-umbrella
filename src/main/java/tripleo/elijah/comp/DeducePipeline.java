@@ -9,7 +9,6 @@
 package tripleo.elijah.comp;
 
 import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.gen_fn.GeneratedNode;
 
 import java.util.ArrayList;
@@ -73,11 +72,13 @@ public class DeducePipeline implements PipelineMember {
 			pipelineLogic.addModule(module);
 		}
 
-//              System.err.println(ms.size());
+/*
+        System.err.println(ms1.size());
 
 		final EIT_ModuleList eml = new EIT_ModuleList(ms1);
 
 		__ab.resolveModuleList(eml);
+*/
 
 //              assert lgc.size() == 0;
 		pipelineLogic.everythingBeforeGenerate(Collections.emptyList());
