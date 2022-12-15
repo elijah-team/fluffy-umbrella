@@ -27,6 +27,7 @@ import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
 import tripleo.elijah.lang.Qualident;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.deduce.FunctionMapHook;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
@@ -156,9 +157,12 @@ public class Compilation {
 
 					ab.resolvePipelineLogic(pipelineLogic);
 
-					final @NotNull DeducePipeline dpl = new DeducePipeline(this);
+					final EIT_ModuleList eml = new EIT_ModuleList(modules);
+					ab.resolveModuleList(eml);
+
+					final @NotNull DeducePipeline dpl = new DeducePipeline(this, ab);
 					pipelines.add(dpl);
-					final @NotNull GeneratePipeline gpl = new GeneratePipeline(this, dpl);
+					final @NotNull GeneratePipeline gpl = new GeneratePipeline(ab); // this, dpl);
 					pipelines.add(gpl);
 					final @NotNull WritePipeline wpl = new WritePipeline(this, pipelineLogic.gr);
 					pipelines.add(wpl);
@@ -480,6 +484,10 @@ public class Compilation {
 
 	public void addFunctionMapHook(FunctionMapHook aFunctionMapHook) {
 		pipelineLogic.dp.addFunctionMapHook(aFunctionMapHook);
+	}
+
+	public List<OS_Module> getModules() {
+		return modules;
 	}
 }
 

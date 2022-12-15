@@ -20,8 +20,6 @@ import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.work.WorkManager;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,6 +47,8 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 		generatePhase = new GeneratePhase(aVerbosity, this);
 		dp = new DeducePhase(generatePhase, this, verbosity);
 		__ab = aAb;
+
+		__ab.subscribe_moduleList(this);
 	}
 
 	public void everythingBeforeGenerate(List<GeneratedNode> lgc) {
