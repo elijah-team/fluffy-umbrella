@@ -17,7 +17,6 @@ import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.elijah.stages.logging.ElLog;
-import tripleo.elijah.stages.post_deduce.PostDeduce;
 import tripleo.elijah.work.WorkManager;
 
 import java.io.File;
@@ -43,8 +42,6 @@ public class PipelineLogic {
 
 	final List<OS_Module> mods = new ArrayList<OS_Module>();
 
-	public boolean postDeduceEnabled = false;
-
 	public PipelineLogic(ElLog.Verbosity aVerbosity) {
 		verbosity = aVerbosity;
 		generatePhase = new GeneratePhase(aVerbosity, this);
@@ -59,13 +56,6 @@ public class PipelineLogic {
 		dp.finish();
 
 		dp.generatedClasses.addAll(lgc);
-
-		if (postDeduceEnabled) {
-			for (OS_Module mod : mods) {
-				PostDeduce pd = new PostDeduce(mod.parent.getErrSink(), dp);
-				pd.analyze();
-			}
-		}
 
 //		elLogs = dp.deduceLogs;
 	}
