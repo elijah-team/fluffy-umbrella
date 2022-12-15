@@ -68,7 +68,7 @@ public class EIT_ModuleList {
 
 		// assert lgc.size() == epl.size(); //hmm
 
-		if (true) {
+		if (false) {
 			________NONO_processByEntryPoint(plp.getLgc(), resolved_nodes, plp.getMod());
 		} else {
 			final Coder coder = new Coder();
