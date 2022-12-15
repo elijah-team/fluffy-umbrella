@@ -62,6 +62,8 @@ public class EIT_ModuleList {
 		if (size != 0) {
 			int y = 2;
 			Stupidity.println_err(String.format("lgc.size() != 0: %d", size));
+		} else {
+			return; // TODO don't know if this is correct, but we will short circuit for no work
 		}
 
 		plp.generate();
