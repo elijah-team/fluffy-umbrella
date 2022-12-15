@@ -15,6 +15,18 @@ import tripleo.elijah.lang.OS_Element;
  */
 public interface IElementHolder {
 	OS_Element getElement();
+
+	final class NullElementHolder implements IElementHolder {
+		@Override
+		public OS_Element getElement() {
+			return null;
+		}
+	}
+
+	static NullElementHolder nullElementHolder() {
+		// return _nullElementHolder;
+		return new NullElementHolder();
+	}
 }
 
 //

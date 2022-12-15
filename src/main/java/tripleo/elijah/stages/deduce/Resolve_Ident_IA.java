@@ -332,7 +332,7 @@ class Resolve_Ident_IA {
 					ectx = el.getContext();
 				} else {
 					errSink.reportError("1179 Can't resolve " + text);
-					idte.setStatus(BaseTableEntry.Status.UNKNOWN, null);
+					idte.setStatus(BaseTableEntry.Status.UNKNOWN, IElementHolder.nullElementHolder());
 					foundElement.doNoFoundElement();
 					return RIA_STATE.RETURN;
 				}

@@ -8672,7 +8672,7 @@ inputState.guessing--;
 	}
 	
 	public final void regularQualifiers2(
-			@NotNull NormalTypeName fp
+			final NormalTypeName fp
 	) throws RecognitionException, TokenStreamException {
 		
 		

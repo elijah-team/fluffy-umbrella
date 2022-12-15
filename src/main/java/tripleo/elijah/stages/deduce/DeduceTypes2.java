@@ -1581,7 +1581,7 @@ public class DeduceTypes2 {
 
 				@Override
 				public void noFoundElement() {
-					ite.setStatus(BaseTableEntry.Status.UNKNOWN, null);
+					ite.setStatus(BaseTableEntry.Status.UNKNOWN, IElementHolder.nullElementHolder());
 					errSink.reportError("165 Can't resolve "+path);
 				}
 			});
@@ -1637,7 +1637,7 @@ public class DeduceTypes2 {
 
 				@Override
 				public void noFoundElement() {
-					ite.setStatus(BaseTableEntry.Status.UNKNOWN, null);
+					ite.setStatus(BaseTableEntry.Status.UNKNOWN, IElementHolder.nullElementHolder());
 					//errSink.reportError("1004 Can't find element for "+ x); // Already reported by 1179
 				}
 			});
@@ -2010,7 +2010,7 @@ public class DeduceTypes2 {
 		return resolve_type(module, type, ctx);
 	}
 
-	/*static*/ @NotNull GenType resolve_type(final @NotNull OS_Module module, final @NotNull OS_Type type, final Context ctx) throws ResolveError {
+	/*static*/ @NotNull GenType resolve_type(final /*@NotNull*/ OS_Module module, final @NotNull OS_Type type, final Context ctx) throws ResolveError {
 		@NotNull GenType R = new GenType();
 		R.typeName = type;
 
@@ -2941,7 +2941,7 @@ public class DeduceTypes2 {
 			}
 
 			if (!found)
-				pte.setStatus(BaseTableEntry.Status.UNKNOWN, null);
+				pte.setStatus(BaseTableEntry.Status.UNKNOWN, IElementHolder.nullElementHolder());
 		}
 
 		private boolean action_dunder(@NotNull String pn) {
