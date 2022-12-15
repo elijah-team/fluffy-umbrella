@@ -71,6 +71,7 @@ public class PipelineLogic {
 		//List<List<EntryPoint>> entryPoints = mods.stream().map(mod -> mod.entryPoints).collect(Collectors.toList());
 		dp.finish();
 
+//		elLogs = dp.deduceLogs;
 //		int y = lgc.size();
 
 //		dp.generatedClasses.addAll(lgc);
