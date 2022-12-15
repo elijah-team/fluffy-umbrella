@@ -13,10 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.*;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.gen_c.CReference;
 import tripleo.elijah.stages.gen_c.Emit;
@@ -94,7 +91,8 @@ public class GetIdentIAPathTest_ForC {
 		//		el1.add(vsq);
 		//
 		final ElLog.@NotNull Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1);
+		final AccessBus ab = new AccessBus(mock(Compilation.class));
+		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1, ab);
 		final @NotNull GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		@NotNull GenerateFunctions gen = generatePhase.getGenerateFunctions(mod);
 		Context ctx = mock(Context.class);
@@ -120,7 +118,8 @@ public class GetIdentIAPathTest_ForC {
 		@NotNull IdentExpression foo_ident = Helpers.string_to_ident("foo");
 		//
 		final ElLog.@NotNull Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1);
+		final AccessBus ab = new AccessBus(mock(Compilation.class));
+		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1, ab);
 		final @NotNull GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		@NotNull GenerateFunctions gen = generatePhase.getGenerateFunctions(mod);
 		Context ctx = mock(Context.class);
@@ -201,7 +200,8 @@ public class GetIdentIAPathTest_ForC {
 		@NotNull DotExpression expr = new DotExpression(x_ident, foo_ident);
 		//
 		final ElLog.@NotNull Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1);
+		final AccessBus ab = new AccessBus(mock(Compilation.class));
+		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1, ab);
 		final @NotNull GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		@NotNull GenerateFunctions gen = generatePhase.getGenerateFunctions(mod);
 		@NotNull InstructionArgument xx = gen.simplify_expression(expr, gf, ctx);

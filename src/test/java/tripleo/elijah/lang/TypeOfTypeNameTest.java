@@ -12,11 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.*;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.ResolveError;
@@ -72,7 +68,8 @@ public class TypeOfTypeNameTest {
 		// VERIFY EXPECTATIONS
 		//
 		final ElLog.@NotNull Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1);
+		final AccessBus ab = new AccessBus(c);
+		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1, ab);
 		final @NotNull GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		@NotNull DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
 		@Nullable TypeName tn = t.resolve(ctx, deduceTypes2);
@@ -125,7 +122,8 @@ public class TypeOfTypeNameTest {
 		// VERIFY EXPECTATIONS
 		//
 		final ElLog.@NotNull Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1);
+		final AccessBus ab = new AccessBus(c);
+		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1, ab);
 		final @NotNull GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		@NotNull DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
 		@Nullable TypeName tn = t.resolve(ctx, deduceTypes2);
@@ -255,7 +253,8 @@ public class TypeOfTypeNameTest {
 		//
 //		OS_Module mod = mock(OS_Module.class);
 		final ElLog.@NotNull Verbosity verbosity1 = new Compilation(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1);
+		final AccessBus ab = new AccessBus(mod.parent);
+		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1, ab);
 		final @NotNull GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		@NotNull DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
 //		expect(mod.getFileName()).andReturn("foo.elijah");

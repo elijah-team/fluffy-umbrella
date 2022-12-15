@@ -13,10 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.*;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
@@ -68,13 +65,14 @@ public class TestGenFunction {
 
 
 		final ElLog.@NotNull Verbosity verbosity1 = c.gitlabCIVerbosity();
-		c.pipelineLogic = new PipelineLogic(verbosity1);
-		final GeneratePhase generatePhase1 = c.pipelineLogic.generatePhase;//new GeneratePhase();
+		final AccessBus ab = new AccessBus(c);
+		c.pipelineLogic = new PipelineLogic(verbosity1, ab);
+		final GeneratePhase generatePhase1 = c.pipelineLogic.generatePhase;// new GeneratePhase();
 		final @NotNull GenerateFunctions gfm = generatePhase1.getGenerateFunctions(m);
-		DeducePhase dp = c.pipelineLogic.dp;//new DeducePhase(generatePhase1);
+		DeducePhase dp = c.pipelineLogic.dp;// new DeducePhase(generatePhase1);
 		gfm.generateFromEntryPoints(m.entryPoints, dp);
 
-		final DeducePhase.@NotNull GeneratedClasses lgc = dp.generatedClasses; //new ArrayList<>();
+		final DeducePhase.@NotNull GeneratedClasses lgc = dp.generatedClasses; // new ArrayList<>();
 
 /*
 		List<GeneratedNode> lgf = new ArrayList<>();
@@ -240,7 +238,8 @@ public class TestGenFunction {
 		}
 
 		final ElLog.@NotNull Verbosity verbosity1 = c.gitlabCIVerbosity();
-		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1);
+		final AccessBus ab = new AccessBus(c);
+		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1, ab);
 		final @NotNull GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		final @NotNull GenerateFunctions gfm = generatePhase.getGenerateFunctions(m);
 		final @NotNull List<GeneratedNode> lgc = new ArrayList<>();
@@ -283,7 +282,8 @@ public class TestGenFunction {
 			}
 		}
 
-		@NotNull PipelineLogic pipelineLogic = new PipelineLogic(Compilation.gitlabCIVerbosity());
+		// final AccessBus ab = new AccessBus(c);
+		@NotNull PipelineLogic pipelineLogic = new PipelineLogic(Compilation.gitlabCIVerbosity(), ab);
 		@NotNull GenerateC ggc = new GenerateC(m, eee, c.gitlabCIVerbosity(), pipelineLogic);
 		ggc.generateCode(lgf, wm);
 

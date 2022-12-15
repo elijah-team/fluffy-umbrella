@@ -12,10 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.*;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.contexts.ModuleContext;
 import tripleo.elijah.lang.*;
@@ -58,7 +55,8 @@ public class DeduceTypesTest2 {
 		//
 		//
 		final ElLog.@NotNull Verbosity verbosity1 = c.gitlabCIVerbosity();
-		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1);
+		final AccessBus ab = new AccessBus(c);
+		final @NotNull PipelineLogic pl = new PipelineLogic(verbosity1, ab);
 		final @NotNull GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		@NotNull DeducePhase dp = new DeducePhase(generatePhase, pl, verbosity1);
 		@NotNull DeduceTypes2 d = dp.deduceModule(mod, verbosity1);

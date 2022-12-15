@@ -14,14 +14,11 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.StdErrSink;
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.lang.OS_Type;
-import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.gen_fn.GeneratedFunction;
 import tripleo.elijah.stages.gen_fn.TypeTableEntry;
 import tripleo.elijah.stages.instructions.IdentIA;
@@ -61,7 +58,8 @@ public class GetRealTargetNameTest {
 		@NotNull IdentIA ident_ia = new IdentIA(ite_index, gf);
 		ident_ia.setPrev(new IntegerIA(int_index, gf));
 		//
-		@NotNull PipelineLogic pipelineLogic = new PipelineLogic(Compilation.gitlabCIVerbosity());
+		final AccessBus ab = new AccessBus(mock(Compilation.class));
+		@NotNull PipelineLogic pipelineLogic = new PipelineLogic(Compilation.gitlabCIVerbosity(), ab);
 		@NotNull GenerateC c = new GenerateC(mod, new StdErrSink(), ElLog.Verbosity.SILENT, pipelineLogic); // TODO do we want silent?
 		//
 		Emit.emitting = false;
