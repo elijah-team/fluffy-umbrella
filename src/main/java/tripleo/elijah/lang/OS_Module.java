@@ -30,12 +30,7 @@ import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.gen.ICodeGen;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 public class OS_Module implements OS_Element, OS_Container {
 
@@ -49,6 +44,10 @@ public class OS_Module implements OS_Element, OS_Container {
 	private String _fileName;
 	public @NotNull List<EntryPoint> entryPoints = new ArrayList<EntryPoint>();
 	private IndexingStatement indexingStatement;
+
+	public static boolean is_prelude(final OS_Module aPrelude) {
+		return aPrelude == null; // FIXME encoded assumption that this means that
+	}
 
 	public @org.jetbrains.annotations.Nullable OS_Element findClass(final String className) {
 		for (final ModuleItem item : items) {

@@ -24,15 +24,7 @@ import tripleo.elijah.lang2.SpecialFunctions;
 import tripleo.elijah.lang2.SpecialVariables;
 import tripleo.elijah.stages.deduce.declarations.DeferredMember;
 import tripleo.elijah.stages.gen_fn.*;
-import tripleo.elijah.stages.instructions.ConstTableIA;
-import tripleo.elijah.stages.instructions.FnCallArgs;
-import tripleo.elijah.stages.instructions.IdentIA;
-import tripleo.elijah.stages.instructions.Instruction;
-import tripleo.elijah.stages.instructions.InstructionArgument;
-import tripleo.elijah.stages.instructions.InstructionName;
-import tripleo.elijah.stages.instructions.IntegerIA;
-import tripleo.elijah.stages.instructions.ProcIA;
-import tripleo.elijah.stages.instructions.VariableTableType;
+import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
@@ -2024,7 +2016,7 @@ public class DeduceTypes2 {
 						@NotNull String typeName = type.getBType().name();
 						assert typeName.equals("SystemInteger");
 						OS_Module prelude = module.prelude;
-						if (prelude == null) // README Assume `module' IS prelude
+						if (OS_Module.is_prelude(prelude)) // README Assume `module' IS prelude
 							prelude = module;
 						final LookupResultList lrl = prelude.getContext().lookup(typeName);
 						@Nullable OS_Element best = lrl.chooseBest(null);
@@ -2047,7 +2039,7 @@ public class DeduceTypes2 {
 						@NotNull String typeName = type.getBType().name();
 						assert typeName.equals("String_");
 						OS_Module prelude = module.prelude;
-						if (prelude == null) // README Assume `module' IS prelude
+						if (OS_Module.is_prelude(prelude)) // README Assume `module' IS prelude
 							prelude = module;
 						final LookupResultList lrl = prelude.getContext().lookup("ConstString"); // TODO not sure about String
 						@Nullable OS_Element best = lrl.chooseBest(null);
@@ -2070,7 +2062,7 @@ public class DeduceTypes2 {
 						@NotNull String typeName = type.getBType().name();
 						assert typeName.equals("SystemCharacter");
 						OS_Module prelude = module.prelude;
-						if (prelude == null) // README Assume `module' IS prelude
+						if (OS_Module.is_prelude(prelude)) // README Assume `module' IS prelude
 							prelude = module;
 						final LookupResultList lrl = prelude.getContext().lookup("SystemCharacter");
 						@Nullable OS_Element best = lrl.chooseBest(null);
@@ -2091,7 +2083,7 @@ public class DeduceTypes2 {
 				case Boolean:
 					{
 						OS_Module prelude = module.prelude;
-						if (prelude == null) // README Assume `module' IS prelude
+						if (OS_Module.is_prelude(prelude)) // README Assume `module' IS prelude
 							prelude = module;
 						final LookupResultList lrl = prelude.getContext().lookup("Boolean");
 						final @Nullable OS_Element best = lrl.chooseBest(null);
