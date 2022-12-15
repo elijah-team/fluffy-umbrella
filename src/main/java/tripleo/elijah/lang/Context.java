@@ -9,6 +9,7 @@
 package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.contexts.ModuleContext;
 
@@ -28,13 +29,13 @@ public abstract class Context {
 //	}
 	
 	public LookupResultList lookup(@NotNull final String name) {
-		final LookupResultList Result = new LookupResultList();
+		final @NotNull LookupResultList Result = new LookupResultList();
 		return lookup(name, 0, Result, new ArrayList<Context>(), false);
 	}
 	
 	public abstract LookupResultList lookup(String name, int level, LookupResultList Result, List<Context> alreadySearched, boolean one);
 
-	public abstract Context getParent();
+	public abstract @Nullable Context getParent();
 
 //	@Deprecated public void add(OS_Element element, String name) {
 //		add(element, new IdentExpression(Helpers.makeToken(name)));
@@ -64,14 +65,14 @@ public abstract class Context {
 //	}
 
 	public @NotNull OS_Module module() {
-		Context ctx = this;//getParent();
+		@Nullable Context ctx = this;//getParent();
 		while (!(ctx instanceof ModuleContext))
 			ctx = ctx.getParent();
 		return ((ModuleContext) ctx).getCarrier();
 	}
 
 	public @NotNull Compilation compilation() {
-		OS_Module module = module();
+		@NotNull OS_Module module = module();
 		return module.parent;
 	}
 }

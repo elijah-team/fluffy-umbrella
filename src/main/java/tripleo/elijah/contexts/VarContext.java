@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.contexts;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.util.Helpers;
 
@@ -26,12 +27,12 @@ public class VarContext extends Context {
 		this._parent = _parent;
 	}
 
-	@Override public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	@Override public LookupResultList lookup(final String name, final int level, final @NotNull LookupResultList Result, final @NotNull List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 
-		for (final VariableStatement vs : carrier.items()) {
+		for (final @NotNull VariableStatement vs : carrier.items()) {
 			if (vs.getName().equals(name)) {
-				final IdentExpression ie = new IdentExpression(Helpers.makeToken(vs.getName()));
+				final @NotNull IdentExpression ie = new IdentExpression(Helpers.makeToken(vs.getName()));
 				Result.add(name, level, ie, this); // TODO getNameToken
 			}
 		}

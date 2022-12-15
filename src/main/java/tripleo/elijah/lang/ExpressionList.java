@@ -8,6 +8,9 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -19,7 +22,7 @@ import java.util.List;
  */
 public class ExpressionList implements Iterable<IExpression> {
 
-	public IExpression next(final IExpression aExpr) {
+	public @NotNull IExpression next(final @Nullable IExpression aExpr) {
 //		assert aExpr != null;
 		if (aExpr == null) throw new IllegalArgumentException("expression cannot be null");
 		//
@@ -34,12 +37,12 @@ public class ExpressionList implements Iterable<IExpression> {
 		return exprs.toString();
 	}
 
-	public Collection<IExpression> expressions() {
+	public @NotNull Collection<IExpression> expressions() {
 		return exprs;
 	}
 	
 	@Override
-	public Iterator<IExpression> iterator() {
+	public @NotNull Iterator<IExpression> iterator() {
 		return exprs.iterator();
 	}
 	

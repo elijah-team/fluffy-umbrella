@@ -8,6 +8,7 @@
  */
 package tripleo.elijah;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.ParserClosure;
@@ -22,10 +23,10 @@ import java.util.Date;
 
 public class Out {
 
-	private final Compilation compilation;
+	private final @NotNull Compilation compilation;
 	private boolean do_out = false;
 
-	public Out(final String fn, final Compilation compilation, final boolean do_out) {
+	public Out(final String fn, final @NotNull Compilation compilation, final boolean do_out) {
 		pc = new ParserClosure(fn, compilation);
 		this.compilation = compilation;
 		this.do_out = do_out;
@@ -33,7 +34,7 @@ public class Out {
 	
 	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings("NM_METHOD_NAMING_CONVENTION")
 	public void FinishModule() {
-		final TabbedOutputStream tos;
+		final @NotNull TabbedOutputStream tos;
 		println("** FinishModule");
 		try {
 //			pc.module.print_osi(tos);
@@ -54,8 +55,8 @@ public class Out {
 		}
 	}
 
-	private static TabbedOutputStream getTOSLog() throws FileNotFoundException {
-		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+	private static @NotNull TabbedOutputStream getTOSLog() throws FileNotFoundException {
+		final @NotNull SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		final String filename = String.format("eljc-%s.out", sdf.format(new Date()));
 		return new TabbedOutputStream(new FileOutputStream(filename));
 	}
@@ -64,13 +65,13 @@ public class Out {
 		System.out.println(s);
 	}
 
-	private final ParserClosure pc;
+	private final @NotNull ParserClosure pc;
 
-	public ParserClosure closure() {
+	public @NotNull ParserClosure closure() {
 		return pc;
 	}
 
-	public OS_Module module() {
+	public @NotNull OS_Module module() {
 		return pc.module;
 	}
 }

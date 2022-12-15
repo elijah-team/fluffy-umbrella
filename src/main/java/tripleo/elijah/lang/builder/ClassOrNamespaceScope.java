@@ -9,6 +9,7 @@
 
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.IdentExpression;
 
@@ -34,7 +35,7 @@ public abstract class ClassOrNamespaceScope extends BaseScope {
 		}
 	}
 
-	List<IspPart> isps = new ArrayList<IspPart>();
+	@NotNull List<IspPart> isps = new ArrayList<IspPart>();
 
 	public void addInvariantStatementPart(IdentExpression i1, IExpression expr) {
 		isps.add(new IspPart(i1, expr));

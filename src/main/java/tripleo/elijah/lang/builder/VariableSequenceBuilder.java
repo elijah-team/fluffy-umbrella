@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 
 import java.util.ArrayList;
@@ -17,13 +19,13 @@ import java.util.List;
  * Created 12/22/20 11:48 PM
  */
 public class VariableSequenceBuilder extends ElBuilder {
-	private IExpression _initial;
-	private IdentExpression _name;
+	private @Nullable IExpression _initial;
+	private @Nullable IdentExpression _name;
 	private TypeName _tn;
-	private TypeModifiers def = null;
+	private @Nullable TypeModifiers def = null;
 
 	private Context _context;
-	List<Triple> triples = new ArrayList<Triple>();
+	@NotNull List<Triple> triples = new ArrayList<Triple>();
 
 	public void defaultModifiers(TypeModifiers modifiers) {
 		def = modifiers;
@@ -62,12 +64,12 @@ public class VariableSequenceBuilder extends ElBuilder {
 	}
 
 	@Override
-	protected VariableSequence build() {
-		VariableSequence variableSequence = new VariableSequence(_context);
+	protected @NotNull VariableSequence build() {
+		@NotNull VariableSequence variableSequence = new VariableSequence(_context);
 		variableSequence.defaultModifiers(def);
 		if (_name != null)
 			next(); // create singular entry
-		for (Triple triple : triples) {
+		for (@NotNull Triple triple : triples) {
 			VariableStatement vs = variableSequence.next();
 			if (triple._tn != null)
 				vs.setTypeName(triple._tn);

@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.ImportContext;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.imports.AssigningImportStatement;
@@ -30,13 +31,13 @@ public class ImportStatementBuilder extends ElBuilder {
 	private QualidentList qil;
 
 	// ASSIGNING
-	List<AssigningImportStatement.Part> aparts = new ArrayList<AssigningImportStatement.Part>();
+	@NotNull List<AssigningImportStatement.Part> aparts = new ArrayList<AssigningImportStatement.Part>();
 
 	// SELECTIVE/QUALIFIED
-	List<QualifiedImportStatement.Part> sparts = new ArrayList<QualifiedImportStatement.Part>();
+	@NotNull List<QualifiedImportStatement.Part> sparts = new ArrayList<QualifiedImportStatement.Part>();
 
 	// NORMAL
-	List<Qualident> nparts = new ArrayList<Qualident>();
+	@NotNull List<Qualident> nparts = new ArrayList<Qualident>();
 
 	//
 	//
@@ -62,28 +63,28 @@ public class ImportStatementBuilder extends ElBuilder {
 	}
 
 	@Override
-	protected ImportStatement build() {
+	protected @NotNull ImportStatement build() {
 		switch (state) {
 		case ROOTED:
-			RootedImportStatement rootedImportStatement = new RootedImportStatement(_parent);
+			@NotNull RootedImportStatement rootedImportStatement = new RootedImportStatement(_parent);
 			rootedImportStatement.setRoot(xy);
 			rootedImportStatement.setImportList(qil);
 			rootedImportStatement.setContext(new ImportContext(_context, rootedImportStatement)); // TODO is this correct?
 			return rootedImportStatement;
 		case ASSIGNING:
-			AssigningImportStatement assigningImportStatement = new AssigningImportStatement(_parent);
+			@NotNull AssigningImportStatement assigningImportStatement = new AssigningImportStatement(_parent);
 			for (AssigningImportStatement.Part apart : aparts) {
 				assigningImportStatement.addPart(apart);
 			}
 			return assigningImportStatement;
 		case SELECTIVE:
-			QualifiedImportStatement qualifiedImportStatement = new QualifiedImportStatement(_parent);
+			@NotNull QualifiedImportStatement qualifiedImportStatement = new QualifiedImportStatement(_parent);
 			for (QualifiedImportStatement.Part spart : sparts) {
 				qualifiedImportStatement.addPart(spart);
 			}
 			return qualifiedImportStatement;
 		case NORMAL:
-			NormalImportStatement normalImportStatement = new NormalImportStatement(_parent);
+			@NotNull NormalImportStatement normalImportStatement = new NormalImportStatement(_parent);
 			for (Qualident npart : nparts) {
 				normalImportStatement.addNormalPart(npart);
 			}

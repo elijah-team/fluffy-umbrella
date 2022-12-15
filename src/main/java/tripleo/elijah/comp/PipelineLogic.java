@@ -31,11 +31,11 @@ import java.util.List;
  * Created 12/30/20 2:14 AM
  */
 public class PipelineLogic {
-	public final GeneratePhase generatePhase;
-	public final DeducePhase dp;
+	public final @NotNull GeneratePhase generatePhase;
+	public final @NotNull DeducePhase dp;
 
-	public GenerateResult gr = new GenerateResult();
-	public List<ElLog> elLogs = new LinkedList<ElLog>();
+	public @NotNull GenerateResult gr = new GenerateResult();
+	public @NotNull List<ElLog> elLogs = new LinkedList<ElLog>();
 	public boolean verbose = true;
 
 	private final ElLog.Verbosity verbosity;
@@ -49,7 +49,7 @@ public class PipelineLogic {
 	}
 
 	public void everythingBeforeGenerate(List<GeneratedNode> lgc) {
-		for (OS_Module mod : mods) {
+		for (@NotNull OS_Module mod : mods) {
 			run2(mod, mod.entryPoints);
 		}
 //		List<List<EntryPoint>> entryPoints = mods.stream().map(mod -> mod.entryPoints).collect(Collectors.toList());
@@ -60,19 +60,19 @@ public class PipelineLogic {
 //		elLogs = dp.deduceLogs;
 	}
 
-	public void generate(List<GeneratedNode> lgc) {
-		final WorkManager wm = new WorkManager();
+	public void generate(@NotNull List<GeneratedNode> lgc) {
+		final @NotNull WorkManager wm = new WorkManager();
 		// README use any errSink, they should all be the same
-		for (OS_Module mod : mods) {
-			final GenerateC generateC = new GenerateC(mod, mod.parent.getErrSink(), verbosity, this);
-			final GenerateResult ggr = run3(mod, lgc, wm, generateC);
+		for (@NotNull OS_Module mod : mods) {
+			final @NotNull GenerateC generateC = new GenerateC(mod, mod.parent.getErrSink(), verbosity, this);
+			final @NotNull GenerateResult ggr = run3(mod, lgc, wm, generateC);
 			wm.drain();
 			gr.results().addAll(ggr.results());
 		}
 	}
 
-	public static void debug_buffers(GenerateResult gr, PrintStream stream) {
-		for (GenerateResultItem ab : gr.results()) {
+	public static void debug_buffers(@NotNull GenerateResult gr, @NotNull PrintStream stream) {
+		for (@NotNull GenerateResultItem ab : gr.results()) {
 			stream.println("---------------------------------------------------------------");
 			stream.println(ab.counter);
 			stream.println(ab.ty);
@@ -83,30 +83,30 @@ public class PipelineLogic {
 		}
 	}
 
-	protected void run2(OS_Module mod, @NotNull List<EntryPoint> epl) {
-		final GenerateFunctions gfm = getGenerateFunctions(mod);
+	protected void run2(@NotNull OS_Module mod, @NotNull List<EntryPoint> epl) {
+		final @NotNull GenerateFunctions gfm = getGenerateFunctions(mod);
 		gfm.generateFromEntryPoints(epl, dp);
 
 //		WorkManager wm = new WorkManager();
 //		WorkList wl = new WorkList();
 
 		DeducePhase.@NotNull GeneratedClasses lgc = dp.generatedClasses;
-		List<GeneratedNode> resolved_nodes = new ArrayList<GeneratedNode>();
+		@NotNull List<GeneratedNode> resolved_nodes = new ArrayList<GeneratedNode>();
 
 		for (final GeneratedNode generatedNode : lgc) {
 			if (generatedNode instanceof GeneratedFunction) {
-				GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
+				@NotNull GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
 				if (generatedFunction.getCode() == 0)
 					generatedFunction.setCode(mod.parent.nextFunctionCode());
 			} else if (generatedNode instanceof GeneratedClass) {
-				final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
+				final @NotNull GeneratedClass generatedClass = (GeneratedClass) generatedNode;
 //				if (generatedClass.getCode() == 0)
 //					generatedClass.setCode(mod.parent.nextClassCode());
-				for (GeneratedClass generatedClass2 : generatedClass.classMap.values()) {
+				for (@NotNull GeneratedClass generatedClass2 : generatedClass.classMap.values()) {
 					generatedClass2.setCode(mod.parent.nextClassCode());
 				}
-				for (GeneratedFunction generatedFunction : generatedClass.functionMap.values()) {
-					for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
+				for (@NotNull GeneratedFunction generatedFunction : generatedClass.functionMap.values()) {
+					for (@NotNull IdentTableEntry identTableEntry : generatedFunction.idte_list) {
 						if (identTableEntry.isResolved()) {
 							GeneratedNode node = identTableEntry.resolvedType();
 							resolved_nodes.add(node);
@@ -114,14 +114,14 @@ public class PipelineLogic {
 					}
 				}
 			} else if (generatedNode instanceof GeneratedNamespace) {
-				final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
+				final @NotNull GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
 				if (generatedNamespace.getCode() == 0)
 					generatedNamespace.setCode(mod.parent.nextClassCode());
-				for (GeneratedClass generatedClass : generatedNamespace.classMap.values()) {
+				for (@NotNull GeneratedClass generatedClass : generatedNamespace.classMap.values()) {
 					generatedClass.setCode(mod.parent.nextClassCode());
 				}
-				for (GeneratedFunction generatedFunction : generatedNamespace.functionMap.values()) {
-					for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
+				for (@NotNull GeneratedFunction generatedFunction : generatedNamespace.functionMap.values()) {
+					for (@NotNull IdentTableEntry identTableEntry : generatedFunction.idte_list) {
 						if (identTableEntry.isResolved()) {
 							GeneratedNode node = identTableEntry.resolvedType();
 							resolved_nodes.add(node);
@@ -133,15 +133,15 @@ public class PipelineLogic {
 
 		for (final GeneratedNode generatedNode : resolved_nodes) {
 			if (generatedNode instanceof GeneratedFunction) {
-				GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
+				@NotNull GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
 				if (generatedFunction.getCode() == 0)
 					generatedFunction.setCode(mod.parent.nextFunctionCode());
 			} else if (generatedNode instanceof GeneratedClass) {
-				final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
+				final @NotNull GeneratedClass generatedClass = (GeneratedClass) generatedNode;
 				if (generatedClass.getCode() == 0)
 					generatedClass.setCode(mod.parent.nextClassCode());
 			} else if (generatedNode instanceof GeneratedNamespace) {
-				final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
+				final @NotNull GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
 				if (generatedNamespace.getCode() == 0)
 					generatedNamespace.setCode(mod.parent.nextClassCode());
 			}
@@ -165,18 +165,18 @@ public class PipelineLogic {
 	}
 
 	@NotNull
-	private GenerateFunctions getGenerateFunctions(OS_Module mod) {
+	private GenerateFunctions getGenerateFunctions(@NotNull OS_Module mod) {
 		return generatePhase.getGenerateFunctions(mod);
 	}
 
-	protected GenerateResult run3(OS_Module mod, List<GeneratedNode> lgc, WorkManager wm, GenerateC ggc) {
-		GenerateResult gr = new GenerateResult();
+	protected @NotNull GenerateResult run3(OS_Module mod, @NotNull List<GeneratedNode> lgc, WorkManager wm, @NotNull GenerateC ggc) {
+		@NotNull GenerateResult gr = new GenerateResult();
 
-		for (GeneratedNode generatedNode : lgc) {
+		for (@NotNull GeneratedNode generatedNode : lgc) {
 			if (generatedNode.module() != mod) continue; // README curious
 
 			if (generatedNode instanceof GeneratedContainerNC) {
-				final GeneratedContainerNC nc = (GeneratedContainerNC) generatedNode;
+				final @NotNull GeneratedContainerNC nc = (GeneratedContainerNC) generatedNode;
 
 				nc.generateCode(ggc, gr);
 				final @NotNull Collection<GeneratedNode> gn1 = ggc.functions_to_list_of_generated_nodes(nc.functionMap.values());
@@ -197,7 +197,7 @@ public class PipelineLogic {
 		mods.add(m);
 	}
 
-	private void resolveCheck(DeducePhase.GeneratedClasses lgc) {
+	private void resolveCheck(DeducePhase.@NotNull GeneratedClasses lgc) {
 		for (final GeneratedNode generatedNode : lgc) {
 			if (generatedNode instanceof GeneratedFunction) {
 
@@ -233,7 +233,7 @@ public class PipelineLogic {
 		}
 	}
 
-	public ElLog.Verbosity getVerbosity() {
+	public ElLog.@NotNull Verbosity getVerbosity() {
 		return verbose ? ElLog.Verbosity.VERBOSE : ElLog.Verbosity.SILENT;
 	}
 

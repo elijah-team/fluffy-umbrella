@@ -16,6 +16,8 @@ import antlr.SemanticException;
 import antlr.ParserSharedInputState;
 import antlr.collections.impl.BitSet;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.contexts.*;
 import tripleo.elijah.ci.*;
@@ -26,9 +28,9 @@ import tripleo.elijah.*;
 public class EzParser extends antlr.LLkParser       implements EzTokenTypes
  {
 
-IExpression expr;
-Context cur=null;
-public CompilerInstructions ci = new CompilerInstructions();
+@Nullable IExpression expr;
+@Nullable Context cur=null;
+public @NotNull CompilerInstructions ci = new CompilerInstructions();
 
 protected EzParser(TokenBuffer tokenBuf, int k) {
   super(tokenBuf,k);
@@ -55,8 +57,8 @@ public EzParser(ParserSharedInputState state) {
 
 	public final void program() throws RecognitionException, TokenStreamException {
 		
-		Token  i1 = null;
-		GenerateStatement gen=null;
+		@Nullable Token  i1 = null;
+		@Nullable GenerateStatement gen=null;
 		
 		try {      // for error handling
 			{
@@ -125,11 +127,11 @@ public EzParser(ParserSharedInputState state) {
 	}
 	
 	public final void indexingStatement(
-		IndexingStatement idx
+			@NotNull IndexingStatement idx
 	) throws RecognitionException, TokenStreamException {
 		
-		Token  i1 = null;
-		ExpressionList el=null;
+		@Nullable Token  i1 = null;
+		@Nullable ExpressionList el=null;
 		
 		try {      // for error handling
 			match(LITERAL_indexing);
@@ -167,7 +169,7 @@ public EzParser(ParserSharedInputState state) {
 	
 	public final void library_statement() throws RecognitionException, TokenStreamException {
 		
-		LibraryStatementPart lsp=null;
+		@Nullable LibraryStatementPart lsp=null;
 		
 		try {      // for error handling
 			{
@@ -214,10 +216,10 @@ public EzParser(ParserSharedInputState state) {
 		}
 	}
 	
-	public final GenerateStatement  generate_statement() throws RecognitionException, TokenStreamException {
+	public final @NotNull GenerateStatement  generate_statement() throws RecognitionException, TokenStreamException {
 		GenerateStatement gen;
 		
-		Token  i1 = null;
+		@Nullable Token  i1 = null;
 		gen=new GenerateStatement();
 		
 		try {      // for error handling
@@ -252,12 +254,12 @@ public EzParser(ParserSharedInputState state) {
 		return gen;
 	}
 	
-	public final LibraryStatementPart  library_statement_part() throws RecognitionException, TokenStreamException {
+	public final @NotNull LibraryStatementPart  library_statement_part() throws RecognitionException, TokenStreamException {
 		LibraryStatementPart lsp;
 		
-		Token  i1 = null;
-		Token  dirname = null;
-		Token  i2 = null;
+		@Nullable Token  i1 = null;
+		@Nullable Token  dirname = null;
+		@Nullable Token  i2 = null;
 		lsp=new LibraryStatementPart();
 		
 		try {      // for error handling
@@ -338,8 +340,8 @@ public EzParser(ParserSharedInputState state) {
 		return lsp;
 	}
 	
-	public final IExpression  expression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  expression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
 		
@@ -357,7 +359,7 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final ExpressionList  expressionList2() throws RecognitionException, TokenStreamException {
+	public final @NotNull ExpressionList  expressionList2() throws RecognitionException, TokenStreamException {
 		ExpressionList el;
 		
 		el = new ExpressionList();
@@ -395,13 +397,13 @@ public EzParser(ParserSharedInputState state) {
 		return el;
 	}
 	
-	public final IExpression  constantValue() throws RecognitionException, TokenStreamException {
-		IExpression e;
+	public final @Nullable IExpression  constantValue() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression e;
 		
-		Token  s = null;
-		Token  c = null;
-		Token  n = null;
-		Token  f = null;
+		@Nullable Token  s = null;
+		@Nullable Token  c = null;
+		@Nullable Token  n = null;
+		@Nullable Token  f = null;
 		e=null;
 		
 		try {      // for error handling
@@ -459,11 +461,12 @@ public EzParser(ParserSharedInputState state) {
 		return e;
 	}
 	
-	public final Qualident  qualident() throws RecognitionException, TokenStreamException {
+	public final @NotNull Qualident  qualident() throws RecognitionException, TokenStreamException {
 		Qualident q;
 		
-		Token  d1 = null;
-		q=new Qualident();IdentExpression r1=null, r2=null;
+		@Nullable Token  d1 = null;
+		q=new Qualident();
+		@Nullable IdentExpression r1=null, r2=null;
 		
 		try {      // for error handling
 			r1=ident();
@@ -499,10 +502,10 @@ public EzParser(ParserSharedInputState state) {
 		return q;
 	}
 	
-	public final IdentExpression  ident() throws RecognitionException, TokenStreamException {
-		IdentExpression id;
+	public final @Nullable IdentExpression  ident() throws RecognitionException, TokenStreamException {
+		@Nullable IdentExpression id;
 		
-		Token  r1 = null;
+		@Nullable Token  r1 = null;
 		id=null;
 		
 		try {      // for error handling
@@ -524,10 +527,10 @@ public EzParser(ParserSharedInputState state) {
 	}
 	
 	public final void docstrings(
-		Documentable sc
+			@Nullable Documentable sc
 	) throws RecognitionException, TokenStreamException {
 		
-		Token  s1 = null;
+		@Nullable Token  s1 = null;
 		
 		try {      // for error handling
 			{
@@ -608,10 +611,10 @@ public EzParser(ParserSharedInputState state) {
 	}
 	
 	public final void identList(
-		IdentList ail
+			@NotNull IdentList ail
 	) throws RecognitionException, TokenStreamException {
 		
-		IdentExpression s=null;
+		@Nullable IdentExpression s=null;
 		
 		try {      // for error handling
 			s=ident();
@@ -645,10 +648,13 @@ public EzParser(ParserSharedInputState state) {
 		}
 	}
 	
-	public final IExpression  assignmentExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  assignmentExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
-		ee=null;IExpression e=null;IExpression e2;ExpressionKind ek=null;
+		ee=null;
+		@Nullable IExpression e=null;
+		@Nullable IExpression e2;
+		@Nullable ExpressionKind ek=null;
 		
 		try {      // for error handling
 			ee=conditionalExpression();
@@ -783,7 +789,7 @@ public EzParser(ParserSharedInputState state) {
 	}
 	
 	public final void qualidentList(
-		QualidentList qal
+			@NotNull QualidentList qal
 	) throws RecognitionException, TokenStreamException {
 		
 		Qualident qid;
@@ -820,11 +826,13 @@ public EzParser(ParserSharedInputState state) {
 		}
 	}
 	
-	public final IExpression  variableReference() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  variableReference() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
-		Token  lp = null;
-		ProcedureCallExpression pcx;ExpressionList el=null;ee=null;IdentExpression r1=null, r2=null;
+		@Nullable Token  lp = null;
+		ProcedureCallExpression pcx;
+		@Nullable ExpressionList el=null;ee=null;
+		@Nullable IdentExpression r1=null, r2=null;
 		
 		try {      // for error handling
 			r1=ident();
@@ -890,7 +898,7 @@ public EzParser(ParserSharedInputState state) {
 				}
 				}
 				if ( inputState.guessing==0 ) {
-					ProcedureCallExpression pce=new ProcedureCallExpression();
+					@NotNull ProcedureCallExpression pce=new ProcedureCallExpression();
 					pce.identifier(ee);
 					pce.setArgs(el);
 					ee=pce;
@@ -916,8 +924,8 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  conditionalExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  conditionalExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
 		
@@ -935,11 +943,11 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  logicalOrExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  logicalOrExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				IExpression e3=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=logicalAndExpression();
@@ -971,10 +979,11 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  logicalAndExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  logicalAndExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
-		ee=null;IExpression e3=null;
+		ee=null;
+		@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=inclusiveOrExpression();
@@ -1006,10 +1015,11 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  inclusiveOrExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  inclusiveOrExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
-		ee=null;IExpression e3=null;
+		ee=null;
+		@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=exclusiveOrExpression();
@@ -1041,11 +1051,11 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  exclusiveOrExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  exclusiveOrExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				IExpression e3=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=andExpression();
@@ -1077,11 +1087,11 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  andExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  andExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				IExpression e3=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=equalityExpression();
@@ -1113,12 +1123,12 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  equalityExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  equalityExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				ExpressionKind e2=null;
-				IExpression e3=null;
+				@Nullable ExpressionKind e2=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=relationalExpression();
@@ -1173,13 +1183,13 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  relationalExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  relationalExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				ExpressionKind e2=null; // should never be null (below)
-				IExpression e3=null;
-				TypeName tn=null;
+				@Nullable ExpressionKind e2=null; // should never be null (below)
+				@Nullable IExpression e3=null;
+				@Nullable TypeName tn=null;
 		
 		try {      // for error handling
 			ee=shiftExpression();
@@ -1253,11 +1263,12 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  shiftExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  shiftExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
-		ee=null;ExpressionKind e2=null;
-				IExpression e3=null;
+		ee=null;
+		@Nullable ExpressionKind e2=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=additiveExpression();
@@ -1320,11 +1331,12 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  additiveExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  additiveExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
-		ee=null;ExpressionKind e2=null;
-				IExpression e3=null;
+		ee=null;
+		@Nullable ExpressionKind e2=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=multiplicativeExpression();
@@ -1379,11 +1391,12 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  multiplicativeExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  multiplicativeExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				IExpression e3=null;ExpressionKind e2=null;
+				@Nullable IExpression e3=null;
+		@Nullable ExpressionKind e2=null;
 		
 		try {      // for error handling
 			ee=unaryExpression();
@@ -1446,11 +1459,11 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  unaryExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  unaryExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				IExpression e3=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			switch ( LA(1)) {
@@ -1524,11 +1537,11 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  unaryExpressionNotPlusMinus() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  unaryExpressionNotPlusMinus() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				IExpression e3=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			switch ( LA(1)) {
@@ -1582,16 +1595,19 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  postfixExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  postfixExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
-		Token  lb = null;
-		Token  rb = null;
-		Token  lp = null;
-		Token  in = null;
-		Token  de = null;
-		ee=null;TypeCastExpression tc=null;TypeName tn=null;
-				IExpression e3=null;ExpressionList el=null;
+		@Nullable Token  lb = null;
+		@Nullable Token  rb = null;
+		@Nullable Token  lp = null;
+		@Nullable Token  in = null;
+		@Nullable Token  de = null;
+		ee=null;
+		@Nullable TypeCastExpression tc=null;
+		@Nullable TypeName tn=null;
+				@Nullable IExpression e3=null;
+		@Nullable ExpressionList el=null;
 		
 		try {      // for error handling
 			ee=primaryExpression();
@@ -1666,7 +1682,7 @@ public EzParser(ParserSharedInputState state) {
 					}
 					}
 					if ( inputState.guessing==0 ) {
-						ProcedureCallExpression pce=new ProcedureCallExpression();
+						@NotNull ProcedureCallExpression pce=new ProcedureCallExpression();
 						pce.identifier(ee);
 						pce.setArgs(el);
 						ee=pce;
@@ -1713,10 +1729,13 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  primaryExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  primaryExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
-		ee=null;FuncExpr ppc=null;IdentExpression e=null;ExpressionList el=null;
+		ee=null;
+		@Nullable FuncExpr ppc=null;
+		@Nullable IdentExpression e=null;
+		@Nullable ExpressionList el=null;
 		
 		try {      // for error handling
 			switch ( LA(1)) {
@@ -1796,13 +1815,15 @@ public EzParser(ParserSharedInputState state) {
 		return ee;
 	}
 	
-	public final IExpression  dot_expression_or_procedure_call(
+	public final @Nullable IExpression  dot_expression_or_procedure_call(
 		IExpression e1
 	) throws RecognitionException, TokenStreamException {
-		IExpression ee;
+		@Nullable IExpression ee;
 		
-		Token  lp2 = null;
-		ee=null;ExpressionList el=null;IdentExpression e=null;
+		@Nullable Token  lp2 = null;
+		ee=null;
+		@Nullable ExpressionList el=null;
+		@Nullable IdentExpression e=null;
 		
 		try {      // for error handling
 			e=ident();
@@ -1847,7 +1868,7 @@ public EzParser(ParserSharedInputState state) {
 				}
 				}
 				if ( inputState.guessing==0 ) {
-					ProcedureCallExpression pce=new ProcedureCallExpression();
+					@NotNull ProcedureCallExpression pce=new ProcedureCallExpression();
 					pce.identifier(ee);
 					pce.setArgs(el);
 					ee=pce;
@@ -1955,62 +1976,62 @@ public EzParser(ParserSharedInputState state) {
 	};
 	
 	private static final long[] mk_tokenSet_0() {
-		long[] data = { 2L, 0L};
+		long @NotNull [] data = { 2L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_0 = new BitSet(mk_tokenSet_0());
 	private static final long[] mk_tokenSet_1() {
-		long[] data = { 112L, 0L};
+		long @NotNull [] data = { 112L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_1 = new BitSet(mk_tokenSet_1());
 	private static final long[] mk_tokenSet_2() {
-		long[] data = { 32768L, 0L};
+		long @NotNull [] data = { 32768L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_2 = new BitSet(mk_tokenSet_2());
 	private static final long[] mk_tokenSet_3() {
-		long[] data = { 256L, 0L};
+		long @NotNull [] data = { 256L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_3 = new BitSet(mk_tokenSet_3());
 	private static final long[] mk_tokenSet_4() {
-		long[] data = { 36992L, 0L};
+		long @NotNull [] data = { 36992L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_4 = new BitSet(mk_tokenSet_4());
 	private static final long[] mk_tokenSet_5() {
-		long[] data = { 288230376148591088L, 0L};
+		long @NotNull [] data = { 288230376148591088L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_5 = new BitSet(mk_tokenSet_5());
 	private static final long[] mk_tokenSet_6() {
-		long[] data = { 16793840L, 0L};
+		long @NotNull [] data = { 16793840L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_6 = new BitSet(mk_tokenSet_6());
 	private static final long[] mk_tokenSet_7() {
-		long[] data = { 4194306L, 0L};
+		long @NotNull [] data = { 4194306L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_7 = new BitSet(mk_tokenSet_7());
 	private static final long[] mk_tokenSet_8() {
-		long[] data = { 288230376148591090L, 0L};
+		long @NotNull [] data = { 288230376148591090L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_8 = new BitSet(mk_tokenSet_8());
 	private static final long[] mk_tokenSet_9() {
-		long[] data = { -65302194587553664L, 0L};
+		long @NotNull [] data = { -65302194587553664L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_9 = new BitSet(mk_tokenSet_9());
 	private static final long[] mk_tokenSet_10() {
-		long[] data = { -2164238L, 0L};
+		long @NotNull [] data = { -2164238L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_10 = new BitSet(mk_tokenSet_10());
 	private static final long[] mk_tokenSet_11() {
-		long[] data = { -65302194570776448L, 0L};
+		long @NotNull [] data = { -65302194570776448L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_11 = new BitSet(mk_tokenSet_11());

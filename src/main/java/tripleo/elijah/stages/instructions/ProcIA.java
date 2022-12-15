@@ -25,7 +25,7 @@ public class ProcIA implements InstructionArgument {
 	}
 
 	@Override
-	public String toString() {
+	public @NotNull String toString() {
 		return "ProcIA{" +
 				"index=" + index + ", " +
 				"func=" + gf.getProcTableEntry(index) +

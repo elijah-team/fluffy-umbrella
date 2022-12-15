@@ -83,7 +83,7 @@ public class DeducePhase {
 		@Nullable ClassInvocation Result = null;
 
 		// 1. select which to return
-		ClassStatement c = aClassInvocation.getKlass();
+		@NotNull ClassStatement c = aClassInvocation.getKlass();
 		Collection<ClassInvocation> cis = classInvocationMultimap.get(c);
 		for (@NotNull ClassInvocation ci : cis) {
 			// don't lose information
@@ -127,8 +127,8 @@ public class DeducePhase {
 	}
 
 	public boolean equivalentGenericPart(@NotNull ClassInvocation first, @NotNull ClassInvocation second) {
-		Map<TypeName, OS_Type> firstGenericPart = first.genericPart;
-		Map<TypeName, OS_Type> secondGenericPart = second.genericPart;
+		@Nullable Map<TypeName, OS_Type> firstGenericPart = first.genericPart;
+		@Nullable Map<TypeName, OS_Type> secondGenericPart = second.genericPart;
 		if (secondGenericPart == null && (firstGenericPart == null || firstGenericPart.size() == 0)) return true;
 		//
 		int i = secondGenericPart.entrySet().size();
@@ -182,7 +182,7 @@ public class DeducePhase {
 
 	static class ResolvedVariables {
 		final IdentTableEntry identTableEntry;
-		final OS_Element parent; // README tripleo.elijah.lang._CommonNC, but that's package-private
+		final @NotNull OS_Element parent; // README tripleo.elijah.lang._CommonNC, but that's package-private
 		final String varName;
 
 		public ResolvedVariables(IdentTableEntry aIdentTableEntry, OS_Element aParent, String aVarName) {
@@ -200,7 +200,7 @@ public class DeducePhase {
 		final @NotNull DeduceTypes2 deduceTypes2 = new DeduceTypes2(m, this, verbosity);
 //		LOG.err("196 DeduceTypes "+deduceTypes2.getFileName());
 		{
-			final ArrayList<GeneratedNode> p = new ArrayList<GeneratedNode>();
+			final @NotNull ArrayList<GeneratedNode> p = new ArrayList<GeneratedNode>();
 			Iterables.addAll(p, lgf);
 			LOG.info("197 lgf.size " + p.size());
 		}
@@ -468,9 +468,9 @@ public class DeducePhase {
 				final @Nullable ClassInvocation ci = registerClassInvocation(parent, null);
 				ci.resolvePromise().then(new DoneCallback<GeneratedClass>() {
 					@Override
-					public void onDone(final GeneratedClass result) {
+					public void onDone(final @NotNull GeneratedClass result) {
 						final List<GeneratedContainer.VarTableEntry> vt = result.varTable;
-						for (GeneratedContainer.VarTableEntry gc_vte : vt) {
+						for (GeneratedContainer.@NotNull VarTableEntry gc_vte : vt) {
 							if (gc_vte.nameToken.getText().equals(name)) {
 								// check connections
 								// unify pot. types (prol. shuld be done already -- we don't want to be reporting errors here)
@@ -549,7 +549,7 @@ public class DeducePhase {
 		}
 
 		@Override
-		public Iterator<GeneratedNode> iterator() {
+		public @NotNull Iterator<GeneratedNode> iterator() {
 			return generatedClasses.iterator();
 		}
 
@@ -557,11 +557,11 @@ public class DeducePhase {
 			return generatedClasses.size();
 		}
 
-		public List<GeneratedNode> copy() {
+		public @NotNull List<GeneratedNode> copy() {
 			return new ArrayList<GeneratedNode>(generatedClasses);
 		}
 
-		public void addAll(List<GeneratedNode> lgc) {
+		public void addAll(@NotNull List<GeneratedNode> lgc) {
 			// TODO is this method really needed
 			generatedClasses.addAll(lgc);
 		}

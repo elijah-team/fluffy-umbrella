@@ -8,6 +8,7 @@
  */
 package tripleo.elijah;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
@@ -33,10 +34,10 @@ public class FindBothSourceFiles {
 	 */
 	@Test
 	public final void compilerShouldFindBothParseFiles() {
-		final List<String> args = List_of("test/demo-el-normal", "test/demo-el-normal/main2", "-sE");
+		final @NotNull List<String> args = List_of("test/demo-el-normal", "test/demo-el-normal/main2", "-sE");
 //		ErrSink eee = JMock.of(ErrSink.class);
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final @NotNull ErrSink eee = new StdErrSink();
+		final @NotNull Compilation c = new Compilation(eee, new IO());
 
 		c.feedCmdLine(args);
 		

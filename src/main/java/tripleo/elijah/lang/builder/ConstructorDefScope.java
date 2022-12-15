@@ -9,6 +9,7 @@
 package tripleo.elijah.lang.builder;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.Documentable;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.util.NotImplementedException;
@@ -23,7 +24,7 @@ import java.util.List;
  */
 public class ConstructorDefScope extends BaseFunctionDefScope implements Documentable /*extends FunctionDefScope*/ {
 //	private List<ElBuilder> _items = new ArrayList<ElBuilder>();
-	private List<Token> docstrings = new ArrayList<Token>();
+	private @NotNull List<Token> docstrings = new ArrayList<Token>();
 
 //	@Override
 //	public Iterable<ElBuilder> items() {

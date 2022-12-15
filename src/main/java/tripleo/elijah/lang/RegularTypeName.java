@@ -14,12 +14,15 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 
 public class RegularTypeName extends AbstractTypeName2 implements NormalTypeName {
 
 	private TypeNameList genericPart;
-	private Context _ctx;
+	private @Nullable Context _ctx;
 //	private OS_Type _resolved;
 	private OS_Element _resolvedElement;
 
@@ -39,7 +42,7 @@ public class RegularTypeName extends AbstractTypeName2 implements NormalTypeName
 	}
 
 @Override
-public String getName() {
+public @Nullable String getName() {
 	if (typeName == null) return null;
 	return this.typeName.asSimpleString();
 }
@@ -79,9 +82,9 @@ public String getName() {
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder();
-		for (final TypeModifiers modifier : _ltm) {
+	public @NotNull String toString() {
+		final @NotNull StringBuilder sb = new StringBuilder();
+		for (final @NotNull TypeModifiers modifier : _ltm) {
 			switch (modifier) {
 				case CONST:      sb.append("const "); break;
 				case REFPAR:     sb.append("ref "); break;
@@ -111,7 +114,7 @@ public String getName() {
 	}
 
 	@Override
-	public Type kindOfType() {
+	public @NotNull Type kindOfType() {
 		return Type.NORMAL;
 	}
 

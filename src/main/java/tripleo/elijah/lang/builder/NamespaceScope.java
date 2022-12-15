@@ -9,6 +9,7 @@
 package tripleo.elijah.lang.builder;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.AccessNotation;
 import tripleo.elijah.lang.Documentable;
 import tripleo.elijah.lang.InvariantStatement;
@@ -42,15 +43,15 @@ public class NamespaceScope extends ClassOrNamespaceScope implements Documentabl
 		// _items.add(acs);
 	}
 
-	public TypeAliasBuilder typeAlias() {
+	public @NotNull TypeAliasBuilder typeAlias() {
 		return new TypeAliasBuilder();
 	}
 
-	public FunctionDefBuilder funcDef() {
+	public @NotNull FunctionDefBuilder funcDef() {
 		return new FunctionDefBuilder();
 	}
 
-	public InvariantStatement invariantStatement() {
+	public @NotNull InvariantStatement invariantStatement() {
 		return new InvariantStatement();
 	}
 

@@ -9,6 +9,7 @@
 package tripleo.elijah.lang.builder;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
 
 import java.util.ArrayList;
@@ -18,12 +19,12 @@ import java.util.List;
  * Created 12/23/20 2:38 AM
  */
 public class NamespaceStatementBuilder extends ElBuilder implements Documentable {
-	private List<AnnotationClause> annotations = new ArrayList<AnnotationClause>();
+	private @NotNull List<AnnotationClause> annotations = new ArrayList<AnnotationClause>();
 	private NamespaceTypes _type;
 	private OS_Element _parent;
 	private Context _parent_context;
 	private IdentExpression _name;
-	private NamespaceScope _scope = new NamespaceScope();
+	private @NotNull NamespaceScope _scope = new NamespaceScope();
 	private Context _context;
 
 	public void setType(NamespaceTypes namespaceTypes) {
@@ -31,14 +32,14 @@ public class NamespaceStatementBuilder extends ElBuilder implements Documentable
 	}
 
 	@Override
-	public NamespaceStatement build() {
-		NamespaceStatement cs = new NamespaceStatement(_parent, _parent_context);
+	public @NotNull NamespaceStatement build() {
+		@NotNull NamespaceStatement cs = new NamespaceStatement(_parent, _parent_context);
 		cs.setType(_type);
 		cs.setName(_name);
 		for (AnnotationClause annotation : annotations) {
 			cs.addAnnotation(annotation);
 		}
-		for (ElBuilder builder : _scope.items()) {
+		for (@NotNull ElBuilder builder : _scope.items()) {
 //			if (builder instanceof AccessNotation) {
 //				cs.addAccess((AccessNotation) builder);
 //			} else {

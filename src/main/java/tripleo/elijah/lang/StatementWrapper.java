@@ -1,5 +1,6 @@
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.gen.ICodeGen;
 
 public class StatementWrapper implements StatementItem, FunctionItem, OS_Element {
@@ -37,7 +38,7 @@ public class StatementWrapper implements StatementItem, FunctionItem, OS_Element
     }
 
     @Override
-    public void visitGen(final ICodeGen visit) {
+    public void visitGen(final @NotNull ICodeGen visit) {
         visit.visitStatementWrapper(this);
     }
 

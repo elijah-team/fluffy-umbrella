@@ -4,6 +4,7 @@
 package tripleo.elijah.gen.nodes;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.IdentExpression;
 
 /**
@@ -19,7 +20,7 @@ public class TypeNameNode {
 
 	public String genType;
 	
-	public String getText() {
+	public @Nullable String getText() {
 		return null;
 	}
 }

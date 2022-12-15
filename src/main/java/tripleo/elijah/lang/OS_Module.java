@@ -42,7 +42,7 @@ public class OS_Module implements OS_Element, OS_Container {
 	private final Stack<Qualident> packageNames_q = new Stack<Qualident>();
 	public @NotNull List<ModuleItem> items = new ArrayList<ModuleItem>();
 	public @NotNull Attached _a = new Attached();
-	public OS_Module prelude;
+	public @org.jetbrains.annotations.Nullable OS_Module prelude;
 
 	public Compilation parent;
 	private LibraryStatementPart lsp;
@@ -95,7 +95,7 @@ public class OS_Module implements OS_Element, OS_Container {
 				return b;
 			}
 		});
-		final ArrayList<OS_Element2> a = new ArrayList<OS_Element2>();
+		final @NotNull ArrayList<OS_Element2> a = new ArrayList<OS_Element2>();
 		for (final ModuleItem moduleItem : c) {
 			a.add((OS_Element2) moduleItem);
 		}
@@ -198,14 +198,14 @@ public class OS_Module implements OS_Element, OS_Container {
 		//
 		for (final ModuleItem item : items) {
 			if (item instanceof ClassStatement) {
-				ClassStatement classStatement = (ClassStatement) item;
+				@NotNull ClassStatement classStatement = (ClassStatement) item;
 				if (MainClassEntryPoint.isMainClass(classStatement)) {
 					Collection<ClassItem> x = classStatement.findFunction("main");
 					Collection<ClassItem> found = Collections2.filter(x, new Predicate<ClassItem>() {
 						@Override
 						public boolean apply(@org.checkerframework.checker.nullness.qual.Nullable ClassItem input) {
 							assert input != null;
-							FunctionDef fd = (FunctionDef) input;
+							@NotNull FunctionDef fd = (FunctionDef) input;
 							return MainClassEntryPoint.is_main_function_with_no_args(fd);
 						}
 					});
@@ -224,7 +224,7 @@ public class OS_Module implements OS_Element, OS_Container {
 */
 
 					final int eps = entryPoints.size();
-					for (ClassItem classItem : found) {
+					for (@NotNull ClassItem classItem : found) {
 						entryPoints.add(new MainClassEntryPoint((ClassStatement) classItem.getParent()));
 					}
 					assert entryPoints.size() == eps || entryPoints.size() == eps+1; // TODO this will fail one day
@@ -239,7 +239,7 @@ public class OS_Module implements OS_Element, OS_Container {
 	}
 
 	private void find_multiple_items() {
-		Multimap<String, ModuleItem> items_map = ArrayListMultimap.create(items.size(), 1);
+		@NotNull Multimap<String, ModuleItem> items_map = ArrayListMultimap.create(items.size(), 1);
 		for (final ModuleItem item : items) {
 			if (!(item instanceof OS_Element2/* && item != anElement*/))
 				continue;
@@ -253,15 +253,15 @@ public class OS_Module implements OS_Element, OS_Container {
 			if (moduleItems.size() < 2) // README really 1
 				continue;
 
-			Collection<ElObjectType> t = Collections2.transform(moduleItems, new Function<ModuleItem, ElObjectType>() {
+			@NotNull Collection<ElObjectType> t = Collections2.transform(moduleItems, new Function<ModuleItem, ElObjectType>() {
 				@Override
-				public ElObjectType apply(@org.checkerframework.checker.nullness.qual.Nullable ModuleItem input) {
+				public @NotNull ElObjectType apply(@org.checkerframework.checker.nullness.qual.Nullable ModuleItem input) {
 					assert input != null;
 					return DecideElObjectType.getElObjectType(input);
 				}
 			});
 
-			Set<ElObjectType> st = new HashSet<ElObjectType>(t);
+			@NotNull Set<ElObjectType> st = new HashSet<ElObjectType>(t);
 			if (st.size() > 1)
 				warn = true;
 			if (moduleItems.size() > 1)

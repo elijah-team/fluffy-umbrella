@@ -9,6 +9,7 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.IfConditionalContext;
 
 import java.util.ArrayList;
@@ -27,11 +28,11 @@ public class Scope3 implements Documentable {
 		parent = aParent;
 	}
 
-	public List<OS_Element> items() {
+	public @NotNull List<OS_Element> items() {
 		return _items;
 	}
 
-	public Iterable<? extends Token> docstrings() {
+	public @NotNull Iterable<? extends Token> docstrings() {
 		return _docstrings;
 	}
 
@@ -48,7 +49,7 @@ public class Scope3 implements Documentable {
 		return parent;
 	}
 
-	public StatementClosure statementClosure() {
+	public @NotNull StatementClosure statementClosure() {
 		return asc;
 	}
 
@@ -56,49 +57,49 @@ public class Scope3 implements Documentable {
 		add(new StatementWrapper(expr, parent.getContext(), parent)); // TODO is this right?
 	}
 
-	public VariableSequence varSeq() {
+	public @NotNull VariableSequence varSeq() {
 		return asc.varSeq(asc.getParent().getContext());
 	}
 
 	private class Scope3StatementClosure implements StatementClosure {
 		@Override
-		public void constructExpression(final IExpression aExpr, final ExpressionList aO) {
-			final ConstructStatement constructExpression = new ConstructStatement(parent, parent.getContext(), aExpr, null, aO); // TODO provide for name
+		public void constructExpression(final @NotNull IExpression aExpr, final ExpressionList aO) {
+			final @NotNull ConstructStatement constructExpression = new ConstructStatement(parent, parent.getContext(), aExpr, null, aO); // TODO provide for name
 			add(constructExpression);
 		}
 
 		@Override
-		public IfConditional ifConditional(final OS_Element aParent, final Context cur) {
-			IfConditional ifex = new IfConditional(aParent);
+		public @NotNull IfConditional ifConditional(final OS_Element aParent, final Context cur) {
+			@NotNull IfConditional ifex = new IfConditional(aParent);
 			ifex.setContext(new IfConditionalContext(cur, ifex));
 			add(ifex);
 			return ifex;
 		}
 
 		@Override
-		public BlockStatement blockClosure() {
-			BlockStatement bs = new BlockStatement(null);
+		public @NotNull BlockStatement blockClosure() {
+			@NotNull BlockStatement bs = new BlockStatement(null);
 //			add(bs);  // TODO make this an Element
 			return bs;
 		}
 
 		@Override
-		public Loop loop() {
-			Loop loop = new Loop(parent, parent.getContext());
+		public @NotNull Loop loop() {
+			@NotNull Loop loop = new Loop(parent, parent.getContext());
 			add(loop);
 			return loop;
 		}
 
 		@Override
-		public ProcedureCallExpression procedureCallExpression() {
-			ProcedureCallExpression pce = new ProcedureCallExpression();
+		public @NotNull ProcedureCallExpression procedureCallExpression() {
+			@NotNull ProcedureCallExpression pce = new ProcedureCallExpression();
 			add(new StatementWrapper(pce, getParent().getContext(), getParent()));
 			return pce;
 		}
 
 		@Override
-		public VariableSequence varSeq(final Context ctx) {
-			VariableSequence vsq = new VariableSequence(ctx);
+		public @NotNull VariableSequence varSeq(final Context ctx) {
+			@NotNull VariableSequence vsq = new VariableSequence(ctx);
 			vsq.setParent(parent); // TODO look at this
 			assert ctx == parent.getContext();
 			vsq.setContext(ctx);
@@ -112,20 +113,20 @@ public class Scope3 implements Documentable {
 
 		@Override
 		public void yield(final IExpression aExpr) {
-			final YieldExpression yiex = new YieldExpression(aExpr);
+			final @NotNull YieldExpression yiex = new YieldExpression(aExpr);
 			add(yiex);
 		}
 
 		@Override
-		public CaseConditional caseConditional(final Context parentContext) {
-			final CaseConditional caseConditional = new CaseConditional(getParent(), parentContext);
+		public @NotNull CaseConditional caseConditional(final Context parentContext) {
+			final @NotNull CaseConditional caseConditional = new CaseConditional(getParent(), parentContext);
 			add(caseConditional);
 			return caseConditional;
 		}
 
 		@Override
-		public MatchConditional matchConditional(final Context parentContext) {
-			final MatchConditional matchConditional = new MatchConditional(getParent(), parentContext);
+		public @NotNull MatchConditional matchConditional(final Context parentContext) {
+			final @NotNull MatchConditional matchConditional = new MatchConditional(getParent(), parentContext);
 			add(matchConditional);
 			return matchConditional;
 		}

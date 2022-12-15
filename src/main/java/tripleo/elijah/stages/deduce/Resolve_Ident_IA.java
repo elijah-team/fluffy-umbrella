@@ -136,7 +136,7 @@ class Resolve_Ident_IA {
 				@NotNull IdentTableEntry y = ((IdentIA) x).getEntry();
 				y.addStatusListener(new BaseTableEntry.StatusListener() {
 					@Override
-					public void onChange(IElementHolder eh, BaseTableEntry.Status newStatus) {
+					public void onChange(@NotNull IElementHolder eh, BaseTableEntry.Status newStatus) {
 						if (newStatus == BaseTableEntry.Status.KNOWN) {
 //								assert el2 != eh.getElement();
 							y.resolveExpectation.satisfy(normal_path);
@@ -236,7 +236,7 @@ class Resolve_Ident_IA {
 
 		ci = phase.registerClassInvocation(ci);
 //		prte.setClassInvocation(ci);
-		Collection<ConstructorDef> cs = (((ClassStatement) el).getConstructors());
+		@NotNull Collection<ConstructorDef> cs = (((ClassStatement) el).getConstructors());
 		@Nullable ConstructorDef selected_constructor = null;
 		if (pte.getArgs().size() == 0 && cs.size() == 0) {
 			// TODO use a virtual default ctor
@@ -388,7 +388,7 @@ class Resolve_Ident_IA {
 			//
 			@NotNull List<TypeTableEntry> pot = deduceTypes2.getPotentialTypesVte(vte);
 			if (pot.size() == 1) {
-				OS_Type attached = pot.get(0).getAttached();
+				@Nullable OS_Type attached = pot.get(0).getAttached();
 				if (attached != null) {
 					action_001(attached);
 				} else {
@@ -491,7 +491,7 @@ class Resolve_Ident_IA {
 	private void action_001(@NotNull OS_Type aAttached) {
 		switch (aAttached.getType()) {
 			case USER_CLASS: {
-				ClassStatement x = aAttached.getClassOf();
+				@NotNull ClassStatement x = aAttached.getClassOf();
 				ectx = x.getContext();
 				break;
 			}

@@ -9,6 +9,7 @@
 package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeduceLookupUtils;
@@ -29,7 +30,7 @@ import java.util.Map;
 public class GeneratedClass extends GeneratedContainerNC {
 	private final OS_Module module;
 	private final ClassStatement klass;
-	public Map<ConstructorDef, GeneratedConstructor> constructors = new HashMap<ConstructorDef, GeneratedConstructor>();
+	public @NotNull Map<ConstructorDef, GeneratedConstructor> constructors = new HashMap<ConstructorDef, GeneratedConstructor>();
 	public ClassInvocation ci;
 	private boolean resolve_var_table_entries_already = false;
 
@@ -48,16 +49,16 @@ public class GeneratedClass extends GeneratedContainerNC {
 
 	public void createCtor0() {
 		// TODO implement me
-		FunctionDef fd = new FunctionDef(klass, klass.getContext());
+		@NotNull FunctionDef fd = new FunctionDef(klass, klass.getContext());
 		fd.setName(Helpers.string_to_ident("<ctor$0>"));
-		Scope3 scope3 = new Scope3(fd);
+		@NotNull Scope3 scope3 = new Scope3(fd);
 		fd.scope(scope3);
-		for (VarTableEntry varTableEntry : varTable) {
+		for (@NotNull VarTableEntry varTableEntry : varTable) {
 			if (varTableEntry.initialValue != IExpression.UNASSIGNED) {
-				IExpression left = varTableEntry.nameToken;
+				@NotNull IExpression left = varTableEntry.nameToken;
 				IExpression right = varTableEntry.initialValue;
 
-				IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
+				@NotNull IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
 				scope3.add(new StatementWrapper(e, fd.getContext(), fd));
 			} else {
 				if (getPragma("auto_construct")) {
@@ -73,11 +74,11 @@ public class GeneratedClass extends GeneratedContainerNC {
 
 	@NotNull
 	public String getName() {
-		StringBuilder sb = new StringBuilder();
+		@NotNull StringBuilder sb = new StringBuilder();
 		sb.append(klass.getName());
 		if (ci.genericPart != null) {
 			sb.append("[");
-			final String joined = getNameHelper(ci.genericPart);
+			final @NotNull String joined = getNameHelper(ci.genericPart);
 			sb.append(joined);
 			sb.append("]");
 		}
@@ -85,9 +86,9 @@ public class GeneratedClass extends GeneratedContainerNC {
 	}
 
 	@NotNull
-	private String getNameHelper(Map<TypeName, OS_Type> aGenericPart) {
-		List<String> ls = new ArrayList<String>();
-		for (Map.Entry<TypeName, OS_Type> entry : aGenericPart.entrySet()) { // TODO Is this guaranteed to be in order?
+	private String getNameHelper(@NotNull Map<TypeName, OS_Type> aGenericPart) {
+		@NotNull List<String> ls = new ArrayList<String>();
+		for (Map.@NotNull Entry<TypeName, OS_Type> entry : aGenericPart.entrySet()) { // TODO Is this guaranteed to be in order?
 			final OS_Type value = entry.getValue(); // This can be another ClassInvocation using GenType
 			final String name = value.getClassOf().getName();
 			ls.add(name); // TODO Could be nested generics
@@ -104,7 +105,7 @@ public class GeneratedClass extends GeneratedContainerNC {
 	}
 
     @Override
-    public String identityString() {
+    public @NotNull String identityString() {
         return ""+klass;
     }
 
@@ -113,20 +114,20 @@ public class GeneratedClass extends GeneratedContainerNC {
         return module;
     }
 
-	public boolean resolve_var_table_entries(DeducePhase aDeducePhase) {
+	public boolean resolve_var_table_entries(@NotNull DeducePhase aDeducePhase) {
 		boolean Result = false;
 
 		if (resolve_var_table_entries_already) return true;
 
-		for (VarTableEntry varTableEntry : varTable) {
+		for (@NotNull VarTableEntry varTableEntry : varTable) {
 			if (varTableEntry.potentialTypes.size() == 0 && varTableEntry.varType == null) {
 				final TypeName tn = varTableEntry.typeName;
 				if (tn != null) {
 					if (tn instanceof NormalTypeName) {
-						final NormalTypeName tn2 = (NormalTypeName) tn;
+						final @NotNull NormalTypeName tn2 = (NormalTypeName) tn;
 						if (!tn.isNull()) {
 							LookupResultList lrl = tn.getContext().lookup(tn2.getName());
-							OS_Element best = lrl.chooseBest(null);
+							@Nullable OS_Element best = lrl.chooseBest(null);
 							if (best != null) {
 								if (best instanceof AliasStatement)
 									best = DeduceLookupUtils._resolveAlias((AliasStatement) best, null);
@@ -148,10 +149,10 @@ public class GeneratedClass extends GeneratedContainerNC {
 						assert varType1.getAttached() != null;
 						assert varType1.getAttached().getType() == OS_Type.Type.USER_CLASS;
 						//
-						ClassInvocation xci = new ClassInvocation(varType1.getAttached().getClassOf(), null);
+						@Nullable ClassInvocation xci = new ClassInvocation(varType1.getAttached().getClassOf(), null);
 						xci = aDeducePhase.registerClassInvocation(xci);
 						@NotNull GenerateFunctions gf = aDeducePhase.generatePhase.getGenerateFunctions(xci.getKlass().getContext().module());
-						WlGenerateClass wgc = new WlGenerateClass(gf, xci, aDeducePhase.generatedClasses);
+						@NotNull WlGenerateClass wgc = new WlGenerateClass(gf, xci, aDeducePhase.generatedClasses);
 						wgc.run(null); // !
 						varType1.resolve(wgc.getResult());
 						Result = true;
@@ -174,7 +175,7 @@ public class GeneratedClass extends GeneratedContainerNC {
 	}
 
 	@Override
-	public void generateCode(CodeGenerator aCodeGenerator, GenerateResult aGr) {
+	public void generateCode(@NotNull CodeGenerator aCodeGenerator, GenerateResult aGr) {
 		aCodeGenerator.generate_class(this, aGr);
 	}
 

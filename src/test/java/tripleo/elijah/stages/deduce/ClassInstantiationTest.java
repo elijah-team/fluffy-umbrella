@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
@@ -22,24 +23,24 @@ public class ClassInstantiationTest {
 
 	@Test
 	public void classInstantiation() {
-		String f = "test/basic1/class_instantiation/";
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+		@NotNull String f = "test/basic1/class_instantiation/";
+		@NotNull Compilation c = new Compilation(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
 	}
 
 	@Test
 	public void classInstantiation2() {
-		String f = "test/basic1/class_instantiation2/";
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+		@NotNull String f = "test/basic1/class_instantiation2/";
+		@NotNull Compilation c = new Compilation(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
 	}
 
 	@Test
 	public void classInstantiation3() {
-		String f = "test/basic1/class_instantiation3/";
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+		@NotNull String f = "test/basic1/class_instantiation3/";
+		@NotNull Compilation c = new Compilation(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
 	}

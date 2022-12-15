@@ -18,6 +18,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.Out;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
@@ -63,7 +64,7 @@ public class Compilation {
 	//
 	//
 	public PipelineLogic pipelineLogic;
-	private Pipeline pipelines = new Pipeline();
+	private @NotNull Pipeline pipelines = new Pipeline();
 	//
 	//
 	//
@@ -74,7 +75,7 @@ public class Compilation {
 		this._compilationNumber = new Random().nextInt(Integer.MAX_VALUE);
 	}
 
-	public void feedCmdLine(final List<String> args) {
+	public void feedCmdLine(final @NotNull List<String> args) {
 		main(args, eee == null ? new StdErrSink() : eee);
 	}
 
@@ -92,16 +93,16 @@ public class Compilation {
 
 	public String stage = "O"; // Output
 
-	public void main(final List<String> args, final ErrSink errSink) {
+	public void main(final @NotNull List<String> args, final @NotNull ErrSink errSink) {
 		boolean do_out = false, silent = false;
 		try {
 			if (args.size() > 0) {
-				final Options options = new Options();
+				final @NotNull Options options = new Options();
 				options.addOption("s", true, "stage: E: parse; O: output");
 				options.addOption("showtree", false, "show tree");
 				options.addOption("out", false, "make debug files");
 				options.addOption("silent", false, "suppress DeduceType output to console");
-				final CommandLineParser clp = new DefaultParser();
+				final @NotNull CommandLineParser clp = new DefaultParser();
 				final CommandLine cmd = clp.parse(options, args.toArray(new String[args.size()]));
 
 				if (cmd.hasOption("s")) {
@@ -117,19 +118,19 @@ public class Compilation {
 					silent = true;
 				}
 
-				CompilerInstructions ez_file = null;
+				@Nullable CompilerInstructions ez_file = null;
 				final String[] args2 = cmd.getArgs();
 
 				for (int i = 0; i < args2.length; i++) {
 					final String file_name = args2[i];
-					final File f = new File(file_name);
+					final @NotNull File f = new File(file_name);
 					final boolean matches2 = Pattern.matches(".+\\.ez$", file_name);
 					if (matches2)
 						add_ci(parseEzFile(f, file_name, eee));
 					else {
 //						eee.reportError("9996 Not an .ez file "+file_name);
 						if (f.isDirectory()) {
-							final List<CompilerInstructions> ezs = searchEzFiles(f);
+							final @NotNull List<CompilerInstructions> ezs = searchEzFiles(f);
 							if (ezs.size() > 1) {
 //								eee.reportError("9998 Too many .ez files, using first.");
 								eee.reportError("9997 Too many .ez files, be specific.");
@@ -148,7 +149,7 @@ public class Compilation {
 				System.err.println("130 GEN_LANG: "+cis.get(0).genLang());
 				findStdLib("c"); // TODO find a better place for this
 
-				for (final CompilerInstructions ci : cis) {
+				for (final @NotNull CompilerInstructions ci : cis) {
 					use(ci, do_out);
 				}
 
@@ -157,11 +158,11 @@ public class Compilation {
 					// do nothing. job over
 				} else {
 					pipelineLogic = new PipelineLogic(silent ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE);
-					final DeducePipeline dpl = new DeducePipeline(this);
+					final @NotNull DeducePipeline dpl = new DeducePipeline(this);
 					pipelines.add(dpl);
-					final GeneratePipeline gpl = new GeneratePipeline(this, dpl);
+					final @NotNull GeneratePipeline gpl = new GeneratePipeline(this, dpl);
 					pipelines.add(gpl);
-					final WritePipeline wpl = new WritePipeline(this, pipelineLogic.gr);
+					final @NotNull WritePipeline wpl = new WritePipeline(this, pipelineLogic.gr);
 					pipelines.add(wpl);
 
 					pipelines.run();
@@ -176,7 +177,7 @@ public class Compilation {
 		}
 	}
 
-	public static ElLog.Verbosity gitlabCIVerbosity() {
+	public static ElLog.@NotNull Verbosity gitlabCIVerbosity() {
 		final boolean gitlab_ci = isGitlab_ci();
 		return gitlab_ci ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
 	}
@@ -185,34 +186,34 @@ public class Compilation {
 		return System.getenv("GITLAB_CI") != null;
 	}
 
-	private void writeLogs(boolean aSilent, List<ElLog> aLogs) {
-		Multimap<String, ElLog> logMap = ArrayListMultimap.create();
+	private void writeLogs(boolean aSilent, @NotNull List<ElLog> aLogs) {
+		@NotNull Multimap<String, ElLog> logMap = ArrayListMultimap.create();
 		if (true || aSilent) {
-			for (ElLog deduceLog : aLogs) {
+			for (@NotNull ElLog deduceLog : aLogs) {
 				logMap.put(deduceLog.getFileName(), deduceLog);
 			}
-			for (Map.Entry<String, Collection<ElLog>> stringCollectionEntry : logMap.asMap().entrySet()) {
-				final F202 f202 = new F202(getErrSink(), this);
+			for (Map.@NotNull Entry<String, Collection<ElLog>> stringCollectionEntry : logMap.asMap().entrySet()) {
+				final @NotNull F202 f202 = new F202(getErrSink(), this);
 				f202.processLogs(stringCollectionEntry.getValue());
 			}
 		}
 	}
 
-	private List<CompilerInstructions> searchEzFiles(final File directory) {
-		final List<CompilerInstructions> R = new ArrayList<CompilerInstructions>();
-		final FilenameFilter filter = new FilenameFilter() {
+	private @NotNull List<CompilerInstructions> searchEzFiles(final @NotNull File directory) {
+		final @NotNull List<CompilerInstructions> R = new ArrayList<CompilerInstructions>();
+		final @NotNull FilenameFilter filter = new FilenameFilter() {
 			@Override
 			public boolean accept(final File file, final String s) {
 				final boolean matches2 = Pattern.matches(".+\\.ez$", s);
 				return matches2;
 			}
 		};
-		final String[] list = directory.list(filter);
+		final String @Nullable [] list = directory.list(filter);
 		if (list != null) {
-			for (final String file_name : list) {
+			for (final @NotNull String file_name : list) {
 				try {
-					final File file = new File(directory, file_name);
-					final CompilerInstructions ezFile = parseEzFile(file, file.toString(), eee);
+					final @NotNull File file = new File(directory, file_name);
+					final @Nullable CompilerInstructions ezFile = parseEzFile(file, file.toString(), eee);
 					if (ezFile != null)
 						R.add(ezFile);
 					else
@@ -229,10 +230,10 @@ public class Compilation {
 		cis.add(ci);
 	}
 
-	public void use(final CompilerInstructions compilerInstructions, final boolean do_out) throws Exception {
+	public void use(final @NotNull CompilerInstructions compilerInstructions, final boolean do_out) throws Exception {
 		final File instruction_dir = new File(compilerInstructions.getFilename()).getParentFile();
-		for (final LibraryStatementPart lsp : compilerInstructions.lsps) {
-			final String dir_name = Helpers.remove_single_quotes_from_string(lsp.getDirName());
+		for (final @NotNull LibraryStatementPart lsp : compilerInstructions.lsps) {
+			final @NotNull String dir_name = Helpers.remove_single_quotes_from_string(lsp.getDirName());
 			File dir;// = new File(dir_name);
 			if (dir_name.equals(".."))
 				dir = instruction_dir/*.getAbsoluteFile()*/.getParentFile();
@@ -240,20 +241,20 @@ public class Compilation {
 				dir = new File(instruction_dir, dir_name);
 			use_internal(dir, do_out, lsp);
 		}
-		final LibraryStatementPart lsp = new LibraryStatementPart();
+		final @NotNull LibraryStatementPart lsp = new LibraryStatementPart();
 		lsp.setName(Helpers.makeToken("default")); // TODO: make sure this doesn't conflict
 		lsp.setDirName(Helpers.makeToken(String.format("\"%s\"", instruction_dir)));
 		lsp.setInstructions(compilerInstructions);
 		use_internal(instruction_dir, do_out, lsp);
 	}
 
-	private void use_internal(final File dir, final boolean do_out, LibraryStatementPart lsp) throws Exception {
+	private void use_internal(final @NotNull File dir, final boolean do_out, LibraryStatementPart lsp) throws Exception {
 		if (!dir.isDirectory()) {
 			eee.reportError("9997 Not a directory " + dir.toString());
 			return;
 		}
 		//
-		final FilenameFilter accept_source_files = new FilenameFilter() {
+		final @NotNull FilenameFilter accept_source_files = new FilenameFilter() {
 			@Override
 			public boolean accept(final File directory, final String file_name) {
 				final boolean matches = Pattern.matches(".+\\.elijah$", file_name)
@@ -261,15 +262,15 @@ public class Compilation {
 				return matches;
 			}
 		};
-		final File[] files = dir.listFiles(accept_source_files);
+		final File @Nullable [] files = dir.listFiles(accept_source_files);
 		if (files != null) {
-			for (final File file : files) {
+			for (final @NotNull File file : files) {
 				parseElijjahFile(file, file.toString(), eee, do_out, lsp);
 			}
 		}
 	}
 
-	private CompilerInstructions parseEzFile(final File f, final String file_name, final ErrSink errSink) throws Exception {
+	private @Nullable CompilerInstructions parseEzFile(final @NotNull File f, final String file_name, final @NotNull ErrSink errSink) throws Exception {
 		System.out.println((String.format("   %s", f.getAbsolutePath())));
 		if (!f.exists()) {
 			errSink.reportError(
@@ -277,9 +278,9 @@ public class Compilation {
 			return null;
 		}
 
-		final CompilerInstructions m = realParseEzFile(file_name, io.readFile(f), f);
+		final @Nullable CompilerInstructions m = realParseEzFile(file_name, io.readFile(f), f);
 		{
-			String prelude = m.genLang();
+			@Nullable String prelude = m.genLang();
 			System.err.println("230 " + prelude);
 			if (prelude == null) prelude = "c"; // TODO should be java for eljc
 		}
@@ -288,12 +289,12 @@ public class Compilation {
 
 	private void parseElijjahFile(@NotNull final File f,
 								  final String file_name,
-								  final ErrSink errSink,
+								  final @NotNull ErrSink errSink,
 								  final boolean do_out,
 								  LibraryStatementPart lsp) throws Exception {
 		System.out.println((String.format("   %s", f.getAbsolutePath())));
 		if (f.exists()) {
-			final OS_Module m = realParseElijjahFile(file_name, f, do_out);
+			final @Nullable OS_Module m = realParseElijjahFile(file_name, f, do_out);
 			m.setLsp(lsp);
 			m.prelude = this.findPrelude("c"); // TODO we dont know which prelude to find yet
 		} else {
@@ -302,12 +303,12 @@ public class Compilation {
 		}
 	}
 
-	public OS_Module realParseElijjahFile(final String f, final File file, final boolean do_out) throws Exception {
+	public @Nullable OS_Module realParseElijjahFile(final String f, final @NotNull File file, final boolean do_out) throws Exception {
 		final String absolutePath = file.getCanonicalFile().toString();
 		if (fn2m.containsKey(absolutePath)) { // don't parse twice
 			return fn2m.get(absolutePath);
 		}
-		final InputStream s = io.readFile(file);
+		final @NotNull InputStream s = io.readFile(file);
 		try {
 			final OS_Module R = parseFile_(f, s, do_out);
 			fn2m.put(absolutePath, R);
@@ -321,7 +322,7 @@ public class Compilation {
 		}
 	}
 
-	public CompilerInstructions realParseEzFile(final String f, final InputStream s, final File file) throws Exception {
+	public @Nullable CompilerInstructions realParseEzFile(final String f, final @NotNull InputStream s, final @NotNull File file) throws Exception {
 		final String absolutePath = file.getCanonicalFile().toString();
 		if (fn2ci.containsKey(absolutePath)) { // don't parse twice
 			return fn2ci.get(absolutePath);
@@ -341,9 +342,9 @@ public class Compilation {
 	}
 
 	private OS_Module parseFile_(final String f, final InputStream s, final boolean do_out) throws RecognitionException, TokenStreamException {
-		final ElijjahLexer lexer = new ElijjahLexer(s);
+		final @NotNull ElijjahLexer lexer = new ElijjahLexer(s);
 		lexer.setFilename(f);
-		final ElijjahParser parser = new ElijjahParser(lexer);
+		final @NotNull ElijjahParser parser = new ElijjahParser(lexer);
 		parser.out = new Out(f, this, do_out);
 		parser.setFilename(f);
 		parser.program();
@@ -353,9 +354,9 @@ public class Compilation {
 	}
 
 	private CompilerInstructions parseEzFile_(final String f, final InputStream s) throws RecognitionException, TokenStreamException {
-		final EzLexer lexer = new EzLexer(s);
+		final @NotNull EzLexer lexer = new EzLexer(s);
 		lexer.setFilename(f);
-		final EzParser parser = new EzParser(lexer);
+		final @NotNull EzParser parser = new EzParser(lexer);
 		parser.setFilename(f);
 		parser.program();
 		final CompilerInstructions instructions = parser.ci;
@@ -364,9 +365,9 @@ public class Compilation {
 
 	boolean showTree = false;
 
-	public List<ClassStatement> findClass(final String string) {
-		final List<ClassStatement> l = new ArrayList<ClassStatement>();
-		for (final OS_Module module : modules) {
+	public @NotNull List<ClassStatement> findClass(final String string) {
+		final @NotNull List<ClassStatement> l = new ArrayList<ClassStatement>();
+		for (final @NotNull OS_Module module : modules) {
 			if (module.hasClass(string)) {
 				l.add((ClassStatement) module.findClass(string));
 			}
@@ -378,8 +379,8 @@ public class Compilation {
 		return eee.errorCount();
 	}
 
-	public OS_Module findPrelude(final String prelude_name) {
-		final File local_prelude = new File("lib_elijjah/lib-"+prelude_name+"/Prelude.elijjah");
+	public @Nullable OS_Module findPrelude(final String prelude_name) {
+		final @NotNull File local_prelude = new File("lib_elijjah/lib-"+prelude_name+"/Prelude.elijjah");
 		if (local_prelude.exists()) {
 			try {
 				return realParseElijjahFile(local_prelude.getName(), local_prelude, false);
@@ -392,10 +393,10 @@ public class Compilation {
 	}
 
 	public boolean findStdLib(final String prelude_name) {
-		final File local_stdlib = new File("lib_elijjah/lib-"+prelude_name+"/stdlib.ez");
+		final @NotNull File local_stdlib = new File("lib_elijjah/lib-"+prelude_name+"/stdlib.ez");
 		if (local_stdlib.exists()) {
 			try {
-				final CompilerInstructions ci = realParseEzFile(local_stdlib.getName(), io.readFile(local_stdlib), local_stdlib);
+				final @Nullable CompilerInstructions ci = realParseEzFile(local_stdlib.getName(), io.readFile(local_stdlib), local_stdlib);
 				add_ci(ci);
 				return true;
 			} catch (final Exception e) {
@@ -414,7 +415,7 @@ public class Compilation {
 		fn2m.put(fn, module);
 	}
 
-    public OS_Module fileNameToModule(final String fileName) {
+    public @Nullable OS_Module fileNameToModule(final String fileName) {
         if (fn2m.containsKey(fileName)) {
             return fn2m.get(fileName);
         }
@@ -448,13 +449,13 @@ public class Compilation {
 		return _packages.containsKey(pkg);
 	}
 
-	public OS_Package getPackage(final Qualident pkg_name) {
+	public OS_Package getPackage(final @NotNull Qualident pkg_name) {
 		return _packages.get(pkg_name.toString());
 	}
 
-	public OS_Package makePackage(final Qualident pkg_name) {
+	public OS_Package makePackage(final @NotNull Qualident pkg_name) {
 		if (!isPackage(pkg_name.toString())) {
-			final OS_Package newPackage = new OS_Package(pkg_name, nextPackageCode());
+			final @NotNull OS_Package newPackage = new OS_Package(pkg_name, nextPackageCode());
 			_packages.put(pkg_name.toString(), newPackage);
 			return newPackage;
 		} else

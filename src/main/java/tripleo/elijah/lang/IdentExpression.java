@@ -15,6 +15,7 @@ package tripleo.elijah.lang;
 import antlr.Token;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.gen.ICodeGen;
 import tripleo.elijah.util.Helpers;
@@ -44,7 +45,7 @@ public class IdentExpression implements IExpression, OS_Element, Resolvable, Loc
 	}
 
 	@Override
-	public ExpressionKind getKind() {
+	public @NotNull ExpressionKind getKind() {
 		return ExpressionKind.IDENT;
 	}
 
@@ -57,18 +58,18 @@ public class IdentExpression implements IExpression, OS_Element, Resolvable, Loc
 	}
 
 	@Override
-	public void setKind(final ExpressionKind aIncrement) {
+	public void setKind(final @NotNull ExpressionKind aIncrement) {
 		// log and ignore
 		System.err.println("Trying to set ExpressionType of IdentExpression to "+aIncrement.toString());
 	}
 
 	@Override
-	public IExpression getLeft() {
+	public @NotNull IExpression getLeft() {
 		return this;
 	}
 
 	@Override
-	public void setLeft(final IExpression iexpression) {
+	public void setLeft(final @NotNull IExpression iexpression) {
 //		if (iexpression instanceof IdentExpression) {
 //			text = ((IdentExpression) iexpression).text;
 //		} else {
@@ -92,7 +93,7 @@ public class IdentExpression implements IExpression, OS_Element, Resolvable, Loc
 	}
 
 	@Override
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final @NotNull ICodeGen visit) {
 		visit.visitIdentExpression(this);
 	}
 
@@ -171,7 +172,7 @@ public class IdentExpression implements IExpression, OS_Element, Resolvable, Loc
 	}
 
 	@Override
-	public File getFile() {
+	public @Nullable File getFile() {
 		String filename = token().getFilename();
 		if (filename == null)
 			return null;

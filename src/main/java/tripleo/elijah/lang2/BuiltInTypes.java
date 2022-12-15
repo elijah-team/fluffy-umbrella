@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang2;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author Tripleo
  *
@@ -30,7 +32,7 @@ public enum BuiltInTypes {
 		return _code;
 	}
 
-	public static boolean isBooleanText(String name) {
+	public static boolean isBooleanText(@NotNull String name) {
 		return name.equals("true") || name.equals("false")
 			|| name.equals("True") || name.equals("False");
 	}

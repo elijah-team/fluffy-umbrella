@@ -36,7 +36,7 @@ public class GeneratedFunction extends BaseGeneratedFunction {
 		return String.format("<GeneratedFunction %s>", fd);
 	}
 
-	public String name() {
+	public @NotNull String name() {
 		if (fd == null)
 			throw new IllegalArgumentException("null fd");
 		return fd.name();
@@ -51,7 +51,7 @@ public class GeneratedFunction extends BaseGeneratedFunction {
 	}
 
 	@Override
-	public VariableTableEntry getSelf() {
+	public @Nullable VariableTableEntry getSelf() {
 		if (getFD().getParent() instanceof ClassStatement)
 			return getVarTableEntry(0);
 		else
@@ -59,7 +59,7 @@ public class GeneratedFunction extends BaseGeneratedFunction {
 	}
 
 	@Override
-	public String identityString() {
+	public @NotNull String identityString() {
 		return ""+fd;
 	}
 

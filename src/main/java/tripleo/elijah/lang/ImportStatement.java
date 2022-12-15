@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.ImportContext;
 import tripleo.elijah.gen.ICodeGen;
 
@@ -16,7 +17,7 @@ import java.util.List;
 public interface ImportStatement extends ModuleItem, ClassItem, StatementItem {
 
 	@Override
-	default void visitGen(final ICodeGen visit) {
+	default void visitGen(final @NotNull ICodeGen visit) {
 		visit.visitImportStatment(this);
 	}
 

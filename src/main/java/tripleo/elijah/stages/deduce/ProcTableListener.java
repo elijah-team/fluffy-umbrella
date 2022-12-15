@@ -182,7 +182,7 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 		}
 	}
 
-	private void resolved_element_pte_FunctionDef_VariableStatement(Constructable co, ProcTableEntry pte, AbstractDependencyTracker depTracker, FunctionDef fd, VariableStatement parent) {
+	private void resolved_element_pte_FunctionDef_VariableStatement(Constructable co, ProcTableEntry pte, AbstractDependencyTracker depTracker, @NotNull FunctionDef fd, VariableStatement parent) {
 		final VariableStatement variableStatement = parent;
 		// TODO lookupVariableStatement?
 		//  we really want DeduceVariableStatement < DeduceElement (with type/promise)

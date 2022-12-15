@@ -14,6 +14,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,13 +29,13 @@ public class ClassInheritance {
 	public ClassInheritance() {
 	}
 
-	public List<TypeName> tns = new ArrayList<TypeName>();
+	public @NotNull List<TypeName> tns = new ArrayList<TypeName>();
 
 	public void add(final TypeName tn) {
 		tns.add(tn);
 	}
 
-	public void addAll(final Collection<TypeName> tns) {
+	public void addAll(final @NotNull Collection<TypeName> tns) {
 		this.tns.addAll(tns);
 	}
 

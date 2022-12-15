@@ -55,7 +55,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
         this.pc     = pc;
         addStatusListener(new StatusListener() {
 			@Override
-			public void onChange(IElementHolder eh, Status newStatus) {
+			public void onChange(@NotNull IElementHolder eh, Status newStatus) {
 				if (newStatus == Status.KNOWN) {
 					setResolvedElement(eh.getElement());
 				}
@@ -97,7 +97,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	}
 
 	@Override
-	public void setGenType(GenType aGenType) {
+	public void setGenType(@NotNull GenType aGenType) {
 		if (type != null) {
 			type.genType.copy(aGenType);
 		}
@@ -132,13 +132,13 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		constructable_pte = aPte;
 	}
 
-	public DeducePath buildDeducePath(BaseGeneratedFunction generatedFunction) {
+	public @NotNull DeducePath buildDeducePath(@NotNull BaseGeneratedFunction generatedFunction) {
 		@NotNull List<InstructionArgument> x = generatedFunction._getIdentIAPathList(new IdentIA(index, generatedFunction));
 		return new DeducePath(this, x);
 	}
 
 	@Override
-	public String expectationString() {
+	public @NotNull String expectationString() {
 		return "IdentTableEntry{" +
 				"index=" + index +
 				", ident=" + ident +
@@ -146,7 +146,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 				"}";
 	}
 
-	private DeferredObject<GenType, Void, Void> fefiDone = new DeferredObject<GenType, Void, Void>();
+	private @NotNull DeferredObject<GenType, Void, Void> fefiDone = new DeferredObject<GenType, Void, Void>();
 
 	public void fefiDone(final GenType aGenType) {
 		if (fefiDone.isPending())

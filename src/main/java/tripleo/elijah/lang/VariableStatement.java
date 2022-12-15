@@ -9,6 +9,7 @@
 package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.gen.ICodeGen;
 
@@ -23,8 +24,8 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 
 	private final VariableSequence _parent;
 
-	private TypeName typeName = new VariableTypeName();
-	private IExpression initialValue = IExpression.UNASSIGNED;
+	private @NotNull TypeName typeName = new VariableTypeName();
+	private @NotNull IExpression initialValue = IExpression.UNASSIGNED;
 	private IdentExpression name;
 	private TypeModifiers typeModifiers;
 
@@ -69,7 +70,7 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 	}
 
 	@Override
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final @NotNull ICodeGen visit) {
 		visit.visitVariableStatement(this);
 	}
 
@@ -85,7 +86,7 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 
 	// region annotations
 
-	List<AnnotationClause> annotations = null;
+	@Nullable List<AnnotationClause> annotations = null;
 
 	public void addAnnotation(final AnnotationClause a) {
 		if (annotations == null)
@@ -93,16 +94,16 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 		annotations.add(a);
 	}
 
-	public void walkAnnotations(AnnotationWalker annotationWalker) {
+	public void walkAnnotations(@NotNull AnnotationWalker annotationWalker) {
 		if (_parent.annotations != null) {
-			for (AnnotationClause annotationClause : _parent.annotations) {
+			for (@NotNull AnnotationClause annotationClause : _parent.annotations) {
 				for (AnnotationPart annotationPart : annotationClause.aps) {
 					annotationWalker.annotation(annotationPart);
 				}
 			}
 		}
 		if (annotations == null) return;
-		for (AnnotationClause annotationClause : annotations) {
+		for (@NotNull AnnotationClause annotationClause : annotations) {
 			for (AnnotationPart annotationPart : annotationClause.aps) {
 				annotationWalker.annotation(annotationPart);
 			}

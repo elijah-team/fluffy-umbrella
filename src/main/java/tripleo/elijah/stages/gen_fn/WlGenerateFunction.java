@@ -10,6 +10,7 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.NamespaceStatement;
 import tripleo.elijah.lang.OS_Element;
@@ -25,9 +26,9 @@ import tripleo.elijah.work.WorkManager;
 public class WlGenerateFunction implements WorkJob {
 	private final FunctionDef functionDef;
 	private final GenerateFunctions generateFunctions;
-	private final FunctionInvocation functionInvocation;
+	private final @NotNull FunctionInvocation functionInvocation;
 	private boolean _isDone = false;
-	private GeneratedFunction result;
+	private @Nullable GeneratedFunction result;
 
 	public WlGenerateFunction(GenerateFunctions aGenerateFunctions, @NotNull FunctionInvocation aFunctionInvocation) {
 		functionDef = (FunctionDef) aFunctionInvocation.getFunction();
@@ -49,7 +50,7 @@ public class WlGenerateFunction implements WorkJob {
 				assert nsi != null;
 				nsi.resolveDeferred().done(new DoneCallback<GeneratedNamespace>() {
 					@Override
-					public void onDone(GeneratedNamespace result) {
+					public void onDone(@NotNull GeneratedNamespace result) {
 						if (result.getFunction(functionDef) == null) {
 							gf.setCode(generateFunctions.module.parent.nextFunctionCode());
 							result.addFunction(functionDef, gf);
@@ -61,7 +62,7 @@ public class WlGenerateFunction implements WorkJob {
 				final ClassInvocation ci = functionInvocation.getClassInvocation();
 				ci.resolvePromise().done(new DoneCallback<GeneratedClass>() {
 					@Override
-					public void onDone(GeneratedClass result) {
+					public void onDone(@NotNull GeneratedClass result) {
 						if (result.getFunction(functionDef) == null) {
 							gf.setCode(generateFunctions.module.parent.nextFunctionCode());
 							result.addFunction(functionDef, gf);

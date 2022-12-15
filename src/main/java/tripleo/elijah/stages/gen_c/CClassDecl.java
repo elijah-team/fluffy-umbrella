@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.gen_c;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.AnnotationPart;
 import tripleo.elijah.lang.AnnotationWalker;
 import tripleo.elijah.lang.ClassStatement;
@@ -42,13 +43,13 @@ public class CClassDecl {
 		ClassStatement xx = generatedClass.getKlass();
 		xx.walkAnnotations(new AnnotationWalker() {
 			@Override
-			public void annotation(AnnotationPart anno) {
+			public void annotation(@NotNull AnnotationPart anno) {
 				if (anno.annoClass().equals(Helpers.string_to_qualident("C.repr"))) {
 					if (anno.getExprs() != null) {
-						final ArrayList<IExpression> expressions = new ArrayList<IExpression>(anno.getExprs().expressions());
+						final @NotNull ArrayList<IExpression> expressions = new ArrayList<IExpression>(anno.getExprs().expressions());
 						final IExpression str0 = expressions.get(0);
 						if (str0 instanceof StringExpression) {
-							final String str = ((StringExpression) str0).getText();
+							final @NotNull String str = ((StringExpression) str0).getText();
 							setDecl(str);
 						} else {
 							System.out.println("Illegal C.repr");

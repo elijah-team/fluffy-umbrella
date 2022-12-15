@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.AccessNotation;
 import tripleo.elijah.lang.Documentable;
 
@@ -21,14 +22,14 @@ public class ClassScope extends ClassOrNamespaceScope implements Documentable {
 		// _items.add(acs);
 	}
 
-	public FunctionDefBuilder funcDef() {
-		FunctionDefBuilder functionDefBuilder = new FunctionDefBuilder();
+	public @NotNull FunctionDefBuilder funcDef() {
+		@NotNull FunctionDefBuilder functionDefBuilder = new FunctionDefBuilder();
 		add(functionDefBuilder);
 		return functionDefBuilder;
 	}
 
-	public TypeAliasBuilder typeAlias() {
-		TypeAliasBuilder typeAliasBuilder = new TypeAliasBuilder();
+	public @NotNull TypeAliasBuilder typeAlias() {
+		@NotNull TypeAliasBuilder typeAliasBuilder = new TypeAliasBuilder();
 		add(typeAliasBuilder);
 		return typeAliasBuilder;
 	}

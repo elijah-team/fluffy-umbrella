@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.NamespaceContext;
 import tripleo.elijah.gen.ICodeGen;
 import tripleo.elijah.util.NotImplementedException;
@@ -25,7 +26,7 @@ public class NamespaceStatement extends _CommonNC implements Documentable, Modul
 	public NamespaceStatement(final OS_Element aElement, final Context context) {
 		parent = aElement; // setParent
 		if (aElement instanceof  OS_Module) {
-			final OS_Module module = (OS_Module) aElement;
+			final @NotNull OS_Module module = (OS_Module) aElement;
 			//
 			this.setPackageName(module.pullPackageName());
 			_packageName.addElement(this);
@@ -42,7 +43,7 @@ public class NamespaceStatement extends _CommonNC implements Documentable, Modul
 		_a.setContext(ctx);
 	}
 
-	public StatementClosure statementClosure() {
+	public @NotNull StatementClosure statementClosure() {
 		return new AbstractStatementClosure(new AbstractScope2(this) {
 			@Override
 			public void statementWrapper(final IExpression aExpr) {
@@ -71,16 +72,16 @@ public class NamespaceStatement extends _CommonNC implements Documentable, Modul
 		throw new NotImplementedException();
 	}
 	
-	public FunctionDef funcDef() {
+	public @NotNull FunctionDef funcDef() {
 		return new FunctionDef(this, getContext());
 	}
 	
-	public ProgramClosure XXX() {
+	public @NotNull ProgramClosure XXX() {
 		return new ProgramClosure() {};
 	}
 
 	@Override // OS_Element
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final @NotNull ICodeGen visit) {
 		visit.visitNamespaceStatement(this);
 	}
 

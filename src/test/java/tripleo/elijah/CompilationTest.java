@@ -8,6 +8,7 @@
  */
 package tripleo.elijah;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
@@ -28,9 +29,9 @@ public class CompilationTest {
 
 	@Test
 	public final void testEz() {
-		final List<String> args = List_of("test/comp_test/main3", "-sE"/*, "-out"*/);
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final @NotNull List<String> args = List_of("test/comp_test/main3", "-sE"/*, "-out"*/);
+		final @NotNull ErrSink eee = new StdErrSink();
+		final @NotNull Compilation c = new Compilation(eee, new IO());
 
 		c.feedCmdLine(args);
 

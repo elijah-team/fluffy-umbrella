@@ -28,7 +28,7 @@ import java.util.Objects;
 public class Qualident  implements IExpression {
 
 	/** Look into creating a {@link DotExpression} from here */
-	public void append(final IdentExpression r1) {
+	public void append(final @NotNull IdentExpression r1) {
 		if (r1.getText().contains("."))
 			throw new IllegalArgumentException("trying to create a Qualident with a dot from a user created Token");
 		parts.add(r1);
@@ -41,7 +41,7 @@ public class Qualident  implements IExpression {
 	private final List<IdentExpression> parts = new ArrayList<IdentExpression>();
 
 	@Override
-	public String toString() {
+	public @NotNull String toString() {
 		return asSimpleString();
 	}
 
@@ -66,7 +66,7 @@ public class Qualident  implements IExpression {
 	}
 	
 	@Override
-	public ExpressionKind getKind() {
+	public @NotNull ExpressionKind getKind() {
 		return ExpressionKind.QIDENT;
 	}
 	
@@ -76,7 +76,7 @@ public class Qualident  implements IExpression {
 	}
 	
 	@Override
-	public IExpression getLeft() {
+	public @NotNull IExpression getLeft() {
 		return this;
 	}
 	
@@ -107,7 +107,7 @@ public class Qualident  implements IExpression {
 	public OS_Type getType() {
     	return _type;
 	}
-	public List<IdentExpression> parts() {
+	public @NotNull List<IdentExpression> parts() {
 		return parts;
 	}
 
@@ -115,7 +115,7 @@ public class Qualident  implements IExpression {
 	public boolean equals(final Object o) {
 		if (this == o) return true;
 		if (!(o instanceof Qualident)) return false;
-		final Qualident qualident = (Qualident) o;
+		final @NotNull Qualident qualident = (Qualident) o;
 		if (qualident.parts.size() != parts.size()) return false;
 		for (int i=0; i< parts.size();i++) {
 			final IdentExpression ppart = qualident.parts.get(i);
@@ -130,7 +130,7 @@ public class Qualident  implements IExpression {
 		return true;//Objects.equals(_type, qualident._type);
 	}
 
-	private static boolean equivalentTokens(final Token token1, final Token token2) {
+	private static boolean equivalentTokens(final @NotNull Token token1, final @NotNull Token token2) {
 		return token2.getText().equals(token1.getText()) &&
 			token2.getLine() == token1.getLine() &&
 			token2.getColumn() == token1.getColumn() &&

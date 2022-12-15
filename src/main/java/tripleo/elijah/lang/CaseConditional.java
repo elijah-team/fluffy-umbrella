@@ -12,6 +12,8 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.CaseContext;
 import tripleo.elijah.contexts.SingleIdentContext;
 import tripleo.elijah.gen.ICodeGen;
@@ -30,10 +32,10 @@ public class CaseConditional implements OS_Element, StatementItem, FunctionItem 
 
     private final OS_Element parent;
     private IExpression expr;
-	private SingleIdentContext _ctx = null;
-	private HashMap<IExpression, CaseScope> scopes = new LinkedHashMap<IExpression, CaseScope>();
-	private CaseScope default_case_scope = null;
-	private CaseContext __ctx = null; // TODO look into removing this
+	private @Nullable SingleIdentContext _ctx = null;
+	private @NotNull HashMap<IExpression, CaseScope> scopes = new LinkedHashMap<IExpression, CaseScope>();
+	private @Nullable CaseScope default_case_scope = null;
+	private @Nullable CaseContext __ctx = null; // TODO look into removing this
 
 	public CaseConditional(final OS_Element parent, final Context parentContext) {
         this.parent = parent;
@@ -45,7 +47,7 @@ public class CaseConditional implements OS_Element, StatementItem, FunctionItem 
 	}
 
 	@Override
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final @NotNull ICodeGen visit) {
 		visit.visitCaseConditional(this);
 	}
 
@@ -120,12 +122,12 @@ public class CaseConditional implements OS_Element, StatementItem, FunctionItem 
 		}
 
 		@Override
-		public void visitGen(final ICodeGen visit) {
+		public void visitGen(final @NotNull ICodeGen visit) {
 			visit.visitCaseScope(this);
 		}
 
 		@Override
-		public OS_Element getParent() {
+		public @NotNull OS_Element getParent() {
 			return CaseConditional.this;
 		}
 

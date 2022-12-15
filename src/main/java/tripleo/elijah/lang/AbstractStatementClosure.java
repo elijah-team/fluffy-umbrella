@@ -11,6 +11,7 @@ package tripleo.elijah.lang;
 
 import antlr.Token;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.IfConditionalContext;
 
 import java.util.ArrayList;
@@ -26,18 +27,18 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 		parent_scope = aParent;
 	}
 
-	public AbstractStatementClosure(final ClassStatement classStatement) {
+	public AbstractStatementClosure(final @NotNull ClassStatement classStatement) {
 		// TODO check final member
 		_parent = classStatement;
 		parent_scope = new AbstractScope2(_parent) {
 
 			@Override
-			public void addDocString(final Token s1) {
+			public void addDocString(final @NotNull Token s1) {
 				classStatement.addDocString(s1);
 			}
 
 			@Override
-			public StatementClosure statementClosure() {
+			public @NotNull StatementClosure statementClosure() {
 				return AbstractStatementClosure.this; // TODO is this right?
 			}
 
@@ -67,7 +68,7 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 //	}
 
 	@Override
-	public void constructExpression(final IExpression aExpr, final ExpressionList aO) {
+	public void constructExpression(final @NotNull IExpression aExpr, final ExpressionList aO) {
 		add(new ConstructStatement(_parent, _parent.getContext(), aExpr, null, aO)); // TODO provide for name
 	}
 
@@ -131,15 +132,15 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 	final Scope parent_scope;
 
 	@Override
-	public CaseConditional caseConditional(final Context parentContext) {
-		final CaseConditional caseConditional = new CaseConditional(getParent(), parentContext);
+	public @NotNull CaseConditional caseConditional(final Context parentContext) {
+		final @NotNull CaseConditional caseConditional = new CaseConditional(getParent(), parentContext);
 		add(caseConditional);
 		return caseConditional;
 	}
 
 	@Override
-	public MatchConditional matchConditional(final Context parentContext) {
-		final MatchConditional matchConditional = new MatchConditional(getParent(), parentContext);
+	public @NotNull MatchConditional matchConditional(final Context parentContext) {
+		final @NotNull MatchConditional matchConditional = new MatchConditional(getParent(), parentContext);
 		add(matchConditional);
 		return matchConditional;
 	}

@@ -18,10 +18,10 @@ import java.util.List;
  */
 public class Helpers {
 	@NotNull
-	static ExpressionList LocalAgnTmpNodeToListVarRef(final List<LocalAgnTmpNode> of) {
-		final ExpressionList expl = new ExpressionList();
-		for (final LocalAgnTmpNode node : of) {
-			final VariableReference vr = new VariableReference();
+	static ExpressionList LocalAgnTmpNodeToListVarRef(final @NotNull List<LocalAgnTmpNode> of) {
+		final @NotNull ExpressionList expl = new ExpressionList();
+		for (final @NotNull LocalAgnTmpNode node : of) {
+			final @NotNull VariableReference vr = new VariableReference();
 			vr.setMain(node.genName());
 			expl.add(vr);
 //			NotImplementedException.raise();
@@ -30,8 +30,8 @@ public class Helpers {
 	}
 	
 	@NotNull
-	static ExpressionKind ExpressionOperatorToExpressionType(final ExpressionOperators middle) {
-		final ExpressionKind middle1;
+	static ExpressionKind ExpressionOperatorToExpressionType(final @NotNull ExpressionOperators middle) {
+		final @NotNull ExpressionKind middle1;
 		switch (middle) {
 			case OP_MINUS:
 				middle1 = ExpressionKind.SUBTRACTION;
@@ -46,8 +46,8 @@ public class Helpers {
 	}
 	
 	@NotNull
-	public static String getFunctionName(final int code, final String aStr, final ExpressionList expressionList) {
-		final StringBuilder sb=new StringBuilder();
+	public static String getFunctionName(final int code, final String aStr, final @NotNull ExpressionList expressionList) {
+		final @NotNull StringBuilder sb=new StringBuilder();
 		sb.append("z");
 		sb.append(code);
 		sb.append(aStr);
@@ -64,8 +64,8 @@ public class Helpers {
 			sb.deleteCharAt(sb.length());
 		}
 */
-		final List<String> ls = new ArrayList<String>();
-		for (final IExpression e : expressionList) {
+		final @NotNull List<String> ls = new ArrayList<String>();
+		for (final @NotNull IExpression e : expressionList) {
 			ls.add(e.toString());
 		}
 		sb.append(tripleo.elijah.util.Helpers.String_join(", ", ls));

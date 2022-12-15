@@ -10,6 +10,7 @@ package tripleo.elijah;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
@@ -35,11 +36,11 @@ public class TestBasic {
 	@Test
 	public final void testBasicParse() throws IOException {
 		final List<String> ez_files = Files.readLines(new File("test/basic/ez_files.txt"), Charsets.UTF_8);
-		final List<String> args = new ArrayList<String>();
+		final @NotNull List<String> args = new ArrayList<String>();
 		args.addAll(ez_files);
 		args.add("-sE");
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final @NotNull ErrSink eee = new StdErrSink();
+		final @NotNull Compilation c = new Compilation(eee, new IO());
 
 		c.feedCmdLine(args);
 
@@ -49,13 +50,13 @@ public class TestBasic {
 //	@Test
 	public final void testBasic() throws IOException {
 		final List<String> ez_files = Files.readLines(new File("test/basic/ez_files.txt"), Charsets.UTF_8);
-		final Map<Integer, Integer> errorCount = new HashMap<Integer, Integer>();
+		final @NotNull Map<Integer, Integer> errorCount = new HashMap<Integer, Integer>();
 		int index = 0;
 
 		for (String s : ez_files) {
 //			List<String> args = List_of("test/basic", "-sO"/*, "-out"*/);
-			final ErrSink eee = new StdErrSink();
-			final Compilation c = new Compilation(eee, new IO());
+			final @NotNull ErrSink eee = new StdErrSink();
+			final @NotNull Compilation c = new Compilation(eee, new IO());
 
 			c.feedCmdLine(List_of(s, "-sO"));
 
@@ -73,10 +74,10 @@ public class TestBasic {
 
 	@Test
 	public final void testBasic_listfolders3() throws IOException {
-		String s = "test/basic/listfolders3/listfolders3.ez";
+		@NotNull String s = "test/basic/listfolders3/listfolders3.ez";
 
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final @NotNull ErrSink eee = new StdErrSink();
+		final @NotNull Compilation c = new Compilation(eee, new IO());
 
 		c.feedCmdLine(List_of(s, "-sO"));
 
@@ -88,10 +89,10 @@ public class TestBasic {
 
 	@Test
 	public final void testBasic_listfolders4() throws IOException {
-		String s = "test/basic/listfolders4/listfolders4.ez";
+		@NotNull String s = "test/basic/listfolders4/listfolders4.ez";
 
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final @NotNull ErrSink eee = new StdErrSink();
+		final @NotNull Compilation c = new Compilation(eee, new IO());
 
 		c.feedCmdLine(List_of(s, "-sO"));
 
@@ -103,10 +104,10 @@ public class TestBasic {
 
 	@Test
 	public final void testBasic_fact1() throws IOException {
-		String s = "test/basic/fact1/main2";
+		@NotNull String s = "test/basic/fact1/main2";
 
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final @NotNull ErrSink eee = new StdErrSink();
+		final @NotNull Compilation c = new Compilation(eee, new IO());
 
 		c.feedCmdLine(List_of(s, "-sO"));
 

@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
 
 import java.util.ArrayList;
@@ -21,8 +22,8 @@ public class MatchConditionalBuilder extends ElBuilder {
 	private IExpression expr;
 
 	@Override
-	protected MatchConditional build() {
-		MatchConditional matchConditional = new MatchConditional(_parent, _context);
+	protected @NotNull MatchConditional build() {
+		@NotNull MatchConditional matchConditional = new MatchConditional(_parent, _context);
 		matchConditional.expr(expr);
 
 		matchConditional.postConstruct();
@@ -39,13 +40,13 @@ public class MatchConditionalBuilder extends ElBuilder {
 	}
 
 	public BaseScope normalscope(IExpression expr) {
-		Normal typeMatch = new Normal(expr);
+		@NotNull Normal typeMatch = new Normal(expr);
 		parts.add(typeMatch);
 		return typeMatch.scope();
 	}
 
 	public BaseScope valNormalscope(IdentExpression i1) {
-		ValNormal typeMatch = new ValNormal(i1);
+		@NotNull ValNormal typeMatch = new ValNormal(i1);
 		parts.add(typeMatch);
 		return typeMatch.scope();
 	}
@@ -62,8 +63,8 @@ public class MatchConditionalBuilder extends ElBuilder {
 			this.typeName = tn;
 		}
 
-		public BaseScope scope() {
-			BaseScope baseScope = new BaseScope() {
+		public @NotNull BaseScope scope() {
+			@NotNull BaseScope baseScope = new BaseScope() {
 			};
 			this.baseScope = baseScope;
 			return baseScope;
@@ -79,8 +80,8 @@ public class MatchConditionalBuilder extends ElBuilder {
 			this.expr = expr;
 		}
 
-		public BaseScope scope() {
-			BaseScope baseScope = new BaseScope() {
+		public @NotNull BaseScope scope() {
+			@NotNull BaseScope baseScope = new BaseScope() {
 			};
 			this.baseScope = baseScope;
 			return baseScope;
@@ -95,18 +96,18 @@ public class MatchConditionalBuilder extends ElBuilder {
 		public ValNormal(IdentExpression i1) {
 			this.valMatch = i1;
 		}
-		public BaseScope scope() {
-			BaseScope baseScope = new BaseScope() {
+		public @NotNull BaseScope scope() {
+			@NotNull BaseScope baseScope = new BaseScope() {
 			};
 			this.baseScope = baseScope;
 			return baseScope;
 		}
 	}
 
-	List<FakeMC1> parts = new ArrayList<FakeMC1>();
+	@NotNull List<FakeMC1> parts = new ArrayList<FakeMC1>();
 
 	public BaseScope typeMatchscope(IdentExpression i1, TypeName tn) {
-		TypeMatch typeMatch = new TypeMatch(i1, tn);
+		@NotNull TypeMatch typeMatch = new TypeMatch(i1, tn);
 		parts.add(typeMatch);
 		return typeMatch.scope();
 	}

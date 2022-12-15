@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.entrypoints;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.NamespaceStatement;
@@ -19,7 +20,7 @@ import tripleo.elijah.lang.OS_Element;
 public class ArbitraryFunctionEntryPoint implements EntryPoint {
 	FunctionDef fd;
 
-	public ArbitraryFunctionEntryPoint(FunctionDef aFunction) {
+	public ArbitraryFunctionEntryPoint(@NotNull FunctionDef aFunction) {
 		final OS_Element parent = aFunction.getParent();
 		if (!(parent instanceof ClassStatement || parent instanceof NamespaceStatement))
 			throw new IllegalStateException("Invalid parent");

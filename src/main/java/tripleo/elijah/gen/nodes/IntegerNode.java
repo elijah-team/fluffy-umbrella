@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.gen.nodes;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.gen.TypeRef;
 import tripleo.elijah.lang.IExpression;
@@ -54,17 +55,17 @@ public class IntegerNode implements IExpressionNode {
 	}
 	
 	@Override
-	public String genText(final CompilerContext cctx) {
+	public @NotNull String genText(final CompilerContext cctx) {
 		return Integer.toString(((NumericExpression)_expr).getValue());
 	}
 	
 	@Override
-	public String genType() {
+	public @NotNull String genType() {
 		return "u64"; // TODO hardcoded
 	}
 	
 	@Override
-	public String genText() {
+	public @NotNull String genText() {
 		return Integer.toString(((NumericExpression)_expr).getValue());
 	}
 	

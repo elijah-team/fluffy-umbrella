@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ import java.util.List;
  * Created 12/22/20 7:59 PM
  */
 public class ClassBuilder {
-	private List<AnnotationClause> annotations = new ArrayList<AnnotationClause>();
+	private @NotNull List<AnnotationClause> annotations = new ArrayList<AnnotationClause>();
 	private ClassTypes _type;
 	private OS_Element _parent;
 	private Context _parent_context;
@@ -30,8 +32,8 @@ public class ClassBuilder {
 		_type = classTypes;
 	}
 
-	public ClassStatement build() {
-		ClassStatement cs = new ClassStatement(_parent, _parent_context);
+	public @NotNull ClassStatement build() {
+		@NotNull ClassStatement cs = new ClassStatement(_parent, _parent_context);
 		cs.setType(_type);
 		assert _name != null;
 		cs.setName(_name);
@@ -40,7 +42,7 @@ public class ClassBuilder {
 		}
 		if (genericPart != null)
 			cs.setGenericPart(genericPart);
-		for (ElBuilder builder : _scope.items()) {
+		for (@NotNull ElBuilder builder : _scope.items()) {
 //			if (builder instanceof AccessNotation) {
 //				cs.addAccess((AccessNotation) builder);
 //			} else {
@@ -58,7 +60,7 @@ public class ClassBuilder {
 		return cs;
 	}
 
-	public void annotation_clause(AnnotationClause a) {
+	public void annotation_clause(@Nullable AnnotationClause a) {
 		if (a == null) return;
 		annotations.add(a);
 	}
@@ -75,15 +77,15 @@ public class ClassBuilder {
 		_parent_context = o;
 	}
 
-	public ClassScope getScope() {
+	public @NotNull ClassScope getScope() {
 		return _scope;
 	}
 
-	public ClassInheritance classInheritance() {
+	public @NotNull ClassInheritance classInheritance() {
 		return _inh;
 	}
 
-	public void annotations(List<AnnotationClause> as) {
+	public void annotations(@NotNull List<AnnotationClause> as) {
 		for (AnnotationClause annotationClause : as) {
 			annotation_clause(annotationClause);
 		}

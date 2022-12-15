@@ -30,12 +30,12 @@ public class DotExpressionToStackTest {
 	public void test_dot_expression_to_stack() {
 //		DeduceTypes2 d = new DeduceTypes2(null);
 		//
-		IdentExpression c = Helpers.string_to_ident("c");
-		IdentExpression b = Helpers.string_to_ident("b");
-		IdentExpression a = Helpers.string_to_ident("a");
+		@NotNull IdentExpression c = Helpers.string_to_ident("c");
+		@NotNull IdentExpression b = Helpers.string_to_ident("b");
+		@NotNull IdentExpression a = Helpers.string_to_ident("a");
 		//
-		DotExpression de2 = new DotExpression(b, c);
-		DotExpression de = new DotExpression(a, de2);
+		@NotNull DotExpression de2 = new DotExpression(b, c);
+		@NotNull DotExpression de = new DotExpression(a, de2);
 		//
 		@NotNull Stack<IExpression> s = DeduceLookupUtils.dot_expression_to_stack(de);
 //		IExpression[] sa = (IExpression[]) s.toArray();
@@ -48,16 +48,16 @@ public class DotExpressionToStackTest {
 	public void test_dot_expression_to_stack2() {
 //		DeduceTypes2 dt2 = new DeduceTypes2(null);
 		//
-		IdentExpression e = Helpers.string_to_ident("e");
-		IdentExpression d = Helpers.string_to_ident("d");
-		IdentExpression c = Helpers.string_to_ident("c");
-		IdentExpression b = Helpers.string_to_ident("b");
-		IdentExpression a = Helpers.string_to_ident("a");
+		@NotNull IdentExpression e = Helpers.string_to_ident("e");
+		@NotNull IdentExpression d = Helpers.string_to_ident("d");
+		@NotNull IdentExpression c = Helpers.string_to_ident("c");
+		@NotNull IdentExpression b = Helpers.string_to_ident("b");
+		@NotNull IdentExpression a = Helpers.string_to_ident("a");
 		//
-		DotExpression de4 = new DotExpression(d, e);
-		DotExpression de3 = new DotExpression(c, de4);
-		DotExpression de2 = new DotExpression(b, de3);
-		DotExpression de = new DotExpression(a, de2);
+		@NotNull DotExpression de4 = new DotExpression(d, e);
+		@NotNull DotExpression de3 = new DotExpression(c, de4);
+		@NotNull DotExpression de2 = new DotExpression(b, de3);
+		@NotNull DotExpression de = new DotExpression(a, de2);
 		//
 		@NotNull Stack<IExpression> s = DeduceLookupUtils.dot_expression_to_stack(de);
 //		IExpression[] sa = (IExpression[]) s.toArray();

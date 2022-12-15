@@ -13,6 +13,9 @@ import antlr.collections.impl.BitSet;
 
 import java.util.List;
 import java.util.ArrayList;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.builder.*;
 import tripleo.elijah.contexts.*;
@@ -24,9 +27,9 @@ public class ElijjahParser extends antlr.LLkParser       implements ElijjahToken
  {
 
 Qualident xy;
-public Out out;
-IExpression expr;
-Context cur;
+public @Nullable Out out;
+@Nullable IExpression expr;
+@Nullable Context cur;
 Scope3 sco;
 
 protected ElijjahParser(TokenBuffer tokenBuf, int k) {
@@ -54,10 +57,10 @@ public ElijjahParser(ParserSharedInputState state) {
 
 	public final void program() throws RecognitionException, TokenStreamException {
 		
-		ParserClosure pc = out.closure();
-		ModuleContext mctx=new ModuleContext(out.module());
+		@NotNull ParserClosure pc = out.closure();
+		@NotNull ModuleContext mctx=new ModuleContext(out.module());
 		out.module().setContext(mctx);cur=mctx;
-		IndexingStatement idx=null;
+		@Nullable IndexingStatement idx=null;
 		OS_Package pkg;
 		
 		try {      // for error handling
@@ -139,11 +142,11 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void indexingStatement(
-		IndexingStatement idx
+			@NotNull IndexingStatement idx
 	) throws RecognitionException, TokenStreamException {
 		
-		Token  i1 = null;
-		ExpressionList el=null;
+		@Nullable Token  i1 = null;
+		@Nullable ExpressionList el=null;
 		
 		try {      // for error handling
 			match(LITERAL_indexing);
@@ -179,11 +182,12 @@ public ElijjahParser(ParserSharedInputState state) {
 		}
 	}
 	
-	public final Qualident  qualident() throws RecognitionException, TokenStreamException {
+	public final @NotNull Qualident  qualident() throws RecognitionException, TokenStreamException {
 		Qualident q;
 		
-		Token  d1 = null;
-		q=new Qualident();IdentExpression r1=null, r2=null;
+		@Nullable Token  d1 = null;
+		q=new Qualident();
+		@Nullable IdentExpression r1=null, r2=null;
 		
 		try {      // for error handling
 			r1=ident();
@@ -246,10 +250,13 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void programStatement(
-		ProgramClosure pc, OS_Element cont
+			ProgramClosure pc, @NotNull OS_Element cont
 	) throws RecognitionException, TokenStreamException {
 		
-		ImportStatement imp=null;AnnotationClause a=null;List<AnnotationClause> as=new ArrayList<AnnotationClause>();AliasStatement als=null;
+		@Nullable ImportStatement imp=null;
+		@Nullable AnnotationClause a=null;
+		@NotNull List<AnnotationClause> as=new ArrayList<AnnotationClause>();
+		@Nullable AliasStatement als=null;
 		
 		try {      // for error handling
 			switch ( LA(1)) {
@@ -319,7 +326,7 @@ public ElijjahParser(ParserSharedInputState state) {
 		}
 	}
 	
-	public final ExpressionList  expressionList() throws RecognitionException, TokenStreamException {
+	public final @NotNull ExpressionList  expressionList() throws RecognitionException, TokenStreamException {
 		ExpressionList el;
 		
 		el = new ExpressionList();
@@ -357,13 +364,13 @@ public ElijjahParser(ParserSharedInputState state) {
 		return el;
 	}
 	
-	public final IExpression  constantValue() throws RecognitionException, TokenStreamException {
-		IExpression e;
+	public final @Nullable IExpression  constantValue() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression e;
 		
-		Token  s = null;
-		Token  c = null;
-		Token  n = null;
-		Token  f = null;
+		@Nullable Token  s = null;
+		@Nullable Token  c = null;
+		@Nullable Token  n = null;
+		@Nullable Token  f = null;
 		e=null;
 		
 		try {      // for error handling
@@ -421,10 +428,10 @@ public ElijjahParser(ParserSharedInputState state) {
 		return e;
 	}
 	
-	public final IdentExpression  ident() throws RecognitionException, TokenStreamException {
-		IdentExpression id;
+	public final @Nullable IdentExpression  ident() throws RecognitionException, TokenStreamException {
+		@Nullable IdentExpression id;
 		
-		Token  r1 = null;
+		@Nullable Token  r1 = null;
 		id=null;
 		
 		try {      // for error handling
@@ -445,12 +452,16 @@ public ElijjahParser(ParserSharedInputState state) {
 		return id;
 	}
 	
-	public final ClassStatement  classStatement(
-		OS_Element parent, Context cctx, List<AnnotationClause> as
+	public final @Nullable ClassStatement  classStatement(
+			OS_Element parent, Context cctx, @NotNull List<AnnotationClause> as
 	) throws RecognitionException, TokenStreamException {
-		ClassStatement cls;
+		@Nullable ClassStatement cls;
 		
-		cls=null;ClassContext ctx=null;IdentExpression i1=null;ClassBuilder cb=null;TypeNameList tnl=null;
+		cls=null;
+		@Nullable ClassContext ctx=null;
+		@Nullable IdentExpression i1=null;
+		@Nullable ClassBuilder cb=null;
+		@Nullable TypeNameList tnl=null;
 		
 		try {      // for error handling
 			{
@@ -646,10 +657,10 @@ public ElijjahParser(ParserSharedInputState state) {
 		return cls;
 	}
 	
-	public final TypeNameList  typeNameList2() throws RecognitionException, TokenStreamException {
+	public final @NotNull TypeNameList  typeNameList2() throws RecognitionException, TokenStreamException {
 		TypeNameList cr;
 		
-		TypeName tn=null;cr=new TypeNameList();
+		@Nullable TypeName tn=null;cr=new TypeNameList();
 		
 		try {      // for error handling
 			tn=typeName2();
@@ -685,10 +696,10 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void classInheritance_(
-		ClassInheritance ci
+			@NotNull ClassInheritance ci
 	) throws RecognitionException, TokenStreamException {
 		
-		TypeName tn=null;
+		@Nullable TypeName tn=null;
 		
 		try {      // for error handling
 			tn=inhTypeName();
@@ -723,7 +734,7 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void classInheritanceRuby(
-		ClassInheritance ci
+			@NotNull ClassInheritance ci
 	) throws RecognitionException, TokenStreamException {
 		
 		
@@ -742,10 +753,11 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void classScope(
-		ClassStatement cr
+			@NotNull ClassStatement cr
 	) throws RecognitionException, TokenStreamException {
 		
-		AccessNotation acs=null;TypeAliasStatement tal=null;
+		@Nullable AccessNotation acs=null;
+		@Nullable TypeAliasStatement tal=null;
 		
 		try {      // for error handling
 			docstrings(cr);
@@ -861,8 +873,8 @@ public ElijjahParser(ParserSharedInputState state) {
 		InvariantStatement cr
 	) throws RecognitionException, TokenStreamException {
 		
-		Token  i1 = null;
-		InvariantStatementPart isp=null;
+		@Nullable Token  i1 = null;
+		@Nullable InvariantStatementPart isp=null;
 		
 		try {      // for error handling
 			match(LITERAL_invariant);
@@ -909,10 +921,12 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void classDefinition_interface(
-		ClassBuilder cb
+			@NotNull ClassBuilder cb
 	) throws RecognitionException, TokenStreamException {
 		
-		IdentExpression i1=null;ClassContext ctx=null;TypeNameList tnl=null;
+		@Nullable IdentExpression i1=null;
+		@Nullable ClassContext ctx=null;
+		@Nullable TypeNameList tnl=null;
 		
 		try {      // for error handling
 			match(LITERAL_class);
@@ -984,7 +998,8 @@ public ElijjahParser(ParserSharedInputState state) {
 		BaseScope sc
 	) throws RecognitionException, TokenStreamException {
 		
-		AnnotationClause a=null;ClassBuilder cb=null;
+		@Nullable AnnotationClause a=null;
+		@Nullable ClassBuilder cb=null;
 		
 		try {      // for error handling
 			if ( inputState.guessing==0 ) {
@@ -1037,10 +1052,12 @@ public ElijjahParser(ParserSharedInputState state) {
 		}
 	}
 	
-	public final AnnotationClause  annotation_clause() throws RecognitionException, TokenStreamException {
+	public final @NotNull AnnotationClause  annotation_clause() throws RecognitionException, TokenStreamException {
 		AnnotationClause a;
 		
-		Qualident q=null;ExpressionList el=null;a=new AnnotationClause();AnnotationPart ap=null;
+		@Nullable Qualident q=null;
+		@Nullable ExpressionList el=null;a=new AnnotationClause();
+		@Nullable AnnotationPart ap=null;
 		
 		try {      // for error handling
 			match(ANNOT);
@@ -1104,10 +1121,12 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void classDefinition_normal(
-		ClassBuilder cb
+			@NotNull ClassBuilder cb
 	) throws RecognitionException, TokenStreamException {
 		
-		IdentExpression i1=null;ClassContext ctx=null;TypeNameList tnl=null;
+		@Nullable IdentExpression i1=null;
+		@Nullable ClassContext ctx=null;
+		@Nullable TypeNameList tnl=null;
 		
 		try {      // for error handling
 			match(LITERAL_class);
@@ -1177,10 +1196,11 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void classDefinition_struct(
-		ClassBuilder cb
+			@NotNull ClassBuilder cb
 	) throws RecognitionException, TokenStreamException {
 		
-		IdentExpression i1=null;ClassContext ctx=null;
+		@Nullable IdentExpression i1=null;
+		@Nullable ClassContext ctx=null;
 		
 		try {      // for error handling
 			match(LITERAL_class);
@@ -1225,10 +1245,11 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void classDefinition_signature(
-		ClassBuilder cb
+			@NotNull ClassBuilder cb
 	) throws RecognitionException, TokenStreamException {
 		
-		IdentExpression i1=null;ClassContext ctx=null;
+		@Nullable IdentExpression i1=null;
+		@Nullable ClassContext ctx=null;
 		
 		try {      // for error handling
 			match(LITERAL_class);
@@ -1273,10 +1294,11 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void classDefinition_abstract(
-		ClassBuilder cb
+			@NotNull ClassBuilder cb
 	) throws RecognitionException, TokenStreamException {
 		
-		ClassStatement cls=null;IdentExpression i1=null;
+		@Nullable ClassStatement cls=null;
+		@Nullable IdentExpression i1=null;
 		
 		try {      // for error handling
 			match(LITERAL_class);
@@ -1376,7 +1398,7 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void classDefinition_inheritance(
-		ClassBuilder cb
+			@NotNull ClassBuilder cb
 	) throws RecognitionException, TokenStreamException {
 		
 		
@@ -1413,10 +1435,10 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void classScope2(
-		ClassScope cr
+			@NotNull ClassScope cr
 	) throws RecognitionException, TokenStreamException {
 		
-		AccessNotation acs=null;
+		@Nullable AccessNotation acs=null;
 		
 		try {      // for error handling
 			docstrings(cr);
@@ -1515,10 +1537,10 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void classScope2_signature(
-		ClassScope cr
+			@NotNull ClassScope cr
 	) throws RecognitionException, TokenStreamException {
 		
-		AccessNotation acs=null;
+		@Nullable AccessNotation acs=null;
 		
 		try {      // for error handling
 			docstrings(cr);
@@ -1599,10 +1621,11 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void invariantStatement2(
-		ClassScope sc
+			@NotNull ClassScope sc
 	) throws RecognitionException, TokenStreamException {
 		
-		InvariantStatementPart isp=null;IdentExpression i1=null;
+		@Nullable InvariantStatementPart isp=null;
+		@Nullable IdentExpression i1=null;
 		
 		try {      // for error handling
 			match(LITERAL_invariant);
@@ -1650,10 +1673,10 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void classScope2_interface(
-		ClassScope cr
+			@NotNull ClassScope cr
 	) throws RecognitionException, TokenStreamException {
 		
-		AccessNotation acs=null;
+		@Nullable AccessNotation acs=null;
 		
 		try {      // for error handling
 			docstrings(cr);
@@ -1746,10 +1769,10 @@ public ElijjahParser(ParserSharedInputState state) {
 	}
 	
 	public final void docstrings(
-		Documentable sc
+			@Nullable Documentable sc
 	) throws RecognitionException, TokenStreamException {
 		
-		Token  s1 = null;
+		@Nullable Token  s1 = null;
 		
 		try {      // for error handling
 			{
@@ -1808,10 +1831,12 @@ inputState.guessing--;
 	}
 	
 	public final void constructorDef(
-		ClassStatement cr
+			@NotNull ClassStatement cr
 	) throws RecognitionException, TokenStreamException {
 		
-		ConstructorDef cd=null;IdentExpression x1=null;FormalArgList fal=null;
+		@Nullable ConstructorDef cd=null;
+		@Nullable IdentExpression x1=null;
+		@Nullable FormalArgList fal=null;
 		
 		try {      // for error handling
 			{
@@ -1878,10 +1903,11 @@ inputState.guessing--;
 	}
 	
 	public final void destructorDef(
-		ClassStatement cr
+			@NotNull ClassStatement cr
 	) throws RecognitionException, TokenStreamException {
 		
-		DestructorDef dd=null;FormalArgList fal=null;
+		@Nullable DestructorDef dd=null;
+		@Nullable FormalArgList fal=null;
 		
 		try {      // for error handling
 			{
@@ -1928,10 +1954,14 @@ inputState.guessing--;
 	}
 	
 	public final void functionDef(
-		FunctionDef fd
+			@NotNull FunctionDef fd
 	) throws RecognitionException, TokenStreamException {
 		
-		AnnotationClause a=null;FunctionContext ctx=null;IdentExpression i1=null;TypeName tn=null;FormalArgList fal=null;
+		@Nullable AnnotationClause a=null;
+		@Nullable FunctionContext ctx=null;
+		@Nullable IdentExpression i1=null;
+		@Nullable TypeName tn=null;
+		@Nullable FormalArgList fal=null;
 		
 		try {      // for error handling
 			{
@@ -2028,10 +2058,12 @@ inputState.guessing--;
 	}
 	
 	public final void defFunctionDef(
-		DefFunctionDef fd
+			@NotNull DefFunctionDef fd
 	) throws RecognitionException, TokenStreamException {
 		
-		FormalArgList op=null;TypeName tn=null;IdentExpression i1=null;
+		@Nullable FormalArgList op=null;
+		@Nullable TypeName tn=null;
+		@Nullable IdentExpression i1=null;
 		
 		try {      // for error handling
 			match(LITERAL_def);
@@ -2093,10 +2125,11 @@ inputState.guessing--;
 	}
 	
 	public final void varStmt(
-		StatementClosure cr, OS_Element aParent
+			@NotNull StatementClosure cr, OS_Element aParent
 	) throws RecognitionException, TokenStreamException {
 		
-		VariableSequence vsq=null;TypeName tn=null;
+		@Nullable VariableSequence vsq=null;
+		@Nullable TypeName tn=null;
 		
 		try {      // for error handling
 			if ( inputState.guessing==0 ) {
@@ -2231,12 +2264,12 @@ inputState.guessing--;
 		}
 	}
 	
-	public final TypeAliasStatement  typeAlias(
+	public final @Nullable TypeAliasStatement  typeAlias(
 		OS_Element cont
 	) throws RecognitionException, TokenStreamException {
-		TypeAliasStatement cr;
+		@Nullable TypeAliasStatement cr;
 		
-		TypeAliasBuilder tab=new TypeAliasBuilder();cr=null;
+		@NotNull TypeAliasBuilder tab=new TypeAliasBuilder();cr=null;
 		
 		try {      // for error handling
 			typeAlias2(tab);
@@ -2258,10 +2291,11 @@ inputState.guessing--;
 	}
 	
 	public final void propertyStatement(
-		PropertyStatement ps
+			@NotNull PropertyStatement ps
 	) throws RecognitionException, TokenStreamException {
 		
-		IdentExpression prop_name=null;TypeName tn=null;
+		@Nullable IdentExpression prop_name=null;
+		@Nullable TypeName tn=null;
 		
 		try {      // for error handling
 			{
@@ -2390,14 +2424,14 @@ inputState.guessing--;
 		}
 	}
 	
-	public final AccessNotation  accessNotation() throws RecognitionException, TokenStreamException {
+	public final @NotNull AccessNotation  accessNotation() throws RecognitionException, TokenStreamException {
 		AccessNotation acs;
 		
-		Token  category = null;
-		Token  shorthand = null;
-		Token  category1 = null;
-		Token  shorthand1 = null;
-		TypeNameList tnl=null;acs=new AccessNotation();
+		@Nullable Token  category = null;
+		@Nullable Token  shorthand = null;
+		@Nullable Token  category1 = null;
+		@Nullable Token  shorthand1 = null;
+		@Nullable TypeNameList tnl=null;acs=new AccessNotation();
 		
 		try {      // for error handling
 			match(LITERAL_access);
@@ -2487,7 +2521,9 @@ inputState.guessing--;
 		ClassScope cr
 	) throws RecognitionException, TokenStreamException {
 		
-		ConstructorDefBuilder cd=new ConstructorDefBuilder();IdentExpression x1=null;FormalArgList fal=null;
+		@NotNull ConstructorDefBuilder cd=new ConstructorDefBuilder();
+		@Nullable IdentExpression x1=null;
+		@Nullable FormalArgList fal=null;
 		
 		try {      // for error handling
 			{
@@ -2551,7 +2587,8 @@ inputState.guessing--;
 		ClassScope cr
 	) throws RecognitionException, TokenStreamException {
 		
-		DestructorDefBuilder dd=new DestructorDefBuilder();FormalArgList fal=null;
+		@NotNull DestructorDefBuilder dd=new DestructorDefBuilder();
+		@Nullable FormalArgList fal=null;
 		
 		try {      // for error handling
 			{
@@ -2589,10 +2626,13 @@ inputState.guessing--;
 	}
 	
 	public final void functionDef2(
-		FunctionDefBuilder fb
+			@NotNull FunctionDefBuilder fb
 	) throws RecognitionException, TokenStreamException {
 		
-		AnnotationClause a=null;IdentExpression i1=null;TypeName tn=null;FormalArgList fal=null;
+		@Nullable AnnotationClause a=null;
+		@Nullable IdentExpression i1=null;
+		@Nullable TypeName tn=null;
+		@Nullable FormalArgList fal=null;
 		
 		try {      // for error handling
 			{
@@ -2683,10 +2723,11 @@ inputState.guessing--;
 	}
 	
 	public final void varStmt2(
-		BaseScope cs
+			@NotNull BaseScope cs
 	) throws RecognitionException, TokenStreamException {
 		
-		VariableSequenceBuilder vsqb=new VariableSequenceBuilder();TypeName tn=null;
+		@NotNull VariableSequenceBuilder vsqb=new VariableSequenceBuilder();
+		@Nullable TypeName tn=null;
 		
 		try {      // for error handling
 			{
@@ -2825,10 +2866,11 @@ inputState.guessing--;
 	}
 	
 	public final void typeAlias2(
-		TypeAliasBuilder tab
+			@NotNull TypeAliasBuilder tab
 	) throws RecognitionException, TokenStreamException {
 		
-		Qualident q=null;IdentExpression i=null;
+		@Nullable Qualident q=null;
+		@Nullable IdentExpression i=null;
 		
 		try {      // for error handling
 			match(LITERAL_type);
@@ -2854,7 +2896,7 @@ inputState.guessing--;
 	}
 	
 	public final void programStatement2(
-		ClassOrNamespaceScope cont
+			@NotNull ClassOrNamespaceScope cont
 	) throws RecognitionException, TokenStreamException {
 		
 		
@@ -2894,10 +2936,13 @@ inputState.guessing--;
 	}
 	
 	public final void functionDef2_interface(
-		FunctionDefBuilder fb
+			@NotNull FunctionDefBuilder fb
 	) throws RecognitionException, TokenStreamException {
 		
-		AnnotationClause a=null;IdentExpression i1=null;TypeName tn=null;FormalArgList fal=null;
+		@Nullable AnnotationClause a=null;
+		@Nullable IdentExpression i1=null;
+		@Nullable TypeName tn=null;
+		@Nullable FormalArgList fal=null;
 		
 		try {      // for error handling
 			{
@@ -3035,10 +3080,12 @@ inputState.guessing--;
 	}
 	
 	public final void propertyStatement2_abstract(
-		ClassScope cr
+			@NotNull ClassScope cr
 	) throws RecognitionException, TokenStreamException {
 		
-		PropertyStatementBuilder ps=new PropertyStatementBuilder();IdentExpression prop_name=null;TypeName tn=null;
+		@NotNull PropertyStatementBuilder ps=new PropertyStatementBuilder();
+		@Nullable IdentExpression prop_name=null;
+		@Nullable TypeName tn=null;
 		
 		try {      // for error handling
 			{
@@ -3131,10 +3178,12 @@ inputState.guessing--;
 	}
 	
 	public final void propertyStatement2(
-		ClassScope cr
+			@NotNull ClassScope cr
 	) throws RecognitionException, TokenStreamException {
 		
-		PropertyStatementBuilder ps=new PropertyStatementBuilder();IdentExpression prop_name=null;TypeName tn=null;
+		@NotNull PropertyStatementBuilder ps=new PropertyStatementBuilder();
+		@Nullable IdentExpression prop_name=null;
+		@Nullable TypeName tn=null;
 		
 		try {      // for error handling
 			{
@@ -3261,10 +3310,12 @@ inputState.guessing--;
 	}
 	
 	public final void namespaceStatement__(
-		NamespaceStatement cls, List<AnnotationClause> as
+			@NotNull NamespaceStatement cls, List<AnnotationClause> as
 	) throws RecognitionException, TokenStreamException {
 		
-		AnnotationClause a=null;NamespaceContext ctx=null;IdentExpression i1=null;
+		@Nullable AnnotationClause a=null;
+		@Nullable NamespaceContext ctx=null;
+		@Nullable IdentExpression i1=null;
 		
 		try {      // for error handling
 			if ( inputState.guessing==0 ) {
@@ -3311,10 +3362,11 @@ inputState.guessing--;
 	}
 	
 	public final void namespaceScope(
-		NamespaceStatement cr
+			@NotNull NamespaceStatement cr
 	) throws RecognitionException, TokenStreamException {
 		
-		AccessNotation acs=null;TypeAliasStatement tal=null;
+		@Nullable AccessNotation acs=null;
+		@Nullable TypeAliasStatement tal=null;
 		
 		try {      // for error handling
 			docstrings(cr);
@@ -3396,10 +3448,13 @@ inputState.guessing--;
 	}
 	
 	public final void namespaceStatement2(
-		BaseScope sc
+			@NotNull BaseScope sc
 	) throws RecognitionException, TokenStreamException {
 		
-		NamespaceStatementBuilder cls = new NamespaceStatementBuilder();AnnotationClause a=null;NamespaceContext ctx=null;IdentExpression i1=null;
+		@NotNull NamespaceStatementBuilder cls = new NamespaceStatementBuilder();
+		@Nullable AnnotationClause a=null;
+		@Nullable NamespaceContext ctx=null;
+		@Nullable IdentExpression i1=null;
 		
 		try {      // for error handling
 			{
@@ -3455,10 +3510,10 @@ inputState.guessing--;
 	}
 	
 	public final void namespaceScope2(
-		NamespaceScope cr
+			@NotNull NamespaceScope cr
 	) throws RecognitionException, TokenStreamException {
 		
-		AccessNotation acs=null;
+		@Nullable AccessNotation acs=null;
 		
 		try {      // for error handling
 			docstrings(cr);
@@ -3536,12 +3591,13 @@ inputState.guessing--;
 		}
 	}
 	
-	public final ImportStatement  importStatement(
+	public final @Nullable ImportStatement  importStatement(
 		OS_Element el
 	) throws RecognitionException, TokenStreamException {
-		ImportStatement pc;
+		@Nullable ImportStatement pc;
 		
-		pc=null;ImportContext ctx=null;
+		pc=null;
+		@Nullable ImportContext ctx=null;
 		
 		try {      // for error handling
 			switch ( LA(1)) {
@@ -3682,7 +3738,7 @@ inputState.guessing--;
 		}
 		
 	public final void qualidentList(
-		QualidentList qal
+			@NotNull QualidentList qal
 	) throws RecognitionException, TokenStreamException {
 		
 		Qualident qid;
@@ -3720,10 +3776,11 @@ inputState.guessing--;
 	}
 	
 	public final void importPart1(
-		AssigningImportStatement cr
+			@NotNull AssigningImportStatement cr
 	) throws RecognitionException, TokenStreamException {
 		
-		IdentExpression i1=null;Qualident q1=null;
+		@Nullable IdentExpression i1=null;
+		@Nullable Qualident q1=null;
 		
 		try {      // for error handling
 			i1=ident();
@@ -3744,10 +3801,11 @@ inputState.guessing--;
 	}
 	
 	public final void importPart2(
-		QualifiedImportStatement cr
+			@NotNull QualifiedImportStatement cr
 	) throws RecognitionException, TokenStreamException {
 		
-		Qualident q3;IdentList il=new IdentList();
+		Qualident q3;
+		@NotNull IdentList il=new IdentList();
 		
 		try {      // for error handling
 			q3=qualident();
@@ -3769,7 +3827,7 @@ inputState.guessing--;
 	}
 	
 	public final void importPart3(
-		NormalImportStatement cr
+			@NotNull NormalImportStatement cr
 	) throws RecognitionException, TokenStreamException {
 		
 		Qualident q2;
@@ -3794,7 +3852,7 @@ inputState.guessing--;
 		BaseScope sc
 	) throws RecognitionException, TokenStreamException {
 		
-		ImportStatementBuilder ib=new ImportStatementBuilder(); ImportStatement pc=null; QualidentList qil=null;
+		@NotNull ImportStatementBuilder ib=new ImportStatementBuilder(); @Nullable ImportStatement pc=null; @Nullable QualidentList qil=null;
 		
 		try {      // for error handling
 			switch ( LA(1)) {
@@ -3923,7 +3981,7 @@ inputState.guessing--;
 			}
 		}
 		
-	public final QualidentList  qualidentList2() throws RecognitionException, TokenStreamException {
+	public final @NotNull QualidentList  qualidentList2() throws RecognitionException, TokenStreamException {
 		QualidentList qal;
 		
 		Qualident qid;qal=new QualidentList();
@@ -3962,10 +4020,11 @@ inputState.guessing--;
 	}
 	
 	public final void importPart1_(
-		ImportStatementBuilder cr
+			@NotNull ImportStatementBuilder cr
 	) throws RecognitionException, TokenStreamException {
 		
-		IdentExpression i1=null;Qualident q1=null;
+		@Nullable IdentExpression i1=null;
+		@Nullable Qualident q1=null;
 		
 		try {      // for error handling
 			i1=ident();
@@ -3986,10 +4045,11 @@ inputState.guessing--;
 	}
 	
 	public final void importPart2_(
-		ImportStatementBuilder cr
+			@NotNull ImportStatementBuilder cr
 	) throws RecognitionException, TokenStreamException {
 		
-		Qualident q3;IdentList il=new IdentList();
+		Qualident q3;
+		@NotNull IdentList il=new IdentList();
 		
 		try {      // for error handling
 			q3=qualident();
@@ -4011,7 +4071,7 @@ inputState.guessing--;
 	}
 	
 	public final void importPart3_(
-		ImportStatementBuilder cr
+			@NotNull ImportStatementBuilder cr
 	) throws RecognitionException, TokenStreamException {
 		
 		Qualident q2;
@@ -4032,10 +4092,10 @@ inputState.guessing--;
 		}
 	}
 	
-	public final IdentList  identList2() throws RecognitionException, TokenStreamException {
+	public final @NotNull IdentList  identList2() throws RecognitionException, TokenStreamException {
 		IdentList ail;
 		
-		IdentExpression s=null;ail=new IdentList();
+		@Nullable IdentExpression s=null;ail=new IdentList();
 		
 		try {      // for error handling
 			s=ident();
@@ -4070,8 +4130,8 @@ inputState.guessing--;
 		return ail;
 	}
 	
-	public final TypeName  inhTypeName() throws RecognitionException, TokenStreamException {
-		TypeName tn;
+	public final @Nullable TypeName  inhTypeName() throws RecognitionException, TokenStreamException {
+		@Nullable TypeName tn;
 		
 		tn=null;
 		
@@ -4113,8 +4173,8 @@ inputState.guessing--;
 		return tn;
 	}
 	
-	public final FormalArgList  opfal() throws RecognitionException, TokenStreamException {
-		FormalArgList fal;
+	public final @Nullable FormalArgList  opfal() throws RecognitionException, TokenStreamException {
+		@Nullable FormalArgList fal;
 		
 		fal=null;
 		
@@ -4134,12 +4194,13 @@ inputState.guessing--;
 		return fal;
 	}
 	
-	public final Scope3  scope3(
+	public final @NotNull Scope3  scope3(
 		OS_Element parent
 	) throws RecognitionException, TokenStreamException {
 		Scope3 sc;
 		
-		sc=new Scope3(parent);ClassStatement cls=null;
+		sc=new Scope3(parent);
+		@Nullable ClassStatement cls=null;
 		
 		try {      // for error handling
 			match(LCURLY);
@@ -4247,7 +4308,7 @@ inputState.guessing--;
 	}
 	
 	public final void constructor_scope2(
-		ConstructorDefScope sc
+			@NotNull ConstructorDefScope sc
 	) throws RecognitionException, TokenStreamException {
 		
 		
@@ -4366,7 +4427,7 @@ inputState.guessing--;
 	}
 	
 	public final void scope2(
-		BaseScope sc
+			@NotNull BaseScope sc
 	) throws RecognitionException, TokenStreamException {
 		
 		
@@ -4485,10 +4546,11 @@ inputState.guessing--;
 	}
 	
 	public final void statement(
-		StatementClosure cr, OS_Element aParent
+			@NotNull StatementClosure cr, OS_Element aParent
 	) throws RecognitionException, TokenStreamException {
 		
-		Qualident q=null;ExpressionList o=null;
+		@Nullable Qualident q=null;
+		@Nullable ExpressionList o=null;
 		
 		try {      // for error handling
 			{
@@ -4585,8 +4647,8 @@ inputState.guessing--;
 		}
 	}
 	
-	public final IExpression  expression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  expression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
 		
@@ -4608,7 +4670,8 @@ inputState.guessing--;
 		OS_Element aParent
 	) throws RecognitionException, TokenStreamException {
 		
-		WithStatement ws=new WithStatement(aParent);WithContext ctx=null;
+		@NotNull WithStatement ws=new WithStatement(aParent);
+		@Nullable WithContext ctx=null;
 		
 		try {      // for error handling
 			match(LITERAL_with);
@@ -4642,7 +4705,8 @@ inputState.guessing--;
 		OS_Element aParent
 	) throws RecognitionException, TokenStreamException {
 		
-		SyntacticBlock sb=new SyntacticBlock(aParent);SyntacticBlockContext ctx=null;
+		@NotNull SyntacticBlock sb=new SyntacticBlock(aParent);
+		@Nullable SyntacticBlockContext ctx=null;
 		
 		try {      // for error handling
 			if ( inputState.guessing==0 ) {
@@ -4667,7 +4731,7 @@ inputState.guessing--;
 	}
 	
 	public final void statement2(
-		BaseScope cr
+			@NotNull BaseScope cr
 	) throws RecognitionException, TokenStreamException {
 		
 		
@@ -4763,10 +4827,10 @@ inputState.guessing--;
 	}
 	
 	public final void withStatement2(
-		BaseScope sc
+			@NotNull BaseScope sc
 	) throws RecognitionException, TokenStreamException {
 		
-		WithStatementBuilder ws=new WithStatementBuilder();VariableSequenceBuilder vsqb=ws.sb();
+		@NotNull WithStatementBuilder ws=new WithStatementBuilder();VariableSequenceBuilder vsqb=ws.sb();
 		
 		try {      // for error handling
 			match(LITERAL_with);
@@ -4794,10 +4858,10 @@ inputState.guessing--;
 	}
 	
 	public final void syntacticBlockScope2(
-		BaseScope sc
+			@NotNull BaseScope sc
 	) throws RecognitionException, TokenStreamException {
 		
-		SyntacticBlockBuilder sbb=new SyntacticBlockBuilder();
+		@NotNull SyntacticBlockBuilder sbb=new SyntacticBlockBuilder();
 		
 		try {      // for error handling
 			scope2(sbb.scope());
@@ -4816,10 +4880,11 @@ inputState.guessing--;
 	}
 	
 	public final void varStmt_i(
-		VariableStatement vs
+			@NotNull VariableStatement vs
 	) throws RecognitionException, TokenStreamException {
 		
-		TypeName tn=null;IdentExpression i=null;
+		@Nullable TypeName tn=null;
+		@Nullable IdentExpression i=null;
 		
 		try {      // for error handling
 			i=ident();
@@ -4883,10 +4948,11 @@ inputState.guessing--;
 	}
 	
 	public final void varStmt_i2(
-		VariableSequenceBuilder vsb
+			@NotNull VariableSequenceBuilder vsb
 	) throws RecognitionException, TokenStreamException {
 		
-		TypeName tn=null;IdentExpression i=null;
+		@Nullable TypeName tn=null;
+		@Nullable IdentExpression i=null;
 		
 		try {      // for error handling
 			i=ident();
@@ -4979,12 +5045,13 @@ inputState.guessing--;
 		}
 	}
 	
-	public final Scope3  functionScope(
-		FunctionDef parent
+	public final @NotNull Scope3  functionScope(
+			@NotNull FunctionDef parent
 	) throws RecognitionException, TokenStreamException {
 		Scope3 sc;
 		
-		sc=new Scope3(parent);ClassStatement cls=null;
+		sc=new Scope3(parent);
+		@Nullable ClassStatement cls=null;
 		
 		try {      // for error handling
 			match(LCURLY);
@@ -5140,7 +5207,7 @@ inputState.guessing--;
 	}
 	
 	public final void functionScope2(
-		FunctionDefScope sc
+			@NotNull FunctionDefScope sc
 	) throws RecognitionException, TokenStreamException {
 		
 		
@@ -5326,10 +5393,10 @@ inputState.guessing--;
 	}
 	
 	public final void preConditionSegment(
-		FunctionDefScope sc
+			@NotNull FunctionDefScope sc
 	) throws RecognitionException, TokenStreamException {
 		
-		Precondition p=null;
+		@Nullable Precondition p=null;
 		
 		try {      // for error handling
 			match(LITERAL_pre);
@@ -5362,7 +5429,7 @@ inputState.guessing--;
 	}
 	
 	public final void returnExpressionFunctionDefScope(
-		FunctionDefScope sc
+			@NotNull FunctionDefScope sc
 	) throws RecognitionException, TokenStreamException {
 		
 		
@@ -5415,10 +5482,10 @@ inputState.guessing--;
 	}
 	
 	public final void postConditionSegment(
-		FunctionDefScope sc
+			@NotNull FunctionDefScope sc
 	) throws RecognitionException, TokenStreamException {
 		
-		Postcondition po=null;
+		@Nullable Postcondition po=null;
 		
 		try {      // for error handling
 			match(LITERAL_post);
@@ -5475,10 +5542,11 @@ inputState.guessing--;
 		}
 	}
 	
-	public final Precondition  precondition() throws RecognitionException, TokenStreamException {
+	public final @NotNull Precondition  precondition() throws RecognitionException, TokenStreamException {
 		Precondition prec;
 		
-		prec=new Precondition();IdentExpression id=null;
+		prec=new Precondition();
+		@Nullable IdentExpression id=null;
 		
 		try {      // for error handling
 			{
@@ -5512,10 +5580,11 @@ inputState.guessing--;
 		return prec;
 	}
 	
-	public final Postcondition  postcondition() throws RecognitionException, TokenStreamException {
+	public final @NotNull Postcondition  postcondition() throws RecognitionException, TokenStreamException {
 		Postcondition postc;
 		
-		postc = new Postcondition();IdentExpression id=null;
+		postc = new Postcondition();
+		@Nullable IdentExpression id=null;
 		
 		try {      // for error handling
 			{
@@ -5549,8 +5618,8 @@ inputState.guessing--;
 		return postc;
 	}
 	
-	public final TypeName  typeName2() throws RecognitionException, TokenStreamException {
-		TypeName cr;
+	public final @Nullable TypeName  typeName2() throws RecognitionException, TokenStreamException {
+		@Nullable TypeName cr;
 		
 		cr=null;
 		
@@ -5601,12 +5670,12 @@ inputState.guessing--;
 		return cr;
 	}
 	
-	public final AliasStatement  aliasStatement(
-		OS_Element cont
+	public final @NotNull AliasStatement  aliasStatement(
+			@NotNull OS_Element cont
 	) throws RecognitionException, TokenStreamException {
 		AliasStatement pc;
 		
-		IdentExpression i1=null;pc=new AliasStatement(cont);
+		@Nullable IdentExpression i1=null;pc=new AliasStatement(cont);
 		
 		try {      // for error handling
 			match(LITERAL_alias);
@@ -5632,10 +5701,11 @@ inputState.guessing--;
 	}
 	
 	public final void aliasStatement2(
-		BaseScope sc
+			@NotNull BaseScope sc
 	) throws RecognitionException, TokenStreamException {
 		
-		AliasStatementBuilder pc = new AliasStatementBuilder();IdentExpression i1=null;
+		@NotNull AliasStatementBuilder pc = new AliasStatementBuilder();
+		@Nullable IdentExpression i1=null;
 		
 		try {      // for error handling
 			match(LITERAL_alias);
@@ -5663,10 +5733,10 @@ inputState.guessing--;
 	}
 	
 	public final void varStmt_i3(
-		VariableStatement vs
+			@NotNull VariableStatement vs
 	) throws RecognitionException, TokenStreamException {
 		
-		IdentExpression i=null;
+		@Nullable IdentExpression i=null;
 		
 		try {      // for error handling
 			i=ident();
@@ -5759,7 +5829,7 @@ inputState.guessing--;
 		}
 	}
 	
-	public final FormalArgList  formalArgList() throws RecognitionException, TokenStreamException {
+	public final @NotNull FormalArgList  formalArgList() throws RecognitionException, TokenStreamException {
 		FormalArgList fal;
 		
 		fal=new FormalArgList();
@@ -5779,7 +5849,7 @@ inputState.guessing--;
 	}
 	
 	public final void formalArgList_(
-		FormalArgList fal
+			@NotNull FormalArgList fal
 	) throws RecognitionException, TokenStreamException {
 		
 		
@@ -5829,10 +5899,13 @@ inputState.guessing--;
 		}
 	}
 	
-	public final IExpression  assignmentExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  assignmentExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
-		ee=null;IExpression e=null;IExpression e2;ExpressionKind ek=null;
+		ee=null;
+		@Nullable IExpression e=null;
+		@Nullable IExpression e2;
+		@Nullable ExpressionKind ek=null;
 		
 		try {      // for error handling
 			ee=conditionalExpression();
@@ -5967,10 +6040,11 @@ inputState.guessing--;
 	}
 	
 	public final void ifConditional(
-		IfConditional ifex
+			@NotNull IfConditional ifex
 	) throws RecognitionException, TokenStreamException {
 		
-		IfConditionalContext ifc_top=null,ifc=null;IfConditional else_=null;
+		@Nullable IfConditionalContext ifc_top=null,ifc=null;
+		@Nullable IfConditional else_=null;
 		
 		try {      // for error handling
 			match(LITERAL_if);
@@ -6090,15 +6164,15 @@ inputState.guessing--;
 	}
 	
 	public final void matchConditional(
-		MatchConditional mc, OS_Element aParent
+			@NotNull MatchConditional mc, OS_Element aParent
 	) throws RecognitionException, TokenStreamException {
 		
-		MatchConditional.MatchArm_TypeMatch mcp1=null;
-				 MatchConditional.MatchConditionalPart2 mcp2=null;
-				 MatchConditional.MatchConditionalPart3 mcp3=null;
-				 TypeName tn=null;
-				 IdentExpression i1=null;
-				 MatchContext ctx = null;
+		MatchConditional.@Nullable MatchArm_TypeMatch mcp1=null;
+				 MatchConditional.@Nullable MatchConditionalPart2 mcp2=null;
+				 MatchConditional.@Nullable MatchConditionalPart3 mcp3=null;
+				 @Nullable TypeName tn=null;
+				 @Nullable IdentExpression i1=null;
+				 @Nullable MatchContext ctx = null;
 		
 		try {      // for error handling
 			match(LITERAL_match);
@@ -6179,10 +6253,11 @@ inputState.guessing--;
 	}
 	
 	public final void caseConditional(
-		CaseConditional mc
+			@NotNull CaseConditional mc
 	) throws RecognitionException, TokenStreamException {
 		
-		CaseContext ctx = null;IExpression expr1=null;
+		@Nullable CaseContext ctx = null;
+		@Nullable IExpression expr1=null;
 		
 		try {      // for error handling
 			match(LITERAL_case);
@@ -6223,7 +6298,7 @@ inputState.guessing--;
 	}
 	
 	public final void whileLoop(
-		StatementClosure cr
+			@NotNull StatementClosure cr
 	) throws RecognitionException, TokenStreamException {
 		
 		Loop loop=cr.loop();LoopContext ctx;
@@ -6288,10 +6363,12 @@ inputState.guessing--;
 	}
 	
 	public final void frobeIteration(
-		StatementClosure cr
+			@NotNull StatementClosure cr
 	) throws RecognitionException, TokenStreamException {
 		
-		Loop loop=cr.loop();LoopContext ctx=null;IdentExpression i1=null, i2=null, i3=null;
+		Loop loop=cr.loop();
+		@Nullable LoopContext ctx=null;
+		@Nullable IdentExpression i1=null, i2=null, i3=null;
 		
 		try {      // for error handling
 			match(LITERAL_iterate);
@@ -6444,10 +6521,11 @@ inputState.guessing--;
 	}
 	
 	public final void constructExpression(
-		StatementClosure cr
+			@NotNull StatementClosure cr
 	) throws RecognitionException, TokenStreamException {
 		
-		Qualident q=null;ExpressionList o=null;
+		@Nullable Qualident q=null;
+		@Nullable ExpressionList o=null;
 		
 		try {      // for error handling
 			match(LITERAL_construct);
@@ -6515,10 +6593,10 @@ inputState.guessing--;
 	}
 	
 	public final void ifConditional2(
-		BaseScope sc
+			@NotNull BaseScope sc
 	) throws RecognitionException, TokenStreamException {
 		
-		IfConditionalBuilder ifb = new IfConditionalBuilder();
+		@NotNull IfConditionalBuilder ifb = new IfConditionalBuilder();
 		
 		try {      // for error handling
 			match(LITERAL_if);
@@ -6628,12 +6706,12 @@ inputState.guessing--;
 	}
 	
 	public final void matchConditional2(
-		BaseScope sc
+			@NotNull BaseScope sc
 	) throws RecognitionException, TokenStreamException {
 		
-		MatchConditionalBuilder mc = new MatchConditionalBuilder();
-				 TypeName tn=null;
-				 IdentExpression i1=null;
+		@NotNull MatchConditionalBuilder mc = new MatchConditionalBuilder();
+				 @Nullable TypeName tn=null;
+				 @Nullable IdentExpression i1=null;
 		
 		try {      // for error handling
 			match(LITERAL_match);
@@ -6684,10 +6762,10 @@ inputState.guessing--;
 	}
 	
 	public final void caseConditional2(
-		BaseScope sc
+			@NotNull BaseScope sc
 	) throws RecognitionException, TokenStreamException {
 		
-		CaseConditionalBuilder mc = new CaseConditionalBuilder();
+		@NotNull CaseConditionalBuilder mc = new CaseConditionalBuilder();
 		
 		try {      // for error handling
 			match(LITERAL_case);
@@ -6725,10 +6803,10 @@ inputState.guessing--;
 	}
 	
 	public final void whileLoop2(
-		BaseScope sc
+			@NotNull BaseScope sc
 	) throws RecognitionException, TokenStreamException {
 		
-		LoopBuilder loop=new LoopBuilder();LoopContext ctx;
+		@NotNull LoopBuilder loop=new LoopBuilder();LoopContext ctx;
 		
 		try {      // for error handling
 			{
@@ -6781,10 +6859,11 @@ inputState.guessing--;
 	}
 	
 	public final void frobeIteration2(
-		BaseScope cr
+			@NotNull BaseScope cr
 	) throws RecognitionException, TokenStreamException {
 		
-		LoopBuilder loop=new LoopBuilder();/*LoopContext ctx=null;*/IdentExpression i1=null, i2=null, i3=null;
+		@NotNull LoopBuilder loop=new LoopBuilder();/*LoopContext ctx=null;*/
+		@Nullable IdentExpression i1=null, i2=null, i3=null;
 		
 		try {      // for error handling
 			match(LITERAL_iterate);
@@ -6934,10 +7013,11 @@ inputState.guessing--;
 	}
 	
 	public final void constructExpression2(
-		BaseScope cr
+			@NotNull BaseScope cr
 	) throws RecognitionException, TokenStreamException {
 		
-		Qualident q=null;ExpressionList o=null;
+		@Nullable Qualident q=null;
+		@Nullable ExpressionList o=null;
 		
 		try {      // for error handling
 			match(LITERAL_construct);
@@ -7005,7 +7085,7 @@ inputState.guessing--;
 	}
 	
 	public final void yieldExpression(
-		BaseScope cr
+			@NotNull BaseScope cr
 	) throws RecognitionException, TokenStreamException {
 		
 		
@@ -7026,8 +7106,8 @@ inputState.guessing--;
 		}
 	}
 	
-	public final IExpression  conditionalExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  conditionalExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
 		
@@ -7045,11 +7125,11 @@ inputState.guessing--;
 		return ee;
 	}
 	
-	public final IExpression  logicalOrExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  logicalOrExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				IExpression e3=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=logicalAndExpression();
@@ -7081,10 +7161,11 @@ inputState.guessing--;
 		return ee;
 	}
 	
-	public final IExpression  logicalAndExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  logicalAndExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
-		ee=null;IExpression e3=null;
+		ee=null;
+		@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=inclusiveOrExpression();
@@ -7116,10 +7197,11 @@ inputState.guessing--;
 		return ee;
 	}
 	
-	public final IExpression  inclusiveOrExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  inclusiveOrExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
-		ee=null;IExpression e3=null;
+		ee=null;
+		@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=exclusiveOrExpression();
@@ -7151,11 +7233,11 @@ inputState.guessing--;
 		return ee;
 	}
 	
-	public final IExpression  exclusiveOrExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  exclusiveOrExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				IExpression e3=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=andExpression();
@@ -7187,11 +7269,11 @@ inputState.guessing--;
 		return ee;
 	}
 	
-	public final IExpression  andExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  andExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				IExpression e3=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=equalityExpression();
@@ -7223,12 +7305,12 @@ inputState.guessing--;
 		return ee;
 	}
 	
-	public final IExpression  equalityExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  equalityExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				ExpressionKind e2=null;
-				IExpression e3=null;
+				@Nullable ExpressionKind e2=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=relationalExpression();
@@ -7283,13 +7365,13 @@ inputState.guessing--;
 		return ee;
 	}
 	
-	public final IExpression  relationalExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  relationalExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				ExpressionKind e2=null; // should never be null (below)
-				IExpression e3=null;
-				TypeName tn=null;
+				@Nullable ExpressionKind e2=null; // should never be null (below)
+				@Nullable IExpression e3=null;
+				@Nullable TypeName tn=null;
 		
 		try {      // for error handling
 			ee=shiftExpression();
@@ -7376,11 +7458,12 @@ inputState.guessing--;
 		return ee;
 	}
 	
-	public final IExpression  shiftExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  shiftExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
-		ee=null;ExpressionKind e2=null;
-				IExpression e3=null;
+		ee=null;
+		@Nullable ExpressionKind e2=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=additiveExpression();
@@ -7443,11 +7526,12 @@ inputState.guessing--;
 		return ee;
 	}
 	
-	public final IExpression  additiveExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  additiveExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
-		ee=null;ExpressionKind e2=null;
-				IExpression e3=null;
+		ee=null;
+		@Nullable ExpressionKind e2=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			ee=multiplicativeExpression();
@@ -7502,11 +7586,12 @@ inputState.guessing--;
 		return ee;
 	}
 	
-	public final IExpression  multiplicativeExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  multiplicativeExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				IExpression e3=null;ExpressionKind e2=null;
+				@Nullable IExpression e3=null;
+		@Nullable ExpressionKind e2=null;
 		
 		try {      // for error handling
 			ee=unaryExpression();
@@ -7569,11 +7654,11 @@ inputState.guessing--;
 		return ee;
 	}
 	
-	public final IExpression  unaryExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  unaryExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				IExpression e3=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			switch ( LA(1)) {
@@ -7650,11 +7735,11 @@ inputState.guessing--;
 		return ee;
 	}
 	
-	public final IExpression  unaryExpressionNotPlusMinus() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  unaryExpressionNotPlusMinus() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
 		ee=null;
-				IExpression e3=null;
+				@Nullable IExpression e3=null;
 		
 		try {      // for error handling
 			switch ( LA(1)) {
@@ -7711,16 +7796,19 @@ inputState.guessing--;
 		return ee;
 	}
 	
-	public final IExpression  postfixExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  postfixExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
-		Token  lb = null;
-		Token  rb = null;
-		Token  lp = null;
-		Token  in = null;
-		Token  de = null;
-		ee=null;TypeCastExpression tc=null;TypeName tn=null;
-				IExpression e3=null;ExpressionList el=null;
+		@Nullable Token  lb = null;
+		@Nullable Token  rb = null;
+		@Nullable Token  lp = null;
+		@Nullable Token  in = null;
+		@Nullable Token  de = null;
+		ee=null;
+		@Nullable TypeCastExpression tc=null;
+		@Nullable TypeName tn=null;
+				@Nullable IExpression e3=null;
+		@Nullable ExpressionList el=null;
 		
 		try {      // for error handling
 			ee=primaryExpression();
@@ -7798,7 +7886,7 @@ inputState.guessing--;
 					}
 					}
 					if ( inputState.guessing==0 ) {
-						ProcedureCallExpression pce=new ProcedureCallExpression();
+						@NotNull ProcedureCallExpression pce=new ProcedureCallExpression();
 						pce.identifier(ee);
 						pce.setArgs(el);
 						ee=pce;
@@ -7886,11 +7974,13 @@ inputState.guessing--;
 		return ee;
 	}
 	
-	public final IExpression  primaryExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
+	public final @Nullable IExpression  primaryExpression() throws RecognitionException, TokenStreamException {
+		@Nullable IExpression ee;
 		
-		ee=null;FuncExpr ppc=null;IdentExpression e=null;
-				ExpressionList el=null;
+		ee=null;
+		@Nullable FuncExpr ppc=null;
+		@Nullable IdentExpression e=null;
+				@Nullable ExpressionList el=null;
 		
 		try {      // for error handling
 			switch ( LA(1)) {
@@ -7980,13 +8070,15 @@ inputState.guessing--;
 		return ee;
 	}
 	
-	public final IExpression  dot_expression_or_procedure_call(
+	public final @Nullable IExpression  dot_expression_or_procedure_call(
 		IExpression e1
 	) throws RecognitionException, TokenStreamException {
-		IExpression ee;
+		@Nullable IExpression ee;
 		
-		Token  lp2 = null;
-		ee=null;ExpressionList el=null;IdentExpression e=null;
+		@Nullable Token  lp2 = null;
+		ee=null;
+		@Nullable ExpressionList el=null;
+		@Nullable IdentExpression e=null;
 		
 		try {      // for error handling
 			e=ident();
@@ -8034,7 +8126,7 @@ inputState.guessing--;
 				}
 				}
 				if ( inputState.guessing==0 ) {
-					ProcedureCallExpression pce=new ProcedureCallExpression();
+					@NotNull ProcedureCallExpression pce=new ProcedureCallExpression();
 					pce.identifier(ee);
 					pce.setArgs(el);
 					ee=pce;
@@ -8061,10 +8153,13 @@ inputState.guessing--;
 	}
 	
 	public final void funcExpr(
-		FuncExpr pc
+			@NotNull FuncExpr pc
 	) throws RecognitionException, TokenStreamException {
 		
-		Scope3 sc = null;TypeName tn=null;FuncExprContext ctx=null;FormalArgList fal=null;
+		@Nullable Scope3 sc = null;
+		@Nullable TypeName tn=null;
+		@Nullable FuncExprContext ctx=null;
+		@Nullable FormalArgList fal=null;
 		
 		try {      // for error handling
 			{
@@ -8222,7 +8317,7 @@ inputState.guessing--;
 	}
 	
 	public final void elseif_part(
-		IfConditional ifex
+			@NotNull IfConditional ifex
 	) throws RecognitionException, TokenStreamException {
 		
 		
@@ -8269,7 +8364,7 @@ inputState.guessing--;
 	}
 	
 	public final void elseif_part2(
-		IfConditionalBuilder.Doublet ifex
+		IfConditionalBuilder.@NotNull Doublet ifex
 	) throws RecognitionException, TokenStreamException {
 		
 		
@@ -8309,7 +8404,7 @@ inputState.guessing--;
 		}
 	}
 	
-	public final TypeOfTypeName  typeOfTypeName2() throws RecognitionException, TokenStreamException {
+	public final @NotNull TypeOfTypeName  typeOfTypeName2() throws RecognitionException, TokenStreamException {
 		TypeOfTypeName tn;
 		
 		tn=new TypeOfTypeName(cur);
@@ -8332,10 +8427,10 @@ inputState.guessing--;
 		return tn;
 	}
 	
-	public final NormalTypeName  normalTypeName2() throws RecognitionException, TokenStreamException {
+	public final @NotNull NormalTypeName  normalTypeName2() throws RecognitionException, TokenStreamException {
 		NormalTypeName tn;
 		
-		tn=new RegularTypeName(cur); TypeNameList rtn=null;
+		tn=new RegularTypeName(cur); @Nullable TypeNameList rtn=null;
 		
 		try {      // for error handling
 			regularQualifiers2(tn);
@@ -8484,10 +8579,11 @@ inputState.guessing--;
 		return tn;
 	}
 	
-	public final GenericTypeName  genericTypeName2() throws RecognitionException, TokenStreamException {
+	public final @NotNull GenericTypeName  genericTypeName2() throws RecognitionException, TokenStreamException {
 		GenericTypeName tn;
 		
-		tn=new GenericTypeName(cur);TypeName tn2=null;
+		tn=new GenericTypeName(cur);
+		@Nullable TypeName tn2=null;
 		
 		try {      // for error handling
 			{
@@ -8539,8 +8635,8 @@ inputState.guessing--;
 		return tn;
 	}
 	
-	public final FuncTypeName  functionTypeName2() throws RecognitionException, TokenStreamException {
-		FuncTypeName tn;
+	public final @Nullable FuncTypeName  functionTypeName2() throws RecognitionException, TokenStreamException {
+		@Nullable FuncTypeName tn;
 		
 		tn=null;
 		
@@ -8576,7 +8672,7 @@ inputState.guessing--;
 	}
 	
 	public final void regularQualifiers2(
-		NormalTypeName fp
+			@NotNull NormalTypeName fp
 	) throws RecognitionException, TokenStreamException {
 		
 		
@@ -8672,10 +8768,11 @@ inputState.guessing--;
 		}
 	}
 	
-	public final FuncTypeName  functionTypeName2_function() throws RecognitionException, TokenStreamException {
+	public final @NotNull FuncTypeName  functionTypeName2_function() throws RecognitionException, TokenStreamException {
 		FuncTypeName tn;
 		
-		tn=new FuncTypeName(cur); TypeName rtn=null; TypeNameList tnl=null;FormalArgList op=null;
+		tn=new FuncTypeName(cur); @Nullable TypeName rtn=null; @Nullable TypeNameList tnl=null;
+		@Nullable FormalArgList op=null;
 		
 		try {      // for error handling
 			{
@@ -8778,10 +8875,11 @@ inputState.guessing--;
 		return tn;
 	}
 	
-	public final FuncTypeName  functionTypeName2_procedure() throws RecognitionException, TokenStreamException {
+	public final @NotNull FuncTypeName  functionTypeName2_procedure() throws RecognitionException, TokenStreamException {
 		FuncTypeName tn;
 		
-		tn=new FuncTypeName(cur); TypeNameList tnl=null;FormalArgList op=null;
+		tn=new FuncTypeName(cur); @Nullable TypeNameList tnl=null;
+		@Nullable FormalArgList op=null;
 		
 		try {      // for error handling
 			{
@@ -8853,10 +8951,11 @@ inputState.guessing--;
 	}
 	
 	public final void formalArgListItem_priv(
-		FormalArgListItem fali
+			@NotNull FormalArgListItem fali
 	) throws RecognitionException, TokenStreamException {
 		
-		TypeName tn=null;IdentExpression i=null;
+		@Nullable TypeName tn=null;
+		@Nullable IdentExpression i=null;
 		
 		try {      // for error handling
 			{
@@ -9039,507 +9138,507 @@ inputState.guessing--;
 	};
 	
 	private static final long[] mk_tokenSet_0() {
-		long[] data = { 2L, 0L};
+		long @NotNull [] data = { 2L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_0 = new BitSet(mk_tokenSet_0());
 	private static final long[] mk_tokenSet_1() {
-		long[] data = { 1125907959939138L, 0L};
+		long @NotNull [] data = { 1125907959939138L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_1 = new BitSet(mk_tokenSet_1());
 	private static final long[] mk_tokenSet_2() {
-		long[] data = { -219902359568526L, 1973610486956031L, 0L, 0L};
+		long @NotNull [] data = { -219902359568526L, 1973610486956031L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_2 = new BitSet(mk_tokenSet_2());
 	private static final long[] mk_tokenSet_3() {
-		long[] data = { 71837665500642626L, 1970861705986048L, 0L, 0L};
+		long @NotNull [] data = { 71837665500642626L, 1970861705986048L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_3 = new BitSet(mk_tokenSet_3());
 	private static final long[] mk_tokenSet_4() {
-		long[] data = { -8796093022350L, 8726823789658111L, 0L, 0L};
+		long @NotNull [] data = { -8796093022350L, 8726823789658111L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_4 = new BitSet(mk_tokenSet_4());
 	private static final long[] mk_tokenSet_5() {
-		long[] data = { 65056427525308738L, 1970324836974592L, 0L, 0L};
+		long @NotNull [] data = { 65056427525308738L, 1970324836974592L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_5 = new BitSet(mk_tokenSet_5());
 	private static final long[] mk_tokenSet_6() {
-		long[] data = { 1125907965182274L, 0L};
+		long @NotNull [] data = { 1125907965182274L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_6 = new BitSet(mk_tokenSet_6());
 	private static final long[] mk_tokenSet_7() {
-		long[] data = { -219902359568526L, 1971411463700479L, 0L, 0L};
+		long @NotNull [] data = { -219902359568526L, 1971411463700479L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_7 = new BitSet(mk_tokenSet_7());
 	private static final long[] mk_tokenSet_8() {
-		long[] data = { -8796127035534L, 1973610486956031L, 0L, 0L};
+		long @NotNull [] data = { -8796127035534L, 1973610486956031L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_8 = new BitSet(mk_tokenSet_8());
 	private static final long[] mk_tokenSet_9() {
-		long[] data = { 459008L, 0L};
+		long @NotNull [] data = { 459008L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_9 = new BitSet(mk_tokenSet_9());
 	private static final long[] mk_tokenSet_10() {
-		long[] data = { 17190879232L, 0L};
+		long @NotNull [] data = { 17190879232L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_10 = new BitSet(mk_tokenSet_10());
 	private static final long[] mk_tokenSet_11() {
-		long[] data = { 71820073314598210L, 1970861705986048L, 0L, 0L};
+		long @NotNull [] data = { 71820073314598210L, 1970861705986048L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_11 = new BitSet(mk_tokenSet_11());
 	private static final long[] mk_tokenSet_12() {
-		long[] data = { 22020096L, 0L};
+		long @NotNull [] data = { 22020096L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_12 = new BitSet(mk_tokenSet_12());
 	private static final long[] mk_tokenSet_13() {
-		long[] data = { 12582912L, 0L};
+		long @NotNull [] data = { 12582912L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_13 = new BitSet(mk_tokenSet_13());
 	private static final long[] mk_tokenSet_14() {
-		long[] data = { 8388608L, 0L};
+		long @NotNull [] data = { 8388608L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_14 = new BitSet(mk_tokenSet_14());
 	private static final long[] mk_tokenSet_15() {
-		long[] data = { 105553118363904L, 0L};
+		long @NotNull [] data = { 105553118363904L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_15 = new BitSet(mk_tokenSet_15());
 	private static final long[] mk_tokenSet_16() {
-		long[] data = { 1125907959939072L, 0L};
+		long @NotNull [] data = { 1125907959939072L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_16 = new BitSet(mk_tokenSet_16());
 	private static final long[] mk_tokenSet_17() {
-		long[] data = { 42402048L, 0L};
+		long @NotNull [] data = { 42402048L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_17 = new BitSet(mk_tokenSet_17());
 	private static final long[] mk_tokenSet_18() {
-		long[] data = { 16777216L, 0L};
+		long @NotNull [] data = { 16777216L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_18 = new BitSet(mk_tokenSet_18());
 	private static final long[] mk_tokenSet_19() {
-		long[] data = { 11025664L, 2145583104L, 0L, 0L};
+		long @NotNull [] data = { 11025664L, 2145583104L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_19 = new BitSet(mk_tokenSet_19());
 	private static final long[] mk_tokenSet_20() {
-		long[] data = { -72057576427586256L, 2147483647L, 0L, 0L};
+		long @NotNull [] data = { -72057576427586256L, 2147483647L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_20 = new BitSet(mk_tokenSet_20());
 	private static final long[] mk_tokenSet_21() {
-		long[] data = { 71837665500642560L, 1689386729275392L, 0L, 0L};
+		long @NotNull [] data = { 71837665500642560L, 1689386729275392L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_21 = new BitSet(mk_tokenSet_21());
 	private static final long[] mk_tokenSet_22() {
-		long[] data = { 1610645760L, 0L};
+		long @NotNull [] data = { 1610645760L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_22 = new BitSet(mk_tokenSet_22());
 	private static final long[] mk_tokenSet_23() {
-		long[] data = { 65056427567710464L, 0L};
+		long @NotNull [] data = { 65056427567710464L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_23 = new BitSet(mk_tokenSet_23());
 	private static final long[] mk_tokenSet_24() {
-		long[] data = { 56048712874492160L, 0L};
+		long @NotNull [] data = { 56048712874492160L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_24 = new BitSet(mk_tokenSet_24());
 	private static final long[] mk_tokenSet_25() {
-		long[] data = { 71908034278833408L, 1689386729275392L, 0L, 0L};
+		long @NotNull [] data = { 71908034278833408L, 1689386729275392L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_25 = new BitSet(mk_tokenSet_25());
 	private static final long[] mk_tokenSet_26() {
-		long[] data = { 65055912171634944L, 0L};
+		long @NotNull [] data = { 65055912171634944L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_26 = new BitSet(mk_tokenSet_26());
 	private static final long[] mk_tokenSet_27() {
-		long[] data = { 65055912171634944L, 1688849860263936L, 0L, 0L};
+		long @NotNull [] data = { 65055912171634944L, 1688849860263936L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_27 = new BitSet(mk_tokenSet_27());
 	private static final long[] mk_tokenSet_28() {
-		long[] data = { 62839262339185920L, 1970861705986048L, 0L, 0L};
+		long @NotNull [] data = { 62839262339185920L, 1970861705986048L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_28 = new BitSet(mk_tokenSet_28());
 	private static final long[] mk_tokenSet_29() {
-		long[] data = { 56049228270567680L, 1970324836974592L, 0L, 0L};
+		long @NotNull [] data = { 56049228270567680L, 1970324836974592L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_29 = new BitSet(mk_tokenSet_29());
 	private static final long[] mk_tokenSet_30() {
-		long[] data = { 65056427525308672L, 1970324836974592L, 0L, 0L};
+		long @NotNull [] data = { 65056427525308672L, 1970324836974592L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_30 = new BitSet(mk_tokenSet_30());
 	private static final long[] mk_tokenSet_31() {
-		long[] data = { 71820073314598144L, 1970861705986048L, 0L, 0L};
+		long @NotNull [] data = { 71820073314598144L, 1970861705986048L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_31 = new BitSet(mk_tokenSet_31());
 	private static final long[] mk_tokenSet_32() {
-		long[] data = { 56049228270567680L, 0L};
+		long @NotNull [] data = { 56049228270567680L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_32 = new BitSet(mk_tokenSet_32());
 	private static final long[] mk_tokenSet_33() {
-		long[] data = { 65056427525308672L, 0L};
+		long @NotNull [] data = { 65056427525308672L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_33 = new BitSet(mk_tokenSet_33());
 	private static final long[] mk_tokenSet_34() {
-		long[] data = { 34013440L, 0L};
+		long @NotNull [] data = { 34013440L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_34 = new BitSet(mk_tokenSet_34());
 	private static final long[] mk_tokenSet_35() {
-		long[] data = { 65056427525308672L, 1688849860263936L, 0L, 0L};
+		long @NotNull [] data = { 65056427525308672L, 1688849860263936L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_35 = new BitSet(mk_tokenSet_35());
 	private static final long[] mk_tokenSet_36() {
-		long[] data = { 56048712874492160L, 1688849860263936L, 0L, 0L};
+		long @NotNull [] data = { 56048712874492160L, 1688849860263936L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_36 = new BitSet(mk_tokenSet_36());
 	private static final long[] mk_tokenSet_37() {
-		long[] data = { 56048712874493184L, 0L};
+		long @NotNull [] data = { 56048712874493184L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_37 = new BitSet(mk_tokenSet_37());
 	private static final long[] mk_tokenSet_38() {
-		long[] data = { 38034314348232960L, 0L};
+		long @NotNull [] data = { 38034314348232960L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_38 = new BitSet(mk_tokenSet_38());
 	private static final long[] mk_tokenSet_39() {
-		long[] data = { 65056436115259714L, 1970324836974592L, 0L, 0L};
+		long @NotNull [] data = { 65056436115259714L, 1970324836974592L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_39 = new BitSet(mk_tokenSet_39());
 	private static final long[] mk_tokenSet_40() {
-		long[] data = { 65056436115243330L, 1970324836974592L, 0L, 0L};
+		long @NotNull [] data = { 65056436115243330L, 1970324836974592L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_40 = new BitSet(mk_tokenSet_40());
 	private static final long[] mk_tokenSet_41() {
-		long[] data = { 71908034278833474L, 1970861705986048L, 0L, 0L};
+		long @NotNull [] data = { 71908034278833474L, 1970861705986048L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_41 = new BitSet(mk_tokenSet_41());
 	private static final long[] mk_tokenSet_42() {
-		long[] data = { 65056436115259648L, 1688849860263936L, 0L, 0L};
+		long @NotNull [] data = { 65056436115259648L, 1688849860263936L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_42 = new BitSet(mk_tokenSet_42());
 	private static final long[] mk_tokenSet_43() {
-		long[] data = { 65056436115243264L, 1688849860263936L, 0L, 0L};
+		long @NotNull [] data = { 65056436115243264L, 1688849860263936L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_43 = new BitSet(mk_tokenSet_43());
 	private static final long[] mk_tokenSet_44() {
-		long[] data = { 8602517504L, 0L};
+		long @NotNull [] data = { 8602517504L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_44 = new BitSet(mk_tokenSet_44());
 	private static final long[] mk_tokenSet_45() {
-		long[] data = { 56189450773889792L, 1688849860263936L, 0L, 0L};
+		long @NotNull [] data = { 56189450773889792L, 1688849860263936L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_45 = new BitSet(mk_tokenSet_45());
 	private static final long[] mk_tokenSet_46() {
-		long[] data = { 7643255091543296L, 536869011456L, 0L, 0L};
+		long @NotNull [] data = { 7643255091543296L, 536869011456L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_46 = new BitSet(mk_tokenSet_46());
 	private static final long[] mk_tokenSet_47() {
-		long[] data = { -55407122092327632L, 536870911999L, 0L, 0L};
+		long @NotNull [] data = { -55407122092327632L, 536870911999L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_47 = new BitSet(mk_tokenSet_47());
 	private static final long[] mk_tokenSet_48() {
-		long[] data = { 16650454363061504L, 536869011456L, 0L, 0L};
+		long @NotNull [] data = { 16650454363061504L, 536869011456L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_48 = new BitSet(mk_tokenSet_48());
 	private static final long[] mk_tokenSet_49() {
-		long[] data = { -79164837200014L, 8726823789658111L, 0L, 0L};
+		long @NotNull [] data = { -79164837200014L, 8726823789658111L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_49 = new BitSet(mk_tokenSet_49());
 	private static final long[] mk_tokenSet_50() {
-		long[] data = { 7635008754302208L, 536869011456L, 0L, 0L};
+		long @NotNull [] data = { 7635008754302208L, 536869011456L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_50 = new BitSet(mk_tokenSet_50());
 	private static final long[] mk_tokenSet_51() {
-		long[] data = { -55407119944843984L, 1086626725887L, 0L, 0L};
+		long @NotNull [] data = { -55407119944843984L, 1086626725887L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_51 = new BitSet(mk_tokenSet_51());
 	private static final long[] mk_tokenSet_52() {
-		long[] data = { 7643255108320512L, 536869011456L, 0L, 0L};
+		long @NotNull [] data = { 7643255108320512L, 536869011456L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_52 = new BitSet(mk_tokenSet_52());
 	private static final long[] mk_tokenSet_53() {
-		long[] data = { -79164871213198L, 8726823789658111L, 0L, 0L};
+		long @NotNull [] data = { -79164871213198L, 8726823789658111L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_53 = new BitSet(mk_tokenSet_53());
 	private static final long[] mk_tokenSet_54() {
-		long[] data = { 7643255628414208L, 536869011456L, 0L, 0L};
+		long @NotNull [] data = { 7643255628414208L, 536869011456L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_54 = new BitSet(mk_tokenSet_54());
 	private static final long[] mk_tokenSet_55() {
-		long[] data = { -55407121555456720L, 536870911999L, 0L, 0L};
+		long @NotNull [] data = { -55407121555456720L, 536870911999L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_55 = new BitSet(mk_tokenSet_55());
 	private static final long[] mk_tokenSet_56() {
-		long[] data = { 16650454899932416L, 536869011456L, 0L, 0L};
+		long @NotNull [] data = { 16650454899932416L, 536869011456L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_56 = new BitSet(mk_tokenSet_56());
 	private static final long[] mk_tokenSet_57() {
-		long[] data = { -237503106777808L, 1086626725887L, 0L, 0L};
+		long @NotNull [] data = { -237503106777808L, 1086626725887L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_57 = new BitSet(mk_tokenSet_57());
 	private static final long[] mk_tokenSet_58() {
-		long[] data = { -55407119407973072L, 1086626725887L, 0L, 0L};
+		long @NotNull [] data = { -55407119407973072L, 1086626725887L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_58 = new BitSet(mk_tokenSet_58());
 	private static final long[] mk_tokenSet_59() {
-		long[] data = { 7643255645191424L, 536869011456L, 0L, 0L};
+		long @NotNull [] data = { 7643255645191424L, 536869011456L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_59 = new BitSet(mk_tokenSet_59());
 	private static final long[] mk_tokenSet_60() {
-		long[] data = { -219910920733392L, 6756498952683519L, 0L, 0L};
+		long @NotNull [] data = { -219910920733392L, 6756498952683519L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_60 = new BitSet(mk_tokenSet_60());
 	private static final long[] mk_tokenSet_61() {
-		long[] data = { 71837665500642560L, 6755949194969088L, 0L, 0L};
+		long @NotNull [] data = { 71837665500642560L, 6755949194969088L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_61 = new BitSet(mk_tokenSet_61());
 	private static final long[] mk_tokenSet_62() {
-		long[] data = { 16668047085976832L, 536869011456L, 0L, 0L};
+		long @NotNull [] data = { 16668047085976832L, 536869011456L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_62 = new BitSet(mk_tokenSet_62());
 	private static final long[] mk_tokenSet_63() {
-		long[] data = { 8598323200L, 0L};
+		long @NotNull [] data = { 8598323200L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_63 = new BitSet(mk_tokenSet_63());
 	private static final long[] mk_tokenSet_64() {
-		long[] data = { 71837674090577664L, 1689386729275392L, 0L, 0L};
+		long @NotNull [] data = { 71837674090577664L, 1689386729275392L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_64 = new BitSet(mk_tokenSet_64());
 	private static final long[] mk_tokenSet_65() {
-		long[] data = { 7638857045032192L, 536869011456L, 0L, 0L};
+		long @NotNull [] data = { 7638857045032192L, 536869011456L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_65 = new BitSet(mk_tokenSet_65());
 	private static final long[] mk_tokenSet_66() {
-		long[] data = { -55411520138838736L, 536870911999L, 0L, 0L};
+		long @NotNull [] data = { -55411520138838736L, 536870911999L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_66 = new BitSet(mk_tokenSet_66());
 	private static final long[] mk_tokenSet_67() {
-		long[] data = { 16646056316550400L, 536869011456L, 0L, 0L};
+		long @NotNull [] data = { 16646056316550400L, 536869011456L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_67 = new BitSet(mk_tokenSet_67());
 	private static final long[] mk_tokenSet_68() {
-		long[] data = { -241901153288912L, 1971411463700479L, 0L, 0L};
+		long @NotNull [] data = { -241901153288912L, 1971411463700479L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_68 = new BitSet(mk_tokenSet_68());
 	private static final long[] mk_tokenSet_69() {
-		long[] data = { -55411517991355088L, 1086626725887L, 0L, 0L};
+		long @NotNull [] data = { -55411517991355088L, 1086626725887L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_69 = new BitSet(mk_tokenSet_69());
 	private static final long[] mk_tokenSet_70() {
-		long[] data = { 7637208314461440L, 536869011456L, 0L, 0L};
+		long @NotNull [] data = { 7637208314461440L, 536869011456L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_70 = new BitSet(mk_tokenSet_70());
 	private static final long[] mk_tokenSet_71() {
-		long[] data = { -55395574535881424L, 1086626725887L, 0L, 0L};
+		long @NotNull [] data = { -55395574535881424L, 1086626725887L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_71 = new BitSet(mk_tokenSet_71());
 	private static final long[] mk_tokenSet_72() {
-		long[] data = { -55395576683365072L, 536870911999L, 0L, 0L};
+		long @NotNull [] data = { -55395576683365072L, 536870911999L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_72 = new BitSet(mk_tokenSet_72());
 	private static final long[] mk_tokenSet_73() {
-		long[] data = { 7654800517545216L, 536869011456L, 0L, 0L};
+		long @NotNull [] data = { 7654800517545216L, 536869011456L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_73 = new BitSet(mk_tokenSet_73());
 	private static final long[] mk_tokenSet_74() {
-		long[] data = { 16661999772024064L, 536869011456L, 0L, 0L};
+		long @NotNull [] data = { 16661999772024064L, 536869011456L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_74 = new BitSet(mk_tokenSet_74());
 	private static final long[] mk_tokenSet_75() {
-		long[] data = { -225958234686160L, 1689936486989823L, 0L, 0L};
+		long @NotNull [] data = { -225958234686160L, 1689936486989823L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_75 = new BitSet(mk_tokenSet_75());
 	private static final long[] mk_tokenSet_76() {
-		long[] data = { 27802880L, 2145583104L, 0L, 0L};
+		long @NotNull [] data = { 27802880L, 2145583104L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_76 = new BitSet(mk_tokenSet_76());
 	private static final long[] mk_tokenSet_77() {
-		long[] data = { -7001148919054544L, 1688852007747583L, 0L, 0L};
+		long @NotNull [] data = { -7001148919054544L, 1688852007747583L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_77 = new BitSet(mk_tokenSet_77());
 	private static final long[] mk_tokenSet_78() {
-		long[] data = { 71820081904533248L, 1970861705986048L, 0L, 0L};
+		long @NotNull [] data = { 71820081904533248L, 1970861705986048L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_78 = new BitSet(mk_tokenSet_78());
 	private static final long[] mk_tokenSet_79() {
-		long[] data = { 4194304L, 0L};
+		long @NotNull [] data = { 4194304L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_79 = new BitSet(mk_tokenSet_79());
 	private static final long[] mk_tokenSet_80() {
-		long[] data = { -144115187941638144L, 15L, 0L, 0L};
+		long @NotNull [] data = { -144115187941638144L, 15L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_80 = new BitSet(mk_tokenSet_80());
 	private static final long[] mk_tokenSet_81() {
-		long[] data = { -8796093022350L, 9007199254740991L, 0L, 0L};
+		long @NotNull [] data = { -8796093022350L, 9007199254740991L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_81 = new BitSet(mk_tokenSet_81());
 	private static final long[] mk_tokenSet_82() {
-		long[] data = { 11025664L, 4293066752L, 0L, 0L};
+		long @NotNull [] data = { 11025664L, 4293066752L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_82 = new BitSet(mk_tokenSet_82());
 	private static final long[] mk_tokenSet_83() {
-		long[] data = { -72057576444363472L, 2147483647L, 0L, 0L};
+		long @NotNull [] data = { -72057576444363472L, 2147483647L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_83 = new BitSet(mk_tokenSet_83());
 	private static final long[] mk_tokenSet_84() {
-		long[] data = { 15219968L, 2145583104L, 0L, 0L};
+		long @NotNull [] data = { 15219968L, 2145583104L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_84 = new BitSet(mk_tokenSet_84());
 	private static final long[] mk_tokenSet_85() {
-		long[] data = { -219910920733392L, 8445348812947455L, 0L, 0L};
+		long @NotNull [] data = { -219910920733392L, 8445348812947455L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_85 = new BitSet(mk_tokenSet_85());
 	private static final long[] mk_tokenSet_86() {
-		long[] data = { 17179869184L, 3584L, 0L, 0L};
+		long @NotNull [] data = { 17179869184L, 3584L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_86 = new BitSet(mk_tokenSet_86());
 	private static final long[] mk_tokenSet_87() {
-		long[] data = { 35184372089088L, 280377075695616L, 0L, 0L};
+		long @NotNull [] data = { 35184372089088L, 280377075695616L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_87 = new BitSet(mk_tokenSet_87());
 	private static final long[] mk_tokenSet_88() {
-		long[] data = { -55415366282052304L, 1086626725887L, 0L, 0L};
+		long @NotNull [] data = { -55415366282052304L, 1086626725887L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_88 = new BitSet(mk_tokenSet_88());
 	private static final long[] mk_tokenSet_89() {
-		long[] data = { -64422567684276944L, 536870911999L, 0L, 0L};
+		long @NotNull [] data = { -64422567684276944L, 536870911999L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_89 = new BitSet(mk_tokenSet_89());
 	private static final long[] mk_tokenSet_90() {
-		long[] data = { 16650454363061504L, 549753913344L, 0L, 0L};
+		long @NotNull [] data = { 16650454363061504L, 549753913344L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_90 = new BitSet(mk_tokenSet_90());
 	private static final long[] mk_tokenSet_91() {
-		long[] data = { 16668047085976832L, 549753913344L, 0L, 0L};
+		long @NotNull [] data = { 16668047085976832L, 549753913344L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_91 = new BitSet(mk_tokenSet_91());
 	private static final long[] mk_tokenSet_92() {
-		long[] data = { -142L, 9007199254740991L, 0L, 0L};
+		long @NotNull [] data = { -142L, 9007199254740991L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_92 = new BitSet(mk_tokenSet_92());
 	private static final long[] mk_tokenSet_93() {
-		long[] data = { 256L, 0L};
+		long @NotNull [] data = { 256L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_93 = new BitSet(mk_tokenSet_93());
 	private static final long[] mk_tokenSet_94() {
-		long[] data = { 35192968855808L, 142936511610880L, 0L, 0L};
+		long @NotNull [] data = { 35192968855808L, 142936511610880L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_94 = new BitSet(mk_tokenSet_94());
 	private static final long[] mk_tokenSet_95() {
-		long[] data = { 35184376283392L, 246290604621824L, 0L, 0L};
+		long @NotNull [] data = { 35184376283392L, 246290604621824L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_95 = new BitSet(mk_tokenSet_95());
 	private static final long[] mk_tokenSet_96() {
-		long[] data = { -79164871213198L, 2112148952055807L, 0L, 0L};
+		long @NotNull [] data = { -79164871213198L, 2112148952055807L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_96 = new BitSet(mk_tokenSet_96());
 	private static final long[] mk_tokenSet_97() {
-		long[] data = { -219902359568526L, 2112148952055807L, 0L, 0L};
+		long @NotNull [] data = { -219902359568526L, 2112148952055807L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_97 = new BitSet(mk_tokenSet_97());
 	private static final long[] mk_tokenSet_98() {
-		long[] data = { 35184372089088L, 246290604621824L, 0L, 0L};
+		long @NotNull [] data = { 35184372089088L, 246290604621824L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_98 = new BitSet(mk_tokenSet_98());
 	private static final long[] mk_tokenSet_99() {
-		long[] data = { 35192966218496L, 140737488355328L, 0L, 0L};
+		long @NotNull [] data = { 35192966218496L, 140737488355328L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_99 = new BitSet(mk_tokenSet_99());
 	private static final long[] mk_tokenSet_100() {
-		long[] data = { 8594128896L, 0L};
+		long @NotNull [] data = { 8594128896L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_100 = new BitSet(mk_tokenSet_100());

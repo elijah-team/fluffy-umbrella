@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.contexts;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.lang.*;
 
@@ -26,11 +27,11 @@ public class ImportContext extends Context {
 	}
 
 	@Override
-	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	public LookupResultList lookup(final String name, final int level, final @NotNull LookupResultList Result, final @NotNull List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(this);
 //		System.err.println("2002 "+importStatement.importList());
-		Compilation compilation = compilation();
-		for (final Qualident importStatementItem : carrier.parts()) {
+		@NotNull Compilation compilation = compilation();
+		for (final @NotNull Qualident importStatementItem : carrier.parts()) {
 //			System.err.println("2005 "+importStatementItem);
 			if (compilation.isPackage(importStatementItem.toString())) {
 				final OS_Package aPackage = compilation.getPackage(importStatementItem);
@@ -43,7 +44,7 @@ public class ImportContext extends Context {
 						alreadySearched.add(namespaceContext);
 						namespaceContext.lookup(name, level, Result, alreadySearched, true);
 					} else if (element instanceof OS_Element2) {
-						final OS_Element2 element2 = (OS_Element2) element;
+						final @NotNull OS_Element2 element2 = (OS_Element2) element;
 						if (element2.name().equals(name)) {
 							Result.add(name, level, element, this);
 							break; // shortcut: should only have one in scope
@@ -52,10 +53,10 @@ public class ImportContext extends Context {
 				}
 			} else {
 				// find directly imported elements
-				List<IdentExpression> x = importStatementItem.parts();
+				@NotNull List<IdentExpression> x = importStatementItem.parts();
 				final IdentExpression last = x.get(x.size() - 1);
 				if (last.getText().equals(name)) {
-					Qualident cl = new Qualident();
+					@NotNull Qualident cl = new Qualident();
 					for (int i = 0; i < x.size() - 1; i++) {
 						cl.append(x.get(i));
 					}
@@ -70,7 +71,7 @@ public class ImportContext extends Context {
 								final NamespaceContext namespaceContext = (NamespaceContext) element.getContext();
 								alreadySearched.add(namespaceContext);
 								LookupResultList xxx = namespaceContext.lookup(name, level, Result, alreadySearched, true);
-								for (LookupResult result : xxx.results()) {
+								for (@NotNull LookupResult result : xxx.results()) {
 									Result.add(result.getName(), result.getLevel(), result.getElement(), result.getContext());
 								}
 							} else {

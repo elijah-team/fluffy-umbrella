@@ -11,6 +11,7 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class LookupResultList {
 	private final List<LookupResult> _results = new ArrayList<LookupResult>();
 
 	public void add(final String name, final int level, final OS_Element element, final Context aContext) {
-		for (final LookupResult result : _results) {
+		for (final @NotNull LookupResult result : _results) {
 			if (result.getElement() == element)
 				return; // TODO hack for bad algorithm
 		}
@@ -37,8 +38,8 @@ public class LookupResultList {
 	}
 
 	@Nullable
-	public OS_Element chooseBest(final List<Predicate<OS_Element>> l) {
-		final List<LookupResult> r;
+	public OS_Element chooseBest(final @Nullable List<Predicate<OS_Element>> l) {
+		final @NotNull List<LookupResult> r;
 		if (l != null) {
 			r = getMaxScoredResults(l);
 		} else {
@@ -65,13 +66,13 @@ public class LookupResultList {
 		return null; //throw new NotImplementedException();
 	}
 
-	private List<LookupResult> getMaxScoredResults(final List<Predicate<OS_Element>> l) {
-		final Map<LookupResult, Integer> new_results = new HashMap<LookupResult, Integer>();
+	private @NotNull List<LookupResult> getMaxScoredResults(final @NotNull List<Predicate<OS_Element>> l) {
+		final @NotNull Map<LookupResult, Integer> new_results = new HashMap<LookupResult, Integer>();
 		int maxScore = 0;
 
-		for (final LookupResult lookupResult : _results) {
+		for (final @NotNull LookupResult lookupResult : _results) {
 			int score = 0;
-			for (final Predicate<OS_Element> predicate : l) {
+			for (final @NotNull Predicate<OS_Element> predicate : l) {
 				if (predicate.test(lookupResult.getElement()))
 					score++;
 			}
@@ -85,7 +86,7 @@ public class LookupResultList {
 		return new ArrayList<LookupResult>(new_results.keySet());
 	}
 
-	public List<LookupResult> results() { // TODO want ImmutableList
+	public @NotNull List<LookupResult> results() { // TODO want ImmutableList
 		return _results;
 	}
 }

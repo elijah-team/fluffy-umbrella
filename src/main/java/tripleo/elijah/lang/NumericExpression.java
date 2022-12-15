@@ -16,6 +16,7 @@ package tripleo.elijah.lang;
 
 import antlr.Token;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.util.NotImplementedException;
 
@@ -36,7 +37,7 @@ public class NumericExpression implements IExpression, Locatable {
 	}
 
 	@Override
-	public IExpression getLeft() {
+	public @NotNull IExpression getLeft() {
 		return this;
 	}
 
@@ -48,12 +49,12 @@ public class NumericExpression implements IExpression, Locatable {
 	// region kind
 
 	@Override  // IExpression
-	public ExpressionKind getKind() {
+	public @NotNull ExpressionKind getKind() {
 		return ExpressionKind.NUMERIC; // TODO
 	}
 
 	@Override  // IExpression
-	public void setKind(final ExpressionKind aType) {
+	public void setKind(final @NotNull ExpressionKind aType) {
 		// log and ignore
 		System.err.println("Trying to set ExpressionType of NumericExpression to "+aType.toString());
 	}
@@ -134,7 +135,7 @@ public class NumericExpression implements IExpression, Locatable {
 	}
 
 	@Override
-	public File getFile() {
+	public @Nullable File getFile() {
 		if (token() != null) {
 			String filename = token().getFilename();
 			if (filename != null)

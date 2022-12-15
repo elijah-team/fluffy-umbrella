@@ -26,7 +26,7 @@ public class DeduceLookupUtils {
 	public static LookupResultList lookupExpression(final @NotNull IExpression left, final @NotNull Context ctx, @NotNull DeduceTypes2 deduceTypes2) throws ResolveError {
 		switch (left.getKind()) {
 		case QIDENT:
-			final IExpression de = Helpers.qualidentToDotExpression2((Qualident) left);
+			final @Nullable IExpression de = Helpers.qualidentToDotExpression2((Qualident) left);
 			return lookupExpression(de, ctx, deduceTypes2)/*lookup_dot_expression(ctx, de)*/;
 		case DOT_EXP:
 			return lookup_dot_expression(ctx, (DotExpression) left, deduceTypes2);
@@ -49,7 +49,7 @@ public class DeduceLookupUtils {
 	public static OS_Element _resolveAlias(final @NotNull AliasStatement aliasStatement, @NotNull DeduceTypes2 deduceTypes2) {
 		LookupResultList lrl2;
 		if (aliasStatement.getExpression() instanceof Qualident) {
-			final IExpression de = Helpers.qualidentToDotExpression2(((Qualident) aliasStatement.getExpression()));
+			final @Nullable IExpression de = Helpers.qualidentToDotExpression2(((Qualident) aliasStatement.getExpression()));
 			if (de instanceof DotExpression) {
 				try {
 					lrl2 = lookup_dot_expression(aliasStatement.getContext(), (DotExpression) de, deduceTypes2);
@@ -80,7 +80,7 @@ public class DeduceLookupUtils {
 	public static OS_Element _resolveAlias2(final @NotNull AliasStatement aliasStatement, @NotNull DeduceTypes2 deduceTypes2) throws ResolveError {
 		LookupResultList lrl2;
 		if (aliasStatement.getExpression() instanceof Qualident) {
-			final IExpression de = Helpers.qualidentToDotExpression2(((Qualident) aliasStatement.getExpression()));
+			final @Nullable IExpression de = Helpers.qualidentToDotExpression2(((Qualident) aliasStatement.getExpression()));
 			if (de instanceof DotExpression) {
 				lrl2 = lookup_dot_expression(aliasStatement.getContext(), (DotExpression) de, deduceTypes2);
 			} else
@@ -165,7 +165,7 @@ public class DeduceLookupUtils {
 			@Nullable GenType ty = deduceProcedureCall((ProcedureCallExpression) n, context, aDeduceTypes2);
 			return ty/*n.getType()*/;
 		case QIDENT:
-			final IExpression expression = Helpers.qualidentToDotExpression2(((Qualident) n));
+			final @Nullable IExpression expression = Helpers.qualidentToDotExpression2(((Qualident) n));
 			return deduceExpression(aDeduceTypes2, expression, context);
 		}
 		return null;

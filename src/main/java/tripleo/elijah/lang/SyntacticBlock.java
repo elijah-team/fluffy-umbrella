@@ -13,6 +13,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.SyntacticBlockContext;
 import tripleo.elijah.gen.ICodeGen;
 
@@ -35,7 +36,7 @@ public class SyntacticBlock implements OS_Element, OS_Container, FunctionItem, S
 	}
 
 	@Override
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final @NotNull ICodeGen visit) {
 		visit.visitSyntacticBlock(this);
 	}
 
@@ -49,8 +50,8 @@ public class SyntacticBlock implements OS_Element, OS_Container, FunctionItem, S
 		return ctx;
 	}
 
-	public List<FunctionItem> getItems() {
-		List<FunctionItem> collection = new ArrayList<FunctionItem>();
+	public @NotNull List<FunctionItem> getItems() {
+		@NotNull List<FunctionItem> collection = new ArrayList<FunctionItem>();
 		for (OS_Element element : scope3.items()) {
 			if (element instanceof FunctionItem)
 				collection.add((FunctionItem) element);
@@ -67,14 +68,14 @@ public class SyntacticBlock implements OS_Element, OS_Container, FunctionItem, S
 	}
 
 	@Override
-	public List<OS_Element2> items() {
+	public @NotNull List<OS_Element2> items() {
 		final Collection<OS_Element> items = Collections2.filter(scope3.items(), new Predicate<OS_Element>() {
 				@Override
 				public boolean apply(@Nullable OS_Element input) {
 					return input instanceof OS_Element2;
 				}
 		});
-		Collection<OS_Element2> c = Collections2.transform(items, new Function<OS_Element, OS_Element2>() {
+		@NotNull Collection<OS_Element2> c = Collections2.transform(items, new Function<OS_Element, OS_Element2>() {
 			@Nullable
 			@Override
 			public OS_Element2 apply(@Nullable OS_Element input) {

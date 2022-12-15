@@ -11,6 +11,7 @@
  */
 package tripleo.elijah.contexts;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class LoopContext extends Context {
 		_parent = cur;
 	}
 
-	@Override public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	@Override public LookupResultList lookup(final @NotNull String name, final int level, final @NotNull LookupResultList Result, final @NotNull List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 
 		if (carrier.getIterNameToken() != null) {
@@ -56,7 +57,7 @@ public class LoopContext extends Context {
 			}
 			if (item instanceof VariableSequence) {
 				System.out.println("1102 "+item);
-				for (final VariableStatement vs : ((VariableSequence) item).items()) {
+				for (final @NotNull VariableStatement vs : ((VariableSequence) item).items()) {
 					if (vs.getName().equals(name))
 						Result.add(name, level, vs, this);
 				}

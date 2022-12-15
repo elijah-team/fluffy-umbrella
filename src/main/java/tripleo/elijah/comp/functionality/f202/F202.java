@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.comp.functionality.f202;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.stages.logging.ElLog;
@@ -34,7 +35,7 @@ public class F202 {
 		pre = new DefaultProgressBehavior();
 	}
 
-	public void processLogs(Collection<ElLog> aElLogs) {
+	public void processLogs(@NotNull Collection<ElLog> aElLogs) {
 		if (aElLogs.size() == 0) return; // TODO progress message? should be impossible anyway
 
 		ElLog firstLog = aElLogs.iterator().next();
@@ -42,13 +43,13 @@ public class F202 {
 		final String s2  = gln.getLogName(firstLog);
 		final File file2 = gld.getLogDirectory();
 
-		final File psf   = new File(file2, s2);
+		final @NotNull File psf   = new File(file2, s2);
 		final String s1  = firstLog.getFileName();
 		pre.reportProgress(psf.toString());
 
 		ple.initialize(psf, s1, errSink);
 		ple.start();
-		for (ElLog elLog : aElLogs) {
+		for (@NotNull ElLog elLog : aElLogs) {
 			ple.processPhase(elLog.getPhase());
 
 			for (LogEntry entry : elLog.getEntries()) {

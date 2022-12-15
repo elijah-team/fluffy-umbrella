@@ -30,7 +30,7 @@ public class ParserClosure extends ProgramClosure {
 		return module;
 	}
 
-	public OS_Package defaultPackageName(final Qualident aPackageName) {
+	public OS_Package defaultPackageName(final @NotNull Qualident aPackageName) {
 //		assert module.packageName == null;
 		module.pushPackageName(aPackageName);
 		return module.parent.makePackage(aPackageName);
@@ -41,10 +41,10 @@ public class ParserClosure extends ProgramClosure {
 		module.pushPackageName(aPackageName);
 	}
 
-	public final OS_Module module;
+	public final @NotNull OS_Module module;
 
-	public IndexingStatement indexingStatement() {
-		final IndexingStatement indexingStatement = new IndexingStatement();
+	public @NotNull IndexingStatement indexingStatement() {
+		final @NotNull IndexingStatement indexingStatement = new IndexingStatement();
 		indexingStatement.setModule(module());
 		return indexingStatement;
 	}

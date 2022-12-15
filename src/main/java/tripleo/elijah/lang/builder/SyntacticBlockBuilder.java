@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.SyntacticBlock;
@@ -17,12 +18,12 @@ import tripleo.elijah.lang.SyntacticBlock;
  */
 public class SyntacticBlockBuilder extends ElBuilder {
 	private Context _context;
-	private SyntacticBlockScope _scope = new SyntacticBlockScope();
+	private @NotNull SyntacticBlockScope _scope = new SyntacticBlockScope();
 
 	@Override
-	protected SyntacticBlock build() {
-		SyntacticBlock syntacticBlock = new SyntacticBlock(_parent);
-		for (ElBuilder builder : _scope.items()) {
+	protected @NotNull SyntacticBlock build() {
+		@NotNull SyntacticBlock syntacticBlock = new SyntacticBlock(_parent);
+		for (@NotNull ElBuilder builder : _scope.items()) {
 //			if (builder instanceof AccessNotation) {
 //				cs.addAccess((AccessNotation) builder);
 //			} else {

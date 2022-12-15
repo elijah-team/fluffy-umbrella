@@ -31,7 +31,7 @@ public class VariableTypeName extends AbstractTypeName implements NormalTypeName
 	private OS_Element _resolvedElement;
 
 	@Override
-	public Type kindOfType() {
+	public @NotNull Type kindOfType() {
 		return Type.NORMAL;
 	}
 
@@ -105,7 +105,7 @@ public class VariableTypeName extends AbstractTypeName implements NormalTypeName
 		if (this == o) return true;
 		if (!super.equals(o)) return false;
 		if (!(o instanceof NormalTypeName)) return false;
-		final NormalTypeName that = (NormalTypeName) o;
+		final @NotNull NormalTypeName that = (NormalTypeName) o;
 		return Objects.equals(genericPart, that.getGenericPart());
 	}
 

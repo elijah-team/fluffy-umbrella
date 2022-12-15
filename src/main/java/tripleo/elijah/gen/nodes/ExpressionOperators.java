@@ -23,7 +23,7 @@ public enum ExpressionOperators {
 	
 	@NotNull
 	public String getSymbol() {
-		final String middle1;
+		final @NotNull String middle1;
 		switch (this) {
 			case OP_MINUS: middle1 = "-"; break;
 			case OP_MULT:  middle1 = "*"; break;

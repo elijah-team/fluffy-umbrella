@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.work;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +17,7 @@ import java.util.List;
  * Created 4/26/21 4:24 AM
  */
 public class WorkList {
-	List<WorkJob> jobs = new ArrayList<>();
+	@NotNull List<WorkJob> jobs = new ArrayList<>();
 	private boolean _done;
 
 	public void addJob(final WorkJob aJob) {

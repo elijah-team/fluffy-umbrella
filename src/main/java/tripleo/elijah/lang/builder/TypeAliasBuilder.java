@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
 
 /**
@@ -36,8 +37,8 @@ public class TypeAliasBuilder extends ElBuilder {
 	}
 
 	@Override
-	public TypeAliasStatement build() {
-		TypeAliasStatement typeAliasStatement = new TypeAliasStatement(_parent);
+	public @NotNull TypeAliasStatement build() {
+		@NotNull TypeAliasStatement typeAliasStatement = new TypeAliasStatement(_parent);
 		typeAliasStatement.make(newAlias, oldElement);
 		return typeAliasStatement;
 	}

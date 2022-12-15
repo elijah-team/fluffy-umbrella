@@ -25,9 +25,9 @@ import java.util.List;
  * Created 5/31/21 3:01 AM
  */
 public class WlGenerateNamespace implements WorkJob {
-	private final GenerateFunctions generateFunctions;
+	private final @NotNull GenerateFunctions generateFunctions;
 	private final NamespaceStatement namespaceStatement;
-	private final NamespaceInvocation namespaceInvocation;
+	private final @NotNull NamespaceInvocation namespaceInvocation;
 	private final DeducePhase.@Nullable GeneratedClasses coll;
 	private boolean _isDone = false;
 	private GeneratedNamespace Result;
@@ -43,7 +43,7 @@ public class WlGenerateNamespace implements WorkJob {
 
 	@Override
 	public void run(WorkManager aWorkManager) {
-		final DeferredObject<GeneratedNamespace, Void, Void> resolvePromise = namespaceInvocation.resolveDeferred();
+		final @NotNull DeferredObject<GeneratedNamespace, Void, Void> resolvePromise = namespaceInvocation.resolveDeferred();
 		switch (resolvePromise.state()) {
 		case PENDING:
 			@NotNull GeneratedNamespace ns = generateFunctions.generateNamespace(namespaceStatement);

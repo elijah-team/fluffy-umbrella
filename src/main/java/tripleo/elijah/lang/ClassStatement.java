@@ -41,7 +41,7 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 	public ClassStatement(final OS_Element parentElement, final Context parentContext) {
 		parent = parentElement; // setParent
 		if (parentElement instanceof OS_Module) {
-			final OS_Module module = (OS_Module) parentElement;
+			final @NotNull OS_Module module = (OS_Module) parentElement;
 			//
 			this.setPackageName(module.pullPackageName());
 			_packageName.addElement(this);
@@ -69,13 +69,13 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 	}
 
 	@Override
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final @NotNull ICodeGen visit) {
 		visit.addClass(this); // TODO visitClass
 	}
 
 	@Override
 	public String toString() {
-		final String package_name;
+		final @NotNull String package_name;
 		if (getPackageName() != null && getPackageName()._name != null) {
 			final Qualident package_name_q = getPackageName()._name;
 			package_name = package_name_q.toString();
@@ -84,11 +84,11 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 		return String.format("<Class %d %s %s>", _a.getCode(), package_name, getName());
 	}
 
-	public ConstructorDef addCtor(final IdentExpression aConstructorName) {
+	public @NotNull ConstructorDef addCtor(final IdentExpression aConstructorName) {
 		return new ConstructorDef(aConstructorName, this, getContext());
 	}
 
-	public DestructorDef addDtor() {
+	public @NotNull DestructorDef addDtor() {
 		return new DestructorDef(this, getContext());
 	}
 
@@ -149,10 +149,10 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 
 	// region annotations
 
-	public Iterable<AnnotationPart> annotationIterable() {
-		List<AnnotationPart> aps = new ArrayList<AnnotationPart>();
+	public @NotNull Iterable<AnnotationPart> annotationIterable() {
+		@NotNull List<AnnotationPart> aps = new ArrayList<AnnotationPart>();
 		if (annotations == null) return aps;
-		for (AnnotationClause annotationClause : annotations) {
+		for (@NotNull AnnotationClause annotationClause : annotations) {
 			aps.addAll(annotationClause.aps);
 		}
 		return aps;
@@ -162,36 +162,36 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 
 	// region called from parser
 
-	public FunctionDef funcDef() {
+	public @NotNull FunctionDef funcDef() {
 		return new FunctionDef(this, getContext());
 	}
 
-	public DefFunctionDef defFuncDef() {
+	public @NotNull DefFunctionDef defFuncDef() {
 		return new DefFunctionDef(this, getContext());
 	}
 
-	public PropertyStatement prop() {
-		PropertyStatement propertyStatement = new PropertyStatement(this, getContext());
+	public @NotNull PropertyStatement prop() {
+		@NotNull PropertyStatement propertyStatement = new PropertyStatement(this, getContext());
 		add(propertyStatement);
 		return propertyStatement;
 	}
 
-	public TypeAliasStatement typeAlias() {
+	public @org.jetbrains.annotations.Nullable TypeAliasStatement typeAlias() {
 		NotImplementedException.raise();
 		return null;
 	}
 
-	public InvariantStatement invariantStatement() {
+	public @org.jetbrains.annotations.Nullable InvariantStatement invariantStatement() {
 		NotImplementedException.raise();
 		return null;
 	}
 
-	public ProgramClosure XXX() {
+	public @NotNull ProgramClosure XXX() {
 		return new ProgramClosure() {
 		};
 	}
 
-	public StatementClosure statementClosure() {
+	public @NotNull StatementClosure statementClosure() {
 		return new AbstractStatementClosure(this);
 	}
 
@@ -208,7 +208,7 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 			return genericPart.p;
 	}
 
-	public Collection<ConstructorDef> getConstructors() {
+	public @NotNull Collection<ConstructorDef> getConstructors() {
 		Collection<ClassItem> x = Collections2.filter(items, new Predicate<ClassItem>() {
 			@Override
 			public boolean apply(@Nullable ClassItem input) {

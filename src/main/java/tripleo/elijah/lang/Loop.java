@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.LoopContext;
 import tripleo.elijah.gen.ICodeGen;
 
@@ -65,8 +66,8 @@ private IExpression topart,frompart;
 private IExpression expr;
 private final Attached _a = new Attached();
 
-	public List<StatementItem> getItems() {
-		List<StatementItem> collection = new ArrayList<StatementItem>();
+	public @NotNull List<StatementItem> getItems() {
+		@NotNull List<StatementItem> collection = new ArrayList<StatementItem>();
 		for (OS_Element element : scope3.items()) {
 			if (element instanceof FunctionItem)
 				collection.add((StatementItem) element);
@@ -76,7 +77,7 @@ private final Attached _a = new Attached();
 	}
 
 	@Override // OS_Element
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final @NotNull ICodeGen visit) {
 		visit.visitLoop(this);
 	}
 

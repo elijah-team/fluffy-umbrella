@@ -9,6 +9,8 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.diagnostic.Locatable;
 
 import java.io.File;
@@ -40,7 +42,7 @@ public class ListExpression extends AbstractExpression implements Locatable {
 	}
 
 	@Override
-	public OS_Type getType() {
+	public @Nullable OS_Type getType() {
 		return null;
 	}
 
@@ -49,7 +51,7 @@ public class ListExpression extends AbstractExpression implements Locatable {
 	public class Syntax {
 		Token startToken;
 		Token endToken;
-		List<Token> commas = new ArrayList<Token>();
+		@NotNull List<Token> commas = new ArrayList<Token>();
 
 		public void start_and_end(Token startToken, Token endToken) {
 			this.startToken = startToken;
@@ -61,7 +63,7 @@ public class ListExpression extends AbstractExpression implements Locatable {
 		}
 	}
 
-	public Syntax syntax = new Syntax();
+	public @NotNull Syntax syntax = new Syntax();
 
 	// endregion
 
@@ -96,7 +98,7 @@ public class ListExpression extends AbstractExpression implements Locatable {
 	}
 
 	@Override
-	public File getFile() {
+	public @Nullable File getFile() {
 		if (syntax.startToken != null) {
 			String filename = syntax.startToken.getFilename();
 			if (filename != null)

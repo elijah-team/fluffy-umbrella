@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.gen.ICodeGen;
 import tripleo.elijah.util.Helpers;
@@ -21,11 +23,11 @@ public class ConstructorDef extends BaseFunctionDef {
 	public static final IdentExpression emptyConstructorName = Helpers.string_to_ident("<>");
 
 	// TODO override name() ??
-	public static ConstructorDef defaultVirtualCtor = new ConstructorDef(null, null, null);
+	public static @NotNull ConstructorDef defaultVirtualCtor = new ConstructorDef(null, null, null);
 
 	private final OS_Element parent;
 
-	public ConstructorDef(final IdentExpression aConstructorName, final _CommonNC aParent, final Context context) {
+	public ConstructorDef(final @Nullable IdentExpression aConstructorName, final _CommonNC aParent, final Context context) {
 		parent = (OS_Element) aParent;
 		if (parent != null) {
 			if (aParent instanceof OS_Container) {
@@ -44,7 +46,7 @@ public class ConstructorDef extends BaseFunctionDef {
 	}
 
 	@Override
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(@NotNull ICodeGen visit) {
 		visit.visitConstructorDef(this);
 	}
 

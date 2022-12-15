@@ -11,27 +11,29 @@ package tripleo.elijah.lang;
 // Referenced classes of package pak2:
 //			Statement, StatementClosure, FormalArgList
 
+import org.jetbrains.annotations.NotNull;
+
 public class BlockStatement implements /*Statement,*/ StatementItem {
 
 	final private Scope parent;
 	private final NormalTypeName tn=new RegularTypeName(); // FIXME
 	private final FormalArgList fal=new FormalArgList();
-	private final StatementClosure scope;
+	private final @NotNull StatementClosure scope;
 	
 	public BlockStatement(final Scope aParent) {
 		parent = aParent;
 		scope=new AbstractStatementClosure(parent);
 	}
 
-	public StatementClosure scope() {
+	public @NotNull StatementClosure scope() {
 		return scope;
 	}
 
-	public FormalArgList opfal() {
+	public @NotNull FormalArgList opfal() {
 		return fal;
 	}
 
-	public NormalTypeName returnType() {
+	public @NotNull NormalTypeName returnType() {
 		return tn;
 	}
 }

@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.gen.nodes;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.util.NotImplementedException;
 
 /**
@@ -25,7 +27,7 @@ public class LocalAgnTmpNode {
 		return declared;
 	}
 	
-	private String declared = null;
+	private @Nullable String declared = null;
 
 //	public LocalAgnTmpNode(TmpSSACtxNode tccssan, IExpression expression) {
 //		// TODO Auto-generated constructor stub
@@ -40,7 +42,7 @@ public class LocalAgnTmpNode {
 //		this.declared ="vt"+n;
 //	}
 	
-	public LocalAgnTmpNode(final TmpSSACtxNode tmpSSACtxNode, final IExpressionNode node) {
+	public LocalAgnTmpNode(final @NotNull TmpSSACtxNode tmpSSACtxNode, final IExpressionNode node) {
 		// TODO Auto-generated constructor stub
 		this.agnTo = tmpSSACtxNode;
 //		this.expr = expression;
@@ -73,7 +75,7 @@ public class LocalAgnTmpNode {
 		this.agnWhat = agnWhat;
 	}
 	
-	public ExpressionNode getLeft() {
+	public @NotNull ExpressionNode getLeft() {
 		return new VariableReferenceNode2(declared, "Z0*", false); // TODO semi-hardcoded
 	}
 }

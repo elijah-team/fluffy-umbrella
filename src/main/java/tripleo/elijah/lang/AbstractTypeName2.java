@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
@@ -19,7 +21,7 @@ import java.util.LinkedHashSet;
  */
 public abstract class AbstractTypeName2 implements NormalTypeName {
 	
-	protected Collection<TypeModifiers> _ltm = new LinkedHashSet<TypeModifiers>();
+	protected @NotNull Collection<TypeModifiers> _ltm = new LinkedHashSet<TypeModifiers>();
 	protected TypeModifiers tm;
 	protected Qualident typeName;
 	
@@ -84,7 +86,7 @@ public abstract class AbstractTypeName2 implements NormalTypeName {
 	public boolean equals(final Object o) {
 		if (this == o) return true;
 		if (!(o instanceof NormalTypeName)) return false;
-		final NormalTypeName that = (NormalTypeName) o;
+		final @NotNull NormalTypeName that = (NormalTypeName) o;
 		return getConstant() == that.getConstant() &&
 				getReference() == that.getReference() &&
 				getOut() == that.getOut() &&

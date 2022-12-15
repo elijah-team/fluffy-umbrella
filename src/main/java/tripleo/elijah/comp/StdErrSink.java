@@ -12,6 +12,7 @@
  */
 package tripleo.elijah.comp;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.diagnostic.Diagnostic;
 
 /**
@@ -23,7 +24,7 @@ public class StdErrSink implements ErrSink {
 	private int _errorCount;
 
 	@Override
-	public void exception(final Exception e) {
+	public void exception(final @NotNull Exception e) {
 		_errorCount++;
 		System.err.println((new StringBuilder("exception: ")).append(e)
 				.toString());
@@ -52,7 +53,7 @@ public class StdErrSink implements ErrSink {
 	}
 
 	@Override
-	public void reportDiagnostic(Diagnostic diagnostic) {
+	public void reportDiagnostic(@NotNull Diagnostic diagnostic) {
 		if (diagnostic.severity() == Diagnostic.Severity.ERROR)
 			_errorCount++;
 		diagnostic.report(System.err);

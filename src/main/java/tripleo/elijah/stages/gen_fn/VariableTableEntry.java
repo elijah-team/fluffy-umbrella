@@ -11,6 +11,7 @@ package tripleo.elijah.stages.gen_fn;
 import org.jdeferred2.*;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
@@ -31,7 +32,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	public @NotNull Map<Integer, TypeTableEntry> potentialTypes = new HashMap<Integer, TypeTableEntry>();
 	public int tempNum = -1;
 	public ProcTableEntry constructable_pte;
-	public GenType genType = new GenType();
+	public @NotNull GenType genType = new GenType();
 	private GeneratedNode _resolvedType;
 
 	public VariableTableEntry(final int aIndex, final VariableTableType aVtt, final String aName, final TypeTableEntry aTTE, final OS_Element el) {
@@ -58,7 +59,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		return name;
 	}
 
-	public void addPotentialType(final int instructionIndex, final TypeTableEntry tte) {
+	public void addPotentialType(final int instructionIndex, final @NotNull TypeTableEntry tte) {
 		if (!typeDeferred.isPending()) {
 			System.err.println("62 addPotentialType while typeDeferred is already resolved "+this);//throw new AssertionError();
 			return;
@@ -105,7 +106,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		return index;
 	}
 
-	private DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
+	private @NotNull DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
 
 	public Promise<GenType, Void, Void> typePromise() {
 		return typeDeferred.promise();
@@ -119,7 +120,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		return typeDeferred.isPending();
 	}
 
-	GenType _resolveTypeCalled = null;
+	@Nullable GenType _resolveTypeCalled = null;
 	public void resolveType(final @NotNull GenType aGenType) {
 		if (_resolveTypeCalled != null) { // TODO what a hack
 			assert aGenType == _resolveTypeCalled;
@@ -148,13 +149,13 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	}
 
 	@Override
-	public void setGenType(GenType aGenType) {
+	public void setGenType(@NotNull GenType aGenType) {
 		genType.copy(aGenType);
 		resolveType(aGenType);
 	}
 
 	@Override
-	public String expectationString() {
+	public @NotNull String expectationString() {
 		return "VariableTableEntry{" +
 				"index=" + index +
 				", name='" + name + '\'' +

@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.IExpression;
 
 /**
@@ -16,7 +17,7 @@ import tripleo.elijah.lang.IExpression;
 public class BaseScope2 extends BaseScope {
 	@Override
 	public void statementWrapper(IExpression expr) {
-		StatementWrapperBuilder swb = new StatementWrapperBuilder(expr);
+		@NotNull StatementWrapperBuilder swb = new StatementWrapperBuilder(expr);
 		bs.add(swb);
 	}
 }

@@ -9,6 +9,8 @@
 
 package tripleo.elijah.diagnostic;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 
 /**
@@ -23,7 +25,7 @@ public interface Locatable {
 	int getColumn();
 	int getLineEnd();
 	int getColumnEnd();
-	File getFile();
+	@Nullable File getFile();
 }
 
 //

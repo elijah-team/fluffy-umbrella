@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * @author olu
  *
@@ -26,7 +28,7 @@ public class TypeCastExpression extends AbstractExpression implements IExpressio
     }
 
     @Override
-    public OS_Type getType() {
+    public @Nullable OS_Type getType() {
         return null;
     }
 

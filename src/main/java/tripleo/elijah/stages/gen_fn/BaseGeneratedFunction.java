@@ -47,9 +47,9 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	private int _nextTemp = 0;
 	private GeneratedNode genClass;
 	private GeneratedContainerNC parent;
-	private DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
+	private @NotNull DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
 
-	public static void printTables(GeneratedFunction gf) {
+	public static void printTables(@NotNull GeneratedFunction gf) {
 		System.out.println("VariableTable ");
 		for (VariableTableEntry variableTableEntry : gf.vte_list) {
 			System.out.println("\t"+variableTableEntry);
@@ -77,13 +77,13 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	//
 
 	public static @NotNull List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
-		LinkedList<InstructionArgument> s = new LinkedList<InstructionArgument>();
+		@NotNull LinkedList<InstructionArgument> s = new LinkedList<InstructionArgument>();
 		while (oo != null) {
 			if (oo instanceof IntegerIA) {
 				s.addFirst(oo);
 				oo = null;
 			} else if (oo instanceof IdentIA) {
-				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
+				final @NotNull IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
 				s.addFirst(oo);
 				oo = ite1.backlink;
 			} else if (oo instanceof ProcIA) {
@@ -105,23 +105,23 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	 * @param ia2 the path
 	 * @return a string that represents the path encoded by ia2
 	 */
-	public String getIdentIAPathNormal(final IdentIA ia2) {
-		final List<InstructionArgument> s = _getIdentIAPathList(ia2);
+	public @NotNull String getIdentIAPathNormal(final @NotNull IdentIA ia2) {
+		final @NotNull List<InstructionArgument> s = _getIdentIAPathList(ia2);
 
 		//
 		// TODO NOT LOOKING UP THINGS, IE PROPERTIES, MEMBERS
 		//
-		List<String> sl = new ArrayList<String>();
+		@NotNull List<String> sl = new ArrayList<String>();
 		for (final InstructionArgument ia : s) {
 			final String text;
 			if (ia instanceof IntegerIA) {
-				final VariableTableEntry vte = getVarTableEntry(to_int(ia));
+				final @NotNull VariableTableEntry vte = getVarTableEntry(to_int(ia));
 				text = vte.getName();
 			} else if (ia instanceof IdentIA) {
-				final IdentTableEntry idte = getIdentTableEntry(((IdentIA) ia).getIndex());
+				final @NotNull IdentTableEntry idte = getIdentTableEntry(((IdentIA) ia).getIndex());
 				text = idte.getIdent().getText();
 			} else if (ia instanceof ProcIA) {
-				final ProcTableEntry prte = getProcTableEntry(to_int(ia));
+				final @NotNull ProcTableEntry prte = getProcTableEntry(to_int(ia));
 				assert prte.expression instanceof ProcedureCallExpression;
 				text = ((ProcedureCallExpression)prte.expression).printableString();
 			} else
@@ -147,7 +147,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	}
 
 	public int add(final InstructionName aName, final List<InstructionArgument> args_, final Context ctx) {
-		final Instruction i = new Instruction();
+		final @NotNull Instruction i = new Instruction();
 		i.setIndex(instruction_index++);
 		i.setName(aName);
 		i.setArgs(args_);
@@ -167,7 +167,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	}
 
 	public @NotNull Label addLabel(final String base_name, final boolean append_int) {
-		final Label label = new Label(this);
+		final @NotNull Label label = new Label(this);
 		final String name;
 		if (append_int) {
 			label.setNumber(label_count);
@@ -230,7 +230,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	}
 
 	public @NotNull TypeTableEntry newTypeTableEntry(final TypeTableEntry.Type type1, final OS_Type type, final IExpression expression, TableEntryIV aTableEntryIV) {
-		final TypeTableEntry typeTableEntry = new TypeTableEntry(tte_list.size(), type1, type, expression, aTableEntryIV);
+		final @NotNull TypeTableEntry typeTableEntry = new TypeTableEntry(tte_list.size(), type1, type, expression, aTableEntryIV);
 		typeTableEntry.setAttached(type); // README make sure tio call callback
 		tte_list.add(typeTableEntry);
 		return typeTableEntry;
@@ -258,7 +258,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	 */
 	public @Nullable InstructionArgument vte_lookup(final String text) {
 		int index = 0;
-		for (final VariableTableEntry variableTableEntry : vte_list) {
+		for (final @NotNull VariableTableEntry variableTableEntry : vte_list) {
 			final String variableTableEntryName = variableTableEntry.getName();
 			if (variableTableEntryName != null) // null when temp
 				if (variableTableEntryName.equals(text))
@@ -266,7 +266,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 			index++;
 		}
 		index = 0;
-		for (final ConstantTableEntry constTableEntry : cte_list) {
+		for (final @NotNull ConstantTableEntry constTableEntry : cte_list) {
 			final String constTableEntryName = constTableEntry.getName();
 			if (constTableEntryName != null) // null when not assigned
 				if (constTableEntryName.equals(text))
@@ -277,25 +277,25 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	}
 
 	public @NotNull InstructionArgument get_assignment_path(@NotNull final IExpression expression,
-															@NotNull final GenerateFunctions generateFunctions,
-															Context context) {
+	                                                        @NotNull final GenerateFunctions generateFunctions,
+	                                                        @NotNull Context context) {
 		switch (expression.getKind()) {
 		case DOT_EXP:
 		{
-			final DotExpression de = (DotExpression) expression;
-			final InstructionArgument left_part = get_assignment_path(de.getLeft(), generateFunctions, context);
+			final @NotNull DotExpression de = (DotExpression) expression;
+			final @NotNull InstructionArgument left_part = get_assignment_path(de.getLeft(), generateFunctions, context);
 			return get_assignment_path(left_part, de.getRight(), generateFunctions, context);
 		}
 		case QIDENT:
 			throw new NotImplementedException();
 		case PROCEDURE_CALL:
 			{
-				ProcedureCallExpression pce = (ProcedureCallExpression) expression;
+				@NotNull ProcedureCallExpression pce = (ProcedureCallExpression) expression;
 				if (pce.getLeft() instanceof IdentExpression) {
 					final IdentExpression identExpression = (IdentExpression) pce.getLeft();
 					int idte_index = addIdentTableEntry(identExpression, identExpression.getContext());
-					final IdentIA identIA = new IdentIA(idte_index, this);
-					final List<TypeTableEntry> args_types = generateFunctions.get_args_types(pce.getArgs(), this, context);
+					final @NotNull IdentIA identIA = new IdentIA(idte_index, this);
+					final @NotNull List<TypeTableEntry> args_types = generateFunctions.get_args_types(pce.getArgs(), this, context);
 					int i = generateFunctions.addProcTableEntry(pce, identIA, args_types, this);
 					return new ProcIA(i, this);
 				}
@@ -305,9 +305,9 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 			throw new NotImplementedException();
 		case IDENT:
 			{
-				final IdentExpression ie = (IdentExpression) expression;
+				final @NotNull IdentExpression ie = (IdentExpression) expression;
 				final String text = ie.getText();
-				final InstructionArgument lookup = vte_lookup(text); // IntegerIA(variable) or ConstTableIA or null
+				final @Nullable InstructionArgument lookup = vte_lookup(text); // IntegerIA(variable) or ConstTableIA or null
 				if (lookup != null)
 					return lookup;
 				final int ite = addIdentTableEntry(ie, context);
@@ -325,8 +325,8 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		switch (expression.getKind()) {
 		case DOT_EXP:
 		{
-			final DotExpression de = (DotExpression) expression;
-			final InstructionArgument left_part = get_assignment_path(de.getLeft(), generateFunctions, context);
+			final @NotNull DotExpression de = (DotExpression) expression;
+			final @NotNull InstructionArgument left_part = get_assignment_path(de.getLeft(), generateFunctions, context);
 			if (left_part instanceof IdentIA) {
 				((IdentIA)left_part).setPrev(prev);
 //				getIdentTableEntry(to_int(left_part)).addStatusListener(new DeduceTypes2.FoundParent());
@@ -342,9 +342,9 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 			throw new NotImplementedException();
 		case IDENT:
 		{
-			final IdentExpression ie = (IdentExpression) expression;
+			final @NotNull IdentExpression ie = (IdentExpression) expression;
 			final int ite = addIdentTableEntry(ie, context);
-			final IdentIA identIA = new IdentIA(ite, this);
+			final @NotNull IdentIA identIA = new IdentIA(ite, this);
 			identIA.setPrev(prev);
 //			getIdentTableEntry(ite).addStatusListener(new DeduceTypes2.FoundParent()); // inject!
 			return identIA;
@@ -359,14 +359,14 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	}
 
 	public @Nullable Label findLabel(final int index) {
-		for (final Label label : labelList) {
+		for (final @NotNull Label label : labelList) {
 			if (label.getIndex() == index)
 				return label;
 		}
 		return null;
 	}
 
-	public abstract VariableTableEntry getSelf();
+	public abstract @Nullable VariableTableEntry getSelf();
 
 	/**
 	 * Returns first {@link IdentTableEntry} that matches expression
@@ -375,8 +375,8 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	 * @param expression {@link IdentExpression} to test for
 	 * @return IdentTableEntry or null
 	 */
-	public IdentTableEntry getIdentTableEntryFor(IExpression expression) {
-		for (IdentTableEntry identTableEntry : idte_list) {
+	public @Nullable IdentTableEntry getIdentTableEntryFor(@NotNull IExpression expression) {
+		for (@NotNull IdentTableEntry identTableEntry : idte_list) {
 			// TODO make this work for Qualidents and DotExpressions
 			if (identTableEntry.getIdent().getText().equals(((IdentExpression) expression).getText()) && identTableEntry.backlink == null) {
 				return identTableEntry;
@@ -390,13 +390,13 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 			if (idte_list.get(i).getIdent() == ident && idte_list.get(i).getPC() == context)
 				return i;
 		}
-		final IdentTableEntry idte = new IdentTableEntry(idte_list.size(), ident, context);
+		final @NotNull IdentTableEntry idte = new IdentTableEntry(idte_list.size(), ident, context);
 		idte_list.add(idte);
 		return idte.getIndex();
 	}
 
 	public int addVariableTableEntry(final String name, final VariableTableType vtt, final TypeTableEntry type, OS_Element el) {
-		final VariableTableEntry vte = new VariableTableEntry(vte_list.size(), vtt, name, type, el);
+		final @NotNull VariableTableEntry vte = new VariableTableEntry(vte_list.size(), vtt, name, type, el);
 		vte_list.add(vte);
 		return vte.getIndex();
 	}

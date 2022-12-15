@@ -76,7 +76,7 @@ class Resolve_Ident_IA2 {
 			if (ia2 instanceof IdentIA) {
 				final @NotNull IdentTableEntry ite = ((IdentIA) ia2).getEntry();
 				if (ite.backlink != null) {
-					InstructionArgument backlink = ite.backlink;
+					@NotNull InstructionArgument backlink = ite.backlink;
 					if (backlink instanceof IntegerIA) {
 						final @NotNull IntegerIA integerIA = (IntegerIA) backlink;
 						@NotNull VariableTableEntry vte = integerIA.getEntry();
@@ -205,7 +205,7 @@ class Resolve_Ident_IA2 {
 					final @NotNull IntegerIA integerIA = (IntegerIA) bl;
 					@NotNull VariableTableEntry vte = integerIA.getEntry();
 					if (vte.constructable_pte != null) {
-						ProcTableEntry cpte = vte.constructable_pte;
+						@NotNull ProcTableEntry cpte = vte.constructable_pte;
 						invocation = cpte.getFunctionInvocation().getClassInvocation();
 					}
 				} else if (bl instanceof IdentIA) {
@@ -253,7 +253,7 @@ class Resolve_Ident_IA2 {
 			if (idte2.type.getAttached() instanceof OS_UnknownType) // TODO ??
 				return false;
 
-			final OS_Type attached = idte2.type.getAttached();
+			final @Nullable OS_Type attached = idte2.type.getAttached();
 			if (attached.getType() == OS_Type.Type.USER_CLASS) {
 				if (idte2.type.genType.resolved == null) {
 					@NotNull GenType rtype = deduceTypes2.resolve_type(attached, ctx);
@@ -330,7 +330,7 @@ class Resolve_Ident_IA2 {
 		{
 			@NotNull List<TypeTableEntry> pot = deduceTypes2.getPotentialTypesVte(vte);
 			if (pot.size() == 1) {
-				final OS_Type attached = pot.get(0).getAttached();
+				final @Nullable OS_Type attached = pot.get(0).getAttached();
 				if (attached == null) {
 					ia2_IntegerIA_null_attached(ctx, pot);
 				} else {
@@ -353,7 +353,7 @@ class Resolve_Ident_IA2 {
 			}
 		}
 
-		OS_Type attached = vte.type.getAttached();
+		@Nullable OS_Type attached = vte.type.getAttached();
 		if (attached != null) {
 			switch (attached.getType()) {
 				case USER_CLASS:
@@ -384,7 +384,7 @@ class Resolve_Ident_IA2 {
 	private void ia2_IntegerIA_potentialTypes_equals_1(@NotNull VariableTableEntry aVte, String aText) {
 		int state = 0;
 		final @NotNull ArrayList<TypeTableEntry> pot = deduceTypes2.getPotentialTypesVte(aVte);
-		final OS_Type attached1 = pot.get(0).getAttached();
+		final @Nullable OS_Type attached1 = pot.get(0).getAttached();
 		TableEntryIV te = pot.get(0).tableEntry;
 		if (te instanceof ProcTableEntry) {
 			final @NotNull ProcTableEntry procTableEntry = (ProcTableEntry) te;
@@ -394,7 +394,7 @@ class Resolve_Ident_IA2 {
 				public void onDone(@NotNull BaseGeneratedFunction result) {
 					result.typePromise().then(new DoneCallback<GenType>() {
 						@Override
-						public void onDone(GenType result) {
+						public void onDone(@NotNull GenType result) {
 							int y = 2;
 							aVte.resolveType(result); // save for later
 						}
@@ -425,7 +425,7 @@ class Resolve_Ident_IA2 {
 						assert attached1TypeName instanceof RegularTypeName;
 						final Qualident realName = ((RegularTypeName) attached1TypeName).getRealName();
 						try {
-							final List<LookupResult> lrl = DeduceLookupUtils.lookupExpression(realName, ectx, deduceTypes2).results();
+							final @NotNull List<LookupResult> lrl = DeduceLookupUtils.lookupExpression(realName, ectx, deduceTypes2).results();
 							ectx = lrl.get(0).getElement().getContext();
 						} catch (ResolveError aResolveError) {
 							aResolveError.printStackTrace();

@@ -25,6 +25,8 @@ import antlr.ANTLRHashString;
 import antlr.LexerSharedInputState;
 import antlr.collections.impl.BitSet;
 import antlr.SemanticException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class EzLexer extends antlr.CharScanner implements EzTokenTypes, TokenStream
  {
@@ -57,10 +59,10 @@ public EzLexer(LexerSharedInputState state) {
 }
 
 public Token nextToken() throws TokenStreamException {
-	Token theRetToken=null;
+	@Nullable Token theRetToken=null;
 tryAgain:
 	for (;;) {
-		Token _token = null;
+		@Nullable Token _token = null;
 		int _ttype = Token.INVALID_TYPE;
 		resetText();
 		try {   // for char stream error handling
@@ -359,7 +361,7 @@ tryAgain:
 }
 
 	public final void mQUESTION(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = QUESTION;
 		int _saveIndex;
 		
@@ -372,7 +374,7 @@ tryAgain:
 	}
 	
 	public final void mLPAREN(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = LPAREN;
 		int _saveIndex;
 		
@@ -385,7 +387,7 @@ tryAgain:
 	}
 	
 	public final void mRPAREN(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = RPAREN;
 		int _saveIndex;
 		
@@ -398,7 +400,7 @@ tryAgain:
 	}
 	
 	public final void mLBRACK(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = LBRACK;
 		int _saveIndex;
 		
@@ -411,7 +413,7 @@ tryAgain:
 	}
 	
 	public final void mRBRACK(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = RBRACK;
 		int _saveIndex;
 		
@@ -424,7 +426,7 @@ tryAgain:
 	}
 	
 	public final void mLCURLY(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = LCURLY;
 		int _saveIndex;
 		
@@ -437,7 +439,7 @@ tryAgain:
 	}
 	
 	public final void mRCURLY(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = RCURLY;
 		int _saveIndex;
 		
@@ -450,7 +452,7 @@ tryAgain:
 	}
 	
 	public final void mTOK_COLON(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = TOK_COLON;
 		int _saveIndex;
 		
@@ -463,7 +465,7 @@ tryAgain:
 	}
 	
 	public final void mCOMMA(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = COMMA;
 		int _saveIndex;
 		
@@ -476,7 +478,7 @@ tryAgain:
 	}
 	
 	public final void mBECOMES(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = BECOMES;
 		int _saveIndex;
 		
@@ -489,7 +491,7 @@ tryAgain:
 	}
 	
 	public final void mEQUAL(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = EQUAL;
 		int _saveIndex;
 		
@@ -502,7 +504,7 @@ tryAgain:
 	}
 	
 	public final void mLNOT(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = LNOT;
 		int _saveIndex;
 		
@@ -515,7 +517,7 @@ tryAgain:
 	}
 	
 	public final void mBNOT(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = BNOT;
 		int _saveIndex;
 		
@@ -528,7 +530,7 @@ tryAgain:
 	}
 	
 	public final void mNOT_EQUAL(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = NOT_EQUAL;
 		int _saveIndex;
 		
@@ -541,7 +543,7 @@ tryAgain:
 	}
 	
 	public final void mDIV(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = DIV;
 		int _saveIndex;
 		
@@ -554,7 +556,7 @@ tryAgain:
 	}
 	
 	public final void mDIV_ASSIGN(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = DIV_ASSIGN;
 		int _saveIndex;
 		
@@ -567,7 +569,7 @@ tryAgain:
 	}
 	
 	public final void mPLUS(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = PLUS;
 		int _saveIndex;
 		
@@ -580,7 +582,7 @@ tryAgain:
 	}
 	
 	public final void mPLUS_ASSIGN(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = PLUS_ASSIGN;
 		int _saveIndex;
 		
@@ -593,7 +595,7 @@ tryAgain:
 	}
 	
 	public final void mINC(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = INC;
 		int _saveIndex;
 		
@@ -606,7 +608,7 @@ tryAgain:
 	}
 	
 	public final void mTOK_ARROW(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = TOK_ARROW;
 		int _saveIndex;
 		
@@ -619,7 +621,7 @@ tryAgain:
 	}
 	
 	public final void mMINUS(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = MINUS;
 		int _saveIndex;
 		
@@ -641,7 +643,7 @@ tryAgain:
 	}
 	
 	public final void mMINUS_ASSIGN(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = MINUS_ASSIGN;
 		int _saveIndex;
 		
@@ -654,7 +656,7 @@ tryAgain:
 	}
 	
 	public final void mDEC(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = DEC;
 		int _saveIndex;
 		
@@ -667,7 +669,7 @@ tryAgain:
 	}
 	
 	public final void mSTAR(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = STAR;
 		int _saveIndex;
 		
@@ -680,7 +682,7 @@ tryAgain:
 	}
 	
 	public final void mSTAR_ASSIGN(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = STAR_ASSIGN;
 		int _saveIndex;
 		
@@ -693,7 +695,7 @@ tryAgain:
 	}
 	
 	public final void mMOD(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = MOD;
 		int _saveIndex;
 		
@@ -706,7 +708,7 @@ tryAgain:
 	}
 	
 	public final void mMOD_ASSIGN(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = MOD_ASSIGN;
 		int _saveIndex;
 		
@@ -719,7 +721,7 @@ tryAgain:
 	}
 	
 	public final void mSR(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = SR;
 		int _saveIndex;
 		
@@ -732,7 +734,7 @@ tryAgain:
 	}
 	
 	public final void mSR_ASSIGN(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = SR_ASSIGN;
 		int _saveIndex;
 		
@@ -745,7 +747,7 @@ tryAgain:
 	}
 	
 	public final void mBSR(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = BSR;
 		int _saveIndex;
 		
@@ -758,7 +760,7 @@ tryAgain:
 	}
 	
 	public final void mBSR_ASSIGN(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = BSR_ASSIGN;
 		int _saveIndex;
 		
@@ -771,7 +773,7 @@ tryAgain:
 	}
 	
 	public final void mGE(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = GE;
 		int _saveIndex;
 		
@@ -784,7 +786,7 @@ tryAgain:
 	}
 	
 	public final void mGT(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = GT;
 		int _saveIndex;
 		
@@ -797,7 +799,7 @@ tryAgain:
 	}
 	
 	public final void mSL(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = SL;
 		int _saveIndex;
 		
@@ -810,7 +812,7 @@ tryAgain:
 	}
 	
 	public final void mSL_ASSIGN(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = SL_ASSIGN;
 		int _saveIndex;
 		
@@ -823,7 +825,7 @@ tryAgain:
 	}
 	
 	public final void mLE(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = LE;
 		int _saveIndex;
 		
@@ -836,7 +838,7 @@ tryAgain:
 	}
 	
 	public final void mLT_(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = LT_;
 		int _saveIndex;
 		
@@ -849,7 +851,7 @@ tryAgain:
 	}
 	
 	public final void mBXOR(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = BXOR;
 		int _saveIndex;
 		
@@ -862,7 +864,7 @@ tryAgain:
 	}
 	
 	public final void mBXOR_ASSIGN(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = BXOR_ASSIGN;
 		int _saveIndex;
 		
@@ -875,7 +877,7 @@ tryAgain:
 	}
 	
 	public final void mBOR(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = BOR;
 		int _saveIndex;
 		
@@ -888,7 +890,7 @@ tryAgain:
 	}
 	
 	public final void mBOR_ASSIGN(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = BOR_ASSIGN;
 		int _saveIndex;
 		
@@ -901,7 +903,7 @@ tryAgain:
 	}
 	
 	public final void mLOR(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = LOR;
 		int _saveIndex;
 		
@@ -914,7 +916,7 @@ tryAgain:
 	}
 	
 	public final void mBAND(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = BAND;
 		int _saveIndex;
 		
@@ -927,7 +929,7 @@ tryAgain:
 	}
 	
 	public final void mBAND_ASSIGN(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = BAND_ASSIGN;
 		int _saveIndex;
 		
@@ -940,7 +942,7 @@ tryAgain:
 	}
 	
 	public final void mLAND(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = LAND;
 		int _saveIndex;
 		
@@ -953,7 +955,7 @@ tryAgain:
 	}
 	
 	public final void mSEMI(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = SEMI;
 		int _saveIndex;
 		
@@ -966,7 +968,7 @@ tryAgain:
 	}
 	
 	public final void mANNOT(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = ANNOT;
 		int _saveIndex;
 		
@@ -979,7 +981,7 @@ tryAgain:
 	}
 	
 	public final void mWS(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = WS;
 		int _saveIndex;
 		
@@ -1035,7 +1037,7 @@ tryAgain:
 	}
 	
 	public final void mSL_COMMENT(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = SL_COMMENT;
 		int _saveIndex;
 		
@@ -1089,7 +1091,7 @@ tryAgain:
 	}
 	
 	public final void mML_COMMENT(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = ML_COMMENT;
 		int _saveIndex;
 		
@@ -1134,7 +1136,7 @@ tryAgain:
 	}
 	
 	public final void mCHAR_LITERAL(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = CHAR_LITERAL;
 		int _saveIndex;
 		
@@ -1160,7 +1162,7 @@ tryAgain:
 	}
 	
 	protected final void mESC(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = ESC;
 		int _saveIndex;
 		
@@ -1294,7 +1296,7 @@ tryAgain:
 	}
 	
 	public final void mSTRING_LITERAL(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = STRING_LITERAL;
 		int _saveIndex;
 		
@@ -1325,7 +1327,7 @@ tryAgain:
 	}
 	
 	protected final void mHEX_DIGIT(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = HEX_DIGIT;
 		int _saveIndex;
 		
@@ -1364,7 +1366,7 @@ tryAgain:
 	}
 	
 	protected final void mVOCAB(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = VOCAB;
 		int _saveIndex;
 		
@@ -1377,7 +1379,7 @@ tryAgain:
 	}
 	
 	public final void mIDENT(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = IDENT;
 		int _saveIndex;
 		
@@ -1480,7 +1482,7 @@ tryAgain:
 	}
 	
 	public final void mNUM_INT(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = NUM_INT;
 		int _saveIndex;
 		boolean isDecimal=false;
@@ -1804,7 +1806,7 @@ tryAgain:
 	}
 	
 	protected final void mEXPONENT(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = EXPONENT;
 		int _saveIndex;
 		
@@ -1872,7 +1874,7 @@ tryAgain:
 	}
 	
 	protected final void mFLOAT_SUFFIX(boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		int _ttype; Token _token=null; int _begin=text.length();
+		int _ttype; @Nullable Token _token=null; int _begin=text.length();
 		_ttype = FLOAT_SUFFIX;
 		int _saveIndex;
 		
@@ -1911,21 +1913,21 @@ tryAgain:
 	
 	
 	private static final long[] mk_tokenSet_0() {
-		long[] data = new long[8];
+		long @NotNull [] data = new long[8];
 		data[0]=-9217L;
 		for (int i = 1; i<=3; i++) { data[i]=-1L; }
 		return data;
 	}
 	public static final BitSet _tokenSet_0 = new BitSet(mk_tokenSet_0());
 	private static final long[] mk_tokenSet_1() {
-		long[] data = new long[8];
+		long @NotNull [] data = new long[8];
 		data[0]=-4398046520321L;
 		for (int i = 1; i<=3; i++) { data[i]=-1L; }
 		return data;
 	}
 	public static final BitSet _tokenSet_1 = new BitSet(mk_tokenSet_1());
 	private static final long[] mk_tokenSet_2() {
-		long[] data = new long[8];
+		long @NotNull [] data = new long[8];
 		data[0]=-549755813889L;
 		data[1]=-268435457L;
 		for (int i = 2; i<=3; i++) { data[i]=-1L; }
@@ -1933,7 +1935,7 @@ tryAgain:
 	}
 	public static final BitSet _tokenSet_2 = new BitSet(mk_tokenSet_2());
 	private static final long[] mk_tokenSet_3() {
-		long[] data = new long[8];
+		long @NotNull [] data = new long[8];
 		data[0]=-17179869185L;
 		data[1]=-268435457L;
 		for (int i = 2; i<=3; i++) { data[i]=-1L; }
@@ -1941,17 +1943,17 @@ tryAgain:
 	}
 	public static final BitSet _tokenSet_3 = new BitSet(mk_tokenSet_3());
 	private static final long[] mk_tokenSet_4() {
-		long[] data = { 0L, 343597383760L, 0L, 0L, 0L};
+		long @NotNull [] data = { 0L, 343597383760L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_4 = new BitSet(mk_tokenSet_4());
 	private static final long[] mk_tokenSet_5() {
-		long[] data = { 287948901175001088L, 541165879422L, 0L, 0L, 0L};
+		long @NotNull [] data = { 287948901175001088L, 541165879422L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_5 = new BitSet(mk_tokenSet_5());
 	private static final long[] mk_tokenSet_6() {
-		long[] data = { 70368744177664L, 481036337264L, 0L, 0L, 0L};
+		long @NotNull [] data = { 70368744177664L, 481036337264L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_6 = new BitSet(mk_tokenSet_6());

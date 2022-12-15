@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.comp.functionality.f202;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 
 import java.io.File;
@@ -23,9 +24,9 @@ public class DefaultGetLogDirectoryBehavior implements GetLogDirectoryBehavior {
 	}
 
 	@Override
-	public File getLogDirectory() {
-		final File file1 = new File("COMP", c.getCompilationNumberString());
-		final File file2 = new File(file1, "logs");
+	public @NotNull File getLogDirectory() {
+		final @NotNull File file1 = new File("COMP", c.getCompilationNumberString());
+		final @NotNull File file2 = new File(file1, "logs");
 		file2.mkdirs();
 
 		return file2;

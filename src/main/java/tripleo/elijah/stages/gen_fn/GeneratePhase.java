@@ -21,9 +21,9 @@ import java.util.Map;
  * Created 5/16/21 12:35 AM
  */
 public class GeneratePhase {
-	public WorkManager wm = new WorkManager();
+	public @NotNull WorkManager wm = new WorkManager();
 
-	Map<OS_Module, GenerateFunctions> generateFunctions = new HashMap<OS_Module, GenerateFunctions>();
+	@NotNull Map<OS_Module, GenerateFunctions> generateFunctions = new HashMap<OS_Module, GenerateFunctions>();
 	private ElLog.Verbosity verbosity;
 	private final PipelineLogic pipelineLogic;
 

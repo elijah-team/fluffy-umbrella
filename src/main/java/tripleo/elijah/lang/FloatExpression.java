@@ -15,6 +15,7 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.util.NotImplementedException;
 
 public class FloatExpression implements IExpression {
@@ -22,13 +23,13 @@ public class FloatExpression implements IExpression {
 	float carrier;
 	private final Token n;
 
-	public FloatExpression(final Token n) {
+	public FloatExpression(final @NotNull Token n) {
 		this.n = n;
 		carrier = Float.parseFloat(n.getText());
 	}
 
 	@Override
-	public IExpression getLeft() {
+	public @NotNull IExpression getLeft() {
 		return this;
 	}
 
@@ -43,12 +44,12 @@ public class FloatExpression implements IExpression {
 	}
 
 	@Override
-	public ExpressionKind getKind() {
+	public @NotNull ExpressionKind getKind() {
 		return ExpressionKind.FLOAT; // TODO
 	}
 
 	@Override
-	public void setKind(final ExpressionKind aType) {
+	public void setKind(final @NotNull ExpressionKind aType) {
 		// log and ignore
 		System.err.println("Trying to set ExpressionType of FloatExpression to "+aType.toString());
 	}

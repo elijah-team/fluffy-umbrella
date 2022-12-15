@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +17,7 @@ import java.util.List;
  * Created 8/15/20 6:31 PM
  */
 public class AnnotationClause {
-	List<AnnotationPart> aps = new ArrayList<AnnotationPart>();
+	@NotNull List<AnnotationPart> aps = new ArrayList<AnnotationPart>();
 
 	public void add(final AnnotationPart ap) {
 		aps.add(ap);

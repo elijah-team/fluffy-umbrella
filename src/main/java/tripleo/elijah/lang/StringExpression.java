@@ -9,17 +9,18 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 
 public class StringExpression extends AbstractExpression {
 
-public StringExpression(final Token g) { // TODO List<Token>
+public StringExpression(final @NotNull Token g) { // TODO List<Token>
 set(g.getText());
 }
 
 	@Override
-	public ExpressionKind getKind() {
+	public @NotNull ExpressionKind getKind() {
 		return ExpressionKind.STRING_LITERAL;
 	}
 
@@ -42,7 +43,7 @@ set(g.getText());
 	@Override
 	public String repr_() {return repr_;}
 
-	public String getText() {
+	public @NotNull String getText() {
 		return Helpers.remove_single_quotes_from_string(repr_); // TODO wont work with triple quoted string
 	}
 

@@ -38,7 +38,7 @@ import static tripleo.elijah.gen.TypeRef.is_integer_code;
 public class ExpressionNodeBuilder {
 	
 	private static class MyIExpressionNode1 implements IExpressionNode {
-		static String printableExpression(@NotNull final IExpression expression) {
+		static @NotNull String printableExpression(@NotNull final IExpression expression) {
 //			if (expression instanceof OS_Integer) {
 //				return Integer.toString(((OS_Integer) expression).getValue());
 //			} else
@@ -59,21 +59,21 @@ public class ExpressionNodeBuilder {
 		}
 		
 		@Override
-		public String genText() {
+		public @org.jetbrains.annotations.Nullable String genText() {
 			return null;
 		}
 		
 		@Override
 		public String genText(final CompilerContext cctx) {
 			final String left = _left.genText();
-			final String middle1 = _middle.getSymbol();
-			final String right = printableExpression(_right.getExpr());
+			final @NotNull String middle1 = _middle.getSymbol();
+			final @NotNull String right = printableExpression(_right.getExpr());
 			
 			return String.format("%s %s %s", left, middle1, right);
 		}
 		
 		@Override
-		public String genType() {
+		public @org.jetbrains.annotations.Nullable String genType() {
 			// TODO need lookup somewhere, prolly not here tho...
 			if (_middle == ExpressionOperators.OP_MINUS) {
 				if (_left.getType().getCode() == CODE_U64 &&
@@ -85,12 +85,12 @@ public class ExpressionNodeBuilder {
 		}
 		
 		@Override
-		public IExpression getExpr() {
+		public @org.jetbrains.annotations.Nullable IExpression getExpr() {
 			return null;
 		}
 		
 		@Override
-		public TypeRef getType() {
+		public @org.jetbrains.annotations.Nullable TypeRef getType() {
 			return null;
 		}
 		
@@ -117,48 +117,48 @@ public class ExpressionNodeBuilder {
 	
 	@NotNull
 	@Contract("_, _, _, _ -> new")
-	public static IExpression binex(final TypeRef rt, final VariableReference left, final ExpressionOperators middle, final IExpression right) {
+	public static IExpression binex(final TypeRef rt, final VariableReference left, final @NotNull ExpressionOperators middle, final IExpression right) {
 		// TODO Auto-generated method stub
-		final ExpressionKind middle1 = Helpers.ExpressionOperatorToExpressionType(middle);
+		final @NotNull ExpressionKind middle1 = Helpers.ExpressionOperatorToExpressionType(middle);
 		return new BasicBinaryExpression(left, middle1, right);
 	}
 
 	@NotNull
 	@Contract("_, _, _, _ -> new")
-	public static IExpression binex(final TypeRef rt, final VariableReference left, final ExpressionOperators middle, final TmpSSACtxNode right) { // todo wrong again
+	public static IExpression binex(final TypeRef rt, final VariableReference left, final @NotNull ExpressionOperators middle, final @NotNull TmpSSACtxNode right) { // todo wrong again
 		// TODO Auto-generated method stub
-		final ExpressionKind middle1 = Helpers.ExpressionOperatorToExpressionType(middle);
+		final @NotNull ExpressionKind middle1 = Helpers.ExpressionOperatorToExpressionType(middle);
 		return new BasicBinaryExpression(left, middle1, new StringExpression(tripleo.elijah.util.Helpers.makeToken(right.text()))); // TODO !!!
 	}
 
 	@NotNull
 	public static IExpressionNode binex(final TypeRef rt, final VariableReferenceNode3 n, final ExpressionOperators opMinus, final NumericExpression integer) {
-		final TypeRef typeRef = new TypeRef(null, null,"int", 80);  // TODO smells
+		final @NotNull TypeRef typeRef = new TypeRef(null, null,"int", 80);  // TODO smells
 		//
 		return new MyIExpressionNode1(n, opMinus, new IntegerNode(integer, typeRef));
 	}
 	
 	@NotNull
 	@Contract(value = "_, _, _, _ -> new", pure = true)
-	public static IExpressionNode binex(final TypeRef rt, final VariableReferenceNode3 varref, final ExpressionOperators operators, final TmpSSACtxNode node) {
+	public static IExpressionNode binex(final @NotNull TypeRef rt, final VariableReferenceNode3 varref, final ExpressionOperators operators, final TmpSSACtxNode node) {
 		return new IExpressionNode() {
 			@Override
-			public String genText() {
+			public @org.jetbrains.annotations.Nullable String genText() {
 				return null;
 			}
 			
 			@Override
-			public String genText(final CompilerContext cctx) {
+			public @org.jetbrains.annotations.Nullable String genText(final CompilerContext cctx) {
 				return null;
 			}
 			
 			@Override
-			public String genType() {
+			public @org.jetbrains.annotations.Nullable String genType() {
 				return null; //rt.getName(); // TODO
 			}
 			
 			@Override
-			public IExpression getExpr() {
+			public @org.jetbrains.annotations.Nullable IExpression getExpr() {
 				return null;
 			}
 			
@@ -190,31 +190,31 @@ public class ExpressionNodeBuilder {
 	}
 	
 	@NotNull
-	public static IExpressionNode fncall(final MethRef aMeth, final List<LocalAgnTmpNode> of) { // TODO no so wrong anymore
-		final ProcedureCallExpression pce1 = new ProcedureCallExpression();
-		final Qualident xyz = new Qualident();
-		final Token t = new CommonToken();
+	public static IExpressionNode fncall(final @NotNull MethRef aMeth, final @NotNull List<LocalAgnTmpNode> of) { // TODO no so wrong anymore
+		final @NotNull ProcedureCallExpression pce1 = new ProcedureCallExpression();
+		final @NotNull Qualident xyz = new Qualident();
+		final @NotNull Token t = new CommonToken();
 		xyz.append(tripleo.elijah.util.Helpers.string_to_ident(aMeth.getTitle()));
 		pce1.identifier(xyz);
 		//
 		//
-		final ExpressionList expl = Helpers.LocalAgnTmpNodeToListVarRef(of);
+		final @NotNull ExpressionList expl = Helpers.LocalAgnTmpNodeToListVarRef(of);
 		pce1.setArgs(expl);
 		//
 		//
 		return new IExpressionNode() {
 			@Override
-			public String genText() {
+			public @org.jetbrains.annotations.Nullable String genText() {
 				NotImplementedException.raise();
 				return null;
 			}
 			
 			@Override
-			public String genText(final CompilerContext cctx) {
+			public @NotNull String genText(final CompilerContext cctx) {
 				final TypeRef p = aMeth.getParent();
 				final int code = p.getCode();
 				final String s = String.format("z%d%s", code, pce1.getLeft().toString());
-				final StringBuilder sb = new StringBuilder();
+				final @NotNull StringBuilder sb = new StringBuilder();
 				
 				sb.append(s);
 				sb.append('(');
@@ -245,23 +245,23 @@ public class ExpressionNodeBuilder {
 					}
 				})));
 				sb.append(')');
-				final String s3 = sb.toString();
+				final @NotNull String s3 = sb.toString();
 				return s3;
 			}
 			
 			@Override
-			public String genType() {
+			public @org.jetbrains.annotations.Nullable String genType() {
 				NotImplementedException.raise();
 				return null;
 			}
 			
 			@Override
-			public IExpression getExpr() {
+			public @NotNull IExpression getExpr() {
 				return pce1;
 			}
 			
 			@Override
-			public TypeRef getType() {
+			public @org.jetbrains.annotations.Nullable TypeRef getType() {
 				NotImplementedException.raise();
 				return null;
 			}
@@ -293,43 +293,43 @@ public class ExpressionNodeBuilder {
 //		return fncall(string, expl);
 //	}
 	
-	public static IExpressionNode fncall(final String string, final List<LocalAgnTmpNode> of) { // todo wrong
+	public static @NotNull IExpressionNode fncall(final String string, final @NotNull List<LocalAgnTmpNode> of) { // todo wrong
 		// TODO Auto-generated method stub
-		final ProcedureCallExpression pce1 = new ProcedureCallExpression();
-		final Qualident xyz = new Qualident();
+		final @NotNull ProcedureCallExpression pce1 = new ProcedureCallExpression();
+		final @NotNull Qualident xyz = new Qualident();
 //		final Token t = tripleo.elijah.util.Helpers.makeToken(string);
 		xyz.append(tripleo.elijah.util.Helpers.string_to_ident(string));
 		pce1.identifier(xyz);
 		//
-		final ExpressionList expl = Helpers.LocalAgnTmpNodeToListVarRef(of);
+		final @NotNull ExpressionList expl = Helpers.LocalAgnTmpNodeToListVarRef(of);
 		pce1.setArgs(expl);
 		//
 		return new IExpressionNode() {
 			@Override
-			public String genText() {
+			public @org.jetbrains.annotations.Nullable String genText() {
 				NotImplementedException.raise();
 				return null;
 			}
 			
 			@Override
-			public String genText(final CompilerContext cctx) {
+			public @org.jetbrains.annotations.Nullable String genText(final CompilerContext cctx) {
 				NotImplementedException.raise();
 				return null;
 			}
 			
 			@Override
-			public String genType() {
+			public @org.jetbrains.annotations.Nullable String genType() {
 				NotImplementedException.raise();
 				return null;
 			}
 			
 			@Override
-			public IExpression getExpr() {
+			public @NotNull IExpression getExpr() {
 				return pce1;
 			}
 			
 			@Override
-			public TypeRef getType() {
+			public @org.jetbrains.annotations.Nullable TypeRef getType() {
 				NotImplementedException.raise();
 				return null;
 			}

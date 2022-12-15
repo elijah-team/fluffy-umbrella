@@ -113,22 +113,22 @@ public class TypeTableEntry {
 		return genType.node != null;
 	}
 
-	public OS_Type getAttached() {
+	public @Nullable OS_Type getAttached() {
 		return attached;
 	}
 
-	public void setAttached(OS_Type aAttached) {
+	public void setAttached(@Nullable OS_Type aAttached) {
 		attached = aAttached;
 		if (aAttached != null) {
 			_settingAttached(aAttached);
 
-			for (OnSetAttached cb : osacbs) {
+			for (@NotNull OnSetAttached cb : osacbs) {
 				cb.onSetAttached(this);
 			}
 		}
 	}
 
-	public void setAttached(GenType aGenType) {
+	public void setAttached(@NotNull GenType aGenType) {
 		genType.copy(aGenType);
 //		if (aGenType.resolved != null) genType.resolved = aGenType.resolved;
 //		if (aGenType.ci != null) genType.ci = aGenType.ci;

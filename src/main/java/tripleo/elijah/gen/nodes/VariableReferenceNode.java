@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.gen.nodes;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.lang.VariableReference;
 import tripleo.elijah.util.NotImplementedException;
@@ -22,12 +24,12 @@ public class VariableReferenceNode {
 		this._varref=varref;
 	}
 	
-	public TypeNameNode getType() {
+	public @Nullable TypeNameNode getType() {
 		NotImplementedException.raise();
 		return null;
 	}
 	
-	public String genText() {
+	public @NotNull String genText() {
 		NotImplementedException.raise();
 		return "vtn"; // TODO hardcoded
 	}

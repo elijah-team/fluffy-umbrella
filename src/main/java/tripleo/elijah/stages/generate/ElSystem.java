@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.generate;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.stages.gen_fn.GeneratedClass;
 import tripleo.elijah.stages.gen_fn.GeneratedFunction;
@@ -28,27 +29,27 @@ public class ElSystem {
 	private final Map<GeneratedFunction, String> gfm_map = new HashMap<GeneratedFunction, String>();
 	public boolean verbose = true;
 
-	public void generateOutputs(GenerateResult gr) {
-		final OutputStrategyC outputStrategyC = new OutputStrategyC(this.outputStrategy);
+	public void generateOutputs(@NotNull GenerateResult gr) {
+		final @NotNull OutputStrategyC outputStrategyC = new OutputStrategyC(this.outputStrategy);
 
-		for (GenerateResultItem ab : gr.results()) {
+		for (@NotNull GenerateResultItem ab : gr.results()) {
 			String s = generateOutputs_Internal(ab.node, ab.ty, outputStrategyC);
 			assert s != null;
 			ab.output = s;
 		}
 
 		if (verbose) {
-			for (GenerateResultItem ab : gr.results()) {
+			for (@NotNull GenerateResultItem ab : gr.results()) {
 				if (ab.node instanceof GeneratedFunction) continue;
 				System.out.println("** "+ab.node+" "+ab.output);
 			}
 		}
 	}
 
-	String generateOutputs_Internal(GeneratedNode node, GenerateResult.TY ty, OutputStrategyC outputStrategyC) {
+	String generateOutputs_Internal(GeneratedNode node, GenerateResult.TY ty, @NotNull OutputStrategyC outputStrategyC) {
 		String s, ss;
 		if (node instanceof GeneratedNamespace) {
-			final GeneratedNamespace generatedNamespace = (GeneratedNamespace) node;
+			final @NotNull GeneratedNamespace generatedNamespace = (GeneratedNamespace) node;
 			s = outputStrategyC.nameForNamespace(generatedNamespace, ty);
 //			System.out.println("41 "+generatedNamespace+" "+s);
 			for (GeneratedFunction gf : generatedNamespace.functionMap.values()) {
@@ -56,7 +57,7 @@ public class ElSystem {
 				gfm_map.put(gf, ss);
 			}
 		} else if (node instanceof GeneratedClass) {
-			final GeneratedClass generatedClass = (GeneratedClass) node;
+			final @NotNull GeneratedClass generatedClass = (GeneratedClass) node;
 			s = outputStrategyC.nameForClass(generatedClass, ty);
 //			System.out.println("48 "+generatedClass+" "+s);
 			for (GeneratedFunction gf : generatedClass.functionMap.values()) {
@@ -64,7 +65,7 @@ public class ElSystem {
 				gfm_map.put(gf, ss);
 			}
 		} else if (node instanceof GeneratedFunction) {
-			final GeneratedFunction generatedFunction = (GeneratedFunction) node;
+			final @NotNull GeneratedFunction generatedFunction = (GeneratedFunction) node;
 			s = outputStrategyC.nameForFunction(generatedFunction, ty);
 //			System.out.println("55 "+generatedFunction+" "+s);
 		} else

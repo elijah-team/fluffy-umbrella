@@ -3,6 +3,7 @@ package me.friwi.jcefsampleapp;
 import me.friwi.jcefmaven.CefBuildInfo;
 import me.friwi.jcefmaven.EnumPlatform;
 import me.friwi.jcefmaven.UnsupportedPlatformException;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,7 +18,7 @@ import java.util.Locale;
  * @author Fritz Windisch
  */
 public class TestReportGenerator {
-    public static void print(String[] args) throws IOException, UnsupportedPlatformException {
+    public static void print(String @NotNull [] args) throws IOException, UnsupportedPlatformException {
         System.out.println("Please consider reporting back whether this build worked on your platform or not.");
         System.out.println("To report back, follow these 3 (1/2) easy steps (it will take ~1 minute):");
         System.out.println("    1) Check if everything is working");

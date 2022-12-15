@@ -9,6 +9,7 @@
 package tripleo.elijah.lang.builder;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.Documentable;
 import tripleo.elijah.lang.ExpressionList;
 import tripleo.elijah.lang.IExpression;
@@ -51,7 +52,7 @@ public class BaseScope implements Documentable {
 		throw new NotImplementedException();
 	}
 
-	public Iterable<ElBuilder> items() {
+	public @NotNull Iterable<ElBuilder> items() {
 		return bs;
 	}
 

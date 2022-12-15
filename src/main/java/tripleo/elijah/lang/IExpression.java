@@ -16,6 +16,8 @@
 package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface IExpression {
 
@@ -31,15 +33,16 @@ public interface IExpression {
 
 	void setKind(ExpressionKind aKind);
 
-	IExpression getLeft();
+	@Nullable IExpression getLeft();
 
 	void setLeft(IExpression iexpression);
 
-	@Deprecated String repr_();
+	@Deprecated
+	@Nullable String repr_();
 
 	IExpression UNASSIGNED = new BasicBinaryExpression() {
 		@Override
-		public String toString() {
+		public @NotNull String toString() {
 			return "<UNASSIGNED expression>";
 		}
 	};

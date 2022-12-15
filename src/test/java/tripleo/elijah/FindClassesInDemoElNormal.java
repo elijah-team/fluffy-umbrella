@@ -8,6 +8,7 @@
  */
 package tripleo.elijah;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
@@ -28,14 +29,14 @@ public class FindClassesInDemoElNormal {
 
 	@Test
 	public final void testParseFile() {
-		final List<String> args = tripleo.elijah.util.Helpers.List_of("test/demo-el-normal", "test/demo-el-normal/main2", "-sE");
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final @NotNull List<String> args = tripleo.elijah.util.Helpers.List_of("test/demo-el-normal", "test/demo-el-normal/main2", "-sE");
+		final @NotNull ErrSink eee = new StdErrSink();
+		final @NotNull Compilation c = new Compilation(eee, new IO());
 
 		c.feedCmdLine(args);
 
-		final List<ClassStatement> aClassList = c.findClass("Main");
-		for (final ClassStatement classStatement : aClassList) {
+		final @NotNull List<ClassStatement> aClassList = c.findClass("Main");
+		for (final @NotNull ClassStatement classStatement : aClassList) {
 			System.out.println(classStatement.getPackageName().getName());
 		}
 		Assert.assertEquals(3, aClassList.size());  // NOTE this may change. be aware
@@ -44,13 +45,13 @@ public class FindClassesInDemoElNormal {
 
 	@Test
 	public final void testListFolders() {
-		final List<String> args = Helpers.List_of("test/demo-el-normal/listfolders/", "-sE");
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final @NotNull List<String> args = Helpers.List_of("test/demo-el-normal/listfolders/", "-sE");
+		final @NotNull ErrSink eee = new StdErrSink();
+		final @NotNull Compilation c = new Compilation(eee, new IO());
 
 		c.feedCmdLine(args);
 
-		final List<ClassStatement> aClassList = c.findClass("Main");
+		final @NotNull List<ClassStatement> aClassList = c.findClass("Main");
 		Assert.assertEquals(1, aClassList.size());
 
 		Assert.assertFalse("isMainClass", MainClassEntryPoint.isMainClass(aClassList.get(0)));

@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
 
 import java.util.ArrayList;
@@ -18,8 +19,8 @@ import java.util.List;
  */
 public class FunctionDefScope extends BaseFunctionDefScope implements Documentable {
 
-	private List<Precondition> prec_list = new ArrayList<Precondition>();
-	private List<Postcondition> postc_list = new ArrayList<Postcondition>();
+	private @NotNull List<Precondition> prec_list = new ArrayList<Precondition>();
+	private @NotNull List<Postcondition> postc_list = new ArrayList<Postcondition>();
 	private boolean _isAbstract = false;
 
 	@Override

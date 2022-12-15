@@ -9,6 +9,9 @@
 
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 public class BasicBinaryExpression implements IBinaryExpression {
 
 	/* (non-Javadoc)
@@ -16,8 +19,8 @@ public class BasicBinaryExpression implements IBinaryExpression {
 	 */
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder();
-		final BasicBinaryExpression abe = this;
+		final @NotNull StringBuilder sb = new StringBuilder();
+		final @NotNull BasicBinaryExpression abe = this;
 		switch (abe.getKind()) {
 			case ASSIGNMENT:
 				sb.append(abe.getLeft().toString());
@@ -322,7 +325,7 @@ public class BasicBinaryExpression implements IBinaryExpression {
 	}
 
 	@Override
-	public void set(final IBinaryExpression aEx) {
+	public void set(final @NotNull IBinaryExpression aEx) {
 		left=aEx.getLeft();
 		_kind =aEx.getKind();
 		right=aEx.getRight();
@@ -344,9 +347,9 @@ public class BasicBinaryExpression implements IBinaryExpression {
 		right=null;
 	}
 
-	public IExpression left;
-	public IExpression right;
-	public ExpressionKind _kind;
+	public @Nullable IExpression left;
+	public @Nullable IExpression right;
+	public @Nullable ExpressionKind _kind;
 
 	@Override
 	public void setKind(final ExpressionKind aKind) {

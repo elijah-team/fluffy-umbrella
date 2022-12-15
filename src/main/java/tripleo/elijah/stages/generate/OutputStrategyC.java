@@ -9,6 +9,7 @@
 package tripleo.elijah.stages.generate;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.lang.ClassStatement;
@@ -37,10 +38,10 @@ public class OutputStrategyC {
 		this.outputStrategy = outputStrategy;
 	}
 
-	public String nameForNamespace(GeneratedNamespace generatedNamespace, GenerateResult.TY aTy) {
+	public @NotNull String nameForNamespace(@NotNull GeneratedNamespace generatedNamespace, GenerateResult.@NotNull TY aTy) {
 		if (generatedNamespace.module().isPrelude()) {
 			// We are dealing with the Prelude
-			StringBuilder sb = new StringBuilder();
+			@NotNull StringBuilder sb = new StringBuilder();
 			sb.append("/Prelude/");
 			sb.append("Prelude");
 			appendExtension(aTy, sb);
@@ -49,12 +50,12 @@ public class OutputStrategyC {
 		String filename;
 		if (generatedNamespace.getNamespaceStatement().getKind() == NamespaceTypes.MODULE) {
 			final String moduleFileName = generatedNamespace.module().getFileName();
-			File moduleFile = new File(moduleFileName);
+			@NotNull File moduleFile = new File(moduleFileName);
 			filename = moduleFile.getName();
 			filename = strip_elijah_extension(filename);
 		} else
 			filename = generatedNamespace.getName();
-		StringBuilder sb = new StringBuilder();
+		@NotNull StringBuilder sb = new StringBuilder();
 		sb.append("/");
 		final LibraryStatementPart lsp = generatedNamespace.module().getLsp();
 		if (lsp == null)
@@ -74,7 +75,7 @@ public class OutputStrategyC {
 		return sb.toString();
 	}
 
-	private OS_Package findPackage(OS_Element e) {
+	private OS_Package findPackage(@Nullable OS_Element e) {
 		while (e != null) {
 			e = e.getParent();
 			if (e.getContext().getParent() == e.getContext())
@@ -101,7 +102,7 @@ public class OutputStrategyC {
 		return null;
 	}
 
-	String strip_elijah_extension(String aFilename) {
+	@NotNull String strip_elijah_extension(@NotNull String aFilename) {
 		if (aFilename.endsWith(".elijah")) {
 			aFilename = aFilename.substring(0, aFilename.length()-7);
 		} else if (aFilename.endsWith(".elijjah")) {
@@ -110,7 +111,7 @@ public class OutputStrategyC {
 		return aFilename;
 	}
 
-	public String nameForFunction(GeneratedFunction generatedFunction, GenerateResult.TY aTy) {
+	public @Nullable String nameForFunction(@NotNull GeneratedFunction generatedFunction, GenerateResult.@NotNull TY aTy) {
 		GeneratedNode c = generatedFunction.getGenClass();
 		if (c == null) c = generatedFunction.getParent(); // TODO fixme
 		if (c instanceof GeneratedClass)
@@ -120,16 +121,16 @@ public class OutputStrategyC {
 		return null;
 	}
 
-	public String nameForClass(GeneratedClass generatedClass, GenerateResult.TY aTy) {
+	public @NotNull String nameForClass(@NotNull GeneratedClass generatedClass, GenerateResult.@NotNull TY aTy) {
 		if (generatedClass.module().isPrelude()) {
 			// We are dealing with the Prelude
-			StringBuilder sb = new StringBuilder();
+			@NotNull StringBuilder sb = new StringBuilder();
 			sb.append("/Prelude/");
 			sb.append("Prelude");
 			appendExtension(aTy, sb);
 			return sb.toString();
 		}
-		StringBuilder sb = new StringBuilder();
+		@NotNull StringBuilder sb = new StringBuilder();
 		sb.append("/");
 		final LibraryStatementPart lsp = generatedClass.module().getLsp();
 		if (lsp == null)
@@ -158,8 +159,8 @@ public class OutputStrategyC {
 			{
 //					mod = generatedClass.getKlass().getContext().module();
 				OS_Module mod = generatedClass.module();
-				File f = new File(mod.getFileName());
-				String ff = f.getName();
+				@NotNull File f = new File(mod.getFileName());
+				@NotNull String ff = f.getName();
 				int y=2;
 				ff = strip_elijah_extension(ff);
 				sb.append(ff);
@@ -193,7 +194,7 @@ public class OutputStrategyC {
 		return sb.toString();
 	}
 
-	public void appendExtension(GenerateResult.TY aTy, StringBuilder aSb) {
+	public void appendExtension(GenerateResult.@NotNull TY aTy, @NotNull StringBuilder aSb) {
 		switch (aTy) {
 		case IMPL:
 			aSb.append(".c");

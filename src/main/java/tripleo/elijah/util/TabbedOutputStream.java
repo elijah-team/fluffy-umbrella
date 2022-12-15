@@ -8,22 +8,25 @@
  */
 package tripleo.elijah.util;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.*;
 
 public class TabbedOutputStream {
 
 	private boolean dont_close = false;
 	int tabwidth;
-	Writer myStream;
+	@Nullable Writer myStream;
 	private boolean do_tabs = false;
 
-	public TabbedOutputStream(final OutputStream os) {
+	public TabbedOutputStream(final @NotNull OutputStream os) {
 		tabwidth = 0;
 		if (os == System.out) dont_close = true;
 		myStream = new BufferedWriter(new OutputStreamWriter(os));
 	}
 
-	public TabbedOutputStream(final Writer w, boolean buffer_it) {
+	public TabbedOutputStream(final @NotNull Writer w, boolean buffer_it) {
 		tabwidth = 0;
 		//if (os == System.out) dont_close = true;
 		if (buffer_it)
@@ -33,7 +36,7 @@ public class TabbedOutputStream {
 	}
 
 	public static void main(final String[] args) {
-		final TabbedOutputStream tos = new TabbedOutputStream(System.out);
+		final @NotNull TabbedOutputStream tos = new TabbedOutputStream(System.out);
 //		int i = 0;
 //		int j = 0;
 		try {
@@ -61,7 +64,7 @@ public class TabbedOutputStream {
 		}
 	}
 
-	public void put_string_ln(final String s) throws IOException {
+	public void put_string_ln(final @NotNull String s) throws IOException {
 		if (!is_connected())
 			throw new IllegalStateException("is_connected assertion failed");
 
@@ -73,7 +76,7 @@ public class TabbedOutputStream {
 		do_tabs = true;
 	}
 
-	public void put_string_ln_no_tabs(final String s) throws IOException {
+	public void put_string_ln_no_tabs(final @NotNull String s) throws IOException {
 		if (!is_connected())
 			throw new IllegalStateException("is_connected assertion failed");
 
@@ -82,7 +85,7 @@ public class TabbedOutputStream {
 //		do_tabs = true;
 	}
 
-	public void put_string(final String s) throws IOException {
+	public void put_string(final @NotNull String s) throws IOException {
 		if (!is_connected())
 			throw new IllegalStateException("is_connected assertion failed");
 
@@ -122,7 +125,7 @@ public class TabbedOutputStream {
 		return myStream != null;
 	}
 
-	public void quote_string(final String s) throws IOException {
+	public void quote_string(final @NotNull String s) throws IOException {
 		if (!is_connected())
 			throw new IllegalStateException("is_connected assertion failed");
 

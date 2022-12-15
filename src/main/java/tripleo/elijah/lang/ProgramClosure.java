@@ -8,9 +8,11 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+
 public abstract class ProgramClosure {
-	public ClassStatement classStatement(final OS_Element aParent, Context ctx) {
-		final ClassStatement classStatement = new ClassStatement(aParent, ctx);
+	public @NotNull ClassStatement classStatement(final OS_Element aParent, Context ctx) {
+		final @NotNull ClassStatement classStatement = new ClassStatement(aParent, ctx);
 		return classStatement;
 	}
 
@@ -19,13 +21,13 @@ public abstract class ProgramClosure {
 //		return importStatement;
 //	}
 
-	public NamespaceStatement namespaceStatement(final OS_Element aParent, Context ctx) {
-		final NamespaceStatement namespaceStatement = new NamespaceStatement(aParent, ctx);
+	public @NotNull NamespaceStatement namespaceStatement(final OS_Element aParent, Context ctx) {
+		final @NotNull NamespaceStatement namespaceStatement = new NamespaceStatement(aParent, ctx);
 		return namespaceStatement;
 	}
 
-	public AliasStatement aliasStatement(final OS_Element aParent) {
-		final AliasStatement aliasStatement = new AliasStatement(aParent);
+	public @NotNull AliasStatement aliasStatement(final @NotNull OS_Element aParent) {
+		final @NotNull AliasStatement aliasStatement = new AliasStatement(aParent);
 		return aliasStatement;
 	}
 

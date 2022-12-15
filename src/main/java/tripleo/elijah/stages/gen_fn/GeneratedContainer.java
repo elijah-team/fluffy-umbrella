@@ -23,16 +23,16 @@ import java.util.List;
 public interface GeneratedContainer extends GeneratedNode {
     OS_Element getElement();
 
-    VarTableEntry getVariable(String aVarName);
+    @Nullable VarTableEntry getVariable(String aVarName);
 
     public class VarTableEntry {
         public final VariableStatement vs;
-        public final IdentExpression nameToken;
+        public final @NotNull IdentExpression nameToken;
         public final IExpression initialValue;
-        private final OS_Element parent;
+        private final @NotNull OS_Element parent;
         TypeName typeName;
         public OS_Type varType;
-        List<TypeTableEntry> potentialTypes = new ArrayList<TypeTableEntry>();
+        @NotNull List<TypeTableEntry> potentialTypes = new ArrayList<TypeTableEntry>();
         private GeneratedNode _resolvedType;
 
         public VarTableEntry(final VariableStatement aVs,
@@ -68,7 +68,7 @@ public interface GeneratedContainer extends GeneratedNode {
             connectionPairs.add(new ConnectionPair(aVte, aConstructor));
         }
 
-        public List<ConnectionPair> connectionPairs = new ArrayList<>();
+        public @NotNull List<ConnectionPair> connectionPairs = new ArrayList<>();
 
         public static class ConnectionPair {
             public final VariableTableEntry vte;

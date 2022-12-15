@@ -32,14 +32,14 @@ public class FnCallArgs implements InstructionArgument {
 	@Override
 	public String toString() {
 		final int index = DeduceTypes2.to_int(expression_to_call.args.get(0));
-		final List<InstructionArgument> instructionArguments = getInstructionArguments();
+		final @NotNull List<InstructionArgument> instructionArguments = getInstructionArguments();
 /*
         final List<String> collect = instructionArguments
                 .stream()
                 .map((instructionArgument -> instructionArgument.toString()))
                 .collect(Collectors.toList());
 */
-		final Collection<String> collect2 = Collections2.transform(instructionArguments, new Function<InstructionArgument, String>() {
+		final @NotNull Collection<String> collect2 = Collections2.transform(instructionArguments, new Function<InstructionArgument, String>() {
 			@Nullable
 			@Override
 			public String apply(@Nullable final InstructionArgument input) {

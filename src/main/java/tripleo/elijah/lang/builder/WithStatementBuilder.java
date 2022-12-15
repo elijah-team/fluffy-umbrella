@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.VariableStatement;
@@ -18,19 +19,19 @@ import tripleo.elijah.lang.WithStatement;
  */
 public class WithStatementBuilder extends ElBuilder {
 	private Context _context;
-	private VariableSequenceBuilder _sb = new VariableSequenceBuilder();
-	private WithStatementScope _scope = new WithStatementScope();
+	private @NotNull VariableSequenceBuilder _sb = new VariableSequenceBuilder();
+	private @NotNull WithStatementScope _scope = new WithStatementScope();
 
 	@Override
-	protected WithStatement build() {
-		WithStatement withStatement = new WithStatement(_parent);
-		for (VariableSequenceBuilder.Triple triple : _sb.triples) {
+	protected @NotNull WithStatement build() {
+		@NotNull WithStatement withStatement = new WithStatement(_parent);
+		for (VariableSequenceBuilder.@NotNull Triple triple : _sb.triples) {
 			VariableStatement vs = withStatement.nextVarStmt();
 			vs.setName(triple._name);
 			vs.initial(triple._initial);
 			vs.setTypeName(triple._tn);
 		}
-		for (ElBuilder builder : _scope.items()) {
+		for (@NotNull ElBuilder builder : _scope.items()) {
 			OS_Element built;
 			builder.setParent(_parent);
 			builder.setContext(_context);

@@ -1,13 +1,15 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Created 8/30/20 2:54 PM
  */
 public abstract class AbstractBlockScope implements Scope {
 
-	private final AbstractStatementClosure asc;
+	private final @NotNull AbstractStatementClosure asc;
 
 	public AbstractBlockScope(final OS_Container _element) {
 		this._element = _element;
@@ -30,12 +32,12 @@ public abstract class AbstractBlockScope implements Scope {
 	}
 
 	@Override
-	public BlockStatement blockStatement() {
+	public @NotNull BlockStatement blockStatement() {
 		return new BlockStatement(this);
 	}
 
 	@Override
-	public InvariantStatement invariantStatement() {
+	public @Nullable InvariantStatement invariantStatement() {
 		return null;
 	}
 
@@ -52,7 +54,7 @@ public abstract class AbstractBlockScope implements Scope {
 	public abstract Context getContext();
 
 	@Override
-	public TypeAliasStatement typeAlias() {
+	public @Nullable TypeAliasStatement typeAlias() {
 		return null;
 	}
 

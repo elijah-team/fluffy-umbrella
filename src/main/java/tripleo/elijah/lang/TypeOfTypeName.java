@@ -1,5 +1,7 @@
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.stages.deduce.DeduceLookupUtils;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.ResolveError;
@@ -28,7 +30,7 @@ public class TypeOfTypeName implements TypeName {
 	}
 
 	@Override
-	public Type kindOfType() {
+	public @NotNull Type kindOfType() {
 		return Type.TYPE_OF;
 	}
 
@@ -47,10 +49,10 @@ public class TypeOfTypeName implements TypeName {
 		return _ctx;
 	}
 
-	public TypeName resolve(Context ctx, DeduceTypes2 deduceTypes2) throws ResolveError {
+	public @Nullable TypeName resolve(@NotNull Context ctx, @NotNull DeduceTypes2 deduceTypes2) throws ResolveError {
 //		System.out.println(_typeOf.toString());
 		LookupResultList lrl = DeduceLookupUtils.lookupExpression(_typeOf, ctx, deduceTypes2);
-		OS_Element best = lrl.chooseBest(null);
+		@Nullable OS_Element best = lrl.chooseBest(null);
 		if (best instanceof VariableStatement)
 			return ((VariableStatement) best).typeName();
 		return null;

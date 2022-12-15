@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.gen_generic;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
 import tripleo.elijah.stages.gen_fn.GeneratedClass;
 import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
@@ -30,7 +31,7 @@ public class GenerateResult {
 		res.add(new GenerateResultItem(ty, b, n, ++bufferCounter));
 	}
 
-	public List<GenerateResultItem> results() {
+	public @NotNull List<GenerateResultItem> results() {
 		return res;
 	}
 

@@ -8,16 +8,18 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.gen.ICodeGen;
 import tripleo.elijah.util.NotImplementedException;
 
 public class FormalArgListItem implements OS_Element, OS_Element2 {
 
 	private IdentExpression name;
-	private TypeName tn=null;
+	private @Nullable TypeName tn=null;
 
     @Override // OS_Element
-    public void visitGen(final ICodeGen visit) {
+    public void visitGen(final @NotNull ICodeGen visit) {
         visit.visitFormalArgListItem(this);
     }
 

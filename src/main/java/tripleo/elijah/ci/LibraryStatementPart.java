@@ -9,6 +9,8 @@
 package tripleo.elijah.ci;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.IExpression;
 
 import java.util.ArrayList;
@@ -20,15 +22,15 @@ import java.util.List;
 public class LibraryStatementPart {
 	private String name;
 	private String dirName;
-   	private List<Directive> dirs = null;
+   	private @Nullable List<Directive> dirs = null;
 
 	private CompilerInstructions ci;
 
-	public void setName(final Token i1) {
+	public void setName(final @NotNull Token i1) {
 		name = i1.getText();
 	}
 
-	public void setDirName(final Token dirName) {
+	public void setDirName(final @NotNull Token dirName) {
 		this.dirName = dirName.getText();
 	}
 
@@ -40,7 +42,7 @@ public class LibraryStatementPart {
 		return dirName;
 	}
 
-	public void addDirective(final Token token, final IExpression iExpression) {
+	public void addDirective(final @NotNull Token token, final IExpression iExpression) {
 		if (dirs == null)
 			dirs = new ArrayList<Directive>();
 		dirs.add(new Directive(token, iExpression));
@@ -59,7 +61,7 @@ public class LibraryStatementPart {
 		private final IExpression expression;
 		private final String name;
 
-		public Directive(final Token token_, final IExpression expression_) {
+		public Directive(final @NotNull Token token_, final IExpression expression_) {
 			name = token_.getText();
 			expression = expression_;
 		}

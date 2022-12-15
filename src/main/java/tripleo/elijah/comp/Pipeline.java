@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.comp;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +17,7 @@ import java.util.List;
  * Created 8/21/21 10:09 PM
  */
 public class Pipeline {
-	List<PipelineMember> pls = new ArrayList<>();
+	@NotNull List<PipelineMember> pls = new ArrayList<>();
 
 	public void add(PipelineMember aPipelineMember) {
 		pls.add(aPipelineMember);
@@ -23,7 +25,7 @@ public class Pipeline {
 
 
 	public void run() throws Exception {
-		for (PipelineMember pl : pls) {
+		for (@NotNull PipelineMember pl : pls) {
 			pl.run();
 		}
 	}

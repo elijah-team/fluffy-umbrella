@@ -14,17 +14,19 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+
 public class ExpressionBuilder {
 
-	public static IBinaryExpression buildPartial(final IExpression left, final ExpressionKind aType) {
+	public static @NotNull IBinaryExpression buildPartial(final IExpression left, final ExpressionKind aType) {
 		return new BasicBinaryExpression(left, aType, null);
 	}
 
-	public static IBinaryExpression build(final IExpression left, final ExpressionKind aType, final IExpression aExpression) {
+	public static @NotNull IBinaryExpression build(final IExpression left, final ExpressionKind aType, final IExpression aExpression) {
 		return new BasicBinaryExpression(left, aType, aExpression);
 	}
 
-	public static IExpression build(final IExpression left, final ExpressionKind aType) {
+	public static @NotNull IExpression build(final IExpression left, final ExpressionKind aType) {
 		return new AbstractExpression(left, aType) {
 			@Override
 			public boolean is_simple() {

@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.stages.logging;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +50,7 @@ public class ElLog {
 		return fileName;
 	}
 
-	public List<LogEntry> getEntries() {
+	public @NotNull List<LogEntry> getEntries() {
 		return entries;
 	}
 

@@ -11,6 +11,7 @@ package tripleo.elijah.stages.gen_c;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.lang.*;
@@ -51,9 +52,9 @@ import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 public class GenerateC implements CodeGenerator {
 	private static final String PHASE = "GenerateC";
 	private final ErrSink errSink;
-	private final ElLog LOG;
+	private final @NotNull ElLog LOG;
 
-	public GenerateC(OS_Module aM, ErrSink aErrSink, ElLog.Verbosity verbosity, PipelineLogic pipelineLogic) {
+	public GenerateC(@NotNull OS_Module aM, ErrSink aErrSink, ElLog.Verbosity verbosity, @NotNull PipelineLogic pipelineLogic) {
 		errSink = aErrSink;
 		LOG = new ElLog(aM.getFileName(), verbosity, PHASE);
 		//
@@ -61,7 +62,7 @@ public class GenerateC implements CodeGenerator {
 	}
 
 	@NotNull
-	public static Collection<GeneratedNode> functions_to_list_of_generated_nodes(Collection<GeneratedFunction> generatedFunctions) {
+	public static Collection<GeneratedNode> functions_to_list_of_generated_nodes(@NotNull Collection<GeneratedFunction> generatedFunctions) {
 		return Collections2.transform(generatedFunctions, new Function<GeneratedFunction, GeneratedNode>() {
 			@org.checkerframework.checker.nullness.qual.Nullable
 			@Override
@@ -72,7 +73,7 @@ public class GenerateC implements CodeGenerator {
 	}
 
 	@NotNull
-	public static Collection<GeneratedNode> classes_to_list_of_generated_nodes(Collection<GeneratedClass> aGeneratedClasses) {
+	public static Collection<GeneratedNode> classes_to_list_of_generated_nodes(@NotNull Collection<GeneratedClass> aGeneratedClasses) {
 		return Collections2.transform(aGeneratedClasses, new Function<GeneratedClass, GeneratedNode>() {
 			@org.checkerframework.checker.nullness.qual.Nullable
 			@Override
@@ -82,18 +83,18 @@ public class GenerateC implements CodeGenerator {
 		});
 	}
 
-	public GenerateResult generateCode(final Collection<GeneratedNode> lgn, final WorkManager wm) {
-		GenerateResult gr = new GenerateResult();
+	public @NotNull GenerateResult generateCode(final @NotNull Collection<GeneratedNode> lgn, final @NotNull WorkManager wm) {
+		@NotNull GenerateResult gr = new GenerateResult();
 
 		for (final GeneratedNode generatedNode : lgn) {
 			if (generatedNode instanceof GeneratedFunction) {
-				GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
-				WorkList wl = new WorkList();
+				@NotNull GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
+				@NotNull WorkList wl = new WorkList();
 				generate_function(generatedFunction, gr, wl);
 				if (!wl.isEmpty())
 					wm.addJobs(wl);
 			} else if (generatedNode instanceof GeneratedContainerNC) {
-				GeneratedContainerNC containerNC = (GeneratedContainerNC) generatedNode;
+				@NotNull GeneratedContainerNC containerNC = (GeneratedContainerNC) generatedNode;
 				containerNC.generateCode(this, gr);
 			}
 		}
@@ -140,9 +141,9 @@ public class GenerateC implements CodeGenerator {
 		}
 	}
 
-	public void generate_function(GeneratedFunction aGeneratedFunction, GenerateResult gr, WorkList wl) {
+	public void generate_function(@NotNull GeneratedFunction aGeneratedFunction, @NotNull GenerateResult gr, @NotNull WorkList wl) {
 		generateCodeForMethod(aGeneratedFunction, gr, wl);
-		for (IdentTableEntry identTableEntry : aGeneratedFunction.idte_list) {
+		for (@NotNull IdentTableEntry identTableEntry : aGeneratedFunction.idte_list) {
 			if (identTableEntry.isResolved()) {
 				GeneratedNode x = identTableEntry.resolvedType();
 
@@ -156,7 +157,7 @@ public class GenerateC implements CodeGenerator {
 				}
 			}
 		}
-		for (ProcTableEntry pte : aGeneratedFunction.prte_list) {
+		for (@NotNull ProcTableEntry pte : aGeneratedFunction.prte_list) {
 //			ClassInvocation ci = pte.getClassInvocation();
 			FunctionInvocation fi = pte.getFunctionInvocation();
 			if (fi == null) {
@@ -167,7 +168,7 @@ public class GenerateC implements CodeGenerator {
 					assert pte.getStatus() == BaseTableEntry.Status.UNKNOWN;
 */
 			} else {
-				BaseGeneratedFunction gf = fi.getGenerated();
+				@Nullable BaseGeneratedFunction gf = fi.getGenerated();
 				if (gf != null) {
 					wl.addJob(new WlGenerateFunctionC(gf, gr, wl, this));
 				}
@@ -175,9 +176,9 @@ public class GenerateC implements CodeGenerator {
 		}
 	}
 
-	public void generate_constructor(GeneratedConstructor aGeneratedConstructor, GenerateResult gr, WorkList wl) {
+	public void generate_constructor(@NotNull GeneratedConstructor aGeneratedConstructor, @NotNull GenerateResult gr, @NotNull WorkList wl) {
 		generateCodeForMethod(aGeneratedConstructor, gr, wl);
-		for (IdentTableEntry identTableEntry : aGeneratedConstructor.idte_list) {
+		for (@NotNull IdentTableEntry identTableEntry : aGeneratedConstructor.idte_list) {
 			if (identTableEntry.isResolved()) {
 				GeneratedNode x = identTableEntry.resolvedType();
 
@@ -191,14 +192,14 @@ public class GenerateC implements CodeGenerator {
 				}
 			}
 		}
-		for (ProcTableEntry pte : aGeneratedConstructor.prte_list) {
+		for (@NotNull ProcTableEntry pte : aGeneratedConstructor.prte_list) {
 //			ClassInvocation ci = pte.getClassInvocation();
 			FunctionInvocation fi = pte.getFunctionInvocation();
 			if (fi == null) {
 				// TODO constructor
 				int y=2;
 			} else {
-				BaseGeneratedFunction gf = fi.getGenerated();
+				@Nullable BaseGeneratedFunction gf = fi.getGenerated();
 				if (gf != null) {
 					wl.addJob(new WlGenerateFunctionC(gf, gr, wl, this));
 				}
@@ -207,7 +208,7 @@ public class GenerateC implements CodeGenerator {
 	}
 
 	@Override
-	public void generate_class(GeneratedClass x, GenerateResult gr) {
+	public void generate_class(@NotNull GeneratedClass x, @NotNull GenerateResult gr) {
 		if (x.generatedAlready) return;
 		switch (x.getKlass().getType()) {
 			// Don't generate class definition for these three
@@ -216,17 +217,17 @@ public class GenerateC implements CodeGenerator {
 			case ABSTRACT:
 				return;
 		}
-		final CClassDecl decl = new CClassDecl(x);
+		final @NotNull CClassDecl decl = new CClassDecl(x);
 		decl.evaluatePrimitive();
-		final BufferTabbedOutputStream tosHdr = new BufferTabbedOutputStream();
-		final BufferTabbedOutputStream tos = new BufferTabbedOutputStream();
+		final @NotNull BufferTabbedOutputStream tosHdr = new BufferTabbedOutputStream();
+		final @NotNull BufferTabbedOutputStream tos = new BufferTabbedOutputStream();
 		try {
 			tosHdr.put_string_ln("typedef struct {");
 			tosHdr.incr_tabs();
 			tosHdr.put_string_ln("int _tag;");
 			if (!decl.prim) {
-				for (GeneratedClass.VarTableEntry o : x.varTable){
-					final String typeName = getTypeNameGNCForVarTableEntry(o);
+				for (GeneratedClass.@NotNull VarTableEntry o : x.varTable){
+					final @NotNull String typeName = getTypeNameGNCForVarTableEntry(o);
 					tosHdr.put_string_ln(String.format("%s vm%s;", typeName, o.nameToken));
 				}
 			} else {
@@ -255,7 +256,7 @@ public class GenerateC implements CodeGenerator {
 				else if (decl.prim_decl.equals("bool"))
 					tos.put_string_ln("R->vsv = false;");
 			} else {
-				for (GeneratedClass.VarTableEntry o : x.varTable){
+				for (GeneratedClass.@NotNull VarTableEntry o : x.varTable){
 //					final String typeName = getTypeNameForVarTableEntry(o);
 					// TODO this should be the result of getDefaultValue for each type
 					tos.put_string_ln(String.format("R->vm%s = 0;", o.nameToken));
@@ -279,10 +280,10 @@ public class GenerateC implements CodeGenerator {
 		x.generatedAlready = true;
 	}
 
-	@NotNull public String getTypeNameGNCForVarTableEntry(GeneratedContainer.VarTableEntry o) {
+	@NotNull public String getTypeNameGNCForVarTableEntry(GeneratedContainer.@NotNull VarTableEntry o) {
 		final String typeName;
 		if (o.resolvedType() != null) {
-			GeneratedNode xx = o.resolvedType();
+			@Nullable GeneratedNode xx = o.resolvedType();
 			if (xx instanceof GeneratedClass) {
 				typeName = getTypeName((GeneratedClass) xx);
 			} else if (xx instanceof GeneratedNamespace) {
@@ -299,18 +300,18 @@ public class GenerateC implements CodeGenerator {
 	}
 
 	@Override
-	public void generate_namespace(GeneratedNamespace x, GenerateResult gr) {
+	public void generate_namespace(@NotNull GeneratedNamespace x, @NotNull GenerateResult gr) {
 		if (x.generatedAlready) return;
 		// TODO do we need `self' parameters for namespace?
-		final BufferTabbedOutputStream tosHdr = new BufferTabbedOutputStream();
-		final BufferTabbedOutputStream tos = new BufferTabbedOutputStream();
+		final @NotNull BufferTabbedOutputStream tosHdr = new BufferTabbedOutputStream();
+		final @NotNull BufferTabbedOutputStream tos = new BufferTabbedOutputStream();
 		try {
 			if (x.varTable.size() > 0) {
 				tosHdr.put_string_ln("typedef struct {");
 				tosHdr.incr_tabs();
 //				tosHdr.put_string_ln("int _tag;");
-				for (GeneratedNamespace.VarTableEntry o : x.varTable) {
-					final String typeName = getTypeNameGNCForVarTableEntry(o);
+				for (GeneratedNamespace.@NotNull VarTableEntry o : x.varTable) {
+					final @NotNull String typeName = getTypeNameGNCForVarTableEntry(o);
 
 					tosHdr.put_string_ln(String.format("%s* vm%s;", o.varType == null ? "void " : typeName, o.nameToken));
 				}
@@ -333,7 +334,7 @@ public class GenerateC implements CodeGenerator {
 				// TODO multiple calls of namespace function (need if/else statement)
 				tos.put_string_ln(String.format("%s* R = GC_malloc(sizeof(%s));", class_name, class_name));
 //				tos.put_string_ln(String.format("R->_tag = %d;", class_code));
-				for (GeneratedNamespace.VarTableEntry o : x.varTable) {
+				for (GeneratedNamespace.@NotNull VarTableEntry o : x.varTable) {
 //					final String typeName = getTypeNameForVarTableEntry(o);
 					tosHdr.put_string_ln(String.format("R->vm%s = 0;", o.nameToken));
 				}
@@ -360,15 +361,15 @@ public class GenerateC implements CodeGenerator {
 		x.generatedAlready = true;
 	}
 
-	private void generateCodeForMethod(BaseGeneratedFunction gf, GenerateResult gr, WorkList aWorkList) {
+	private void generateCodeForMethod(@NotNull BaseGeneratedFunction gf, @NotNull GenerateResult gr, WorkList aWorkList) {
 		if (gf.getFD() == null) return;
-		Generate_Code_For_Method gcfm = new Generate_Code_For_Method(this, LOG);
+		@NotNull Generate_Code_For_Method gcfm = new Generate_Code_For_Method(this, LOG);
 		gcfm.generateCodeForMethod(gf, gr, aWorkList);
 	}
 
-	private void generateCodeForConstructor(GeneratedConstructor gf, GenerateResult gr, WorkList aWorkList) {
+	private void generateCodeForConstructor(@NotNull GeneratedConstructor gf, @NotNull GenerateResult gr, WorkList aWorkList) {
 		if (gf.getFD() == null) return;
-		Generate_Code_For_Method gcfm = new Generate_Code_For_Method(this, LOG);
+		@NotNull Generate_Code_For_Method gcfm = new Generate_Code_For_Method(this, LOG);
 		gcfm.generateCodeForConstructor(gf, gr, aWorkList);
 	}
 
@@ -385,7 +386,7 @@ public class GenerateC implements CodeGenerator {
 		}
 
 		static String forVTE(@NotNull VariableTableEntry input) {
-			OS_Type attached = input.type.getAttached();
+			@Nullable OS_Type attached = input.type.getAttached();
 			if (attached == null)
 				return Emit.emit("/*390*/")+"Z__Unresolved*"; // TODO remove this ASAP
 			//
@@ -422,10 +423,10 @@ public class GenerateC implements CodeGenerator {
 			return z;
 		}
 
-		static String forTypeTableEntry(@NotNull TypeTableEntry tte) {
+		static @NotNull String forTypeTableEntry(@NotNull TypeTableEntry tte) {
 			GeneratedNode res = tte.resolved();
 			if (res instanceof GeneratedContainerNC) {
-				final GeneratedContainerNC nc = (GeneratedContainerNC) res;
+				final @NotNull GeneratedContainerNC nc = (GeneratedContainerNC) res;
 				int code = nc.getCode();
 				return "Z"+code;
 			} else
@@ -433,13 +434,13 @@ public class GenerateC implements CodeGenerator {
 		}
 
 		@Deprecated
-		static String forOSType(final @NotNull OS_Type ty, ElLog LOG) {
+		static String forOSType(final @NotNull OS_Type ty, @NotNull ElLog LOG) {
 			if (ty == null) throw new IllegalArgumentException("ty is null");
 			//
 			String z;
 			switch (ty.getType()) {
 				case USER_CLASS:
-					final ClassStatement el = ty.getClassOf();
+					final @NotNull ClassStatement el = ty.getClassOf();
 					final String name;
 					if (ty instanceof NormalTypeName)
 						name = ((NormalTypeName) ty).getName();
@@ -453,7 +454,7 @@ public class GenerateC implements CodeGenerator {
 				case FUNC_EXPR:
 				{
 					z = "<function>";
-					OS_FuncExprType fe = (OS_FuncExprType) ty;
+					@NotNull OS_FuncExprType fe = (OS_FuncExprType) ty;
 					int y=2;
 				}
 				break;
@@ -482,7 +483,7 @@ public class GenerateC implements CodeGenerator {
 		@Deprecated
 		static String forTypeName(final @NotNull TypeName typeName, final @NotNull ErrSink errSink) {
 			if (typeName instanceof RegularTypeName) {
-				final String name = ((RegularTypeName) typeName).getName(); // TODO convert to Z-name
+				final @Nullable String name = ((RegularTypeName) typeName).getName(); // TODO convert to Z-name
 
 				return String.format("Z<%s>/*kklkl*/", name);
 //			return getTypeName(new OS_Type(typeName));
@@ -508,7 +509,7 @@ public class GenerateC implements CodeGenerator {
 		return GetTypeName.forGenClass(aGeneratedClass);
 	}
 
-	String getTypeName(@NotNull TypeTableEntry tte) {
+	@NotNull String getTypeName(@NotNull TypeTableEntry tte) {
 		return GetTypeName.forTypeTableEntry(tte);
 	}
 
@@ -522,23 +523,23 @@ public class GenerateC implements CodeGenerator {
 		return GetTypeName.forTypeName(typeName, errSink);
 	}
 
-	@NotNull List<String> getArgumentStrings(final BaseGeneratedFunction gf, final Instruction instruction) {
-		final List<String> sl3 = new ArrayList<String>();
+	@NotNull List<String> getArgumentStrings(final @NotNull BaseGeneratedFunction gf, final @NotNull Instruction instruction) {
+		final @NotNull List<String> sl3 = new ArrayList<String>();
 		final int args_size = instruction.getArgsSize();
 		for (int i = 1; i < args_size; i++) {
 			final InstructionArgument ia = instruction.getArg(i);
 			if (ia instanceof IntegerIA) {
 //				VariableTableEntry vte = gf.getVarTableEntry(DeduceTypes2.to_int(ia));
-				final String realTargetName = getRealTargetName(gf, (IntegerIA) ia);
+				final @NotNull String realTargetName = getRealTargetName(gf, (IntegerIA) ia);
 				sl3.add(Emit.emit("/*669*/")+""+realTargetName);
 			} else if (ia instanceof IdentIA) {
-				final CReference reference = new CReference();
+				final @NotNull CReference reference = new CReference();
 				reference.getIdentIAPath((IdentIA) ia, gf);
-				String text = reference.build();
+				@NotNull String text = reference.build();
 				sl3.add(Emit.emit("/*673*/")+""+text);
 			} else if (ia instanceof ConstTableIA) {
-				ConstTableIA c = (ConstTableIA) ia;
-				ConstantTableEntry cte = gf.getConstTableEntry(c.getIndex());
+				@NotNull ConstTableIA c = (ConstTableIA) ia;
+				@NotNull ConstantTableEntry cte = gf.getConstTableEntry(c.getIndex());
 				String s = GetAssignmentValue.const_to_string(cte.initialValue);
 				sl3.add(s);
 				int y = 2;
@@ -555,13 +556,13 @@ public class GenerateC implements CodeGenerator {
 
 	static class GetAssignmentValue {
 
-		public String FnCallArgs(FnCallArgs fca, BaseGeneratedFunction gf, ElLog LOG) {
-			final StringBuilder sb = new StringBuilder();
+		public @NotNull String FnCallArgs(@NotNull FnCallArgs fca, @NotNull BaseGeneratedFunction gf, @NotNull ElLog LOG) {
+			final @NotNull StringBuilder sb = new StringBuilder();
 			final Instruction inst = fca.getExpression();
 //			LOG.err("9000 "+inst.getName());
 			final InstructionArgument x = inst.getArg(0);
 			assert x instanceof ProcIA;
-			final ProcTableEntry pte = gf.getProcTableEntry(to_int(x));
+			final @NotNull ProcTableEntry pte = gf.getProcTableEntry(to_int(x));
 //			LOG.err("9000-2 "+pte);
 			switch (inst.getName()) {
 			case CALL:
@@ -572,30 +573,30 @@ public class GenerateC implements CodeGenerator {
 					sb.append(ptex.getText());
 					sb.append(Emit.emit("/*671*/")+"(");
 
-					final List<String> sll = getAssignmentValueArgs(inst, gf, LOG);
+					final @NotNull List<String> sll = getAssignmentValueArgs(inst, gf, LOG);
 					sb.append(Helpers.String_join(", ", sll));
 
 					sb.append(")");
 				} else {
-					final IdentIA ia2 = (IdentIA) pte.expression_num;
-					final IdentTableEntry idte = ia2.getEntry();
+					final @NotNull IdentIA ia2 = (IdentIA) pte.expression_num;
+					final @NotNull IdentTableEntry idte = ia2.getEntry();
 					if (idte.getStatus() == BaseTableEntry.Status.KNOWN) {
-						final CReference reference = new CReference();
+						final @NotNull CReference reference = new CReference();
 						final FunctionInvocation functionInvocation = pte.getFunctionInvocation();
 						if (functionInvocation == null || functionInvocation.getFunction() == ConstructorDef.defaultVirtualCtor) {
 							reference.getIdentIAPath(ia2, gf);
-							final List<String> sll = getAssignmentValueArgs(inst, gf, LOG);
+							final @NotNull List<String> sll = getAssignmentValueArgs(inst, gf, LOG);
 							reference.args(sll);
-							String path = reference.build();
+							@NotNull String path = reference.build();
 							sb.append(Emit.emit("/*829*/") + path);
 						} else {
-							final BaseGeneratedFunction pte_generated = functionInvocation.getGenerated();
+							final @Nullable BaseGeneratedFunction pte_generated = functionInvocation.getGenerated();
 							if (idte.resolvedType() == null && pte_generated != null)
 								idte.resolveTypeToClass(pte_generated);
 							reference.getIdentIAPath(ia2, gf);
-							final List<String> sll = getAssignmentValueArgs(inst, gf, LOG);
+							final @NotNull List<String> sll = getAssignmentValueArgs(inst, gf, LOG);
 							reference.args(sll);
-							String path = reference.build();
+							@NotNull String path = reference.build();
 							sb.append(Emit.emit("/*827*/") + path);
 						}
 					} else {
@@ -607,7 +608,7 @@ public class GenerateC implements CodeGenerator {
 			}
 			case CALLS:
 			{
-				CReference reference = null;
+				@Nullable CReference reference = null;
 				if (pte.expression_num == null) {
 					final int y=2;
 					final IdentExpression ptex = (IdentExpression) pte.expression;
@@ -616,11 +617,11 @@ public class GenerateC implements CodeGenerator {
 				} else {
 					// TODO Why not expression_num?
 					reference = new CReference();
-					final IdentIA ia2 = (IdentIA) pte.expression_num;
+					final @NotNull IdentIA ia2 = (IdentIA) pte.expression_num;
 					reference.getIdentIAPath(ia2, gf);
-					final List<String> sll = getAssignmentValueArgs(inst, gf, LOG);
+					final @NotNull List<String> sll = getAssignmentValueArgs(inst, gf, LOG);
 					reference.args(sll);
-					String path = reference.build();
+					@NotNull String path = reference.build();
 					sb.append(Emit.emit("/*807*/")+path);
 
 					final IExpression ptex = pte.expression;
@@ -635,7 +636,7 @@ public class GenerateC implements CodeGenerator {
 				if (true /*reference == null*/) {
 					sb.append(Emit.emit("/*810*/") + "(");
 					{
-						final List<String> sll = getAssignmentValueArgs(inst, gf, LOG);
+						final @NotNull List<String> sll = getAssignmentValueArgs(inst, gf, LOG);
 						sb.append(Helpers.String_join(", ", sll));
 					}
 					sb.append(");");
@@ -647,8 +648,8 @@ public class GenerateC implements CodeGenerator {
 			}
 		}
 
-		public String ConstTableIA(ConstTableIA constTableIA, BaseGeneratedFunction gf) {
-			final ConstantTableEntry cte = gf.getConstTableEntry(constTableIA.getIndex());
+		public String ConstTableIA(@NotNull ConstTableIA constTableIA, @NotNull BaseGeneratedFunction gf) {
+			final @NotNull ConstantTableEntry cte = gf.getConstTableEntry(constTableIA.getIndex());
 //			LOG.err(("9001-3 "+cte.initialValue));
 			switch (cte.initialValue.getKind()) {
 			case NUMERIC:
@@ -667,28 +668,28 @@ public class GenerateC implements CodeGenerator {
 		}
 
 		@NotNull
-		private List<String> getAssignmentValueArgs(final Instruction inst, final BaseGeneratedFunction gf, ElLog LOG) {
+		private List<String> getAssignmentValueArgs(final @NotNull Instruction inst, final @NotNull BaseGeneratedFunction gf, @NotNull ElLog LOG) {
 			final int args_size = inst.getArgsSize();
-			final List<String> sll = new ArrayList<String>();
+			final @NotNull List<String> sll = new ArrayList<String>();
 			for (int i = 1; i < args_size; i++) {
 				final InstructionArgument ia = inst.getArg(i);
 				final int y=2;
 //			LOG.err("7777 " +ia);
 				if (ia instanceof ConstTableIA) {
-					final ConstantTableEntry constTableEntry = gf.getConstTableEntry(((ConstTableIA) ia).getIndex());
+					final @NotNull ConstantTableEntry constTableEntry = gf.getConstTableEntry(((ConstTableIA) ia).getIndex());
 					sll.add(""+ const_to_string(constTableEntry.initialValue));
 				} else if (ia instanceof IntegerIA) {
-					final VariableTableEntry variableTableEntry = gf.getVarTableEntry(((IntegerIA) ia).getIndex());
+					final @NotNull VariableTableEntry variableTableEntry = gf.getVarTableEntry(((IntegerIA) ia).getIndex());
 					sll.add(Emit.emit("/*853*/")+""+getRealTargetName(gf, variableTableEntry));
 				} else if (ia instanceof IdentIA) {
 					String path = gf.getIdentIAPathNormal((IdentIA) ia);    // return x.y.z
-					IdentTableEntry ite = gf.getIdentTableEntry(to_int(ia));
+					@NotNull IdentTableEntry ite = gf.getIdentTableEntry(to_int(ia));
 					if (ite.getStatus() == BaseTableEntry.Status.UNKNOWN) {
 						sll.add(String.format("%s is UNKNOWN", path));
 					} else {
-						final CReference reference = new CReference();
+						final @NotNull CReference reference = new CReference();
 						reference.getIdentIAPath((IdentIA) ia, gf);
-						String path2 = reference.build();                        // return ZP105get_z(vvx.vmy)
+						@NotNull String path2 = reference.build();                        // return ZP105get_z(vvx.vmy)
 						if (path.equals(path2)) {
 							// should always fail
 							//throw new AssertionError();
@@ -727,24 +728,24 @@ public class GenerateC implements CodeGenerator {
 			throw new NotImplementedException();
 		}
 
-		public String IntegerIA(IntegerIA integerIA, BaseGeneratedFunction gf) {
-			VariableTableEntry vte = gf.getVarTableEntry(integerIA.getIndex());
-			String x = getRealTargetName(gf, vte);
+		public @NotNull String IntegerIA(@NotNull IntegerIA integerIA, @NotNull BaseGeneratedFunction gf) {
+			@NotNull VariableTableEntry vte = gf.getVarTableEntry(integerIA.getIndex());
+			@NotNull String x = getRealTargetName(gf, vte);
 			return x;
 		}
 
-		public String IdentIA(IdentIA identIA, BaseGeneratedFunction gf) {
+		public @NotNull String IdentIA(@NotNull IdentIA identIA, BaseGeneratedFunction gf) {
 			assert gf == identIA.gf;
-			final CReference reference = new CReference();
+			final @NotNull CReference reference = new CReference();
 			reference.getIdentIAPath(identIA, gf);
 			return reference.build();
 		}
 
-		public String forClassInvocation(Instruction aInstruction, ClassInvocation aClsinv, BaseGeneratedFunction gf, ElLog LOG) {
+		public String forClassInvocation(@NotNull Instruction aInstruction, ClassInvocation aClsinv, @NotNull BaseGeneratedFunction gf, @NotNull ElLog LOG) {
 			int y=2;
 			InstructionArgument _arg0 = aInstruction.getArg(0);
 			@NotNull ProcTableEntry pte = gf.getProcTableEntry(((ProcIA) _arg0).getIndex());
-			final CtorReference reference = new CtorReference();
+			final @NotNull CtorReference reference = new CtorReference();
 			reference.getConstructorPath(pte.expression_num, gf);
 			@NotNull List<String> x = getAssignmentValueArgs(aInstruction, gf, LOG);
 			reference.args(x);
@@ -752,31 +753,31 @@ public class GenerateC implements CodeGenerator {
 		}
 	}
 
-	String getAssignmentValue(VariableTableEntry aSelf, Instruction aInstruction, ClassInvocation aClsinv, BaseGeneratedFunction gf) {
-		GetAssignmentValue gav = new GetAssignmentValue();
+	String getAssignmentValue(VariableTableEntry aSelf, @NotNull Instruction aInstruction, ClassInvocation aClsinv, @NotNull BaseGeneratedFunction gf) {
+		@NotNull GetAssignmentValue gav = new GetAssignmentValue();
 		return gav.forClassInvocation(aInstruction, aClsinv, gf, LOG);
 	}
 
 	@NotNull
-	String getAssignmentValue(VariableTableEntry value_of_this, final InstructionArgument value, final BaseGeneratedFunction gf) {
-		GetAssignmentValue gav = new GetAssignmentValue();
+	String getAssignmentValue(VariableTableEntry value_of_this, final InstructionArgument value, final @NotNull BaseGeneratedFunction gf) {
+		@NotNull GetAssignmentValue gav = new GetAssignmentValue();
 		if (value instanceof FnCallArgs) {
-			final FnCallArgs fca = (FnCallArgs) value;
+			final @NotNull FnCallArgs fca = (FnCallArgs) value;
 			return gav.FnCallArgs(fca, gf, LOG);
 		}
 
 		if (value instanceof ConstTableIA) {
-			ConstTableIA constTableIA = (ConstTableIA) value;
+			@NotNull ConstTableIA constTableIA = (ConstTableIA) value;
 			return gav.ConstTableIA(constTableIA, gf);
 		}
 
 		if (value instanceof IntegerIA) {
-			IntegerIA integerIA = (IntegerIA) value;
+			@NotNull IntegerIA integerIA = (IntegerIA) value;
 			return gav.IntegerIA(integerIA, gf);
 		}
 
 		if (value instanceof IdentIA) {
-			IdentIA identIA = (IdentIA) value;
+			@NotNull IdentIA identIA = (IdentIA) value;
 			return gav.IdentIA(identIA, gf);
 		}
 
@@ -784,12 +785,12 @@ public class GenerateC implements CodeGenerator {
 		return ""+value;
 	}
 
-	String getRealTargetName(final BaseGeneratedFunction gf, final IntegerIA target) {
-		final VariableTableEntry varTableEntry = gf.getVarTableEntry(target.getIndex());
+	@NotNull String getRealTargetName(final @NotNull BaseGeneratedFunction gf, final @NotNull IntegerIA target) {
+		final @NotNull VariableTableEntry varTableEntry = gf.getVarTableEntry(target.getIndex());
 		return getRealTargetName(gf, varTableEntry);
 	}
 
-	static String getRealTargetName(final BaseGeneratedFunction gf, final VariableTableEntry varTableEntry) {
+	static @NotNull String getRealTargetName(final @NotNull BaseGeneratedFunction gf, final @NotNull VariableTableEntry varTableEntry) {
 		final String vte_name = varTableEntry.getName();
 		if (varTableEntry.vtt == VariableTableType.TEMP) {
 			if (varTableEntry.getName() == null) {
@@ -808,7 +809,7 @@ public class GenerateC implements CodeGenerator {
 		}
 	}
 
-	private static boolean isValue(BaseGeneratedFunction gf, String name) {
+	private static boolean isValue(@NotNull BaseGeneratedFunction gf, @NotNull String name) {
 		if (!name.equals("Value")) return false;
 		//
 		FunctionDef fd = (FunctionDef) gf.getFD();
@@ -816,7 +817,7 @@ public class GenerateC implements CodeGenerator {
 		case REG_FUN:
 		case DEF_FUN:
 			if (!(fd.getParent() instanceof ClassStatement)) return false;
-			for (AnnotationPart anno : ((ClassStatement) fd.getParent()).annotationIterable()) {
+			for (@NotNull AnnotationPart anno : ((ClassStatement) fd.getParent()).annotationIterable()) {
 				if (anno.annoClass().equals(Helpers.string_to_qualident("Primitive"))) {
 					return true;
 				}
@@ -830,17 +831,17 @@ public class GenerateC implements CodeGenerator {
 		}
 	}
 
-	String getRealTargetName(final BaseGeneratedFunction gf, final IdentIA target) {
+	@NotNull String getRealTargetName(final @NotNull BaseGeneratedFunction gf, final @NotNull IdentIA target) {
 		int state = 0, code = -1;
-		IdentTableEntry identTableEntry = gf.getIdentTableEntry(target.getIndex());
-		LinkedList<String> ls = new LinkedList<String>();
+		@NotNull IdentTableEntry identTableEntry = gf.getIdentTableEntry(target.getIndex());
+		@NotNull LinkedList<String> ls = new LinkedList<String>();
 		// TODO in Deduce set property lookupType to denote what type of lookup it is: MEMBER, LOCAL, or CLOSURE
-		InstructionArgument backlink = identTableEntry.backlink;
+		@Nullable InstructionArgument backlink = identTableEntry.backlink;
 		final String text = identTableEntry.getIdent().getText();
 		if (backlink == null) {
 			if (identTableEntry.getResolvedElement() instanceof VariableStatement) {
 				final VariableStatement vs = (VariableStatement) identTableEntry.getResolvedElement();
-				OS_Element parent = vs.getParent().getParent();
+				@Nullable OS_Element parent = vs.getParent().getParent();
 				if (parent != gf.getFD()) {
 					// we want identTableEntry.resolved which will be a GeneratedMember
 					// which will have a container which will be either be a function,
@@ -848,9 +849,9 @@ public class GenerateC implements CodeGenerator {
 					int y=2;
 					GeneratedNode er = identTableEntry.externalRef;
 					if (er instanceof GeneratedContainerNC) {
-						final GeneratedContainerNC nc = (GeneratedContainerNC) er;
+						final @NotNull GeneratedContainerNC nc = (GeneratedContainerNC) er;
 						assert nc instanceof GeneratedNamespace;
-						GeneratedNamespace ns = (GeneratedNamespace) nc;
+						@NotNull GeneratedNamespace ns = (GeneratedNamespace) nc;
 //						if (ns.isInstance()) {}
 						state = 1;
 						code = nc.getCode();
@@ -871,25 +872,25 @@ public class GenerateC implements CodeGenerator {
 			ls.add(Emit.emit("/*872*/")+"vm"+ text); // TODO blindly adding "vm" might not always work, also put in loop
 		while (backlink != null) {
 			if (backlink instanceof IntegerIA) {
-				IntegerIA integerIA = (IntegerIA) backlink;
-				String realTargetName = getRealTargetName(gf, integerIA);
+				@NotNull IntegerIA integerIA = (IntegerIA) backlink;
+				@NotNull String realTargetName = getRealTargetName(gf, integerIA);
 				ls.addFirst(Emit.emit("/*892*/")+realTargetName);
 				backlink = null;
 			} else if (backlink instanceof IdentIA) {
-				IdentIA identIA = (IdentIA) backlink;
+				@NotNull IdentIA identIA = (IdentIA) backlink;
 				int identIAIndex = identIA.getIndex();
-				IdentTableEntry identTableEntry1 = gf.getIdentTableEntry(identIAIndex);
+				@NotNull IdentTableEntry identTableEntry1 = gf.getIdentTableEntry(identIAIndex);
 				String identTableEntryName = identTableEntry1.getIdent().getText();
 				ls.addFirst(Emit.emit("/*885*/")+"vm"+identTableEntryName); // TODO blindly adding "vm" might not always be right
 				backlink = identTableEntry1.backlink;
 			} else
 				throw new IllegalStateException("Invalid InstructionArgument for backlink");
 		}
-		final CReference reference = new CReference();
+		final @NotNull CReference reference = new CReference();
 		reference.getIdentIAPath(target, gf);
-		String path = reference.build();
+		@NotNull String path = reference.build();
 		LOG.info("932 "+path);
-		String s = Helpers.String_join("->", ls);
+		@NotNull String s = Helpers.String_join("->", ls);
 		LOG.info("933 "+s);
 		if (identTableEntry.getResolvedElement() instanceof ConstructorDef)
 			return path;

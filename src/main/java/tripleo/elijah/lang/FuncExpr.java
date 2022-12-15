@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.FuncExprContext;
 import tripleo.elijah.gen.ICodeGen;
 import tripleo.elijah.util.NotImplementedException;
@@ -75,7 +77,7 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 
 	/****** FOR IEXPRESSION ******/
 	@Override
-	public ExpressionKind getKind() {
+	public @NotNull ExpressionKind getKind() {
 		return ExpressionKind.FUNC_EXPR;
 	}
 
@@ -85,7 +87,7 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 	}
 
 	@Override
-	public IExpression getLeft() {
+	public @Nullable IExpression getLeft() {
 		return null;
 	}
 
@@ -95,7 +97,7 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 	}
 
 	@Override
-	public String repr_() {
+	public @Nullable String repr_() {
 		return null;
 	}
 
@@ -116,12 +118,12 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 	}
 
 	@Override
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final @NotNull ICodeGen visit) {
 		visit.visitFuncExpr(this);
 	}
 
 	@Override
-	public OS_Element getParent() {
+	public @Nullable OS_Element getParent() {
 //		throw new NotImplementedException();
 		return null; // getContext().getParent().carrier() except if it is an Expression; but Expression is not an Element
 	}

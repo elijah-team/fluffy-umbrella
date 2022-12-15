@@ -1,5 +1,6 @@
 package tripleo.elijah.lang.imports;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.ImportContext;
 import tripleo.elijah.lang.*;
 
@@ -33,7 +34,7 @@ public class QualifiedImportStatement extends _BaseImportStatement {
 	}
 
 	public void addSelectivePart(final Qualident aQualident, final IdentList il) {
-		final Part p = new Part(aQualident, il);
+		final @NotNull Part p = new Part(aQualident, il);
 //		p.base = aQualident;
 //		p.idents = il;
 		addPart(p);
@@ -54,9 +55,9 @@ public class QualifiedImportStatement extends _BaseImportStatement {
 	}
 
 	@Override
-	public List<Qualident> parts() {
-		final List<Qualident> r = new ArrayList<Qualident>();
-		for (final Part part : _parts) {
+	public @NotNull List<Qualident> parts() {
+		final @NotNull List<Qualident> r = new ArrayList<Qualident>();
+		for (final @NotNull Part part : _parts) {
 			r.add(part.base);
 		}
 		return r;

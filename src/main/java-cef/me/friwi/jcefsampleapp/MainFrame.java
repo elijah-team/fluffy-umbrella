@@ -13,6 +13,7 @@ import org.cef.browser.CefFrame;
 import org.cef.browser.CefMessageRouter;
 import org.cef.handler.CefDisplayHandlerAdapter;
 import org.cef.handler.CefFocusHandlerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +34,7 @@ import java.io.IOException;
  */
 public class MainFrame extends JFrame {
     private static final long serialVersionUID = -5570653778104813836L;
-    private final JTextField address_;
+    private final @NotNull JTextField address_;
     private final CefApp cefApp_;
     private final CefClient client_;
     private final CefBrowser browser_;
@@ -47,9 +48,9 @@ public class MainFrame extends JFrame {
      * But to be more verbose, this CTOR keeps an instance of each object on the
      * way to the browser UI.
      */
-    private MainFrame(String startURL, boolean useOSR, boolean isTransparent, String[] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
+    private MainFrame(String startURL, boolean useOSR, boolean isTransparent, String @NotNull [] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
         // (0) Initialize CEF using the maven loader
-        CefAppBuilder builder = new CefAppBuilder();
+        @NotNull CefAppBuilder builder = new CefAppBuilder();
         // windowless_rendering_enabled must be set to false if not wanted. 
         builder.getCefSettings().windowless_rendering_enabled = useOSR;
         // USE builder.setAppHandler INSTEAD OF CefApp.addAppHandler!
@@ -153,7 +154,7 @@ public class MainFrame extends JFrame {
         // Clear focus from the address field when the browser gains focus.
         client_.addFocusHandler(new CefFocusHandlerAdapter() {
             @Override
-            public void onGotFocus(CefBrowser browser) {
+            public void onGotFocus(@NotNull CefBrowser browser) {
                 if (browserFocus_) return;
                 browserFocus_ = true;
                 KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();
@@ -186,7 +187,7 @@ public class MainFrame extends JFrame {
         });
     }
 
-    public static void main(String[] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
+    public static void main(String @NotNull [] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
         //Print some info for the test reports. You can ignore this.
         TestReportGenerator.print(args);
         

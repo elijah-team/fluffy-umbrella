@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
 
 import java.util.ArrayList;
@@ -18,8 +19,8 @@ import java.util.List;
  */
 public class FunctionDefBuilder extends BaseFunctionDefBuilder {
 
-	private FunctionDefScope _scope = new FunctionDefScope();
-	private List<FunctionModifiers> _mods = new ArrayList<FunctionModifiers>();
+	private @NotNull FunctionDefScope _scope = new FunctionDefScope();
+	private @NotNull List<FunctionModifiers> _mods = new ArrayList<FunctionModifiers>();
 	private TypeName _returnType;
 	private Context _context;
 
@@ -36,8 +37,8 @@ public class FunctionDefBuilder extends BaseFunctionDefBuilder {
 	}
 
 	@Override
-	public FunctionDef build() {
-		FunctionDef functionDef = new FunctionDef(_parent, _context);
+	public @NotNull FunctionDef build() {
+		@NotNull FunctionDef functionDef = new FunctionDef(_parent, _context);
 		functionDef.setName(_name);
 		functionDef.setFal(mFal == null ? new FormalArgList() : mFal);
 		functionDef.setReturnType(_returnType);
@@ -50,9 +51,9 @@ public class FunctionDefBuilder extends BaseFunctionDefBuilder {
 		if (_scope.isAbstract()) {
 			functionDef.setAbstract(true);
 		}
-		Scope3 scope3 = new Scope3(functionDef);
+		@NotNull Scope3 scope3 = new Scope3(functionDef);
 		functionDef.scope(scope3);
-		for (ElBuilder b : _scope.items()) {
+		for (@NotNull ElBuilder b : _scope.items()) {
 			b.setParent(functionDef);
 			b.setContext(functionDef.getContext());
 			OS_Element built = b.build();

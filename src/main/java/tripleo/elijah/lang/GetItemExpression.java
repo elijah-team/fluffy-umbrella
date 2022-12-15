@@ -9,6 +9,7 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Tripleo
@@ -29,7 +30,7 @@ public class GetItemExpression extends AbstractExpression { // TODO binary?
 	 * @see tripleo.elijah.lang.IExpression#getKind()
 	 */
 	@Override
-	public ExpressionKind getKind() {
+	public @NotNull ExpressionKind getKind() {
 		return ExpressionKind.GET_ITEM;
 	}
 

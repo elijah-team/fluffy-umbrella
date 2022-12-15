@@ -9,6 +9,8 @@
 package tripleo.elijah.gen.nodes;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.gen.TypeRef;
 import tripleo.elijah.lang.*;
@@ -20,14 +22,14 @@ import tripleo.elijah.util.NotImplementedException;
  */
 public class ExpressionNode implements IExpressionNode {
 
-	public String genName;  // TODO since when does expression have a name?
-	public String genText;
-	public String genType;
+	public @Nullable String genName;  // TODO since when does expression have a name?
+	public @Nullable String genText;
+	public @Nullable String genType;
     
 	public boolean _is_const_expr;
-	public OS_Element ref_;
+	public @Nullable OS_Element ref_;
 	
-	private IExpression iex;
+	private @Nullable IExpression iex;
 	
 	/**
 	 * For {@link VariableReferenceNode2}
@@ -61,7 +63,7 @@ public class ExpressionNode implements IExpressionNode {
 		}
 	}
 
-	static String getStringPCE(final ProcedureCallExpression expr) {
+	static @NotNull String getStringPCE(final @NotNull ProcedureCallExpression expr) {
 		final int code = 1000; // TODO hardcoded
 		return Helpers.getFunctionName(code, expr.getLeft().toString(), expr.exprList());
 	}
@@ -112,7 +114,7 @@ public class ExpressionNode implements IExpressionNode {
 			if (iex.getLeft() instanceof VariableReference) {
 
 				final String left_side = ((VariableReference) this.iex.getLeft()).getName();
-				String right_side = null;
+				@Nullable String right_side = null;
 				
 				final BasicBinaryExpression abe = (BasicBinaryExpression) this.iex;
 //				if (abe.getRight() instanceof OS_Integer) {
@@ -150,7 +152,7 @@ public class ExpressionNode implements IExpressionNode {
 	}
 	
 	@Override
-	public String genType() {
+	public @NotNull String genType() {
 		return "u64";  // TODO harcoded
 	}
 	
@@ -160,7 +162,7 @@ public class ExpressionNode implements IExpressionNode {
 	}
 	
 	@Override
-	public TypeRef getType() {
+	public @Nullable TypeRef getType() {
 		return null;
 	}
 }

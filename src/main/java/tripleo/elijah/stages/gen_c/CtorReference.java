@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.gen_c;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.ConstructorDef;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.deduce.ClassInvocation;
@@ -33,24 +34,24 @@ import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
  */
 public class CtorReference {
 
-	private String ctorName = "";
+	private @NotNull String ctorName = "";
 	private List<String> args;
-	List<CReference.Reference> refs = new ArrayList<CReference.Reference>();
+	@NotNull List<CReference.Reference> refs = new ArrayList<CReference.Reference>();
 	private GeneratedNode _resolved;
 
 	void addRef(String text, CReference.Ref type) {
 		refs.add(new CReference.Reference(text, type));
 	}
 
-	public void getConstructorPath(InstructionArgument ia2, BaseGeneratedFunction gf) {
-		final List<InstructionArgument> s = CReference._getIdentIAPathList(ia2);
+	public void getConstructorPath(@NotNull InstructionArgument ia2, @NotNull BaseGeneratedFunction gf) {
+		final @NotNull List<InstructionArgument> s = CReference._getIdentIAPathList(ia2);
 
 		for (int i = 0, sSize = s.size(); i < sSize; i++) {
 			InstructionArgument ia = s.get(i);
 			if (ia instanceof IntegerIA) {
 				// should only be the first element if at all
 				assert i == 0;
-				final VariableTableEntry vte = gf.getVarTableEntry(to_int(ia));
+				final @NotNull VariableTableEntry vte = gf.getVarTableEntry(to_int(ia));
 				if (sSize == 1) {
 					final GeneratedNode resolved = vte.type.resolved();
 					if (resolved != null) {
@@ -61,7 +62,7 @@ public class CtorReference {
 				}
 				addRef(vte.getName(), CReference.Ref.LOCAL);
 			} else if (ia instanceof IdentIA) {
-				final IdentTableEntry idte = gf.getIdentTableEntry(to_int(ia));
+				final @NotNull IdentTableEntry idte = gf.getIdentTableEntry(to_int(ia));
 				OS_Element resolved_element = idte.getResolvedElement();
 				if (idte.resolvedType() != null) {
 					_resolved = idte.resolvedType();
@@ -100,12 +101,12 @@ public class CtorReference {
 		}
 	}
 
-	public String build(ClassInvocation aClsinv) {
-		StringBuilder sb = new StringBuilder();
+	public @NotNull String build(@NotNull ClassInvocation aClsinv) {
+		@NotNull StringBuilder sb = new StringBuilder();
 		boolean open = false, needs_comma = false;
 //		List<String> sl = new ArrayList<String>();
 		String text = "";
-		for (CReference.Reference ref : refs) {
+		for (CReference.@NotNull Reference ref : refs) {
 			switch (ref.type) {
 				case LOCAL:
 					text = "vv" + ref.text;
@@ -124,7 +125,7 @@ public class CtorReference {
 					sb.append(text);
 					break;
 				case FUNCTION: {
-					final String s = sb.toString();
+					final @NotNull String s = sb.toString();
 					text = String.format("%s(%s", ref.text, s);
 					sb = new StringBuilder();
 					open = true;
@@ -133,7 +134,7 @@ public class CtorReference {
 					break;
 				}
 				case CONSTRUCTOR: {
-					final String s = sb.toString();
+					final @NotNull String s = sb.toString();
 					text = String.format("%s(%s", ref.text, s);
 					sb = new StringBuilder();
 					open = true;
@@ -142,7 +143,7 @@ public class CtorReference {
 					break;
 				}
 				case PROPERTY: {
-					final String s = sb.toString();
+					final @NotNull String s = sb.toString();
 					text = String.format("%s(%s", ref.text, s);
 					sb = new StringBuilder();
 					open = true;

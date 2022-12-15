@@ -9,6 +9,8 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.WithContext;
 import tripleo.elijah.gen.ICodeGen;
 
@@ -37,7 +39,7 @@ public class WithStatement implements OS_Element, OS_Container, FunctionItem, St
 	}
 
 	@Override
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final @NotNull ICodeGen visit) {
 		visit.visitWithStatement(this);
 	}
 
@@ -47,11 +49,11 @@ public class WithStatement implements OS_Element, OS_Container, FunctionItem, St
 	}
 
 	@Override
-	public Context getContext() {
+	public @Nullable Context getContext() {
 		return null;
 	}
 
-	public List<FunctionItem> getItems() {
+	public @NotNull List<FunctionItem> getItems() {
 		return _items;
 	}
 
@@ -63,7 +65,7 @@ public class WithStatement implements OS_Element, OS_Container, FunctionItem, St
 		return hidden_seq.next();
 	}
 
-	VariableSequence hidden_seq = new VariableSequence();
+	@NotNull VariableSequence hidden_seq = new VariableSequence();
 
 	public void setContext(final WithContext ctx) {
 		this.ctx = ctx;
@@ -73,7 +75,7 @@ public class WithStatement implements OS_Element, OS_Container, FunctionItem, St
 	}
 
 	@Override
-	public List<OS_Element2> items() {
+	public @Nullable List<OS_Element2> items() {
 		return null;
 	}
 

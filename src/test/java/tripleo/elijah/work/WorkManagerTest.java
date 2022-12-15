@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.work;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class WorkManagerTest {
 		private final int level;
 		private final List<String> sink;
 		private boolean _done;
-		private final String state;
+		private final @NotNull String state;
 
 		public AppendChar(String s, int level, List<String> aSink) {
 			state = s + (char)(level+'A');
@@ -29,9 +30,9 @@ public class WorkManagerTest {
 		}
 
 		@Override
-		public void run(WorkManager aWorkManager) {
+		public void run(@NotNull WorkManager aWorkManager) {
 			if (level < 4) {
-				WorkList wl = new WorkList();
+				@NotNull WorkList wl = new WorkList();
 				wl.addJob(new AppendChar(state, level + 1, sink));
 				aWorkManager.addJobs(wl);
 			}
@@ -47,11 +48,11 @@ public class WorkManagerTest {
 
 	@Test
 	public void testWorkManager() {
-		List<String> sink = new ArrayList<>();
+		@NotNull List<String> sink = new ArrayList<>();
 
-		WorkManager workManager = new WorkManager();
+		@NotNull WorkManager workManager = new WorkManager();
 
-		WorkList wl = new WorkList();
+		@NotNull WorkList wl = new WorkList();
 		wl.addJob(new AppendChar("A", 0, sink));
 		wl.addJob(new AppendChar("B", 0, sink));
 		wl.addJob(new AppendChar("C", 0, sink));

@@ -9,6 +9,8 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.MatchConditionalContext;
 import tripleo.elijah.contexts.MatchContext;
 import tripleo.elijah.gen.ICodeGen;
@@ -34,7 +36,7 @@ public class MatchConditional implements OS_Element, StatementItem, FunctionItem
 //		this._ctx = new SingleIdentContext(parentContext, this);
 	}
 
-	public List<MC1> getParts() {
+	public @NotNull List<MC1> getParts() {
 		return parts;
 	}
 
@@ -42,7 +44,7 @@ public class MatchConditional implements OS_Element, StatementItem, FunctionItem
 	 * @category OS_Element
 	 */
 	@Override
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final @NotNull ICodeGen visit) {
 		visit.visitMatchConditional(this);
 	}
 
@@ -89,20 +91,20 @@ public class MatchConditional implements OS_Element, StatementItem, FunctionItem
 	//
 	//
 	//
-	public MatchArm_TypeMatch typeMatch() {
-		final MatchArm_TypeMatch p = new MatchArm_TypeMatch();
+	public @NotNull MatchArm_TypeMatch typeMatch() {
+		final @NotNull MatchArm_TypeMatch p = new MatchArm_TypeMatch();
 		parts.add(p);
 		return p;
 	}
 
-	public MatchConditionalPart2 normal() {
-		final MatchConditionalPart2 p = new MatchConditionalPart2();
+	public @NotNull MatchConditionalPart2 normal() {
+		final @NotNull MatchConditionalPart2 p = new MatchConditionalPart2();
 		parts.add(p);
 		return p;
 	}
 
-	public MatchConditionalPart3 valNormal() {
-		final MatchConditionalPart3 p = new MatchConditionalPart3();
+	public @NotNull MatchConditionalPart3 valNormal() {
+		final @NotNull MatchConditionalPart3 p = new MatchConditionalPart3();
 		parts.add(p);
 		return p;
 	}
@@ -116,7 +118,7 @@ public class MatchConditional implements OS_Element, StatementItem, FunctionItem
 		Iterable<? extends FunctionItem> getItems();
 
 		@Override
-		default void visitGen(ICodeGen visit) {
+		default void visitGen(@NotNull ICodeGen visit) {
 			visit.visitMC1(this);
 		}
 	}
@@ -126,7 +128,7 @@ public class MatchConditional implements OS_Element, StatementItem, FunctionItem
 		private final Context ___ctx = new MatchConditionalContext(MatchConditional.this.getContext(), this);
 
 //		private final List<FunctionItem> items = new ArrayList<FunctionItem>();
-		private List<Token> docstrings = null;
+		private @Nullable List<Token> docstrings = null;
 		private IdentExpression matching_expression;
 		private Scope3 scope3;
 
@@ -135,7 +137,7 @@ public class MatchConditional implements OS_Element, StatementItem, FunctionItem
 		}
 
 		@Override
-		public Context getContext() {
+		public @NotNull Context getContext() {
 			return ___ctx;
 		}
 
@@ -154,8 +156,8 @@ public class MatchConditional implements OS_Element, StatementItem, FunctionItem
 		}
 
 		@Override
-		public List<FunctionItem> getItems() {
-			List<FunctionItem> collection = new ArrayList<FunctionItem>();
+		public @NotNull List<FunctionItem> getItems() {
+			@NotNull List<FunctionItem> collection = new ArrayList<FunctionItem>();
 			for (OS_Element element : scope3.items()) {
 				if (element instanceof FunctionItem)
 					collection.add((FunctionItem) element);
@@ -165,7 +167,7 @@ public class MatchConditional implements OS_Element, StatementItem, FunctionItem
 		}
 
 		@Override
-		public OS_Element getParent() {
+		public @NotNull OS_Element getParent() {
 			return MatchConditional.this;
 		}
 
@@ -206,8 +208,8 @@ public class MatchConditional implements OS_Element, StatementItem, FunctionItem
 		}
 
 		@Override
-		public List<FunctionItem> getItems() {
-			List<FunctionItem> collection = new ArrayList<FunctionItem>();
+		public @NotNull List<FunctionItem> getItems() {
+			@NotNull List<FunctionItem> collection = new ArrayList<FunctionItem>();
 			for (OS_Element element : scope3.items()) {
 				if (element instanceof FunctionItem)
 					collection.add((FunctionItem) element);
@@ -217,12 +219,12 @@ public class MatchConditional implements OS_Element, StatementItem, FunctionItem
 		}
 
 		@Override
-		public Context getContext() {
+		public @NotNull Context getContext() {
 			return ___ctx;
 		}
 
 		@Override
-		public OS_Element getParent() {
+		public @NotNull OS_Element getParent() {
 			return MatchConditional.this;
 		}
 
@@ -261,8 +263,8 @@ public class MatchConditional implements OS_Element, StatementItem, FunctionItem
 		}
 
 		@Override
-		public List<FunctionItem> getItems() {
-			List<FunctionItem> collection = new ArrayList<FunctionItem>();
+		public @NotNull List<FunctionItem> getItems() {
+			@NotNull List<FunctionItem> collection = new ArrayList<FunctionItem>();
 			for (OS_Element element : scope3.items()) {
 				if (element instanceof FunctionItem)
 					collection.add((FunctionItem) element);
@@ -284,12 +286,12 @@ public class MatchConditional implements OS_Element, StatementItem, FunctionItem
 		}
 
 		@Override
-		public Context getContext() {
+		public @NotNull Context getContext() {
 			return ___ctx;
 		}
 
 		@Override
-		public OS_Element getParent() {
+		public @NotNull OS_Element getParent() {
 			return MatchConditional.this;
 		}
 

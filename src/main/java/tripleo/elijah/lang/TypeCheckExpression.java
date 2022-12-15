@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang2.BuiltInTypes;
 
 /**
@@ -35,7 +36,7 @@ public class TypeCheckExpression extends AbstractExpression implements IExpressi
     }
 
     @Override
-    public OS_Type getType() {
+    public @NotNull OS_Type getType() {
         return new OS_Type(BuiltInTypes.Boolean);
     }
 }

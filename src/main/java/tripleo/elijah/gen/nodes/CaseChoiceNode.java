@@ -9,19 +9,21 @@
 package tripleo.elijah.gen.nodes;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.lang.NumericExpression;
 
 public class CaseChoiceNode {
 	
-	private final VariableReferenceNode _varref;
-	private final VariableReferenceNode3 varref3;
-	public ExpressionNode left;
-	public ScopeNode right;
+	private final @Nullable VariableReferenceNode _varref;
+	private final @Nullable VariableReferenceNode3 varref3;
+	public @Nullable ExpressionNode left;
+	public @Nullable ScopeNode right;
 	public final CaseHdrNode header;
-	private String _defaultName;
+	private @Nullable String _defaultName;
 	
-	public CaseChoiceNode(final NumericExpression expr1, final CaseHdrNode header) {
+	public CaseChoiceNode(final @NotNull NumericExpression expr1, final CaseHdrNode header) {
 		// TODO Auto-generated constructor stub
 		left=new ExpressionNode(expr1);
 		this.header = header;

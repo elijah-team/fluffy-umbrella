@@ -1,5 +1,6 @@
 package tripleo.elijah.lang.imports;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.ImportContext;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.util.NotImplementedException;
@@ -34,7 +35,7 @@ public class AssigningImportStatement extends _BaseImportStatement {
 	}
 
 	public void addAssigningPart(final IdentExpression aToken, final Qualident aQualident) {
-		final Part p = new Part(aToken, aQualident);
+		final @NotNull Part p = new Part(aToken, aQualident);
 //		p.name = aToken;
 //		p.value = aQualident;
 		addPart(p);
@@ -55,9 +56,9 @@ public class AssigningImportStatement extends _BaseImportStatement {
 	}
 
 	@Override
-	public List<Qualident> parts() {
-		final List<Qualident> r = new ArrayList<Qualident>();
-		for (final Part part : _parts) {
+	public @NotNull List<Qualident> parts() {
+		final @NotNull List<Qualident> r = new ArrayList<Qualident>();
+		for (final @NotNull Part part : _parts) {
 			r.add(identToQualident(part.name));
 		}
 		return r;
@@ -68,8 +69,8 @@ public class AssigningImportStatement extends _BaseImportStatement {
 		_ctx = ctx;
 	}
 
-	private static Qualident identToQualident(final IdentExpression identExpression) {
-		final Qualident r = new Qualident();
+	private static @NotNull Qualident identToQualident(final @NotNull IdentExpression identExpression) {
+		final @NotNull Qualident r = new Qualident();
 		r.append(identExpression);
 		return r;
 	}

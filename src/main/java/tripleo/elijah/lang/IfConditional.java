@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.IfConditionalContext;
 import tripleo.elijah.gen.ICodeGen;
 
@@ -22,7 +24,7 @@ public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 //	private final List<OS_Element> _items = new ArrayList<OS_Element>();
 //	final IfConditionalScope _scope = new IfConditionalScope(this);
 	private final OS_Element _parent;
-	private Context _ctx;
+	private @Nullable Context _ctx;
 	private Scope3 scope3;
 
 	public IfConditional(final OS_Element _parent) {
@@ -31,7 +33,7 @@ public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 //		this.sibling = null;
 	}
 
-	public IfConditional(final IfConditional ifExpression) {
+	public IfConditional(final @NotNull IfConditional ifExpression) {
 //		this.sibling = ifExpression;
 		//
 		this._ctx = new IfConditionalContext(ifExpression._ctx, this, true);
@@ -39,7 +41,7 @@ public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 	}
 	
 	@Override
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final @NotNull ICodeGen visit) {
 		visit.visitIfConditional(this);
 	}
 
@@ -57,14 +59,14 @@ public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 		return expr;
     }
 
-	public IfConditional else_() {
-		final IfConditional elsepart = new IfConditional(this);
+	public @NotNull IfConditional else_() {
+		final @NotNull IfConditional elsepart = new IfConditional(this);
 		parts.add(elsepart);
 		return elsepart;
 	}
 
-	public IfConditional elseif() {
-		final IfConditional elseifpart = new IfConditional(this);
+	public @NotNull IfConditional elseif() {
+		final @NotNull IfConditional elseifpart = new IfConditional(this);
 		parts.add(elseifpart);
 		return elseifpart;
 	}
@@ -83,7 +85,7 @@ public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 //		return _items;
 	}
 
-	public List<IfConditional> getParts() {
+	public @NotNull List<IfConditional> getParts() {
 		return parts;
 	}
 

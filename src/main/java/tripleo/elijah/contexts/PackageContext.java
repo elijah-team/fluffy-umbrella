@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.contexts;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.LookupResultList;
 import tripleo.elijah.lang.OS_Element;
@@ -29,11 +30,11 @@ public class PackageContext extends Context {
 	}
 
 	@Override
-	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	public LookupResultList lookup(final String name, final int level, final @NotNull LookupResultList Result, final @NotNull List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(this);
 		for (OS_Element element : carrier.getElements()) {
 			if (element instanceof OS_Element2) {
-				final OS_Element2 element2 = (OS_Element2) element;
+				final @NotNull OS_Element2 element2 = (OS_Element2) element;
 				if (element2.name().equals(name)) {
 					Result.add(name, level, element, this);
 				}

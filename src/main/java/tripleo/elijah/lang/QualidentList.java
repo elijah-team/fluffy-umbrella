@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +20,7 @@ public class QualidentList {
 		parts.add(qid);
 	}
 	
-	public List<Qualident> parts = new ArrayList<Qualident>();
+	public @NotNull List<Qualident> parts = new ArrayList<Qualident>();
 }
 
 //

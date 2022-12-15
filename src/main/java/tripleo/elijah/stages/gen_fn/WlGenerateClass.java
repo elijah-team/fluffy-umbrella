@@ -25,16 +25,16 @@ import java.util.List;
  * Created 5/16/21 12:41 AM
  */
 public class WlGenerateClass implements WorkJob {
-	private final ClassStatement classStatement;
+	private final @NotNull ClassStatement classStatement;
 	private final GenerateFunctions generateFunctions;
-	private final ClassInvocation classInvocation;
+	private final @NotNull ClassInvocation classInvocation;
 	private final DeducePhase.GeneratedClasses coll;
 	private boolean _isDone = false;
 	private GeneratedClass Result;
 
 	public WlGenerateClass(GenerateFunctions aGenerateFunctions,
-						   ClassInvocation aClassInvocation,
-						   DeducePhase.GeneratedClasses coll) {
+	                       @NotNull ClassInvocation aClassInvocation,
+	                       DeducePhase.GeneratedClasses coll) {
 		classStatement = aClassInvocation.getKlass();
 		generateFunctions = aGenerateFunctions;
 		classInvocation = aClassInvocation;
@@ -43,7 +43,7 @@ public class WlGenerateClass implements WorkJob {
 
 	@Override
 	public void run(WorkManager aWorkManager) {
-		final DeferredObject<GeneratedClass, Void, Void> resolvePromise = classInvocation.resolveDeferred();
+		final @NotNull DeferredObject<GeneratedClass, Void, Void> resolvePromise = classInvocation.resolveDeferred();
 		switch (resolvePromise.state()) {
 		case PENDING:
 			@NotNull GeneratedClass kl = generateFunctions.generateClass(classStatement, classInvocation);
@@ -55,7 +55,7 @@ public class WlGenerateClass implements WorkJob {
 			Result = kl;
 			break;
 		case RESOLVED:
-			DeduceTypes2.Holder<GeneratedClass> hgc = new DeduceTypes2.Holder<GeneratedClass>();
+			DeduceTypes2.@NotNull Holder<GeneratedClass> hgc = new DeduceTypes2.Holder<GeneratedClass>();
 			resolvePromise.then(new DoneCallback<GeneratedClass>() {
 				@Override
 				public void onDone(GeneratedClass result) {

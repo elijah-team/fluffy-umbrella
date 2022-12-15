@@ -12,6 +12,7 @@ import antlr.Token;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.StringExpression;
 import tripleo.elijah.util.Helpers;
@@ -27,11 +28,11 @@ import java.util.List;
 public class CompilerInstructions {
 	private IndexingStatement _idx;
 	private GenerateStatement gen;
-	public List<LibraryStatementPart> lsps = new ArrayList<LibraryStatementPart>();
+	public @NotNull List<LibraryStatementPart> lsps = new ArrayList<LibraryStatementPart>();
 	private String filename;
 	private String name;
 
-	public IndexingStatement indexingStatement() {
+	public @NotNull IndexingStatement indexingStatement() {
 		if (_idx == null)
 			_idx = new IndexingStatement(this);
 
@@ -43,7 +44,7 @@ public class CompilerInstructions {
 		gen = generateStatement;
 	}
 
-	public void add(final LibraryStatementPart libraryStatementPart) {
+	public void add(final @NotNull LibraryStatementPart libraryStatementPart) {
 		libraryStatementPart.setInstructions(this);
 		lsps.add(libraryStatementPart);
 	}
@@ -68,7 +69,7 @@ public class CompilerInstructions {
 				return false;
 			}
 		});
-		Iterator<GenerateStatement.Directive> gi = gens.iterator();
+		@NotNull Iterator<GenerateStatement.Directive> gi = gens.iterator();
 		if (!gi.hasNext()) return null;
 		IExpression lang_raw = gi.next().getExpression();
 		assert lang_raw instanceof StringExpression;
@@ -83,7 +84,7 @@ public class CompilerInstructions {
 		this.name = name;
 	}
 
-	public void setName(Token name) {
+	public void setName(@NotNull Token name) {
 		this.name = name.getText();
 	}
 }

@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.contexts;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.DefFunctionDef;
 import tripleo.elijah.lang.LookupResultList;
@@ -35,14 +37,14 @@ public class DefFunctionContext extends Context {
 	 * @param alreadySearched
 	 * @return
 	 */
-	@Override public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	@Override public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final @NotNull List<Context> alreadySearched, final boolean one) {
 //		final LookupResultList Result = new LookupResultList();
 		alreadySearched.add(carrier.getContext());
 		return getParent().lookup(name, level, Result, alreadySearched, one);
 	}
 
 	@Override
-	public Context getParent() {
+	public @Nullable Context getParent() {
 		return null;
 	}
 

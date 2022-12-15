@@ -19,11 +19,11 @@ import tripleo.elijah.gen.ICodeGen;
  *
  */
 public class ConstructStatement implements FunctionItem, StatementItem, OS_Element {
-	private final OS_Element parent;
-	private final Context context;
-	private final IExpression _expr;
-	private final ExpressionList _args;
-	private final String constructorName;
+	private final @NotNull OS_Element parent;
+	private final @NotNull Context context;
+	private final @NotNull IExpression _expr;
+	private final @Nullable ExpressionList _args;
+	private final @Nullable String constructorName;
 //	private OS_Type _type;
 
 	public ConstructStatement(@NotNull final OS_Element aParent,
@@ -54,25 +54,25 @@ public class ConstructStatement implements FunctionItem, StatementItem, OS_Eleme
 //	}
 
 	@Override
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(@NotNull ICodeGen visit) {
 		visit.visitConstructStatement(this);
 	}
 
 	@Override
-	public OS_Element getParent() {
+	public @NotNull OS_Element getParent() {
 		return parent;
 	}
 
 	@Override
-	public Context getContext() {
+	public @NotNull Context getContext() {
 		return context;
 	}
 
-	public IExpression getExpr() {
+	public @NotNull IExpression getExpr() {
 		return _expr;
 	}
 
-	public ExpressionList getArgs() {
+	public @Nullable ExpressionList getArgs() {
 		return _args;
 	}
 }

@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Created 5/8/21 7:13 AM
  */
@@ -29,7 +31,7 @@ public class UnaryExpression extends AbstractExpression {
 	}
 
 	@Override
-	public OS_Type getType() {
+	public @Nullable OS_Type getType() {
 		return null;
 	}
 

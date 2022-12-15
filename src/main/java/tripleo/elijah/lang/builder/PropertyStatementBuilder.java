@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 
 /**
@@ -17,19 +19,19 @@ public class PropertyStatementBuilder extends ElBuilder {
 	private IdentExpression prop_name;
 	private TypeName tn;
 	private Context _context;
-	private BaseScope _get_scope = null;
-	private BaseScope _set_scope = null;
+	private @Nullable BaseScope _get_scope = null;
+	private @Nullable BaseScope _set_scope = null;
 	private boolean _get_is_abstract = false;
 	private boolean _set_is_abstract = false;
 
 	@Override
-	protected OS_Element build() {
-		PropertyStatement ps = new PropertyStatement(_parent, _context);
+	protected @NotNull OS_Element build() {
+		@NotNull PropertyStatement ps = new PropertyStatement(_parent, _context);
 		ps.setName(this.prop_name);
 		ps.setTypeName(this.tn);
 		if (_get_scope != null) {
-			Scope3 scope3 = new Scope3(ps.get_fn);
-			for (ElBuilder gsi : _get_scope.items()) {
+			@NotNull Scope3 scope3 = new Scope3(ps.get_fn);
+			for (@NotNull ElBuilder gsi : _get_scope.items()) {
 				gsi.setParent(ps);
 				gsi.setContext(ps.getContext());
 				OS_Element built = gsi.build();
@@ -41,8 +43,8 @@ public class PropertyStatementBuilder extends ElBuilder {
 		} else
 			ps.get_fn = null;
 		if (_set_scope != null) {
-			Scope3 scope3 = new Scope3(ps.set_fn);
-			for (ElBuilder gsi : _set_scope.items()) {
+			@NotNull Scope3 scope3 = new Scope3(ps.set_fn);
+			for (@NotNull ElBuilder gsi : _set_scope.items()) {
 				gsi.setParent(ps);
 				gsi.setContext(ps.getContext());
 				OS_Element built = gsi.build();
@@ -69,12 +71,12 @@ public class PropertyStatementBuilder extends ElBuilder {
 		this.tn = tn;
 	}
 
-	public BaseScope get_scope() {
+	public @NotNull BaseScope get_scope() {
 		_get_scope = new BaseScope();
 		return _get_scope;
 	}
 
-	public BaseScope set_scope() {
+	public @NotNull BaseScope set_scope() {
 		_set_scope = new BaseScope();
 		return _set_scope;
 	}

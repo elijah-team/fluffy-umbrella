@@ -12,6 +12,7 @@ package tripleo.elijah.lang;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.util.Helpers;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.List;
 
 public class TypeNameList {
 
-	List<TypeName> p = new ArrayList<TypeName>();
+	@NotNull List<TypeName> p = new ArrayList<TypeName>();
 
 	public void add(final TypeName tn) {
 		p.add(tn);
@@ -32,7 +33,7 @@ public class TypeNameList {
 	public int size() { return p.size(); }
 
 	@Override
-	public String toString() {
+	public @NotNull String toString() {
 		return Helpers.String_join(", ", Collections2.transform(p, new Function<TypeName, String>() {
 			@Nullable
 			@Override

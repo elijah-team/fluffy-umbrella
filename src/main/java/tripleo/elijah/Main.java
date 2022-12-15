@@ -8,6 +8,7 @@
  */
 package tripleo.elijah;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
@@ -19,9 +20,9 @@ import java.util.List;
 public class Main {
 
 	public static void main(final String[] args) {
-		final StdErrSink errSink = new StdErrSink();
-		final Compilation cc = new Compilation(errSink, new IO());
-		final List<String> ls = new ArrayList<String>();
+		final @NotNull StdErrSink errSink = new StdErrSink();
+		final @NotNull Compilation cc = new Compilation(errSink, new IO());
+		final @NotNull List<String> ls = new ArrayList<String>();
 		ls.addAll(Arrays.asList(args));
 		cc.main(ls, new StdErrSink());
 	}

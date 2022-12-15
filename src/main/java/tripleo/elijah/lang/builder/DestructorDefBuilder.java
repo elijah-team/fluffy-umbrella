@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
 
 /**
@@ -15,17 +16,17 @@ import tripleo.elijah.lang.*;
  */
 public class DestructorDefBuilder extends BaseFunctionDefBuilder {
 	private Context _context;
-	private DestructorDefScope _scope = new DestructorDefScope();
+	private @NotNull DestructorDefScope _scope = new DestructorDefScope();
 
 	@Override
-	public DestructorDef build() {
+	public @NotNull DestructorDef build() {
 		assert _parent instanceof ClassStatement;
 
-		DestructorDef destructorDef = new DestructorDef((ClassStatement) _parent, _context);
+		@NotNull DestructorDef destructorDef = new DestructorDef((ClassStatement) _parent, _context);
 		destructorDef.setFal(mFal);
-		Scope3 scope3 = new Scope3(destructorDef);
+		@NotNull Scope3 scope3 = new Scope3(destructorDef);
 		destructorDef.scope(scope3);
-		for (ElBuilder item : _scope.items()) {
+		for (@NotNull ElBuilder item : _scope.items()) {
 			item.setParent(destructorDef);
 			item.setContext(_context);
 			destructorDef.add(item.build());

@@ -9,6 +9,8 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +21,11 @@ import java.util.List;
 abstract class _CommonNC {
 	protected final List<ClassItem> items = new ArrayList<ClassItem>();
 	private final List<String> mDocs = new ArrayList<String>();
-	public Attached _a = new Attached();
+	public @NotNull Attached _a = new Attached();
 	protected IdentExpression nameToken;
 	protected OS_Package _packageName;
-	List<AnnotationClause> annotations = null;
-	private List<AccessNotation> accesses = new ArrayList<AccessNotation>();
+	@Nullable List<AnnotationClause> annotations = null;
+	private @NotNull List<AccessNotation> accesses = new ArrayList<AccessNotation>();
 
 	public void setPackageName(final OS_Package aPackageName) {
 		_packageName = aPackageName;
@@ -33,11 +35,11 @@ abstract class _CommonNC {
 		return _packageName;
 	}
 
-	public void addDocString(final Token aText) {
+	public void addDocString(final @NotNull Token aText) {
 		mDocs.add(aText.getText());
 	}
 
-	public List<ClassItem> getItems() {
+	public @NotNull List<ClassItem> getItems() {
 		return items ;
 	}
 
@@ -47,8 +49,8 @@ abstract class _CommonNC {
 	}
 
 	// OS_Container
-	public List<OS_Element2> items() {
-		final ArrayList<OS_Element2> a = new ArrayList<OS_Element2>();
+	public @NotNull List<OS_Element2> items() {
+		final @NotNull ArrayList<OS_Element2> a = new ArrayList<OS_Element2>();
 		for (final ClassItem functionItem : getItems()) {
 			final boolean b = functionItem instanceof OS_Element2;
 			if (b) a.add((OS_Element2) functionItem);
@@ -75,9 +77,9 @@ abstract class _CommonNC {
 		accesses.add(acs);
 	}
 
-	public void walkAnnotations(AnnotationWalker annotationWalker) {
+	public void walkAnnotations(@NotNull AnnotationWalker annotationWalker) {
 		if (annotations == null) return;
-		for (AnnotationClause annotationClause : annotations) {
+		for (@NotNull AnnotationClause annotationClause : annotations) {
 			for (AnnotationPart annotationPart : annotationClause.aps) {
 				annotationWalker.annotation(annotationPart);
 			}
@@ -89,7 +91,7 @@ abstract class _CommonNC {
 		return items.contains(element);
 	}
 
-	public void addAnnotations(List<AnnotationClause> as) {
+	public void addAnnotations(@Nullable List<AnnotationClause> as) {
 		if (as == null) return;
 		for (AnnotationClause annotationClause : as) {
 			addAnnotation(annotationClause);

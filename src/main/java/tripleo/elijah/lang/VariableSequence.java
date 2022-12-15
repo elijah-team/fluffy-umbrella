@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.gen.ICodeGen;
 
 import java.util.ArrayList;
@@ -33,8 +35,8 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 
 	public void defaultModifiers(final TypeModifiers aModifiers) {def=aModifiers;}
 
-	public VariableStatement next() {
-		final VariableStatement st = new VariableStatement(this);
+	public @NotNull VariableStatement next() {
+		final @NotNull VariableStatement st = new VariableStatement(this);
 		st.set(def);
 		stmts.add(st);
 		return st;
@@ -45,7 +47,7 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 	}
 
 	@Override
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final @NotNull ICodeGen visit) {
 		visit.visitVariableSequence(this);
 	}
 
@@ -68,15 +70,15 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 	}
 
 	@Override public String toString() {
-		final List<String> r = new ArrayList<String>();
-		for (final VariableStatement stmt : stmts) {
+		final @NotNull List<String> r = new ArrayList<String>();
+		for (final @NotNull VariableStatement stmt : stmts) {
 			r.add(stmt.getName());
 		}
 		return r.toString();
 //		return (stmts.stream().map(n -> n.getName()).collect(Collectors.toList())).toString();
 	}
 
-	List<AnnotationClause> annotations = null;
+	@Nullable List<AnnotationClause> annotations = null;
 
 	public void addAnnotation(final AnnotationClause a) {
 		if (annotations == null)
@@ -111,8 +113,8 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 
 	// endregion
 
-	public void setTypeName(TypeName aTypeName) {
-		for (VariableStatement vs : stmts) {
+	public void setTypeName(@NotNull TypeName aTypeName) {
+		for (@NotNull VariableStatement vs : stmts) {
 			vs.setTypeName(aTypeName);
 		}
 	}

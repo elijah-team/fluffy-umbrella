@@ -106,7 +106,7 @@ class Found_Element_For_ITE {
 			ite.type.setAttached(attached);
 	}
 
-	public void action_ClassStatement(@NotNull IdentTableEntry ite, ClassStatement classStatement) {
+	public void action_ClassStatement(@NotNull IdentTableEntry ite, @NotNull ClassStatement classStatement) {
 		@NotNull OS_Type attached = new OS_Type(classStatement);
 		if (ite.type == null) {
 			ite.type = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, attached, null, ite);
@@ -122,7 +122,7 @@ class Found_Element_For_ITE {
 					ite.type = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null, vs.initialValue());
 				ite.type.setAttached(new OS_Type(typeName));
 			} else {
-				final OS_Element parent = vs.getParent().getParent();
+				final @Nullable OS_Element parent = vs.getParent().getParent();
 				if (parent instanceof NamespaceStatement || parent instanceof ClassStatement) {
 					boolean state;
 					if (generatedFunction instanceof GeneratedFunction) {
@@ -153,10 +153,10 @@ class Found_Element_For_ITE {
 									}
 								});
 					} else {
-						IInvocation invocation;
+						@Nullable IInvocation invocation;
 						if (ite.backlink == null) {
 							if (parent instanceof ClassStatement) {
-								final ClassStatement classStatement = (ClassStatement) parent;
+								final @NotNull ClassStatement classStatement = (ClassStatement) parent;
 								final @Nullable ClassInvocation ci = dc.registerClassInvocation(classStatement, null);
 								assert ci != null;
 								invocation = ci;
@@ -166,10 +166,10 @@ class Found_Element_For_ITE {
 						} else {
 							invocation = dc.getInvocationFromBacklink(ite.backlink);
 						}
-						DeferredMember dm = dc.deferred_member(parent, invocation, vs, ite);
+						@NotNull DeferredMember dm = dc.deferred_member(parent, invocation, vs, ite);
 						dm.typePromise().then(new DoneCallback<GenType>() {
 							@Override
-							public void onDone(final GenType result) {
+							public void onDone(final @NotNull GenType result) {
 								if (ite.type == null)
 									ite.type = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null, vs.initialValue());
 								assert result.resolved != null;
@@ -200,13 +200,13 @@ class Found_Element_For_ITE {
 	 *
 	 * @param aGenType the GenType to modify.
 	 */
-	public void genCIForGenType(final GenType aGenType) {
+	public void genCIForGenType(final @NotNull GenType aGenType) {
 		//assert aGenType.nonGenericTypeName != null ;//&& ((NormalTypeName) aGenType.nonGenericTypeName).getGenericPart().size() > 0;
 
 		dc.genCI(aGenType, aGenType.nonGenericTypeName);
 		final IInvocation invocation = aGenType.ci;
 		if (invocation instanceof NamespaceInvocation) {
-			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
+			final @NotNull NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
 			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
 				@Override
 				public void onDone(final GeneratedNamespace result) {
@@ -214,7 +214,7 @@ class Found_Element_For_ITE {
 				}
 			});
 		} else if (invocation instanceof ClassInvocation) {
-			final ClassInvocation classInvocation = (ClassInvocation) invocation;
+			final @NotNull ClassInvocation classInvocation = (ClassInvocation) invocation;
 			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
 				@Override
 				public void onDone(final GeneratedClass result) {

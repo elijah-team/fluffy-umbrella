@@ -23,7 +23,7 @@ import tripleo.elijah.work.WorkManager;
  * Created 5/31/21 2:26 AM
  */
 public class WlGenerateDefaultCtor implements WorkJob {
-	private final GenerateFunctions generateFunctions;
+	private final @NotNull GenerateFunctions generateFunctions;
 	private final FunctionInvocation functionInvocation;
 	private boolean _isDone = false;
 
@@ -36,8 +36,8 @@ public class WlGenerateDefaultCtor implements WorkJob {
 	@Override
 	public void run(WorkManager aWorkManager) {
 		if (functionInvocation.generateDeferred().isPending()) {
-			final ClassStatement klass = functionInvocation.getClassInvocation().getKlass();
-			DeduceTypes2.Holder<GeneratedClass> hGenClass = new DeduceTypes2.Holder<>();
+			final @NotNull ClassStatement klass = functionInvocation.getClassInvocation().getKlass();
+			DeduceTypes2.@NotNull Holder<GeneratedClass> hGenClass = new DeduceTypes2.Holder<>();
 			functionInvocation.getClassInvocation().resolvePromise().then(new DoneCallback<GeneratedClass>() {
 				@Override
 				public void onDone(GeneratedClass result) {
@@ -47,17 +47,17 @@ public class WlGenerateDefaultCtor implements WorkJob {
 			GeneratedClass genClass = hGenClass.get();
 			assert genClass != null;
 
-			ConstructorDef cd = new ConstructorDef(null, klass, klass.getContext());
+			@NotNull ConstructorDef cd = new ConstructorDef(null, klass, klass.getContext());
 //			cd.setName(Helpers.string_to_ident("<ctor>"));
 			cd.setName(ConstructorDef.emptyConstructorName);
-			Scope3 scope3 = new Scope3(cd);
+			@NotNull Scope3 scope3 = new Scope3(cd);
 			cd.scope(scope3);
-			for (GeneratedContainer.VarTableEntry varTableEntry : genClass.varTable) {
+			for (GeneratedContainer.@NotNull VarTableEntry varTableEntry : genClass.varTable) {
 				if (varTableEntry.initialValue != IExpression.UNASSIGNED) {
-					IExpression left = varTableEntry.nameToken;
+					@NotNull IExpression left = varTableEntry.nameToken;
 					IExpression right = varTableEntry.initialValue;
 
-					IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
+					@NotNull IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
 					scope3.add(new WrappedStatementWrapper(e, cd.getContext(), cd, varTableEntry.vs));
 				} else {
 					if (true || getPragma("auto_construct")) {
@@ -74,7 +74,7 @@ public class WlGenerateDefaultCtor implements WorkJob {
 			final ClassInvocation ci = functionInvocation.getClassInvocation();
 			ci.resolvePromise().done(new DoneCallback<GeneratedClass>() {
 				@Override
-				public void onDone(GeneratedClass result) {
+				public void onDone(@NotNull GeneratedClass result) {
 					gf.setCode(generateFunctions.module.parent.nextFunctionCode());
 					gf.setClass(result);
 					result.constructors.put(cd, gf);

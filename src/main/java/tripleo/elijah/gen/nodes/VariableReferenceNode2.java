@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.gen.nodes;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.util.NotImplementedException;
@@ -38,7 +39,7 @@ public class VariableReferenceNode2 extends ExpressionNode {
 		return super.genText(cctx);
 	}
 	
-	private void setText(final IdentExpression identExpression) {
+	private void setText(final @NotNull IdentExpression identExpression) {
 		//NotImplementedException.raise();
 		_declared = identExpression.getText();
 		_perm = true;

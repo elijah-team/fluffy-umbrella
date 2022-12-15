@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
 
 /**
@@ -36,8 +37,8 @@ public class AliasStatementBuilder extends ElBuilder {
 	}
 
 	@Override
-	public AliasStatement build() {
-		AliasStatement aliasStatement = new AliasStatement(_parent);
+	public @NotNull AliasStatement build() {
+		@NotNull AliasStatement aliasStatement = new AliasStatement(_parent);
 		aliasStatement.setName(newAlias);
 		aliasStatement.setExpression(oldElement);
 		// no setContext!!

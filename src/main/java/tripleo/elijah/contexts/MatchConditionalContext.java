@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.contexts;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
 
 import java.util.List;
@@ -23,11 +24,11 @@ public class MatchConditionalContext extends Context {
 		this._parent = parent;
 		this.carrier = part;
 	}
-	@Override public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	@Override public LookupResultList lookup(final @NotNull String name, final int level, final @NotNull LookupResultList Result, final @NotNull List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 
 		if (carrier instanceof MatchConditional.MatchArm_TypeMatch) {
-			MatchConditional.MatchArm_TypeMatch carrier2 = (MatchConditional.MatchArm_TypeMatch) carrier;
+			MatchConditional.@NotNull MatchArm_TypeMatch carrier2 = (MatchConditional.MatchArm_TypeMatch) carrier;
 			if (name.equals(carrier2.getIdent().getText()))
 				Result.add(name, level, carrier2, this);
 		}
@@ -44,7 +45,7 @@ public class MatchConditionalContext extends Context {
 				}
 			} else if (item instanceof VariableSequence) {
 //				System.out.println("[FunctionContext#lookup] VariableSequence "+item);
-				for (final VariableStatement vs : ((VariableSequence) item).items()) {
+				for (final @NotNull VariableStatement vs : ((VariableSequence) item).items()) {
 					if (vs.getName().equals(name))
 						Result.add(name, level, vs, this);
 				}

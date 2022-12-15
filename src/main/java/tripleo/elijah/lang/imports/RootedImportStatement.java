@@ -1,5 +1,6 @@
 package tripleo.elijah.lang.imports;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.ImportContext;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.util.NotImplementedException;
@@ -57,15 +58,15 @@ public class RootedImportStatement extends _BaseImportStatement {
 	}
 
 	@Override
-	public List<Qualident> parts() {
-		final List<Qualident> r = new ArrayList<Qualident>();
-		for (final Qualident qualident : importList.parts) {
-			final Qualident q = new Qualident();
+	public @NotNull List<Qualident> parts() {
+		final @NotNull List<Qualident> r = new ArrayList<Qualident>();
+		for (final @NotNull Qualident qualident : importList.parts) {
+			final @NotNull Qualident q = new Qualident();
 			// TODO what the hell does this do? Should it be `root'
-			for (final IdentExpression part : q.parts()) {
+			for (final @NotNull IdentExpression part : q.parts()) {
 				q.append(part);
 			}
-			for (final IdentExpression part : qualident.parts()) {
+			for (final @NotNull IdentExpression part : qualident.parts()) {
 				q.append(part);
 			}
 			r.add(q);

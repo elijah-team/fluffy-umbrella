@@ -9,6 +9,8 @@
 
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.Nullable;
+
 public abstract class AbstractExpression implements IExpression {
 
 	public AbstractExpression() {
@@ -41,8 +43,8 @@ public abstract class AbstractExpression implements IExpression {
 		left = aLeft;
 	}
 
-	public IExpression left;
-	public ExpressionKind _kind;
+	public @Nullable IExpression left;
+	public @Nullable ExpressionKind _kind;
 
 	@Override
 	public void setKind(final ExpressionKind type1) {

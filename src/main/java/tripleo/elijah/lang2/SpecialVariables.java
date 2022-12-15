@@ -8,11 +8,13 @@
  */
 package tripleo.elijah.lang2;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Created 10/6/20 3:20 PM
  */
 public class SpecialVariables {
-	public static boolean contains(final String name) {
+	public static boolean contains(final @NotNull String name) {
 		if (name.equals("self")) return true;
 		if (name.equals("this")) return true;
 		if (name.equals("Value")) return true; // TODO only special sometimes
@@ -21,7 +23,7 @@ public class SpecialVariables {
 		return false;
 	}
 
-	public static String get(final String name) {
+	public static @NotNull String get(final @NotNull String name) {
 		if (name.equals("self")) return "vsc"; // TODO this should be this in Java and C++
 		if (name.equals("this")) return "vsc"; // TODO this should be this in Java and C++
 		if (name.equals("Value")) return "vsv"; // TODO only special sometimes

@@ -13,6 +13,7 @@
 
 package tripleo.elijah.gen.nodes;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.IExpression;
 
 /**
@@ -24,7 +25,7 @@ public class ReturnAgnNode {
 	private LocalAgnTmpNode _latn;
 	public ExpressionNode expr;
 
-	public ReturnAgnNode(final IExpression expression) {
+	public ReturnAgnNode(final @NotNull IExpression expression) {
 		// TODO Auto-generated constructor stub
 		expr = new ExpressionNode(expression);
 	}

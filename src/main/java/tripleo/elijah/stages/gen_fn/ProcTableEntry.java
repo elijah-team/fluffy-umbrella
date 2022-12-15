@@ -37,10 +37,10 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	public final InstructionArgument expression_num;
 	private ClassInvocation classInvocation;
 	private FunctionInvocation functionInvocation;
-	private DeferredObject<ProcTableEntry, Void, Void> completeDeferred = new DeferredObject<ProcTableEntry, Void, Void>();
-	private DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<FunctionInvocation, Void, Void>();
+	private @NotNull DeferredObject<ProcTableEntry, Void, Void> completeDeferred = new DeferredObject<ProcTableEntry, Void, Void>();
+	private @NotNull DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<FunctionInvocation, Void, Void>();
 
-	public ProcTableEntry(final int index, final IExpression aExpression, final InstructionArgument expression_num, final List<TypeTableEntry> args) {
+	public ProcTableEntry(final int index, final IExpression aExpression, final InstructionArgument expression_num, final @NotNull List<TypeTableEntry> args) {
 		this.index = index;
 		this.expression = aExpression;
 		this.expression_num = expression_num;
@@ -48,14 +48,14 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 
 		addStatusListener(new StatusListener() {
 			@Override
-			public void onChange(IElementHolder eh, Status newStatus) {
+			public void onChange(@NotNull IElementHolder eh, Status newStatus) {
 				if (newStatus == Status.KNOWN) {
 					setResolvedElement(eh.getElement());
 				}
 			}
 		});
 
-		for (TypeTableEntry tte : args) {
+		for (@NotNull TypeTableEntry tte : args) {
 			tte.addSetAttached(new TypeTableEntry.OnSetAttached() {
 				@Override
 				public void onSetAttached(TypeTableEntry aTypeTableEntry) {
@@ -88,7 +88,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		if (args != null) {
 			final int ac = args.size();
 			int acx = 0;
-			for (TypeTableEntry tte : args) {
+			for (@NotNull TypeTableEntry tte : args) {
 				if (tte.getAttached() != null)
 					acx++;
 			}
@@ -148,7 +148,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		onFunctionInvocations.then(callback);
 	}
 
-	private DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
+	private @NotNull DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
 
 	public DeferredObject<GenType, Void, Void> typeDeferred() {
 		return typeDeferred;

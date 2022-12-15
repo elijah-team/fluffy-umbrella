@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 public abstract class AbstractTypeName implements NormalTypeName {
@@ -87,7 +89,7 @@ public abstract class AbstractTypeName implements NormalTypeName {
 	public boolean equals(final Object o) {
 		if (this == o) return true;
 		if (!(o instanceof NormalTypeName)) return false;
-		final NormalTypeName that = (NormalTypeName) o;
+		final @NotNull NormalTypeName that = (NormalTypeName) o;
 		return getConstant() == that.getConstant() &&
 				getReference() == that.getReference() &&
 				getOut() == that.getOut() &&

@@ -12,6 +12,8 @@
 package tripleo.elijah.gen.nodes;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.GenBuffer;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.gen.Node;
@@ -29,15 +31,15 @@ import java.util.List;
  */
 public class MethHdrNode implements Node {
 	
-	private final TypeRef returnType2;
+	private final @Nullable TypeRef returnType2;
 	private final Node _parent;
 	public int argCount;
-	final public MethNameNode methName;
-	public TypeNameNode returnType;
-	private final List<ArgumentNode> argument_types;
+	final public @NotNull MethNameNode methName;
+	public @Nullable TypeNameNode returnType;
+	private final @NotNull List<ArgumentNode> argument_types;
 	private final int _code;
 	
-	public MethHdrNode(final Node parent, @NonNull final IdentExpression return_type, final String method_name, final List<ArgumentNode> argument_types, final int code) {
+	public MethHdrNode(final Node parent, @NonNull final IdentExpression return_type, final String method_name, final @NotNull List<ArgumentNode> argument_types, final int code) {
 		_parent = parent;
 		_code = code;
 		methName = new MethNameNode(method_name, this);
@@ -48,7 +50,7 @@ public class MethHdrNode implements Node {
 		returnType2 = null;
 	}
 	
-	public MethHdrNode(final TypeRef retType, final Node parent, final String methodName, final List<ArgumentNode> argumentTypes, final int code) {
+	public MethHdrNode(final TypeRef retType, final Node parent, final String methodName, final @NotNull List<ArgumentNode> argumentTypes, final int code) {
 		_parent = parent;
 		_code = code;
 		methName=new MethNameNode(methodName, this);
@@ -73,12 +75,12 @@ public class MethHdrNode implements Node {
 		NotImplementedException.raise();
 	}
 	
-	public Iterable<ArgumentNode> ArgumentsIterator() {
+	public @NotNull Iterable<ArgumentNode> ArgumentsIterator() {
 		// TODO Auto-generated method stub
 		return new Iterable<ArgumentNode>() {
 			
 			@Override
-			public Iterator<ArgumentNode> iterator() {
+			public @NotNull Iterator<ArgumentNode> iterator() {
 			
 				return new Iterator<ArgumentNode>() {		
 				
@@ -86,13 +88,13 @@ public class MethHdrNode implements Node {
 		
 					@Override
 					public boolean hasNext() {
-						final MethHdrNode node=MethHdrNode.this;
+						final @NotNull MethHdrNode node=MethHdrNode.this;
 						return c<node.argCount;
 					}
 		
 					@Override
 					public ArgumentNode next() {
-						final MethHdrNode node=MethHdrNode.this;
+						final @NotNull MethHdrNode node=MethHdrNode.this;
 						return node.argument(c++);
 					}
 				};

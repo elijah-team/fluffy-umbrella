@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.contexts;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.gen.ICodeGen;
 import tripleo.elijah.lang.*;
 
@@ -29,7 +31,7 @@ public class ClassContext extends Context {
 		carrier = cls;
 	}
 
-	@Override public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	@Override public LookupResultList lookup(final @NotNull String name, final int level, final @NotNull LookupResultList Result, final @NotNull List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 		for (final ClassItem item: carrier.getItems()) {
 			if (!(item instanceof ClassStatement) &&
@@ -46,7 +48,7 @@ public class ClassContext extends Context {
 			}
 			if (item instanceof VariableSequence) {
 //				System.out.println("102 "+item);
-				for (final VariableStatement vs : ((VariableSequence) item).items()) {
+				for (final @NotNull VariableStatement vs : ((VariableSequence) item).items()) {
 					if (vs.getName().equals(name))
 						Result.add(name, level, vs, this);
 				}
@@ -55,7 +57,7 @@ public class ClassContext extends Context {
 		for (final TypeName tn1 : carrier.classInheritance().tns) {
 //			System.out.println("1001 "+tn);
 			final NormalTypeName tn = (NormalTypeName)tn1;
-			final OS_Element best;
+			final @Nullable OS_Element best;
 			if (!tn.hasResolvedElement()) {
 				final LookupResultList tnl = tn.getContext().lookup(tn.getName());
 //	    		System.out.println("1002 "+tnl.results());
@@ -65,7 +67,7 @@ public class ClassContext extends Context {
 			if (best != null) {
 				tn.setResolvedElement(best);
 				final LookupResultList lrl2 = best.getContext().lookup(name);
-				final OS_Element best2 = lrl2.chooseBest(null);
+				final @Nullable OS_Element best2 = lrl2.chooseBest(null);
 				if (best2 != null)
 					Result.add(name, level, best2, this);
 			}
@@ -73,7 +75,7 @@ public class ClassContext extends Context {
 		}
 		for (TypeName tn1 : carrier.getGenericPart()) {
 			if (tn1 instanceof NormalTypeName) {
-				final NormalTypeName tn = (NormalTypeName) tn1;
+				final @NotNull NormalTypeName tn = (NormalTypeName) tn1;
 				final String name1 = tn.getName(); // TODO this may return a string with DOTs in it.
 				if (name1.equals(name)) {
 //					LookupResultList lrl = tn.getContext().lookup(name);
@@ -111,7 +113,7 @@ public class ClassContext extends Context {
 		}
 
 		@Override
-		public void visitGen(ICodeGen visit) {
+		public void visitGen(@NotNull ICodeGen visit) {
 			visit.visitTypeNameElement(this);
 		}
 
@@ -121,7 +123,7 @@ public class ClassContext extends Context {
 		}
 
 		@Override
-		public Context getContext() {
+		public @NotNull Context getContext() {
 			return ClassContext.this;
 		}
 	}

@@ -14,6 +14,7 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.gen.ICodeGen;
@@ -25,7 +26,7 @@ import java.util.List;
 // TODO FunctionDef is not a Container is it?
 public class FunctionDef extends BaseFunctionDef implements Documentable, ClassItem, OS_Container, OS_Element2 {
 
-	private TypeName _returnType = null;
+	private @Nullable TypeName _returnType = null;
 
 	public void setReturnType(final TypeName tn) {
 		this._returnType = tn;
@@ -85,7 +86,7 @@ public class FunctionDef extends BaseFunctionDef implements Documentable, ClassI
 	}
 
 	@Override
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final @NotNull ICodeGen visit) {
 		visit.visitFunctionDef(this);
 	}
 

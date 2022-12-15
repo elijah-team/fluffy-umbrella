@@ -3,6 +3,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +24,7 @@ public class NameTable {
 		OS_Type type;
 
 		@Override
-		public String toString() {
+		public @NotNull String toString() {
 			return "TypedElement{" +
 					"element=" + element +
 					", type=" + type +
@@ -30,7 +32,7 @@ public class NameTable {
 		}
 	}
 	
-	Map<String, TypedElement> members = new HashMap<String, TypedElement>();
+	@NotNull Map<String, TypedElement> members = new HashMap<String, TypedElement>();
 	
 	public void add(final OS_Element element, final String name, final OS_Type dtype) {
 //		element.setType(dtype);

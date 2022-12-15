@@ -9,6 +9,7 @@
 package tripleo.elijah.ci;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.IExpression;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import java.util.List;
 public class GenerateStatement {
 	public final List<Directive> dirs = new ArrayList<Directive>();
 
-	public void addDirective(final Token token, final IExpression expression) {
+	public void addDirective(final @NotNull Token token, final IExpression expression) {
 		dirs.add(new Directive(token, expression));
 	}
 
@@ -29,7 +30,7 @@ public class GenerateStatement {
 		private final IExpression expression;
 		private final String name;
 
-		public Directive(final Token token_, final IExpression expression_) {
+		public Directive(final @NotNull Token token_, final IExpression expression_) {
 			name = token_.getText();
 			expression = expression_;
 		}

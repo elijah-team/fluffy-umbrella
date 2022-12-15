@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.instructions;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.Context;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public class Instruction {
 	}
 
 	@Override
-	public String toString() {
+	public @NotNull String toString() {
 		return "Instruction{" +
 				"name=" + name +
 				", index=" + index +

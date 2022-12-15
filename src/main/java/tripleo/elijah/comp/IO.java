@@ -9,6 +9,7 @@
 package tripleo.elijah.comp;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.util.io.CharSink;
 import tripleo.util.io.CharSource;
 import tripleo.util.io.FileCharSink;
@@ -38,17 +39,17 @@ public class IO {
 		return recordedwrites.contains(file);
 	}
 
-	public CharSource openRead(final Path p) {
+	public @Nullable CharSource openRead(final @NotNull Path p) {
 		record(FileOption.READ, p);
 		return null;
 	}
 
-	public CharSink openWrite(final Path p) throws IOException {
+	public @NotNull CharSink openWrite(final @NotNull Path p) throws IOException {
 		record(FileOption.WRITE, p);				
 		return new FileCharSink(Files.newOutputStream(p));
 	}
 
-	private void record(final FileOption read, @NotNull final Path p) {
+	private void record(final @NotNull FileOption read, @NotNull final Path p) {
 		record(read, p.toFile());
 	}
 
@@ -65,7 +66,7 @@ public class IO {
 		}
 	}
 
-	public InputStream readFile(final File f) throws FileNotFoundException {
+	public @NotNull InputStream readFile(final @NotNull File f) throws FileNotFoundException {
 		record(FileOption.READ, f);
 		return new FileInputStream(f);
 	}

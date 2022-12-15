@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+
 // TODO is ExpressionList an IExpression?
 public class ProcedureCallExpression implements IExpression {
 
@@ -59,7 +61,7 @@ public class ProcedureCallExpression implements IExpression {
 	// region kind
 
 	@Override
-	public ExpressionKind getKind() {
+	public @NotNull ExpressionKind getKind() {
 		return ExpressionKind.PROCEDURE_CALL;
 	}
 
@@ -107,7 +109,7 @@ public class ProcedureCallExpression implements IExpression {
 
 	// endregion
 
-	public String getReturnTypeString() {
+	public @NotNull String getReturnTypeString() {
 		return "int"; // TODO hardcoded
 	}
 

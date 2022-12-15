@@ -8,13 +8,15 @@
  */
 package tripleo.elijah.lang2;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.ExpressionKind;
 
 /**
  * Created 10/2/20 10:16 AM
  */
 public class SpecialFunctions {
-	public static String of(final ExpressionKind kind) {
+	public static @NotNull String of(final @NotNull ExpressionKind kind) {
 		switch (kind) {
 		case LT_: 				return "__lt__";
 		case GT: 				return "__gt__";
@@ -34,7 +36,7 @@ public class SpecialFunctions {
 		}
 	}
 
-	public static String reverse_name(final String pn) {
+	public static @Nullable String reverse_name(final @NotNull String pn) {
 		if (pn.equals("__gt__")) // README  explicitly disallow
 			return null;
 //		if (pn.equals("__eq__"))

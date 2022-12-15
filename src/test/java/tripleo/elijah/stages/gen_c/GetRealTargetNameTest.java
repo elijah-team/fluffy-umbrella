@@ -10,6 +10,7 @@
 package tripleo.elijah.stages.gen_c;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +46,7 @@ public class GetRealTargetNameTest {
 
 	@Test
 	public void testManualXDotFoo() {
-		IdentExpression x_ident = Helpers.string_to_ident("x");
+		@NotNull IdentExpression x_ident = Helpers.string_to_ident("x");
 		@NotNull IdentExpression foo_ident = Helpers.string_to_ident("foo");
 		//
 		// create x.foo, where x is a VAR and foo is unknown
@@ -53,18 +54,18 @@ public class GetRealTargetNameTest {
 		// GenerateC#getRealTargetName doesn't use type information
 		// TODO but what if foo was a property instead of a member
 		//
-		OS_Type type = null;
-		TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, x_ident);
+		@Nullable OS_Type type = null;
+		@NotNull TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, x_ident);
 		int int_index = gf.addVariableTableEntry("x", VariableTableType.VAR, tte, mock(VariableStatement.class));
 		int ite_index = gf.addIdentTableEntry(foo_ident, null);
-		IdentIA ident_ia = new IdentIA(ite_index, gf);
+		@NotNull IdentIA ident_ia = new IdentIA(ite_index, gf);
 		ident_ia.setPrev(new IntegerIA(int_index, gf));
 		//
-		PipelineLogic pipelineLogic = new PipelineLogic(Compilation.gitlabCIVerbosity());
-		GenerateC c = new GenerateC(mod, new StdErrSink(), ElLog.Verbosity.SILENT, pipelineLogic); // TODO do we want silent?
+		@NotNull PipelineLogic pipelineLogic = new PipelineLogic(Compilation.gitlabCIVerbosity());
+		@NotNull GenerateC c = new GenerateC(mod, new StdErrSink(), ElLog.Verbosity.SILENT, pipelineLogic); // TODO do we want silent?
 		//
 		Emit.emitting = false;
-		String x = c.getRealTargetName(gf, ident_ia);
+		@NotNull String x = c.getRealTargetName(gf, ident_ia);
 		Assert.assertEquals("vvx->vmfoo", x);
 	}
 }

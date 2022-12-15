@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.util;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.util.buffer.Buffer;
 import tripleo.util.buffer.DefaultBuffer;
 import tripleo.util.buffer.TextBuffer;
@@ -19,7 +20,7 @@ public class BufferTabbedOutputStream  {
 
 	int tabwidth = 0;
 	private boolean do_tabs = false;
-	TextBuffer b = new DefaultBuffer("");
+	@NotNull TextBuffer b = new DefaultBuffer("");
 	private boolean _closed = false;
 
 	public Buffer getBuffer() {

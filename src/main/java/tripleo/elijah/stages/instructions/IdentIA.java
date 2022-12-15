@@ -41,7 +41,7 @@ public class IdentIA implements InstructionArgument, Constructable {
 	}
 
 	@Override
-	public String toString() {
+	public @NotNull String toString() {
 		return "IdentIA{" +
 				"id=" + id +
 //				", prev=" + prev +
@@ -67,7 +67,7 @@ public class IdentIA implements InstructionArgument, Constructable {
 	}
 
 	@Override
-	public void setGenType(GenType aGenType) {
+	public void setGenType(@NotNull GenType aGenType) {
 		getEntry().setGenType(aGenType);
 	}
 }

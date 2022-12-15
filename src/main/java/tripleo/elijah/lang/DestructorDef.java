@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.gen.ICodeGen;
 
@@ -32,12 +34,12 @@ public class DestructorDef extends BaseFunctionDef {
 	}
 
 	@Override
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(@NotNull ICodeGen visit) {
 		visit.visitDestructor(this);
 	}
 
 	@Override
-	public OS_Element getParent() {
+	public @Nullable OS_Element getParent() {
 		return null;
 	}
 

@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.comp.functionality.f202;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.stages.logging.LogEntry;
 
@@ -23,13 +24,13 @@ public class DefaultProcessLogEntryBehavior implements ProcessLogEntryBehavior {
 	private String s1;
 
 	@Override
-	public void processLogEntry(LogEntry entry) {
+	public void processLogEntry(@NotNull LogEntry entry) {
 		final String logentry = String.format("[%s] [%tD %tT] %s %s", s1, entry.time, entry.time, entry.level, entry.message);
 		ps.println(logentry);
 	}
 
 	@Override
-	public void initialize(File aLogFile, String aElLogFileName, ErrSink aErrSink) {
+	public void initialize(@NotNull File aLogFile, String aElLogFileName, @NotNull ErrSink aErrSink) {
 		try {
 			ps = new PrintStream(aLogFile);
 			s1 = aElLogFileName;
@@ -49,9 +50,9 @@ public class DefaultProcessLogEntryBehavior implements ProcessLogEntryBehavior {
 	}
 
 	@Override
-	public void processPhase(String aPhase) {
+	public void processPhase(@NotNull String aPhase) {
 		ps.println(aPhase);
-		StringBuilder sb = new StringBuilder(aPhase.length());
+		@NotNull StringBuilder sb = new StringBuilder(aPhase.length());
 		for (int i = 0; i < aPhase.length(); i++) {
 			sb.append('=');
 		}

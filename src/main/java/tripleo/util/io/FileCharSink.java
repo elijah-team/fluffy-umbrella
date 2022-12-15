@@ -3,6 +3,8 @@
  */
 package tripleo.util.io;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -30,7 +32,7 @@ public class FileCharSink implements CharSink {
 	 * @see tripleo.util.io.CharSink#accept(java.lang.String)
 	 */
 	@Override
-	public void accept(final String string1) {
+	public void accept(final @NotNull String string1) {
 		try {
 			fos.write(string1.getBytes());
 		} catch (final IOException e) {

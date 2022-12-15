@@ -27,9 +27,9 @@ import java.util.List;
  * Created 7/3/21 6:24 AM
  */
 public class WlGenerateCtor implements WorkJob {
-	private final GenerateFunctions generateFunctions;
-	private final FunctionInvocation functionInvocation;
-	private final IdentExpression constructorName;
+	private final @NotNull GenerateFunctions generateFunctions;
+	private final @NotNull FunctionInvocation functionInvocation;
+	private final @Nullable IdentExpression constructorName;
 	private boolean _isDone = false;
 
 	@Contract(pure = true)
@@ -44,8 +44,8 @@ public class WlGenerateCtor implements WorkJob {
 	@Override
 	public void run(WorkManager aWorkManager) {
 		if (functionInvocation.generateDeferred().isPending()) {
-			final ClassStatement klass = functionInvocation.getClassInvocation().getKlass();
-			DeduceTypes2.Holder<GeneratedClass> hGenClass = new DeduceTypes2.Holder<>();
+			final @NotNull ClassStatement klass = functionInvocation.getClassInvocation().getKlass();
+			DeduceTypes2.@NotNull Holder<GeneratedClass> hGenClass = new DeduceTypes2.Holder<>();
 			functionInvocation.getClassInvocation().resolvePromise().then(new DoneCallback<GeneratedClass>() {
 				@Override
 				public void onDone(GeneratedClass result) {
@@ -55,15 +55,15 @@ public class WlGenerateCtor implements WorkJob {
 			GeneratedClass genClass = hGenClass.get();
 			assert genClass != null;
 
-			ConstructorDef cd = new ConstructorDef(constructorName, klass, klass.getContext());
-			Scope3 scope3 = new Scope3(cd);
+			@NotNull ConstructorDef cd = new ConstructorDef(constructorName, klass, klass.getContext());
+			@NotNull Scope3 scope3 = new Scope3(cd);
 			cd.scope(scope3);
-			for (GeneratedContainer.VarTableEntry varTableEntry : genClass.varTable) {
+			for (GeneratedContainer.@NotNull VarTableEntry varTableEntry : genClass.varTable) {
 				if (varTableEntry.initialValue != IExpression.UNASSIGNED) {
-					IExpression left = varTableEntry.nameToken;
+					@NotNull IExpression left = varTableEntry.nameToken;
 					IExpression right = varTableEntry.initialValue;
 
-					IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
+					@NotNull IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
 					scope3.add(new StatementWrapper(e, cd.getContext(), cd));
 				} else {
 					if (true || getPragma("auto_construct")) {
@@ -75,11 +75,11 @@ public class WlGenerateCtor implements WorkJob {
 			OS_Element classStatement_ = cd.getParent();
 			assert classStatement_ instanceof ClassStatement;
 
-			ClassStatement classStatement = (ClassStatement) classStatement_;
-			Collection<ConstructorDef> cs = classStatement.getConstructors();
-			ConstructorDef c = null;
+			@NotNull ClassStatement classStatement = (ClassStatement) classStatement_;
+			@NotNull Collection<ConstructorDef> cs = classStatement.getConstructors();
+			@Nullable ConstructorDef c = null;
 			if (constructorName != null) {
-				for (ConstructorDef cc : cs) {
+				for (@NotNull ConstructorDef cc : cs) {
 					if (cc.name().equals(constructorName.getText()))
 						c = cc;
 				}
@@ -88,7 +88,7 @@ public class WlGenerateCtor implements WorkJob {
 				ProcTableEntry pte = functionInvocation.pte;
 				List<TypeTableEntry> args = pte.getArgs();
 				// isResolved -> GeneratedNode, etc or getAttached -> OS_Element
-				for (ConstructorDef cc : cs) {
+				for (@NotNull ConstructorDef cc : cs) {
 					Collection<FormalArgListItem> cc_args = cc.getArgs();
 					if (cc_args.size() == args.size()) {
 						if (args.size() == 0) {
@@ -107,7 +107,7 @@ public class WlGenerateCtor implements WorkJob {
 
 				// add code from c
 				if (c != null) {
-					ArrayList<FunctionItem> is = new ArrayList<>(c.getItems());
+					@NotNull ArrayList<FunctionItem> is = new ArrayList<>(c.getItems());
 
 					// skip initializers (already present in cd)
 //				FunctionItem firstElement = is.get(0);
@@ -128,7 +128,7 @@ public class WlGenerateCtor implements WorkJob {
 			final ClassInvocation ci = functionInvocation.getClassInvocation();
 			ci.resolvePromise().done(new DoneCallback<GeneratedClass>() {
 				@Override
-				public void onDone(GeneratedClass result) {
+				public void onDone(@NotNull GeneratedClass result) {
 					gf.setCode(generateFunctions.module.parent.nextFunctionCode());
 					gf.setClass(result);
 					result.constructors.put(cd, gf);

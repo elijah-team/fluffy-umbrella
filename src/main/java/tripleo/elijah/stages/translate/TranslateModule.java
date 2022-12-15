@@ -1,5 +1,6 @@
 package tripleo.elijah.stages.translate;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.util.TabbedOutputStream;
@@ -47,14 +48,14 @@ public class TranslateModule {
 		}
 	}
 
-	private void put_class_statement(final ClassStatement item) throws IOException {
-		final String cls_name = "C"+item.name();
-		final TabbedOutputStream w = stream_for(item.getPackageName().getName(), cls_name);
+	private void put_class_statement(final @NotNull ClassStatement item) throws IOException {
+		final @NotNull String cls_name = "C"+item.name();
+		final @NotNull TabbedOutputStream w = stream_for(item.getPackageName().getName(), cls_name);
 		try {
 			{
 				final String packageName = item.getPackageName().getName();
 				if (!packageName.equals("")) {
-					final String pkg_decl = "package " + packageName+";";
+					final @NotNull String pkg_decl = "package " + packageName+";";
 					w.put_string_ln(pkg_decl);
 					w.put_string_ln("");
 				}
@@ -69,8 +70,8 @@ public class TranslateModule {
 		}
 	}
 
-	private void put_namespace_statement(final NamespaceStatement item) throws IOException {
-		final StringBuilder ns_name_sb = new StringBuilder("NS_");
+	private void put_namespace_statement(final @NotNull NamespaceStatement item) throws IOException {
+		final @NotNull StringBuilder ns_name_sb = new StringBuilder("NS_");
 		switch(item.getKind()) {
 			case NAMED:
 				ns_name_sb.append(item.name());
@@ -86,13 +87,13 @@ public class TranslateModule {
 				ns_name_sb.append("__package__");
 				break;
 		}
-		final String ns_name = ns_name_sb.toString();
-		final TabbedOutputStream w = stream_for(item.getPackageName().getName(), ns_name);
+		final @NotNull String ns_name = ns_name_sb.toString();
+		final @NotNull TabbedOutputStream w = stream_for(item.getPackageName().getName(), ns_name);
 		try {
 			{
 				final String packageName = item.getPackageName().getName();
 				if (!packageName.equals("")) {
-					final String pkg_decl = "package " + packageName+";";
+					final @NotNull String pkg_decl = "package " + packageName+";";
 					w.put_string_ln(pkg_decl);
 					w.put_string_ln("");
 				}
@@ -107,19 +108,19 @@ public class TranslateModule {
 		}
 	}
 
-	private static TabbedOutputStream stream_for(final String packageName, final String name) throws FileNotFoundException {
-		String packageDirName = packageName.replace('.', '/');
+	private static @NotNull TabbedOutputStream stream_for(final @NotNull String packageName, final String name) throws FileNotFoundException {
+		@NotNull String packageDirName = packageName.replace('.', '/');
 		if (packageDirName.equals(""))
 			packageDirName = ".";
-		final File dir = new File("output", packageDirName);
+		final @NotNull File dir = new File("output", packageDirName);
 		dir.mkdirs();
-		final File file = new File(dir, name+".java");
-		final FileOutputStream os = new FileOutputStream(file);
-		final TabbedOutputStream R = new TabbedOutputStream(os);
+		final @NotNull File file = new File(dir, name+".java");
+		final @NotNull FileOutputStream os = new FileOutputStream(file);
+		final @NotNull TabbedOutputStream R = new TabbedOutputStream(os);
 		return R;
 	}
 
-	private void put_class_statement_internal(final ClassStatement classStatement, final TabbedOutputStream w) throws IOException {
+	private void put_class_statement_internal(final @NotNull ClassStatement classStatement, final @NotNull TabbedOutputStream w) throws IOException {
 		for (final ClassItem item : classStatement.getItems()) {
 			if (item instanceof FunctionDef) {
 				w.put_string("public void "+((FunctionDef) item).name()+"(");
@@ -134,8 +135,8 @@ public class TranslateModule {
 		}
 	}
 
-	private void put_formal_arg_list(final FormalArgList fal, final TabbedOutputStream w) throws IOException {
-		for (final FormalArgListItem fali : fal.falis) {
+	private void put_formal_arg_list(final @NotNull FormalArgList fal, final @NotNull TabbedOutputStream w) throws IOException {
+		for (final @NotNull FormalArgListItem fali : fal.falis) {
 			w.put_string(fali.typeName().toString());
 			w.put_string(" ");
 			w.put_string(fali.name());
@@ -143,7 +144,7 @@ public class TranslateModule {
 		}
 	}
 
-	private void put_function_def(final FunctionDef functionDef, final TabbedOutputStream w) throws IOException {
+	private void put_function_def(final @NotNull FunctionDef functionDef, final @NotNull TabbedOutputStream w) throws IOException {
 		for (final FunctionItem item : functionDef.getItems()) {
 			System.out.println("8003 "+item);
 			if (item instanceof AliasStatement) {
@@ -163,7 +164,7 @@ public class TranslateModule {
 			} else if (item instanceof NamespaceStatement) {
 
 			} else if (item instanceof VariableSequence) {
-				for (final VariableStatement vs : ((VariableSequence) item).items()) {
+				for (final @NotNull VariableStatement vs : ((VariableSequence) item).items()) {
 					System.out.println("8004 " + vs);
 					final OS_Type type = vs.initialValue().getType();
 					final String stype = type == null ? "Unknown" : getTypeString(type);
@@ -181,7 +182,7 @@ public class TranslateModule {
 		}
 	}
 
-	private String getTypeString(final OS_Type type) {
+	private String getTypeString(final @NotNull OS_Type type) {
 		switch (type.getType()) {
 			case BUILT_IN:
 				final BuiltInTypes bt = type.getBType();
@@ -202,7 +203,7 @@ public class TranslateModule {
 //		return type.toString();
 	}
 
-	private void put_namespace_statement_internal(final NamespaceStatement namespaceStatement, final TabbedOutputStream w) {
+	private void put_namespace_statement_internal(final @NotNull NamespaceStatement namespaceStatement, final TabbedOutputStream w) {
 		for (final ClassItem item : namespaceStatement.getItems()) {
 			System.out.println("8002 "+item);
 		}

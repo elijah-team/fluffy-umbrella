@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
@@ -33,16 +34,16 @@ public class GeneratedNamespace extends GeneratedContainerNC {
 
 	public void createCtor0() {
 		// TODO implement me
-		FunctionDef fd = new FunctionDef(namespaceStatement, namespaceStatement.getContext());
+		@NotNull FunctionDef fd = new FunctionDef(namespaceStatement, namespaceStatement.getContext());
 		fd.setName(Helpers.string_to_ident("<ctor$0>"));
-		Scope3 scope3 = new Scope3(fd);
+		@NotNull Scope3 scope3 = new Scope3(fd);
 		fd.scope(scope3);
-		for (VarTableEntry varTableEntry : varTable) {
+		for (@NotNull VarTableEntry varTableEntry : varTable) {
 			if (varTableEntry.initialValue != IExpression.UNASSIGNED) {
-				IExpression left = varTableEntry.nameToken;
+				@NotNull IExpression left = varTableEntry.nameToken;
 				IExpression right = varTableEntry.initialValue;
 
-				IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
+				@NotNull IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
 				scope3.add(new StatementWrapper(e, fd.getContext(), fd));
 			} else {
 				if (getPragma("auto_construct")) {
@@ -65,7 +66,7 @@ public class GeneratedNamespace extends GeneratedContainerNC {
 	}
 
     @Override
-    public String identityString() {
+    public @NotNull String identityString() {
         return ""+namespaceStatement;
     }
 
@@ -82,7 +83,7 @@ public class GeneratedNamespace extends GeneratedContainerNC {
 	@Override
 	@Nullable
 	public VarTableEntry getVariable(String aVarName) {
-		for (VarTableEntry varTableEntry : varTable) {
+		for (@NotNull VarTableEntry varTableEntry : varTable) {
 			if (varTableEntry.nameToken.getText().equals(aVarName))
 				return varTableEntry;
 		}
@@ -90,7 +91,7 @@ public class GeneratedNamespace extends GeneratedContainerNC {
 	}
 
 	@Override
-	public void generateCode(CodeGenerator aCodeGenerator, GenerateResult aGr) {
+	public void generateCode(@NotNull CodeGenerator aCodeGenerator, GenerateResult aGr) {
 		aCodeGenerator.generate_namespace(this, aGr);
 	}
 }

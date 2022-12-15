@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.AccessNotation;
 import tripleo.elijah.lang.ClassStatement;
@@ -28,12 +29,12 @@ public abstract class GeneratedContainerNC extends AbstractDependencyTracker imp
 	public boolean generatedAlready = false;
 	private int code = 0;
 
-	public Map<FunctionDef, GeneratedFunction> functionMap = new HashMap<FunctionDef, GeneratedFunction>();
-	public Map<ClassStatement, GeneratedClass> classMap = new HashMap<ClassStatement, GeneratedClass>();
+	public @NotNull Map<FunctionDef, GeneratedFunction> functionMap = new HashMap<FunctionDef, GeneratedFunction>();
+	public @NotNull Map<ClassStatement, GeneratedClass> classMap = new HashMap<ClassStatement, GeneratedClass>();
 
-	public List<VarTableEntry> varTable = new ArrayList<VarTableEntry>();
+	public @NotNull List<VarTableEntry> varTable = new ArrayList<VarTableEntry>();
 
-	public void addVarTableEntry(AccessNotation an, VariableStatement vs) {
+	public void addVarTableEntry(AccessNotation an, @NotNull VariableStatement vs) {
 		// TODO dont ignore AccessNotation
 		varTable.add(new VarTableEntry(vs, vs.getNameToken(), vs.initialValue(), vs.typeName(), vs.getParent().getParent()));
 	}
@@ -41,7 +42,7 @@ public abstract class GeneratedContainerNC extends AbstractDependencyTracker imp
 	@Override
 	@Nullable
 	public VarTableEntry getVariable(String aVarName) {
-		for (VarTableEntry varTableEntry : varTable) {
+		for (@NotNull VarTableEntry varTableEntry : varTable) {
 			if (varTableEntry.nameToken.getText().equals(aVarName))
 				return varTableEntry;
 		}

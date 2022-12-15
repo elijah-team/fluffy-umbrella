@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.gen.nodes;
 
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.gen.TypeRef;
 import tripleo.elijah.lang.IExpression;
@@ -15,7 +16,7 @@ import tripleo.elijah.lang.IExpression;
 public interface IExpressionNode {
 //	String getStringPCE(ProcedureCallExpression expr);
 	
-	IExpression getExpr();
+	@Nullable IExpression getExpr();
 	
 	boolean is_const_expr();
 	
@@ -27,9 +28,9 @@ public interface IExpressionNode {
 	
 	String genText(CompilerContext cctx);
 	
-	String genType();
+	@Nullable String genType();
 	
-	String genText();
+	@Nullable String genText();
 	
-	TypeRef getType();
+	@Nullable TypeRef getType();
 }

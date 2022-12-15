@@ -1,5 +1,7 @@
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.util.NotImplementedException;
 
 import java.io.File;
@@ -10,8 +12,8 @@ import java.io.File;
 public class FuncTypeName implements TypeName {
 	private final Context _ctx;
 	private TypeModifiers _modifiers;
-	private TypeNameList _arglist = null/*new TypeNameList()*/;
-	private TypeName _returnValue = null /*new RegularTypeName()*/; // TODO warning
+	private @Nullable TypeNameList _arglist = null/*new TypeNameList()*/;
+	private @Nullable TypeName _returnValue = null /*new RegularTypeName()*/; // TODO warning
 
 	public FuncTypeName(final Context cur) {
 		_ctx = cur;
@@ -21,9 +23,9 @@ public class FuncTypeName implements TypeName {
 		_arglist = tnl;
 	}
 
-	public void argList(final FormalArgList op) {
-		TypeNameList tnl = new TypeNameList();
-		for (FormalArgListItem fali : op.falis) {
+	public void argList(final @NotNull FormalArgList op) {
+		@NotNull TypeNameList tnl = new TypeNameList();
+		for (@NotNull FormalArgListItem fali : op.falis) {
 			final TypeName tn = fali.typeName();
 			if (tn != null)
 				tnl.add(tn);
@@ -40,7 +42,7 @@ public class FuncTypeName implements TypeName {
 	}
 
 	@Override
-	public Type kindOfType() {
+	public @NotNull Type kindOfType() {
 		return Type.FUNCTION;
 	}
 
@@ -84,7 +86,7 @@ public class FuncTypeName implements TypeName {
 	}
 
 	@Override
-	public File getFile() {
+	public @Nullable File getFile() {
 		return null;
 	}
 }

@@ -9,6 +9,7 @@
 
 package tripleo.elijah.stages.generate;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
@@ -23,10 +24,10 @@ public class ElSystemTest {
 
 	@Before
 	public void setUp() throws Exception {
-		final StdErrSink eee = new StdErrSink();
+		final @NotNull StdErrSink eee = new StdErrSink();
 		c = new Compilation(eee, new IO());
 
-		final String f = "test/basic1/backlink3";
+		final @NotNull String f = "test/basic1/backlink3";
 
 		sys = new ElSystem();
 		sys.setCompilation(c);
@@ -36,7 +37,7 @@ public class ElSystemTest {
 
 	@Test
 	public void generateOutputs() {
-		OutputStrategy os = new OutputStrategy();
+		@NotNull OutputStrategy os = new OutputStrategy();
 		os.per(OutputStrategy.Per.PER_CLASS);
 		sys.setOutputStrategy(os);
 		sys.generateOutputs(c.pipelineLogic.gr);

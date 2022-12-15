@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.comp;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.gen.nodes.ImportNode;
 import tripleo.elijah.gen.nodes.LocalDeclAgnNode;
@@ -42,7 +43,7 @@ public class GenBuffer {
 		if (hdr_bufs.containsKey(module)) {
 			return hdr_bufs.get(module);
 		} else {
-			final TextBuffer buf = new FileBackedBuffer(module + ".h");
+			final @NotNull TextBuffer buf = new FileBackedBuffer(module + ".h");
 			hdr_bufs.put(module, buf);
 			return buf;
 		}
@@ -54,7 +55,7 @@ public class GenBuffer {
 		if (reg_bufs.containsKey(module)) {
 			return reg_bufs.get(module);
 		} else {
-			final TextBuffer buf = new FileBackedBuffer(module + ".c");
+			final @NotNull TextBuffer buf = new FileBackedBuffer(module + ".c");
 			reg_bufs.put(module, buf);
 			return buf;
 		}
@@ -74,11 +75,11 @@ public class GenBuffer {
 //	}
 	
 	public void writeBuffers() throws IOException {
-		for (final Map.Entry<String, TextBuffer> entry : reg_bufs.entrySet()) {
+		for (final Map.@NotNull Entry<String, TextBuffer> entry : reg_bufs.entrySet()) {
 			final String module = entry.getKey();
 			final TextBuffer build  = entry.getValue();
 			//
-			final FileOutputStream fileOutputStream;
+			final @NotNull FileOutputStream fileOutputStream;
 			fileOutputStream = new FileOutputStream(module + ".c", true); // append
 			final String buildText = build.getText();
 			fileOutputStream.write(buildText.getBytes());

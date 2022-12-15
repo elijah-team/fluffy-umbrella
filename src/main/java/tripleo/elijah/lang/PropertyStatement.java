@@ -9,6 +9,7 @@
 package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.PropertyStatementContext;
 import tripleo.elijah.gen.ICodeGen;
 import tripleo.elijah.util.Helpers;
@@ -18,11 +19,11 @@ import tripleo.elijah.util.Helpers;
  */
 public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 
-	private final Context context;
+	private final @NotNull Context context;
 	private final OS_Element parent;
 
-	public FunctionDef set_fn;
-	public FunctionDef get_fn;
+	public @Nullable FunctionDef set_fn;
+	public @Nullable FunctionDef get_fn;
 	private IdentExpression prop_name;
 	private TypeName typeName;
 	private boolean _set_is_abstract;
@@ -35,14 +36,14 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 
 	@NotNull
 	private FunctionDef createSetFunction() {
-		FunctionDef functionDef = new FunctionDef(this, getContext());
+		@NotNull FunctionDef functionDef = new FunctionDef(this, getContext());
 		functionDef.setName(Helpers.string_to_ident(String.format("<prop_set %s>", prop_name)));
 		functionDef.setSpecies(FunctionDef.Species.PROP_SET);
-		FormalArgList fal = new FormalArgList();
-		FormalArgListItem fali = fal.next();
+		@NotNull FormalArgList fal = new FormalArgList();
+		@NotNull FormalArgListItem fali = fal.next();
 		fali.setName(Helpers.string_to_ident("Value"));
 		fali.setTypeName(this.typeName);
-		RegularTypeName unitType = new RegularTypeName();
+		@NotNull RegularTypeName unitType = new RegularTypeName();
 		unitType.setName(Helpers.string_to_qualident("Unit"));
 		functionDef.setReturnType(unitType/*BuiltInTypes.Unit*/);
 		functionDef.setFal(fal);
@@ -51,7 +52,7 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 
 	@NotNull
 	private FunctionDef createGetFunction() {
-		FunctionDef functionDef = new FunctionDef(this, getContext());
+		@NotNull FunctionDef functionDef = new FunctionDef(this, getContext());
 		functionDef.setName(Helpers.string_to_ident(String.format("<prop_get %s>", prop_name)));
 		functionDef.setSpecies(FunctionDef.Species.PROP_GET);
 		functionDef.setReturnType(typeName);
@@ -59,7 +60,7 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 	}
 
 	@Override // OS_Element
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(@NotNull ICodeGen visit) {
 		visit.visitPropertyStatement(this);
 	}
 

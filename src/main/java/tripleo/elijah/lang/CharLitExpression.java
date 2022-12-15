@@ -13,6 +13,8 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.util.Helpers;
 
 /**
@@ -31,7 +33,7 @@ public class CharLitExpression implements IExpression {
 	 * @see tripleo.elijah.lang.IExpression#getType()
 	 */
 	@Override
-	public ExpressionKind getKind() {
+	public @NotNull ExpressionKind getKind() {
 		return ExpressionKind.CHAR_LITERAL;
 	}
 
@@ -48,7 +50,7 @@ public class CharLitExpression implements IExpression {
 	 * @see tripleo.elijah.lang.IExpression#getLeft()
 	 */
 	@Override
-	public IExpression getLeft() {
+	public @Nullable IExpression getLeft() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -88,7 +90,7 @@ public class CharLitExpression implements IExpression {
 	}
 
 	@Override
-	public String toString() {
+	public @NotNull String toString() {
 		return Helpers.remove_single_quotes_from_string(char_lit_raw.getText());
 	}
 }

@@ -36,35 +36,35 @@ import static org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_256;
  */
 public class Helpers {
 	public static void printXML(final Object obj, @NotNull final TabbedOutputStream tos) {
-		final XStream x = new XStream();
+		final @NotNull XStream x = new XStream();
 		//x.setMode(XStream.ID_REFERENCES);
 		x.toXML(obj, tos.getStream());
 	}
 
 	@NotNull
-	public static <E> List<E> List_of(@NotNull final E... e1) {
-		final List<E> r = new ArrayList<E>();
+	public static <E> List<E> List_of(@NotNull final E @NotNull ... e1) {
+		final @NotNull List<E> r = new ArrayList<E>();
 		for (final E e : e1) {
 			r.add(e);
 		}
 		return r;
 	}
 
-	public static IExpression qualidentToDotExpression2(@NotNull final Qualident q) {
+	public static @Nullable IExpression qualidentToDotExpression2(@NotNull final Qualident q) {
 		return qualidentToDotExpression2(q.parts(), 1);
 	}
 
-	public static IExpression qualidentToDotExpression2(@NotNull final List<IdentExpression> ts) {
+	public static @Nullable IExpression qualidentToDotExpression2(@NotNull final List<IdentExpression> ts) {
 		return qualidentToDotExpression2(ts, 1);
 	}
 
-	public static IExpression qualidentToDotExpression2(@NotNull final List<IdentExpression> ts, int i) {
+	public static @Nullable IExpression qualidentToDotExpression2(@NotNull final List<IdentExpression> ts, int i) {
 		if (ts.size() == 1) return ts.get(0);
 		if (ts.size() == 0) return null;
 		IExpression r = ts.get(0);
 //		int i=1;
 		while (ts.size() > i) {
-			final IExpression dotExpression = qualidentToDotExpression2(ts.subList(i++, ts.size()), i+1);
+			final @Nullable IExpression dotExpression = qualidentToDotExpression2(ts.subList(i++, ts.size()), i+1);
 			if (dotExpression == null) break;
 //			r.setRight(dotExpression);
 			r = new DotExpression(r, dotExpression);
@@ -72,48 +72,48 @@ public class Helpers {
 		return r;
 	}
 
-	public static Token makeToken(final String aText) {
-		final CommonToken t = new CommonToken();
+	public static @NotNull Token makeToken(final String aText) {
+		final @NotNull CommonToken t = new CommonToken();
 		t.setText(aText);
 		return t;
 	}
 
 	@NotNull
 	public static IdentExpression string_to_ident(final String txt) {
-		final CommonToken t = new CommonToken(ElijjahTokenTypes.IDENT, txt);
+		final @NotNull CommonToken t = new CommonToken(ElijjahTokenTypes.IDENT, txt);
 		return new IdentExpression(t);
 	}
 
 	@NotNull
-	public static String remove_single_quotes_from_string(final String s) {
+	public static String remove_single_quotes_from_string(final @NotNull String s) {
 		return s.substring(1, s.length()-1);
 	}
 
-	public static String String_join(String separator, Iterable<String> stringIterable) {
+	public static @NotNull String String_join(@NotNull String separator, @NotNull Iterable<String> stringIterable) {
 		if (false) {
-			final StringBuilder sb = new StringBuilder();
+			final @NotNull StringBuilder sb = new StringBuilder();
 
 			for (final String part : stringIterable) {
 				sb.append(part);
 				sb.append(separator);
 			}
-			final String ss = sb.toString();
-			final String substring = separator.substring(0, ss.length() - separator.length());
+			final @NotNull String ss = sb.toString();
+			final @NotNull String substring = separator.substring(0, ss.length() - separator.length());
 			return substring;
 		}
 		// since Java 1.8
 		return String.join(separator, stringIterable);
 	}
 
-	public static Qualident string_to_qualident(String x) {
-		Qualident q = new Qualident();
+	public static @NotNull Qualident string_to_qualident(@NotNull String x) {
+		@NotNull Qualident q = new Qualident();
 		for (String xx : x.split("\\.")) {
 			q.append(string_to_ident(xx));
 		}
 		return q;
 	}
 
-	public static String getHash(byte[] aBytes) throws NoSuchAlgorithmException {
+	public static @NotNull String getHash(byte[] aBytes) throws NoSuchAlgorithmException {
 		MessageDigest md = MessageDigest.getInstance("SHA-256");
 
 //		String input;
@@ -122,7 +122,7 @@ public class Helpers {
 
 		byte[] hashBytes = md.digest();
 
-		StringBuilder sb = new StringBuilder();
+		@NotNull StringBuilder sb = new StringBuilder();
 		for (byte b : hashBytes) {
 			sb.append(String.format("%02x", b));
 		}
@@ -130,23 +130,23 @@ public class Helpers {
 		return sb.toString();
 	}
 
-	public static String getHashForFilename(final String aFilename, final ErrSink aErrSink) throws IOException {
+	public static String getHashForFilename(final @NotNull String aFilename, final ErrSink aErrSink) throws IOException {
 		String hdigest = new DigestUtils(SHA_256).digestAsHex(new File(aFilename));
 		return hdigest;
 	}
 
 	@Nullable
-	public static String getHashForFilenameJava(String aFilename, ErrSink aErrSink) throws IOException {
-		final File file = new File(aFilename);
+	public static String getHashForFilenameJava(@NotNull String aFilename, @NotNull ErrSink aErrSink) throws IOException {
+		final @NotNull File file = new File(aFilename);
 		long size = file.length();
-		byte[] ba = new byte[(int)size];  // README Counting on reasonable sizes here
-		FileInputStream bb = null;
+		byte @NotNull [] ba = new byte[(int)size];  // README Counting on reasonable sizes here
+		@Nullable FileInputStream bb = null;
 		try {
 			bb = new FileInputStream(file);
 			bb.read(ba);
 
 			try {
-				String hh = getHash(ba);
+				@NotNull String hh = getHash(ba);
 				return hh;
 			} catch (NoSuchAlgorithmException aE) {
 				aErrSink.exception(aE);

@@ -10,6 +10,8 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.FailCallback;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.lang.OS_Element;
@@ -26,9 +28,9 @@ public abstract class BaseTableEntry {
 
 	protected OS_Element resolved_element;
 
-	private DeferredObject2<OS_Element, Diagnostic, Void> elementPromise = new DeferredObject2<OS_Element, Diagnostic, Void>();
+	private @NotNull DeferredObject2<OS_Element, Diagnostic, Void> elementPromise = new DeferredObject2<OS_Element, Diagnostic, Void>();
 
-	public void elementPromise(DoneCallback<OS_Element> dc, FailCallback<Diagnostic> fc) {
+	public void elementPromise(@Nullable DoneCallback<OS_Element> dc, @Nullable FailCallback<Diagnostic> fc) {
 		if (dc != null)
 			elementPromise.then(dc);
 		if (fc != null)
@@ -62,11 +64,11 @@ public abstract class BaseTableEntry {
 		return status;
 	}
 
-	public void setStatus(Status newStatus, IElementHolder eh) {
+	public void setStatus(Status newStatus, @NotNull IElementHolder eh) {
 		status = newStatus;
 		if (newStatus == Status.KNOWN && eh.getElement() == null)
 			assert false;
-		for (StatusListener statusListener : statusListenerList) {
+		for (@NotNull StatusListener statusListener : statusListenerList) {
 			statusListener.onChange(eh, newStatus);
 		}
 		if (newStatus == Status.UNKNOWN)

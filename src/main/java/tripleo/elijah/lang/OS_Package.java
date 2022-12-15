@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.PackageContext;
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class OS_Package {
 		elements.add(element);
 	}
 
-	public List<OS_Element> getElements() {
+	public @NotNull List<OS_Element> getElements() {
 		return elements;
 	}
 

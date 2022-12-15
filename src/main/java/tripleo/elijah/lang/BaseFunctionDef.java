@@ -10,6 +10,7 @@ package tripleo.elijah.lang;
 
 import antlr.Token;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.FunctionContext;
 
 import java.util.ArrayList;
@@ -21,9 +22,9 @@ import java.util.List;
  */
 public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Container, OS_Element2 {
 
-	public Attached _a = new Attached();
+	public @NotNull Attached _a = new Attached();
 	protected Species _species;
-	List<AnnotationClause> annotations = null;
+	@Nullable List<AnnotationClause> annotations = null;
 	protected Scope3 scope3;
 	protected FormalArgList mFal = new FormalArgList(); // remove final for FunctionDefBuilder
 	private IdentExpression funName;
@@ -51,7 +52,7 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 	}
 
 	@Override // OS_Element
-	public abstract OS_Element getParent();
+	public abstract @Nullable OS_Element getParent();
 
 	// region items
 
@@ -60,7 +61,7 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 	}
 
 	public @NotNull List<FunctionItem> getItems() {
-		List<FunctionItem> collection = new ArrayList<FunctionItem>();
+		@NotNull List<FunctionItem> collection = new ArrayList<FunctionItem>();
 		for (OS_Element element : scope3.items()) {
 			if (element instanceof FunctionItem)
 				collection.add((FunctionItem) element);
@@ -70,8 +71,8 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 	}
 
 	@Override // OS_Container
-	public List<OS_Element2> items() {
-		final ArrayList<OS_Element2> a = new ArrayList<OS_Element2>();
+	public @NotNull List<OS_Element2> items() {
+		final @NotNull ArrayList<OS_Element2> a = new ArrayList<OS_Element2>();
 		for (final OS_Element functionItem : scope3.items()) {
 			if (functionItem instanceof OS_Element2)
 				a.add((OS_Element2) functionItem);
@@ -132,19 +133,19 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 		annotations.add(a);
 	}
 
-	public void walkAnnotations(AnnotationWalker annotationWalker) {
+	public void walkAnnotations(@NotNull AnnotationWalker annotationWalker) {
 		if (annotations == null) return;
-		for (AnnotationClause annotationClause : annotations) {
+		for (@NotNull AnnotationClause annotationClause : annotations) {
 			for (AnnotationPart annotationPart : annotationClause.aps) {
 				annotationWalker.annotation(annotationPart);
 			}
 		}
 	}
 
-	public Iterable<AnnotationPart> annotationIterable() {
-		List<AnnotationPart> aps = new ArrayList<AnnotationPart>();
+	public @NotNull Iterable<AnnotationPart> annotationIterable() {
+		@NotNull List<AnnotationPart> aps = new ArrayList<AnnotationPart>();
 		if (annotations == null) return aps;
-		for (AnnotationClause annotationClause : annotations) {
+		for (@NotNull AnnotationClause annotationClause : annotations) {
 			for (AnnotationPart annotationPart : annotationClause.aps) {
 				aps.add(annotationPart);
 			}

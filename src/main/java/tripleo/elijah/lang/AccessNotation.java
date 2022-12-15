@@ -9,6 +9,8 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.gen.ICodeGen;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijjah.ElijjahTokenTypes;
@@ -22,13 +24,13 @@ public class AccessNotation implements OS_Element {
 	private Token shorthand;
 	private TypeNameList tnl;
 
-	public void setCategory(final Token category) {
+	public void setCategory(final @Nullable Token category) {
 		if (category == null) return;
 		assert category.getType() == ElijjahTokenTypes.STRING_LITERAL;
 		this.category = category;
 	}
 
-	public void setShortHand(final Token shorthand) {
+	public void setShortHand(final @Nullable Token shorthand) {
 		if (shorthand == null) return;
 		assert shorthand.getType() == ElijjahTokenTypes.IDENT;
 		this.shorthand = shorthand;
@@ -39,7 +41,7 @@ public class AccessNotation implements OS_Element {
 	}
 
 	@Override
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(@NotNull ICodeGen visit) {
 		visit.visitAccessNotation(this);
 	}
 

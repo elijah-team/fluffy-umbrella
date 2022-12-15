@@ -27,8 +27,8 @@ public class GeneratedConstructor extends BaseGeneratedFunction {
 		cd = aConstructorDef;
 	}
 
-	public void setFunctionInvocation(FunctionInvocation fi) {
-		GenType genType = new GenType();
+	public void setFunctionInvocation(@NotNull FunctionInvocation fi) {
+		@NotNull GenType genType = new GenType();
 		genType.ci = fi.getClassInvocation(); // TODO will fail on namespace constructors; next line too
 		genType.resolved = new OS_Type(((ClassInvocation) genType.ci).getKlass());
 		genType.node = this;
@@ -44,7 +44,7 @@ public class GeneratedConstructor extends BaseGeneratedFunction {
 		return String.format("<GeneratedConstructor %s>", cd);
 	}
 
-	public String name() {
+	public @NotNull String name() {
 		if (cd == null)
 			throw new IllegalArgumentException("null cd");
 		return cd.name();
@@ -59,7 +59,7 @@ public class GeneratedConstructor extends BaseGeneratedFunction {
 	}
 
 	@Override
-	public VariableTableEntry getSelf() {
+	public @Nullable VariableTableEntry getSelf() {
 		if (getFD().getParent() instanceof ClassStatement)
 			return getVarTableEntry(0);
 		else
@@ -67,7 +67,7 @@ public class GeneratedConstructor extends BaseGeneratedFunction {
 	}
 
 	@Override
-	public String identityString() {
+	public @NotNull String identityString() {
 		return ""+cd;
 	}
 

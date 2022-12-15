@@ -19,7 +19,7 @@ public class AliasStatement implements ModuleItem, ClassItem, FunctionItem, OS_E
 	private OS_Element _resolvedElement;
 	private IdentExpression nameToken;
 
-	public AliasStatement(final OS_Element aParent) {
+	public AliasStatement(final @NotNull OS_Element aParent) {
 		this.parent = aParent;
 		if (parent instanceof OS_Container) {
 			((OS_Container) parent).add(this);
@@ -28,7 +28,7 @@ public class AliasStatement implements ModuleItem, ClassItem, FunctionItem, OS_E
 		}
 	}
 
-	public void setExpression(final IExpression expr) {
+	public void setExpression(final @NotNull IExpression expr) {
 		if (expr.getKind() != ExpressionKind.IDENT &&
 				    expr.getKind() != ExpressionKind.QIDENT &&
 				    expr.getKind() != ExpressionKind.DOT_EXP) // TODO need DOT_EXP to QIDENT
@@ -48,7 +48,7 @@ public class AliasStatement implements ModuleItem, ClassItem, FunctionItem, OS_E
 	}
 
 	@Override // OS_Element
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final @NotNull ICodeGen visit) {
 		visit.visitAliasStatement(this);
 	}
 

@@ -9,13 +9,15 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 
 /**
  * Created 9/18/21 4:03 AM
  */
 public class WrappedStatementWrapper extends StatementWrapper {
-	private final Wrapped wrapped;
+	private final @NotNull Wrapped wrapped;
 	private final VariableStatement vs;
 
 	public WrappedStatementWrapper(final IExpression aExpression, final Context aContext, final OS_Element aParent, final VariableStatement aVs) {
@@ -53,7 +55,7 @@ public class WrappedStatementWrapper extends StatementWrapper {
 		}
 
 		@Override
-		public OS_Type getType() {
+		public @Nullable OS_Type getType() {
 			return null;
 		}
 	}

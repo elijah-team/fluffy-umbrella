@@ -9,6 +9,7 @@
 package tripleo.elijah.entrypoints;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.ClassItem;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
@@ -22,14 +23,14 @@ import java.util.Collection;
  */
 public class MainClassEntryPoint implements EntryPoint {
 	private FunctionDef main_function;
-	private final ClassStatement klass;
+	private final @NotNull ClassStatement klass;
 
-	public MainClassEntryPoint(ClassStatement aKlass) {
+	public MainClassEntryPoint(@NotNull ClassStatement aKlass) {
 		final Collection<ClassItem> main = aKlass.findFunction("main");
 		for (ClassItem classItem : main) {
 			FunctionDef fd = (FunctionDef) classItem;
 			boolean return_type_is_null;
-			final TypeName typeName = fd.returnType();
+			final @Nullable TypeName typeName = fd.returnType();
 			if (typeName == null)
 				return_type_is_null = true;
 			else

@@ -11,6 +11,8 @@
  */
 package tripleo.elijah.gen.nodes;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.GenBuffer;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.lang.IExpression;
@@ -22,7 +24,7 @@ import tripleo.elijah.lang.ProcedureCallExpression;
  */
 public class TmpSSACtxNode {
 	
-	public LocalAgnTmpNode _tmp = null;
+	public @Nullable LocalAgnTmpNode _tmp = null;
 	private IExpression __expr;
 	private final CompilerContext _ctx;
 	private IExpressionNode _node;
@@ -32,12 +34,12 @@ public class TmpSSACtxNode {
 		this._ctx=cctx;
 	}
 
-	public String text() {
+	public @NotNull String text() {
 		return ExpressionNode.getStringPCE((ProcedureCallExpression) getExprType());
 		//"--------------------"; // TODO hardcoded
 	}
 	
-	public IExpressionNode getType() {
+	public @NotNull IExpressionNode getType() {
 		if (_node != null)
 			return _node;
 		return new ExpressionNode(getExprType());

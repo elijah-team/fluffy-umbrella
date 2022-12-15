@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.AnnotationClause;
 import tripleo.elijah.lang.FormalArgList;
 import tripleo.elijah.lang.FunctionDef;
@@ -20,10 +22,10 @@ import java.util.List;
  * Created 12/22/20 10:41 PM
  */
 public abstract class BaseFunctionDefBuilder extends ElBuilder {
-	protected List<AnnotationClause> annotations = new ArrayList<AnnotationClause>();
+	protected @NotNull List<AnnotationClause> annotations = new ArrayList<AnnotationClause>();
 	protected IdentExpression _name;
 	protected FormalArgList mFal;
-	protected FunctionDef.Species _species = null;
+	protected FunctionDef.@Nullable Species _species = null;
 
 	public void addAnnotation(AnnotationClause a) {
 		annotations.add(a);

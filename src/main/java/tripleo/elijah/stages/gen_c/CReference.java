@@ -31,7 +31,7 @@ import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
  * Created 1/9/21 7:12 AM
  */
 public class CReference {
-	String rtext = null;
+	@Nullable String rtext = null;
 	private List<String> args;
 	List<Reference> refs;
 
@@ -53,29 +53,29 @@ public class CReference {
 		refs.add(new Reference(text, type));
 	}
 
-	public String getIdentIAPath(final @NotNull IdentIA ia2, BaseGeneratedFunction generatedFunction) {
+	public @NotNull String getIdentIAPath(final @NotNull IdentIA ia2, @NotNull BaseGeneratedFunction generatedFunction) {
 		assert ia2.gf == generatedFunction;
-		final List<InstructionArgument> s = _getIdentIAPathList(ia2);
+		final @NotNull List<InstructionArgument> s = _getIdentIAPathList(ia2);
 		refs = new ArrayList<Reference>(s.size());
 
 		//
 		// TODO NOT LOOKING UP THINGS, IE PROPERTIES, MEMBERS
 		//
-		String text = "";
-		List<String> sl = new ArrayList<String>();
+		@Nullable String text = "";
+		@NotNull List<String> sl = new ArrayList<String>();
 		for (int i = 0, sSize = s.size(); i < sSize; i++) {
 			InstructionArgument ia = s.get(i);
 			if (ia instanceof IntegerIA) {
 				// should only be the first element if at all
 				assert i == 0;
-				final VariableTableEntry vte = generatedFunction.getVarTableEntry(to_int(ia));
+				final @NotNull VariableTableEntry vte = generatedFunction.getVarTableEntry(to_int(ia));
 				text = "vv" + vte.getName();
 				addRef(vte.getName(), Ref.LOCAL);
 			} else if (ia instanceof IdentIA) {
-				final IdentTableEntry idte = ((IdentIA)ia).getEntry();
+				final @NotNull IdentTableEntry idte = ((IdentIA)ia).getEntry();
 				OS_Element resolved_element = idte.getResolvedElement();
 				if (resolved_element != null) {
-					GeneratedNode resolved = null;
+					@Nullable GeneratedNode resolved = null;
 					if (resolved_element instanceof ClassStatement) {
 						if (idte.type != null)
 							resolved = idte.type.resolved();
@@ -86,7 +86,7 @@ public class CReference {
 						if (pte != null) {
 							FunctionInvocation fi = pte.getFunctionInvocation();
 							if (fi != null) {
-								BaseGeneratedFunction gen = fi.getGenerated();
+								@Nullable BaseGeneratedFunction gen = fi.getGenerated();
 								if (gen != null)
 									resolved = gen;
 							}
@@ -124,12 +124,12 @@ public class CReference {
 							text = Emit.emit("/*152*/") + "vm" + text1;
 						}
 						System.err.println("119 "+idte.getIdent()+" "+idte.getStatus());
-						String text2 = (Emit.emit("/*114*/") + String.format("%s is UNKNOWN", text1));
+						@NotNull String text2 = (Emit.emit("/*114*/") + String.format("%s is UNKNOWN", text1));
 						addRef(text2, Ref.MEMBER);
 					}
 				}
 			} else if (ia instanceof ProcIA) {
-				final ProcTableEntry prte = generatedFunction.getProcTableEntry(to_int(ia));
+				final @NotNull ProcTableEntry prte = generatedFunction.getProcTableEntry(to_int(ia));
 				text = getIdentIAPath_Proc(prte);
 			} else {
 				throw new NotImplementedException();
@@ -141,9 +141,9 @@ public class CReference {
 		return rtext;
 	}
 
-	public String getIdentIAPath_Proc(ProcTableEntry aPrte) {
+	public String getIdentIAPath_Proc(@NotNull ProcTableEntry aPrte) {
 		String text;
-		final BaseGeneratedFunction generated = aPrte.getFunctionInvocation().getGenerated();
+		final @Nullable BaseGeneratedFunction generated = aPrte.getFunctionInvocation().getGenerated();
 
 		if (generated == null)
 			throw new IllegalStateException();
@@ -169,12 +169,12 @@ public class CReference {
 	}
 
 	boolean _getIdentIAPath_IdentIAHelper(InstructionArgument ia_next,
-										  List<String> sl,
-										  int i,
-										  int sSize,
-										  OS_Element resolved_element,
-										  BaseGeneratedFunction generatedFunction,
-										  GeneratedNode aResolved) {
+	                                      @NotNull List<String> sl,
+	                                      int i,
+	                                      int sSize,
+	                                      OS_Element resolved_element,
+	                                      @NotNull BaseGeneratedFunction generatedFunction,
+	                                      @Nullable GeneratedNode aResolved) {
 		boolean b = false;
 		if (resolved_element instanceof ClassStatement) {
 			// Assuming constructor call
@@ -188,7 +188,7 @@ public class CReference {
 			// README might be calling reflect or Type or Name
 			// TODO what about named constructors -- should be called with construct keyword
 			if (ia_next instanceof IdentIA) {
-				IdentTableEntry ite = ((IdentIA) ia_next).getEntry();
+				@NotNull IdentTableEntry ite = ((IdentIA) ia_next).getEntry();
 				final String text = ite.getIdent().getText();
 				if (text.equals("reflect")) {
 					b = true;
@@ -223,22 +223,22 @@ public class CReference {
 				System.err.println("** 31161 not resolved " + resolved_element);
 			}
 			// README Assuming this is for named constructors
-			String text = ((ConstructorDef) resolved_element).name();
+			@NotNull String text = ((ConstructorDef) resolved_element).name();
 			String text2 = String.format("ZC%d%s", code, text);
 			addRef(text2, Ref.CONSTRUCTOR);
 		} else if (resolved_element instanceof FunctionDef) {
-			OS_Element parent = resolved_element.getParent();
+			@Nullable OS_Element parent = resolved_element.getParent();
 			int code = -1;
 			if (aResolved != null) {
 				if (aResolved instanceof BaseGeneratedFunction) {
-					final BaseGeneratedFunction rf = (BaseGeneratedFunction) aResolved;
+					final @NotNull BaseGeneratedFunction rf = (BaseGeneratedFunction) aResolved;
 					GeneratedNode gc = rf.getGenClass();
 					if (gc instanceof GeneratedContainerNC) // and not another function
 						code = ((GeneratedContainerNC) gc).getCode();
 					else
 						code = -2;
 				} else if (aResolved instanceof GeneratedClass) {
-					final GeneratedClass generatedClass = (GeneratedClass) aResolved;
+					final @NotNull GeneratedClass generatedClass = (GeneratedClass) aResolved;
 					code = generatedClass.getCode();
 				}
 			}
@@ -251,11 +251,11 @@ public class CReference {
 			String text2 = String.format("Z%d%s", code, ((FunctionDef) resolved_element).name());
 			addRef(text2, Ref.FUNCTION);
 		} else if (resolved_element instanceof DefFunctionDef) {
-			OS_Element parent = resolved_element.getParent();
+			@Nullable OS_Element parent = resolved_element.getParent();
 			int code;
 			if (aResolved != null) {
 				assert aResolved instanceof BaseGeneratedFunction;
-				final BaseGeneratedFunction rf = (BaseGeneratedFunction) aResolved;
+				final @NotNull BaseGeneratedFunction rf = (BaseGeneratedFunction) aResolved;
 				GeneratedNode gc = rf.getGenClass();
 				if (gc instanceof GeneratedContainerNC) // and not another function
 					code = ((GeneratedContainerNC) gc).getCode();
@@ -277,7 +277,7 @@ public class CReference {
 			if (code == -1) {
 //				text2 = String.format("ZT%d_%d", enclosing_function._a.getCode(), closure_index);
 			}
-			final DefFunctionDef defFunctionDef = (DefFunctionDef) resolved_element;
+			final @NotNull DefFunctionDef defFunctionDef = (DefFunctionDef) resolved_element;
 			String text2 = String.format("Z%d%s", code, defFunctionDef.name());
 			addRef(text2, Ref.FUNCTION);
 		} else if (resolved_element instanceof VariableStatement) {
@@ -299,7 +299,7 @@ public class CReference {
 				}
 			}
 		} else if (resolved_element instanceof PropertyStatement) {
-			OS_Element parent = resolved_element.getParent();
+			@Nullable OS_Element parent = resolved_element.getParent();
 			int code;
 			if (parent instanceof ClassStatement) {
 				code = ((ClassStatement) parent)._a.getCode();
@@ -328,13 +328,13 @@ public class CReference {
 	}
 
 	@NotNull static List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
-		List<InstructionArgument> s = new LinkedList<InstructionArgument>();
+		@NotNull List<InstructionArgument> s = new LinkedList<InstructionArgument>();
 		while (oo != null) {
 			if (oo instanceof IntegerIA) {
 				s.add(0, oo);
 				oo = null;
 			} else if (oo instanceof IdentIA) {
-				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
+				final @NotNull IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
 				s.add(0, oo);
 				oo = ite1.backlink;
 			} else if (oo instanceof ProcIA) {
@@ -349,11 +349,11 @@ public class CReference {
 
 	@NotNull
 	public String build() {
-		StringBuilder sb = new StringBuilder();
+		@NotNull StringBuilder sb = new StringBuilder();
 		boolean open = false, needs_comma = false;
 //		List<String> sl = new ArrayList<String>();
 		String text = "";
-		for (Reference ref : refs) {
+		for (@NotNull Reference ref : refs) {
 			switch (ref.type) {
 			case LOCAL:
 				text = "vv" + ref.text;
@@ -372,7 +372,7 @@ public class CReference {
 				sb.append(text);
 				break;
 			case FUNCTION: {
-				final String s = sb.toString();
+				final @NotNull String s = sb.toString();
 				text = String.format("%s(%s", ref.text, s);
 				sb = new StringBuilder();
 				open = true;
@@ -381,7 +381,7 @@ public class CReference {
 				break;
 			}
 			case CONSTRUCTOR: {
-				final String s = sb.toString();
+				final @NotNull String s = sb.toString();
 				text = String.format("%s(%s", ref.text, s);
 				sb = new StringBuilder();
 				open = false;
@@ -391,7 +391,7 @@ public class CReference {
 				break;
 			}
 			case PROPERTY: {
-				final String s = sb.toString();
+				final @NotNull String s = sb.toString();
 				text = String.format("%s(%s", ref.text, s);
 				sb = new StringBuilder();
 				open = true;

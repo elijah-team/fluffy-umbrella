@@ -9,6 +9,7 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 
 public class VariableReference extends AbstractExpression implements OS_Expression {
 
@@ -35,7 +36,7 @@ public class VariableReference extends AbstractExpression implements OS_Expressi
 		System.out.println(repr_());
 	}
 
-	public void setMain(final Token t) {
+	public void setMain(final @NotNull Token t) {
 		final String s = t.getText();
 		main = s;
 		System.out.println(repr_());

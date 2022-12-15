@@ -9,6 +9,7 @@
 package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang2.BuiltInTypes;
 
 import java.util.Objects;
@@ -24,7 +25,7 @@ import java.util.Objects;
  */
 public class OS_Type {
 
-	public OS_Type(Type t) {
+	public OS_Type(@NotNull Type t) {
 		type_of_type = t;
 	}
 
@@ -36,10 +37,10 @@ public class OS_Type {
 	}
 
 	@Override
-	public boolean equals(final Object o) {
+	public boolean equals(final @Nullable Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		final OS_Type os_type = (OS_Type) o;
+		final @NotNull OS_Type os_type = (OS_Type) o;
 /*		switch (kind) {
 			case USER: return (((OS_Type) o).getTypeName()).equals(getTypeName());
 			case BUILT_IN: return (((OS_Type) o).type).equals(type);
@@ -59,7 +60,7 @@ public class OS_Type {
 		return Objects.hash(type, type_of_type, etype.hashCode(), ttype.hashCode());
 	}
 
-	public ClassStatement getClassOf() {
+	public @NotNull ClassStatement getClassOf() {
 		if (etype != null && etype instanceof ClassStatement)
 			return (ClassStatement) etype;
 		System.err.println("3001 "+etype+" "+toString());
@@ -77,7 +78,7 @@ public class OS_Type {
 		}
 	}
 
-	public OS_Type resolve(final Context ctx) {
+	public @NotNull OS_Type resolve(final @NotNull Context ctx) {
 		assert ctx != null;
 		switch (getType()) {
 		case BUILT_IN:
@@ -89,7 +90,7 @@ public class OS_Type {
 				case SystemInteger:
 					{
 						final LookupResultList r;
-						final OS_Element best;
+						final @Nullable OS_Element best;
 
 						r = ctx.lookup("SystemInteger");
 						best = r.chooseBest(null);
@@ -98,7 +99,7 @@ public class OS_Type {
 				case Boolean:
 					{
 						final LookupResultList r;
-						final OS_Element best;
+						final @Nullable OS_Element best;
 
 						r = ctx.lookup("Boolean");
 						best = r.chooseBest(null);
@@ -111,7 +112,7 @@ public class OS_Type {
 				case String_:
 					{
 						final LookupResultList r;
-						final OS_Element best;
+						final @Nullable OS_Element best;
 
 						r = ctx.lookup("String8"); // TODO not sure about this
 						best = r.chooseBest(null);
@@ -124,7 +125,7 @@ public class OS_Type {
 		case USER:
 			{
 				final LookupResultList r = ctx.lookup(getTypeName().toString()); // TODO
-				final OS_Element best = r.chooseBest(null);
+				final @Nullable OS_Element best = r.chooseBest(null);
 				return new OS_Type((ClassStatement) best);
 			}
 		case USER_CLASS:
@@ -143,7 +144,7 @@ public class OS_Type {
 		BUILT_IN, USER, USER_CLASS, FUNC_EXPR, UNIT_TYPE, UNKNOWN, ANY, FUNCTION, GENERIC_TYPENAME
 	}
 
-	public Type getType() {
+	public @NotNull Type getType() {
 		return type_of_type;
 	}
 
@@ -159,7 +160,7 @@ public class OS_Type {
 	}
 
 	/*@ ensures type_of_type = Type.USER_CLASS; */
-	public OS_Type(final ClassStatement klass) {
+	public OS_Type(final @NotNull ClassStatement klass) {
 		assert klass != null;
 		this.etype = klass;
 		this.type_of_type = Type.USER_CLASS;
@@ -203,7 +204,7 @@ public class OS_Type {
 		}
 
 		@Override
-		public String toString() {
+		public @NotNull String toString() {
 			return "<UnitType>";
 		}
 	}

@@ -22,7 +22,7 @@ import tripleo.elijah.stages.gen_fn.VariableTableEntry;
 public class IntegerIA implements InstructionArgument, Constructable {
 
 	@Override
-	public String toString() {
+	public @NotNull String toString() {
 		return "IntegerIA{" +
 				"index=" + index +
 				'}';
@@ -56,7 +56,7 @@ public class IntegerIA implements InstructionArgument, Constructable {
 	}
 
 	@Override
-	public void setGenType(GenType aGenType) {
+	public void setGenType(@NotNull GenType aGenType) {
 		getEntry().setGenType(aGenType);
 	}
 }

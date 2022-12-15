@@ -13,6 +13,7 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.gen.ICodeGen;
@@ -37,7 +38,7 @@ public class DefFunctionDef extends BaseFunctionDef {
 		setSpecies(Species.DEF_FUN);
 	}
 
-	private TypeName _returnType = null;
+	private @Nullable TypeName _returnType = null;
 
 	public void setReturnType(final TypeName tn) {
 		this._returnType = tn;
@@ -65,11 +66,11 @@ public class DefFunctionDef extends BaseFunctionDef {
 		_items.add(new StatementWrapper(_expr, getContext(), this));
 	}
 
-	List<FunctionItem> _items = new ArrayList<FunctionItem>();
+	@NotNull List<FunctionItem> _items = new ArrayList<FunctionItem>();
 
 
 	@Override
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(@NotNull ICodeGen visit) {
 		visit.visitDefFunction(this);
 	}
 
@@ -79,7 +80,7 @@ public class DefFunctionDef extends BaseFunctionDef {
 	}
 
 	@Override
-	public List<FunctionItem> getItems() {
+	public @NotNull List<FunctionItem> getItems() {
 		return _items; // TODO what about scope?
 	}
 

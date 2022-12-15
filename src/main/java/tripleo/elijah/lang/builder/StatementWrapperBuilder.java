@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.OS_Element;
@@ -25,7 +26,7 @@ public class StatementWrapperBuilder extends ElBuilder {
 	}
 
 	@Override
-	protected OS_Element build() {
+	protected @NotNull OS_Element build() {
 		return new StatementWrapper(expr, _context, _parent);
 	}
 

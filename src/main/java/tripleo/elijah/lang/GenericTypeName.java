@@ -11,6 +11,7 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.util.NotImplementedException;
 
 import java.io.File;
@@ -52,7 +53,7 @@ public class GenericTypeName implements TypeName {
 	}
 
 	@Override
-	public Type kindOfType() {
+	public @NotNull Type kindOfType() {
 		return Type.GENERIC;
 	}
 

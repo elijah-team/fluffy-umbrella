@@ -88,7 +88,7 @@ public class DeduceUtils {
 			/*if (((LookupResult)o).getElement() instanceof FunctionDef)*/ {
 				//o filter isCtor each (each args isCompat)
 				final @NotNull FunctionDef fd = (FunctionDef) (/*(LookupResult)*/o)/*.getElement()*/;
-				final List<OS_Element2> matching_functions = fd.items()
+				final @NotNull List<OS_Element2> matching_functions = fd.items()
 						                                       .stream()
 						                                       .filter(new MatchArgs(pce.getArgs()))
 						                                       .collect(Collectors.toList());

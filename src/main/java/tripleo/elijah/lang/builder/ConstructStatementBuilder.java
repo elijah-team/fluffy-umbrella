@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 
 /**
@@ -17,7 +19,7 @@ public class ConstructStatementBuilder extends ElBuilder {
 	private final Qualident q;
 	private final ExpressionList o;
 	private Context _context;
-	private String constructorName = null;
+	private @Nullable String constructorName = null;
 
 	public ConstructStatementBuilder(Qualident q, ExpressionList o) {
 		super();
@@ -26,7 +28,7 @@ public class ConstructStatementBuilder extends ElBuilder {
 	}
 
 	@Override
-	protected ConstructStatement build() {
+	protected @NotNull ConstructStatement build() {
 		return new ConstructStatement(_parent, _context, q, constructorName, o);
 	}
 

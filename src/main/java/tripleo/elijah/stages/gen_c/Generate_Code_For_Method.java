@@ -53,7 +53,7 @@ public class Generate_Code_For_Method {
 	final BufferTabbedOutputStream tosHdr = new BufferTabbedOutputStream();
 	final BufferTabbedOutputStream tos = new BufferTabbedOutputStream();
 
-	void generateCodeForMethod(BaseGeneratedFunction gf, GenerateResult gr, WorkList aWorkList) {
+	void generateCodeForMethod(@NotNull BaseGeneratedFunction gf, @NotNull GenerateResult gr, WorkList aWorkList) {
 		action(gf);
 		
 		tos.flush();
@@ -68,7 +68,7 @@ public class Generate_Code_For_Method {
 		gr.addFunction(gf, bufHdr, GenerateResult.TY.HEADER);
 	}
 
-	void generateCodeForConstructor(GeneratedConstructor gf, GenerateResult gr, WorkList aWorkList) {
+	void generateCodeForConstructor(@NotNull GeneratedConstructor gf, @NotNull GenerateResult gr, WorkList aWorkList) {
 		action(gf);
 
 		tos.flush();
@@ -85,8 +85,8 @@ public class Generate_Code_For_Method {
 
 	boolean is_constructor = false, is_unit_type = false;
 
-	private void action(BaseGeneratedFunction gf) {
-		Generate_Method_Header gmh = new Generate_Method_Header(gf, gc, LOG);
+	private void action(@NotNull BaseGeneratedFunction gf) {
+		@NotNull Generate_Method_Header gmh = new Generate_Method_Header(gf, gc, LOG);
 
 		tos.put_string_ln(String.format("%s {", gmh.header_string));
 		tosHdr.put_string_ln(String.format("%s;", gmh.header_string));
@@ -97,7 +97,7 @@ public class Generate_Code_For_Method {
 		for (int instruction_index = 0; instruction_index < instructions.size(); instruction_index++) {
 			Instruction instruction = instructions.get(instruction_index);
 //			LOG.err("8999 "+instruction);
-			final Label label = gf.findLabel(instruction.getIndex());
+			final @Nullable Label label = gf.findLabel(instruction.getIndex());
 			if (label != null) {
 				tos.put_string_ln_no_tabs(label.getName() + ":");
 			}
@@ -183,7 +183,7 @@ public class Generate_Code_For_Method {
 		tos.incr_tabs();
 	}
 
-	private void action_X(Generate_Method_Header aGmh) {
+	private void action_X(@NotNull Generate_Method_Header aGmh) {
 		tos.dec_tabs();
 		tos.put_string_ln("}");
 		if (!is_unit_type)
@@ -192,7 +192,7 @@ public class Generate_Code_For_Method {
 			}
 	}
 
-	private void action_E(BaseGeneratedFunction gf, Generate_Method_Header aGmh) {
+	private void action_E(@NotNull BaseGeneratedFunction gf, @NotNull Generate_Method_Header aGmh) {
 		tos.put_string_ln("bool vsb;");
 		int state = 0;
 
@@ -210,7 +210,7 @@ public class Generate_Code_For_Method {
 				tos.put_string_ln("Error_TTE_Not_Resolved "+ aGmh.tte);
 				break;
 			case 1:
-				String ty = gc.getTypeName(aGmh.tte);
+				@NotNull String ty = gc.getTypeName(aGmh.tte);
 				tos.put_string_ln(String.format("%s* vsr;", ty));
 				break;
 			case 2:
@@ -230,38 +230,38 @@ public class Generate_Code_For_Method {
 		tos.incr_tabs();
 	}
 
-	private void action_AGN(BaseGeneratedFunction gf, Instruction aInstruction) {
+	private void action_AGN(@NotNull BaseGeneratedFunction gf, @NotNull Instruction aInstruction) {
 		final InstructionArgument target = aInstruction.getArg(0);
 		final InstructionArgument value  = aInstruction.getArg(1);
 
-		final String realTarget;
+		final @NotNull String realTarget;
 		if (target instanceof IntegerIA) {
 			realTarget = gc.getRealTargetName(gf, (IntegerIA) target);
 		} else {
 			realTarget = gc.getRealTargetName(gf, (IdentIA) target);
 		}
-		final String assignmentValue = gc.getAssignmentValue(gf.getSelf(), value, gf);
+		final @NotNull String assignmentValue = gc.getAssignmentValue(gf.getSelf(), value, gf);
 		String s = String.format(Emit.emit("/*267*/")+"%s = %s;", realTarget, assignmentValue);
 		tos.put_string_ln(s);
 	}
 
-	private void action_AGNK(BaseGeneratedFunction gf, Instruction aInstruction) {
+	private void action_AGNK(@NotNull BaseGeneratedFunction gf, @NotNull Instruction aInstruction) {
 		final InstructionArgument target = aInstruction.getArg(0);
 		final InstructionArgument value  = aInstruction.getArg(1);
 
-		final String realTarget = gc.getRealTargetName(gf, (IntegerIA) target);
-		final String assignmentValue = gc.getAssignmentValue(gf.getSelf(), value, gf);
+		final @NotNull String realTarget = gc.getRealTargetName(gf, (IntegerIA) target);
+		final @NotNull String assignmentValue = gc.getAssignmentValue(gf.getSelf(), value, gf);
 		String s = String.format(Emit.emit("/*278*/")+"%s = %s;", realTarget, assignmentValue);
 		tos.put_string_ln(s);
 	}
 
-	private void action_CALLS(BaseGeneratedFunction gf, Instruction aInstruction) {
-		final StringBuilder sb = new StringBuilder();
+	private void action_CALLS(@NotNull BaseGeneratedFunction gf, @NotNull Instruction aInstruction) {
+		final @NotNull StringBuilder sb = new StringBuilder();
 		final InstructionArgument x = aInstruction.getArg(0);
 		assert x instanceof ProcIA;
-		final ProcTableEntry pte = gf.getProcTableEntry(to_int(x));
+		final @NotNull ProcTableEntry pte = gf.getProcTableEntry(to_int(x));
 		{
-			CReference reference = null;
+			@Nullable CReference reference = null;
 			if (pte.expression_num == null) {
 				final int y = 2;
 				final IdentExpression ptex = (IdentExpression) pte.expression;
@@ -276,17 +276,17 @@ public class Generate_Code_For_Method {
 				}
 				sb.append(Emit.emit("/*460*/")+xxx);
 			} else {
-				final IdentIA ia2 = (IdentIA) pte.expression_num;
+				final @NotNull IdentIA ia2 = (IdentIA) pte.expression_num;
 				reference = new CReference();
 				reference.getIdentIAPath(ia2, gf);
-				final List<String> sl3 = gc.getArgumentStrings(gf, aInstruction);
+				final @NotNull List<String> sl3 = gc.getArgumentStrings(gf, aInstruction);
 				reference.args(sl3);
-				String path = reference.build();
+				@NotNull String path = reference.build();
 				sb.append(Emit.emit("/*463*/")+path);
 			}
 			if (reference == null){
 				sb.append('(');
-				final List<String> sl3 = gc.getArgumentStrings(gf, aInstruction);
+				final @NotNull List<String> sl3 = gc.getArgumentStrings(gf, aInstruction);
 				sb.append(Helpers.String_join(", ", sl3));
 				sb.append(");");
 			}
@@ -294,31 +294,31 @@ public class Generate_Code_For_Method {
 		tos.put_string_ln(sb.toString());
 	}
 
-	private void action_CALL(BaseGeneratedFunction gf, Instruction aInstruction) {
-		final StringBuilder sb = new StringBuilder();
+	private void action_CALL(@NotNull BaseGeneratedFunction gf, @NotNull Instruction aInstruction) {
+		final @NotNull StringBuilder sb = new StringBuilder();
 // 					LOG.err("9000 "+inst.getName());
 		final InstructionArgument x = aInstruction.getArg(0);
 		assert x instanceof ProcIA;
-		final ProcTableEntry pte = gf.getProcTableEntry(((ProcIA) x).getIndex());
+		final @NotNull ProcTableEntry pte = gf.getProcTableEntry(((ProcIA) x).getIndex());
 		{
 			if (pte.expression_num == null) {
 				final IdentExpression ptex = (IdentExpression) pte.expression;
 				String text = ptex.getText();
 				@Nullable InstructionArgument xx = gf.vte_lookup(text);
 				assert xx != null;
-				String realTargetName = gc.getRealTargetName(gf, (IntegerIA) xx);
+				@NotNull String realTargetName = gc.getRealTargetName(gf, (IntegerIA) xx);
 				sb.append(Emit.emit("/*424*/")+realTargetName);
 				sb.append('(');
-				final List<String> sl3 = gc.getArgumentStrings(gf, aInstruction);
+				final @NotNull List<String> sl3 = gc.getArgumentStrings(gf, aInstruction);
 				sb.append(Helpers.String_join(", ", sl3));
 				sb.append(");");
 			} else {
-				final CReference reference = new CReference();
-				final IdentIA ia2 = (IdentIA) pte.expression_num;
+				final @NotNull CReference reference = new CReference();
+				final @NotNull IdentIA ia2 = (IdentIA) pte.expression_num;
 				reference.getIdentIAPath(ia2, gf);
-				final List<String> sl3 = gc.getArgumentStrings(gf, aInstruction);
+				final @NotNull List<String> sl3 = gc.getArgumentStrings(gf, aInstruction);
 				reference.args(sl3);
-				String path = reference.build();
+				@NotNull String path = reference.build();
 
 				sb.append(Emit.emit("/*427*/")+path+";");
 			}
@@ -326,10 +326,10 @@ public class Generate_Code_For_Method {
 		tos.put_string_ln(sb.toString());
 	}
 
-	private void action_CONSTRUCT(BaseGeneratedFunction gf, Instruction aInstruction) {
+	private void action_CONSTRUCT(@NotNull BaseGeneratedFunction gf, @NotNull Instruction aInstruction) {
 		final InstructionArgument _arg0 = aInstruction.getArg(0);
 		assert _arg0 instanceof ProcIA;
-		final ProcTableEntry pte = gf.getProcTableEntry(((ProcIA) _arg0).getIndex());
+		final @NotNull ProcTableEntry pte = gf.getProcTableEntry(((ProcIA) _arg0).getIndex());
 		List<TypeTableEntry> x = pte.getArgs();
 		int y = aInstruction.getArgsSize();
 //					InstructionArgument z = instruction.getArg(1);
@@ -357,7 +357,7 @@ public class Generate_Code_For_Method {
 		}
 	}
 
-	private void action_JMP(Instruction aInstruction) {
+	private void action_JMP(@NotNull Instruction aInstruction) {
 		final InstructionArgument target = aInstruction.getArg(0);
 //					InstructionArgument value  = instruction.getArg(1);
 
@@ -367,26 +367,26 @@ public class Generate_Code_For_Method {
 		final int y=2;
 	}
 
-	private void action_JL(BaseGeneratedFunction gf, Instruction aInstruction) {
+	private void action_JL(@NotNull BaseGeneratedFunction gf, @NotNull Instruction aInstruction) {
 		final InstructionArgument lhs    = aInstruction.getArg(0);
 		final InstructionArgument rhs    = aInstruction.getArg(1);
 		final InstructionArgument target = aInstruction.getArg(2);
 
 		final Label realTarget = (Label) target;
 
-		final VariableTableEntry vte = gf.getVarTableEntry(((IntegerIA) lhs).getIndex());
+		final @NotNull VariableTableEntry vte = gf.getVarTableEntry(((IntegerIA) lhs).getIndex());
 		assert rhs != null;
 
 		if (rhs instanceof ConstTableIA) {
-			final ConstantTableEntry cte = gf.getConstTableEntry(((ConstTableIA) rhs).getIndex());
-			final String realTargetName = gc.getRealTargetName(gf, (IntegerIA) lhs);
+			final @NotNull ConstantTableEntry cte = gf.getConstTableEntry(((ConstTableIA) rhs).getIndex());
+			final @NotNull String realTargetName = gc.getRealTargetName(gf, (IntegerIA) lhs);
 			tos.put_string_ln(String.format("vsb = %s < %s;", realTargetName, gc.getAssignmentValue(gf.getSelf(), rhs, gf)));
 			tos.put_string_ln(String.format("if (!vsb) goto %s;", realTarget.getName()));
 		} else {
 			//
 			// TODO need to lookup special __lt__ function
 			//
-			String realTargetName = gc.getRealTargetName(gf, (IntegerIA) lhs);
+			@NotNull String realTargetName = gc.getRealTargetName(gf, (IntegerIA) lhs);
 			tos.put_string_ln(String.format("vsb = %s < %s;", realTargetName, gc.getAssignmentValue(gf.getSelf(), rhs, gf)));
 			tos.put_string_ln(String.format("if (!vsb) goto %s;", realTarget.getName()));
 
@@ -394,26 +394,26 @@ public class Generate_Code_For_Method {
 		}
 	}
 
-	private void action_JNE(BaseGeneratedFunction gf, Instruction aInstruction) {
+	private void action_JNE(@NotNull BaseGeneratedFunction gf, @NotNull Instruction aInstruction) {
 		final InstructionArgument lhs    = aInstruction.getArg(0);
 		final InstructionArgument rhs    = aInstruction.getArg(1);
 		final InstructionArgument target = aInstruction.getArg(2);
 
 		final Label realTarget = (Label) target;
 
-		final VariableTableEntry vte = gf.getVarTableEntry(((IntegerIA) lhs).getIndex());
+		final @NotNull VariableTableEntry vte = gf.getVarTableEntry(((IntegerIA) lhs).getIndex());
 		assert rhs != null;
 
 		if (rhs instanceof ConstTableIA) {
-			final ConstantTableEntry cte = gf.getConstTableEntry(((ConstTableIA) rhs).getIndex());
-			final String realTargetName = gc.getRealTargetName(gf, (IntegerIA) lhs);
+			final @NotNull ConstantTableEntry cte = gf.getConstTableEntry(((ConstTableIA) rhs).getIndex());
+			final @NotNull String realTargetName = gc.getRealTargetName(gf, (IntegerIA) lhs);
 			tos.put_string_ln(String.format("vsb = %s != %s;", realTargetName, gc.getAssignmentValue(gf.getSelf(), rhs, gf)));
 			tos.put_string_ln(String.format("if (!vsb) goto %s;", realTarget.getName()));
 		} else {
 			//
 			// TODO need to lookup special __ne__ function ??
 			//
-			String realTargetName = gc.getRealTargetName(gf, (IntegerIA) lhs);
+			@NotNull String realTargetName = gc.getRealTargetName(gf, (IntegerIA) lhs);
 			tos.put_string_ln(String.format("vsb = %s != %s;", realTargetName, gc.getAssignmentValue(gf.getSelf(), rhs, gf)));
 			tos.put_string_ln(String.format("if (!vsb) goto %s;", realTarget.getName()));
 
@@ -421,26 +421,26 @@ public class Generate_Code_For_Method {
 		}
 	}
 
-	private void action_JE(BaseGeneratedFunction gf, Instruction aInstruction) {
+	private void action_JE(@NotNull BaseGeneratedFunction gf, @NotNull Instruction aInstruction) {
 		final InstructionArgument lhs    = aInstruction.getArg(0);
 		final InstructionArgument rhs    = aInstruction.getArg(1);
 		final InstructionArgument target = aInstruction.getArg(2);
 
 		final Label realTarget = (Label) target;
 
-		final VariableTableEntry vte = gf.getVarTableEntry(((IntegerIA)lhs).getIndex());
+		final @NotNull VariableTableEntry vte = gf.getVarTableEntry(((IntegerIA)lhs).getIndex());
 		assert rhs != null;
 
 		if (rhs instanceof ConstTableIA) {
-			final ConstantTableEntry cte = gf.getConstTableEntry(((ConstTableIA) rhs).getIndex());
-			final String realTargetName = gc.getRealTargetName(gf, (IntegerIA) lhs);
+			final @NotNull ConstantTableEntry cte = gf.getConstTableEntry(((ConstTableIA) rhs).getIndex());
+			final @NotNull String realTargetName = gc.getRealTargetName(gf, (IntegerIA) lhs);
 			tos.put_string_ln(String.format("vsb = %s == %s;", realTargetName, gc.getAssignmentValue(gf.getSelf(), rhs, gf)));
 			tos.put_string_ln(String.format("if (!vsb) goto %s;", realTarget.getName()));
 		} else {
 			//
 			// TODO need to lookup special __eq__ function
 			//
-			String realTargetName = gc.getRealTargetName(gf, (IntegerIA) lhs);
+			@NotNull String realTargetName = gc.getRealTargetName(gf, (IntegerIA) lhs);
 			tos.put_string_ln(String.format("vsb = %s == %s;", realTargetName, gc.getAssignmentValue(gf.getSelf(), rhs, gf)));
 			tos.put_string_ln(String.format("if (!vsb) goto %s;", realTarget.getName()));
 
@@ -448,13 +448,13 @@ public class Generate_Code_For_Method {
 		}
 	}
 
-	private void action_IS_A(Instruction instruction, BufferTabbedOutputStream tos, BaseGeneratedFunction gf) {
+	private void action_IS_A(@NotNull Instruction instruction, @NotNull BufferTabbedOutputStream tos, @NotNull BaseGeneratedFunction gf) {
 		final IntegerIA testing_var_  = (IntegerIA) instruction.getArg(0);
 		final IntegerIA testing_type_ = (IntegerIA) instruction.getArg(1);
 		final Label target_label      = ((LabelIA) instruction.getArg(2)).label;
 
-		final VariableTableEntry testing_var    = gf.getVarTableEntry(testing_var_.getIndex());
-		final TypeTableEntry     testing_type__ = gf.getTypeTableEntry(testing_type_.getIndex());
+		final @NotNull VariableTableEntry testing_var    = gf.getVarTableEntry(testing_var_.getIndex());
+		final @NotNull TypeTableEntry     testing_type__ = gf.getTypeTableEntry(testing_type_.getIndex());
 
 		GeneratedNode testing_type = testing_type__.resolved();
 		final int z = ((GeneratedContainerNC) testing_type).getCode();
@@ -463,26 +463,26 @@ public class Generate_Code_For_Method {
 		tos.put_string_ln(String.format("if (!vsb) goto %s;", target_label.getName()));
 	}
 
-	private void action_CAST(Instruction instruction, BufferTabbedOutputStream tos, BaseGeneratedFunction gf) {
+	private void action_CAST(@NotNull Instruction instruction, @NotNull BufferTabbedOutputStream tos, @NotNull BaseGeneratedFunction gf) {
 		final IntegerIA  vte_num_ = (IntegerIA) instruction.getArg(0);
 		final IntegerIA vte_type_ = (IntegerIA) instruction.getArg(1);
 		final IntegerIA vte_targ_ = (IntegerIA) instruction.getArg(2);
-		final String target_name = gc.getRealTargetName(gf, vte_num_);
-		final TypeTableEntry target_type_ = gf.getTypeTableEntry(vte_type_.getIndex());
+		final @NotNull String target_name = gc.getRealTargetName(gf, vte_num_);
+		final @NotNull TypeTableEntry target_type_ = gf.getTypeTableEntry(vte_type_.getIndex());
 //		final String target_type = gc.getTypeName(target_type_.getAttached());
-		final String target_type = gc.getTypeName(target_type_.genType.node);
-		final String source_target = gc.getRealTargetName(gf, vte_targ_);
+		final @NotNull String target_type = gc.getTypeName(target_type_.genType.node);
+		final @NotNull String source_target = gc.getRealTargetName(gf, vte_targ_);
 
 		tos.put_string_ln(String.format("%s = (%s)%s;", target_name, target_type, source_target));
 	}
 
-	private void action_DECL(Instruction instruction, BufferTabbedOutputStream tos, BaseGeneratedFunction gf) {
+	private void action_DECL(@NotNull Instruction instruction, @NotNull BufferTabbedOutputStream tos, @NotNull BaseGeneratedFunction gf) {
 		final SymbolIA decl_type = (SymbolIA)  instruction.getArg(0);
 		final IntegerIA  vte_num = (IntegerIA) instruction.getArg(1);
-		final String target_name = gc.getRealTargetName(gf, vte_num);
-		final VariableTableEntry vte = gf.getVarTableEntry(vte_num.getIndex());
+		final @NotNull String target_name = gc.getRealTargetName(gf, vte_num);
+		final @NotNull VariableTableEntry vte = gf.getVarTableEntry(vte_num.getIndex());
 
-		final OS_Type x = vte.type.getAttached();
+		final @Nullable OS_Type x = vte.type.getAttached();
 		if (x == null && vte.potentialTypes().size() == 0) {
 			if (vte.vtt == VariableTableType.TEMP) {
 				LOG.err("8884 temp variable has no type "+vte+" "+gf);
@@ -526,7 +526,7 @@ public class Generate_Code_For_Method {
 			} else if (x.getType() == OS_Type.Type.BUILT_IN) {
 				final Context context = gf.getFD().getContext();
 				assert context != null;
-				final OS_Type type = x.resolve(context);
+				final @NotNull OS_Type type = x.resolve(context);
 				if (type.isUnitType()) {
 					// TODO still should not happen
 					tos.put_string_ln(String.format("/*%s is declared as the Unit type*/", target_name));
@@ -543,21 +543,21 @@ public class Generate_Code_For_Method {
 		// MTL A TEMP VARIABLE
 		//
 		@NotNull final Collection<TypeTableEntry> pt_ = vte.potentialTypes();
-		final List<TypeTableEntry> pt = new ArrayList<TypeTableEntry>(pt_);
+		final @NotNull List<TypeTableEntry> pt = new ArrayList<TypeTableEntry>(pt_);
 		if (pt.size() == 1) {
 			final TypeTableEntry ty = pt.get(0);
 			if (ty.genType.node != null) {
-				GeneratedNode node = ty.genType.node;
+				@NotNull GeneratedNode node = ty.genType.node;
 				if (node instanceof GeneratedFunction) {
 					int y=2;
 //					((GeneratedFunction)node).typeDeferred()
 					// get signature
-					String z = Emit.emit("/*552*/") + "void (*)()";
+					@NotNull String z = Emit.emit("/*552*/") + "void (*)()";
 					tos.put_string_ln(String.format("/*8889*/%s %s;", z, target_name));
 				}
 			} else {
 //				LOG.err("8885 " +ty.attached);
-				final OS_Type attached = ty.getAttached();
+				final @Nullable OS_Type attached = ty.getAttached();
 				final String z;
 				if (attached != null)
 					z = gc.getTypeName(attached);
@@ -571,15 +571,15 @@ public class Generate_Code_For_Method {
 
 	static class Generate_Method_Header {
 
-		private final String return_type;
-		private final String args_string;
+		private final @NotNull String return_type;
+		private final @NotNull String args_string;
 		private final String header_string;
-		private final String name;
-		private final GenerateC gc;
-		OS_Type type;
+		private final @NotNull String name;
+		private final @NotNull GenerateC gc;
+		@Nullable OS_Type type;
 		TypeTableEntry tte;
 
-		public Generate_Method_Header(BaseGeneratedFunction gf, @NotNull GenerateC aGenerateC, ElLog LOG) {
+		public Generate_Method_Header(@NotNull BaseGeneratedFunction gf, @NotNull GenerateC aGenerateC, @NotNull ElLog LOG) {
 			gc            = aGenerateC;
 			name          = gf.getFD().name();
 			//
@@ -588,22 +588,22 @@ public class Generate_Code_For_Method {
 			header_string = find_header_string(gf, LOG);
 		}
 
-		String find_header_string(BaseGeneratedFunction gf, ElLog LOG) {
+		String find_header_string(@NotNull BaseGeneratedFunction gf, @NotNull ElLog LOG) {
 			GeneratedContainerNC parent = gf.getParent();
 			if (parent == null)
 				parent = (GeneratedContainerNC) gf.getGenClass(); // TODO might not type check, but why not?
 
 			if (parent instanceof GeneratedClass) {
-				GeneratedClass st = (GeneratedClass) parent;
+				@NotNull GeneratedClass st = (GeneratedClass) parent;
 				final String class_name = gc.getTypeName(st);
 //				LOG.info("234 class_name >> " + class_name);
-				final String if_args = args_string.length() == 0 ? "" : ", ";
+				final @NotNull String if_args = args_string.length() == 0 ? "" : ", ";
 				return String.format("%s %s%s(%s* vsc%s%s)", return_type, class_name, name, class_name, if_args, args_string);
 			} else if (parent instanceof GeneratedNamespace) {
-				GeneratedNamespace st = (GeneratedNamespace) parent;
+				@NotNull GeneratedNamespace st = (GeneratedNamespace) parent;
 				final String class_name = gc.getTypeName(st);
 				LOG.info(String.format("240 (namespace) %s -> %s", st.getName(), class_name));
-				final String if_args = args_string.length() == 0 ? "" : ", ";
+				final @NotNull String if_args = args_string.length() == 0 ? "" : ", ";
 				// TODO vsi for namespace instance??
 //				tos.put_string_ln(String.format("%s %s%s(%s* vsi%s%s) {", returnType, class_name, name, class_name, if_args, args));
 				return String.format("%s %s%s(%s)", return_type, class_name, name, args_string);
@@ -612,8 +612,8 @@ public class Generate_Code_For_Method {
 			}
 		}
 
-		String find_args_string(BaseGeneratedFunction gf) {
-			final String args;
+		@NotNull String find_args_string(@NotNull BaseGeneratedFunction gf) {
+			final @NotNull String args;
 			if (false) {
 				args = Helpers.String_join(", ", Collections2.transform(gf.getFD().fal().falis, new Function<FormalArgListItem, String>() {
 					@org.checkerframework.checker.nullness.qual.Nullable
@@ -643,8 +643,8 @@ public class Generate_Code_For_Method {
 			return args;
 		}
 
-		@NotNull String find_return_type(BaseGeneratedFunction gf, ElLog LOG) {
-			String returnType = null;
+		@NotNull String find_return_type(BaseGeneratedFunction gf, @NotNull ElLog LOG) {
+			@Nullable String returnType = null;
 			if (gf instanceof GeneratedConstructor) {
 				@Nullable InstructionArgument result_index = gf.vte_lookup("self");
 				@NotNull VariableTableEntry vte = ((IntegerIA) result_index).getEntry();
@@ -654,7 +654,7 @@ public class Generate_Code_For_Method {
 				tte = gf.getTypeTableEntry(((IntegerIA) result_index).getIndex());
 				GeneratedNode res = tte.resolved();
 				if (res instanceof GeneratedContainerNC) {
-					final GeneratedContainerNC nc = (GeneratedContainerNC) res;
+					final @NotNull GeneratedContainerNC nc = (GeneratedContainerNC) res;
 					int code = nc.getCode();
 					return String.format("Z%d*",code);
 				}
@@ -688,7 +688,7 @@ public class Generate_Code_For_Method {
 				tte = gf.getTypeTableEntry(((IntegerIA) result_index).getIndex());
 				GeneratedNode res = tte.resolved();
 				if (res instanceof GeneratedContainerNC) {
-					final GeneratedContainerNC nc = (GeneratedContainerNC) res;
+					final @NotNull GeneratedContainerNC nc = (GeneratedContainerNC) res;
 					int code = nc.getCode();
 					return String.format("Z%d*",code);
 				}

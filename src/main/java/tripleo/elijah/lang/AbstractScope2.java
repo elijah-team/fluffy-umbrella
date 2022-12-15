@@ -9,6 +9,7 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,17 +37,17 @@ public abstract class AbstractScope2 implements Scope {
 //	}
 
 	@Override
-	public BlockStatement blockStatement() {
+	public @NotNull BlockStatement blockStatement() {
 		return new BlockStatement(this);
 	}
 
 	@Override
-	public TypeAliasStatement typeAlias() {
+	public @NotNull TypeAliasStatement typeAlias() {
 		return new TypeAliasStatement(getParent());
 	}
 
 	@Override
-	public InvariantStatement invariantStatement() {
+	public @NotNull InvariantStatement invariantStatement() {
 		return new InvariantStatement();
 	}
 
@@ -61,7 +62,7 @@ public abstract class AbstractScope2 implements Scope {
 	}
 
 	@Override
-	public void addDocString(Token s1) {
+	public void addDocString(@NotNull Token s1) {
 		if (docstrings == null)
 			docstrings = new ArrayList<String>();
 		docstrings.add(s1.getText());

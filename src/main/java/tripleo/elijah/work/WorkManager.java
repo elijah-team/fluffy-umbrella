@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.work;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -18,21 +19,21 @@ import java.util.List;
  * Created 4/26/21 4:22 AM
  */
 public class WorkManager {
-	List<WorkList> jobs = new ArrayList<WorkList>();
-	List<WorkList> doneWork = new ArrayList<WorkList>();
+	@NotNull List<WorkList> jobs = new ArrayList<WorkList>();
+	@NotNull List<WorkList> doneWork = new ArrayList<WorkList>();
 
 	public void addJobs(final WorkList aList) {
 		jobs.add(aList);
 	}
 
 	@Nullable public WorkJob next() {
-		Iterator<WorkList> workListIterator = jobs.iterator();
+		@NotNull Iterator<WorkList> workListIterator = jobs.iterator();
 		while (true) {
 			if (workListIterator.hasNext()) {
 				WorkList workList = workListIterator.next();
 //			for (WorkList workList :jobs) {
 				if (!workList.isDone()) {
-					for (WorkJob w : workList.jobs) {
+					for (@NotNull WorkJob w : workList.jobs) {
 						if (!w.isDone())
 							return w;
 					}

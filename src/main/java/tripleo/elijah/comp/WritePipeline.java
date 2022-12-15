@@ -10,6 +10,7 @@ package tripleo.elijah.comp;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
@@ -42,10 +43,10 @@ public class WritePipeline implements PipelineMember {
 	private final Compilation c;
 	private final GenerateResult gr;
 
-	final OutputStrategy os;
-	final ElSystem sys;
+	final @NotNull OutputStrategy os;
+	final @NotNull ElSystem sys;
 
-	private final File file_prefix;
+	private final @NotNull File file_prefix;
 
 	public WritePipeline(Compilation aCompilation, GenerateResult aGr) {
 		c = aCompilation;
@@ -72,9 +73,9 @@ public class WritePipeline implements PipelineMember {
 	}
 
 	public void write_files() throws IOException {
-		Multimap<String, Buffer> mb = ArrayListMultimap.create();
+		@NotNull Multimap<String, Buffer> mb = ArrayListMultimap.create();
 
-		for (GenerateResultItem ab : gr.results()) {
+		for (@NotNull GenerateResultItem ab : gr.results()) {
 			mb.put(ab.output, ab.buffer);
 		}
 
@@ -84,17 +85,17 @@ public class WritePipeline implements PipelineMember {
 		// TODO flag?
 		write_inputs(file_prefix);
 
-		for (Map.Entry<String, Collection<Buffer>> entry : mb.asMap().entrySet()) {
+		for (Map.@NotNull Entry<String, Collection<Buffer>> entry : mb.asMap().entrySet()) {
 			final String key = entry.getKey();
-			Path path = FileSystems.getDefault().getPath(prefix, key);
+			@NotNull Path path = FileSystems.getDefault().getPath(prefix, key);
 //			BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
 
 			path.getParent().toFile().mkdirs();
 
 			// TODO functionality
 			System.out.println("201 Writing path: "+path);
-			CharSink x = c.getIO().openWrite(path);
-			for (Buffer buffer : entry.getValue()) {
+			@NotNull CharSink x = c.getIO().openWrite(path);
+			for (@NotNull Buffer buffer : entry.getValue()) {
 				x.accept(buffer.getText());
 			}
 			((FileCharSink)x).close();
@@ -104,7 +105,7 @@ public class WritePipeline implements PipelineMember {
 	private void write_inputs(File file_prefix) throws IOException {
 		final String fn1 = new File(file_prefix, "inputs.txt").toString();
 
-		DefaultBuffer buf = new DefaultBuffer("");
+		@NotNull DefaultBuffer buf = new DefaultBuffer("");
 //			FileBackedBuffer buf = new FileBackedBuffer(fn1);
 //			for (OS_Module module : modules) {
 //				final String fn = module.getFileName();
@@ -117,18 +118,18 @@ public class WritePipeline implements PipelineMember {
 //
 //				append_hash(buf, fn);
 //			}
-		for (File file : c.getIO().recordedreads) {
+		for (@NotNull File file : c.getIO().recordedreads) {
 			final String fn = file.toString();
 
 			append_hash(buf, fn, c.getErrSink());
 		}
 		String s = buf.getText();
-		Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn1, true)));
+		@NotNull Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn1, true)));
 		w.write(s);
 		w.close();
 	}
 
-	private void append_hash(TextBuffer aBuf, String aFilename, ErrSink errSink) throws IOException {
+	private void append_hash(@NotNull TextBuffer aBuf, String aFilename, ErrSink errSink) throws IOException {
 		@Nullable final String hh = Helpers.getHashForFilename(aFilename, errSink);
 		if (hh != null) {
 			aBuf.append(hh);
@@ -140,7 +141,7 @@ public class WritePipeline implements PipelineMember {
 	public void write_buffers() throws FileNotFoundException {
 		file_prefix.mkdirs();
 
-		PrintStream db_stream = new PrintStream(new File(file_prefix, "buffers.txt"));
+		@NotNull PrintStream db_stream = new PrintStream(new File(file_prefix, "buffers.txt"));
 		PipelineLogic.debug_buffers(gr, db_stream);
 	}
 

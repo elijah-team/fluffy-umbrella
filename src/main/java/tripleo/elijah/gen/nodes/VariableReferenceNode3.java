@@ -9,6 +9,7 @@
 package tripleo.elijah.gen.nodes;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.gen.Node;
 import tripleo.elijah.gen.TypeRef;
@@ -33,7 +34,7 @@ public class VariableReferenceNode3 implements IExpressionNode {
 		return _typeRef;
 	}
 	
-	public String getTypeName() {
+	public @Nullable String getTypeName() {
 		NotImplementedException.raise();
 //		return _container.getName();
 		return null;
@@ -65,7 +66,7 @@ public class VariableReferenceNode3 implements IExpressionNode {
 	//
 	
 	@Override
-	public IExpression getExpr() {
+	public @Nullable IExpression getExpr() {
 		return null;
 	}
 	
