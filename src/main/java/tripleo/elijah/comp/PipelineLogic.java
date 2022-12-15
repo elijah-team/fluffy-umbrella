@@ -11,6 +11,7 @@ package tripleo.elijah.comp;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.entrypoints.EntryPoint;
 import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.gen_c.GenerateC;
 import tripleo.elijah.stages.gen_fn.*;
@@ -30,7 +31,7 @@ import java.util.List;
 /**
  * Created 12/30/20 2:14 AM
  */
-public class PipelineLogic {
+public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	public final @NotNull GeneratePhase generatePhase;
 	public final @NotNull DeducePhase dp;
 
@@ -41,11 +42,13 @@ public class PipelineLogic {
 	private final ElLog.Verbosity verbosity;
 
 	final List<OS_Module> mods = new ArrayList<OS_Module>();
+	private final AccessBus __ab;
 
-	public PipelineLogic(ElLog.Verbosity aVerbosity) {
+	public PipelineLogic(ElLog.Verbosity aVerbosity, final AccessBus aAb) {
 		verbosity = aVerbosity;
 		generatePhase = new GeneratePhase(aVerbosity, this);
 		dp = new DeducePhase(generatePhase, this, verbosity);
+		__ab = aAb;
 	}
 
 	public void everythingBeforeGenerate(List<GeneratedNode> lgc) {
@@ -197,7 +200,7 @@ public class PipelineLogic {
 		mods.add(m);
 	}
 
-	private void resolveCheck(DeducePhase.@NotNull GeneratedClasses lgc) {
+	public void resolveCheck(DeducePhase.@NotNull GeneratedClasses lgc) {
 		for (final GeneratedNode generatedNode : lgc) {
 			if (generatedNode instanceof GeneratedFunction) {
 
@@ -239,6 +242,16 @@ public class PipelineLogic {
 
 	public void addLog(ElLog aLog) {
 		elLogs.add(aLog);
+	}
+
+	@Override
+	public void mods_slot(final @NotNull EIT_ModuleList aModuleList) {
+		__ab.subscribePipelineLogic((x) -> aModuleList._set_PL(x));
+
+		aModuleList.process__PL(this::getGenerateFunctions, this);
+
+		dp.finish();
+//		dp.generatedClasses.addAll(lgc);
 	}
 
 }

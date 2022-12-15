@@ -28,8 +28,6 @@ import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
 import tripleo.elijah.lang.Qualident;
 import tripleo.elijah.stages.deduce.FunctionMapHook;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
-import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijjah.ElijjahLexer;
@@ -40,12 +38,7 @@ import tripleo.elijjah.EzParser;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class Compilation {
@@ -146,18 +139,23 @@ public class Compilation {
 					}
 				}
 
-				System.err.println("130 GEN_LANG: "+cis.get(0).genLang());
+				System.err.println("130 GEN_LANG: " + cis.get(0).genLang());
 				findStdLib("c"); // TODO find a better place for this
 
 				for (final @NotNull CompilerInstructions ci : cis) {
 					use(ci, do_out);
 				}
 
+				final AccessBus ab = new AccessBus(this);
+
 				//
 				if (stage.equals("E")) {
 					// do nothing. job over
 				} else {
-					pipelineLogic = new PipelineLogic(silent ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE);
+					pipelineLogic = new PipelineLogic(silent ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE, ab);
+
+					ab.resolvePipelineLogic(pipelineLogic);
+
 					final @NotNull DeducePipeline dpl = new DeducePipeline(this);
 					pipelines.add(dpl);
 					final @NotNull GeneratePipeline gpl = new GeneratePipeline(this, dpl);
