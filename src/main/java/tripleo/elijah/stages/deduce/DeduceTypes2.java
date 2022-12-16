@@ -44,8 +44,8 @@ import java.util.regex.Pattern;
 public class DeduceTypes2 {
 	private static final String PHASE = "DeduceTypes2";
 	private final @NotNull OS_Module module;
-	final @NotNull DeducePhase phase;
-	final ErrSink errSink;
+	public final @NotNull DeducePhase phase;
+	public final ErrSink errSink;
 	final @NotNull ElLog LOG;
 	@NotNull WorkManager wm = new WorkManager();
 
@@ -2519,6 +2519,67 @@ public class DeduceTypes2 {
 			return ni;
 		} else
 			return classInvocation;
+	}
+
+	public static class ClassInvocationMake {
+		public static ClassInvocation withGenericPart(ClassStatement best,
+													  String constructorName,
+													  NormalTypeName aTyn1,
+													  DeduceTypes2 dt2,
+													  final ErrSink aErrSink) {
+			@NotNull GenericPart genericPart = new GenericPart(best, aTyn1);
+
+			@Nullable ClassInvocation clsinv = new ClassInvocation(best, constructorName);
+
+			if (genericPart.hasGenericPart()) {
+				final @NotNull List<TypeName> gp = best.getGenericPart();
+				final @NotNull TypeNameList gp2 = genericPart.getGenericPartFromTypeName();
+
+				for (int i = 0; i < gp.size(); i++) {
+					final TypeName typeName = gp2.get(i);
+					@NotNull GenType typeName2;
+					try {
+						typeName2 = dt2.resolve_type(new OS_Type(typeName), typeName.getContext());
+						// TODO transition to GenType
+						clsinv.set(i, gp.get(i), typeName2.resolved);
+					} catch (ResolveError aResolveError) {
+//						aResolveError.printStackTrace();
+						aErrSink.reportDiagnostic(aResolveError);
+					}
+				}
+			}
+			return clsinv;
+		}
+	}
+
+	static class GenericPart {
+		private final ClassStatement classStatement;
+		private final TypeName genericTypeName;
+
+		@Contract(pure = true)
+		public GenericPart(final ClassStatement aClassStatement, final TypeName aGenericTypeName) {
+			classStatement = aClassStatement;
+			genericTypeName = aGenericTypeName;
+		}
+
+		@Contract(pure = true)
+		public boolean hasGenericPart() {
+			return classStatement.getGenericPart().size() > 0;
+		}
+
+		@Contract(pure = true)
+		private NormalTypeName getGenericTypeName() {
+			assert genericTypeName != null;
+			assert genericTypeName instanceof NormalTypeName;
+
+			return (NormalTypeName) genericTypeName;
+		}
+
+		@Contract(pure = true)
+		public TypeNameList getGenericPartFromTypeName() {
+			final NormalTypeName ntn = getGenericTypeName();
+			return ntn.getGenericPart();
+		}
 	}
 
 	private void do_assign_call_args_ident(@NotNull BaseGeneratedFunction generatedFunction,

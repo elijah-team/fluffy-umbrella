@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +17,10 @@ import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FoundElement;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.deduce.OnGenClass;
 import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.util.Helpers;
+import tripleo.elijah.util.Holder;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.util.range.Range;
 
@@ -48,27 +51,28 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	private GeneratedNode genClass;
 	private GeneratedContainerNC parent;
 	private DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
+	private DeferredObject<GeneratedClass, Void, Void> _gcP = new DeferredObject<>();
 
 	public static void printTables(GeneratedFunction gf) {
-		System.out.println("VariableTable ");
+		tripleo.elijah.util.Stupidity.println_out("VariableTable ");
 		for (VariableTableEntry variableTableEntry : gf.vte_list) {
-			System.out.println("\t"+variableTableEntry);
+			tripleo.elijah.util.Stupidity.println_out("\t" + variableTableEntry);
 		}
-		System.out.println("ConstantTable ");
+		tripleo.elijah.util.Stupidity.println_out("ConstantTable ");
 		for (ConstantTableEntry constantTableEntry : gf.cte_list) {
-			System.out.println("\t"+constantTableEntry);
+			tripleo.elijah.util.Stupidity.println_out("\t" + constantTableEntry);
 		}
-		System.out.println("ProcTable     ");
+		tripleo.elijah.util.Stupidity.println_out("ProcTable     ");
 		for (ProcTableEntry procTableEntry : gf.prte_list) {
-			System.out.println("\t"+procTableEntry);
+			tripleo.elijah.util.Stupidity.println_out("\t" + procTableEntry);
 		}
-		System.out.println("TypeTable     ");
+		tripleo.elijah.util.Stupidity.println_out("TypeTable     ");
 		for (TypeTableEntry typeTableEntry : gf.tte_list) {
-			System.out.println("\t"+typeTableEntry);
+			tripleo.elijah.util.Stupidity.println_out("\t" + typeTableEntry);
 		}
-		System.out.println("IdentTable    ");
+		tripleo.elijah.util.Stupidity.println_out("IdentTable    ");
 		for (IdentTableEntry identTableEntry : gf.idte_list) {
-			System.out.println("\t"+identTableEntry);
+			tripleo.elijah.util.Stupidity.println_out("\t" + identTableEntry);
 		}
 	}
 
@@ -85,7 +89,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 			} else if (oo instanceof IdentIA) {
 				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
 				s.addFirst(oo);
-				oo = ite1.backlink;
+				oo = ite1.getBacklink();
 			} else if (oo instanceof ProcIA) {
 				s.addFirst(oo);
 				oo = null;
@@ -378,7 +382,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	public IdentTableEntry getIdentTableEntryFor(IExpression expression) {
 		for (IdentTableEntry identTableEntry : idte_list) {
 			// TODO make this work for Qualidents and DotExpressions
-			if (identTableEntry.getIdent().getText().equals(((IdentExpression) expression).getText()) && identTableEntry.backlink == null) {
+			if (identTableEntry.getIdent().getText().equals(((IdentExpression) expression).getText()) && identTableEntry.getBacklink() == null) {
 				return identTableEntry;
 			}
 		}
@@ -426,6 +430,12 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	public void setClass(@NotNull GeneratedNode aNode) {
 		assert aNode instanceof GeneratedClass || aNode instanceof GeneratedNamespace;
 		genClass = aNode;
+
+		if (aNode instanceof GeneratedClass) {
+			_gcP.resolve((GeneratedClass) aNode);
+		}
+//		else 
+//			throw new RuntimeException("not implemented");
 	}
 
 	public GeneratedNode getGenClass() {
@@ -447,7 +457,34 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return toString();
 	}
 
+	public void resolveTypeDeferred(final GenType aType) {
+		if (typeDeferred.isPending())
+			typeDeferred.resolve(aType);
+		else {
+			final Holder<GenType> holder = new Holder<GenType>();
+			typeDeferred.then(new DoneCallback<GenType>() {
+				@Override
+				public void onDone(final GenType result) {
+					holder.set(result);
+				}
+			});
+			tripleo.elijah.util.Stupidity.println_err(String.format("Trying to resolve function twice 1) %s 2) %s", holder.get().asString(), aType.asString()));
+		}
+	}
 
+/*
+	Map<OS_Element, DeduceElement> elements = new HashMap<OS_Element, DeduceElement>();
+	public void addElement(final OS_Element aElement, final DeduceElement aDeduceElement) {
+		elements.put(aElement, aDeduceElement);
+	}
+*/
+
+	/*
+	 * Hook in for GeneratedClass
+	 */
+	public void onGenClass(OnGenClass aOnGenClass) {
+		_gcP.then(aOnGenClass::accept);
+	}
 }
 
 //

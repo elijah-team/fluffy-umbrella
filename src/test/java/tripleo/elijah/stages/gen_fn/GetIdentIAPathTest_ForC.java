@@ -17,6 +17,7 @@ import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.gen_c.CReference;
 import tripleo.elijah.stages.gen_c.Emit;
+import tripleo.elijah.stages.gen_c.Generate_Code_For_Method;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
@@ -226,7 +227,7 @@ public class GetIdentIAPathTest_ForC {
 
 	String getIdentIAPath(final IdentIA ia2, GeneratedFunction generatedFunction) {
 		final CReference reference = new CReference();
-		reference.getIdentIAPath(ia2, generatedFunction);
+		reference.getIdentIAPath(ia2, generatedFunction, Generate_Code_For_Method.AOG.GET, null);
 		return reference.build();
 	}
 

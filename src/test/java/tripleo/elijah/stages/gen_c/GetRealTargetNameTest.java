@@ -17,11 +17,7 @@ import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.StdErrSink;
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.lang.OS_Type;
-import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.gen_fn.GeneratedFunction;
 import tripleo.elijah.stages.gen_fn.TypeTableEntry;
 import tripleo.elijah.stages.instructions.IdentIA;
@@ -66,7 +62,7 @@ public class GetRealTargetNameTest {
 		GenerateC c = new GenerateC(mod, new StdErrSink(), ElLog.Verbosity.SILENT, pl); // TODO do we want silent?
 		//
 		Emit.emitting = false;
-		String x = c.getRealTargetName(gf, ident_ia);
+		String x = c.getRealTargetName(gf, ident_ia, Generate_Code_For_Method.AOG.GET, null);
 		Assert.assertEquals("vvx->vmfoo", x);
 	}
 }

@@ -37,22 +37,34 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 	private TypeNameList genericPart;
 
 	static final List<TypeName> emptyTypeNameList = ImmutableList.<TypeName>of();
+	private OS_Type osType;
 
 	public ClassStatement(final OS_Element parentElement, final Context parentContext) {
 		parent = parentElement; // setParent
-		if (parentElement instanceof OS_Module) {
-			final OS_Module module = (OS_Module) parentElement;
-			//
-			this.setPackageName(module.pullPackageName());
-			_packageName.addElement(this);
-			module.add(this);
-		} else if (parentElement instanceof FunctionDef) {
-			// do nothing
-		} else if (parentElement instanceof OS_Container) {
-			((OS_Container) parentElement).add(this);
-		} else {
-			throw new IllegalStateException(String.format("Cant add ClassStatement to %s", parentElement));
+
+		@NotNull final ElObjectType x = DecideElObjectType.getElObjectType(parentElement);
+		switch (x) {
+			case MODULE:
+				final OS_Module module = (OS_Module) parentElement;
+				//
+				this.setPackageName(module.pullPackageName());
+				_packageName.addElement(this);
+				module.add(this);
+				break;
+			case FUNCTION:
+				// do nothing
+				break;
+			default:
+				// we kind of fail the switch test here because OS_Container is not an OS_Element,
+				// so we have to test explicitly, messing up the pretty flow we had.
+				// hey sh*t happens.
+				if (parentElement instanceof OS_Container) {
+					((OS_Container) parentElement).add(this);
+				} else {
+					throw new IllegalStateException(String.format("Cant add ClassStatement to %s", parentElement));
+				}
 		}
+
 		setContext(new ClassContext(parentContext, this));
 	}
 
@@ -93,8 +105,8 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 	}
 
 	@Override // OS_Element
-	public Context getContext() {
-		return _a._context;
+	public ClassContext getContext() {
+		return (ClassContext) _a._context;
 	}
 
 	public void setContext(final ClassContext ctx) {
@@ -222,6 +234,12 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 				return (ConstructorDef) input;
 			}
 		});
+	}
+
+	public OS_Type getOS_Type() {
+		if (osType == null)
+			osType = new OS_Type(this);
+		return osType;
 	}
 }
 

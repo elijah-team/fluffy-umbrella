@@ -146,16 +146,20 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 				"}";
 	}
 
-	private DeferredObject<GenType, Void, Void> fefiDone = new DeferredObject<GenType, Void, Void>();
+    private DeferredObject<GenType, Void, Void> fefiDone = new DeferredObject<GenType, Void, Void>();
 
-	public void fefiDone(final GenType aGenType) {
-		if (fefiDone.isPending())
-			fefiDone.resolve(aGenType);
-	}
+    public void fefiDone(final GenType aGenType) {
+        if (fefiDone.isPending())
+            fefiDone.resolve(aGenType);
+    }
 
-	public void onFefiDone(DoneCallback<GenType> aCallback) {
-		fefiDone.then(aCallback);
-	}
+    public void onFefiDone(DoneCallback<GenType> aCallback) {
+        fefiDone.then(aCallback);
+    }
+
+    public InstructionArgument getBacklink() {
+        return backlink;
+    }
 }
 
 //
