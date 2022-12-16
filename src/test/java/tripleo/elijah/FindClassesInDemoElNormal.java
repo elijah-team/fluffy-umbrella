@@ -17,6 +17,7 @@ import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.OS_Package;
 import tripleo.elijah.util.Helpers;
 
 import java.util.List;
@@ -37,7 +38,9 @@ public class FindClassesInDemoElNormal {
 
 		final List<ClassStatement> aClassList = c.findClass("Main");
 		for (final ClassStatement classStatement : aClassList) {
-			System.out.println(classStatement.getPackageName().getName());
+			OS_Package packageName = classStatement.getPackageName();
+			if (packageName == null) continue;
+			System.out.println(packageName.getName());
 		}
 		Assert.assertEquals(3, aClassList.size());  // NOTE this may change. be aware
 	}
