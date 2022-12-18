@@ -501,38 +501,41 @@ class Resolve_Ident_IA {
 	}
 
 	private @NotNull RIA_STATE action_IntegerIA(@NotNull InstructionArgument ia) {
-		@NotNull VariableTableEntry vte  = ((IntegerIA)ia).getEntry();
-		final String                text = vte.getName();
-		final LookupResultList      lrl  = ectx.lookup(text);
+		final @NotNull VariableTableEntry vte  = ((IntegerIA) ia).getEntry();
+		final @NotNull String             text = vte.getName();
+
+		final @NotNull LookupResultList lrl = ectx.lookup(text);
 		el = lrl.chooseBest(null);
-		if (el != null) {
-			//
-			// TYPE INFORMATION IS CONTAINED IN VARIABLE DECLARATION
-			//
-			if (el instanceof VariableStatement) {
-				@NotNull VariableStatement vs = (VariableStatement) el;
-				if (!vs.typeName().isNull()) {
-					ectx = vs.typeName().getContext();
-					return RIA_STATE.CONTINUE;
-				}
-			}
-			//
-			// OTHERWISE TYPE INFORMATION MAY BE IN POTENTIAL_TYPES
-			//
-			@NotNull List<TypeTableEntry> pot = dc.getPotentialTypesVte(vte);
-			if (pot.size() == 1) {
-				OS_Type attached = pot.get(0).getAttached();
-				if (attached != null) {
-					action_001(attached);
-				} else {
-					action_002(pot.get(0));
-				}
-			}
-		} else {
+
+		if (el == null) {
 			errSink.reportError("1001 Can't resolve " + text);
 			foundElement.doNoFoundElement();
 			return RIA_STATE.RETURN;
 		}
+
+		//
+		// TYPE INFORMATION IS CONTAINED IN VARIABLE DECLARATION
+		//
+		if (el instanceof VariableStatement) {
+			@NotNull VariableStatement vs = (VariableStatement) el;
+			if (!vs.typeName().isNull()) {
+				ectx = vs.typeName().getContext();
+				return RIA_STATE.CONTINUE;
+			}
+		}
+		//
+		// OTHERWISE TYPE INFORMATION MAY BE IN POTENTIAL_TYPES
+		//
+		@NotNull List<TypeTableEntry> pot = dc.getPotentialTypesVte(vte);
+		if (pot.size() == 1) {
+			OS_Type attached = pot.get(0).getAttached();
+			if (attached != null) {
+				action_001(attached);
+			} else {
+				action_002(pot.get(0));
+			}
+		}
+
 		return RIA_STATE.NEXT;
 	}
 
