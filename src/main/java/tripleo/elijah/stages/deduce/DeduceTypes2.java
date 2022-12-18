@@ -23,14 +23,16 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.contexts.ClassContext;
 import tripleo.elijah.diagnostic.Diagnostic;
-import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang2.BuiltInTypes;
+import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.lang2.SpecialFunctions;
 import tripleo.elijah.lang2.SpecialVariables;
 import tripleo.elijah.nextgen.ClassDefinition;
 import tripleo.elijah.stages.deduce.declarations.DeferredMember;
 import tripleo.elijah.stages.deduce.declarations.DeferredMemberFunction;
+import tripleo.elijah.stages.deduce.zero.IZero;
+import tripleo.elijah.stages.deduce.zero.Zero_FuncExprType;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.stages.logging.ElLog;
@@ -3042,6 +3044,15 @@ public class DeduceTypes2 {
 			}
 			return aInvocation;
 		}
+	}
+
+	private Map<Object, IZero> _zeros = new HashMap<>();
+
+	public Zero_FuncExprType getZero(OS_FuncExprType aFuncExprType) {
+		if (!(_zeros.containsKey(aFuncExprType)))
+			_zeros.put(aFuncExprType, new Zero_FuncExprType(aFuncExprType));
+
+		return (Zero_FuncExprType) _zeros.get(aFuncExprType);
 	}
 }
 
