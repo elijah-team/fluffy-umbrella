@@ -224,7 +224,7 @@ class Resolve_Ident_IA2 {
 							@Override
 							public void onDone(final GenType result) {
 								if (result.ci == null) {
-									deduceTypes2.genCIForGenType2(result);
+									result.genCIForGenType2(deduceTypes2);
 								}
 								ainvocation[0] = result.ci;
 							}

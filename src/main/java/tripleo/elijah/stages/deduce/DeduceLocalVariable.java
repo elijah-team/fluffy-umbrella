@@ -12,7 +12,15 @@ package tripleo.elijah.stages.deduce;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.BaseFunctionDef;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.FuncExpr;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_FuncType;
+import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.TypeName;
 import tripleo.elijah.stages.deduce.declarations.DeferredMemberFunction;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
@@ -55,7 +63,7 @@ public class DeduceLocalVariable {
 			if (genType.typeName != null && genType.typeName == genType.resolved) {
 				try {
 					genType.resolved = deduceTypes2.resolve_type(genType.typeName, ctx/*genType.typeName.getTypeName().getContext()*/).resolved;
-					deduceTypes2.genCIForGenType2(genType);
+					genType.genCIForGenType2(deduceTypes2);
 					vte.resolveType(genType);
 					vte.resolveTypeToClass(genType.node);
 					int y=2;
@@ -110,7 +118,7 @@ public class DeduceLocalVariable {
 				if (genType.typeName != null && genType.typeName == genType.resolved) {
 					try {
 						genType.resolved = deduceTypes2.resolve_type(genType.typeName, ctx/*genType.typeName.getTypeName().getContext()*/).resolved;
-						deduceTypes2.genCIForGenType2(genType);
+						genType.genCIForGenType2(deduceTypes2);
 						vte.resolveType(genType);
 						vte.resolveTypeToClass(genType.node);
 					} catch (ResolveError aResolveError) {
@@ -147,7 +155,7 @@ public class DeduceLocalVariable {
 
 					switch (state) {
 					case 1:
-						deduceTypes2.genCIForGenType2(genType); // TODO what is this doing here? huh?
+						genType.genCIForGenType2(deduceTypes2); // TODO what is this doing here? huh?
 						break;
 					case 2:
 						{

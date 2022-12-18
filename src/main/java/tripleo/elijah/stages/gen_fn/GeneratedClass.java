@@ -10,13 +10,22 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
-import tripleo.elijah.stages.deduce.*;
+import tripleo.elijah.stages.deduce.ClassInvocation;
+import tripleo.elijah.stages.deduce.DeduceLookupUtils;
+import tripleo.elijah.stages.deduce.DeducePhase;
+import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.ResolveError;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created 10/29/20 4:26 AM
@@ -294,7 +303,7 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 								if (typeName instanceof NormalTypeName && ((NormalTypeName) typeName).getGenericPart().size() > 0)
 									genType.nonGenericTypeName = typeName;
 							}
-							aDeduceTypes2.genCIForGenType2(genType);
+							genType.genCIForGenType2(aDeduceTypes2);
 							potentialTypes.add(genType);
 						} catch (ResolveError aResolveError) {
 							aResolveError.printStackTrace();

@@ -997,7 +997,7 @@ public class DeduceTypes2 {
 									yy.typeName = null;
 								}
 
-								genCIForGenType2(yy);
+								yy.genCIForGenType2(this);
 								variableTableEntry.resolveType(yy);
 								variableTableEntry.resolveTypeToClass(yy.node);
 //								variableTableEntry.dlv.type.resolve(yy);
@@ -1862,7 +1862,7 @@ public class DeduceTypes2 {
 		}
 
 		public void genCIForGenType2(final GenType genType) {
-			dt2.genCIForGenType2(genType);
+			genType.genCIForGenType2(dt2);
 		}
 
 
@@ -2793,8 +2793,8 @@ public class DeduceTypes2 {
 			deduceTypes2.found_element_for_ite(generatedFunction, ite, y, ctx);
 		}
 
-		public void genCIForGenType2(final GenType genType) {
-			deduceTypes2.genCIForGenType2(genType);
+		public void genCIForGenType2(final @NotNull GenType genType) {
+			genType.genCIForGenType2(deduceTypes2);
 		}
 
 		public @NotNull FunctionInvocation newFunctionInvocation(final BaseFunctionDef aFunctionDef, final ProcTableEntry aPte, final @NotNull IInvocation aInvocation) {
@@ -3024,44 +3024,6 @@ public class DeduceTypes2 {
 					throw new IllegalArgumentException("Illegal object type for parent");
 			}
 			return aInvocation;
-		}
-	}
-
-	public void genCIForGenType2(final GenType aGenType) {
-		aGenType.genCI(aGenType.nonGenericTypeName, this, errSink, phase);
-		final IInvocation invocation = aGenType.ci;
-		if (invocation instanceof NamespaceInvocation) {
-			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
-			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
-				@Override
-				public void onDone(final GeneratedNamespace result) {
-					aGenType.node = result;
-				}
-			});
-		} else if (invocation instanceof ClassInvocation) {
-			final ClassInvocation classInvocation = (ClassInvocation) invocation;
-			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
-				@Override
-				public void onDone(final GeneratedClass result) {
-					aGenType.node = result;
-				}
-			});
-		} else {
-			if (aGenType.resolved instanceof OS_FuncExprType) {
-				final OS_FuncExprType funcExprType = (OS_FuncExprType) aGenType.resolved;
-				final @NotNull GenerateFunctions genf = getGenerateFunctions(funcExprType.getElement().getContext().module());
-				final FunctionInvocation fi = new FunctionInvocation((BaseFunctionDef) funcExprType.getElement(),
-						null,
-						null,
-						phase.generatePhase);
-				WlGenerateFunction gen = new WlGenerateFunction(genf, fi);
-				gen.run(null);
-				aGenType.node = gen.getResult();
-			} else if (aGenType.resolved instanceof OS_FuncType) {
-				final OS_FuncType funcType = (OS_FuncType) aGenType.resolved;
-				int y=2;
-			} else
-				throw new IllegalStateException("invalid invocation");
 		}
 	}
 }

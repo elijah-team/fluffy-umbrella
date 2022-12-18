@@ -8,11 +8,25 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.lang.*;
-import tripleo.elijah.stages.deduce.*;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.NamespaceStatement;
+import tripleo.elijah.lang.NormalTypeName;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_FuncExprType;
+import tripleo.elijah.lang.OS_FuncType;
+import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.stages.deduce.ClassInvocation;
+import tripleo.elijah.stages.deduce.DeducePhase;
+import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.deduce.IInvocation;
+import tripleo.elijah.stages.deduce.NamespaceInvocation;
+import tripleo.elijah.stages.deduce.zero.Zero_FuncExprType;
 
 import java.util.List;
 
@@ -130,9 +144,43 @@ public class GenType {
 								 final DeduceTypes2 deduceTypes2,
 								 final ErrSink errSink,
 								 final DeducePhase phase) {
-		SetGenCI sgci = new SetGenCI();
-		final ClassInvocation ci = sgci.call(this, aGenericTypeName, deduceTypes2, errSink, phase);
+		SetGenCI              sgci = new SetGenCI();
+		final ClassInvocation ci   = sgci.call(this, aGenericTypeName, deduceTypes2, errSink, phase);
 		return ci;
+	}
+
+	public void genCIForGenType2(DeduceTypes2 aDeduceTypes2) {
+		genCI(nonGenericTypeName, aDeduceTypes2, aDeduceTypes2._errSink(), aDeduceTypes2._phase());
+		final IInvocation invocation = ci;
+		if (invocation instanceof NamespaceInvocation) {
+			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
+			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
+				@Override
+				public void onDone(final GeneratedNamespace result) {
+					node = result;
+				}
+			});
+		} else if (invocation instanceof ClassInvocation) {
+			final ClassInvocation classInvocation = (ClassInvocation) invocation;
+			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
+				@Override
+				public void onDone(final GeneratedClass result) {
+					node = result;
+				}
+			});
+		} else {
+			if (resolved instanceof OS_FuncExprType) {
+				final OS_FuncExprType funcExprType = (OS_FuncExprType) resolved;
+
+				final Zero_FuncExprType zfet = aDeduceTypes2.getZero(funcExprType);
+
+				node = zfet.genCIForGenType2(aDeduceTypes2);
+			} else if (resolved instanceof OS_FuncType) {
+				final OS_FuncType funcType = (OS_FuncType) resolved;
+				int               y        = 2;
+			} else
+				throw new IllegalStateException("invalid invocation");
+		}
 	}
 
 	static class SetGenCI {
