@@ -17,8 +17,10 @@ public class ProcessRecord {
 	public ProcessRecord(final @NotNull ICompilationAccess ca0) {
 		//ca            = ca0;
 
-		pipelineLogic = new PipelineLogic(ca0.getAccessBus());
-		dpl = new DeducePipeline(ca0.getAccessBus());
+		throw new IllegalStateException();
+
+//		pipelineLogic = new PipelineLogic(ca0.getAccessBus());
+//		dpl = new DeducePipeline(ca0.getAccessBus());
 	}
 
 	public void writeLogs(final ICompilationAccess aCa) {
