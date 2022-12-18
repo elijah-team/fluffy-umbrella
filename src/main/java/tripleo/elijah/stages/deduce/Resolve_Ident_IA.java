@@ -183,7 +183,7 @@ class Resolve_Ident_IA {
 		}
 	}
 
-	class GenericElementHolderWithDC implements IElementHolder {
+	static class GenericElementHolderWithDC implements IElementHolder {
 		private final OS_Element                 element;
 		private final DeduceTypes2.DeduceClient3 deduceClient3;
 
@@ -218,6 +218,9 @@ class Resolve_Ident_IA {
 		} else if (x instanceof ProcIA) {
 			@NotNull ProcTableEntry y = ((ProcIA) x).getEntry();
 			assert y.getStatus() == BaseTableEntry.Status.KNOWN;
+
+			assert el != null;
+
 			y.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(el));
 		} else
 			throw new NotImplementedException();
@@ -283,6 +286,8 @@ class Resolve_Ident_IA {
 	}
 
 	private void _procIA_constructor_helper_create_invocations(@NotNull ProcTableEntry pte) {
+		assert el != null;
+
 		@Nullable ClassInvocation ci = new ClassInvocation((ClassStatement) el, null);
 
 		ci = phase.registerClassInvocation(ci);
@@ -296,7 +301,7 @@ class Resolve_Ident_IA {
 		} else {
 			// TODO find a ctor that matches prte.getArgs()
 			final List<TypeTableEntry> x  = pte.getArgs();
-			int                        yy = 2;
+			NotImplementedException.raise();
 		}
 		assert ((ClassStatement) el).getGenericPart().size() == 0;
 		@NotNull FunctionInvocation fi = new FunctionInvocation(selected_constructor, pte, ci, phase.generatePhase);
@@ -531,7 +536,7 @@ class Resolve_Ident_IA {
 		return RIA_STATE.NEXT;
 	}
 
-	private void action_002(final TypeTableEntry tte) {
+	private void action_002(final @NotNull TypeTableEntry tte) {
 		//>ENTRY
 		//assert vte.potentailTypes().size() == 1;
 		assert tte.getAttached() == null;
