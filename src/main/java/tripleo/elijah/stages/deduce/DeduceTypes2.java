@@ -1172,68 +1172,6 @@ public class DeduceTypes2 {
 		}
 	}
 
-	/**
-	 * See {@link Implement_construct#_implement_construct_type}
-	 */
-	private @Nullable ClassInvocation genCI(@NotNull TypeTableEntry aType) {
-		GenType genType = aType.genType;
-		if (genType.nonGenericTypeName != null) {
-			@NotNull NormalTypeName aTyn1 = (NormalTypeName) genType.nonGenericTypeName;
-			@Nullable String constructorName = null; // TODO this comes from nowhere
-			ClassStatement best = genType.resolved.getClassOf();
-			//
-			@NotNull List<TypeName> gp = best.getGenericPart();
-			@Nullable ClassInvocation clsinv = new ClassInvocation(best, constructorName);
-			if (gp.size() > 0) {
-				TypeNameList gp2 = aTyn1.getGenericPart();
-				for (int i = 0; i < gp.size(); i++) {
-					final TypeName typeName = gp2.get(i);
-					@NotNull GenType genType1;
-					try {
-						genType1 = resolve_type(new OS_Type(typeName), typeName.getContext());
-						clsinv.set(i, gp.get(i), genType1.resolved);
-					} catch (ResolveError aResolveError) {
-						aResolveError.printStackTrace();
-						return null;
-					}
-				}
-			}
-			clsinv = phase.registerClassInvocation(clsinv);
-			genType.ci = clsinv;
-			return clsinv;
-		}
-		if (genType.resolved != null) {
-			ClassStatement best = genType.resolved.getClassOf();
-			@Nullable String constructorName = null; // TODO what to do about this, nothing I guess
-
-			@NotNull List<TypeName> gp = best.getGenericPart();
-			@Nullable ClassInvocation clsinv = new ClassInvocation(best, constructorName);
-			assert best.getGenericPart().size() == 0;
-/*
-			if (gp.size() > 0) {
-				TypeNameList gp2 = aTyn1.getGenericPart();
-				for (int i = 0; i < gp.size(); i++) {
-					final TypeName typeName = gp2.get(i);
-					@NotNull OS_Type typeName2;
-					try {
-						typeName2 = resolve_type(new OS_Type(typeName), typeName.getContext());
-						clsinv.set(i, gp.get(i), typeName2);
-					} catch (ResolveError aResolveError) {
-						aResolveError.printStackTrace();
-						return null;
-					}
-				}
-			}
-*/
-			clsinv = phase.registerClassInvocation(clsinv);
-			genType.ci = clsinv;
-			return clsinv;
-		}
-		return null;
-	}
-
-	final List<FunctionInvocation> functionInvocations = new ArrayList<>(); // TODO never used!
-
 	@NotNull FunctionInvocation newFunctionInvocation(BaseFunctionDef aFunctionDef, ProcTableEntry aPte, @NotNull IInvocation aInvocation, @NotNull DeducePhase aDeducePhase) {
 		@NotNull FunctionInvocation fi = new FunctionInvocation(aFunctionDef, aPte, aInvocation, aDeducePhase.generatePhase);
 		// TODO register here
