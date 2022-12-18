@@ -63,7 +63,7 @@ class Resolve_Ident_IA {
 	@Nullable OS_Element el;
 	Context ectx;
 
-	public void action() {
+	public void action() throws ResolveError {
 		final @NotNull List<InstructionArgument> s = generatedFunction._getIdentIAPathList(identIA);
 
 		ectx = context;
@@ -106,7 +106,7 @@ class Resolve_Ident_IA {
 		updateStatus(s);
 	}
 
-	private boolean process(InstructionArgument ia, final @NotNull List<InstructionArgument> aS) {
+	private boolean process(InstructionArgument ia, final @NotNull List<InstructionArgument> aS) throws ResolveError {
 		if (ia instanceof IntegerIA) {
 			@NotNull RIA_STATE state = action_IntegerIA(ia);
 			if (state == RIA_STATE.RETURN) {
@@ -223,8 +223,8 @@ class Resolve_Ident_IA {
 			throw new NotImplementedException();
 	}
 
-	private void action_ProcIA(@NotNull InstructionArgument ia) {
-		@NotNull ProcTableEntry prte = ((ProcIA)ia).getEntry();
+	private void action_ProcIA(@NotNull InstructionArgument ia) throws ResolveError {
+		@NotNull ProcTableEntry prte = ((ProcIA) ia).getEntry();
 		if (prte.getResolvedElement() == null) {
 			IExpression exp = prte.expression;
 			if (exp instanceof ProcedureCallExpression) {
@@ -234,20 +234,15 @@ class Resolve_Ident_IA {
 					throw new IllegalStateException("double pce!");
 			} else
 				throw new IllegalStateException("prte resolvedElement not ProcCallExpression");
-			try {
-				LookupResultList lrl = dc.lookupExpression(exp, ectx);
-				el = lrl.chooseBest(null);
-				assert el != null;
-				ectx = el.getContext();
+			LookupResultList lrl = dc.lookupExpression(exp, ectx);
+			el = lrl.chooseBest(null);
+			assert el != null;
+			ectx = el.getContext();
 //					prte.setResolvedElement(el);
-				prte.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(el));
-				// handle constructor calls
-				if (el instanceof ClassStatement) {
-					_procIA_constructor_helper(prte);
-				}
-			} catch (ResolveError aResolveError) {
-				aResolveError.printStackTrace();
-				throw new NotImplementedException();
+			prte.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(el));
+			// handle constructor calls
+			if (el instanceof ClassStatement) {
+				_procIA_constructor_helper(prte);
 			}
 		} else {
 			el = prte.getResolvedElement();

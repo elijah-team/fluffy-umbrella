@@ -39,7 +39,11 @@ import tripleo.elijah.work.WorkJob;
 import tripleo.elijah.work.WorkList;
 import tripleo.elijah.work.WorkManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -149,8 +153,17 @@ public class DeduceTypes2 {
 		throw new NotImplementedException(/*"ooga booga"*/);
 	}
 
+	public DeducePhase _phase() {
+		return phase;
+	}
+
+	public ErrSink _errSink() {
+		return errSink;
+	}
+
 	interface IElementProcessor {
 		void elementIsNull();
+
 		void hasElement(OS_Element el);
 	}
 
@@ -2635,7 +2648,11 @@ public class DeduceTypes2 {
 
 	public void resolveIdentIA_(@NotNull Context context, @NotNull IdentIA identIA, BaseGeneratedFunction generatedFunction, @NotNull FoundElement foundElement) {
 		@NotNull Resolve_Ident_IA ria = new Resolve_Ident_IA(new DeduceClient3(this), context, identIA, generatedFunction, foundElement, errSink);
-		ria.action();
+		try {
+			ria.action();
+		} catch (ResolveError aE) {
+			throw new RuntimeException(aE);
+		}
 	}
 
 
