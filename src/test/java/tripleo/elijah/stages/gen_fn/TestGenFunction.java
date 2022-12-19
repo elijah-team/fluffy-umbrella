@@ -10,6 +10,7 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.AccessBus;
@@ -222,7 +223,7 @@ public class TestGenFunction {
 
 //		Assert.assertEquals(2, lgf.size());
 
-		final @NotNull DeducePhase dp = compilation.getDeducePhase();
+		final @NotNull DeducePhase         dp  = compilation.getDeducePhase();
 		final @NotNull List<GeneratedNode> lgc = compilation.getLGC();
 
 		dp.deduceModule(m, lgc, c.gitlabCIVerbosity());
@@ -232,7 +233,8 @@ public class TestGenFunction {
 		Assert.assertEquals(16, c.errorCount());
 	}
 
-//	@Test
+	@Test
+	@Ignore
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testGenericA() throws Exception {
 		final StdErrSink  errSink = new StdErrSink();
@@ -243,15 +245,16 @@ public class TestGenFunction {
 		c.feedCmdLine(List_of(f));
 	}
 
-//	@Test // ignore because of generateAllTopLevelClasses
+	@Test // ignore because of generateAllTopLevelClasses
+	@Ignore
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testBasic1Backlink1Elijah() throws Exception {
 		final StdErrSink  eee = new StdErrSink();
 		final Compilation c   = new CompilationImpl(eee, new IO());
 
-		final String f = "test/basic1/backlink1.elijah";
-		final File file = new File(f);
-		final OS_Module m = c.realParseElijjahFile(f, file, false);
+		final String    f    = "test/basic1/backlink1.elijah";
+		final File      file = new File(f);
+		final OS_Module m    = c.realParseElijjahFile(f, file, false);
 		Assert.assertTrue("Method parsed correctly", m != null);
 		m.prelude = c.findPrelude("c"); // TODO we dont know which prelude to find yet
 
