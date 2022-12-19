@@ -6,8 +6,6 @@ import tripleo.elijah.stages.logging.ElLog;
 import java.util.List;
 
 public interface ICompilationAccess {
-	void setPipelineLogic(final PipelineLogic pl);
-
 	void addPipeline(final PipelineMember pl);
 
 	ElLog.Verbosity testSilence();

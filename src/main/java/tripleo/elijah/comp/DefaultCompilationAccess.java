@@ -39,15 +39,6 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 	}
 
 	@Override
-	public void setPipelineLogic(final PipelineLogic pl) {
-		compilation.pipelineLogic = pl;
-
-//		pipelineLogicDeferred.resolve(pl);
-
-//		compilation.pr.setGenerateResult(pl.gr);
-	}
-
-	@Override
 	public void addPipeline(final PipelineMember pl) {
 		int y = 2;//compilation.addPipeline(pl);
 	}
