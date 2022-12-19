@@ -159,11 +159,7 @@ public abstract class Compilation {
 
 					ab.addPipelineLogic(PipelineLogic::new);
 
-					ab.subscribePipelineLogic(xx -> {
-						pipelineLogic = xx;
-
-						modules.forEach(mod -> pipelineLogic.addModule(mod));
-					});
+					ab.subscribePipelineLogic(xx -> pipelineLogic = xx);
 
 					ab.add(DeducePipeline::new);
 					ab.add(GeneratePipeline::new);

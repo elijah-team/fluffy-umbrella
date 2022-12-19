@@ -99,7 +99,7 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	}
 
 	public void addModule(OS_Module m) {
-//		mods.add(m);
+		mods.add(m);
 	}
 
 	public void resolveCheck(DeducePhase.@NotNull GeneratedClasses lgc) {

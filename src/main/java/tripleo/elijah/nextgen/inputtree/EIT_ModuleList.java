@@ -191,6 +191,10 @@ public class EIT_ModuleList {
 		__pl = aPipelineLogic;
 	}
 
+	public void add(OS_Module aM) {
+		mods.add(aM);
+	}
+
 	private static class _ProcessParams {
 		private final OS_Module         mod;
 		private       PipelineLogic     pipelineLogic;
