@@ -140,6 +140,9 @@ class Found_Element_For_ITE {
 								done(new DoneCallback<GenType>() {
 									@Override
 									public void onDone(@NotNull GenType result) {
+										if (ite.resolveExpectation.isSatisfied())
+											return; // TODO just skip for now // assert false;
+
 										if (ite.type == null)
 											ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, vs.initialValue());
 										assert result.resolved != null;
