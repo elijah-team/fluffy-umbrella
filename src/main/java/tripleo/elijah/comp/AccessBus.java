@@ -80,11 +80,11 @@ public class AccessBus {
 		generateResultPromise.then(aGenerateResultListener::gr_slot);
 	}
 
-	void doModule(@NotNull List<GeneratedNode> lgc,
-				  WorkManager wm,
-				  @NotNull OS_Module mod,
-				  @NotNull PipelineLogic aPipelineLogic) {
-		final ErrSink         errSink   = mod.parent.getErrSink();
+	void doModule(final @NotNull List<GeneratedNode> lgc,
+				  final @NotNull WorkManager wm,
+				  final @NotNull OS_Module mod,
+				  final @NotNull PipelineLogic aPipelineLogic,
+				  final @NotNull ErrSink errSink) {
 		final ElLog.Verbosity verbosity = aPipelineLogic.getVerbosity();
 
 		final GenerateC generateC = new GenerateC(mod, errSink, verbosity, aPipelineLogic);

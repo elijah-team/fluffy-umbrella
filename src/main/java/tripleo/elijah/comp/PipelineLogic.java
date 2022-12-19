@@ -69,11 +69,13 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 //		resolveMods();
 	}
 
-	public void generate(List<GeneratedNode> lgc) {
+	public void generate(List<GeneratedNode> lgc, ErrSink aErrSink) {
 		final WorkManager wm = new WorkManager();
-		// README use any errSink, they should all be the same
+
+//		__mods_BACKING.addAll((__ab.getCompilation().getModules()));
+
 		for (OS_Module mod : mods.getMods()) {
-			__ab.doModule(lgc, wm, mod, this);
+			__ab.doModule(lgc, wm, mod, this, aErrSink);
 		}
 
 		__ab.resolveGenerateResult(gr);
