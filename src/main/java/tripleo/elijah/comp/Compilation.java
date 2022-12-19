@@ -80,9 +80,10 @@ public abstract class Compilation {
 		this._compilationNumber = new Random().nextInt(Integer.MAX_VALUE);
 	}
 
-	public void feedCmdLine(final List<String> args) throws Exception {
+	public AccessBus feedCmdLine(final List<String> args) throws Exception {
 		final ErrSink errSink = eee == null ? new StdErrSink() : eee;
-		boolean do_out = false /*, silent = false*/;
+		boolean       do_out  = false /*, silent = false*/;
+		AccessBus     ab      = null;
 		try {
 			if (args.size() > 0) {
 				final Options options = new Options();
@@ -91,7 +92,7 @@ public abstract class Compilation {
 				options.addOption("out", false, "make debug files");
 				options.addOption("silent", false, "suppress DeduceType output to console");
 				final CommandLineParser clp = new DefaultParser();
-				final CommandLine cmd = clp.parse(options, args.toArray(new String[args.size()]));
+				final CommandLine       cmd = clp.parse(options, args.toArray(new String[args.size()]));
 
 				if (cmd.hasOption("s")) {
 					stage = Stages.valueOf(cmd.getOptionValue('s'));
@@ -107,12 +108,12 @@ public abstract class Compilation {
 				}
 
 				CompilerInstructions ez_file = null;
-				final String[] args2 = cmd.getArgs();
+				final String[]       args2   = cmd.getArgs();
 
 				for (int i = 0; i < args2.length; i++) {
-					final String file_name = args2[i];
-					final File f = new File(file_name);
-					final boolean matches2 = Pattern.matches(".+\\.ez$", file_name);
+					final String  file_name = args2[i];
+					final File    f         = new File(file_name);
+					final boolean matches2  = Pattern.matches(".+\\.ez$", file_name);
 					if (matches2)
 						add_ci(parseEzFile(f, file_name, eee));
 					else {
@@ -130,18 +131,18 @@ public abstract class Compilation {
 								add_ci(ez_file);
 							}
 						} else
-							eee.reportError("9995 Not a directory "+f.getAbsolutePath());
+							eee.reportError("9995 Not a directory " + f.getAbsolutePath());
 					}
 				}
 
-				System.err.println("130 GEN_LANG: "+cis.get(0).genLang());
+				System.err.println("130 GEN_LANG: " + cis.get(0).genLang());
 				findStdLib("c"); // TODO find a better place for this
 
 				for (final CompilerInstructions ci : cis) {
 					use(ci, do_out);
 				}
 
-				final AccessBus ab = new AccessBus(this);
+				ab = new AccessBus(this);
 
 				if (stage == Stages.E) {
 					// do nothing. job over
@@ -157,6 +158,8 @@ public abstract class Compilation {
 */
 
 					ab.addPipelineLogic(PipelineLogic::new);
+
+					ab.subscribePipelineLogic(xx -> pipelineLogic = xx);
 
 					ab.add(DeducePipeline::new);
 					ab.add(GeneratePipeline::new);
@@ -174,6 +177,8 @@ public abstract class Compilation {
 			errSink.exception(e);
 			throw e;
 		}
+
+		return ab;
 	}
 
 	public IO getIO() {
@@ -497,7 +502,7 @@ public abstract class Compilation {
 	}
 
 	public void addFunctionMapHook(FunctionMapHook aFunctionMapHook) {
-		pipelineLogic.dp.addFunctionMapHook(aFunctionMapHook);
+		getDeducePhase().addFunctionMapHook(aFunctionMapHook);
 	}
 
 	public boolean getSilence() {
@@ -505,11 +510,12 @@ public abstract class Compilation {
 	}
 
 	public @NotNull DeducePhase getDeducePhase() {
+		// TODO subscribeDeducePhase??
 		return pipelineLogic.dp;
 	}
 
 	public @NotNull List<GeneratedNode> getLGC() {
-		return pipelineLogic.dp.generatedClasses.copy();
+		return getDeducePhase().generatedClasses.copy();
 	}
 
 	public EOT_OutputTree getOutputTree() {
