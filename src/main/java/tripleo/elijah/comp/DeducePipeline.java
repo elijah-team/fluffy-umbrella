@@ -71,9 +71,9 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 		pipelineLogic.everythingBeforeGenerate();
 
 //		assert lgc.size() == ms.size();
-		__ab.resolveLgc(lgc);
 
 		lgc = pipelineLogic.dp.generatedClasses.copy();
+		__ab.resolveLgc(lgc);
 	}
 
 	@Override
