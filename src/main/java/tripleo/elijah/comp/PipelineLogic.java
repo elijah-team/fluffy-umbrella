@@ -25,7 +25,6 @@ import tripleo.elijah.work.WorkManager;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -37,7 +36,6 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	private final AccessBus     __ab;
 
 	public GenerateResult gr     = new GenerateResult();
-	public List<ElLog>    elLogs = new LinkedList<ElLog>();
 
 	private final ElLog.Verbosity verbosity;
 
@@ -143,7 +141,7 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	}
 
 	public void addLog(ElLog aLog) {
-		elLogs.add(aLog);
+		__ab.getCompilation().elLogs.add(aLog);
 	}
 
 	@Override

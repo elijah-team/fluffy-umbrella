@@ -70,7 +70,7 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 	public void writeLogs() {
 		final boolean silent = testSilence() == ElLog.Verbosity.SILENT;
 
-		__writeLogs(silent, compilation.pipelineLogic.elLogs);
+		__writeLogs(silent, compilation.elLogs);
 	}
 
 	@Override

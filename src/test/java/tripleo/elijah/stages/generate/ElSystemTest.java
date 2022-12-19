@@ -11,16 +11,19 @@ package tripleo.elijah.stages.generate;
 
 import org.junit.Before;
 import org.junit.Test;
+import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
+import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.util.Helpers;
 
 public class ElSystemTest {
 
-	ElSystem sys;
+	ElSystem    sys;
 	Compilation c;
+	private AccessBus ab;
 
 	@Before
 	public void setUp() throws Exception {
@@ -32,15 +35,18 @@ public class ElSystemTest {
 		sys = new ElSystem();
 		sys.setCompilation(c);
 
-		c.feedCmdLine(Helpers.List_of(f));
+		ab = c.feedCmdLine(Helpers.List_of(f));
 	}
 
 	@Test
 	public void generateOutputs() {
+		final GenerateResult[] gr = new GenerateResult[1];
+		ab.subscribe_GenerateResult(agr -> gr[0] = agr);
+
 		OutputStrategy os = new OutputStrategy();
 		os.per(OutputStrategy.Per.PER_CLASS);
 		sys.setOutputStrategy(os);
-		sys.generateOutputs(c.pipelineLogic.gr);
+		sys.generateOutputs(gr[0]);
 	}
 }
 

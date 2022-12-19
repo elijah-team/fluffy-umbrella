@@ -45,6 +45,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -61,6 +62,8 @@ public abstract class Compilation {
 	private final Map<String, OS_Package>           _packages    = new HashMap<String, OS_Package>();
 	private       int                               _packageCode = 1;
 	public final  List<CompilerInstructions>        cis          = new ArrayList<CompilerInstructions>();
+
+	public List<ElLog> elLogs = new LinkedList<ElLog>();
 
 	//
 	//
@@ -162,15 +165,7 @@ public abstract class Compilation {
 
 					pipelines.run();
 
-					final PipelineLogic[] pl = new PipelineLogic[1];
-
-					ab.subscribePipelineLogic(xx -> pl[0]=xx);
-
-					final PipelineLogic pipelineLogic1  = pl[0];
-
-					assert pipelineLogic1 == pipelineLogic;
-
-					writeLogs(silent, pipelineLogic1.elLogs);
+					writeLogs(silent, elLogs);
 				}
 			} else {
 				System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
