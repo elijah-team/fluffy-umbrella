@@ -262,7 +262,11 @@ public class FoundParent implements BaseTableEntry.StatusListener {
 							final ClassStatement   resolvedClassOf = result.resolved.getClassOf();
 							final LookupResultList lrl             = DeduceLookupUtils.lookupExpression(ite.getIdent(), resolvedClassOf.getContext(), deduceTypes2);
 
-							assert ite.getIdent().getText().equals(resolvedClassOf.getName());
+/*
+							String ite_text = ite.getIdent().getText();
+							String res_text     = resolvedClassOf.getName();
+							assert ite_text.equals(res_text); // TODO no way this could pass
+*/
 
 							final OS_Element ele2 = lrl.chooseBest(null);
 
