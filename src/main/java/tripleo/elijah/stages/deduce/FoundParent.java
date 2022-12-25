@@ -1,12 +1,15 @@
 package tripleo.elijah.stages.deduce;
 
 import org.jdeferred2.DoneCallback;
+import org.jdeferred2.Promise;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
+import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.zero.ITE_Zero;
+import tripleo.elijah.stages.deduce.zero.PTE_Zero;
 import tripleo.elijah.stages.deduce.zero.VTE_Zero;
 import tripleo.elijah.stages.deduce.zero.Zero_PotentialTypes;
 import tripleo.elijah.stages.gen_fn.*;
@@ -189,8 +192,22 @@ public class FoundParent implements BaseTableEntry.StatusListener {
 			final BaseFunctionDef fd = fi.getFunction();
 			if (fd instanceof ConstructorDef) {
 				fi.generatePromise()
-				  .then((BaseGeneratedFunction result) ->
-					aPte.zero().foundCounstructorDef((GeneratedConstructor) result, ite, deduceTypes2, deduceTypes2._errSink()));
+				  .then((final BaseGeneratedFunction result) -> {
+					  /*
+					   * 1. Create Zero if not created
+					   * 2. Get Promise, which is created automatically, because on some level, the purpose of zero
+					   *    is to calculate this
+					   * 3. Calculate because we now have all the information necessary to do it
+					   * 4. Hook up pass/fail callbacks
+					   */
+					  final PTE_Zero zero = aPte.zero();
+					  final Promise<IElementHolder, Diagnostic, Void> bestP = zero.foundCounstructorPromise();
+					  
+					  zero.calculateConstructor((GeneratedConstructor) result, ite, deduceTypes2);
+					  
+					  bestP.done(best -> ite.setStatus(BaseTableEntry.Status.KNOWN, best));
+					  bestP.fail(err -> deduceTypes2._errSink().reportDiagnostic(err));
+				  });
 			}
 		} else {
 			deduceTypes2.LOG.info("1621");
