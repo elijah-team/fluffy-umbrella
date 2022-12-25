@@ -11,6 +11,7 @@ package tripleo.elijah.stages.gen_fn;
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
@@ -21,6 +22,7 @@ import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeduceProcCall;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.deduce.zero.PTE_Zero;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
@@ -203,9 +205,17 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	public DeduceProcCall deduceProcCall() {
 		return dpc;
 	}
-
-	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseGeneratedFunction aGeneratedFunction, final ErrSink aErrSink) {
-		dpc.setDeduceTypes2(aDeduceTypes2, aContext, aGeneratedFunction, aErrSink);
+	
+	@Contract(pure = true)
+	private DeferredObject<ProcTableEntry, Void, Void> completeDeferred() {
+		return completeDeferred;
+	}
+	
+	public PTE_Zero zero() {
+		if (_zero == null)
+			_zero = new PTE_Zero(this);
+		
+		return _zero;
 	}
 }
 

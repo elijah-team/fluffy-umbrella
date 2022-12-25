@@ -180,30 +180,18 @@ public class FoundParent implements BaseTableEntry.StatusListener {
 
 	private void onChangePTE(@NotNull final ProcTableEntry aPte) {
 		if (aPte.getStatus() == BaseTableEntry.Status.KNOWN) { // TODO might be obvious
-			if (aPte.getFunctionInvocation() != null) {
-				final FunctionInvocation fi = aPte.getFunctionInvocation();
-				final BaseFunctionDef fd = fi.getFunction();
-				if (fd instanceof ConstructorDef) {
-					fi.generateDeferred().done(new DoneCallback<BaseGeneratedFunction>() {
-						@Override
-						public void onDone(final BaseGeneratedFunction result) {
-							@NotNull final GeneratedConstructor constructorDef = (GeneratedConstructor) result;
-
-							@NotNull final BaseFunctionDef ele = constructorDef.getFD();
-
-							try {
-								final LookupResultList lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
-								@Nullable final OS_Element best = lrl.chooseBest(null);
-								ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
-							} catch (final ResolveError aResolveError) {
-								aResolveError.printStackTrace();
-								deduceTypes2.errSink.reportDiagnostic(aResolveError);
-							}
-						}
-					});
-				}
-			} else
+			final FunctionInvocation fi = aPte.getFunctionInvocation();
+			
+			if (fi == null) {
 				throw new NotImplementedException();
+			}
+			
+			final BaseFunctionDef fd = fi.getFunction();
+			if (fd instanceof ConstructorDef) {
+				fi.generatePromise()
+				  .then((BaseGeneratedFunction result) ->
+					aPte.zero().foundCounstructorDef((GeneratedConstructor) result, ite, deduceTypes2, deduceTypes2._errSink()));
+			}
 		} else {
 			deduceTypes2.LOG.info("1621");
 			@Nullable LookupResultList lrl = null;
