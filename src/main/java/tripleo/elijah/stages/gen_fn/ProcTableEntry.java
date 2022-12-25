@@ -139,6 +139,8 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 
 	// have no idea what this is for
 	public void setFunctionInvocation(final FunctionInvocation aFunctionInvocation) {
+		if (functionInvocation.sameAs(aFunctionInvocation)) return; // short circuit for better behavior
+		
 		if (functionInvocation != aFunctionInvocation) {
 			functionInvocation = aFunctionInvocation;
 			onFunctionInvocations.reset();

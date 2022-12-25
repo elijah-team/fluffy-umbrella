@@ -116,15 +116,25 @@ public class FunctionInvocation {
 	public Promise<BaseGeneratedFunction, Void, Void> generatePromise() {
 		return generateDeferred.promise();
 	}
-
+	
 	public void setGenerated(final BaseGeneratedFunction aGeneratedFunction) {
 		_generated = aGeneratedFunction;
 	}
-
+	
 	public List<TypeTableEntry> getArgs() {
 		if (pte == null)
 			return List_of();
 		return pte.args;
+	}
+	
+	public boolean sameAs(final @NotNull FunctionInvocation aFunctionInvocation) {
+		if (fd != aFunctionInvocation.fd) return false;
+		if (pte != aFunctionInvocation.pte) return false;
+		if (classInvocation != aFunctionInvocation.classInvocation) return false;
+		if (namespaceInvocation != aFunctionInvocation.namespaceInvocation) return false;
+		if (_generated != aFunctionInvocation._generated) return false;
+		
+		return true;
 	}
 }
 
