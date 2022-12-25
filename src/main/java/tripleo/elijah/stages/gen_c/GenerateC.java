@@ -20,15 +20,10 @@ import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
+import tripleo.elijah.stages.gen_generic.GenerateFiles;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
-import tripleo.elijah.stages.instructions.ConstTableIA;
-import tripleo.elijah.stages.instructions.FnCallArgs;
-import tripleo.elijah.stages.instructions.IdentIA;
-import tripleo.elijah.stages.instructions.Instruction;
-import tripleo.elijah.stages.instructions.InstructionArgument;
-import tripleo.elijah.stages.instructions.IntegerIA;
-import tripleo.elijah.stages.instructions.ProcIA;
-import tripleo.elijah.stages.instructions.VariableTableType;
+import tripleo.elijah.stages.gen_generic.OutputFileFactoryParams;
+import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.BufferTabbedOutputStream;
 import tripleo.elijah.util.Helpers;
@@ -48,7 +43,7 @@ import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 /**
  * Created 10/8/20 7:13 AM
  */
-public class GenerateC implements CodeGenerator {
+public class GenerateC implements CodeGenerator, GenerateFiles {
 	private static final String PHASE = "GenerateC";
 	private final ErrSink errSink;
 	private final ElLog LOG;
@@ -60,39 +55,19 @@ public class GenerateC implements CodeGenerator {
 		pipelineLogic.addLog(LOG);
 	}
 
-	@NotNull
-	public static Collection<GeneratedNode> functions_to_list_of_generated_nodes(Collection<GeneratedFunction> generatedFunctions) {
-		return Collections2.transform(generatedFunctions, new Function<GeneratedFunction, GeneratedNode>() {
-			@org.checkerframework.checker.nullness.qual.Nullable
-			@Override
-			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable GeneratedFunction input) {
-				return input;
-			}
-		});
+	public GenerateC(final @NotNull OutputFileFactoryParams aParams) {
+		errSink = aParams.getErrSink();
+
+		final OS_Module       mod           = aParams.getMod();
+		final ElLog.Verbosity verbosity     = aParams.getVerbosity();
+		final PipelineLogic   pipelineLogic = aParams.getPipelineLogic();
+
+		LOG = new ElLog(mod.getFileName(), verbosity, PHASE);
+
+		pipelineLogic.addLog(LOG);
 	}
 
-	@NotNull
-	public static Collection<GeneratedNode> constructors_to_list_of_generated_nodes(Collection<GeneratedConstructor> aGeneratedConstructors) {
-		return Collections2.transform(aGeneratedConstructors, new Function<GeneratedConstructor, GeneratedNode>() {
-			@org.checkerframework.checker.nullness.qual.Nullable
-			@Override
-			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable GeneratedConstructor input) {
-				return input;
-			}
-		});
-	}
-
-	@NotNull
-	public static Collection<GeneratedNode> classes_to_list_of_generated_nodes(Collection<GeneratedClass> aGeneratedClasses) {
-		return Collections2.transform(aGeneratedClasses, new Function<GeneratedClass, GeneratedNode>() {
-			@org.checkerframework.checker.nullness.qual.Nullable
-			@Override
-			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable GeneratedClass input) {
-				return input;
-			}
-		});
-	}
-
+	@Override
 	public GenerateResult generateCode(final Collection<GeneratedNode> lgn, final WorkManager wm) {
 		GenerateResult gr = new GenerateResult();
 
@@ -292,10 +267,10 @@ public class GenerateC implements CodeGenerator {
 			tosHdr.close();
 			Buffer buf = tos.getBuffer();
 //			LOG.info(buf.getText());
-			gr.addClass(GenerateResult.TY.IMPL, x, buf);
+			gr.addClass(GenerateResult.TY.IMPL, x, buf, x.module().getLsp());
 			Buffer buf2 = tosHdr.getBuffer();
 //			LOG.info(buf2.getText());
-			gr.addClass(GenerateResult.TY.HEADER, x, buf2);
+			gr.addClass(GenerateResult.TY.HEADER, x, buf2, x.module().getLsp());
 		}
 		x.generatedAlready = true;
 	}
@@ -372,10 +347,10 @@ public class GenerateC implements CodeGenerator {
 			if (x.varTable.size() > 0) { // TODO should we let this through?
 				Buffer buf = tos.getBuffer();
 //				LOG.info(buf.getText());
-				gr.addNamespace(GenerateResult.TY.IMPL, x, buf);
+				gr.addNamespace(GenerateResult.TY.IMPL, x, buf, x.module().getLsp());
 				Buffer buf2 = tosHdr.getBuffer();
 //				LOG.info(buf2.getText());
-				gr.addNamespace(GenerateResult.TY.HEADER, x, buf2);
+				gr.addNamespace(GenerateResult.TY.HEADER, x, buf2, x.module().getLsp());
 			}
 		}
 		x.generatedAlready = true;
@@ -391,6 +366,32 @@ public class GenerateC implements CodeGenerator {
 		if (gf.getFD() == null) return;
 		Generate_Code_For_Method gcfm = new Generate_Code_For_Method(this, LOG);
 		gcfm.generateCodeForConstructor(gf, gr, aWorkList);
+	}
+
+	public GenerateResult resultsFromNodes(final List<GeneratedNode> aNodes, final WorkManager wm) {
+		final GenerateC ggc = this;
+
+		final GenerateResult gr2 = new GenerateResult();
+
+		for (final GeneratedNode generatedNode : aNodes) {
+//			if (generatedNode.module() != mod) continue; // README curious
+
+			if (generatedNode instanceof GeneratedContainerNC) {
+				final GeneratedContainerNC nc = (GeneratedContainerNC) generatedNode;
+
+				nc.generateCode(ggc, gr2);
+				final @NotNull Collection<GeneratedNode> gn1 = ggc.functions_to_list_of_generated_nodes(nc.functionMap.values());
+				final GenerateResult gr3 = ggc.generateCode(gn1, wm);
+				gr2.results().addAll(gr3.results());
+				final @NotNull Collection<GeneratedNode> gn2 = GenerateFiles.classes_to_list_of_generated_nodes(nc.classMap.values());
+				final GenerateResult gr4 = ggc.generateCode(gn2, wm);
+				gr2.results().addAll(gr4.results());
+			} else {
+				System.out.println("2009 " + generatedNode.getClass().getName());
+			}
+		}
+
+		return gr2;
 	}
 
 	static class GetTypeName {
@@ -917,6 +918,28 @@ public class GenerateC implements CodeGenerator {
 		else
 			return s;
 	}
+
+	public static Collection<GeneratedNode> functions_to_list_of_generated_nodes(final Collection<GeneratedFunction> generatedFunctions) {
+		return Collections2.transform(generatedFunctions, new Function<GeneratedFunction, GeneratedNode>() {
+			@org.checkerframework.checker.nullness.qual.Nullable
+			@Override
+			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable final GeneratedFunction input) {
+				return input;
+			}
+		});
+	}
+
+	@NotNull
+	public static Collection<GeneratedNode> constructors_to_list_of_generated_nodes(final Collection<GeneratedConstructor> aGeneratedConstructors) {
+		return Collections2.transform(aGeneratedConstructors, new Function<GeneratedConstructor, GeneratedNode>() {
+			@org.checkerframework.checker.nullness.qual.Nullable
+			@Override
+			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable final GeneratedConstructor input) {
+				return input;
+			}
+});
+	}
+
 }
 
 //

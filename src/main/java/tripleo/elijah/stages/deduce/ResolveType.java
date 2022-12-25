@@ -26,7 +26,7 @@ public class ResolveType {
 										 final Context ctx,
 										 final ElLog LOG,
 										 final DeduceTypes2 dt2) throws ResolveError {
-		@NotNull GenType R = new GenType();
+		@NotNull final GenType R = new GenType();
 		if (type.getType() != OS_Type.Type.USER_CLASS)
 			R.typeName = type;
 
@@ -89,7 +89,7 @@ public class ResolveType {
 					assert type_of.getContext() instanceof ClassContext;
 					aR.resolved = ((ClassContext) type_of.getContext()).getCarrier().getOS_Type();
 				}
-				int y=2;
+				final int y=2;
 
 			}
 //				throw new NotImplementedException();
@@ -103,7 +103,7 @@ public class ResolveType {
 		switch (type.getBType()) {
 		case SystemInteger:
 		{
-			@NotNull String typeName = type.getBType().name();
+			@NotNull final String typeName = type.getBType().name();
 			assert typeName.equals("SystemInteger");
 			OS_Module prelude = module.prelude;
 			if (prelude == null) // README Assume `module' IS prelude
@@ -126,7 +126,7 @@ public class ResolveType {
 		}
 		case String_:
 		{
-			@NotNull String typeName = type.getBType().name();
+			@NotNull final String typeName = type.getBType().name();
 			assert typeName.equals("String_");
 			OS_Module prelude = module.prelude;
 			if (prelude == null) // README Assume `module' IS prelude
@@ -149,7 +149,7 @@ public class ResolveType {
 		}
 		case SystemCharacter:
 		{
-			@NotNull String typeName = type.getBType().name();
+			@NotNull final String typeName = type.getBType().name();
 			assert typeName.equals("SystemCharacter");
 			OS_Module prelude = module.prelude;
 			if (prelude == null) // README Assume `module' IS prelude
@@ -183,7 +183,6 @@ public class ResolveType {
 		default:
 			throw new IllegalStateException("531 Unexpected value: " + type.getBType());
 		}
-		return;
 	}
 }
 

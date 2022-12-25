@@ -205,11 +205,11 @@ public class OS_Module implements OS_Element, OS_Container {
 		throw new NotImplementedException();
 	}
 
-	public void remove(ClassStatement cls) {
+	public void remove(final ClassStatement cls) {
 		items.remove(cls);
 	}
 
-	public void addIndexingStatement(IndexingStatement indexingStatement) {
+	public void addIndexingStatement(final IndexingStatement indexingStatement) {
 		this.indexingStatement = indexingStatement;
 	}
 
@@ -221,7 +221,7 @@ public class OS_Module implements OS_Element, OS_Container {
 		return lsp;
 	}
 
-	public void setLsp(LibraryStatementPart aLsp) {
+	public void setLsp(final LibraryStatementPart aLsp) {
 		lsp = aLsp;
 	}
 

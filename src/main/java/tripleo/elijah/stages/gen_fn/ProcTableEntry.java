@@ -44,8 +44,8 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	public final InstructionArgument expression_num;
 	private ClassInvocation classInvocation;
 	private FunctionInvocation functionInvocation;
-	private DeferredObject<ProcTableEntry, Void, Void> completeDeferred = new DeferredObject<ProcTableEntry, Void, Void>();
-	private DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<FunctionInvocation, Void, Void>();
+	private final DeferredObject<ProcTableEntry, Void, Void> completeDeferred = new DeferredObject<ProcTableEntry, Void, Void>();
+	private final DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<FunctionInvocation, Void, Void>();
 
 	public ProcTableEntry(final int aIndex, final IExpression aExpression, final InstructionArgument aExpressionNum, final List<TypeTableEntry> aArgs) {
 		index = aIndex;
@@ -55,7 +55,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 
 		addStatusListener(new StatusListener() {
 			@Override
-			public void onChange(IElementHolder eh, Status newStatus) {
+			public void onChange(final IElementHolder eh, final Status newStatus) {
 				if (newStatus == Status.KNOWN) {
 					setResolvedElement(eh.getElement());
 				}
@@ -88,7 +88,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		return args;
 	}
 
-	public void setArgType(int aIndex, OS_Type aType) {
+	public void setArgType(final int aIndex, final OS_Type aType) {
 		args.get(aIndex).setAttached(aType);
 	}
 
@@ -97,7 +97,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		if (args != null) {
 			final int ac = args.size();
 			int acx = 0;
-			for (TypeTableEntry tte : args) {
+			for (final TypeTableEntry tte : args) {
 				if (tte.getAttached() != null)
 					acx++;
 			}
@@ -129,7 +129,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		}
 	}
 
-	public void setClassInvocation(ClassInvocation aClassInvocation) {
+	public void setClassInvocation(final ClassInvocation aClassInvocation) {
 		classInvocation = aClassInvocation;
 	}
 
@@ -138,7 +138,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	}
 
 	// have no idea what this is for
-	public void setFunctionInvocation(FunctionInvocation aFunctionInvocation) {
+	public void setFunctionInvocation(final FunctionInvocation aFunctionInvocation) {
 		if (functionInvocation != aFunctionInvocation) {
 			functionInvocation = aFunctionInvocation;
 			onFunctionInvocations.reset();
@@ -172,10 +172,10 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	@NotNull
 	public String getLoggingString(final @Nullable DeduceTypes2 aDeduceTypes2, final ElLog LOG) {
 		final String pte_string;
-		@NotNull List<String> l = new ArrayList<String>();
+		@NotNull final List<String> l = new ArrayList<String>();
 
-		for (@NotNull TypeTableEntry typeTableEntry : getArgs()) {
-			OS_Type attached = typeTableEntry.getAttached();
+		for (@NotNull final TypeTableEntry typeTableEntry : getArgs()) {
+			final OS_Type attached = typeTableEntry.getAttached();
 
 			if (attached != null)
 				l.add(attached.toString());
@@ -190,11 +190,10 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 			}
 		}
 
-		@NotNull StringBuilder sb2 = new StringBuilder();
-		sb2.append("[");
-		sb2.append(Helpers.String_join(", ", l));
-		sb2.append("]");
-		pte_string = sb2.toString();
+        String sb2 = "[" +
+                Helpers.String_join(", ", l) +
+                "]";
+		pte_string = sb2;
 		return pte_string;
 	}
 

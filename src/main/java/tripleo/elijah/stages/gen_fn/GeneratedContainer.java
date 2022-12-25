@@ -27,7 +27,7 @@ public interface GeneratedContainer extends GeneratedNode {
 
 	VarTableEntry getVariable(String aVarName);
 
-	public class VarTableEntry {
+	class VarTableEntry {
 		public final VariableStatement vs;
 		public final IdentExpression nameToken;
 		public final IExpression initialValue;
@@ -51,12 +51,12 @@ public interface GeneratedContainer extends GeneratedNode {
 			parent          = aElement;
 		}
 
-		public void addPotentialTypes(@NotNull Collection<TypeTableEntry> aPotentialTypes) {
+		public void addPotentialTypes(@NotNull final Collection<TypeTableEntry> aPotentialTypes) {
 			potentialTypes.addAll(aPotentialTypes);
 		}
 
-		public void resolve(@NotNull GeneratedNode aResolvedType) {
-			System.out.println(String.format("** [GeneratedContainer 56] resolving VarTableEntry %s to %s", nameToken, aResolvedType.identityString()));
+		public void resolve(@NotNull final GeneratedNode aResolvedType) {
+			System.out.printf("** [GeneratedContainer 56] resolving VarTableEntry %s to %s%n", nameToken, aResolvedType.identityString());
 			_resolvedType = aResolvedType;
 		}
 

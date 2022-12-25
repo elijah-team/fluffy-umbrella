@@ -5,8 +5,17 @@
 package tripleo.elijah.nextgen.outputstatement;
 
 /**
- * @author olu
+ * @author Tripleo Nova
  */
 public class EG_SyntheticStatement implements EG_Statement {
 
+	@Override
+	public String getText() {
+		return null;
+	}
+
+	@Override
+	public EX_Explanation getExplanation() {
+		return null;
+	}
 }

@@ -36,7 +36,7 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 		return mFal;
 	}
 
-	public void setFal(FormalArgList fal) {
+	public void setFal(final FormalArgList fal) {
 		mFal = fal;
 	}
 
@@ -46,7 +46,7 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 
 	// endregion
 
-	public void scope(Scope3 sco) {
+	public void scope(final Scope3 sco) {
 		scope3 = sco;
 	}
 
@@ -55,13 +55,13 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 
 	// region items
 
-	public boolean hasItem(OS_Element element) {
+	public boolean hasItem(final OS_Element element) {
 		return scope3.items().contains(element);
 	}
 
 	public @NotNull List<FunctionItem> getItems() {
-		List<FunctionItem> collection = new ArrayList<FunctionItem>();
-		for (OS_Element element : scope3.items()) {
+		final List<FunctionItem> collection = new ArrayList<FunctionItem>();
+		for (final OS_Element element : scope3.items()) {
 			if (element instanceof FunctionItem)
 				collection.add((FunctionItem) element);
 		}
@@ -132,20 +132,20 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 		annotations.add(a);
 	}
 
-	public void walkAnnotations(AnnotationWalker annotationWalker) {
+	public void walkAnnotations(final AnnotationWalker annotationWalker) {
 		if (annotations == null) return;
-		for (AnnotationClause annotationClause : annotations) {
-			for (AnnotationPart annotationPart : annotationClause.aps) {
+		for (final AnnotationClause annotationClause : annotations) {
+			for (final AnnotationPart annotationPart : annotationClause.aps) {
 				annotationWalker.annotation(annotationPart);
 			}
 		}
 	}
 
 	public Iterable<AnnotationPart> annotationIterable() {
-		List<AnnotationPart> aps = new ArrayList<AnnotationPart>();
+		final List<AnnotationPart> aps = new ArrayList<AnnotationPart>();
 		if (annotations == null) return aps;
-		for (AnnotationClause annotationClause : annotations) {
-			for (AnnotationPart annotationPart : annotationClause.aps) {
+		for (final AnnotationClause annotationClause : annotations) {
+			for (final AnnotationPart annotationPart : annotationClause.aps) {
 				aps.add(annotationPart);
 			}
 		}
@@ -179,7 +179,7 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 	}
 
 	@Override
-	public void setCategory(El_Category aCategory) {
+	public void setCategory(final El_Category aCategory) {
 		category = aCategory;
 	}
 
@@ -189,7 +189,7 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 	}
 
 	@Override
-	public void setAccess(AccessNotation aNotation) {
+	public void setAccess(final AccessNotation aNotation) {
 		access_note = aNotation;
 	}
 

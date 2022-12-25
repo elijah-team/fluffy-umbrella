@@ -20,7 +20,7 @@ public class FluffyModuleImpl implements FluffyModule {
 	private final OS_Module   module;
 	private final Compilation compilation;
 
-	public FluffyModuleImpl(OS_Module aModule, Compilation aCompilation) {
+	public FluffyModuleImpl(final OS_Module aModule, final Compilation aCompilation) {
 		module = aModule;
 		compilation = aCompilation;
 	}
@@ -41,7 +41,7 @@ public class FluffyModuleImpl implements FluffyModule {
 	}
 
 	@Override
-	public void find_multiple_items(FluffyComp aFc) {
+	public void find_multiple_items(final FluffyComp aFc) {
 		aFc.find_multiple_items(module);
 	}
 
@@ -50,7 +50,7 @@ public class FluffyModuleImpl implements FluffyModule {
 		//
 		// FIND ALL ENTRY POINTS (should only be one per module)
 		//
-		Consumer<ClassStatement> ccs = (x) -> module.entryPoints.add(new MainClassEntryPoint(x));
+		final Consumer<ClassStatement> ccs = (x) -> module.entryPoints.add(new MainClassEntryPoint(x));
 
 		module.items.stream()
 				.filter(item -> item instanceof ClassStatement)
@@ -64,7 +64,7 @@ public class FluffyModuleImpl implements FluffyModule {
 	 * @param classStatement
 	 * @param ccs
 	 */
-	private static void faep_002(ClassStatement classStatement, Consumer<ClassStatement> ccs) {
+	private static void faep_002(final ClassStatement classStatement, final Consumer<ClassStatement> ccs) {
 		final Collection<ClassItem> x     = classStatement.findFunction("main");
 		final Stream<FunctionDef>   found = x.stream().filter(FluffyCompImpl::isMainClassEntryPoint).map(x7 -> (FunctionDef) x7);
 

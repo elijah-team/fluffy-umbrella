@@ -62,7 +62,7 @@ public class OS_Package {
 		return _name.toString();
 	}
 
-	public void setContext(PackageContext cur) {
+	public void setContext(final PackageContext cur) {
 		_ctx = cur;
 	}
 }

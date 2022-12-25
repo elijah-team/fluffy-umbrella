@@ -10,9 +10,7 @@ package tripleo.elijah.util;
 
 import antlr.CommonToken;
 import antlr.Token;
-//import com.thoughtworks.xstream.XStream;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
@@ -30,6 +28,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_256;
 
 /**
  * Created 9/10/20 3:44 PM
@@ -90,7 +90,7 @@ public class Helpers {
 		return s.substring(1, s.length()-1);
 	}
 
-	public static String String_join(String separator, Iterable<String> stringIterable) {
+	public static String String_join(final String separator, final Iterable<String> stringIterable) {
 		if (false) {
 			final StringBuilder sb = new StringBuilder();
 
@@ -106,25 +106,25 @@ public class Helpers {
 		return String.join(separator, stringIterable);
 	}
 
-	public static Qualident string_to_qualident(String x) {
-		Qualident q = new Qualident();
-		for (String xx : x.split("\\.")) {
+	public static Qualident string_to_qualident(final String x) {
+		final Qualident q = new Qualident();
+		for (final String xx : x.split("\\.")) {
 			q.append(string_to_ident(xx));
 		}
 		return q;
 	}
 
-	public static String getHash(byte[] aBytes) throws NoSuchAlgorithmException {
-		MessageDigest md = MessageDigest.getInstance("SHA-256");
+	public static String getHash(final byte[] aBytes) throws NoSuchAlgorithmException {
+		final MessageDigest md = MessageDigest.getInstance("SHA-256");
 
 //		String input;
 //		md.update(input.getBytes(StandardCharsets.UTF_8));
 		md.update(aBytes);
 
-		byte[] hashBytes = md.digest();
+		final byte[] hashBytes = md.digest();
 
-		StringBuilder sb = new StringBuilder();
-		for (byte b : hashBytes) {
+		final StringBuilder sb = new StringBuilder();
+		for (final byte b : hashBytes) {
 			sb.append(String.format("%02x", b));
 		}
 
@@ -132,25 +132,24 @@ public class Helpers {
 	}
 
 	public static String getHashForFilename(final String aFilename, final ErrSink aErrSink) throws IOException {
-		String hdigest = new DigestUtils(MessageDigestAlgorithms.SHA_256).digestAsHex(new File(aFilename));
+		final String hdigest = new DigestUtils(SHA_256).digestAsHex(new File(aFilename));
 		return hdigest;
 	}
 
-	// TODO this method is just ugly
 	@Nullable
-	public static String getHashForFilenameJava(String aFilename, ErrSink aErrSink) throws IOException {
+	public static String getHashForFilenameJava(final String aFilename, final ErrSink aErrSink) throws IOException {
 		final File file = new File(aFilename);
-		long size = file.length();
-		byte[] ba = new byte[(int)size];  // README Counting on reasonable sizes here
+		final long size = file.length();
+		final byte[] ba = new byte[(int)size];  // README Counting on reasonable sizes here
 		FileInputStream bb = null;
 		try {
 			bb = new FileInputStream(file);
 			bb.read(ba);
 
 			try {
-				String hh = getHash(ba);
+				final String hh = getHash(ba);
 				return hh;
-			} catch (NoSuchAlgorithmException aE) {
+			} catch (final NoSuchAlgorithmException aE) {
 				aErrSink.exception(aE);
 //				aE.printStackTrace();
 			}

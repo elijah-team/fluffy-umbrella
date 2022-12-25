@@ -19,7 +19,7 @@ public class YieldExpression /*extends BasicBinaryExpression*/ implements OS_Ele
 	}
 
 	@Override
-	public void visitGen(ElElementVisitor visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitYield(this);
 	}
 

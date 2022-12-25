@@ -8,8 +8,8 @@
  */
 package tripleo.elijah.contexts;
 
-import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang2.ElElementVisitor;
 
 import java.util.HashMap;
 import java.util.List;
@@ -61,7 +61,7 @@ public class ClassContext extends Context {
 			}
 		}
 
-		for (Map.Entry<TypeName, ClassStatement> entry : inheritance().entrySet()) {
+		for (final Map.Entry<TypeName, ClassStatement> entry : inheritance().entrySet()) {
 			final ClassStatement best = entry.getValue();
 			final LookupResultList lrl2 = best.getContext().lookup(name);
 			final OS_Element best2 = lrl2.chooseBest(null);
@@ -70,7 +70,7 @@ public class ClassContext extends Context {
 				Result.add(name, level, best2, this, new ClassInfo(best, INHERITED));
 		}
 
-		for (TypeName tn1 : carrier.getGenericPart()) {
+		for (final TypeName tn1 : carrier.getGenericPart()) {
 			if (tn1 instanceof NormalTypeName) {
 				final NormalTypeName tn = (NormalTypeName) tn1;
 				final String name1 = tn.getName(); // TODO this may return a string with DOTs in it.
@@ -135,12 +135,12 @@ public class ClassContext extends Context {
 			return typeName;
 		}
 
-		public OS_TypeNameElement(TypeName aTypeName) {
+		public OS_TypeNameElement(final TypeName aTypeName) {
 			typeName = aTypeName;
 		}
 
 		@Override
-		public void visitGen(ElElementVisitor visit) {
+		public void visitGen(final ElElementVisitor visit) {
 			visit.visitTypeNameElement(this);
 		}
 

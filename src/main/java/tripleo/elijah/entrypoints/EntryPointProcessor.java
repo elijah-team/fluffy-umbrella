@@ -14,7 +14,7 @@ import tripleo.elijah.work.WorkList;
 public interface EntryPointProcessor {
 	void process();
 
-	static EntryPointProcessor dispatch(final EntryPoint ep, DeducePhase aDeducePhase, WorkList aWl, GenerateFunctions aGenerateFunctions) {
+	static EntryPointProcessor dispatch(final EntryPoint ep, final DeducePhase aDeducePhase, final WorkList aWl, final GenerateFunctions aGenerateFunctions) {
 		if (ep instanceof MainClassEntryPoint) {
 			return new EPP_MCEP((MainClassEntryPoint) ep, aDeducePhase, aWl, aGenerateFunctions);
 		} else if (ep instanceof ArbitraryFunctionEntryPoint) {
@@ -30,7 +30,7 @@ public interface EntryPointProcessor {
 		private final WorkList wl;
 		private final GenerateFunctions generateFunctions;
 
-		public EPP_MCEP(MainClassEntryPoint aEp, DeducePhase aDeducePhase, WorkList aWl, GenerateFunctions aGenerateFunctions) {
+		public EPP_MCEP(final MainClassEntryPoint aEp, final DeducePhase aDeducePhase, final WorkList aWl, final GenerateFunctions aGenerateFunctions) {
 			mcep = aEp;
 			deducePhase = aDeducePhase;
 			wl = aWl;
@@ -62,7 +62,7 @@ public interface EntryPointProcessor {
 		private final WorkList wl;
 		private final GenerateFunctions generateFunctions;
 
-		public EPP_AFEP(ArbitraryFunctionEntryPoint aEp, DeducePhase aDeducePhase, WorkList aWl, GenerateFunctions aGenerateFunctions) {
+		public EPP_AFEP(final ArbitraryFunctionEntryPoint aEp, final DeducePhase aDeducePhase, final WorkList aWl, final GenerateFunctions aGenerateFunctions) {
 			afep = aEp;
 			deducePhase = aDeducePhase;
 			wl = aWl;
@@ -72,7 +72,7 @@ public interface EntryPointProcessor {
 		@Override
 		public void process() {
 			final @NotNull FunctionDef f  = afep.getFunction();
-			@NotNull ClassInvocation   ci = deducePhase.registerClassInvocation((ClassStatement) afep.getParent());
+			@NotNull final ClassInvocation   ci = deducePhase.registerClassInvocation((ClassStatement) afep.getParent());
 
 			final WlGenerateClass job = new WlGenerateClass(generateFunctions, ci, deducePhase.generatedClasses);
 			wl.addJob(job);

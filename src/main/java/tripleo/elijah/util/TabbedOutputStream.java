@@ -23,7 +23,7 @@ public class TabbedOutputStream {
 		myStream = new BufferedWriter(new OutputStreamWriter(os));
 	}
 
-	public TabbedOutputStream(final Writer w, boolean buffer_it) {
+	public TabbedOutputStream(final Writer w, final boolean buffer_it) {
 		tabwidth = 0;
 		//if (os == System.out) dont_close = true;
 		if (buffer_it)

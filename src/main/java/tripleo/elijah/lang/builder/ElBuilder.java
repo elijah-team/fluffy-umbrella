@@ -17,7 +17,7 @@ import tripleo.elijah.lang.OS_Element;
 public abstract class ElBuilder {
 	protected OS_Element _parent;
 
-	public void setParent(OS_Element element) {
+	public void setParent(final OS_Element element) {
 		_parent = element;
 	}
 

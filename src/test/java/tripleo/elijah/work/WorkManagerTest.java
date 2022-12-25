@@ -22,16 +22,16 @@ public class WorkManagerTest {
 		private boolean _done;
 		private final String state;
 
-		public AppendChar(String s, int level, List<String> aSink) {
+		public AppendChar(final String s, final int level, final List<String> aSink) {
 			state = s + (char)(level+'A');
 			this.level = level;
 			sink = aSink;
 		}
 
 		@Override
-		public void run(WorkManager aWorkManager) {
+		public void run(final WorkManager aWorkManager) {
 			if (level < 4) {
-				WorkList wl = new WorkList();
+				final WorkList wl = new WorkList();
 				wl.addJob(new AppendChar(state, level + 1, sink));
 				aWorkManager.addJobs(wl);
 			}
@@ -47,11 +47,11 @@ public class WorkManagerTest {
 
 	@Test
 	public void testWorkManager() {
-		List<String> sink = new ArrayList<>();
+		final List<String> sink = new ArrayList<>();
 
-		WorkManager workManager = new WorkManager();
+		final WorkManager workManager = new WorkManager();
 
-		WorkList wl = new WorkList();
+		final WorkList wl = new WorkList();
 		wl.addJob(new AppendChar("A", 0, sink));
 		wl.addJob(new AppendChar("B", 0, sink));
 		wl.addJob(new AppendChar("C", 0, sink));

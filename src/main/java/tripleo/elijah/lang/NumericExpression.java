@@ -136,7 +136,7 @@ public class NumericExpression implements IExpression, Locatable {
 	@Override
 	public File getFile() {
 		if (token() != null) {
-			String filename = token().getFilename();
+			final String filename = token().getFilename();
 			if (filename != null)
 				return new File(filename);
 		}

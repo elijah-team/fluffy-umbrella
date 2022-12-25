@@ -76,7 +76,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		if (!potentialTypes.containsKey(instructionIndex))
 			potentialTypes.put(instructionIndex, tte);
 		else {
-			TypeTableEntry v = potentialTypes.get(instructionIndex);
+			final TypeTableEntry v = potentialTypes.get(instructionIndex);
 			if (v.getAttached() == null) {
 				v.setAttached(tte.getAttached());
 				type.genType.copy(tte.genType); // README don't lose information
@@ -114,7 +114,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		return index;
 	}
 
-	private DeferredObject2<GenType, Void, Void> typeDeferred = new DeferredObject2<GenType, Void, Void>();
+	private final DeferredObject2<GenType, Void, Void> typeDeferred = new DeferredObject2<GenType, Void, Void>();
 
 	public Promise<GenType, Void, Void> typePromise() {
 		return typeDeferred.promise();
@@ -133,7 +133,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		if (_resolveTypeCalled != null) { // TODO what a hack
 			if (_resolveTypeCalled.resolved != null) {
 				if (!aGenType.equals(_resolveTypeCalled)) {
-					System.err.println(String.format("** 130 Attempting to replace %s with %s in %s", _resolveTypeCalled.asString(), aGenType.asString(), this));
+					System.err.printf("** 130 Attempting to replace %s with %s in %s%n", _resolveTypeCalled.asString(), aGenType.asString(), this);
 //					throw new AssertionError();
 				}
 			} else {
@@ -151,7 +151,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	}
 
 	@Override
-	public void resolveTypeToClass(GeneratedNode aNode) {
+	public void resolveTypeToClass(final GeneratedNode aNode) {
 		_resolvedType = aNode;
 		genType.node = aNode;
 		type.resolve(aNode); // TODO maybe this obviates above
@@ -162,7 +162,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	}
 
 	@Override
-	public void setGenType(GenType aGenType) {
+	public void setGenType(final GenType aGenType) {
 		genType.copy(aGenType);
 		resolveType(aGenType);
 	}
@@ -170,7 +170,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	// region constructable
 
 	@Override
-	public void setConstructable(ProcTableEntry aPte) {
+	public void setConstructable(final ProcTableEntry aPte) {
 		if (constructable_pte != aPte) {
 			constructable_pte = aPte;
 			constructableDeferred.resolve(constructable_pte);
@@ -207,7 +207,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		return typeDeferred.isResolved();
 	}
 
-	public PostBC_Processor getPostBC_Processor(Context aFd_ctx, DeduceTypes2.DeduceClient1 aDeduceClient1) {
+	public PostBC_Processor getPostBC_Processor(final Context aFd_ctx, final DeduceTypes2.DeduceClient1 aDeduceClient1) {
 		return PostBC_Processor.make_VTE(this, aFd_ctx, aDeduceClient1);
 	}
 

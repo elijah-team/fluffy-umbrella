@@ -93,17 +93,17 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 		annotations.add(a);
 	}
 
-	public void walkAnnotations(AnnotationWalker annotationWalker) {
+	public void walkAnnotations(final AnnotationWalker annotationWalker) {
 		if (_parent.annotations != null) {
-			for (AnnotationClause annotationClause : _parent.annotations) {
-				for (AnnotationPart annotationPart : annotationClause.aps) {
+			for (final AnnotationClause annotationClause : _parent.annotations) {
+				for (final AnnotationPart annotationPart : annotationClause.aps) {
 					annotationWalker.annotation(annotationPart);
 				}
 			}
 		}
 		if (annotations == null) return;
-		for (AnnotationClause annotationClause : annotations) {
-			for (AnnotationPart annotationPart : annotationClause.aps) {
+		for (final AnnotationClause annotationClause : annotations) {
+			for (final AnnotationPart annotationPart : annotationClause.aps) {
 				annotationWalker.annotation(annotationPart);
 			}
 		}

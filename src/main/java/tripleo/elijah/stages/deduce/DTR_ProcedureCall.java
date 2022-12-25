@@ -1,9 +1,7 @@
 package tripleo.elijah.stages.deduce;
 
 import org.jetbrains.annotations.Contract;
-import tripleo.elijah.lang.NormalTypeName;
 import tripleo.elijah.lang.ProcedureCallExpression;
-import tripleo.elijah.lang.TypeName;
 import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.gen_fn.IElementHolder;
 
@@ -12,7 +10,7 @@ public class DTR_ProcedureCall {
 	private final ProcedureCallExpression procedureCallExpression;
 
 	@Contract(pure = true)
-	public DTR_ProcedureCall(DeduceTypeResolve aDeduceTypeResolve, ProcedureCallExpression aProcedureCallExpression) {
+	public DTR_ProcedureCall(final DeduceTypeResolve aDeduceTypeResolve, final ProcedureCallExpression aProcedureCallExpression) {
 		deduceTypeResolve = aDeduceTypeResolve;
 		procedureCallExpression = aProcedureCallExpression;
 	}

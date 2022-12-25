@@ -16,10 +16,9 @@ public class SpecialVariables {
 		if (name.equals("self")) return true;
 		if (name.equals("this")) return true;
 		if (name.equals("Value")) return true; // TODO only special sometimes
-		if (name.equals("Result")) return true;
+        return name.equals("Result");
 //		System.err.println("SpecialVariables: test: "+name);
-		return false;
-	}
+    }
 
 	public static String get(final String name) {
 		if (name.equals("self")) return "vsc"; // TODO this should be this in Java and C++

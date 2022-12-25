@@ -11,6 +11,7 @@ package tripleo.elijah;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ErrSink;
@@ -47,13 +48,12 @@ public class TestBasic {
 	}
 
 //	@Test
-	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public final void testBasic() throws Exception {
 		final List<String> ez_files = Files.readLines(new File("test/basic/ez_files.txt"), Charsets.UTF_8);
 		final Map<Integer, Integer> errorCount = new HashMap<Integer, Integer>();
 		int index = 0;
 
-		for (String s : ez_files) {
+		for (final String s : ez_files) {
 //			List<String> args = List_of("test/basic", "-sO"/*, "-out"*/);
 			final ErrSink     eee = new StdErrSink();
 			final Compilation c   = new CompilationImpl(eee, new IO());
@@ -72,7 +72,8 @@ public class TestBasic {
 		Assert.assertEquals(9, (int)errorCount.get(2)); // TODO Error count obviously should be 0
 	}
 
-//	@Test
+	@Test
+	@Ignore
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public final void testBasic_listfolders3() throws Exception {
 		String s = "test/basic/listfolders3/listfolders3.ez";
@@ -85,7 +86,7 @@ public class TestBasic {
 		if (c.errorCount() != 0)
 			System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
 
-		Assert.assertEquals(13, c.errorCount()); // TODO Error count obviously should be 0
+		Assert.assertEquals(5, c.errorCount()); // TODO Error count obviously should be 0
 	}
 
 	@Test
@@ -100,7 +101,7 @@ public class TestBasic {
 		if (c.errorCount() != 0)
 			System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
 
-		Assert.assertEquals(8, c.errorCount()); // TODO Error count obviously should be 0
+		Assert.assertEquals(5, c.errorCount()); // TODO Error count obviously should be 0
 	}
 
 	@Test
@@ -115,7 +116,7 @@ public class TestBasic {
 		if (c.errorCount() != 0)
 			System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
 
-		Assert.assertEquals(25, c.errorCount()); // TODO Error count obviously should be 0
+		Assert.assertEquals(13, c.errorCount()); // TODO Error count obviously should be 0
 	}
 
 }

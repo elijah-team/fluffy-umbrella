@@ -22,12 +22,12 @@ import java.util.List;
 
 public class CompilationImpl extends Compilation {
 
-	public CompilationImpl(ErrSink aEee, IO aIo) {
+	public CompilationImpl(final ErrSink aEee, final IO aIo) {
 		super(aEee, aIo);
 		_fluffyComp = new FluffyCompImpl(this);
 	}
 
-	public void testMapHooks(List<IFunctionMapHook> aMapHooks) {
+	public void testMapHooks(final List<IFunctionMapHook> aMapHooks) {
 		throw new NotImplementedException();
 	}
 

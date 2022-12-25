@@ -37,7 +37,7 @@ public class DeduceElementIdent {
 	}
 
 	public OS_Element getResolvedElement() {
-		Holder<OS_Element> holder = new Holder<>();
+		final Holder<OS_Element> holder = new Holder<>();
 		final IdentIA identIA = new IdentIA(identTableEntry.getIndex(), generatedFunction);
 		if (deduceTypes2 != null) { // TODO remove this ASAP. Should never happen
 			deduceTypes2.resolveIdentIA_(context, identIA, generatedFunction, new FoundElement(deduceTypes2.phase) {

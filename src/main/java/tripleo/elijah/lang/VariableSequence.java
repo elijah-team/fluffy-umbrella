@@ -24,7 +24,7 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 		stmts = new ArrayList<VariableStatement>();
 	}
 
-	public VariableSequence(Context aContext) {
+	public VariableSequence(final Context aContext) {
 		stmts = new ArrayList<VariableStatement>();
 		_ctx = aContext;
 	}
@@ -90,12 +90,12 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 	private El_Category category;
 
 	@Override
-	public void setCategory(El_Category aCategory) {
+	public void setCategory(final El_Category aCategory) {
 		category = aCategory;
 	}
 
 	@Override
-	public void setAccess(AccessNotation aNotation) {
+	public void setAccess(final AccessNotation aNotation) {
 		access_note = aNotation;
 	}
 
@@ -111,8 +111,8 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 
 	// endregion
 
-	public void setTypeName(TypeName aTypeName) {
-		for (VariableStatement vs : stmts) {
+	public void setTypeName(final TypeName aTypeName) {
+		for (final VariableStatement vs : stmts) {
 			vs.setTypeName(aTypeName);
 		}
 	}

@@ -21,29 +21,19 @@ public class TranslateModule {
 
 	public void translate() {
 //		TabbedOutputStream w = null;
-		try {
-//			w = getFile();
+		//			w = getFile();
 
-			for (final ModuleItem item : module.getItems()) {
-				try {
-					if (item instanceof ClassStatement) {
-						put_class_statement((ClassStatement) item);
-					} else if (item instanceof NamespaceStatement) {
-						put_namespace_statement((NamespaceStatement) item);
-					} else
-						System.out.println("8000 "+item);
-				} catch (final IOException e) {
-					module.parent.getErrSink().exception(e);
-				}
+		for (final ModuleItem item : module.getItems()) {
+			try {
+				if (item instanceof ClassStatement) {
+					put_class_statement((ClassStatement) item);
+				} else if (item instanceof NamespaceStatement) {
+					put_namespace_statement((NamespaceStatement) item);
+				} else
+					System.out.println("8000 "+item);
+			} catch (final IOException e) {
+				module.parent.getErrSink().exception(e);
 			}
-		} finally {
-//			if (w != null) {
-//				try {
-//					w.close();
-//				} catch (IOException e) {
-//					module.parent.eee.exception(e);
-//				}
-//			}
 		}
 	}
 

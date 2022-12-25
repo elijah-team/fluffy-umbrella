@@ -17,7 +17,7 @@ import java.util.Map;
 public class DefaultCompilationAccess implements ICompilationAccess {
 	protected final Compilation                                compilation;
 	private final   AccessBus                                  accessBus;
-	private         DeferredObject2<PipelineLogic, Void, Void> pipelineLogicDeferred = new DeferredObject2<>();
+	private final DeferredObject2<PipelineLogic, Void, Void> pipelineLogicDeferred = new DeferredObject2<>();
 
 	public DefaultCompilationAccess(final Compilation aCompilation) {
 		compilation = aCompilation;
@@ -31,7 +31,7 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 			public void onDone(final PipelineLogic result) {
 				try {
 					aPipelineLogicConsumer.accept(result);
-				} catch (Throwable aE) {
+				} catch (final Throwable aE) {
 					throw new RuntimeException(aE);
 				}
 			}
@@ -40,7 +40,7 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 
 	@Override
 	public void addPipeline(final PipelineMember pl) {
-		int y = 2;//compilation.addPipeline(pl);
+		final int y = 2;//compilation.addPipeline(pl);
 	}
 
 	@Override
@@ -75,13 +75,13 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 		return accessBus;
 	}
 
-	private void __writeLogs(boolean aSilent, List<ElLog> aLogs) {
-		Multimap<String, ElLog> logMap = ArrayListMultimap.create();
-		if (true || aSilent) {
-			for (ElLog deduceLog : aLogs) {
+	private void __writeLogs(final boolean aSilent, final List<ElLog> aLogs) {
+		final Multimap<String, ElLog> logMap = ArrayListMultimap.create();
+		if (true) {
+			for (final ElLog deduceLog : aLogs) {
 				logMap.put(deduceLog.getFileName(), deduceLog);
 			}
-			for (Map.Entry<String, Collection<ElLog>> stringCollectionEntry : logMap.asMap().entrySet()) {
+			for (final Map.Entry<String, Collection<ElLog>> stringCollectionEntry : logMap.asMap().entrySet()) {
 				final F202 f202 = new F202(compilation.getErrSink(), compilation);
 				f202.processLogs(stringCollectionEntry.getValue());
 			}

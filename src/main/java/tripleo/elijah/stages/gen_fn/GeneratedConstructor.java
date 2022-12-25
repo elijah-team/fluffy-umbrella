@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.ConstructorDef;
-import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 
@@ -27,8 +26,8 @@ public class GeneratedConstructor extends BaseGeneratedFunction {
 		cd = aConstructorDef;
 	}
 
-	public void setFunctionInvocation(FunctionInvocation fi) {
-		GenType genType = new GenType();
+	public void setFunctionInvocation(final FunctionInvocation fi) {
+		final GenType genType = new GenType();
 		genType.ci = fi.getClassInvocation(); // TODO will fail on namespace constructors; next line too
 		genType.resolved = (((ClassInvocation) genType.ci).getKlass()).getOS_Type();
 		genType.node = this;

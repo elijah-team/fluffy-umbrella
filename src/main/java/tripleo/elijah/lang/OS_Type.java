@@ -24,15 +24,14 @@ import java.util.Objects;
  */
 public class OS_Type {
 
-	public OS_Type(Type t) {
+	public OS_Type(final Type t) {
 		type_of_type = t;
 	}
 
 	public static boolean isConcreteType(final OS_Element element) {
-		if (element instanceof ClassStatement) return true;
+		return element instanceof ClassStatement;
 		// enum
 		// type
-		return false;
 	}
 
 	@Override
@@ -44,8 +43,8 @@ public class OS_Type {
 
 		if (type != os_type.type) return false;
 		if (type_of_type != os_type.type_of_type) return false;
-		if (etype != null ? !etype.equals(os_type.etype) : os_type.etype != null) return false;
-		return ttype != null ? ttype.equals(os_type.ttype) : os_type.ttype == null;
+		if (!Objects.equals(etype, os_type.etype)) return false;
+		return Objects.equals(ttype, os_type.ttype);
 	}
 
 	@Override
@@ -79,19 +78,16 @@ public class OS_Type {
 	public ClassStatement getClassOf() {
 		if (etype != null && etype instanceof ClassStatement)
 			return (ClassStatement) etype;
-		System.err.println("3001 "+etype+" "+toString());
+		System.err.println("3001 "+etype+" "+ this);
 		throw new IllegalArgumentException();
 //		return null;
 	}
 
 	public OS_Element getElement() {
-		switch (type_of_type) {
-		case USER_CLASS:
-//		case FUNCTION: // defined in subclass
+		if (type_of_type == Type.USER_CLASS) {//		case FUNCTION: // defined in subclass
 			return etype;
-		default:
-			throw new IllegalArgumentException();
 		}
+		throw new IllegalArgumentException();
 	}
 
 	public OS_Type resolve(final Context ctx) {
@@ -112,7 +108,7 @@ public class OS_Type {
 						best = r.chooseBest(null);
 						while (best instanceof AliasStatement) {
 							final AliasStatement aliasStatement = (AliasStatement) best;
-							final LookupResultList lrl = aliasStatement.getContext().lookup(((Qualident) aliasStatement.getExpression()).toString());
+							final LookupResultList lrl = aliasStatement.getContext().lookup(aliasStatement.getExpression().toString());
 							best = lrl.chooseBest(null);
 						}
 						return ((ClassStatement) best).getOS_Type();

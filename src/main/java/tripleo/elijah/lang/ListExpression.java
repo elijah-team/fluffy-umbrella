@@ -35,7 +35,7 @@ public class ListExpression extends AbstractExpression implements Locatable {
 	}
 
 	@Override
-	public void setType(OS_Type deducedExpression) {
+	public void setType(final OS_Type deducedExpression) {
 
 	}
 
@@ -51,12 +51,12 @@ public class ListExpression extends AbstractExpression implements Locatable {
 		Token endToken;
 		List<Token> commas = new ArrayList<Token>();
 
-		public void start_and_end(Token startToken, Token endToken) {
+		public void start_and_end(final Token startToken, final Token endToken) {
 			this.startToken = startToken;
 			this.endToken = endToken;
 		}
 
-		public void comma(Token t) {
+		public void comma(final Token t) {
 			commas.add(t);
 		}
 	}
@@ -98,7 +98,7 @@ public class ListExpression extends AbstractExpression implements Locatable {
 	@Override
 	public File getFile() {
 		if (syntax.startToken != null) {
-			String filename = syntax.startToken.getFilename();
+			final String filename = syntax.startToken.getFilename();
 			if (filename != null)
 				return new File(filename);
 		}

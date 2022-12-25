@@ -33,13 +33,13 @@ public class VTE_TypePromises {
 									 final ProcTableListener aProcTableListener) {
 		aVariableTableEntry.typePromise().then(new DoneCallback<GenType>() {
 			@Override
-			public void onDone(@NotNull GenType result) {
+			public void onDone(@NotNull final GenType result) {
 				assert result.resolved.getClassOf() == fd.getParent();
 
-				@NotNull ProcTableListener.E_Is_FunctionDef e_Is_FunctionDef = aProcTableListener.new E_Is_FunctionDef(
+				@NotNull final ProcTableListener.E_Is_FunctionDef e_Is_FunctionDef = aProcTableListener.new E_Is_FunctionDef(
 						pte, fd, fd.getParent()).invoke(aVariableTableEntry.type.genType.nonGenericTypeName);
-				@Nullable FunctionInvocation fi = e_Is_FunctionDef.getFi();
-				GenType genType = e_Is_FunctionDef.getGenType();
+				@Nullable final FunctionInvocation fi = e_Is_FunctionDef.getFi();
+				final GenType genType = e_Is_FunctionDef.getGenType();
 				aProcTableListener.finish(co, depTracker, fi, genType);
 			}
 		});
@@ -55,13 +55,13 @@ public class VTE_TypePromises {
 		aCi.resolvePromise().done(new DoneCallback<GeneratedClass>() {
 			@Override
 			public void onDone(final GeneratedClass result) {
-				for (GeneratedContainer.VarTableEntry varTableEntry : result.varTable) {
+				for (final GeneratedContainer.VarTableEntry varTableEntry : result.varTable) {
 					if (varTableEntry.nameToken.getText().equals(variableStatement.getName())) {
 						assert varTableEntry.varType.getClassOf() == fd.getParent();
 
-						@NotNull ProcTableListener.E_Is_FunctionDef e_Is_FunctionDef = aProcTableListener.new E_Is_FunctionDef(aProcTableEntry, fd, fd.getParent()).invoke(null/*variableTableEntry.type.genType.nonGenericTypeName*/);
-						@Nullable FunctionInvocation fi1 = e_Is_FunctionDef.getFi();
-						GenType genType1 = e_Is_FunctionDef.getGenType();
+						@NotNull final ProcTableListener.E_Is_FunctionDef e_Is_FunctionDef = aProcTableListener.new E_Is_FunctionDef(aProcTableEntry, fd, fd.getParent()).invoke(null/*variableTableEntry.type.genType.nonGenericTypeName*/);
+						@Nullable final FunctionInvocation fi1 = e_Is_FunctionDef.getFi();
+						final GenType genType1 = e_Is_FunctionDef.getGenType();
 						aProcTableListener.finish(co, depTracker, fi1, genType1);
 
 						break;
@@ -79,14 +79,14 @@ public class VTE_TypePromises {
 														final ProcTableListener aProcTableListener) {
 		aVariableTableEntry.typePromise().then(new DoneCallback<GenType>() {
 			@Override
-			public void onDone(@NotNull GenType result) {
+			public void onDone(@NotNull final GenType result) {
 				if (result.resolved.getClassOf() != fd.getParent()) {
 					System.err.println("** Failed assertion");
 				}
 
-				@NotNull ProcTableListener.E_Is_FunctionDef e_Is_FunctionDef = aProcTableListener.new E_Is_FunctionDef(pte, fd, fd.getParent()).invoke(aVariableTableEntry.type.genType.nonGenericTypeName);
-				@Nullable FunctionInvocation fi = e_Is_FunctionDef.getFi();
-				GenType genType = e_Is_FunctionDef.getGenType();
+				@NotNull final ProcTableListener.E_Is_FunctionDef e_Is_FunctionDef = aProcTableListener.new E_Is_FunctionDef(pte, fd, fd.getParent()).invoke(aVariableTableEntry.type.genType.nonGenericTypeName);
+				@Nullable final FunctionInvocation fi = e_Is_FunctionDef.getFi();
+				final GenType genType = e_Is_FunctionDef.getGenType();
 				aProcTableListener.finish(co, depTracker, fi, genType);
 			}
 		});
@@ -102,30 +102,30 @@ public class VTE_TypePromises {
 							final @NotNull DeduceTypes2 aDeduceTypes2) {
 		aVte2.typePromise().done(new DoneCallback<GenType>() {
 			@Override
-			public void onDone(@NotNull GenType result) {
+			public void onDone(@NotNull final GenType result) {
 				final @Nullable OS_Type ty2 = result.typeName/*.getAttached()*/;
 				assert ty2 != null;
 				@NotNull GenType rtype = null;
 				try {
 					rtype = aDeduceTypes2.resolve_type(ty2, ctx);
-				} catch (ResolveError resolveError) {
+				} catch (final ResolveError resolveError) {
 					aDeduceTypes2.errSink.reportError("Cant resolve " + ty2); // TODO print better diagnostic
 					return;
 				}
 				if (rtype.resolved != null && rtype.resolved.getType() == OS_Type.Type.USER_CLASS) {
-					LookupResultList lrl2 = rtype.resolved.getClassOf().getContext().lookup("__getitem__");
-					@Nullable OS_Element best2 = lrl2.chooseBest(null);
+					final LookupResultList lrl2 = rtype.resolved.getClassOf().getContext().lookup("__getitem__");
+					@Nullable final OS_Element best2 = lrl2.chooseBest(null);
 					if (best2 != null) {
 						if (best2 instanceof FunctionDef) {
-							@Nullable FunctionDef fd = (FunctionDef) best2;
-							@Nullable ProcTableEntry pte = null;
+							@Nullable final FunctionDef fd = (FunctionDef) best2;
+							@Nullable final ProcTableEntry pte = null;
 							final IInvocation invocation = aDeduceTypes2.getInvocation((GeneratedFunction) generatedFunction);
 							aDeduceTypes2.forFunction(aDeduceTypes2.newFunctionInvocation(fd, pte, invocation, aDeduceTypes2.phase), new ForFunction() {
 								@Override
 								public void typeDecided(final @NotNull GenType aType) {
 									assert fd == generatedFunction.getFD();
 									//
-									@NotNull TypeTableEntry tte1 = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, aDeduceTypes2.gt(aType), aVte2); // TODO expression?
+									@NotNull final TypeTableEntry tte1 = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, aDeduceTypes2.gt(aType), aVte2); // TODO expression?
 									aVte2.type = tte1;
 								}
 							});
@@ -144,7 +144,7 @@ public class VTE_TypePromises {
 		final Promise<GenType, Void, Void> p = aVte1.typePromise();
 		p.done(new DoneCallback<GenType>() {
 			@Override
-			public void onDone(GenType result) {
+			public void onDone(final GenType result) {
 //					assert vte != vte1;
 //					aTte.setAttached(result.resolved != null ? result.resolved : result.typeName);
 				aTte.genType.copy(result);
@@ -159,22 +159,22 @@ public class VTE_TypePromises {
 	static void dunder(final String pn, final IntegerIA aIntegerIA, final ProcTableEntry pte, final DeduceTypes2 aDeduceTypes2) {
 		aIntegerIA.getEntry().typePromise().then(new DoneCallback<GenType>() {
 			@Override
-			public void onDone(@NotNull GenType result) {
-				boolean found1 = aDeduceTypes2.lookup_name_calls(result.resolved.getClassOf().getContext(), pn, pte);
+			public void onDone(@NotNull final GenType result) {
+				final boolean found1 = aDeduceTypes2.lookup_name_calls(result.resolved.getClassOf().getContext(), pn, pte);
 				if (found1) {
-					int y=2;
+					final int y=2;
 //					System.out.println("3071 "+pte.getStatus());
-					IInvocation invocation = result.ci;
+					final IInvocation invocation = result.ci;
 //							final BaseFunctionDef fd = gf.getFD();
 					final BaseFunctionDef fd = pte.getFunctionInvocation().getFunction();
 					if (pte.getFunctionInvocation() == null) {
-						@NotNull FunctionInvocation fi = aDeduceTypes2.newFunctionInvocation(fd, pte, invocation, aDeduceTypes2.phase);
+						@NotNull final FunctionInvocation fi = aDeduceTypes2.newFunctionInvocation(fd, pte, invocation, aDeduceTypes2.phase);
 						pte.setFunctionInvocation(fi);
 					} else
 						System.out.println("175 pte.fi is not null");
 					aIntegerIA.gf.addDependentFunction(pte.getFunctionInvocation()); // TODO is this needed (here)?
 				} else {
-					int y=3;
+					final int y=3;
 					System.out.println("3074");
 				}
 			}
@@ -188,7 +188,7 @@ public class VTE_TypePromises {
 					  final DeduceTypes2 aDeduceTypes2) {
 		aBte.typePromise().done(new DoneCallback<GenType>() {
 			@Override
-			public void onDone(@NotNull GenType result) {
+			public void onDone(@NotNull final GenType result) {
 				aPromiseExpectation.satisfy(result);
 				final OS_Type attached1 = result.resolved != null ? result.resolved : result.typeName;
 				if (attached1 != null) {
@@ -202,14 +202,14 @@ public class VTE_TypePromises {
 						break;
 					case USER:
 						try {
-							@NotNull GenType ty3 = aDeduceTypes2.resolve_type(attached1, attached1.getTypeName().getContext());
+							@NotNull final GenType ty3 = aDeduceTypes2.resolve_type(attached1, attached1.getTypeName().getContext());
 							// no expression or TableEntryIV below
-							@NotNull TypeTableEntry tte4 = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null);
+							@NotNull final TypeTableEntry tte4 = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null);
 							// README trying to keep genType up to date
 							tte4.setAttached(attached1);
 							tte4.setAttached(ty3);
 							ite.type = tte4; // or ty2?
-						} catch (ResolveError aResolveError) {
+						} catch (final ResolveError aResolveError) {
 							aResolveError.printStackTrace();
 						}
 						break;

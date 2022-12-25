@@ -17,7 +17,7 @@ public class OS_GenericTypeNameType extends OS_Type {
 
 	private final ClassContext.OS_TypeNameElement genericTypename;
 
-	public OS_GenericTypeNameType(ClassContext.OS_TypeNameElement aGenericTypename) {
+	public OS_GenericTypeNameType(final ClassContext.OS_TypeNameElement aGenericTypename) {
 		super(Type.GENERIC_TYPENAME);
 		genericTypename = aGenericTypename;
 	}

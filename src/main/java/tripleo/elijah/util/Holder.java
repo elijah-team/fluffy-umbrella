@@ -15,7 +15,7 @@ package tripleo.elijah.util;
 public class Holder<T> {
 	private T el;
 
-	public void set(T el) {
+	public void set(final T el) {
 		this.el = el;
 	}
 

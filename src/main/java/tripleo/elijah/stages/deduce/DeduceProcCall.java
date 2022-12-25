@@ -70,8 +70,8 @@ public class DeduceProcCall {
 				assert attached != null;
 				final ClassStatement self = attached.getClassOf();
 				final ClassStatement inherits = DeduceLocalVariable.class_inherits(self, best.getParent());
-				DeclAnchor.AnchorType anchorType;
-				OS_Element declAnchor;
+				final DeclAnchor.AnchorType anchorType;
+				final OS_Element declAnchor;
 				if (inherits != null) {
 					anchorType = DeclAnchor.AnchorType.INHERITED;
 					declAnchor = inherits;
@@ -80,7 +80,7 @@ public class DeduceProcCall {
 					declAnchor = self;
 				}
 				target = new DeclTarget(best, declAnchor, anchorType, errSink);
-			} catch (ResolveError aResolveError) {
+			} catch (final ResolveError aResolveError) {
 				return null; // TODO
 			}
 		} else {
@@ -105,7 +105,7 @@ public class DeduceProcCall {
 					}
 				}
 			}
-			int y=2;
+			final int y=2;
 		}
 		return target;
 	}

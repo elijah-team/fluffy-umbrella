@@ -5,23 +5,23 @@ import tripleo.elijah.stages.gen_fn.*;
 
 public interface DED {
 
-	static DED dispatch(ConstantTableEntry aCte) {
+	static DED dispatch(final ConstantTableEntry aCte) {
 		return new DED_CTE(aCte);
 	}
 
-	static DED dispatch(IdentTableEntry aIte) {
+	static DED dispatch(final IdentTableEntry aIte) {
 		return new DED_ITE(aIte);
 	}
 
-	static DED dispatch(VariableTableEntry aVte) {
+	static DED dispatch(final VariableTableEntry aVte) {
 		return new DED_VTE(aVte);
 	}
 
-	static DED dispatch(ProcTableEntry aPte) {
+	static DED dispatch(final ProcTableEntry aPte) {
 		return new DED_PTE(aPte);
 	}
 
-	static DED dispatch(TypeTableEntry aCte) {
+	static DED dispatch(final TypeTableEntry aCte) {
 		return new DED_TTE(aCte);
 	}
 
@@ -47,7 +47,7 @@ public interface DED {
 
 		private final ProcTableEntry principal;
 
-		public DED_PTE(ProcTableEntry aPte) {
+		public DED_PTE(final ProcTableEntry aPte) {
 			principal = aPte;
 		}
 
@@ -62,7 +62,7 @@ public interface DED {
 
 		private final TypeTableEntry principal;
 
-		public DED_TTE(TypeTableEntry aTte) {
+		public DED_TTE(final TypeTableEntry aTte) {
 			principal = aTte;
 		}
 
@@ -78,7 +78,7 @@ public interface DED {
 		private final ConstantTableEntry constantTableEntry;
 
 		@Contract(pure = true)
-		public DED_CTE(ConstantTableEntry aConstantTableEntry) {
+		public DED_CTE(final ConstantTableEntry aConstantTableEntry) {
 			constantTableEntry = aConstantTableEntry;
 		}
 
@@ -96,7 +96,7 @@ public interface DED {
 
 		private final IdentTableEntry identTableEntry;
 
-		public DED_ITE(IdentTableEntry aIdentTableEntry) {
+		public DED_ITE(final IdentTableEntry aIdentTableEntry) {
 			identTableEntry = aIdentTableEntry;
 		}
 
@@ -115,7 +115,7 @@ public interface DED {
 
 		private final VariableTableEntry variableTableEntry;
 
-		public DED_VTE(VariableTableEntry aVariableTableEntry) {
+		public DED_VTE(final VariableTableEntry aVariableTableEntry) {
 			variableTableEntry = aVariableTableEntry;
 		}
 

@@ -14,7 +14,7 @@ import java.util.List;
 class Do_assign_call {
 	private final DeduceTypes2 deduceTypes2;
 
-	public Do_assign_call(DeduceTypes2 aDeduceTypes2) {
+	public Do_assign_call(final DeduceTypes2 aDeduceTypes2) {
 		deduceTypes2 = aDeduceTypes2;
 	}
 
@@ -25,24 +25,24 @@ class Do_assign_call {
 	                           final @NotNull Instruction instruction) {
 		final int instructionIndex = instruction.getIndex();
 		final @NotNull ProcTableEntry pte = generatedFunction.getProcTableEntry(DeduceTypes2.to_int(fca.getArg(0)));
-		@NotNull IdentIA identIA = (IdentIA) pte.expression_num;
+		@NotNull final IdentIA identIA = (IdentIA) pte.expression_num;
 
 		if (vte.getStatus() == BaseTableEntry.Status.UNCHECKED) {
 			pte.typePromise().then(new DoneCallback<GenType>() {
 				@Override
-				public void onDone(GenType result) {
+				public void onDone(final GenType result) {
 					vte.resolveType(result);
 				}
 			});
 			if (vte.getResolvedElement() != null) {
 				try {
-					OS_Element el;
+					final OS_Element el;
 					if (vte.getResolvedElement() instanceof IdentExpression)
 						el = DeduceLookupUtils.lookup((IdentExpression) vte.getResolvedElement(), ctx, deduceTypes2);
 					else
 						el = DeduceLookupUtils.lookup(((VariableStatement) vte.getResolvedElement()).getNameToken(), ctx, deduceTypes2);
 					vte.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(el));
-				} catch (ResolveError aResolveError) {
+				} catch (final ResolveError aResolveError) {
 					deduceTypes2.errSink.reportDiagnostic(aResolveError);
 					return;
 				}
@@ -57,7 +57,7 @@ class Do_assign_call {
 				final String xx = generatedFunction.getIdentIAPathNormal(identIA);
 
 				@Override
-				public void foundElement(OS_Element e) {
+				public void foundElement(final OS_Element e) {
 //					LOG.info(String.format("600 %s %s", xx ,e));
 //					LOG.info("601 "+identIA.getEntry().getStatus());
 					final OS_Element resolved_element = identIA.getEntry().getResolvedElement();
@@ -66,16 +66,16 @@ class Do_assign_call {
 					pte.setStatus(BaseTableEntry.Status.KNOWN, new ConstructableElementHolder(e, identIA));
 					pte.onFunctionInvocation(new DoneCallback<FunctionInvocation>() {
 						@Override
-						public void onDone(@NotNull FunctionInvocation result) {
+						public void onDone(@NotNull final FunctionInvocation result) {
 							result.generateDeferred().done(new DoneCallback<BaseGeneratedFunction>() {
 								@Override
-								public void onDone(@NotNull BaseGeneratedFunction bgf) {
-									@NotNull DeduceTypes2.PromiseExpectation<GenType> pe = deduceTypes2.promiseExpectation(bgf, "Function Result type");
+								public void onDone(@NotNull final BaseGeneratedFunction bgf) {
+									@NotNull final DeduceTypes2.PromiseExpectation<GenType> pe = deduceTypes2.promiseExpectation(bgf, "Function Result type");
 									bgf.typePromise().then(new DoneCallback<GenType>() {
 										@Override
-										public void onDone(@NotNull GenType result) {
+										public void onDone(@NotNull final GenType result) {
 											pe.satisfy(result);
-											@NotNull TypeTableEntry tte = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, result.resolved); // TODO there has to be a better way
+											@NotNull final TypeTableEntry tte = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, result.resolved); // TODO there has to be a better way
 											tte.genType.copy(result);
 											vte.addPotentialType(instructionIndex, tte);
 										}
@@ -93,7 +93,7 @@ class Do_assign_call {
 				}
 			});
 		}
-		List<TypeTableEntry> args = pte.getArgs();
+		final List<TypeTableEntry> args = pte.getArgs();
 		for (int i = 0; i < args.size(); i++) {
 			final TypeTableEntry tte = args.get(i); // TODO this looks wrong
 //			LOG.info("770 "+tte);
@@ -121,18 +121,18 @@ class Do_assign_call {
 							}
 							if (best instanceof FunctionDef) {
 								final OS_Element parent = best.getParent();
-								@Nullable IInvocation invocation;
+								@Nullable final IInvocation invocation;
 								if (parent instanceof NamespaceStatement) {
 									invocation = deduceTypes2.phase.registerNamespaceInvocation((NamespaceStatement) parent);
 								} else if (parent instanceof ClassStatement) {
-									@NotNull ClassInvocation ci = new ClassInvocation((ClassStatement) parent, null);
+									@NotNull final ClassInvocation ci = new ClassInvocation((ClassStatement) parent, null);
 									invocation = deduceTypes2.phase.registerClassInvocation(ci);
 								} else
 									throw new NotImplementedException(); // TODO implement me
 
 								deduceTypes2.forFunction(deduceTypes2.newFunctionInvocation((FunctionDef) best, pte, invocation, deduceTypes2.phase), new ForFunction() {
 									@Override
-									public void typeDecided(@NotNull GenType aType) {
+									public void typeDecided(@NotNull final GenType aType) {
 										tte.setAttached(deduceTypes2.gt(aType)); // TODO stop setting attached!
 										tte.genType.copy(aType);
 //										vte.addPotentialType(instructionIndex, tte);
@@ -148,9 +148,9 @@ class Do_assign_call {
 							final int y = 2;
 							throw new NotImplementedException();
 						}
-					} catch (ResolveError aResolveError) {
+					} catch (final ResolveError aResolveError) {
 						aResolveError.printStackTrace();
-						int y = 2;
+						final int y = 2;
 						throw new NotImplementedException();
 					}
 				}
@@ -171,8 +171,8 @@ class Do_assign_call {
 								tte.setAttached(new OS_Type((ClassStatement) best));
 							} else if (best instanceof VariableStatement) {
 								final @NotNull VariableStatement vs = (VariableStatement) best;
-								@Nullable InstructionArgument vte_ia = generatedFunction.vte_lookup(vs.getName());
-								TypeTableEntry tte1 = ((IntegerIA) vte_ia).getEntry().type;
+								@Nullable final InstructionArgument vte_ia = generatedFunction.vte_lookup(vs.getName());
+								final TypeTableEntry tte1 = ((IntegerIA) vte_ia).getEntry().type;
 								tte.setAttached(tte1.getAttached());
 							} else {
 								final int y = 2;
@@ -183,9 +183,9 @@ class Do_assign_call {
 							final int y = 2;
 							throw new NotImplementedException();
 						}
-					} catch (ResolveError aResolveError) {
+					} catch (final ResolveError aResolveError) {
 						aResolveError.printStackTrace();
-						int y = 2;
+						final int y = 2;
 						throw new NotImplementedException();
 					}
 				}
@@ -223,17 +223,17 @@ class Do_assign_call {
 					final String x = generatedFunction.getIdentIAPathNormal(identIA);
 
 					@Override
-					public void foundElement(OS_Element el) {
+					public void foundElement(final OS_Element el) {
 						if (pte.getResolvedElement() == null)
 							pte.setResolvedElement(el);
 						if (el instanceof FunctionDef) {
-							@NotNull FunctionDef fd = (FunctionDef) el;
+							@NotNull final FunctionDef fd = (FunctionDef) el;
 							final @Nullable IInvocation invocation;
 							if (fd.getParent() == generatedFunction.getFD().getParent()) {
 								invocation = deduceTypes2.getInvocation((GeneratedFunction) generatedFunction);
 							} else {
 								if (fd.getParent() instanceof NamespaceStatement) {
-									NamespaceInvocation ni = deduceTypes2.phase.registerNamespaceInvocation((NamespaceStatement) fd.getParent());
+									final NamespaceInvocation ni = deduceTypes2.phase.registerNamespaceInvocation((NamespaceStatement) fd.getParent());
 									invocation = ni;
 								} else if (fd.getParent() instanceof ClassStatement) {
 									final @NotNull ClassStatement classStatement = (ClassStatement) fd.getParent();
@@ -250,14 +250,14 @@ class Do_assign_call {
 							}
 							deduceTypes2.forFunction(deduceTypes2.newFunctionInvocation(fd, pte, invocation, deduceTypes2.phase), new ForFunction() {
 								@Override
-								public void typeDecided(@NotNull GenType aType) {
+								public void typeDecided(@NotNull final GenType aType) {
 									if (!vte.typeDeferred_isPending()) {
 										if (vte.resolvedType() == null) {
 											final @Nullable ClassInvocation ci = deduceTypes2.genCI(aType, null);
 											vte.type.genTypeCI(ci);
 											ci.resolvePromise().then(new DoneCallback<GeneratedClass>() {
 												@Override
-												public void onDone(GeneratedClass result) {
+												public void onDone(final GeneratedClass result) {
 													vte.resolveTypeToClass(result);
 												}
 											});
@@ -266,14 +266,14 @@ class Do_assign_call {
 										return; // type already found
 									}
 									// I'm not sure if below is ever called
-									@NotNull TypeTableEntry tte = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, deduceTypes2.gt(aType), pte.expression, pte);
+									@NotNull final TypeTableEntry tte = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, deduceTypes2.gt(aType), pte.expression, pte);
 									vte.addPotentialType(instructionIndex, tte);
 								}
 							});
 						} else if (el instanceof ClassStatement) {
-							@NotNull ClassStatement kl = (ClassStatement) el;
-							@NotNull OS_Type type = new OS_Type(kl);
-							@NotNull TypeTableEntry tte = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, type, pte.expression, pte);
+							@NotNull final ClassStatement kl = (ClassStatement) el;
+							@NotNull final OS_Type type = new OS_Type(kl);
+							@NotNull final TypeTableEntry tte = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, type, pte.expression, pte);
 							vte.addPotentialType(instructionIndex, tte);
 							vte.setConstructable(pte);
 

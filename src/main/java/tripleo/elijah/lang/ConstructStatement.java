@@ -54,7 +54,7 @@ public class ConstructStatement implements FunctionItem, StatementItem, OS_Eleme
 //	}
 
 	@Override
-	public void visitGen(ElElementVisitor visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitConstructStatement(this);
 	}
 

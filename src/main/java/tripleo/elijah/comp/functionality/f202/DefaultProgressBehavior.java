@@ -13,8 +13,8 @@ package tripleo.elijah.comp.functionality.f202;
  */
 public class DefaultProgressBehavior implements ProgressBehavior {
 	@Override
-	public void reportProgress(String a) {
-		System.out.println("202 Writing " + a);
+	public void reportProgress(final String a) {
+		System.out.println("202 Writing logs: " + a);
 	}
 }
 

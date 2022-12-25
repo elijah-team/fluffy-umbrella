@@ -91,7 +91,7 @@ public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 		_ctx = ifConditionalContext;
 	}
 
-	public void scope(Scope3 sco) {
+	public void scope(final Scope3 sco) {
 		scope3 = sco;
 	}
 

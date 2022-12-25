@@ -21,7 +21,7 @@ public class ConstructableElementHolder implements IElementHolder {
 	private final Constructable constructable;
 
 	@Contract(pure = true)
-	public ConstructableElementHolder(OS_Element aElement, Constructable aConstructable) {
+	public ConstructableElementHolder(final OS_Element aElement, final Constructable aConstructable) {
 		element = aElement;
 		constructable = aConstructable;
 	}

@@ -53,7 +53,7 @@ class DTR_VariableStatement {
 				} else {
 					normalTypeName_generic_butNotNull_resolveToNonGeneric(genType, resolved);
 				}
-			} catch (ResolveError aResolveError) {
+			} catch (final ResolveError aResolveError) {
 				aResolveError.printStackTrace();
 				assert false;
 			}
@@ -78,7 +78,7 @@ class DTR_VariableStatement {
 						final @Nullable Map<TypeName, OS_Type> gp  = ci.genericPart;
 						final TypeName                         sch = resolved.typeName.getTypeName();
 						assert gp != null;
-						for (Map.Entry<TypeName, OS_Type> entrySet : gp.entrySet()) {
+						for (final Map.Entry<TypeName, OS_Type> entrySet : gp.entrySet()) {
 							if (entrySet.getKey().equals(sch)) {
 								genType.resolved = entrySet.getValue();
 								break;
@@ -111,11 +111,11 @@ class DTR_VariableStatement {
 
 		assert normalTypeName == type.getTypeName();
 
-		OS_Type typeName = new OS_Type(normalTypeName);
+		final OS_Type typeName = new OS_Type(normalTypeName);
 		try {
 			final @NotNull GenType resolved = dt2.resolve_type(typeName, variableStatement.getContext());
 			genType.resolved = resolved.resolved;
-		} catch (ResolveError aResolveError) {
+		} catch (final ResolveError aResolveError) {
 			aResolveError.printStackTrace();
 			assert false;
 		}

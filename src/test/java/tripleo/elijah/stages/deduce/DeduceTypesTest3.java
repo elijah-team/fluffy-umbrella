@@ -30,7 +30,7 @@ public class DeduceTypesTest3 {
 //	@Before
 //	public void setUp() {
 //		final OS_Module mod = new OS_Module();
-//		mod.parent = new Compilation(new StdErrSink(), new IO());
+//		mod.parent = new CompilationImpl(new StdErrSink(), new IO());
 ////		final DeduceTypes d = new DeduceTypes(mod);
 //		final ModuleContext mctx = new ModuleContext(mod);
 //		mod.setContext(mctx);

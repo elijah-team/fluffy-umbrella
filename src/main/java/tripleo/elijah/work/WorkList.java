@@ -18,7 +18,7 @@ import java.util.List;
  * Created 4/26/21 4:24 AM
  */
 public class WorkList {
-	private List<WorkJob> jobs = new ArrayList<>();
+	private final List<WorkJob> jobs = new ArrayList<>();
 	private boolean _done;
 
 	public void addJob(final WorkJob aJob) {

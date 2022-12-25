@@ -4,12 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
-import tripleo.elijah.stages.gen_fn.IdentTableEntry;
+import tripleo.elijah.stages.gen_fn.*;
 
 import java.util.List;
 import java.util.Map;
@@ -17,9 +12,9 @@ import java.util.stream.Collectors;
 
 public class Coder {
 
-	public void codeNodes(OS_Module mod, List<GeneratedNode> resolved_nodes, GeneratedNode generatedNode) {
+	public void codeNodes(final OS_Module mod, final List<GeneratedNode> resolved_nodes, final GeneratedNode generatedNode) {
 		if (generatedNode instanceof GeneratedFunction) {
-			GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
+			final GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
 			codeNodeFunction(generatedFunction, mod);
 		} else if (generatedNode instanceof GeneratedClass) {
 			final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
@@ -43,11 +38,11 @@ public class Coder {
 		}
 	}
 
-	private void setClassmapNodeCodes(@NotNull Map<ClassStatement, GeneratedClass> aClassMap, OS_Module mod) {
+	private void setClassmapNodeCodes(@NotNull final Map<ClassStatement, GeneratedClass> aClassMap, final OS_Module mod) {
 		aClassMap.values().forEach(generatedClass -> codeNodeClass(generatedClass, mod));
 	}
 
-	private static void extractNodes_toResolvedNodes(@NotNull Map<FunctionDef, GeneratedFunction> aFunctionMap, @NotNull List<GeneratedNode> resolved_nodes) {
+	private static void extractNodes_toResolvedNodes(@NotNull final Map<FunctionDef, GeneratedFunction> aFunctionMap, @NotNull final List<GeneratedNode> resolved_nodes) {
 		aFunctionMap.values().stream().map(generatedFunction -> (generatedFunction.idte_list)
 				.stream()
 				.filter(IdentTableEntry::isResolved)
@@ -55,7 +50,7 @@ public class Coder {
 				.collect(Collectors.toList())).forEach(resolved_nodes::addAll);
 	}
 
-	public void codeNode(GeneratedNode generatedNode, OS_Module mod) {
+	public void codeNode(final GeneratedNode generatedNode, final OS_Module mod) {
 		final Coder coder = this;
 
 		if (generatedNode instanceof GeneratedFunction) {
@@ -70,17 +65,17 @@ public class Coder {
 		}
 	}
 
-	public void codeNodeFunction(@NotNull BaseGeneratedFunction generatedFunction, OS_Module mod) {
+	public void codeNodeFunction(@NotNull final BaseGeneratedFunction generatedFunction, final OS_Module mod) {
 		if (generatedFunction.getCode() == 0)
 			generatedFunction.setCode(mod.parent.nextFunctionCode());
 	}
 
-	public void codeNodeClass(@NotNull GeneratedClass generatedClass, OS_Module mod) {
+	public void codeNodeClass(@NotNull final GeneratedClass generatedClass, final OS_Module mod) {
 		if (generatedClass.getCode() == 0)
 			generatedClass.setCode(mod.parent.nextClassCode());
 	}
 
-	public void codeNodeNamespace(@NotNull GeneratedNamespace generatedNamespace, OS_Module mod) {
+	public void codeNodeNamespace(@NotNull final GeneratedNamespace generatedNamespace, final OS_Module mod) {
 		if (generatedNamespace.getCode() == 0)
 			generatedNamespace.setCode(mod.parent.nextClassCode());
 	}

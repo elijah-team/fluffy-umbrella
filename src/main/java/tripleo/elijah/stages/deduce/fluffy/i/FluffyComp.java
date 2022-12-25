@@ -4,42 +4,37 @@ import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimap;
-import tripleo.elijah.lang.DecideElObjectType;
-import tripleo.elijah.lang.ElObjectType;
-import tripleo.elijah.lang.ModuleItem;
-import tripleo.elijah.lang.NamespaceStatement;
-import tripleo.elijah.lang.OS_Element2;
-import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.lang.*;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 public interface FluffyComp {
-	default void find_multiple_items(OS_Module aModule) {
-		Multimap<String, ModuleItem> items_map = ArrayListMultimap.create(aModule.items.size(), 1);
+	default void find_multiple_items(final OS_Module aModule) {
+		final Multimap<String, ModuleItem> items_map = ArrayListMultimap.create(aModule.items.size(), 1);
 		for (final ModuleItem item : aModule.items) {
 			if (!(item instanceof OS_Element2/* && item != anElement*/))
 				continue;
 			final String item_name = ((OS_Element2) item).name();
 			items_map.put(item_name, item);
 		}
-		for (String key : items_map.keys()) {
+		for (final String key : items_map.keys()) {
 			boolean warn = false;
 
-			Collection<ModuleItem> moduleItems = items_map.get(key);
+			final Collection<ModuleItem> moduleItems = items_map.get(key);
 			if (moduleItems.size() < 2) // README really 1
 				continue;
 
-			Collection<ElObjectType> t = Collections2.transform(moduleItems, new Function<ModuleItem, ElObjectType>() {
+			final Collection<ElObjectType> t = Collections2.transform(moduleItems, new Function<ModuleItem, ElObjectType>() {
 				@Override
-				public ElObjectType apply(@org.checkerframework.checker.nullness.qual.Nullable ModuleItem input) {
+				public ElObjectType apply(@org.checkerframework.checker.nullness.qual.Nullable final ModuleItem input) {
 					assert input != null;
 					return DecideElObjectType.getElObjectType(input);
 				}
 			});
 
-			Set<ElObjectType> st = new HashSet<ElObjectType>(t);
+			final Set<ElObjectType> st = new HashSet<ElObjectType>(t);
 			if (st.size() > 1)
 				warn = true;
 			if (moduleItems.size() > 1)

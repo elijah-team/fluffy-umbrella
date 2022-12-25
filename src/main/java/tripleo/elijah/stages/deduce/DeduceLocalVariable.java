@@ -12,15 +12,7 @@ package tripleo.elijah.stages.deduce;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.BaseFunctionDef;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.FuncExpr;
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_FuncType;
-import tripleo.elijah.lang.OS_Type;
-import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.declarations.DeferredMemberFunction;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
@@ -59,15 +51,15 @@ public class DeduceLocalVariable {
 
 		if (vte.vtt == VariableTableType.TEMP) {
 			final GenType genType = vte.type.genType;
-			int pts = vte.potentialTypes().size();
+			final int pts = vte.potentialTypes().size();
 			if (genType.typeName != null && genType.typeName == genType.resolved) {
 				try {
 					genType.resolved = deduceTypes2.resolve_type(genType.typeName, ctx/*genType.typeName.getTypeName().getContext()*/).resolved;
 					genType.genCIForGenType2(deduceTypes2);
 					vte.resolveType(genType);
 					vte.resolveTypeToClass(genType.node);
-					int y=2;
-				} catch (ResolveError aResolveError) {
+					final int y=2;
+				} catch (final ResolveError aResolveError) {
 //					aResolveError.printStackTrace();
 					deduceTypes2.errSink.reportDiagnostic(aResolveError);
 				}
@@ -78,7 +70,7 @@ public class DeduceLocalVariable {
 			return;
 		{
 			if (vte.type.getAttached() == null && vte.constructable_pte != null) {
-				ClassStatement c = vte.constructable_pte.getFunctionInvocation().getClassInvocation().getKlass();
+				final ClassStatement c = vte.constructable_pte.getFunctionInvocation().getClassInvocation().getKlass();
 				final @NotNull OS_Type attached = c.getOS_Type();
 				// TODO this should have been set somewhere already
 				//  typeName and nonGenericTypeName are not set
@@ -110,18 +102,18 @@ public class DeduceLocalVariable {
 					resolve_var_table_entry_potential_types_1(vte, generatedFunction);
 				}
 			} else if (vte.type.getAttached() == null && vte.potentialTypes().size() == 0) {
-				int y=2;
+				final int y=2;
 			}
 			{
 				final GenType genType = vte.type.genType;
-				int pts = vte.potentialTypes().size();
+				final int pts = vte.potentialTypes().size();
 				if (genType.typeName != null && genType.typeName == genType.resolved) {
 					try {
 						genType.resolved = deduceTypes2.resolve_type(genType.typeName, ctx/*genType.typeName.getTypeName().getContext()*/).resolved;
 						genType.genCIForGenType2(deduceTypes2);
 						vte.resolveType(genType);
 						vte.resolveTypeToClass(genType.node);
-					} catch (ResolveError aResolveError) {
+					} catch (final ResolveError aResolveError) {
 //						aResolveError.printStackTrace();
 						deduceTypes2.errSink.reportDiagnostic(aResolveError);
 					}
@@ -134,7 +126,7 @@ public class DeduceLocalVariable {
 					if (genType.resolved.getType() != OS_Type.Type.USER_CLASS && genType.resolved.getType() != OS_Type.Type.FUNCTION) {
 						try {
 							genType.resolved = deduceTypes2.resolve_type(genType.resolved, ctx).resolved;
-						} catch (ResolveError aResolveError) {
+						} catch (final ResolveError aResolveError) {
 							aResolveError.printStackTrace();
 							assert false;
 						}
@@ -161,7 +153,7 @@ public class DeduceLocalVariable {
 						{
 							final FuncExpr fe = (FuncExpr) vte.getCallablePTE().expression;
 							final DeduceProcCall dpc = vte.getCallablePTE().dpc;
-							int y=2;
+							final int y=2;
 //							target = (DeduceFuncExpr) dpc.target;
 //							type.resolve(new GenType() {target.prototype}): // DeduceType??
 							// TODO because we can already represent a function expression,
@@ -173,7 +165,7 @@ public class DeduceLocalVariable {
 					if (genType.ci != null) { // TODO we may need this call...
 						((ClassInvocation) genType.ci).resolvePromise().then(new DoneCallback<GeneratedClass>() {
 							@Override
-							public void onDone(GeneratedClass result) {
+							public void onDone(final GeneratedClass result) {
 								genType.node = result;
 								if (!vte.typePromise().isResolved()) { // HACK
 									if (genType.resolved instanceof OS_FuncType) {
@@ -283,7 +275,7 @@ public class DeduceLocalVariable {
 		if (!(aInherited instanceof ClassStatement)) return null;
 
 		final Map<TypeName, ClassStatement> inh1 = aFirstClass.getContext().inheritance();
-		for (Map.Entry<TypeName, ClassStatement> entry : inh1.entrySet()) {
+		for (final Map.Entry<TypeName, ClassStatement> entry : inh1.entrySet()) {
 			if (entry.getValue().equals(aInherited))
 				return (ClassStatement) aInherited;
 		}

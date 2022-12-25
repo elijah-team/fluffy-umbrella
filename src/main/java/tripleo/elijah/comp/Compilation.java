@@ -22,6 +22,7 @@ import tripleo.elijah.Out;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.functionality.f202.F202;
+import tripleo.elijah.contexts.ModuleContext;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
@@ -33,7 +34,6 @@ import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
 import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
-import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijjah.ElijjahLexer;
 import tripleo.elijjah.ElijjahParser;
 import tripleo.elijjah.EzLexer;
@@ -42,20 +42,14 @@ import tripleo.elijjah.EzParser;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public abstract class Compilation {
 
 	private final int                               _compilationNumber;
 	private       IO                                io;
-	private       ErrSink                           eee;
+	private final ErrSink                           eee;
 	private final List<OS_Module>                   modules      = new ArrayList<OS_Module>();
 	private final Map<String, OS_Module>            fn2m         = new HashMap<String, OS_Module>();
 	private final Map<String, CompilerInstructions> fn2ci        = new HashMap<String, CompilerInstructions>();
@@ -69,7 +63,7 @@ public abstract class Compilation {
 	//
 	//
 	public PipelineLogic pipelineLogic;
-	Pipeline pipelines = new Pipeline();
+	final Pipeline pipelines = new Pipeline();
 	//
 	//
 	//
@@ -84,8 +78,13 @@ public abstract class Compilation {
 		final ErrSink errSink = eee == null ? new StdErrSink() : eee;
 		boolean       do_out  = false /*, silent = false*/;
 		AccessBus     ab      = null;
+
+		if (args.size() <= 0) {
+			System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
+			return ab;
+		}
+
 		try {
-			if (args.size() > 0) {
 				final Options options = new Options();
 				options.addOption("s", true, "stage: E: parse; O: output");
 				options.addOption("showtree", false, "show tree");
@@ -159,23 +158,26 @@ public abstract class Compilation {
 
 					ab.addPipelineLogic(PipelineLogic::new);
 
-					ab.subscribePipelineLogic(xx -> pipelineLogic = xx);
+//					ab.subscribePipelineLogic(xx -> pipelineLogic = xx);
+					pipelineLogic = ab.__getPL();
 
 					ab.add(DeducePipeline::new);
 					ab.add(GeneratePipeline::new);
 					ab.add(WritePipeline::new);
 //					ab.add(WriteMesonPipeline::new);
 
+
+					modules.stream().forEach(m -> pipelineLogic.addModule(m));
+
+
 					pipelines.run();
 
 					writeLogs(silent, elLogs);
 				}
-			} else {
-				System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
-			}
+//			}
 		} catch (final Exception e) {
 			errSink.exception(e);
-			throw e;
+			throw new RuntimeException(e);
 		}
 
 		return ab;
@@ -207,13 +209,13 @@ public abstract class Compilation {
 		return System.getenv("GITLAB_CI") != null;
 	}
 
-	private void writeLogs(boolean aSilent, List<ElLog> aLogs) {
-		Multimap<String, ElLog> logMap = ArrayListMultimap.create();
-		if (true || aSilent) {
-			for (ElLog deduceLog : aLogs) {
+	private void writeLogs(final boolean aSilent, final List<ElLog> aLogs) {
+		final Multimap<String, ElLog> logMap = ArrayListMultimap.create();
+		if (true) {
+			for (final ElLog deduceLog : aLogs) {
 				logMap.put(deduceLog.getFileName(), deduceLog);
 			}
-			for (Map.Entry<String, Collection<ElLog>> stringCollectionEntry : logMap.asMap().entrySet()) {
+			for (final Map.Entry<String, Collection<ElLog>> stringCollectionEntry : logMap.asMap().entrySet()) {
 				final F202 f202 = new F202(getErrSink(), this);
 				f202.processLogs(stringCollectionEntry.getValue());
 			}
@@ -238,7 +240,7 @@ public abstract class Compilation {
 					if (ezFile != null)
 						R.add(ezFile);
 					else
-						eee.reportError("9995 ezFile is null "+file.toString());
+						eee.reportError("9995 ezFile is null "+ file);
 				} catch (final Exception e) {
 					eee.exception(e);
 				}
@@ -255,7 +257,7 @@ public abstract class Compilation {
 		final File instruction_dir = new File(compilerInstructions.getFilename()).getParentFile();
 		for (final LibraryStatementPart lsp : compilerInstructions.lsps) {
 			final String dir_name = Helpers.remove_single_quotes_from_string(lsp.getDirName());
-			File dir;// = new File(dir_name);
+			final File dir;// = new File(dir_name);
 			if (dir_name.equals(".."))
 				dir = instruction_dir/*.getAbsoluteFile()*/.getParentFile();
 			else
@@ -269,9 +271,9 @@ public abstract class Compilation {
 		use_internal(instruction_dir, do_out, lsp);
 	}
 
-	private void use_internal(final File dir, final boolean do_out, LibraryStatementPart lsp) throws Exception {
+	private void use_internal(final File dir, final boolean do_out, final LibraryStatementPart lsp) throws Exception {
 		if (!dir.isDirectory()) {
-			eee.reportError("9997 Not a directory " + dir.toString());
+			eee.reportError("9997 Not a directory " + dir);
 			return;
 		}
 		//
@@ -312,7 +314,7 @@ public abstract class Compilation {
 								  final String file_name,
 								  final ErrSink errSink,
 								  final boolean do_out,
-								  LibraryStatementPart lsp) throws Exception {
+								  final LibraryStatementPart lsp) throws Exception {
 		System.out.println((String.format("   %s", f.getAbsolutePath())));
 		if (f.exists()) {
 			final OS_Module m = realParseElijjahFile(file_name, f, do_out);
@@ -501,9 +503,14 @@ public abstract class Compilation {
 		return eee;
 	}
 
-	public void addFunctionMapHook(FunctionMapHook aFunctionMapHook) {
+	public void addFunctionMapHook(final FunctionMapHook aFunctionMapHook) {
 		getDeducePhase().addFunctionMapHook(aFunctionMapHook);
 	}
+
+	@NotNull
+	public abstract EOT_OutputTree getOutputTree();
+
+	public abstract @NotNull FluffyComp getFluffy();
 
 	public boolean getSilence() {
 		return silent;
@@ -518,10 +525,6 @@ public abstract class Compilation {
 		return getDeducePhase().generatedClasses.copy();
 	}
 
-	public EOT_OutputTree getOutputTree() {
-		throw new NotImplementedException();
-	}
-
 	@Deprecated
 	public int modules_size() {
 		return modules.size();
@@ -532,7 +535,55 @@ public abstract class Compilation {
 		return modules;
 	}
 
-	public abstract FluffyComp getFluffy();
+	public ModuleBuilder moduleBuilder() {
+		return new ModuleBuilder(this);
+	}
+
+	public static class ModuleBuilder {
+		// private final Compilation compilation;
+		private final OS_Module mod;
+		private boolean _addToCompilation = false;
+		private String _fn = null;
+
+		public ModuleBuilder(Compilation aCompilation) {
+//          compilation = aCompilation;
+			mod = new OS_Module();
+			mod.setParent(aCompilation);
+		}
+
+		public ModuleBuilder setContext() {
+			final ModuleContext mctx = new ModuleContext(mod);
+			mod.setContext(mctx);
+			return this;
+		}
+
+		public OS_Module build() {
+			if (_addToCompilation) {
+				if (_fn == null)
+					throw new IllegalStateException("Filename not set in ModuleBuilder");
+
+				mod.getCompilation().addModule(mod, _fn);
+			}
+			return mod;
+		}
+
+		public ModuleBuilder withPrelude(String aPrelude) {
+			mod.prelude = mod.getCompilation().findPrelude("c");
+			return this;
+		}
+
+		public ModuleBuilder withFileName(String aFn) {
+			_fn = aFn;
+			mod.setFileName(aFn);
+			return this;
+		}
+
+		public ModuleBuilder addToCompilation() {
+			_addToCompilation = true;
+			return this;
+		}
+	}
+
 }
 
 //

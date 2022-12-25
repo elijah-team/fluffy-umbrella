@@ -15,11 +15,11 @@ public class Precondition {
 	private IdentExpression id;
 	private IExpression expr;
 
-	public void id(IdentExpression id) {
+	public void id(final IdentExpression id) {
 		this.id = id;
 	}
 
-	public void expr(IExpression expr) {
+	public void expr(final IExpression expr) {
 		this.expr = expr;
 	}
 }

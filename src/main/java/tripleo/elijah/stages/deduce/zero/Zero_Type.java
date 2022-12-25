@@ -8,7 +8,7 @@ class Zero_Type {
 	private final GenType gt;
 
 	@Contract(pure = true)
-	public Zero_Type(GenType aGt) {
+	public Zero_Type(final GenType aGt) {
 		gt = aGt;
 	}
 

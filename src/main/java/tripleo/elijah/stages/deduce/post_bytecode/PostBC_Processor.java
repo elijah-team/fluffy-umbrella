@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 
 public interface PostBC_Processor {
 	@Contract("_, _, _ -> new")
-	static @NotNull PostBC_Processor make_VTE(@NotNull VariableTableEntry aVariableTableEntry, Context aFd_ctx, DeduceTypes2.DeduceClient1 aDeduceTypes2) {
-		OS_Type vte_type_attached = aVariableTableEntry.type.getAttached();
+	static @NotNull PostBC_Processor make_VTE(@NotNull final VariableTableEntry aVariableTableEntry, final Context aFd_ctx, final DeduceTypes2.DeduceClient1 aDeduceTypes2) {
+		final OS_Type vte_type_attached = aVariableTableEntry.type.getAttached();
 
 		switch (aVariableTableEntry.vtt) {
 		case SELF:
@@ -47,7 +47,7 @@ public interface PostBC_Processor {
 		private static DeduceType3 doNoTypeAttached__zero_potential(final @NotNull VariableTableEntry vte, final Supplier<CantDecideType> cdt) {
 			// invariant: potential_size == 0
 
-			DeduceType3 r;
+			final DeduceType3 r;
 
 			// TODO why both code paths the same? (evolution??)
 			switch (vte.vtt) {
@@ -67,11 +67,11 @@ public interface PostBC_Processor {
 		}
 
 		private static @NotNull DeduceType3 doNoTypeAttached__single_potential(final VariableTableEntry vte, final DeduceTypes2.@NotNull DeduceClient1 deduceTypes2) {
-			OS_Type     attached = deduceTypes2.getPotentialTypesVte(vte).get(0).getAttached();
-			DeduceType3 r        = new DeduceType3(attached, null);
+			final OS_Type     attached = deduceTypes2.getPotentialTypesVte(vte).get(0).getAttached();
+			final DeduceType3 r        = new DeduceType3(attached, null);
 
 			// ... ZeroPotentialDiagnostic
-			ZeroPotentialDiagnostic zpd = new ZeroPotentialDiagnostic();
+			final ZeroPotentialDiagnostic zpd = new ZeroPotentialDiagnostic();
 
 			// ---------------------- vte.type.setAttached(attached);
 			return r;
@@ -97,7 +97,7 @@ public interface PostBC_Processor {
 
 		@Override
 		public DeduceType3 doNoTypeAttached(final ErrSink errSink1) {
-			@NotNull DeduceType3             r;
+			@NotNull final DeduceType3             r;
 			final DeduceTypes2.DeduceClient1 deduceTypes2   = deduceTypes2();
 			final VariableTableEntry         vte            = vte();
 			final Supplier<CantDecideType>   cdt            = () -> new CantDecideType(vte, vte.potentialTypes());
@@ -136,12 +136,12 @@ public interface PostBC_Processor {
 			errSink1.reportDiagnostic(diagnostic);
 
 			// 3. craft and return r-value
-			DeduceElement3_ConstantTableEntry rr = (DeduceElement3_ConstantTableEntry) DeduceType3.dispatch(vte);
+			final DeduceElement3_ConstantTableEntry rr = (DeduceElement3_ConstantTableEntry) DeduceType3.dispatch(vte);
 			rr.deduceElement3 = de3;
 			rr.osType         = null;
 			rr.diagnostic     = diagnostic;
 
-			DeduceType3 r = new DeduceType3(de3, null, diagnostic);
+			final DeduceType3 r = new DeduceType3(de3, null, diagnostic);
 			return r;
 		}
 
@@ -151,17 +151,17 @@ public interface PostBC_Processor {
 			return dty;
 		}
 
-		private DeduceType3 postBC_getTypeFor_VTE(final @NotNull VariableTableEntry vte, Context fd_ctx, final ErrSink errSink1) {
+		private DeduceType3 postBC_getTypeFor_VTE(final @NotNull VariableTableEntry vte, final Context fd_ctx, final ErrSink errSink1) {
 			final DeduceType3                r;
 			final DeduceTypes2.DeduceClient1 deduceClient1     = deduceTypes2();
 			final OS_Type                    vte_type_attached = vte.type.getAttached();
 
 			if (vte_type_attached == null) {
-				DeduceType3 r2 = vte.getPostBC_Processor(fd_ctx, deduceClient1).doNoTypeAttached(errSink1);
+				final DeduceType3 r2 = vte.getPostBC_Processor(fd_ctx, deduceClient1).doNoTypeAttached(errSink1);
 				r = r2; //postBC_getTypeFor_VTE__no_type_attached(vte);
 			} else {
-				Maybe<OS_Type> r1 = vte.getPostBC_Processor(fd_ctx, deduceClient1).doHasTypeAttached();
-				DeduceType3    r2 = new DeduceType3(r1.o, r1.exc);
+				final Maybe<OS_Type> r1 = vte.getPostBC_Processor(fd_ctx, deduceClient1).doHasTypeAttached();
+				final DeduceType3    r2 = new DeduceType3(r1.o, r1.exc);
 				r = r2;
 			}
 
@@ -185,7 +185,7 @@ public interface PostBC_Processor {
 
 		@Override
 		public Maybe<OS_Type> doHasTypeAttached() {
-			Maybe<OS_Type> r;
+			final Maybe<OS_Type> r;
 
 			r = new Maybe<>(vte_type_attached, null);
 
@@ -327,7 +327,7 @@ public interface PostBC_Processor {
 
 		@Override
 		public Maybe<OS_Type> doHasTypeAttached() {
-			Maybe<OS_Type> r;
+			final Maybe<OS_Type> r;
 
 			r = new Maybe<>(vte_type_attached, null);
 
@@ -413,7 +413,7 @@ public interface PostBC_Processor {
 
 		@Override
 		public Maybe<OS_Type> doHasTypeAttached() {
-			Maybe<OS_Type> r;
+			final Maybe<OS_Type> r;
 
 			r = new Maybe<>(vte_type_attached, null);
 

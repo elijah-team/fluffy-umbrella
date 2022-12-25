@@ -34,32 +34,32 @@ public class WlGenerateCtor implements WorkJob {
 	private GeneratedConstructor result;
 
 	@Contract(pure = true)
-	public WlGenerateCtor(@NotNull  GenerateFunctions  aGenerateFunctions,
-						  @NotNull  FunctionInvocation aFunctionInvocation,
-						  @Nullable IdentExpression    aConstructorName) {
+	public WlGenerateCtor(@NotNull final GenerateFunctions  aGenerateFunctions,
+						  @NotNull final FunctionInvocation aFunctionInvocation,
+						  @Nullable final IdentExpression    aConstructorName) {
 		generateFunctions  = aGenerateFunctions;
 		functionInvocation = aFunctionInvocation;
 		constructorName    = aConstructorName;
 	}
 
 	@Override
-	public void run(WorkManager aWorkManager) {
+	public void run(final WorkManager aWorkManager) {
 		if (functionInvocation.generateDeferred().isPending()) {
 			final ClassStatement klass = functionInvocation.getClassInvocation().getKlass();
-			Holder<GeneratedClass> hGenClass = new Holder<>();
+			final Holder<GeneratedClass> hGenClass = new Holder<>();
 			functionInvocation.getClassInvocation().resolvePromise().then(new DoneCallback<GeneratedClass>() {
 				@Override
-				public void onDone(GeneratedClass result) {
+				public void onDone(final GeneratedClass result) {
 					hGenClass.set(result);
 				}
 			});
-			GeneratedClass genClass = hGenClass.get();
+			final GeneratedClass genClass = hGenClass.get();
 			assert genClass != null;
 
 			ConstructorDef ccc = null;
 			if (constructorName != null) {
-				Collection<ConstructorDef> cs = klass.getConstructors();
-				for (@NotNull ConstructorDef c : cs) {
+				final Collection<ConstructorDef> cs = klass.getConstructors();
+				for (@NotNull final ConstructorDef c : cs) {
 					if (c.name().equals(constructorName.getText())) {
 						ccc = c;
 						break;
@@ -67,20 +67,20 @@ public class WlGenerateCtor implements WorkJob {
 				}
 			}
 
-			ConstructorDef cd;
+			final ConstructorDef cd;
 			if (ccc == null) {
 				cd = new ConstructorDef(constructorName, klass, klass.getContext());
-				Scope3 scope3 = new Scope3(cd);
+				final Scope3 scope3 = new Scope3(cd);
 				cd.scope(scope3);
-				for (GeneratedContainer.VarTableEntry varTableEntry : genClass.varTable) {
+				for (final GeneratedContainer.VarTableEntry varTableEntry : genClass.varTable) {
 					if (varTableEntry.initialValue != IExpression.UNASSIGNED) {
-						IExpression left = varTableEntry.nameToken;
-						IExpression right = varTableEntry.initialValue;
+						final IExpression left = varTableEntry.nameToken;
+						final IExpression right = varTableEntry.initialValue;
 
-						IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
+						final IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
 						scope3.add(new StatementWrapper(e, cd.getContext(), cd));
 					} else {
-						if (true || getPragma("auto_construct")) {
+						if (true) {
 							scope3.add(new ConstructStatement(cd, cd.getContext(), varTableEntry.nameToken, null, null));
 						}
 					}
@@ -88,14 +88,14 @@ public class WlGenerateCtor implements WorkJob {
 			} else
 				cd = ccc;
 
-			OS_Element classStatement_ = cd.getParent();
+			final OS_Element classStatement_ = cd.getParent();
 			assert classStatement_ instanceof ClassStatement;
 
-			ClassStatement classStatement = (ClassStatement) classStatement_;
-			Collection<ConstructorDef> cs = classStatement.getConstructors();
+			final ClassStatement classStatement = (ClassStatement) classStatement_;
+			final Collection<ConstructorDef> cs = classStatement.getConstructors();
 			ConstructorDef c = null;
 			if (constructorName != null) {
-				for (ConstructorDef cc : cs) {
+				for (final ConstructorDef cc : cs) {
 					if (cc.name().equals(constructorName.getText())) {
 						c = cc;
 						break;
@@ -103,17 +103,17 @@ public class WlGenerateCtor implements WorkJob {
 				}
 			} else {
 				// TODO match based on arguments
-				ProcTableEntry pte = functionInvocation.pte;
-				List<TypeTableEntry> args = pte.getArgs();
+				final ProcTableEntry pte = functionInvocation.pte;
+				final List<TypeTableEntry> args = pte.getArgs();
 				// isResolved -> GeneratedNode, etc or getAttached -> OS_Element
-				for (ConstructorDef cc : cs) {
-					Collection<FormalArgListItem> cc_args = cc.getArgs();
+				for (final ConstructorDef cc : cs) {
+					final Collection<FormalArgListItem> cc_args = cc.getArgs();
 					if (cc_args.size() == args.size()) {
 						if (args.size() == 0) {
 							c = cc;
 							break;
 						}
-						int y = 2;
+						final int y = 2;
 					}
 				}
 			}
@@ -125,7 +125,7 @@ public class WlGenerateCtor implements WorkJob {
 
 				// add code from c
 				if (c != null && c != cd) {
-					ArrayList<FunctionItem> is = new ArrayList<>(c.getItems());
+					final ArrayList<FunctionItem> is = new ArrayList<>(c.getItems());
 
 					// skip initializers (already present in cd)
 //				FunctionItem firstElement = is.get(0);
@@ -134,19 +134,19 @@ public class WlGenerateCtor implements WorkJob {
 //					is.remove(0);
 //				}
 
-					for (FunctionItem item : is) {
+					for (final FunctionItem item : is) {
 						cd.add(item);
 					}
 				}
 			}
 
-			@NotNull GeneratedConstructor gf = generateFunctions.generateConstructor(cd, (ClassStatement) classStatement_, functionInvocation);
+			@NotNull final GeneratedConstructor gf = generateFunctions.generateConstructor(cd, (ClassStatement) classStatement_, functionInvocation);
 //		lgf.add(gf);
 
 			final ClassInvocation ci = functionInvocation.getClassInvocation();
 			ci.resolvePromise().done(new DoneCallback<GeneratedClass>() {
 				@Override
-				public void onDone(GeneratedClass result) {
+				public void onDone(final GeneratedClass result) {
 					gf.setCode(generateFunctions.module.parent.nextFunctionCode());
 					gf.setClass(result);
 					result.constructors.put(cd, gf);
@@ -162,7 +162,7 @@ public class WlGenerateCtor implements WorkJob {
 		_isDone = true;
 	}
 
-	private boolean getPragma(String aAuto_construct) {
+	private boolean getPragma(final String aAuto_construct) {
 		return false;
 	}
 

@@ -16,15 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang2.AbstractCodeGen;
-import tripleo.elijah.stages.gen_fn.BaseTableEntry;
-import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GenericElementHolder;
-import tripleo.elijah.stages.gen_fn.IElementHolder;
-import tripleo.elijah.stages.gen_fn.IdentTableEntry;
-import tripleo.elijah.stages.gen_fn.ProcTableEntry;
-import tripleo.elijah.stages.gen_fn.VariableTableEntry;
+import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
@@ -39,7 +31,7 @@ public class DeduceTypeResolve {
 	BaseTableEntry backlink;
 	private final DeferredObject<GenType, ResolveError, Void> typeResolution = new DeferredObject<GenType, ResolveError, Void>();
 
-	private void setBacklinkCallback_(BaseTableEntry aBacklink) {
+	private void setBacklinkCallback_(final BaseTableEntry aBacklink) {
 		assert bte instanceof IdentTableEntry;
 
 		backlink = aBacklink;
@@ -75,7 +67,7 @@ public class DeduceTypeResolve {
 
 	}
 
-	public DeduceTypeResolve(BaseTableEntry aBte) {
+	public DeduceTypeResolve(final BaseTableEntry aBte) {
 		bte = aBte;
 		if (bte instanceof IdentTableEntry) {
 			((IdentTableEntry) bte).backlinkSet()
@@ -99,7 +91,7 @@ public class DeduceTypeResolve {
 					__modifyGenType(eh, genType);
 
 					if (!typeResolution.isPending()) {
-						int y = 2;
+						final int y = 2;
 
 						final GenType[] x = new GenType[1];
 
@@ -176,14 +168,14 @@ public class DeduceTypeResolve {
 
 						@Override
 						public void visitConstructorDef(final ConstructorDef aConstructorDef) {
-							int y =2;
+							final int y =2;
 						}
 
 						@Override
 						public void visitMC1(final MatchConditional.MC1 aMC1) {
 							if (aMC1 instanceof MatchConditional.MatchArm_TypeMatch) {
 								final MatchConditional.MatchArm_TypeMatch typeMatch = (MatchConditional.MatchArm_TypeMatch) aMC1;
-								int                                       yy        =2;
+								final int                                       yy        =2;
 							}
 						}
 
@@ -201,7 +193,7 @@ public class DeduceTypeResolve {
 
 	}
 
-	private void __setBacklink_for_IdentTableEntry(InstructionArgument backlink0) {
+	private void __setBacklink_for_IdentTableEntry(final InstructionArgument backlink0) {
 		if (backlink0 instanceof IdentIA) {
 			setBacklinkCallback_(((IdentIA) backlink0).getEntry());
 		} else if (backlink0 instanceof IntegerIA) {
@@ -214,14 +206,14 @@ public class DeduceTypeResolve {
 		}
 	}
 
-	private void procTableEntry_typeResolvePromise(GenType result, ProcTableEntry procTableEntry) {
+	private void procTableEntry_typeResolvePromise(final GenType result, final ProcTableEntry procTableEntry) {
 		// procTableEntry.type.setAttached(result);
 
 		procTableEntry.typePromise().then(aGenType__ -> {
 			assert aGenType__ == result;
 		});
 
-		int                  y              = 2;
+		final int                  y              = 2;
 		final ClassStatement classStatement = result.resolved.getClassOf();
 
 		assert bte instanceof IdentTableEntry;
@@ -238,7 +230,7 @@ public class DeduceTypeResolve {
 		}
 	}
 
-	private static void variableTableEntry_typeResolvePromise(GenType result, IElementHolder eh, VariableTableEntry variableTableEntry) {
+	private static void variableTableEntry_typeResolvePromise(final GenType result, final IElementHolder eh, final VariableTableEntry variableTableEntry) {
 		if (eh instanceof Resolve_Ident_IA.GenericElementHolderWithDC) {
 			final Resolve_Ident_IA.GenericElementHolderWithDC eh1 = (Resolve_Ident_IA.GenericElementHolderWithDC) eh;
 			final DeduceTypes2.DeduceClient3                  dc  = eh1.getDC();

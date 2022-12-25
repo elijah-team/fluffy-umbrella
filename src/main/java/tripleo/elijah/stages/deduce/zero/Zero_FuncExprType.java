@@ -12,17 +12,17 @@ import tripleo.elijah.stages.gen_fn.WlGenerateFunction;
 public class Zero_FuncExprType implements IZero {
 	private final OS_FuncExprType funcExprType;
 
-	public Zero_FuncExprType(OS_FuncExprType aFuncExprType) {
+	public Zero_FuncExprType(final OS_FuncExprType aFuncExprType) {
 		funcExprType = aFuncExprType;
 	}
 
-	public GeneratedFunction genCIForGenType2(DeduceTypes2 aDeduceTypes2) {
+	public GeneratedFunction genCIForGenType2(final DeduceTypes2 aDeduceTypes2) {
 		final @NotNull GenerateFunctions genf = aDeduceTypes2.getGenerateFunctions(funcExprType.getElement().getContext().module());
 		final FunctionInvocation fi = new FunctionInvocation((BaseFunctionDef) funcExprType.getElement(),
 				null,
 				null,
 				aDeduceTypes2._phase().generatePhase);
-		WlGenerateFunction gen = new WlGenerateFunction(genf, fi);
+		final WlGenerateFunction gen = new WlGenerateFunction(genf, fi);
 		gen.run(null);
 		return gen.getResult();
 	}

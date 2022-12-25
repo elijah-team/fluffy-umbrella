@@ -15,13 +15,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.ClassInvocation;
+import tripleo.elijah.stages.gen_c.c_ast1.C_HeaderString;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.BufferTabbedOutputStream;
 import tripleo.elijah.util.Helpers;
-import tripleo.elijah.util.Holder;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkList;
 import tripleo.util.buffer.Buffer;
@@ -63,10 +63,10 @@ public class Generate_Code_For_Method {
 		tosHdr.close();
 		Buffer buf = tos.getBuffer();
 //		LOG.info(buf.getText());
-		gr.addFunction(gf, buf, GenerateResult.TY.IMPL);
+		gr.addFunction(gf, buf, GenerateResult.TY.IMPL, gf.module().getLsp());
 		Buffer bufHdr = tosHdr.getBuffer();
 //		LOG.info(bufHdr.getText());
-		gr.addFunction(gf, bufHdr, GenerateResult.TY.HEADER);
+		gr.addFunction(gf, bufHdr, GenerateResult.TY.HEADER, gf.module().getLsp());
 	}
 
 	void generateCodeForConstructor(GeneratedConstructor gf, GenerateResult gr, WorkList aWorkList) {
@@ -159,10 +159,10 @@ public class Generate_Code_For_Method {
 		tosHdr.close();
 		Buffer buf = tos.getBuffer();
 //		LOG.info(buf.getText());
-		gr.addConstructor(gf, buf, GenerateResult.TY.IMPL);
+		gr.addConstructor(gf, buf, GenerateResult.TY.IMPL, gf.module().getLsp());
 		Buffer bufHdr = tosHdr.getBuffer();
 //		LOG.info(bufHdr.getText());
-		gr.addConstructor(gf, bufHdr, GenerateResult.TY.HEADER);
+		gr.addConstructor(gf, bufHdr, GenerateResult.TY.HEADER, gf.module().getLsp());
 	}
 
 	boolean is_constructor = false, is_unit_type = false;
@@ -676,26 +676,40 @@ public class Generate_Code_For_Method {
 		}
 
 		String find_header_string(BaseGeneratedFunction gf, ElLog LOG) {
+			String result;
+			// TODO buffer for gf.parent.<element>.locatable
+
 			// NOTE getGenClass is always a class or namespace, getParent can be a function
 			GeneratedContainerNC parent = (GeneratedContainerNC) gf.getGenClass();
 
 			if (parent instanceof GeneratedClass) {
-				GeneratedClass st = (GeneratedClass) parent;
-				final String class_name = gc.getTypeName(st);
-//				LOG.info("234 class_name >> " + class_name);
-				final String if_args = args_string.length() == 0 ? "" : ", ";
-				return String.format("%s %s%s(%s* vsc%s%s)", return_type, class_name, name, class_name, if_args, args_string);
+				final GeneratedClass          st  = (GeneratedClass) parent;
+
+				@NotNull final C_HeaderString chs = C_HeaderString.forClass(st,
+																			() -> gc.getTypeName(st),
+																			return_type,
+																			name,
+																			args_string,
+																			LOG);//(ErrSink) LOG);
+
+				result = chs.getResult();
 			} else if (parent instanceof GeneratedNamespace) {
-				GeneratedNamespace st = (GeneratedNamespace) parent;
-				final String class_name = gc.getTypeName(st);
-				LOG.info(String.format("240 (namespace) %s -> %s", st.getName(), class_name));
-				final String if_args = args_string.length() == 0 ? "" : ", ";
-				// TODO vsi for namespace instance??
-//				tos.put_string_ln(String.format("%s %s%s(%s* vsi%s%s) {", returnType, class_name, name, class_name, if_args, args));
-				return String.format("%s %s%s(%s)", return_type, class_name, name, args_string);
+				GeneratedNamespace st         = (GeneratedNamespace) parent;
+
+				@NotNull final C_HeaderString chs = C_HeaderString.forNamespace(st,
+																				() -> gc.getTypeName(st),
+																				LOG,
+																				return_type,
+																				name,
+																				args_string);
+				result = chs.getResult();
 			} else {
-				return String.format("%s %s(%s)", return_type, name, args_string);
+				@NotNull final C_HeaderString chs = C_HeaderString.forOther(parent, return_type, name, args_string);
+				//result = String.format("%s %s(%s)", return_type, name, args_string);
+				result = chs.getResult();
 			}
+
+			return result;
 		}
 
 		String find_args_string(BaseGeneratedFunction gf) {
@@ -729,26 +743,54 @@ public class Generate_Code_For_Method {
 			return args;
 		}
 
-		@NotNull String find_return_type(BaseGeneratedFunction gf, ElLog LOG) {
-			String returnType = null;
-			if (gf instanceof GeneratedConstructor) {
+		interface GCM_D {
+			String find_return_type(Generate_Method_Header aGenerate_method_header);
+		}
+
+		static GCM_D discriminator(BaseGeneratedFunction bgf, final ElLog aLOG, final GenerateC aGc) {
+			if (bgf instanceof GeneratedConstructor) {
+				return new GCM_GC((GeneratedConstructor) bgf, aLOG, aGc);
+			} else if (bgf instanceof GeneratedFunction) {
+				return new GCM_GF((GeneratedFunction) bgf, aLOG, aGc);
+			}
+
+			throw new IllegalStateException();
+		}
+
+		static class GCM_GC implements GCM_D {
+			private final GeneratedConstructor gf;
+			private final ElLog                LOG;
+			private final GenerateC            gc;
+
+			public GCM_GC(final GeneratedConstructor aGf, final ElLog aLOG, final GenerateC aGc) {
+				gf  = aGf;
+				LOG = aLOG;
+				gc  = aGc;
+			}
+
+			@Override
+			public String find_return_type(final Generate_Method_Header aGenerate_method_header__) {
+				OS_Type        type;
+				TypeTableEntry tte;
+				String         returnType = null;
+
 				@Nullable InstructionArgument result_index = gf.vte_lookup("self");
-				@NotNull VariableTableEntry vte = ((IntegerIA) result_index).getEntry();
+				@NotNull VariableTableEntry   vte          = ((IntegerIA) result_index).getEntry();
 				assert vte.vtt == VariableTableType.SELF;
 
 				// Get it from resolved
 				tte = gf.getTypeTableEntry(((IntegerIA) result_index).getIndex());
 				GeneratedNode res = tte.resolved();
 				if (res instanceof GeneratedContainerNC) {
-					final GeneratedContainerNC nc = (GeneratedContainerNC) res;
-					int code = nc.getCode();
-					return String.format("Z%d*",code);
+					final GeneratedContainerNC nc   = (GeneratedContainerNC) res;
+					int                        code = nc.getCode();
+					return String.format("Z%d*", code);
 				}
 
 				// Get it from type.attached
 				type = tte.getAttached();
 
-				LOG.info("228-1 "+ type);
+				LOG.info("228-1 " + type);
 				if (type.isUnitType()) {
 					assert false;
 				} else if (type != null) {
@@ -757,7 +799,28 @@ public class Generate_Code_For_Method {
 					LOG.err("655 Shouldn't be here (type is null)");
 					returnType = "void/*2*/";
 				}
-			} else {
+
+				return returnType;
+			}
+		}
+
+		static class GCM_GF implements GCM_D {
+			private final GeneratedFunction gf;
+			private final ElLog             LOG;
+			private final GenerateC gc;
+
+			public GCM_GF(final GeneratedFunction aGf, final ElLog aLOG, final GenerateC aGc) {
+				gf  = aGf;
+				LOG = aLOG;
+				gc  = aGc;
+			}
+
+			@Override
+			public String find_return_type(final Generate_Method_Header aGenerate_method_header__) {
+				String returnType = null;
+				TypeTableEntry tte;
+				OS_Type type;
+
 				@Nullable InstructionArgument result_index = gf.vte_lookup("Result");
 				if (result_index == null) {
 					// if there is no Result, there should be Value
@@ -782,7 +845,7 @@ public class Generate_Code_For_Method {
 				// Get it from type.attached
 				type = tte.getAttached();
 
-//				LOG.info("228 "+ type);
+				LOG.info("228 "+ type);
 				if (type == null) {
 					LOG.err("655 Shouldn't be here (type is null)");
 					returnType = "ERR_type_attached_is_null/*2*/";
@@ -813,8 +876,14 @@ public class Generate_Code_For_Method {
 //					LOG.err("656 Shouldn't be here (can't reason about type)");
 //					returnType = "void/*656*/";
 				}
+
+				return returnType;
 			}
-			return returnType;
+		}
+
+		@NotNull String find_return_type(BaseGeneratedFunction gf, ElLog LOG) {
+			return discriminator(gf, LOG, gc)
+					.find_return_type(this);
 		}
 	}
 }

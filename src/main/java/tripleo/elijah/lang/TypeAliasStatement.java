@@ -43,7 +43,7 @@ public class TypeAliasStatement implements OS_Element {
 	}
 
 	@Override
-	public void visitGen(ElElementVisitor visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitTypeAlias(this);
 	}
 

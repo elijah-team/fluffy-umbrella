@@ -44,19 +44,19 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	public boolean fefi = false;
 	private GeneratedNode resolvedType;
 	public ProcTableEntry constructable_pte;
-	private DeduceElementIdent dei = new DeduceElementIdent(this);
+	private final DeduceElementIdent dei = new DeduceElementIdent(this);
 
 	public DeduceTypes2.PromiseExpectation<String> resolveExpectation;
 	private DeduceElement3_IdentTableEntry _de3;
 	private ITE_Zero _zero;
 
-	public IdentTableEntry(final int index, final IdentExpression ident, Context pc) {
+	public IdentTableEntry(final int index, final IdentExpression ident, final Context pc) {
         this.index  = index;
         this.ident  = ident;
         this.pc     = pc;
         addStatusListener(new StatusListener() {
 			@Override
-			public void onChange(IElementHolder eh, Status newStatus) {
+			public void onChange(final IElementHolder eh, final Status newStatus) {
 				if (newStatus == Status.KNOWN) {
 					setResolvedElement(eh.getElement());
 				}
@@ -111,14 +111,14 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	}
 
 	@Override
-	public void resolveTypeToClass(GeneratedNode gn) {
+	public void resolveTypeToClass(final GeneratedNode gn) {
 		resolvedType = gn;
 		if (type != null) // TODO maybe find a more robust solution to this, like another Promise? or just setType? or onPossiblesResolve?
 			type.resolve(gn); // TODO maybe this obviates the above?
 	}
 
 	@Override
-	public void setGenType(GenType aGenType) {
+	public void setGenType(final GenType aGenType) {
 		if (type != null) {
 			type.genType.copy(aGenType);
 		} else {
@@ -147,14 +147,14 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		return pc;
 	}
 
-	public void onType(@NotNull DeducePhase phase, OnType callback) {
+	public void onType(@NotNull final DeducePhase phase, final OnType callback) {
 		phase.onType(this, callback);
 	}
 
 	// region constructable
 
 	@Override
-	public void setConstructable(ProcTableEntry aPte) {
+	public void setConstructable(final ProcTableEntry aPte) {
 		constructable_pte = aPte;
 		if (constructableDeferred.isPending())
 			constructableDeferred.resolve(constructable_pte);
@@ -166,7 +166,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 					holder.set(result);
 				}
 			});
-			System.err.println(String.format("Setting constructable_pte twice 1) %s and 2) %s", holder.get(), aPte));
+			System.err.printf("Setting constructable_pte twice 1) %s and 2) %s%n", holder.get(), aPte);
 		}
 
 	}
@@ -180,8 +180,8 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 
 	// endregion constructable
 
-	public DeducePath buildDeducePath(BaseGeneratedFunction generatedFunction) {
-		@NotNull List<InstructionArgument> x = generatedFunction._getIdentIAPathList(new IdentIA(index, generatedFunction));
+	public DeducePath buildDeducePath(final BaseGeneratedFunction generatedFunction) {
+		@NotNull final List<InstructionArgument> x = BaseGeneratedFunction._getIdentIAPathList(new IdentIA(index, generatedFunction));
 		return new DeducePath(this, x);
 	}
 
@@ -194,7 +194,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 				"}";
 	}
 
-	private DeferredObject<GenType, Void, Void> fefiDone = new DeferredObject<GenType, Void, Void>();
+	private final DeferredObject<GenType, Void, Void> fefiDone = new DeferredObject<GenType, Void, Void>();
 
 	public void fefiDone(final GenType aGenType) {
 		if (fefiDone.isPending())
@@ -207,7 +207,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	}
 
 
-	public void onFefiDone(DoneCallback<GenType> aCallback) {
+	public void onFefiDone(final DoneCallback<GenType> aCallback) {
 		fefiDone.then(aCallback);
 	}
 
@@ -219,7 +219,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		return backlink;
 	}
 
-	public void setBacklink(InstructionArgument aBacklink) {
+	public void setBacklink(final InstructionArgument aBacklink) {
 		backlink = aBacklink;
 		backlinkSet.resolve(backlink);
 	}
@@ -232,7 +232,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		type = aGeneratedFunction.newTypeTableEntry(aType, null, aExpression, this);
 	}
 
-	public IDeduceElement3 getDeduceElement3(DeduceTypes2 aDeduceTypes2, BaseGeneratedFunction aGeneratedFunction) {
+	public IDeduceElement3 getDeduceElement3(final DeduceTypes2 aDeduceTypes2, final BaseGeneratedFunction aGeneratedFunction) {
 		if (_de3 == null) {
 			_de3 = new DeduceElement3_IdentTableEntry(this);
 			_de3.deduceTypes2 = aDeduceTypes2;

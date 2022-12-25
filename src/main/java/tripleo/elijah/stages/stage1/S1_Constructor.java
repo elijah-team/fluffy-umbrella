@@ -29,8 +29,8 @@ public class S1_Constructor {
 	private ConstructorDef source;
 	private FunctionInvocation invocation;
 
-	public S1_Constructor(ConstructorDef aConstructorDef, ClassStatement parent,
-	                      FunctionInvocation aFunctionInvocation) {
+	public S1_Constructor(final ConstructorDef aConstructorDef, final ClassStatement parent,
+						  final FunctionInvocation aFunctionInvocation) {
 		setSource(aConstructorDef);
 		setInvocation(aFunctionInvocation);
 		setParent(parent); // TODO smelly
@@ -46,7 +46,7 @@ public class S1_Constructor {
 		return gf;
 	}
 
-	public void setInvocation(FunctionInvocation aFunctionInvocation) {
+	public void setInvocation(final FunctionInvocation aFunctionInvocation) {
 		invocation = aFunctionInvocation;
 
 		if (gf != null) {
@@ -54,11 +54,11 @@ public class S1_Constructor {
 		}
 	}
 
-	public void setParent(ClassStatement parent) {
+	public void setParent(final ClassStatement parent) {
 		if (parent instanceof ClassStatement) {
 			final IdentExpression selfIdent = IdentExpression.forString("self");
 
-			final OS_Type parentType = ((ClassStatement) parent).getOS_Type();
+			final OS_Type parentType = parent.getOS_Type();
 			final TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, parentType, selfIdent);
 
 			gf.addVariableTableEntry("self", VariableTableType.SELF, tte, null);
@@ -66,8 +66,8 @@ public class S1_Constructor {
 	}
 
 	public void parseArgs() {
-		ConstructorDef aConstructorDef = source;
-		FunctionInvocation aFunctionInvocation = this.invocation;
+		final ConstructorDef aConstructorDef = source;
+		final FunctionInvocation aFunctionInvocation = this.invocation;
 
 		final List<FormalArgListItem> fali_args = aConstructorDef.fal().falis;
 		final List<TypeTableEntry> fi_args = aFunctionInvocation.getArgs();
@@ -101,13 +101,13 @@ public class S1_Constructor {
 		}
 	}
 
-	public void process(S1toG_GC_Processor p) {
+	public void process(final S1toG_GC_Processor p) {
 		final Context cctx = source.getContext();
 		final int e1 = p.add_i(gf, InstructionName.E, null, cctx);
 
 		for (final FunctionItem item : source.getItems()) {
 //			LOG.err("7056 aConstructorDef.getItem = "+item);
-			p.generate_item((OS_Element) item, gf, cctx);
+			p.generate_item(item, gf, cctx);
 		}
 
 		final int x1 = p.add_i(gf, InstructionName.X, List_of(new IntegerIA(e1, gf)), cctx);

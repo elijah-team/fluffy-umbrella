@@ -30,9 +30,9 @@ public class WlGenerateClass implements WorkJob {
 	private boolean _isDone = false;
 	private GeneratedClass Result;
 
-	public WlGenerateClass(GenerateFunctions aGenerateFunctions,
-						   ClassInvocation aClassInvocation,
-						   DeducePhase.GeneratedClasses coll) {
+	public WlGenerateClass(final GenerateFunctions aGenerateFunctions,
+                           final ClassInvocation aClassInvocation,
+                           final DeducePhase.GeneratedClasses coll) {
 		classStatement = aClassInvocation.getKlass();
 		generateFunctions = aGenerateFunctions;
 		classInvocation = aClassInvocation;
@@ -40,11 +40,11 @@ public class WlGenerateClass implements WorkJob {
 	}
 
 	@Override
-	public void run(WorkManager aWorkManager) {
+	public void run(final WorkManager aWorkManager) {
 		final DeferredObject<GeneratedClass, Void, Void> resolvePromise = classInvocation.resolveDeferred();
 		switch (resolvePromise.state()) {
 		case PENDING:
-			@NotNull GeneratedClass kl = generateFunctions.generateClass(classStatement, classInvocation);
+			@NotNull final GeneratedClass kl = generateFunctions.generateClass(classStatement, classInvocation);
 			kl.setCode(generateFunctions.module.parent.nextClassCode());
 			if (coll != null)
 				coll.add(kl);
@@ -53,10 +53,10 @@ public class WlGenerateClass implements WorkJob {
 			Result = kl;
 			break;
 		case RESOLVED:
-			Holder<GeneratedClass> hgc = new Holder<GeneratedClass>();
+			final Holder<GeneratedClass> hgc = new Holder<GeneratedClass>();
 			resolvePromise.then(new DoneCallback<GeneratedClass>() {
 				@Override
-				public void onDone(GeneratedClass result) {
+				public void onDone(final GeneratedClass result) {
 //					assert result == kl;
 					hgc.set(result);
 				}

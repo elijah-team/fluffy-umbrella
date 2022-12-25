@@ -39,7 +39,7 @@ public class AccessNotation implements OS_Element {
 	}
 
 	@Override
-	public void visitGen(ElElementVisitor visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitAccessNotation(this);
 	}
 

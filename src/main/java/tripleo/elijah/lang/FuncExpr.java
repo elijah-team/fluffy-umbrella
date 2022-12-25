@@ -66,7 +66,7 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 		return mFal.falis;
 	}
 
-	public void setArgList(FormalArgList argList) {
+	public void setArgList(final FormalArgList argList) {
 		mFal = argList;
 	}
 

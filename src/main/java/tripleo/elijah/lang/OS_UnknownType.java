@@ -12,9 +12,9 @@ package tripleo.elijah.lang;
  * Created 1/22/21 8:34 AM
  */
 public class OS_UnknownType extends OS_Type {
-	private OS_Element element;
+	private final OS_Element element;
 
-	public OS_UnknownType(OS_Element aElement) {
+	public OS_UnknownType(final OS_Element aElement) {
 		super(Type.UNKNOWN);
 		element = aElement;
 	}

@@ -24,7 +24,7 @@ public class DeduceElement3_VariableTableEntry implements IDeduceElement3 {
 		principal = aVariableTableEntry;
 	}
 
-	DeduceElement3_VariableTableEntry(OS_Type vte_type_attached) {
+	DeduceElement3_VariableTableEntry(final OS_Type vte_type_attached) {
 		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
 	}
 

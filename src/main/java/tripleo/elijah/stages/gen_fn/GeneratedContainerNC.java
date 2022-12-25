@@ -11,13 +11,12 @@ package tripleo.elijah.stages.gen_fn;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.AccessNotation;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.FunctionMapDeferred;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
+import tripleo.elijah.stages.gen_generic.Dependency;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
+import tripleo.elijah.stages.gen_generic.IDependencyReferent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,35 +26,42 @@ import java.util.Map;
 /**
  * Created 3/16/21 10:45 AM
  */
-public abstract class GeneratedContainerNC extends AbstractDependencyTracker implements GeneratedContainer {
+public abstract class GeneratedContainerNC extends AbstractDependencyTracker implements GeneratedContainer, IDependencyReferent {
 	public boolean generatedAlready = false;
 	private int code = 0;
+
+	private final Dependency dependency = new Dependency(this);
 
 	public Map<FunctionDef, GeneratedFunction> functionMap = new HashMap<FunctionDef, GeneratedFunction>();
 	public Map<ClassStatement, GeneratedClass> classMap = new HashMap<ClassStatement, GeneratedClass>();
 
 	public List<VarTableEntry> varTable = new ArrayList<VarTableEntry>();
 
-	public void addVarTableEntry(AccessNotation an, VariableStatement vs) {
+	public void addVarTableEntry(final AccessNotation an, final VariableStatement vs) {
 		// TODO dont ignore AccessNotation
 		varTable.add(new VarTableEntry(vs, vs.getNameToken(), vs.initialValue(), vs.typeName(), vs.getParent().getParent()));
 	}
 
 	@Override
+	public OS_Element getElement() {
+		return null;
+	}
+
+	@Override
 	@Nullable
-	public VarTableEntry getVariable(String aVarName) {
-		for (VarTableEntry varTableEntry : varTable) {
+	public VarTableEntry getVariable(final String aVarName) {
+		for (final VarTableEntry varTableEntry : varTable) {
 			if (varTableEntry.nameToken.getText().equals(aVarName))
 				return varTableEntry;
 		}
 		return null;
 	}
 
-	public void addClass(ClassStatement aClassStatement, GeneratedClass aGeneratedClass) {
+	public void addClass(final ClassStatement aClassStatement, final GeneratedClass aGeneratedClass) {
 		classMap.put(aClassStatement, aGeneratedClass);
 	}
 
-	public void addFunction(FunctionDef functionDef, GeneratedFunction generatedFunction) {
+	public void addFunction(final FunctionDef functionDef, final GeneratedFunction generatedFunction) {
 		if (functionMap.containsKey(functionDef))
 			throw new IllegalStateException("Function already generated"); // TODO do better than this
 		functionMap.put(functionDef, generatedFunction);
@@ -68,7 +74,7 @@ public abstract class GeneratedContainerNC extends AbstractDependencyTracker imp
 	 *
 	 * @return null if no such key exists
 	 */
-	public GeneratedFunction getFunction(FunctionDef fd) {
+	public GeneratedFunction getFunction(final FunctionDef fd) {
 		return functionMap.get(fd);
 	}
 
@@ -76,7 +82,7 @@ public abstract class GeneratedContainerNC extends AbstractDependencyTracker imp
 		return code;
 	}
 
-	public void setCode(int aCode) {
+	public void setCode(final int aCode) {
 		code = aCode;
 	}
 
@@ -85,6 +91,20 @@ public abstract class GeneratedContainerNC extends AbstractDependencyTracker imp
 	private final Multimap<FunctionDef, FunctionMapDeferred> functionMapDeferreds = ArrayListMultimap.create();
 	public void functionMapDeferred(final FunctionDef aFunctionDef, final FunctionMapDeferred aFunctionMapDeferred) {
 		functionMapDeferreds.put(aFunctionDef, aFunctionMapDeferred);
+	}
+
+	public Dependency getDependency() {
+		return dependency;
+	}
+
+	@Override
+	public String identityString() {
+		return null;
+	}
+
+	@Override
+	public OS_Module module() {
+		return null;
 	}
 }
 

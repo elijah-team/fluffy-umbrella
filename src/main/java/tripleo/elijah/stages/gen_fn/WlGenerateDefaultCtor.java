@@ -28,53 +28,53 @@ public class WlGenerateDefaultCtor implements WorkJob {
 	private BaseGeneratedFunction Result;
 
 	@Contract(pure = true)
-	public WlGenerateDefaultCtor(@NotNull GenerateFunctions aGenerateFunctions, FunctionInvocation aFunctionInvocation) {
+	public WlGenerateDefaultCtor(@NotNull final GenerateFunctions aGenerateFunctions, final FunctionInvocation aFunctionInvocation) {
 		generateFunctions = aGenerateFunctions;
 		functionInvocation = aFunctionInvocation;
 	}
 
 	@Override
-	public void run(WorkManager aWorkManager) {
+	public void run(final WorkManager aWorkManager) {
 		if (functionInvocation.generateDeferred().isPending()) {
 			final ClassStatement klass = functionInvocation.getClassInvocation().getKlass();
-			Holder<GeneratedClass> hGenClass = new Holder<>();
+			final Holder<GeneratedClass> hGenClass = new Holder<>();
 			functionInvocation.getClassInvocation().resolvePromise().then(new DoneCallback<GeneratedClass>() {
 				@Override
-				public void onDone(GeneratedClass result) {
+				public void onDone(final GeneratedClass result) {
 					hGenClass.set(result);
 				}
 			});
-			GeneratedClass genClass = hGenClass.get();
+			final GeneratedClass genClass = hGenClass.get();
 			assert genClass != null;
 
-			ConstructorDef cd = new ConstructorDef(null, klass, klass.getContext());
+			final ConstructorDef cd = new ConstructorDef(null, klass, klass.getContext());
 //			cd.setName(Helpers.string_to_ident("<ctor>"));
 			cd.setName(ConstructorDef.emptyConstructorName);
-			Scope3 scope3 = new Scope3(cd);
+			final Scope3 scope3 = new Scope3(cd);
 			cd.scope(scope3);
-			for (GeneratedContainer.VarTableEntry varTableEntry : genClass.varTable) {
+			for (final GeneratedContainer.VarTableEntry varTableEntry : genClass.varTable) {
 				if (varTableEntry.initialValue != IExpression.UNASSIGNED) {
-					IExpression left = varTableEntry.nameToken;
-					IExpression right = varTableEntry.initialValue;
+					final IExpression left = varTableEntry.nameToken;
+					final IExpression right = varTableEntry.initialValue;
 
-					IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
+					final IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
 					scope3.add(new WrappedStatementWrapper(e, cd.getContext(), cd, varTableEntry.vs));
 				} else {
-					if (true || getPragma("auto_construct")) {
+					if (true) {
 						scope3.add(new ConstructStatement(cd, cd.getContext(), varTableEntry.nameToken, null, null));
 					}
 				}
 			}
 
-			OS_Element classStatement = cd.getParent();
+			final OS_Element classStatement = cd.getParent();
 			assert classStatement instanceof ClassStatement;
-			@NotNull GeneratedConstructor gf = generateFunctions.generateConstructor(cd, (ClassStatement) classStatement, functionInvocation);
+			@NotNull final GeneratedConstructor gf = generateFunctions.generateConstructor(cd, (ClassStatement) classStatement, functionInvocation);
 //		lgf.add(gf);
 
 			final ClassInvocation ci = functionInvocation.getClassInvocation();
 			ci.resolvePromise().done(new DoneCallback<GeneratedClass>() {
 				@Override
-				public void onDone(GeneratedClass result) {
+				public void onDone(final GeneratedClass result) {
 					gf.setCode(generateFunctions.module.parent.nextFunctionCode());
 					gf.setClass(result);
 					result.constructors.put(cd, gf);
@@ -96,7 +96,7 @@ public class WlGenerateDefaultCtor implements WorkJob {
 		_isDone = true;
 	}
 
-	private boolean getPragma(String aAuto_construct) {
+	private boolean getPragma(final String aAuto_construct) {
 		return false;
 	}
 

@@ -53,7 +53,7 @@ public class TypeTableEntry {
 		this.tableEntry = aTableEntryIV;
 	}
 
-	private void _settingAttached(@NotNull OS_Type aAttached) {
+	private void _settingAttached(@NotNull final OS_Type aAttached) {
 		switch (aAttached.getType()) {
 		case USER:
 			if (genType.typeName != null) {
@@ -104,7 +104,7 @@ public class TypeTableEntry {
 		return index;
 	}
 
-	public void resolve(GeneratedNode aResolved) {
+	public void resolve(final GeneratedNode aResolved) {
 		genType.node = aResolved;
 	}
 
@@ -120,28 +120,28 @@ public class TypeTableEntry {
 		return attached;
 	}
 
-	public void setAttached(OS_Type aAttached) {
+	public void setAttached(final OS_Type aAttached) {
 		attached = aAttached;
 		if (aAttached != null) {
 			_settingAttached(aAttached);
 
-			for (OnSetAttached cb : osacbs) {
+			for (final OnSetAttached cb : osacbs) {
 				cb.onSetAttached(this);
 			}
 		}
 	}
 
-	public void setAttached(GenType aGenType) {
+	public void setAttached(final GenType aGenType) {
 		genType.copy(aGenType);
 
 		setAttached(genType.resolved);
 	}
 
-	public void addSetAttached(OnSetAttached osa) {
+	public void addSetAttached(final OnSetAttached osa) {
 		osacbs.add(osa);
 	}
 
-	public void genTypeCI(ClassInvocation aClsinv) {
+	public void genTypeCI(final ClassInvocation aClsinv) {
 		genType.ci = aClsinv;
 	}
 

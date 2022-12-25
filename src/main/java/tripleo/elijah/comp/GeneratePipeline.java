@@ -24,7 +24,7 @@ public class GeneratePipeline implements PipelineMember, AccessBus.AB_LgcListene
 	private       PipelineLogic       pipelineLogic;
 	private       List<GeneratedNode> lgc;
 
-	public GeneratePipeline(@NotNull AccessBus ab) {
+	public GeneratePipeline(@NotNull final AccessBus ab) {
 //		c = ab.getCompilation();
 
 		ab.subscribePipelineLogic(pll -> pipelineLogic = pll);
@@ -42,7 +42,7 @@ public class GeneratePipeline implements PipelineMember, AccessBus.AB_LgcListene
 	}
 
 	@Override
-	public void lgc_slot(List<GeneratedNode> aX) {
+	public void lgc_slot(final List<GeneratedNode> aX) {
 		lgc = aX;
 	}
 }

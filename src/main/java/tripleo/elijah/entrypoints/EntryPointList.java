@@ -20,9 +20,9 @@ public class EntryPointList {
 		eps = new ArrayList<>();
 	}
 
-	private void generateFromEntryPoints(DeducePhase deducePhase,
-										 GenerateFunctions aGenerateFunctions,
-										 WorkManager wm) {
+	private void generateFromEntryPoints(final DeducePhase deducePhase,
+										 final GenerateFunctions aGenerateFunctions,
+										 final WorkManager wm) {
 		if (eps.size() == 0) return; // short circuit
 
 
@@ -37,12 +37,19 @@ public class EntryPointList {
 		wm.drain();
 	}
 
-	public void generate(@NotNull GenerateFunctions aGenerateFunctions, DeducePhase aDeducePhase, @NotNull Supplier<WorkManager> wm) {
+	public void generate(@NotNull final GenerateFunctions aGenerateFunctions, final DeducePhase aDeducePhase, @NotNull final Supplier<WorkManager> wm) {
 		generateFromEntryPoints(aDeducePhase, aGenerateFunctions, wm.get());
 	}
 
-	public void add(EntryPoint aEntryPoint) {
+	public void add(final EntryPoint aEntryPoint) {
 		eps.add(aEntryPoint);
 	}
 
+	public List<EntryPoint> _getMods() {
+		return eps;
+	}
+
+	public int size() {
+		return eps.size();
+	}
 }

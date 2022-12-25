@@ -17,20 +17,20 @@ class Resolve_ident_table_entry {
 
 	private final DeduceTypes2 deduceTypes2;
 
-	public Resolve_ident_table_entry(DeduceTypes2 aDeduceTypes2) {
+	public Resolve_ident_table_entry(final DeduceTypes2 aDeduceTypes2) {
 		deduceTypes2 = aDeduceTypes2;
 	}
 
-	public void act(@NotNull IdentTableEntry ite, BaseGeneratedFunction generatedFunction, Context ctx) {
+	public void act(@NotNull final IdentTableEntry ite, final BaseGeneratedFunction generatedFunction, final Context ctx) {
 
 		@Nullable InstructionArgument itex = new IdentIA(ite.getIndex(), generatedFunction);
 		{
 			while (itex != null && itex instanceof IdentIA) {
-				@NotNull IdentTableEntry itee = ((IdentIA) itex).getEntry();
+				@NotNull final IdentTableEntry itee = ((IdentIA) itex).getEntry();
 
 				@Nullable BaseTableEntry x = null;
 				if (itee.getBacklink() instanceof IntegerIA) {
-					@NotNull VariableTableEntry vte = ((IntegerIA) itee.getBacklink()).getEntry();
+					@NotNull final VariableTableEntry vte = ((IntegerIA) itee.getBacklink()).getEntry();
 					x = vte;
 //					if (vte.constructable_pte != null)
 					itex = null;
@@ -57,14 +57,14 @@ class Resolve_ident_table_entry {
 		}
 		if (ite.getResolvedElement() != null)
 			return;
-		if (true || ite.getBacklink() == null) {
+		if (true) {
 			final @NotNull IdentIA identIA = new IdentIA(ite.getIndex(), generatedFunction);
 			deduceTypes2.resolveIdentIA_(ite.getPC(), identIA, generatedFunction, new FoundElement(deduceTypes2.phase) {
 
 				final String x = generatedFunction.getIdentIAPathNormal(identIA);
 
 				@Override
-				public void foundElement(OS_Element e) {
+				public void foundElement(final OS_Element e) {
 //					ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(e)); // this is called in resolveIdentIA_
 					deduceTypes2.found_element_for_ite(generatedFunction, ite, e, ctx);
 				}

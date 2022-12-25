@@ -10,16 +10,16 @@ import tripleo.elijah.stages.gen_fn.*;
 class Resolve_var_table_entry {
 	private final DeduceTypes2 deduceTypes2;
 
-	public Resolve_var_table_entry(DeduceTypes2 aDeduceTypes2) {
+	public Resolve_var_table_entry(final DeduceTypes2 aDeduceTypes2) {
 		deduceTypes2 = aDeduceTypes2;
 	}
 
-	public void act(@NotNull VariableTableEntry vte, BaseGeneratedFunction generatedFunction, Context ctx) {
+	public void act(@NotNull final VariableTableEntry vte, final BaseGeneratedFunction generatedFunction, final Context ctx) {
 		if (vte.getResolvedElement() == null)
 			return;
 		{
 			if (vte.type.getAttached() == null && vte.constructable_pte != null) {
-				ClassStatement c = vte.constructable_pte.getFunctionInvocation().getClassInvocation().getKlass();
+				final ClassStatement c = vte.constructable_pte.getFunctionInvocation().getClassInvocation().getKlass();
 				final @NotNull OS_Type attached = new OS_Type(c);
 				// TODO this should have been set somewhere already
 				//  typeName and nonGenericTypeName are not set
@@ -38,7 +38,7 @@ class Resolve_var_table_entry {
 					//
 					((ClassInvocation) genType.ci).resolvePromise().then(new DoneCallback<GeneratedClass>() {
 						@Override
-						public void onDone(GeneratedClass result) {
+						public void onDone(final GeneratedClass result) {
 							genType.node = result;
 							if (!vte.typePromise().isResolved()) // HACK
 								vte.resolveType(genType);

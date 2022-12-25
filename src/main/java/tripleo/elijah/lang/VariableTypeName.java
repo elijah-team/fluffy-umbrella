@@ -50,7 +50,7 @@ public class VariableTypeName extends AbstractTypeName implements NormalTypeName
 		final String result;
 		if (pr_name != null) {
 			if (genericPart != null) {
-				result = String.format("%s[%s]", pr_name.toString(), genericPart.toString());
+				result = String.format("%s[%s]", pr_name, genericPart.toString());
 			} else {
 				result = pr_name.toString();
 			}

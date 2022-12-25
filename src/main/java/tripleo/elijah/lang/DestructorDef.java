@@ -32,7 +32,7 @@ public class DestructorDef extends BaseFunctionDef {
 	}
 
 	@Override
-	public void visitGen(ElElementVisitor visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitDestructor(this);
 	}
 

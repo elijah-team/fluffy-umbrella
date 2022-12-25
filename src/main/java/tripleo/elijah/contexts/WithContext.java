@@ -37,7 +37,7 @@ public class WithContext extends Context {
 			) continue;
 			if (item instanceof OS_Element2) {
 				if (((OS_Element2) item).name().equals(name)) {
-					Result.add(name, level, (OS_Element) item, this);
+					Result.add(name, level, item, this);
 				}
 			} else if (item instanceof VariableSequence) {
 //				System.out.println("[FunctionContext#lookup] VariableSequence "+item);

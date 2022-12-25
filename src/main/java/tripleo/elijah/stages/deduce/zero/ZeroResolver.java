@@ -12,11 +12,11 @@ class ZeroResolver {
 
 	GenType gt;
 
-	public Zero_Type resolve_type(OS_Type ty) {
+	public Zero_Type resolve_type(final OS_Type ty) {
 		try {
 			gt = deduceTypes2.resolve_type(ty, ty.getTypeName().getContext());
 			return new Zero_Type(gt);
-		} catch (ResolveError aE) {
+		} catch (final ResolveError aE) {
 			NotImplementedException.raise();
 		}
 		return null;

@@ -44,7 +44,7 @@ public class CloseCaseNode {
 //	}
 	
 	public CloseCaseNode(final CaseChoiceNode csn2, final ChoiceOptions aBreak, final boolean b) {
-		assert b==true; // means default
+		assert b; // means default
 		NotImplementedException.raise();
 	}
 }

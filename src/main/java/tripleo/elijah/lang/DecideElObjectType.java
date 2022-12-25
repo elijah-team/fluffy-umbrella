@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class DecideElObjectType {
 	@NotNull
-	public static ElObjectType getElObjectType(/*@NotNull*/ OS_Element input) {
+	public static ElObjectType getElObjectType(/*@NotNull*/ final OS_Element input) {
 		if (input instanceof ClassStatement)
 			return ElObjectType.CLASS;
 		else if (input instanceof NamespaceStatement)

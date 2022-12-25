@@ -89,7 +89,7 @@ public class ModuleContext extends Context {
 		return carrier;
 	}
 
-	public void setCarrier(OS_Module aCarrier) {
+	public void setCarrier(final OS_Module aCarrier) {
 		carrier = aCarrier;
 	}
 

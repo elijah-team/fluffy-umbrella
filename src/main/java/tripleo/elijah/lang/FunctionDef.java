@@ -30,7 +30,7 @@ public class FunctionDef extends BaseFunctionDef implements Documentable, ClassI
 
 	private final OS_Element parent;
 
-	public FunctionDef(OS_Element element, Context context) {
+	public FunctionDef(final OS_Element element, final Context context) {
 		parent = element;
 		if (element instanceof OS_Container) {
 			((OS_Container) parent).add(this);

@@ -6,7 +6,7 @@ public class Maybe<T> {
 	public final T          o;
 	public final Diagnostic exc;
 
-	public Maybe(T o, Diagnostic exc) {
+	public Maybe(final T o, final Diagnostic exc) {
 		if (o == null) {
 			if (exc == null) {
 				throw new IllegalStateException("Both o and exc are null!");

@@ -17,7 +17,7 @@ public class CompilationFactory {
 		return new CompilationImpl(eee, io);
 	}
 
-	public static CompilationImpl mkCompilation2(List<IFunctionMapHook> aMapHooks) {
+	public static CompilationImpl mkCompilation2(final List<IFunctionMapHook> aMapHooks) {
 		final StdErrSink errSink = new StdErrSink();
 		final IO io = new IO();
 

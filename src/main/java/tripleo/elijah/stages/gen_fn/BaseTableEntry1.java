@@ -17,7 +17,7 @@ public abstract class BaseTableEntry1 extends BaseTableEntry {
 
 	private ProcTableEntry callable_pte;
 
-	public void setCallablePTE(ProcTableEntry aProcTableEntry) {
+	public void setCallablePTE(final ProcTableEntry aProcTableEntry) {
 		callable_pte = aProcTableEntry;
 	}
 

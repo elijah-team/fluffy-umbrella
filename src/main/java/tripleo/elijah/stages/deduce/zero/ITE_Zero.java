@@ -10,11 +10,7 @@ import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.DeduceLookupUtils;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.ResolveError;
-import tripleo.elijah.stages.gen_fn.BaseTableEntry;
-import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GenericElementHolder;
-import tripleo.elijah.stages.gen_fn.IdentTableEntry;
-import tripleo.elijah.stages.gen_fn.TypeTableEntry;
+import tripleo.elijah.stages.gen_fn.*;
 
 public class ITE_Zero {
 
@@ -22,11 +18,11 @@ public class ITE_Zero {
 	ZeroResolver resolver;
 
 	@Contract(pure = true)
-	public ITE_Zero(IdentTableEntry aIdentTableEntry) {
+	public ITE_Zero(final IdentTableEntry aIdentTableEntry) {
 		ite = aIdentTableEntry;
 	}
 
-	public void fp_onChange__001(@NotNull TypeTableEntry vte, IdentTableEntry ite, @NotNull DeduceTypes2 deduceTypes2, ErrSink errSink) {
+	public void fp_onChange__001(@NotNull final TypeTableEntry vte, final IdentTableEntry ite, @NotNull final DeduceTypes2 deduceTypes2, final ErrSink errSink) {
 		final OS_Type ty = vte.getAttached();
 
 		@Nullable OS_Element ele2 = null;
@@ -34,9 +30,9 @@ public class ITE_Zero {
 		try {
 			if (ty.getType() == OS_Type.Type.USER) {
 
-				Zero_Type zero_type = resolver.resolve_type(ty);
+				final Zero_Type zero_type = resolver.resolve_type(ty);
 
-				@NotNull GenType ty2;
+				@NotNull final GenType ty2;
 				if (zero_type == null) {
 					throw new IllegalArgumentException("** 57 no type found");
 				} else {
@@ -44,14 +40,14 @@ public class ITE_Zero {
 				}
 
 //				ty2 = aFoundParent.deduceTypes2.resolve_type(ty, ty.getTypeName().getContext());
-				OS_Element ele;
+				final OS_Element ele;
 				if (vte.genType.resolved == null) {
 					if (ty2.resolved.getType() == OS_Type.Type.USER_CLASS) {
 						vte.genType.copy(ty2);
 					}
 				}
 				ele = ty2.resolved.getElement();
-				LookupResultList lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
+				final LookupResultList lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
 				ele2 = lrl.chooseBest(null);
 			} else {
 				ele2 = ty.getClassOf(); // TODO might fail later (use getElement?)
@@ -60,17 +56,17 @@ public class ITE_Zero {
 			@Nullable LookupResultList lrl = null;
 
 			lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele2.getContext(), deduceTypes2);
-			@Nullable OS_Element best = lrl.chooseBest(null);
+			@Nullable final OS_Element best = lrl.chooseBest(null);
 			// README commented out because only firing for dir.listFiles, and we always use `best'
 //					if (best != ele2) LOG.err(String.format("2824 Divergent for %s, %s and %s", ite, best, ele2));;
 			ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
-		} catch (ResolveError aResolveError) {
+		} catch (final ResolveError aResolveError) {
 			aResolveError.printStackTrace();
 			errSink.reportDiagnostic(aResolveError);
 		}
 	}
 
-	public void setType(GenType aGenType) {
+	public void setType(final GenType aGenType) {
 		// TODO fill this in later with a Promise, perhaps
 	}
 }
