@@ -307,7 +307,9 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 					return new ArrayList<>(set);
 				}
 			};
-			varTableEntry.updatePotentialTypesCBPromise.resolve(varTableEntry.updatePotentialTypesCB);
+			if (!varTableEntry.updatePotentialTypesCBPromise.isResolved()) {
+				varTableEntry.updatePotentialTypesCBPromise.resolve(varTableEntry.updatePotentialTypesCB);
+			}
 		}
 	}
 }

@@ -61,7 +61,11 @@ public class GenerateFunctions {
 
 		entryPoints.stream().forEach(epl::add);
 
-		generateFromEntryPoints(epl._getMods(), dp);
+		generateFromEntryPoints(epl, dp);
+	}
+
+	public void generateFromEntryPoints(final EntryPointList epl, final DeducePhase deducePhase) {
+		epl.generate(this, deducePhase, () -> phase.wm);
 	}
 
 	public static class S1toG_GC_Processor {
