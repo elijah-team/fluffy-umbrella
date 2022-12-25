@@ -9,13 +9,14 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.instructions.IdentIA;
-import tripleo.elijah.util.Holder;
 
 /**
  * Created 11/22/21 8:23 PM
@@ -30,10 +31,14 @@ public class DeduceElementIdent {
 		identTableEntry = aIdentTableEntry;
 	}
 	
+	private final DeferredObject<OS_Element, Diagnostic, Void> _resolvedElementPromise = new DeferredObject<>();
+	
 	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final @NotNull BaseGeneratedFunction aGeneratedFunction) {
 		deduceTypes2 = aDeduceTypes2;
 		context = aContext;
 		generatedFunction = aGeneratedFunction;
+		
+		calculateResolvedObject();
 	}
 	
 	private void resolveIdentIA_(@NotNull final Context context, @NotNull final IdentIA identIA, final BaseGeneratedFunction generatedFunction, @NotNull final FoundElement foundElement) throws ResolveError {
@@ -42,8 +47,7 @@ public class DeduceElementIdent {
 		ria.action();
 	}
 	
-	public OS_Element getResolvedElement() {
-		final Holder<OS_Element> holder = new Holder<>();
+	private void calculateResolvedObject() {
 		final IdentIA identIA = new IdentIA(identTableEntry.getIndex(), generatedFunction);
 		
 		if (deduceTypes2 != null) { // TODO remove this ASAP. Should never happen
@@ -54,19 +58,38 @@ public class DeduceElementIdent {
 			resolveIdentIA_(context, identIA, generatedFunction, new FoundElement(deduceTypes2.phase) {
 				@Override
 				public void foundElement(final OS_Element e) {
-					holder.set(e);
+					_resolvedElementPromise.resolve(e);
 				}
 				
 				@Override
 				public void noFoundElement() {
-					deduceTypes2.LOG.err("DeduceElementIdent: can't resolve element for " + identTableEntry);
+					final CantResolveElement err = new CantResolveElement(
+					  "DeduceElementIdent: can't resolve element for " + identTableEntry,
+					  identTableEntry,
+					  generatedFunction);
+					
+					_resolvedElementPromise.reject(err);
+
+//					deduceTypes2.LOG.err(err.message);
 				}
 			});
 		} catch (final ResolveError aE) {
-			throw new RuntimeException(aE);
+			_resolvedElementPromise.reject(aE);
+		}
+	}
+	
+	private DeferredObject<OS_Element, Diagnostic, Void> resolvedElementPromise() {
+		return _resolvedElementPromise;
+	}
+	
+	public OS_Element getResolvedElement() {
+		if (_resolvedElementPromise.isResolved()) {
+			final OS_Element[] R = new OS_Element[1];
+			_resolvedElementPromise.then(r -> R[0] = r);
+			return R[0];
 		}
 		
-		return holder.get();
+		return null;
 	}
 }
 
