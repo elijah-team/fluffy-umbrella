@@ -25,34 +25,47 @@ public class DeduceElementIdent {
 	private DeduceTypes2 deduceTypes2;
 	private Context context;
 	private BaseGeneratedFunction generatedFunction;
-
+	
 	public DeduceElementIdent(final IdentTableEntry aIdentTableEntry) {
 		identTableEntry = aIdentTableEntry;
 	}
-
+	
 	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final @NotNull BaseGeneratedFunction aGeneratedFunction) {
 		deduceTypes2 = aDeduceTypes2;
 		context = aContext;
 		generatedFunction = aGeneratedFunction;
 	}
-
+	
+	private void resolveIdentIA_(@NotNull final Context context, @NotNull final IdentIA identIA, final BaseGeneratedFunction generatedFunction, @NotNull final FoundElement foundElement) throws ResolveError {
+		DeduceTypes2.DeduceClient3 aDeduceClient3 = new DeduceTypes2.DeduceClient3(deduceTypes2);
+		final Resolve_Ident_IA ria = new Resolve_Ident_IA(aDeduceClient3, context, identIA, generatedFunction, foundElement, deduceTypes2._errSink());
+		ria.action();
+	}
+	
 	public OS_Element getResolvedElement() {
 		final Holder<OS_Element> holder = new Holder<>();
 		final IdentIA identIA = new IdentIA(identTableEntry.getIndex(), generatedFunction);
+		
 		if (deduceTypes2 != null) { // TODO remove this ASAP. Should never happen
-			deduceTypes2.resolveIdentIA_(context, identIA, generatedFunction, new FoundElement(deduceTypes2.phase) {
+			throw new IllegalStateException("5454 Should never happen. gf is not deduced.");
+		}
+		
+		try {
+			resolveIdentIA_(context, identIA, generatedFunction, new FoundElement(deduceTypes2.phase) {
 				@Override
 				public void foundElement(final OS_Element e) {
 					holder.set(e);
 				}
-
+				
 				@Override
 				public void noFoundElement() {
-					deduceTypes2.LOG.err("DeduceElementIdent: can't resolve element for "+identTableEntry);
+					deduceTypes2.LOG.err("DeduceElementIdent: can't resolve element for " + identTableEntry);
 				}
 			});
-		} else
-			System.err.println("5454 Should never happen. gf is not deduced.");
+		} catch (final ResolveError aE) {
+			throw new RuntimeException(aE);
+		}
+		
 		return holder.get();
 	}
 }
