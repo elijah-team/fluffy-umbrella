@@ -130,15 +130,18 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 				throw new NotImplementedException();
 		}
 	}
-
+	
 	public void setClassInvocation(final ClassInvocation aClassInvocation) {
 		classInvocation = aClassInvocation;
 	}
-
+	
 	public ClassInvocation getClassInvocation() {
 		return classInvocation;
 	}
-
+	
+	public DeduceProcCall dpc = new DeduceProcCall(this);
+	private PTE_Zero _zero;
+	
 	// have no idea what this is for
 	public void setFunctionInvocation(final FunctionInvocation aFunctionInvocation) {
 		if (functionInvocation.sameAs(aFunctionInvocation)) return; // short circuit for better behavior
@@ -149,61 +152,60 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 			onFunctionInvocations.resolve(functionInvocation);
 		}
 	}
-
+	
+	private final DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
+	
+	public DeferredObject<GenType, Void, Void> typeDeferred() {
+		return typeDeferred;
+	}
+	
+	public Promise<GenType, Void, Void> typePromise() {
+		return typeDeferred.promise();
+	}
+	
 	// have no idea what this is for
 	public void onFunctionInvocation(final DoneCallback<FunctionInvocation> callback) {
 		onFunctionInvocations.then(callback);
 	}
-
+	
 	public FunctionInvocation getFunctionInvocation() {
 		return functionInvocation;
 	}
-
-	private DeferredObject<ProcTableEntry, Void, Void> completeDeferred() {
-		return completeDeferred;
+	
+	public DeduceProcCall deduceProcCall() {
+		return dpc;
 	}
-
-	private final DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
-
-	public DeferredObject<GenType, Void, Void> typeDeferred() {
-		return typeDeferred;
-	}
-
-	public Promise<GenType, Void, Void> typePromise() {
-		return typeDeferred.promise();
-	}
-
+	
 	@NotNull
 	public String getLoggingString(final @Nullable DeduceTypes2 aDeduceTypes2, final ElLog LOG) {
 		final String pte_string;
 		@NotNull final List<String> l = new ArrayList<String>();
-
+		
 		for (@NotNull final TypeTableEntry typeTableEntry : getArgs()) {
 			final OS_Type attached = typeTableEntry.getAttached();
-
+			
 			if (attached != null)
 				l.add(attached.toString());
 			else {
 //				if (aDeduceTypes2 != null)
 //					LOG.err("267 attached == null for "+typeTableEntry);
-
+				
 				if (typeTableEntry.expression != null)
 					l.add(String.format("<Unknown expression: %s>", typeTableEntry.expression));
 				else
 					l.add("<Unknkown>");
 			}
 		}
-
-        String sb2 = "[" +
-                Helpers.String_join(", ", l) +
-                "]";
+		
+		String sb2 = "[" +
+		  Helpers.String_join(", ", l) +
+		  "]";
 		pte_string = sb2;
 		return pte_string;
 	}
-
-	public DeduceProcCall dpc = new DeduceProcCall(this);
-	public DeduceProcCall deduceProcCall() {
-		return dpc;
+	
+	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseGeneratedFunction aGeneratedFunction, final ErrSink aErrSink) {
+		dpc.setDeduceTypes2(aDeduceTypes2, aContext, aGeneratedFunction, aErrSink);
 	}
 	
 	@Contract(pure = true)
