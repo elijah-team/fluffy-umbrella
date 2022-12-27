@@ -14,6 +14,7 @@ import com.google.common.collect.Collections2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.nextgen.outputstatement.EG_Statement;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.gen_c.c_ast1.C_HeaderString;
 import tripleo.elijah.stages.gen_fn.*;
@@ -387,6 +388,12 @@ public class Generate_Code_For_Method {
 		final InstructionArgument x = aInstruction.getArg(0);
 		assert x instanceof ProcIA;
 		final ProcTableEntry pte = gf.getProcTableEntry(((ProcIA) x).getIndex());
+		
+		final EG_Statement stmt = CReference.forDeduceElement3(pte.getDeduceElement3());
+		
+		final String text1 = stmt.getText();
+		sb.append(""/*text1*/);
+		
 		{
 			if (pte.expression_num == null) {
 				final IdentExpression ptex = (IdentExpression) pte.expression;
@@ -394,7 +401,7 @@ public class Generate_Code_For_Method {
 				@Nullable InstructionArgument xx = gf.vte_lookup(text);
 				assert xx != null;
 				String realTargetName = gc.getRealTargetName(gf, (IntegerIA) xx, AOG.GET);
-				sb.append(Emit.emit("/*424*/")+realTargetName);
+				sb.append(Emit.emit("/*424*/") + realTargetName);
 				sb.append('(');
 				final List<String> sl3 = gc.getArgumentStrings(gf, aInstruction);
 				sb.append(Helpers.String_join(", ", sl3));

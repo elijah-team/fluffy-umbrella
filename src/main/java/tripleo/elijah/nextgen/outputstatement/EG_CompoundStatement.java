@@ -8,12 +8,15 @@ package tripleo.elijah.nextgen.outputstatement;
  * @author Tripleo Nova
  */
 public class EG_CompoundStatement implements EG_Statement {
-
+	
+	public EG_CompoundStatement(EG_SingleStatement beginning, EG_SingleStatement ending, EG_Statement middle, boolean indent, EX_Explanation explanation) {
+	}
+	
 	@Override
 	public String getText() {
 		return null;
 	}
-
+	
 	@Override
 	public EX_Explanation getExplanation() {
 		return null;

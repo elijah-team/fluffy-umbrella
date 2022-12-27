@@ -12,7 +12,13 @@ package tripleo.elijah.stages.gen_c;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.nextgen.outputstatement.EG_CompoundStatement;
+import tripleo.elijah.nextgen.outputstatement.EG_SingleStatement;
+import tripleo.elijah.nextgen.outputstatement.EG_Statement;
+import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_ProcTableEntry;
+import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
@@ -34,12 +40,32 @@ public class CReference {
 	private String rtext = null;
 	private List<String> args;
 	private List<Reference> refs;
-
+	
+	public static EG_Statement forDeduceElement3(IDeduceElement3 deduceElement3) {
+		//return deduceElement3.();
+		if (deduceElement3 instanceof DeduceElement3_ProcTableEntry) {
+			final DeduceElement3_ProcTableEntry de_pte = (DeduceElement3_ProcTableEntry) deduceElement3;
+			return forDeduceElement3_ProcTableEntry(de_pte);
+		}
+		
+		throw new NotImplementedException();
+	}
+	
+	private static EG_Statement forDeduceElement3_ProcTableEntry(DeduceElement3_ProcTableEntry de_pte) {
+		final EG_SingleStatement beginning = new EG_SingleStatement();
+		final EG_SingleStatement ending = new EG_SingleStatement();
+		final EG_Statement middle = null;
+		boolean indent = false;
+		final EX_Explanation explanation = null; //new EX_TableEntryExplanation();
+		final EG_CompoundStatement stmt = new EG_CompoundStatement(beginning, ending, middle, indent, explanation);
+		return stmt;
+	}
+	
 	static class Reference {
-		final String              text;
-		final Ref                 type;
-		final String              value;
-
+		final String text;
+		final Ref type;
+		final String value;
+		
 		public Reference(final String aText, final Ref aType, final String aValue) {
 			text = aText;
 			type = aType;
@@ -537,17 +563,23 @@ public class CReference {
 		}
 		return s;
 	}
-
+	
 	private final static class BuildState {
 		StringBuilder sb = new StringBuilder();
 		boolean open = false, needs_comma = false;
-
+		
 		public void appendText(final String text, final boolean erase) {
 			if (erase)
 				sb = new StringBuilder();
-
+			
 			sb.append(text);
 		}
+		
+		@Override
+		public String toString() {
+			return sb.toString();
+		}
+		//ABOVE 3a
 	}
 
 	@NotNull

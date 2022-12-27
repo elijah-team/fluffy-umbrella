@@ -87,7 +87,7 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 		final List<EOT_OutputFile> leof = new ArrayList<>();
 		for (final GenerateResultItem ab : gr.results()) {
 			final List<EIT_Input> inputs = List_of(new EIT_ModuleInput(ab.node.module(), c));
-			final EG_CompoundStatement seq = new EG_CompoundStatement();
+			final EG_CompoundStatement seq = new EG_CompoundStatement(null, null, null, false, null);
 			final EOT_OutputFile eof = new EOT_OutputFile(c, inputs, ab.output, EOT_OutputType.SOURCES, seq);
 			leof.add(eof);
 		}
