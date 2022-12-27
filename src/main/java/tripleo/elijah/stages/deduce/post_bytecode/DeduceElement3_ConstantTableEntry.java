@@ -71,7 +71,7 @@ public class DeduceElement3_ConstantTableEntry implements IDeduceElement3 {
 
 	@Override
 	public DeduceElement3_Kind kind() {
-		return DeduceElement3_Kind.GEN_FN__ITE;
+		return DeduceElement3_Kind.GEN_FN__CTE;
 	}
 
 }
