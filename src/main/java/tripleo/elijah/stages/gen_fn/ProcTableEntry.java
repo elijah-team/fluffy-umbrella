@@ -22,6 +22,8 @@ import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeduceProcCall;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_ProcTableEntry;
+import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.deduce.zero.PTE_Zero;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.logging.ElLog;
@@ -48,13 +50,14 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	private FunctionInvocation functionInvocation;
 	private final DeferredObject<ProcTableEntry, Void, Void> completeDeferred = new DeferredObject<ProcTableEntry, Void, Void>();
 	private final DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<FunctionInvocation, Void, Void>();
-
+	private DeduceElement3_ProcTableEntry _de3;
+	
 	public ProcTableEntry(final int aIndex, final IExpression aExpression, final InstructionArgument aExpressionNum, final List<TypeTableEntry> aArgs) {
 		index = aIndex;
 		expression = aExpression;
 		expression_num = aExpressionNum;
 		args = aArgs;
-
+		
 		addStatusListener(new StatusListener() {
 			@Override
 			public void onChange(final IElementHolder eh, final Status newStatus) {
@@ -144,8 +147,9 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	
 	// have no idea what this is for
 	public void setFunctionInvocation(final FunctionInvocation aFunctionInvocation) {
-		if (functionInvocation.sameAs(aFunctionInvocation)) return; // short circuit for better behavior
-		
+		if (functionInvocation != null && functionInvocation.sameAs(aFunctionInvocation))
+			return; // short circuit for better behavior
+		//ABOVE 2b
 		if (functionInvocation != aFunctionInvocation) {
 			functionInvocation = aFunctionInvocation;
 			onFunctionInvocations.reset();
@@ -211,6 +215,14 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	@Contract(pure = true)
 	private DeferredObject<ProcTableEntry, Void, Void> completeDeferred() {
 		return completeDeferred;
+	}
+	
+	public IDeduceElement3 getDeduceElement3() {
+		if (_de3 == null) {
+			_de3 = new DeduceElement3_ProcTableEntry(this);
+//			_de3.
+		}
+		return _de3;
 	}
 	
 	public PTE_Zero zero() {
