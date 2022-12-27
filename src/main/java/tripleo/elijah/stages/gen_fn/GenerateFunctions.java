@@ -1087,7 +1087,13 @@ public class GenerateFunctions {
 		if (expression_num == null) {
 			expression_num = gf.get_assignment_path(left, this, cctx);
 		}
-		final int i = addProcTableEntry(left, expression_num, get_args_types(args, gf, cctx), gf);
+		final int i;
+		
+		if (left instanceof ProcedureCallExpression)
+			i = addProcTableEntry(left, expression_num, get_args_types(args, gf, cctx), gf);
+		else
+			i = addProcTableEntry(pce, expression_num, get_args_types(args, gf, cctx), gf);
+		
 		final List<InstructionArgument> l = new ArrayList<InstructionArgument>();
 		l.add(new ProcIA(i, gf));
 		l.addAll(simplify_args(args, gf, cctx));
