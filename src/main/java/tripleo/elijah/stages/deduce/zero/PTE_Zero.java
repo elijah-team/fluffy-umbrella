@@ -44,8 +44,10 @@ public class PTE_Zero {
     }
     
     public void calculateConstructor(@NotNull GeneratedConstructor constructorDef, @NotNull IdentTableEntry ite, @NotNull DeduceTypes2 deduceTypes2) {
+        if (_foundCounstructorDef2Promise.isResolved()) return;
+    
         @NotNull final BaseFunctionDef ele = constructorDef.getFD();
-        
+    
         try {
             final LookupResultList lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
             @Nullable final OS_Element best = lrl.chooseBest(null);

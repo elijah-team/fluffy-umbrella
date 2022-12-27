@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.stages.deduce.zero.ITE_Zero;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
@@ -154,22 +155,11 @@ class Resolve_Ident_IA {
 				@NotNull final IdentTableEntry y = ((IdentIA) x).getEntry();
 				if (!y.preUpdateStatusListenerAdded) {
 					y.addStatusListener(new BaseTableEntry.StatusListener() {
-						boolean _called;
-
 						@Override
 						public void onChange(final IElementHolder eh, final BaseTableEntry.Status newStatus) {
-							if (_called) return;
-
-							if (newStatus == BaseTableEntry.Status.KNOWN) {
-								_called = true;
-//								y.preUpdateStatusListenerAdded = true;
-
-//							assert el2 != eh.getElement();
-								y.resolveExpectation.satisfy(normal_path);
-//							dc.found_element_for_ite(generatedFunction, y, eh.getElement(), null); // No context
-//							LOG.info("1424 Found for " + normal_path);
-								foundElement.doFoundElement(eh.getElement());
-							}
+							final ITE_Zero zero = y.zero();
+							
+							zero.preUpdateStatus_Change(eh, newStatus, foundElement, normal_path);
 						}
 					});
 					y.preUpdateStatusListenerAdded = true;
@@ -406,7 +396,7 @@ class Resolve_Ident_IA {
 					idte.resolveExpectation.satisfy(normal_path);
 			} else if (idte.getStatus() == BaseTableEntry.Status.KNOWN) {
 				final String normal_path = generatedFunction.getIdentIAPathNormal(identIA);
-				assert idte.resolveExpectation.isSatisfied();
+				//assert idte.resolveExpectation.isSatisfied();
 				if (!idte.resolveExpectation.isSatisfied())
 					idte.resolveExpectation.satisfy(normal_path);
 

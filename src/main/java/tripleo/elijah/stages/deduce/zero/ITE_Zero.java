@@ -9,22 +9,24 @@ import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.DeduceLookupUtils;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.FoundElement;
 import tripleo.elijah.stages.deduce.ResolveError;
 import tripleo.elijah.stages.gen_fn.*;
 
 public class ITE_Zero {
-
+	
 	private final IdentTableEntry ite;
 	ZeroResolver resolver;
-
+	private boolean _preUpdateStatus_Change_called;
+	
 	@Contract(pure = true)
 	public ITE_Zero(final IdentTableEntry aIdentTableEntry) {
 		ite = aIdentTableEntry;
 	}
-
+	
 	public void fp_onChange__001(@NotNull final TypeTableEntry vte, final IdentTableEntry ite, @NotNull final DeduceTypes2 deduceTypes2, final ErrSink errSink) {
 		final OS_Type ty = vte.getAttached();
-
+		
 		@Nullable OS_Element ele2 = null;
 
 		try {
@@ -65,8 +67,24 @@ public class ITE_Zero {
 			errSink.reportDiagnostic(aResolveError);
 		}
 	}
-
+	
 	public void setType(final GenType aGenType) {
 		// TODO fill this in later with a Promise, perhaps
+	}
+	
+	public void preUpdateStatus_Change(IElementHolder eh, BaseTableEntry.Status newStatus, FoundElement foundElement, String normal_path) {
+		if (_preUpdateStatus_Change_called) return;
+		
+		if (newStatus == BaseTableEntry.Status.KNOWN) {
+			_preUpdateStatus_Change_called = true;
+//			y.preUpdateStatusListenerAdded = true;
+
+//			assert el2 != eh.getElement();
+			ite.resolveExpectation.satisfy(normal_path);
+//			dc.found_element_for_ite(generatedFunction, y, eh.getElement(), null); // No context
+//			LOG.info("1424 Found for " + normal_path);
+			foundElement.doFoundElement(eh.getElement());
+		}
+		
 	}
 }

@@ -50,7 +50,7 @@ public class DeduceElementIdent {
 	private void calculateResolvedObject() {
 		final IdentIA identIA = new IdentIA(identTableEntry.getIndex(), generatedFunction);
 		
-		if (deduceTypes2 != null) { // TODO remove this ASAP. Should never happen
+		if (deduceTypes2 == null) { // TODO remove this ASAP. Should never happen
 			throw new IllegalStateException("5454 Should never happen. gf is not deduced.");
 		}
 		
