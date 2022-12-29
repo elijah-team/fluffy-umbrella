@@ -56,8 +56,48 @@ public class CReference {
 		final EG_SingleStatement ending;
 		final EG_Statement middle;
 		boolean indent = false;
-		final EX_Explanation explanation = null; //new EX_TableEntryExplanation();
+		final EX_Explanation explanation;
+
+
+		final ProcTableEntry pte = de_pte.getTablePrincipal();
+
+		final StringBuilder sb = new StringBuilder();
+		final BaseGeneratedFunction gf = de_pte.getGeneratedFunction();
+		final Instruction instruction = de_pte.getInstruction();
+
+		{
+			if (pte.expression_num == null) {
+				final IdentExpression ptex = (IdentExpression) pte.expression;
+				String text = ptex.getText();
+				@Nullable InstructionArgument xx = gf.vte_lookup(text);
+				assert xx != null;
+				String realTargetName = gc.getRealTargetName(gf, (IntegerIA) xx, Generate_Code_For_Method.AOG.GET);
+				sb.append(Emit.emit("/*424*/") + realTargetName);
+				sb.append('(');
+				final List<String> sl3 = gc.getArgumentStrings(gf, () -> new InstructionFixedList(instruction));
+				sb.append(Helpers.String_join(", ", sl3));
+				sb.append(");");
+			} else {
+				final CReference reference = new CReference();
+				final IdentIA ia2 = (IdentIA) pte.expression_num;
+				reference.getIdentIAPath(ia2, gf, Generate_Code_For_Method.AOG.GET, null);
+				final List<String> sl3 = gc.getArgumentStrings(gf, () -> new InstructionFixedList(instruction));
+				reference.args(sl3);
+				String path = reference.build();
+
+				sb.append(Emit.emit("/*427*/") + path + ";");
+			}
+		}
+
+		beginning = new EG_SingleStatement("", new EX_Explanation() {
+		});
+		ending = new EG_SingleStatement("", new EX_Explanation() {
+		});
+		explanation = new EX_ProcTableEntryExplanation(de_pte);
+		middle = new EG_SingleStatement(sb.toString(), explanation);
+
 		final EG_CompoundStatement stmt = new EG_CompoundStatement(beginning, ending, middle, indent, explanation);
+		//new EX_TableEntryExplanation();
 		return stmt;
 	}
 	
