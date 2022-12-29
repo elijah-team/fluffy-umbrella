@@ -221,7 +221,7 @@ public class Generate_Code_For_Method {
 					action_CONSTRUCT(gf, instruction);
 					break;
 				case CALL:
-					action_CALL(gf, instruction);
+					action_CALL(gf, instruction, null);
 					break;
 				case CALLS:
 					action_CALLS(gf, instruction);
