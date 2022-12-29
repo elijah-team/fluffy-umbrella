@@ -8,16 +8,27 @@
  */
 package tripleo.elijah.stages.gen_c;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.diagnostic.Diagnostic;
+import tripleo.elijah.diagnostic.Locatable;
+import tripleo.elijah.lang.ConstructorDef;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.NormalTypeName;
+import tripleo.elijah.lang.OS_GenericTypeNameType;
+import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.nextgen.outputstatement.EG_DottedStatement;
+import tripleo.elijah.nextgen.outputstatement.EG_SingleStatement;
 import tripleo.elijah.nextgen.outputstatement.EG_Statement;
+import tripleo.elijah.nextgen.query.Mode;
+import tripleo.elijah.nextgen.query.Operation2;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_ProcTableEntry;
+import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VariableTableEntry;
+import tripleo.elijah.stages.deduce.post_bytecode.GCFM_Diagnostic;
 import tripleo.elijah.stages.gen_c.c_ast1.C_HeaderString;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
@@ -29,10 +40,12 @@ import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkList;
 import tripleo.util.buffer.Buffer;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 
@@ -553,64 +566,93 @@ public class Generate_Code_For_Method {
 	}
 
 	private void action_DECL(Instruction instruction, BufferTabbedOutputStream tos, BaseGeneratedFunction gf) {
-		final SymbolIA decl_type = (SymbolIA)  instruction.getArg(0);
-		final IntegerIA  vte_num = (IntegerIA) instruction.getArg(1);
+		final Operation2<EG_Statement> op = _action_DECL(instruction, tos, gf);
+
+		if (op.mode() == Mode.SUCCESS) {
+			tos.put_string_ln(op.success().getText());
+		} else {
+			//throw new
+			// ignore
+		}
+	}
+
+	private Operation2<EG_Statement> _action_DECL(Instruction instruction, BufferTabbedOutputStream tos, BaseGeneratedFunction gf) {
+		final SymbolIA decl_type = (SymbolIA) instruction.getArg(0);
+		final IntegerIA vte_num = (IntegerIA) instruction.getArg(1);
 		final String target_name = gc.getRealTargetName(gf, vte_num, AOG.GET);
 		final VariableTableEntry vte = gf.getVarTableEntry(vte_num.getIndex());
 
-		final OS_Type x = vte.type.getAttached();
-		if (x == null && vte.potentialTypes().size() == 0) {
-			if (vte.vtt == VariableTableType.TEMP) {
-				LOG.err("8884 temp variable has no type "+vte+" "+gf);
-			} else {
-				LOG.err("8885 x is null (No typename specified) for " + vte.getName());
+		final DeduceElement3_VariableTableEntry de_vte = (DeduceElement3_VariableTableEntry) vte.getDeduceElement3();
+		final Operation2<OS_Type> diag1 = de_vte.decl_test_001(gf);
+
+		if (diag1.mode() == Mode.FAILURE) {
+			final Diagnostic diag_ = diag1.failure();
+			final GCFM_Diagnostic diag = (GCFM_Diagnostic) diag_;
+
+			switch (diag.severity()) {
+			case INFO:
+				LOG.info(diag._message());
+				break;
+			case ERROR:
+				LOG.err(diag._message());
+				break;
+			case LINT:
+			case WARN:
+			default:
+				throw new NotImplementedException();
 			}
-			return;
+
+			return Operation2.failure(diag_);
 		}
+
+		final OS_Type x = diag1.success(); //vte.type.getAttached();
 
 		final GeneratedNode res = vte.resolvedType();
 		if (res instanceof GeneratedClass) {
 			final String z = gc.getTypeName((GeneratedClass) res);
-			tos.put_string_ln(String.format("%s* %s;", z, target_name));
-			return;
+			final String s = String.format("%s* %s;", z, target_name);
+			return Operation2.success(new EG_SingleStatement(s, null));
 		}
 
 		if (x != null) {
-			if (x.getType() == OS_Type.Type.USER_CLASS) {
+			switch (x.getType()) {
+			case USER_CLASS:
 				final String z = gc.getTypeName(x);
-				tos.put_string_ln(String.format("%s* %s;", z, target_name));
-				return;
-			} else if (x.getType() == OS_Type.Type.USER) {
+				final String s = String.format("%s* %s;", z, target_name);
+				return Operation2.success(new EG_SingleStatement(s, null));
+			case USER:
 				final TypeName y = x.getTypeName();
 				if (y instanceof NormalTypeName) {
-					final String z;
+					final String z2;
 					if (((NormalTypeName) y).getName().equals("Any"))
-						z = "void *";  // TODO Technically this is wrong
+						z2 = "void *";  // TODO Technically this is wrong
 					else
-						z = gc.getTypeName(y);
-					tos.put_string_ln(String.format("%s %s;", z, target_name));
-					return;
+						z2 = gc.getTypeName(y);
+					final String s1 = String.format("%s %s;", z2, target_name);
+					return Operation2.success(new EG_SingleStatement(s1, null));
 				}
 
 				if (y != null) {
 					//
 					// VARIABLE WASN'T FULLY DEDUCED YET
 					//
-					LOG.err("8885 "+y.getClass().getName());
-					return;
+					return Operation2.failure(new Diagnostic_8887(y));
 				}
-			} else if (x.getType() == OS_Type.Type.BUILT_IN) {
+				break;
+			case BUILT_IN:
 				final Context context = gf.getFD().getContext();
 				assert context != null;
 				final OS_Type type = x.resolve(context);
+				final String s1;
 				if (type.isUnitType()) {
 					// TODO still should not happen
-					tos.put_string_ln(String.format("/*%s is declared as the Unit type*/", target_name));
+					s1 = String.format("/*%s is declared as the Unit type*/", target_name);
 				} else {
-	//				LOG.err("Bad potentialTypes size " + type);
-					final String z = gc.getTypeName(type);
-					tos.put_string_ln(String.format("/*535*/Z<%s> %s; /*%s*/", z, target_name, type.getClassOf()));
+					// LOG.err("Bad potentialTypes size " + type);
+					final String z3 = gc.getTypeName(type);
+					s1 = String.format("/*535*/Z<%s> %s; /*%s*/", z3, target_name, type.getClassOf());
 				}
+				return Operation2.success(new EG_SingleStatement(s1, null));
 			}
 		}
 
@@ -625,11 +667,12 @@ public class Generate_Code_For_Method {
 			if (ty.genType.node != null) {
 				GeneratedNode node = ty.genType.node;
 				if (node instanceof GeneratedFunction) {
-					int y=2;
+					int y = 2;
 //					((GeneratedFunction)node).typeDeferred()
 					// get signature
 					String z = Emit.emit("/*552*/") + "void (*)()";
-					tos.put_string_ln(String.format("/*8889*/%s %s;", z, target_name));
+					final String s = String.format("/*8889*/%s %s;", z, target_name);
+					return Operation2.success(new EG_SingleStatement(s, null));
 				}
 			} else {
 //				LOG.err("8885 " +ty.attached);
@@ -639,16 +682,19 @@ public class Generate_Code_For_Method {
 					z = gc.getTypeName(attached);
 				else
 					z = Emit.emit("/*763*/") + "Unknown";
-				tos.put_string_ln(String.format("/*8890*/Z<%s> %s;", z, target_name));
+				final String s = String.format("/*8890*/Z<%s> %s;", z, target_name);
+				return Operation2.success(new EG_SingleStatement(s, null));
 			}
 		}
-		LOG.err("8886 y is null (No typename specified)");
+
+		return Operation2.failure(new Diagnostic_8886());
 	}
 
 	static class Generate_Method_Header {
 
 		private final String return_type;
 		private final String args_string;
+		private final EG_Statement args_statement;
 		private final String header_string;
 		private final String name;
 		private final GenerateC gc;
@@ -656,11 +702,12 @@ public class Generate_Code_For_Method {
 		TypeTableEntry tte;
 
 		public Generate_Method_Header(BaseGeneratedFunction gf, @NotNull GenerateC aGenerateC, ElLog LOG) {
-			gc            = aGenerateC;
-			name          = gf.getFD().name();
+			gc = aGenerateC;
+			name = gf.getFD().name();
 			//
-			return_type   = find_return_type(gf, LOG);
-			args_string   = find_args_string(gf);
+			return_type = find_return_type(gf, LOG);
+			args_statement = find_args_statement(gf);
+			args_string = args_statement.getText();
 			header_string = find_header_string(gf, LOG);
 		}
 
@@ -701,34 +748,20 @@ public class Generate_Code_For_Method {
 			return result;
 		}
 
-		String find_args_string(BaseGeneratedFunction gf) {
-			final String args;
-			if (false) {
-				args = Helpers.String_join(", ", Collections2.transform(gf.getFD().fal().falis, new Function<FormalArgListItem, String>() {
-					@org.checkerframework.checker.nullness.qual.Nullable
-					@Override
-					public String apply(@org.checkerframework.checker.nullness.qual.Nullable final FormalArgListItem input) {
-						assert input != null;
-						return String.format("%s va%s", gc.getTypeName(input.typeName()), input.name());
-					}
-				}));
-			} else {
-				Collection<VariableTableEntry> x = Collections2.filter(gf.vte_list, new Predicate<VariableTableEntry>() {
-					@Override
-					public boolean apply(@org.checkerframework.checker.nullness.qual.Nullable VariableTableEntry input) {
-						assert input != null;
-						return input.vtt == VariableTableType.ARG;
-					}
-				});
-				args = Helpers.String_join(", ", Collections2.transform(x, new Function<VariableTableEntry, String>() {
-					@org.checkerframework.checker.nullness.qual.Nullable
-					@Override
-					public String apply(@org.checkerframework.checker.nullness.qual.Nullable VariableTableEntry input) {
-						assert input != null;
-						return String.format("%s va%s", gc.getTypeNameForVariableEntry(input), input.getName());
-					}
-				}));
-			}
+		EG_Statement find_args_statement(final @NotNull BaseGeneratedFunction gf) {
+
+			final String rule = "gen_c:gcfm:Generate_Method_Header:find_args_statement";
+
+			// TODO EG_Statement, rule
+			final List<String> args_list = gf.vte_list
+			  .stream()
+			  .filter(input -> input.vtt == VariableTableType.ARG)
+
+			  //rule=vte:args_at
+			  .map(input -> String.format("%s va%s", GenerateC.GetTypeName.forVTE(input), input.getName()))
+			  .collect(Collectors.toList());
+			final EG_Statement args = new EG_DottedStatement(", ", args_list, new EX_Rule(rule));
+
 			return args;
 		}
 
@@ -872,7 +905,80 @@ public class Generate_Code_For_Method {
 
 		@NotNull String find_return_type(BaseGeneratedFunction gf, ElLog LOG) {
 			return discriminator(gf, LOG, gc)
-					.find_return_type(this);
+			  .find_return_type(this);
+		}
+	}
+
+	private static class Diagnostic_8886 implements GCFM_Diagnostic {
+		final int _code = 8886;
+
+		@Override
+		public String _message() {
+			return String.format("%d y is null (No typename specified)", _code);
+		}
+
+		@Override
+		public String code() {
+			return "" + _code;
+		}
+
+		@Override
+		public Severity severity() {
+			return Severity.ERROR;
+		}
+
+		@Override
+		public @NotNull Locatable primary() {
+			return null;
+		}
+
+		@Override
+		public @NotNull List<Locatable> secondary() {
+			return null;
+		}
+
+		@Override
+		public void report(final PrintStream stream) {
+			stream.println(_message());
+		}
+	}
+
+	private static class Diagnostic_8887 implements GCFM_Diagnostic {
+		final int _code = 8887;
+		private final TypeName y;
+
+		private Diagnostic_8887(final TypeName aY) {
+			y = aY;
+		}
+
+		@Override
+		public String _message() {
+			return String.format("%d VARIABLE WASN'T FULLY DEDUCED YET: %s", _code, y.getClass().getName());
+		}
+
+		@Override
+		public String code() {
+			return "" + _code;
+		}
+
+		@Override
+		public Severity severity() {
+			return Severity.ERROR;
+		}
+
+		@Override
+		public @NotNull Locatable primary() {
+			return null;
+		}
+
+		@Override
+		public @NotNull List<Locatable> secondary() {
+			return null;
+		}
+
+		@Override
+		public void report(final PrintStream stream) {
+			stream.println(_message());
 		}
 	}
 }
