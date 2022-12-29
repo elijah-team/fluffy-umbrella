@@ -217,9 +217,9 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		return completeDeferred;
 	}
 	
-	public IDeduceElement3 getDeduceElement3() {
+	public IDeduceElement3 getDeduceElement3(final DeduceTypes2 aDeduceTypes2, final BaseGeneratedFunction aGeneratedFunction) {
 		if (_de3 == null) {
-			_de3 = new DeduceElement3_ProcTableEntry(this);
+			_de3 = new DeduceElement3_ProcTableEntry(this, aDeduceTypes2, aGeneratedFunction);
 //			_de3.
 		}
 		return _de3;
