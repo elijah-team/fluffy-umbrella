@@ -4,16 +4,22 @@ import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FoundElement;
+import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
 import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
 import tripleo.elijah.stages.instructions.IdentIA;
+import tripleo.elijah.stages.instructions.Instruction;
 
 public class DeduceElement3_ProcTableEntry implements IDeduceElement3 {
-	private ProcTableEntry principal;
-	
-	public DeduceElement3_ProcTableEntry(ProcTableEntry procTableEntry) {
-		principal = procTableEntry;
+	private final ProcTableEntry principal;
+	private final DeduceTypes2 deduceTypes2;
+	private final BaseGeneratedFunction generatedFunction;
+	private Instruction instruction;
+
+	public DeduceElement3_ProcTableEntry(final ProcTableEntry aProcTableEntry, final DeduceTypes2 aDeduceTypes2, final BaseGeneratedFunction aGeneratedFunction) {
+		principal = aProcTableEntry;
+		deduceTypes2 = aDeduceTypes2;
+		generatedFunction = aGeneratedFunction;
 	}
 	
 	@Override
@@ -40,15 +46,14 @@ public class DeduceElement3_ProcTableEntry implements IDeduceElement3 {
 	
 	@Override
 	public DeduceTypes2 deduceTypes2() {
-		throw new UnsupportedOperationException();
-//		return null;
+		return deduceTypes2;
 	}
-	
+
 	@Override
-	public GeneratedFunction generatedFunction() {
-		return null;
+	public BaseGeneratedFunction generatedFunction() {
+		return generatedFunction;
 	}
-	
+
 	@Override
 	public GenType genType() {
 		return null;
@@ -57,5 +62,21 @@ public class DeduceElement3_ProcTableEntry implements IDeduceElement3 {
 	@Override
 	public DeduceElement3_Kind kind() {
 		return DeduceElement3_Kind.GEN_FN__PTE;
+	}
+
+	public ProcTableEntry getTablePrincipal() {
+		return principal;
+	}
+
+	public BaseGeneratedFunction getGeneratedFunction() {
+		return generatedFunction;
+	}
+
+	public Instruction getInstruction() {
+		return instruction;
+	}
+
+	public void setInstruction(final Instruction aInstruction) {
+		instruction = aInstruction;
 	}
 }
