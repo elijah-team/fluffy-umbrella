@@ -28,7 +28,9 @@ public class DeduceElement3_ProcTableEntry implements IDeduceElement3 {
 	
 	@Override
 	public OS_Element getPrincipal() {
-		return principal.getDeduceElement3().getPrincipal();
+		//return principal.getDeduceElement3(deduceTypes2, generatedFunction).getPrincipal(); // README infinite loop
+
+		return principal.getResolvedElement();//getDeduceElement3(deduceTypes2, generatedFunction).getPrincipal();
 	}
 	
 	@Override
