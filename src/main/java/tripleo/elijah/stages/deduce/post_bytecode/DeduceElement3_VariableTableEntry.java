@@ -7,6 +7,7 @@ import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FoundElement;
 import tripleo.elijah.stages.deduce.post_bytecode.DED.DED_VTE;
+import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
 import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.gen_fn.GeneratedFunction;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
@@ -54,7 +55,7 @@ public class DeduceElement3_VariableTableEntry implements IDeduceElement3 {
 	}
 
 	@Override
-	public GeneratedFunction generatedFunction() {
+	public BaseGeneratedFunction generatedFunction() {
 		return generatedfunction;
 	}
 

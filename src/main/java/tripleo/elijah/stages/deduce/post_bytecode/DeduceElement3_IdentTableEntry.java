@@ -9,7 +9,6 @@ import tripleo.elijah.stages.deduce.FoundElement;
 import tripleo.elijah.stages.deduce.post_bytecode.DED.DED_ITE;
 import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
 import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.util.NotImplementedException;
@@ -56,8 +55,8 @@ public class DeduceElement3_IdentTableEntry implements IDeduceElement3 {
 	}
 
 	@Override
-	public GeneratedFunction generatedFunction() {
-		return (GeneratedFunction) generatedFunction;
+	public BaseGeneratedFunction generatedFunction() {
+		return generatedFunction;
 	}
 
 	@Override
