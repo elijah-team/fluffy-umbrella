@@ -53,7 +53,7 @@ public interface DED {
 
 		@Override
 		public Kind kind() {
-			throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+			return Kind.DED_Kind_ProcTableEntry;
 		}
 
 	}
