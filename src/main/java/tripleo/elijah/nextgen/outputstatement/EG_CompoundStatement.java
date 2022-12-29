@@ -4,17 +4,40 @@
  */
 package tripleo.elijah.nextgen.outputstatement;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author Tripleo Nova
  */
 public class EG_CompoundStatement implements EG_Statement {
-	
-	public EG_CompoundStatement(EG_SingleStatement beginning, EG_SingleStatement ending, EG_Statement middle, boolean indent, EX_Explanation explanation) {
+
+	private final EG_SingleStatement beginning;
+	private final EG_SingleStatement ending;
+	private final EG_Statement middle;
+	private final boolean indent;
+	private final EX_Explanation explanation;
+
+	public EG_CompoundStatement(final @NotNull EG_SingleStatement aBeginning,
+								final @NotNull EG_SingleStatement aEnding,
+								final @NotNull EG_Statement aMiddle,
+								final boolean aIndent,
+								final @NotNull EX_Explanation aExplanation) {
+		beginning = aBeginning;
+		ending = aEnding;
+		middle = aMiddle;
+		indent = aIndent;
+		explanation = aExplanation;
 	}
-	
+
 	@Override
 	public String getText() {
-		return null;
+		final StringBuilder sb = new StringBuilder();
+
+		sb.append(beginning.getText());
+		sb.append(middle.getText());
+		sb.append(ending.getText());
+
+		return sb.toString();
 	}
 	
 	@Override
