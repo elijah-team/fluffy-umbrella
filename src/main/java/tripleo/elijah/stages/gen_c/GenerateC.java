@@ -27,6 +27,7 @@ import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.BufferTabbedOutputStream;
 import tripleo.elijah.util.Helpers;
+import tripleo.elijah.util.IFixedList;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkJob;
 import tripleo.elijah.work.WorkList;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 
@@ -544,35 +546,37 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		return GetTypeName.forTypeName(typeName, errSink);
 	}
 
-	@NotNull List<String> getArgumentStrings(final BaseGeneratedFunction gf, final Instruction instruction) {
-		final List<String> sl3 = new ArrayList<String>();
-		final int args_size = instruction.getArgsSize();
-		for (int i = 1; i < args_size; i++) {
-			final InstructionArgument ia = instruction.getArg(i);
-			if (ia instanceof IntegerIA) {
-//				VariableTableEntry vte = gf.getVarTableEntry(DeduceTypes2.to_int(ia));
-				final String realTargetName = getRealTargetName(gf, (IntegerIA) ia, Generate_Code_For_Method.AOG.GET);
-				sl3.add(Emit.emit("/*669*/")+""+realTargetName);
-			} else if (ia instanceof IdentIA) {
-				final CReference reference = new CReference();
-				reference.getIdentIAPath((IdentIA) ia, gf, Generate_Code_For_Method.AOG.GET, null);
-				String text = reference.build();
-				sl3.add(Emit.emit("/*673*/")+""+text);
-			} else if (ia instanceof ConstTableIA) {
-				ConstTableIA c = (ConstTableIA) ia;
-				ConstantTableEntry cte = gf.getConstTableEntry(c.getIndex());
-				String s = GetAssignmentValue.const_to_string(cte.initialValue);
-				sl3.add(s);
-				int y = 2;
-			} else if (ia instanceof ProcIA) {
-				LOG.err("740 ProcIA");
-				throw new NotImplementedException();
-			} else {
-				LOG.err(ia.getClass().getName());
-				throw new IllegalStateException("Invalid InstructionArgument");
-			}
+	private static boolean isValue(BaseGeneratedFunction gf, @NotNull String name) {
+		if (!name.equals("Value")) return false;
+		//
+		FunctionDef fd = (FunctionDef) gf.getFD();
+		switch (fd.getSpecies()) {
+			case REG_FUN:
+			case DEF_FUN:
+				if (!(fd.getParent() instanceof ClassStatement)) return false;
+				for (AnnotationPart anno : ((ClassStatement) fd.getParent()).annotationIterable()) {
+					if (anno.annoClass().equals(Helpers.string_to_qualident("Primitive"))) {
+						return true;
+					}
+				}
+				return false;
+			case PROP_GET:
+			case PROP_SET:
+				return true;
+			default:
+				throw new IllegalStateException("Unexpected value: " + fd.getSpecies());
 		}
-		return sl3;
+	}
+
+	@NotNull
+	public static Collection<GeneratedNode> constructors_to_list_of_generated_nodes(final Collection<GeneratedConstructor> aGeneratedConstructors) {
+		return Collections2.transform(aGeneratedConstructors, new Function<GeneratedConstructor, GeneratedNode>() {
+			@org.checkerframework.checker.nullness.qual.Nullable
+			@Override
+			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable final GeneratedConstructor input) {
+				return input;
+			}
+		});
 	}
 
 	static class GetAssignmentValue {
