@@ -397,31 +397,8 @@ public class Generate_Code_For_Method {
 		final EG_Statement stmt = CReference.forDeduceElement3(de_pte, gc);
 
 		final String text1 = stmt.getText();
-		sb.append(""/*text1*/);
-		
-		{
-			if (pte.expression_num == null) {
-				final IdentExpression ptex = (IdentExpression) pte.expression;
-				String text = ptex.getText();
-				@Nullable InstructionArgument xx = gf.vte_lookup(text);
-				assert xx != null;
-				String realTargetName = gc.getRealTargetName(gf, (IntegerIA) xx, AOG.GET);
-				sb.append(Emit.emit("/*424*/") + realTargetName);
-				sb.append('(');
-				final List<String> sl3 = gc.getArgumentStrings(gf, aInstruction);
-				sb.append(Helpers.String_join(", ", sl3));
-				sb.append(");");
-			} else {
-				final CReference reference = new CReference();
-				final IdentIA ia2 = (IdentIA) pte.expression_num;
-				reference.getIdentIAPath(ia2, gf, AOG.GET, null);
-				final List<String> sl3 = gc.getArgumentStrings(gf, aInstruction);
-				reference.args(sl3);
-				String path = reference.build();
+		sb.append(text1);
 
-				sb.append(Emit.emit("/*427*/")+path+";");
-			}
-		}
 		tos.put_string_ln(sb.toString());
 	}
 
