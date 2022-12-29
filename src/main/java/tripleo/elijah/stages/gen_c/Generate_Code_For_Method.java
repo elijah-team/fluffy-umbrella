@@ -16,6 +16,8 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.nextgen.outputstatement.EG_Statement;
 import tripleo.elijah.stages.deduce.ClassInvocation;
+import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_ProcTableEntry;
 import tripleo.elijah.stages.gen_c.c_ast1.C_HeaderString;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
@@ -388,9 +390,12 @@ public class Generate_Code_For_Method {
 		final InstructionArgument x = aInstruction.getArg(0);
 		assert x instanceof ProcIA;
 		final ProcTableEntry pte = gf.getProcTableEntry(((ProcIA) x).getIndex());
-		
-		final EG_Statement stmt = CReference.forDeduceElement3(pte.getDeduceElement3());
-		
+
+		final DeduceElement3_ProcTableEntry de_pte = (DeduceElement3_ProcTableEntry) pte.getDeduceElement3(dt2, gf);
+		de_pte.setInstruction(aInstruction);
+
+		final EG_Statement stmt = CReference.forDeduceElement3(de_pte, gc);
+
 		final String text1 = stmt.getText();
 		sb.append(""/*text1*/);
 		
