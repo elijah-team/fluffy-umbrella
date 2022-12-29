@@ -9,6 +9,7 @@
  */
 package tripleo.elijah.stages.gen_c;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
@@ -21,7 +22,9 @@ import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_ProcTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
+import tripleo.elijah.stages.instructions.Instruction;
 import tripleo.elijah.stages.instructions.InstructionArgument;
+import tripleo.elijah.stages.instructions.InstructionFixedList;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.stages.instructions.ProcIA;
 import tripleo.elijah.util.Helpers;
@@ -40,14 +43,15 @@ public class CReference {
 	private String rtext = null;
 	private List<String> args;
 	private List<Reference> refs;
-	
-	public static EG_Statement forDeduceElement3(IDeduceElement3 deduceElement3) {
+
+	@Contract("null, _ -> fail")
+	public static @NotNull EG_Statement forDeduceElement3(IDeduceElement3 deduceElement3, final GenerateC gc) {
 		//return deduceElement3.();
 		if (deduceElement3 instanceof DeduceElement3_ProcTableEntry) {
 			final DeduceElement3_ProcTableEntry de_pte = (DeduceElement3_ProcTableEntry) deduceElement3;
-			return forDeduceElement3_ProcTableEntry(de_pte);
+			return forDeduceElement3_ProcTableEntry(de_pte, gc);
 		}
-		
+
 		throw new NotImplementedException();
 	}
 
