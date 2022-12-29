@@ -56,9 +56,9 @@ public class DeduceElement3_ProcTableEntry implements IDeduceElement3 {
 
 	@Override
 	public GenType genType() {
-		return null;
-	}
-	
+		throw new UnsupportedOperationException("no type for PTE");
+	} // TODO check correctness
+
 	@Override
 	public DeduceElement3_Kind kind() {
 		return DeduceElement3_Kind.GEN_FN__PTE;
