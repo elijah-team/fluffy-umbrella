@@ -382,7 +382,7 @@ public class Generate_Code_For_Method {
 		tos.put_string_ln(sb.toString());
 	}
 
-	private void action_CALL(BaseGeneratedFunction gf, Instruction aInstruction) {
+	private void action_CALL(final BaseGeneratedFunction gf, final Instruction aInstruction, final DeduceTypes2 dt2) {
 		final StringBuilder sb = new StringBuilder();
 // 					LOG.err("9000 "+inst.getName());
 		final InstructionArgument x = aInstruction.getArg(0);

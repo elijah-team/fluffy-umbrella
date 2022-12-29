@@ -21,14 +21,14 @@ public class DeduceElement3_ProcTableEntry implements IDeduceElement3 {
 		deduceTypes2 = aDeduceTypes2;
 		generatedFunction = aGeneratedFunction;
 	}
-	
+
 	@Override
-	public void resolve(IdentIA aIdentIA, Context aContext, FoundElement aFoundElement) {
+	public void resolve(final IdentIA aIdentIA, final Context aContext, final FoundElement aFoundElement) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
-	public void resolve(Context aContext, DeduceTypes2 dt2) {
+	public void resolve(final Context aContext, final DeduceTypes2 dt2) {
 		throw new UnsupportedOperationException();
 	}
 	

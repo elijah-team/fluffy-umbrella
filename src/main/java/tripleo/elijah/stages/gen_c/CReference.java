@@ -50,11 +50,11 @@ public class CReference {
 		
 		throw new NotImplementedException();
 	}
-	
-	private static EG_Statement forDeduceElement3_ProcTableEntry(DeduceElement3_ProcTableEntry de_pte) {
-		final EG_SingleStatement beginning = new EG_SingleStatement();
-		final EG_SingleStatement ending = new EG_SingleStatement();
-		final EG_Statement middle = null;
+
+	private static @NotNull EG_Statement forDeduceElement3_ProcTableEntry(@NotNull DeduceElement3_ProcTableEntry de_pte, final GenerateC gc) {
+		final EG_SingleStatement beginning;
+		final EG_SingleStatement ending;
+		final EG_Statement middle;
 		boolean indent = false;
 		final EX_Explanation explanation = null; //new EX_TableEntryExplanation();
 		final EG_CompoundStatement stmt = new EG_CompoundStatement(beginning, ending, middle, indent, explanation);

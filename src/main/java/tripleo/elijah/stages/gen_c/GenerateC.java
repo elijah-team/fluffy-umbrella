@@ -830,29 +830,52 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		}
 	}
 
-	private static boolean isValue(BaseGeneratedFunction gf, String name) {
-		if (!name.equals("Value")) return false;
-		//
-		FunctionDef fd = (FunctionDef) gf.getFD();
-		switch (fd.getSpecies()) {
-		case REG_FUN:
-		case DEF_FUN:
-			if (!(fd.getParent() instanceof ClassStatement)) return false;
-			for (AnnotationPart anno : ((ClassStatement) fd.getParent()).annotationIterable()) {
-				if (anno.annoClass().equals(Helpers.string_to_qualident("Primitive"))) {
-					return true;
-				}
+	@NotNull List<String> getArgumentStrings(final BaseGeneratedFunction gf, final Supplier<IFixedList<InstructionArgument>> instructionSupplier) {
+		final List<String> sl3 = new ArrayList<String>();
+		final int args_size = instructionSupplier.get().size();
+		for (int i = 1; i < args_size; i++) {
+			final InstructionArgument ia = instructionSupplier.get().get(i);
+			if (ia instanceof IntegerIA) {
+//				VariableTableEntry vte = gf.getVarTableEntry(DeduceTypes2.to_int(ia));
+				final String realTargetName = getRealTargetName(gf, (IntegerIA) ia, Generate_Code_For_Method.AOG.GET);
+				sl3.add(Emit.emit("/*669*/") + "" + realTargetName);
+			} else if (ia instanceof IdentIA) {
+				final CReference reference = new CReference();
+				reference.getIdentIAPath((IdentIA) ia, gf, Generate_Code_For_Method.AOG.GET, null);
+				String text = reference.build();
+				sl3.add(Emit.emit("/*673*/") + "" + text);
+			} else if (ia instanceof ConstTableIA) {
+				ConstTableIA c = (ConstTableIA) ia;
+				ConstantTableEntry cte = gf.getConstTableEntry(c.getIndex());
+				String s = GetAssignmentValue.const_to_string(cte.initialValue);
+				sl3.add(s);
+				int y = 2;
+			} else if (ia instanceof ProcIA) {
+				LOG.err("740 ProcIA");
+				throw new NotImplementedException();
+			} else {
+				LOG.err(ia.getClass().getName());
+				throw new IllegalStateException("Invalid InstructionArgument");
 			}
-			return false;
-		case PROP_GET:
-		case PROP_SET:
-			return true;
-		default:
-			throw new IllegalStateException("Unexpected value: " + fd.getSpecies());
 		}
+		return sl3;
 	}
 
-	String getRealTargetName(final BaseGeneratedFunction gf, final IdentIA target, final Generate_Code_For_Method.AOG aog, final String value) {
+	@NotNull List<String> getArgumentStrings(final BaseGeneratedFunction gf, final Instruction instruction) {
+		return getArgumentStrings(gf, () -> new InstructionFixedList(instruction));
+	}
+
+	public static Collection<GeneratedNode> functions_to_list_of_generated_nodes(final Collection<GeneratedFunction> generatedFunctions) {
+		return Collections2.transform(generatedFunctions, new Function<GeneratedFunction, GeneratedNode>() {
+			@org.checkerframework.checker.nullness.qual.Nullable
+			@Override
+			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable final GeneratedFunction input) {
+				return input;
+			}
+		});
+	}
+
+	String getRealTargetName(final @NotNull BaseGeneratedFunction gf, final @NotNull IdentIA target, final Generate_Code_For_Method.AOG aog, final String value) {
 		int state = 0, code = -1;
 		IdentTableEntry identTableEntry = gf.getIdentTableEntry(target.getIndex());
 		LinkedList<String> ls = new LinkedList<String>();
@@ -917,27 +940,6 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 			return path;
 		else
 			return s;
-	}
-
-	public static Collection<GeneratedNode> functions_to_list_of_generated_nodes(final Collection<GeneratedFunction> generatedFunctions) {
-		return Collections2.transform(generatedFunctions, new Function<GeneratedFunction, GeneratedNode>() {
-			@org.checkerframework.checker.nullness.qual.Nullable
-			@Override
-			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable final GeneratedFunction input) {
-				return input;
-			}
-		});
-	}
-
-	@NotNull
-	public static Collection<GeneratedNode> constructors_to_list_of_generated_nodes(final Collection<GeneratedConstructor> aGeneratedConstructors) {
-		return Collections2.transform(aGeneratedConstructors, new Function<GeneratedConstructor, GeneratedNode>() {
-			@org.checkerframework.checker.nullness.qual.Nullable
-			@Override
-			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable final GeneratedConstructor input) {
-				return input;
-			}
-});
 	}
 
 }
