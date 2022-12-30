@@ -277,10 +277,11 @@ public class Generate_Code_For_Method {
 	}
 
 	private void action_X(Generate_Method_Header aGmh) {
-		if (is_constructor) return;
-
 		tos.dec_tabs();
 		tos.put_string_ln("}");
+
+		if (is_constructor) return;
+
 		if (!is_unit_type)
 			if (aGmh.tte != null && aGmh.tte.isResolved()) {
 				tos.put_string_ln("return vsr;");
