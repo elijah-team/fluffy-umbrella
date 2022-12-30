@@ -125,7 +125,7 @@ public class ExpressionNodeBuilder {
 
 	@NotNull
 	@Contract("_, _, _, _ -> new")
-	public static IExpression binex(final TypeRef rt, final VariableReference left, final ExpressionOperators middle, final TmpSSACtxNode right) { // todo wrong again
+	public static IExpression binex(final TypeRef rt, final VariableReference left, final @NotNull ExpressionOperators middle, final TmpSSACtxNode right) { // todo wrong again
 		// TODO Auto-generated method stub
 		final ExpressionKind middle1 = Helpers.ExpressionOperatorToExpressionType(middle);
 		return new BasicBinaryExpression(left, middle1, new StringExpression(tripleo.elijah.util.Helpers.makeToken(right.text()))); // TODO !!!
@@ -188,9 +188,9 @@ public class ExpressionNodeBuilder {
 			}
 		};
 	}
-	
+
 	@NotNull
-	public static IExpressionNode fncall(final MethRef aMeth, final List<LocalAgnTmpNode> of) { // TODO no so wrong anymore
+	public static IExpressionNode fncall(final @NotNull MethRef aMeth, final List<LocalAgnTmpNode> of) { // TODO no so wrong anymore
 		final ProcedureCallExpression pce1 = new ProcedureCallExpression();
 		final Qualident xyz = new Qualident();
 		final Token t = new CommonToken();
@@ -204,7 +204,7 @@ public class ExpressionNodeBuilder {
 		//
 		return new IExpressionNode() {
 			@Override
-			public String genText() {
+			public @org.jetbrains.annotations.Nullable String genText() {
 				NotImplementedException.raise();
 				return null;
 			}
@@ -214,7 +214,7 @@ public class ExpressionNodeBuilder {
 				final TypeRef p = aMeth.getParent();
 				final int code = p.getCode();
 				final String s = String.format("z%d%s", code, pce1.getLeft().toString());
-				final StringBuilder sb = new StringBuilder();
+				final @NotNull StringBuilder sb = new StringBuilder();
 				
 				sb.append(s);
 				sb.append('(');
@@ -310,9 +310,9 @@ public class ExpressionNodeBuilder {
 				NotImplementedException.raise();
 				return null;
 			}
-			
+
 			@Override
-			public String genText(final CompilerContext cctx) {
+			public @org.jetbrains.annotations.Nullable String genText(final CompilerContext cctx) {
 				NotImplementedException.raise();
 				return null;
 			}

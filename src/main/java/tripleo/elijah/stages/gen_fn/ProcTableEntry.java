@@ -142,7 +142,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		return classInvocation;
 	}
 	
-	public DeduceProcCall dpc = new DeduceProcCall(this);
+	public final DeduceProcCall dpc = new DeduceProcCall(this);
 	private PTE_Zero _zero;
 	
 	// have no idea what this is for

@@ -48,7 +48,7 @@ public class FileCharSink implements CharSink {
 		}
 	}
 
-	OutputStream fos;
+	final OutputStream fos;
 
 	public FileCharSink(final OutputStream fos) {
 		super();

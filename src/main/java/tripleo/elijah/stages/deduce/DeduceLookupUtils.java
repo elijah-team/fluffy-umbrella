@@ -350,7 +350,7 @@ public class DeduceLookupUtils {
 					R.typeName = new OS_UnknownType(vs);
 //				return deduceExpression(vs.initialValue(), ctx); // infinite recursion
 				} else {
-					final IExpression initialValue = vs.initialValue();
+					final @NotNull IExpression initialValue = vs.initialValue();
 					if (initialValue.getKind() == ExpressionKind.PROCEDURE_CALL) {
 						final Context vsContext = vs.getContext();
 						final ProcedureCallExpression pce = (ProcedureCallExpression) initialValue;

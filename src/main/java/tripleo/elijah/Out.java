@@ -8,6 +8,7 @@
  */
 package tripleo.elijah;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.ParserClosure;
@@ -59,7 +60,7 @@ public class Out {
 	}
 
 	private static TabbedOutputStream getTOSLog() throws FileNotFoundException {
-		final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+		final @NotNull SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		final String filename = String.format("eljc-%s.out", sdf.format(new Date()));
 		return new TabbedOutputStream(new FileOutputStream(filename));
 	}
@@ -74,7 +75,7 @@ public class Out {
 		return pc;
 	}
 
-	public OS_Module module() {
+	public @NotNull OS_Module module() {
 		return pc.module;
 	}
 }

@@ -10,6 +10,7 @@ package tripleo.elijah;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -55,8 +56,8 @@ public class TestBasic {
 
 		for (final String s : ez_files) {
 //			List<String> args = List_of("test/basic", "-sO"/*, "-out"*/);
-			final ErrSink     eee = new StdErrSink();
-			final Compilation c   = new CompilationImpl(eee, new IO());
+			final ErrSink eee = new StdErrSink();
+			final @NotNull Compilation c = new CompilationImpl(eee, new IO());
 
 			c.feedCmdLine(List_of(s, "-sO"));
 

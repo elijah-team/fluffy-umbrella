@@ -9,6 +9,7 @@
  */
 package tripleo.elijah.slir;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.lang.OS_Module;
@@ -19,7 +20,6 @@ import tripleo.elijah.util.Helpers;
 import java.io.IOException;
 
 import static org.easymock.EasyMock.mock;
-import static tripleo.elijah.util.Helpers.List_of;
 
 /**
  * Created 11/6/21 8:11 AM
@@ -97,7 +97,7 @@ public class TestBasicSlir {
 		final SlirSourceFile sf1 = new SlirSourceFile(s + "/main2.elijah");
 
 		{
-			final SlirSourceNode sn1 = rsn.newSourceNode(sf1);
+			final @NotNull SlirSourceNode sn1 = rsn.newSourceNode(sf1);
 
 			final OS_Module mod = new OS_Module();
 			mod.setFileName(sf1.getFilename());
@@ -114,7 +114,7 @@ public class TestBasicSlir {
 			fact_module_namespace.markUsed("factorial", SlirPos.ALIAS);
 			sin1.markImported(fact_module_namespace);
 
-			final SlirClass sc1 = sn1.addClass("Main", null);
+			final @NotNull SlirClass sc1 = sn1.addClass("Main", null);
 			sc1.annotate(SlirAnnotations.MAIN);
 			final SlirFunctionNode main_function = sc1.addFunction("main", null);
 			main_function.annotate(SlirAnnotations.MAIN);
@@ -133,7 +133,7 @@ public class TestBasicSlir {
 
 			final SlirNamespaceNode prelude_namespace_import = new SlirNamespaceNode(sf2, "Prelude", null);
 
-			final SlirClass system_integer = new SlirClass(prelude_namespace_import, "SystemInteger", null);
+			final @NotNull SlirClass system_integer = new SlirClass(prelude_namespace_import, "SystemInteger", null);
 			final SlirClass prelude_string = new SlirClass(prelude_namespace_import, "String", null);
 			prelude_string.markUsed("isInt", SlirPos.FUNCTION);
 			prelude_string.markUsed("to_int", SlirPos.FUNCTION);
@@ -168,7 +168,7 @@ public class TestBasicSlir {
 		{
 			final SlirSourceNode sn3 = rsn.newSourceNode(sf2); // Prelude
 
-			final OS_Module mod = new OS_Module();
+			final @NotNull OS_Module mod = new OS_Module();
 			mod.setFileName(sf2.getFilename());
 
 			final OS_Package packageStatement = new OS_Package(Helpers.string_to_qualident("Prelude"), 1);
@@ -183,7 +183,7 @@ public class TestBasicSlir {
 		}
 
 		{
-			final SlirSourceNode sn4 = rsn.newSourceNode(sf3); // collections
+			final @NotNull SlirSourceNode sn4 = rsn.newSourceNode(sf3); // collections
 
 			final OS_Module mod = new OS_Module();
 			mod.setFileName(sf3.getFilename());

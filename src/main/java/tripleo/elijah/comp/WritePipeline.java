@@ -29,7 +29,14 @@ import tripleo.util.buffer.TextBuffer;
 import tripleo.util.io.CharSink;
 import tripleo.util.io.FileCharSink;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.io.Writer;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -121,7 +128,7 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 			// TODO functionality
 			System.out.println("201 Writing path: "+path);
 			final CharSink x = c.getIO().openWrite(path);
-			for (final Buffer buffer : entry.getValue()) {
+			for (final @NotNull Buffer buffer : entry.getValue()) {
 				x.accept(buffer.getText());
 			}
 			((FileCharSink)x).close();
@@ -148,7 +155,7 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 				.map(file -> file.toString())
 				.collect(Collectors.toList());
 
-		for (final File file : recordedreads) {
+		for (final @NotNull File file : recordedreads) {
 			final String fn = file.toString();
 
 			append_hash(buf, fn, c.getErrSink());

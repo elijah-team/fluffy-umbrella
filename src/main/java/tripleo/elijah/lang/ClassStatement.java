@@ -160,7 +160,7 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 
 	// region annotations
 
-	public Iterable<AnnotationPart> annotationIterable() {
+	public @NotNull Iterable<AnnotationPart> annotationIterable() {
 		final List<AnnotationPart> aps = new ArrayList<AnnotationPart>();
 		if (annotations == null) return aps;
 		for (final AnnotationClause annotationClause : annotations) {
@@ -187,7 +187,7 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 		return propertyStatement;
 	}
 
-	public TypeAliasStatement typeAlias() {
+	public @org.jetbrains.annotations.Nullable TypeAliasStatement typeAlias() {
 		NotImplementedException.raise();
 		return null;
 	}

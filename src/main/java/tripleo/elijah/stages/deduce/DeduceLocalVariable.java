@@ -12,7 +12,15 @@ package tripleo.elijah.stages.deduce;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.BaseFunctionDef;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.FuncExpr;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_FuncType;
+import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.TypeName;
 import tripleo.elijah.stages.deduce.declarations.DeferredMemberFunction;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
@@ -30,7 +38,7 @@ import java.util.stream.Collectors;
  */
 public class DeduceLocalVariable {
 	private final VariableTableEntry variableTableEntry;
-	public DeferredObject2<GenType, Void, Void> type = new DeferredObject2();
+	public @NotNull DeferredObject2<GenType, Void, Void> type = new DeferredObject2();
 	private DeduceTypes2 deduceTypes2;
 	private Context context;
 	private BaseGeneratedFunction generatedFunction;
@@ -149,23 +157,22 @@ public class DeduceLocalVariable {
 					case 1:
 						genType.genCIForGenType2(deduceTypes2); // TODO what is this doing here? huh?
 						break;
-					case 2:
-						{
-							final FuncExpr fe = (FuncExpr) vte.getCallablePTE().expression;
-							final DeduceProcCall dpc = vte.getCallablePTE().dpc;
-							final int y=2;
+					case 2: {
+						final FuncExpr fe = (FuncExpr) vte.getCallablePTE().expression;
+						final @NotNull DeduceProcCall dpc = vte.getCallablePTE().dpc;
+						final int y = 2;
 //							target = (DeduceFuncExpr) dpc.target;
 //							type.resolve(new GenType() {target.prototype}): // DeduceType??
-							// TODO because we can already represent a function expression,
-							//  the question is can we generatedFunction.lookupExpression(fe) and get the DeduceFuncExpr?
-						}
+						// TODO because we can already represent a function expression,
+						//  the question is can we generatedFunction.lookupExpression(fe) and get the DeduceFuncExpr?
+					}
 						break;
 					}
 
 					if (genType.ci != null) { // TODO we may need this call...
 						((ClassInvocation) genType.ci).resolvePromise().then(new DoneCallback<GeneratedClass>() {
 							@Override
-							public void onDone(final GeneratedClass result) {
+							public void onDone(final @NotNull GeneratedClass result) {
 								genType.node = result;
 								if (!vte.typePromise().isResolved()) { // HACK
 									if (genType.resolved instanceof OS_FuncType) {

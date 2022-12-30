@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.gen_c;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.stages.gen_generic.Dependency;
 import tripleo.elijah.stages.gen_generic.DependencyRef;
 import tripleo.elijah.stages.gen_generic.IOutputFile;
@@ -45,17 +46,17 @@ public class OutputFileC implements IOutputFile {
 	@Override
 	public String getOutput() {
 		final StringBuilder sb = new StringBuilder();
-		
-		final Predicate<Dependency> dependencyPredicate = next -> {
+
+		final @NotNull Predicate<Dependency> dependencyPredicate = next -> {
 			for (DependencyRef dependency : dependencies) {
 				if (next.dref == dependency) {
 					return true;
 				}
 			}
-			
+
 			return false;
 		};
-		
+
 		final List<Dependency> wnd = notedDeps.stream()
 		  .filter(dependencyPredicate)
 		  .collect(Collectors.toList());

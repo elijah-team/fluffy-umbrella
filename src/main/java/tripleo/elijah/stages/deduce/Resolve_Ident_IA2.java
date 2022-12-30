@@ -314,7 +314,7 @@ class Resolve_Ident_IA2 {
 		try {
 			final boolean has_initial_value = vs.initialValue() != IExpression.UNASSIGNED;
 			if (!vs.typeName().isNull()) {
-				final TypeTableEntry tte;
+				final @NotNull TypeTableEntry tte;
 				@Nullable final GenType attached;
 				if (has_initial_value) {
 					attached = DeduceLookupUtils.deduceExpression(deduceTypes2, vs.initialValue(), ctx);
@@ -414,7 +414,7 @@ class Resolve_Ident_IA2 {
 		int state = 0;
 		final @NotNull ArrayList<TypeTableEntry> pot = deduceTypes2.getPotentialTypesVte(aVte);
 		final OS_Type attached1 = pot.get(0).getAttached();
-		final TableEntryIV te = pot.get(0).tableEntry;
+		final @Nullable TableEntryIV te = pot.get(0).tableEntry;
 		if (te instanceof ProcTableEntry) {
 			final @NotNull ProcTableEntry procTableEntry = (ProcTableEntry) te;
 			// This is how it should be done, with an Incremental

@@ -26,7 +26,7 @@ public class DeduceElement3_IdentTableEntry implements IDeduceElement3 {
 	}
 
 	@Override
-	public void resolve(final IdentIA aIdentIA, final Context aContext, final FoundElement aFoundElement) {
+	public void resolve(final IdentIA aIdentIA, final @NotNull Context aContext, final FoundElement aFoundElement) {
 		// FoundElement is the "disease"
 		deduceTypes2.resolveIdentIA_(aContext, aIdentIA, generatedFunction, aFoundElement);
 	}

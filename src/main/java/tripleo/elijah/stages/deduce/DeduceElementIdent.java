@@ -63,7 +63,7 @@ public class DeduceElementIdent {
 				
 				@Override
 				public void noFoundElement() {
-					final CantResolveElement err = new CantResolveElement(
+					final @NotNull CantResolveElement err = new CantResolveElement(
 					  "DeduceElementIdent: can't resolve element for " + identTableEntry,
 					  identTableEntry,
 					  generatedFunction);

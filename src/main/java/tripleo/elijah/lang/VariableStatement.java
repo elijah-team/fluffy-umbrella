@@ -9,6 +9,7 @@
 package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.lang2.ElElementVisitor;
 
@@ -85,7 +86,7 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 
 	// region annotations
 
-	List<AnnotationClause> annotations = null;
+	@Nullable List<AnnotationClause> annotations = null;
 
 	public void addAnnotation(final AnnotationClause a) {
 		if (annotations == null)

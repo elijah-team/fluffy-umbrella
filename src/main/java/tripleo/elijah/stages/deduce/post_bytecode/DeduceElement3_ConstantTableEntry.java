@@ -1,6 +1,7 @@
 package tripleo.elijah.stages.deduce.post_bytecode;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Element;
@@ -69,7 +70,7 @@ public class DeduceElement3_ConstantTableEntry implements IDeduceElement3 {
 	}
 
 	@Override
-	public DeduceElement3_Kind kind() {
+	public @NotNull DeduceElement3_Kind kind() {
 		return DeduceElement3_Kind.GEN_FN__CTE;
 	}
 

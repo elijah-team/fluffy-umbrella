@@ -164,7 +164,7 @@ public class DeduceElement3_VariableTableEntry implements IDeduceElement3 {
 		}
 
 		@Override
-		public void report(final PrintStream stream) {
+		public void report(final @NotNull PrintStream stream) {
 			stream.printf(_message());
 		}
 

@@ -21,7 +21,7 @@ public class CompilationFactory {
 		final StdErrSink errSink = new StdErrSink();
 		final IO io = new IO();
 
-		final CompilationImpl c = mkCompilation(errSink, io);
+		final @NotNull CompilationImpl c = mkCompilation(errSink, io);
 
 		c.testMapHooks(aMapHooks);
 

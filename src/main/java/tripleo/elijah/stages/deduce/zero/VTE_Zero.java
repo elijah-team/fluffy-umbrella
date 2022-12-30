@@ -4,9 +4,24 @@ import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.lang.*;
-import tripleo.elijah.stages.deduce.*;
-import tripleo.elijah.stages.gen_fn.*;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.stages.deduce.ClassInvocation;
+import tripleo.elijah.stages.deduce.DeduceLookupUtils;
+import tripleo.elijah.stages.deduce.DeducePhase;
+import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.ResolveError;
+import tripleo.elijah.stages.gen_fn.BaseTableEntry;
+import tripleo.elijah.stages.gen_fn.GenType;
+import tripleo.elijah.stages.gen_fn.GeneratedClass;
+import tripleo.elijah.stages.gen_fn.GenericElementHolder;
+import tripleo.elijah.stages.gen_fn.IdentTableEntry;
+import tripleo.elijah.stages.gen_fn.TypeTableEntry;
+import tripleo.elijah.stages.gen_fn.VariableTableEntry;
 import tripleo.elijah.util.Stupidity;
 
 public class VTE_Zero {
@@ -36,7 +51,7 @@ public class VTE_Zero {
 		}
 	}
 
-	public void fp_onChange__001(@NotNull final TypeTableEntry tte, final IdentTableEntry ite, @NotNull final DeduceTypes2 deduceTypes2, final ErrSink errSink) {
+	public void fp_onChange__001(@NotNull final TypeTableEntry tte, final IdentTableEntry ite, @NotNull final DeduceTypes2 deduceTypes2, final @NotNull ErrSink errSink) {
 		final OS_Type ty = tte.getAttached();
 
 		@Nullable OS_Element ele2 = null;
@@ -122,7 +137,7 @@ public class VTE_Zero {
 		}
 	}
 
-	private void vte_pot_size_is_1_USER_CLASS_TYPE(@NotNull final VariableTableEntry vte, @Nullable final OS_Type aTy, final DeduceTypes2 deduceTypes2, final IdentTableEntry ite, final ErrSink errSink, final DeducePhase phase) {
+	private void vte_pot_size_is_1_USER_CLASS_TYPE(@NotNull final VariableTableEntry vte, @Nullable final OS_Type aTy, final @NotNull DeduceTypes2 deduceTypes2, final IdentTableEntry ite, final ErrSink errSink, final DeducePhase phase) {
 		final ClassStatement klass = aTy.getClassOf();
 		@Nullable LookupResultList lrl = null;
 		try {

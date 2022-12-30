@@ -11,6 +11,7 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.ContextInfo;
 
@@ -74,7 +75,7 @@ public class LookupResultList {
 		return null; //throw new NotImplementedException();
 	}
 
-	private List<LookupResult> getMaxScoredResults(final List<Predicate<OS_Element>> l) {
+	private List<LookupResult> getMaxScoredResults(final @NotNull List<Predicate<OS_Element>> l) {
 		final Map<LookupResult, Integer> new_results = new HashMap<LookupResult, Integer>();
 		int maxScore = 0;
 

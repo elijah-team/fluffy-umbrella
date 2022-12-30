@@ -35,7 +35,7 @@ public class CtorReference {
 
 	private String ctorName = "";
 	private List<String> args;
-	List<CReference.Reference> refs = new ArrayList<CReference.Reference>();
+	final List<CReference.Reference> refs = new ArrayList<CReference.Reference>();
 	private GeneratedNode _resolved;
 
 	void addRef(String text, CReference.Ref type) {

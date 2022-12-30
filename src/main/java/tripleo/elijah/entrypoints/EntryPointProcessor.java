@@ -14,7 +14,7 @@ import tripleo.elijah.work.WorkList;
 public interface EntryPointProcessor {
 	void process();
 
-	static EntryPointProcessor dispatch(final EntryPoint ep, final DeducePhase aDeducePhase, final WorkList aWl, final GenerateFunctions aGenerateFunctions) {
+	static @NotNull EntryPointProcessor dispatch(final EntryPoint ep, final DeducePhase aDeducePhase, final WorkList aWl, final GenerateFunctions aGenerateFunctions) {
 		if (ep instanceof MainClassEntryPoint) {
 			return new EPP_MCEP((MainClassEntryPoint) ep, aDeducePhase, aWl, aGenerateFunctions);
 		} else if (ep instanceof ArbitraryFunctionEntryPoint) {

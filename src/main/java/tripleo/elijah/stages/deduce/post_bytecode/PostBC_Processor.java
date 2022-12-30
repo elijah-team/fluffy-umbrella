@@ -2,6 +2,7 @@ package tripleo.elijah.stages.deduce.post_bytecode;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Type;
@@ -41,7 +42,7 @@ public interface PostBC_Processor {
 
 	DeduceType3 getType(final ErrSink aErrSink1);
 
-	DeduceType3 doNoTypeAttached(final ErrSink errSink1);
+	@Nullable DeduceType3 doNoTypeAttached(final ErrSink errSink1);
 
 	abstract class __PostBC_Processor__VTE implements PostBC_Processor {
 		private static DeduceType3 doNoTypeAttached__zero_potential(final @NotNull VariableTableEntry vte, final Supplier<CantDecideType> cdt) {
@@ -96,12 +97,12 @@ public interface PostBC_Processor {
 		}
 
 		@Override
-		public DeduceType3 doNoTypeAttached(final ErrSink errSink1) {
-			@NotNull final DeduceType3             r;
-			final DeduceTypes2.DeduceClient1 deduceTypes2   = deduceTypes2();
-			final VariableTableEntry         vte            = vte();
-			final Supplier<CantDecideType>   cdt            = () -> new CantDecideType(vte, vte.potentialTypes());
-			final int                        potential_size = vte.potentialTypes().size();
+		public @Nullable DeduceType3 doNoTypeAttached(final ErrSink errSink1) {
+			@NotNull final DeduceType3 r;
+			final DeduceTypes2.DeduceClient1 deduceTypes2 = deduceTypes2();
+			final VariableTableEntry vte = vte();
+			final Supplier<CantDecideType> cdt = () -> new CantDecideType(vte, vte.potentialTypes());
+			final int potential_size = vte.potentialTypes().size();
 
 			switch (potential_size) {
 			case 0: // potential_size == 0

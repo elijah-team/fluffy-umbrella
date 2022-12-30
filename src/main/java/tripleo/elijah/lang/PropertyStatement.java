@@ -38,7 +38,7 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 		final FunctionDef functionDef = new FunctionDef(this, getContext());
 		functionDef.setName(Helpers.string_to_ident(String.format("<prop_set %s>", prop_name)));
 		functionDef.setSpecies(FunctionDef.Species.PROP_SET);
-		final FormalArgList fal = new FormalArgList();
+		final @NotNull FormalArgList fal = new FormalArgList();
 		final FormalArgListItem fali = fal.next();
 		fali.setName(Helpers.string_to_ident("Value"));
 		fali.setTypeName(this.typeName);

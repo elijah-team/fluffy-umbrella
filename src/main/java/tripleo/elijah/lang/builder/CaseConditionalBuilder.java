@@ -8,7 +8,11 @@
  */
 package tripleo.elijah.lang.builder;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.CaseConditional;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IExpression;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.Scope3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +27,8 @@ public class CaseConditionalBuilder extends ElBuilder {
 	private final List<Part> parts = new ArrayList<Part>();
 
 	class Part {
-		IExpression expr;
-		BaseScope scope;
+		final IExpression expr;
+		final BaseScope scope;
 
 		public Part(final IExpression expr, final BaseScope baseScope) {
 			this.expr = expr;

@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.contexts;
 
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang2.ElElementVisitor;
 
@@ -30,7 +31,7 @@ public class ClassContext extends Context {
 	private final Context _parent;
 
 	private boolean _didInheritance;
-	public Map<TypeName, ClassStatement> _inheritance = new HashMap<>();
+	public final Map<TypeName, ClassStatement> _inheritance = new HashMap<>();
 
 	public ClassContext(final Context aParent, final ClassStatement cls) {
 		_parent = aParent;
@@ -106,8 +107,8 @@ public class ClassContext extends Context {
 		if (!_didInheritance) {
 			for (final TypeName tn1 : carrier.classInheritance().tns) {
 //				System.out.println("1001 "+tn);
-				final NormalTypeName tn = (NormalTypeName)tn1;
-				final OS_Element best;
+				final NormalTypeName tn = (NormalTypeName) tn1;
+				final @Nullable OS_Element best;
 				final LookupResultList tnl = tn.getContext().lookup(tn.getName());
 //	    		System.out.println("1002 "+tnl.results());
 				best = tnl.chooseBest(null);

@@ -1,6 +1,7 @@
 package tripleo.elijah.comp;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.util.NotImplementedException;
 
 enum Stages {
@@ -20,9 +21,9 @@ enum Stages {
 		public void writeLogs(final ICompilationAccess aCompilationAccess) {
 			aCompilationAccess.writeLogs();
 		}
-		
+
 		@Override
-		public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
+		public @NotNull RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
 			return new DStageProcess(aCa, aPr);
 		}
 	},

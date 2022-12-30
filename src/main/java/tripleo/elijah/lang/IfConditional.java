@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.IfConditionalContext;
 import tripleo.elijah.lang2.ElElementVisitor;
 
@@ -64,7 +65,7 @@ public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 	}
 
 	public IfConditional elseif() {
-		final IfConditional elseifpart = new IfConditional(this);
+		final @NotNull IfConditional elseifpart = new IfConditional(this);
 		parts.add(elseifpart);
 		return elseifpart;
 	}

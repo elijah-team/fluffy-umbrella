@@ -15,8 +15,8 @@ import tripleo.elijah.lang.OS_Element;
  * Created 1/3/22 10:31 PM
  */
 public class DeclAnchor {
-	AnchorType anchorType;
-	OS_Element element;
+	final AnchorType anchorType;
+	final OS_Element element;
 	private IInvocation invocation;
 
 	public DeclAnchor(final OS_Element aElement, final AnchorType aAnchorType) {

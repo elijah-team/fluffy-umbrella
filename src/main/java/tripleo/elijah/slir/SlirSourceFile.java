@@ -9,6 +9,7 @@
  */
 package tripleo.elijah.slir;
 
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.lang.OS_Module;
 
@@ -48,9 +49,10 @@ public class SlirSourceFile {
 
 		/**
 		 * Where are we getting this from?
+		 *
 		 * @return
 		 */
-		public OS_Module getModule() {
+		public @Nullable OS_Module getModule() {
 			return null; // TODO implement me
 		}
 	}

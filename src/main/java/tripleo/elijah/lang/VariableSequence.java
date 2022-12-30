@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang2.ElElementVisitor;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 
 	private Context _ctx;
 	private OS_Element parent;
-	List<VariableStatement> stmts;
+	final List<VariableStatement> stmts;
 
 	@Deprecated public VariableSequence() {
 		stmts = new ArrayList<VariableStatement>();
@@ -76,7 +77,7 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 //		return (stmts.stream().map(n -> n.getName()).collect(Collectors.toList())).toString();
 	}
 
-	List<AnnotationClause> annotations = null;
+	@Nullable List<AnnotationClause> annotations = null;
 
 	public void addAnnotation(final AnnotationClause a) {
 		if (annotations == null)

@@ -87,7 +87,7 @@ public class CReference {
 				reference.getIdentIAPath(ia2, gf, Generate_Code_For_Method.AOG.GET, null);
 				final List<String> sl3 = gc.getArgumentStrings(gf, () -> new InstructionFixedList(instruction));
 				reference.args(sl3);
-				String path = reference.build();
+				@NotNull String path = reference.build();
 
 				sb.append(Emit.emit("/*427*/") + path + ";");
 			}
@@ -138,7 +138,7 @@ public class CReference {
 		},
 		MEMBER {
 			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
+			public void buildHelper(final Reference ref, final @NotNull BuildState sb) {
 				String text = "->vm" + ref.text;
 
 				final StringBuilder sb1 = new StringBuilder();
@@ -188,7 +188,7 @@ public class CReference {
 			@Override
 			public void buildHelper(final Reference ref, final BuildState sb) {
 				String text;
-				final String s = sb.toString();
+				final @NotNull String s = sb.toString();
 				text = String.format("%s(%s", ref.text, s);
 				sb.open = false;
 				if (!s.equals("")) sb.needs_comma = true;
@@ -197,9 +197,9 @@ public class CReference {
 		},
 		DIRECT_MEMBER {
 			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
+			public void buildHelper(final Reference ref, final @NotNull BuildState sb) {
 				String text;
-				text = Emit.emit("/*124*/")+"vsc->vm" + ref.text;
+				text = Emit.emit("/*124*/") + "vsc->vm" + ref.text;
 
 				final StringBuilder sb1 = new StringBuilder();
 

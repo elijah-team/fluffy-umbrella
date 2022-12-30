@@ -17,7 +17,7 @@ import antlr.Token;
  */
 public class GetItemExpression extends AbstractExpression { // TODO binary?
 
-	public IExpression index; // TODO what about multidimensional arrays?
+	public final IExpression index; // TODO what about multidimensional arrays?
 
 	public GetItemExpression(final IExpression ee, final IExpression expr) {
 		this.left    = ee;

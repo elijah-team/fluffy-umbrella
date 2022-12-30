@@ -13,19 +13,19 @@ import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.lang.NumericExpression;
 
 public class CaseChoiceNode {
-	
+
 	private final VariableReferenceNode _varref;
 	private final VariableReferenceNode3 varref3;
-	public ExpressionNode left;
-	public ScopeNode right;
+	public final ExpressionNode left;
+	public final ScopeNode right;
 	public final CaseHdrNode header;
 	private String _defaultName;
-	
+
 	public CaseChoiceNode(final NumericExpression expr1, final CaseHdrNode header) {
 		// TODO Auto-generated constructor stub
-		left=new ExpressionNode(expr1);
+		left = new ExpressionNode(expr1);
 		this.header = header;
-		right=null;
+		right = null;
 		_defaultName = null;
 		_varref = null;
 		varref3 = null;

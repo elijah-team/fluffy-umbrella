@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -37,9 +39,9 @@ public class ExpressionList implements Iterable<IExpression> {
 	public Collection<IExpression> expressions() {
 		return exprs;
 	}
-	
+
 	@Override
-	public Iterator<IExpression> iterator() {
+	public @NotNull Iterator<IExpression> iterator() {
 		return exprs.iterator();
 	}
 	

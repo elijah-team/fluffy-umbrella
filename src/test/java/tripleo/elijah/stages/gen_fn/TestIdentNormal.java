@@ -9,10 +9,18 @@
 package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.AccessBus;
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.IO;
+import tripleo.elijah.comp.PipelineLogic;
+import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.lang.*;
-import tripleo.elijah.stages.deduce.*;
+import tripleo.elijah.stages.deduce.ClassInvocation;
+import tripleo.elijah.stages.deduce.DeducePhase;
+import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.FoundElement;
+import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.logging.ElLog;
@@ -42,7 +50,7 @@ public class TestIdentNormal {
 //		GenerateFunctions generateFunctions = new GenerateFunctions(generatePhase, mod, pl);
 		final GenerateFunctions generateFunctions = generatePhase.getGenerateFunctions(mod);
 		final GeneratedFunction generatedFunction = new GeneratedFunction(fd);
-		final VariableSequence seq = new VariableSequence(ctx1);
+		final @NotNull VariableSequence seq = new VariableSequence(ctx1);
 		final VariableStatement vs = new VariableStatement(seq);
 		final IdentExpression x = IdentExpression.forString("x");
 		vs.setName(x);
@@ -99,7 +107,7 @@ public class TestIdentNormal {
 		final ElLog.Verbosity verbosity1 = new CompilationImpl(new StdErrSink(), new IO()).gitlabCIVerbosity();
 		final AccessBus ab = new AccessBus(comp);
 		final PipelineLogic pl = new PipelineLogic(ab);
-		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
+		final @NotNull GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		final DeducePhase phase = new DeducePhase(generatePhase, pl, verbosity1);
 
 		final GenerateFunctions generateFunctions = generatePhase.getGenerateFunctions(mod);

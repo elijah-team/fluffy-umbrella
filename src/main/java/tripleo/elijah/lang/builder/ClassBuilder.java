@@ -8,7 +8,15 @@
  */
 package tripleo.elijah.lang.builder;
 
-import tripleo.elijah.lang.*;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.lang.AnnotationClause;
+import tripleo.elijah.lang.ClassInheritance;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.ClassTypes;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.TypeNameList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +87,7 @@ public class ClassBuilder {
 		return _scope;
 	}
 
-	public ClassInheritance classInheritance() {
+	public @NotNull ClassInheritance classInheritance() {
 		return _inh;
 	}
 

@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,10 +19,10 @@ import java.util.List;
 
 public class FormalArgList {
 
-	public List<FormalArgListItem> falis=new ArrayList<FormalArgListItem>();
+	public final List<FormalArgListItem> falis = new ArrayList<FormalArgListItem>();
 
 	public FormalArgListItem next() {
-		final FormalArgListItem fali = new FormalArgListItem();
+		final @NotNull FormalArgListItem fali = new FormalArgListItem();
 		falis.add(fali);
 		return fali;
 	}

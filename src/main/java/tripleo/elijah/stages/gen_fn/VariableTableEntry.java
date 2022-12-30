@@ -11,6 +11,7 @@ package tripleo.elijah.stages.gen_fn;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
@@ -34,7 +35,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	private final String name;
 	public TypeTableEntry type;
 	public final VariableTableType vtt;
-	public @NotNull Map<Integer, TypeTableEntry> potentialTypes = new HashMap<Integer, TypeTableEntry>();
+	public final @NotNull Map<Integer, TypeTableEntry> potentialTypes = new HashMap<Integer, TypeTableEntry>();
 	public int tempNum = -1;
 	public ProcTableEntry constructable_pte;
 	public GenType genType = new GenType();
@@ -128,7 +129,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		return typeDeferred.isPending();
 	}
 
-	GenType _resolveTypeCalled = null;
+	public final DeduceLocalVariable dlv = new DeduceLocalVariable(this);
 	public void resolveType(final @NotNull GenType aGenType) {
 		if (_resolveTypeCalled != null) { // TODO what a hack
 			if (_resolveTypeCalled.resolved != null) {
@@ -182,19 +183,19 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		return constructableDeferred.promise();
 	}
 
-	DeferredObject<ProcTableEntry, Void, Void> constructableDeferred = new DeferredObject<>();
+	final DeferredObject<ProcTableEntry, Void, Void> constructableDeferred = new DeferredObject<>();
 
 	// endregion constructable
+	@Nullable GenType _resolveTypeCalled = null;
 
 	@Override
-	public String expectationString() {
+	public @NotNull String expectationString() {
 		return "VariableTableEntry{" +
-				"index=" + index +
-				", name='" + name + '\'' +
-				"}";
+		  "index=" + index +
+		  ", name='" + name + '\'' +
+		  "}";
 	}
 
-	public DeduceLocalVariable dlv = new DeduceLocalVariable(this);
 	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseGeneratedFunction aGeneratedFunction) {
 		dlv.setDeduceTypes2(aDeduceTypes2, aContext, aGeneratedFunction);
 	}

@@ -27,7 +27,7 @@ import java.util.List;
 public class CompilerInstructions {
 	private IndexingStatement _idx;
 	private GenerateStatement gen;
-	public List<LibraryStatementPart> lsps = new ArrayList<LibraryStatementPart>();
+	public final List<LibraryStatementPart> lsps = new ArrayList<LibraryStatementPart>();
 	private String filename;
 	private String name;
 

@@ -2,8 +2,16 @@
 
   package tripleo.elijjah;
 
-import antlr.*;
+import antlr.NoViableAltException;
+import antlr.ParserSharedInputState;
+import antlr.RecognitionException;
+import antlr.Token;
+import antlr.TokenBuffer;
+import antlr.TokenStream;
+import antlr.TokenStreamException;
 import antlr.collections.impl.BitSet;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.GenerateStatement;
 import tripleo.elijah.ci.IndexingStatement;
@@ -11,30 +19,29 @@ import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang2.BuiltInTypes;
 
-public class EzParser extends antlr.LLkParser       implements EzTokenTypes
- {
+public class EzParser extends antlr.LLkParser implements EzTokenTypes {
 
-IExpression expr;
-Context cur=null;
-public CompilerInstructions ci = new CompilerInstructions();
+	public final CompilerInstructions ci = new CompilerInstructions();
+	final Context cur = null;
+	IExpression expr;
 
-protected EzParser(final TokenBuffer tokenBuf, final int k) {
-  super(tokenBuf,k);
-  tokenNames = _tokenNames;
-}
+	protected EzParser(final TokenBuffer tokenBuf, final int k) {
+		super(tokenBuf, k);
+		tokenNames = _tokenNames;
+	}
 
-public EzParser(final TokenBuffer tokenBuf) {
-  this(tokenBuf,2);
-}
+	public EzParser(final TokenBuffer tokenBuf) {
+		this(tokenBuf, 2);
+	}
 
-protected EzParser(final TokenStream lexer, final int k) {
-  super(lexer,k);
-  tokenNames = _tokenNames;
-}
+	protected EzParser(final TokenStream lexer, final int k) {
+		super(lexer, k);
+		tokenNames = _tokenNames;
+	}
 
-public EzParser(final TokenStream lexer) {
-  this(lexer,2);
-}
+	public EzParser(final TokenStream lexer) {
+		this(lexer, 2);
+	}
 
 public EzParser(final ParserSharedInputState state) {
   super(state,2);
@@ -113,7 +120,7 @@ public EzParser(final ParserSharedInputState state) {
 	}
 	
 	public final void indexingStatement(
-			final IndexingStatement idx
+	  final @NotNull IndexingStatement idx
 	) throws RecognitionException, TokenStreamException {
 		
 		Token  i1 = null;
@@ -242,19 +249,18 @@ public EzParser(final ParserSharedInputState state) {
 	
 	public final LibraryStatementPart  library_statement_part() throws RecognitionException, TokenStreamException {
 		final LibraryStatementPart lsp;
-		
-		Token  i1 = null;
-		Token  dirname = null;
-		Token  i2 = null;
-		lsp=new LibraryStatementPart();
-		
+
+		@Nullable Token i1 = null;
+		Token dirname = null;
+		Token i2 = null;
+		lsp = new LibraryStatementPart();
+
 		try {      // for error handling
 			{
-			switch ( LA(1)) {
-			case IDENT:
-			{
-				i1 = LT(1);
-				match(IDENT);
+				switch (LA(1)) {
+				case IDENT: {
+					i1 = LT(1);
+					match(IDENT);
 				match(TOK_COLON);
 				if ( inputState.guessing==0 ) {
 					lsp.setName(i1);
@@ -314,32 +320,30 @@ public EzParser(final ParserSharedInputState state) {
 			}
 			}
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_4);
+				recover(ex, _tokenSet_4);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return lsp;
 	}
-	
-	public final IExpression  expression() throws RecognitionException, TokenStreamException {
+
+	public final @Nullable IExpression expression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		ee=null;
-		
+
+		ee = null;
+
 		try {      // for error handling
-			ee=assignmentExpression();
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+			ee = assignmentExpression();
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
@@ -1574,22 +1578,23 @@ public EzParser(final ParserSharedInputState state) {
 	
 	public final IExpression  postfixExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		Token  lb = null;
-		Token  rb = null;
-		Token  lp = null;
-		Token  in = null;
-		Token  de = null;
-		ee=null;
-		final TypeCastExpression tc=null;
-		final TypeName tn=null;
-				final IExpression e3=null;ExpressionList el=null;
-		
+
+		Token lb = null;
+		Token rb = null;
+		Token lp = null;
+		@Nullable Token in = null;
+		Token de = null;
+		ee = null;
+		final TypeCastExpression tc = null;
+		final TypeName tn = null;
+		final IExpression e3 = null;
+		ExpressionList el = null;
+
 		try {      // for error handling
-			ee=primaryExpression();
+			ee = primaryExpression();
 			{
-			_loop92:
-			do {
+				_loop92:
+				do {
 				if ((LA(1)==DOT) && (LA(2)==IDENT)) {
 					match(DOT);
 					{
@@ -1706,27 +1711,27 @@ public EzParser(final ParserSharedInputState state) {
 	}
 	
 	public final IExpression  primaryExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
-		
-		ee=null;
-		final FuncExpr ppc=null;IdentExpression e=null;ExpressionList el=null;
-		
+		@Nullable IExpression ee;
+
+		ee = null;
+		final @Nullable FuncExpr ppc = null;
+		IdentExpression e = null;
+		ExpressionList el = null;
+
 		try {      // for error handling
-			switch ( LA(1)) {
-			case IDENT:
-			{
-				e=ident();
-				if ( inputState.guessing==0 ) {
-					ee=e;
+			switch (LA(1)) {
+			case IDENT: {
+				e = ident();
+				if (inputState.guessing == 0) {
+					ee = e;
 				}
 				break;
 			}
 			case STRING_LITERAL:
 			case CHAR_LITERAL:
 			case NUM_INT:
-			case NUM_FLOAT:
-			{
-				ee=constantValue();
+			case NUM_FLOAT: {
+				ee = constantValue();
 				break;
 			}
 			case LITERAL_true:

@@ -9,6 +9,7 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.IfConditionalContext;
 
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class Scope3 implements Documentable {
 
 	private class Scope3StatementClosure implements StatementClosure {
 		@Override
-		public void constructExpression(final IExpression aExpr, final ExpressionList aO) {
+		public void constructExpression(final @NotNull IExpression aExpr, final ExpressionList aO) {
 			final ConstructStatement constructExpression = new ConstructStatement(parent, parent.getContext(), aExpr, null, aO); // TODO provide for name
 			add(constructExpression);
 		}

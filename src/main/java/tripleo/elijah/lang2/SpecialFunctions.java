@@ -9,6 +9,7 @@
 package tripleo.elijah.lang2;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.ExpressionKind;
 import tripleo.elijah.util.Stupidity;
 
@@ -39,7 +40,7 @@ public class SpecialFunctions {
 		}
 	}
 
-	public static String reverse_name(final @NotNull String pn) {
+	public static @Nullable String reverse_name(final @NotNull String pn) {
 		if (pn.equals("__gt__")) // README  explicitly disallow
 		{
 			return null;

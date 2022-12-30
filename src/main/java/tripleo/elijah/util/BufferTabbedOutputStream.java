@@ -19,7 +19,7 @@ public class BufferTabbedOutputStream  {
 
 	int tabwidth = 0;
 	private boolean do_tabs = false;
-	TextBuffer b = new DefaultBuffer("");
+	final TextBuffer b = new DefaultBuffer("");
 	private boolean _closed = false;
 
 	public Buffer getBuffer() {

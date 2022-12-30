@@ -11,6 +11,7 @@
  */
 package tripleo.elijah;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.GenBuffer;
 import tripleo.elijah.gen.CompilerContext;
 
@@ -23,7 +24,7 @@ import java.io.IOException;
 public class FindBothSourceFilesMain {
 
 	public static void main(final String[] args) {
-		final FindBothSourceFiles f=new FindBothSourceFiles(/*"xx"*/);
+		final @NotNull FindBothSourceFiles f = new FindBothSourceFiles(/*"xx"*/);
 		try {
 			f.compilerShouldFindBothParseFiles();
 		} catch (final Exception e) {

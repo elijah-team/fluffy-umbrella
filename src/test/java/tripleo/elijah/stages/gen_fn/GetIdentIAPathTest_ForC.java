@@ -95,12 +95,12 @@ public class GetIdentIAPathTest_ForC {
 
 		//		el1.add(vsq);
 		//
-		Compilation           compilation   = new CompilationImpl(new StdErrSink(), new IO());
-		final ElLog.Verbosity verbosity1    = compilation.gitlabCIVerbosity();
-		final PipelineLogic   pl            = new PipelineLogic(new AccessBus(compilation));
-		final GeneratePhase   generatePhase = new GeneratePhase(verbosity1, pl);
-		GenerateFunctions     gen           = generatePhase.getGenerateFunctions(mod);
-		Context               ctx           = mock(Context.class);
+		@NotNull Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
+		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
+		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
+		GenerateFunctions gen = generatePhase.getGenerateFunctions(mod);
+		Context ctx = mock(Context.class);
 		//
 		DotExpression expr = new DotExpression(x_ident, foo_ident);
 		InstructionArgument xx = gen.simplify_expression(expr, gf, ctx);
@@ -163,7 +163,7 @@ public class GetIdentIAPathTest_ForC {
 		Context ctx = mock(Context.class);
 		Context mockContext = mock(Context.class);
 
-		LookupResultList lrl = new LookupResultList();
+		@NotNull LookupResultList lrl = new LookupResultList();
 		LookupResultList lrl2 = new LookupResultList();
 
 		expect(mod.pullPackageName()).andReturn(OS_Package.default_package);
@@ -199,7 +199,7 @@ public class GetIdentIAPathTest_ForC {
 
 		//
 		final OS_Type type = classStatement.getOS_Type();
-		TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, x_ident);
+		@NotNull TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, x_ident);
 		int int_index = gf.addVariableTableEntry("x", VariableTableType.VAR, tte, mock(VariableStatement.class));
 		//
 		DotExpression expr = new DotExpression(x_ident, foo_ident);

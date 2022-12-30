@@ -34,7 +34,7 @@ public abstract class ClassOrNamespaceScope extends BaseScope {
 		}
 	}
 
-	List<IspPart> isps = new ArrayList<IspPart>();
+	final List<IspPart> isps = new ArrayList<IspPart>();
 
 	public void addInvariantStatementPart(final IdentExpression i1, final IExpression expr) {
 		isps.add(new IspPart(i1, expr));

@@ -23,7 +23,15 @@ import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.GenerateFiles;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.OutputFileFactoryParams;
-import tripleo.elijah.stages.instructions.*;
+import tripleo.elijah.stages.instructions.ConstTableIA;
+import tripleo.elijah.stages.instructions.FnCallArgs;
+import tripleo.elijah.stages.instructions.IdentIA;
+import tripleo.elijah.stages.instructions.Instruction;
+import tripleo.elijah.stages.instructions.InstructionArgument;
+import tripleo.elijah.stages.instructions.InstructionFixedList;
+import tripleo.elijah.stages.instructions.IntegerIA;
+import tripleo.elijah.stages.instructions.ProcIA;
+import tripleo.elijah.stages.instructions.VariableTableType;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.BufferTabbedOutputStream;
 import tripleo.elijah.util.Helpers;
@@ -169,7 +177,26 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		}
 	}
 
-	public void generate_constructor(GeneratedConstructor aGeneratedConstructor, GenerateResult gr, WorkList wl) {
+	static String getRealTargetName(final BaseGeneratedFunction gf, final VariableTableEntry varTableEntry) {
+		final String vte_name = varTableEntry.getName();
+		if (varTableEntry.vtt == VariableTableType.TEMP) {
+			if (varTableEntry.getName() == null) {
+				return "vt" + varTableEntry.tempNum;
+			} else {
+				return "vt" + varTableEntry.getName();
+			}
+		} else if (varTableEntry.vtt == VariableTableType.ARG) {
+			return "va" + vte_name;
+		} else if (SpecialVariables.contains(vte_name)) {
+			return SpecialVariables.get(vte_name);
+		} else if (isValue(gf, vte_name)) {
+			return "vsc->vsv";
+		} else {
+			return Emit.emit("/*879*/") + "vv" + vte_name;
+		}
+	}
+
+	public void generate_constructor(@NotNull GeneratedConstructor aGeneratedConstructor, GenerateResult gr, WorkList wl) {
 		generateCodeForConstructor(aGeneratedConstructor, gr, wl);
 		for (IdentTableEntry identTableEntry : aGeneratedConstructor.idte_list) {
 			if (identTableEntry.isResolved()) {
@@ -219,7 +246,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 			tosHdr.incr_tabs();
 			tosHdr.put_string_ln("int _tag;");
 			if (!decl.prim) {
-				for (GeneratedClass.VarTableEntry o : x.varTable){
+				for (GeneratedClass.@NotNull VarTableEntry o : x.varTable) {
 					final String typeName = getTypeNameGNCForVarTableEntry(o);
 					tosHdr.put_string_ln(String.format("%s vm%s;", typeName, o.nameToken));
 				}
@@ -291,6 +318,12 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		return typeName;
 	}
 
+	private void generateCodeForMethod(BaseGeneratedFunction gf, GenerateResult gr, WorkList aWorkList) {
+		if (gf.getFD() == null) return;
+		Generate_Code_For_Method gcfm = new Generate_Code_For_Method(this, LOG);
+		gcfm.generateCodeForMethod(gf, gr, aWorkList);
+	}
+
 	@Override
 	public void generate_namespace(GeneratedNamespace x, GenerateResult gr) {
 		if (x.generatedAlready) return;
@@ -326,7 +359,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 				// TODO multiple calls of namespace function (need if/else statement)
 				tos.put_string_ln(String.format("%s* R = GC_malloc(sizeof(%s));", class_name, class_name));
 //				tos.put_string_ln(String.format("R->_tag = %d;", class_code));
-				for (GeneratedNamespace.VarTableEntry o : x.varTable) {
+				for (GeneratedNamespace.@NotNull VarTableEntry o : x.varTable) {
 //					final String typeName = getTypeNameForVarTableEntry(o);
 					tosHdr.put_string_ln(String.format("R->vm%s = 0;", o.nameToken));
 				}
@@ -351,18 +384,6 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 			}
 		}
 		x.generatedAlready = true;
-	}
-
-	private void generateCodeForMethod(BaseGeneratedFunction gf, GenerateResult gr, WorkList aWorkList) {
-		if (gf.getFD() == null) return;
-		Generate_Code_For_Method gcfm = new Generate_Code_For_Method(this, LOG);
-		gcfm.generateCodeForMethod(gf, gr, aWorkList);
-	}
-
-	private void generateCodeForConstructor(GeneratedConstructor gf, GenerateResult gr, WorkList aWorkList) {
-		if (gf.getFD() == null) return;
-		Generate_Code_For_Method gcfm = new Generate_Code_For_Method(this, LOG);
-		gcfm.generateCodeForConstructor(gf, gr, aWorkList);
 	}
 
 	public GenerateResult resultsFromNodes(final List<GeneratedNode> aNodes, final WorkManager wm) {
@@ -778,6 +799,17 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		return gav.forClassInvocation(aInstruction, aClsinv, gf, LOG);
 	}
 
+	private void generateCodeForConstructor(@NotNull GeneratedConstructor gf, GenerateResult gr, WorkList aWorkList) {
+		if (gf.getFD() == null) return;
+		Generate_Code_For_Method gcfm = new Generate_Code_For_Method(this, LOG);
+		gcfm.generateCodeForConstructor(gf, gr, aWorkList);
+	}
+
+	String getRealTargetName(final BaseGeneratedFunction gf, final IntegerIA target, final Generate_Code_For_Method.AOG aog) {
+		final VariableTableEntry varTableEntry = gf.getVarTableEntry(target.getIndex());
+		return getRealTargetName(gf, varTableEntry);
+	}
+
 	@NotNull
 	String getAssignmentValue(VariableTableEntry value_of_this, final InstructionArgument value, final BaseGeneratedFunction gf) {
 		GetAssignmentValue gav = new GetAssignmentValue();
@@ -787,7 +819,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		}
 
 		if (value instanceof ConstTableIA) {
-			ConstTableIA constTableIA = (ConstTableIA) value;
+			@NotNull ConstTableIA constTableIA = (ConstTableIA) value;
 			return gav.ConstTableIA(constTableIA, gf);
 		}
 
@@ -802,35 +834,11 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		}
 
 		LOG.err(String.format("783 %s %s", value.getClass().getName(), value));
-		return ""+value;
+		return "" + value;
 	}
 
-	String getRealTargetName(final BaseGeneratedFunction gf, final IntegerIA target, final Generate_Code_For_Method.AOG aog) {
-		final VariableTableEntry varTableEntry = gf.getVarTableEntry(target.getIndex());
-		return getRealTargetName(gf, varTableEntry);
-	}
-
-	static String getRealTargetName(final BaseGeneratedFunction gf, final VariableTableEntry varTableEntry) {
-		final String vte_name = varTableEntry.getName();
-		if (varTableEntry.vtt == VariableTableType.TEMP) {
-			if (varTableEntry.getName() == null) {
-				return "vt" + varTableEntry.tempNum;
-			} else {
-				return "vt" + varTableEntry.getName();
-			}
-		} else if (varTableEntry.vtt == VariableTableType.ARG) {
-			return "va" + vte_name;
-		} else if (SpecialVariables.contains(vte_name)) {
-			return SpecialVariables.get(vte_name);
-		} else if (isValue(gf, vte_name)) {
-			return "vsc->vsv";
-		} else {
-			return Emit.emit("/*879*/")+"vv" + vte_name;
-		}
-	}
-
-	@NotNull List<String> getArgumentStrings(final BaseGeneratedFunction gf, final Supplier<IFixedList<InstructionArgument>> instructionSupplier) {
-		final List<String> sl3 = new ArrayList<String>();
+	@NotNull List<String> getArgumentStrings(final BaseGeneratedFunction gf, final @NotNull Supplier<IFixedList<InstructionArgument>> instructionSupplier) {
+		final @NotNull List<String> sl3 = new ArrayList<String>();
 		final int args_size = instructionSupplier.get().size();
 		for (int i = 1; i < args_size; i++) {
 			final InstructionArgument ia = instructionSupplier.get().get(i);

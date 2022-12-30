@@ -8,11 +8,16 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.AccessBus;
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.IO;
+import tripleo.elijah.comp.PipelineLogic;
+import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.stages.deduce.DeducePhase;
@@ -248,12 +253,12 @@ public class TestGenFunction {
 			c.use(ci, false);
 		}
 
-		Compilation               compilation   = new CompilationImpl(new StdErrSink(), new IO());
-		final ElLog.Verbosity     verbosity1    = compilation.gitlabCIVerbosity();
-		final PipelineLogic       pl            = new PipelineLogic(new AccessBus(compilation));
-		final GeneratePhase       generatePhase = new GeneratePhase(verbosity1, pl);
-		final GenerateFunctions   gfm           = generatePhase.getGenerateFunctions(m);
-		final List<GeneratedNode> lgc           = new ArrayList<>();
+		Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
+		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
+		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
+		final GenerateFunctions gfm = generatePhase.getGenerateFunctions(m);
+		final @NotNull List<GeneratedNode> lgc = new ArrayList<>();
 		gfm.generateAllTopLevelClasses(lgc);
 
 		DeducePhase dp = new DeducePhase(generatePhase, pl, verbosity1);

@@ -60,7 +60,7 @@ public class Generate_Code_For_Method {
 		LOG = aLog; // use log from GenerateC
 	}
 
-	GenerateC gc;
+	final GenerateC gc;
 
 	final BufferTabbedOutputStream tosHdr = new BufferTabbedOutputStream();
 	final BufferTabbedOutputStream tos = new BufferTabbedOutputStream();
@@ -77,7 +77,7 @@ public class Generate_Code_For_Method {
 		tos.close();
 		tosHdr.flush();
 		tosHdr.close();
-		Buffer buf = tos.getBuffer();
+		@NotNull Buffer buf = tos.getBuffer();
 //		LOG.info(buf.getText());
 		gr.addFunction(gf, buf, GenerateResult.TY.IMPL, gf.module().getLsp());
 		Buffer bufHdr = tosHdr.getBuffer();
@@ -673,7 +673,7 @@ public class Generate_Code_For_Method {
 				}
 			} else {
 //				LOG.err("8885 " +ty.attached);
-				final OS_Type attached = ty.getAttached();
+				final @Nullable OS_Type attached = ty.getAttached();
 				final String z;
 				if (attached != null)
 					z = gc.getTypeName(attached);
@@ -719,11 +719,11 @@ public class Generate_Code_For_Method {
 				final GeneratedClass          st  = (GeneratedClass) parent;
 
 				@NotNull final C_HeaderString chs = C_HeaderString.forClass(st,
-																			() -> gc.getTypeName(st),
-																			return_type,
-																			name,
-																			args_string,
-																			LOG);//(ErrSink) LOG);
+				  () -> gc.getTypeName(st),
+				  return_type,
+				  name,
+				  args_string,
+				  LOG);
 
 				result = chs.getResult();
 			} else if (parent instanceof GeneratedNamespace) {
@@ -974,7 +974,7 @@ public class Generate_Code_For_Method {
 		}
 
 		@Override
-		public void report(final PrintStream stream) {
+		public void report(final @NotNull PrintStream stream) {
 			stream.println(_message());
 		}
 	}

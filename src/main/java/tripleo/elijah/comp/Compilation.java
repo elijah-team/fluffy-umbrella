@@ -42,7 +42,13 @@ import tripleo.elijjah.EzParser;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 public abstract class Compilation {
@@ -57,7 +63,7 @@ public abstract class Compilation {
 	private       int                               _packageCode = 1;
 	public final  List<CompilerInstructions>        cis          = new ArrayList<CompilerInstructions>();
 
-	public List<ElLog> elLogs = new LinkedList<ElLog>();
+	public final List<ElLog> elLogs = new LinkedList<ElLog>();
 
 	//
 	//
@@ -209,7 +215,7 @@ public abstract class Compilation {
 		return System.getenv("GITLAB_CI") != null;
 	}
 
-	private void writeLogs(final boolean aSilent, final List<ElLog> aLogs) {
+	private void writeLogs(final boolean aSilent, final @NotNull List<ElLog> aLogs) {
 		final Multimap<String, ElLog> logMap = ArrayListMultimap.create();
 		if (true) {
 			for (final ElLog deduceLog : aLogs) {
@@ -235,7 +241,7 @@ public abstract class Compilation {
 		if (list != null) {
 			for (final String file_name : list) {
 				try {
-					final File file = new File(directory, file_name);
+					final @NotNull File file = new File(directory, file_name);
 					final CompilerInstructions ezFile = parseEzFile(file, file.toString(), eee);
 					if (ezFile != null)
 						R.add(ezFile);
@@ -326,7 +332,7 @@ public abstract class Compilation {
 		}
 	}
 
-	public OS_Module realParseElijjahFile(final String f, final File file, final boolean do_out) throws Exception {
+	public OS_Module realParseElijjahFile(final String f, final @NotNull File file, final boolean do_out) throws Exception {
 		final String absolutePath = file.getCanonicalFile().toString();
 		if (fn2m.containsKey(absolutePath)) { // don't parse twice
 			return fn2m.get(absolutePath);
@@ -382,7 +388,7 @@ public abstract class Compilation {
 		final EzParser parser = new EzParser(lexer);
 		parser.setFilename(f);
 		parser.program();
-		final CompilerInstructions instructions = parser.ci;
+		final @NotNull CompilerInstructions instructions = parser.ci;
 		return instructions;
 	}
 
@@ -403,7 +409,7 @@ public abstract class Compilation {
 	}
 
 	public OS_Module findPrelude(final String prelude_name) {
-		final File local_prelude = new File("lib_elijjah/lib-"+prelude_name+"/Prelude.elijjah");
+		final @NotNull File local_prelude = new File("lib_elijjah/lib-" + prelude_name + "/Prelude.elijjah");
 		if (local_prelude.exists()) {
 			try {
 				return realParseElijjahFile(local_prelude.getName(), local_prelude, false);
@@ -531,7 +537,7 @@ public abstract class Compilation {
 	}
 
 	@Deprecated
-	public List<OS_Module> getModules() {
+	public @NotNull List<OS_Module> getModules() {
 		return modules;
 	}
 
@@ -545,7 +551,7 @@ public abstract class Compilation {
 		private boolean _addToCompilation = false;
 		private String _fn = null;
 
-		public ModuleBuilder(Compilation aCompilation) {
+		public ModuleBuilder(@NotNull Compilation aCompilation) {
 //          compilation = aCompilation;
 			mod = new OS_Module();
 			mod.setParent(aCompilation);

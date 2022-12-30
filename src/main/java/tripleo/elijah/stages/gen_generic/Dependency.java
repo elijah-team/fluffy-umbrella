@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.gen_generic;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.gen_fn.AbstractDependencyTracker;
@@ -63,8 +64,8 @@ public class Dependency {
 			}
 		}
 	}
-	
-	public Set<Dependency> getNotedDeps() {
+
+	public @NotNull Set<Dependency> getNotedDeps() {
 		return deps;
 	}
 }

@@ -21,8 +21,8 @@ import java.util.List;
  * Created 12/23/20 1:40 AM
  */
 public class IfConditionalBuilder extends ElBuilder {
-	public Doublet base_expr = new Doublet();
-	public Doublet else_part = new Doublet();
+	public final Doublet base_expr = new Doublet();
+	public final Doublet else_part = new Doublet();
 
 	private Context _context;
 
@@ -36,10 +36,12 @@ public class IfConditionalBuilder extends ElBuilder {
 		return doublet;
 	}
 
+	final List<Doublet> doubles = new ArrayList<Doublet>();
+
 	public static class Doublet {
 		IExpression expr;
-		List<ElBuilder> items = new ArrayList<ElBuilder>();
-		IfConditionalScope _scope = new IfConditionalScope();
+		final List<ElBuilder> items = new ArrayList<ElBuilder>();
+		final IfConditionalScope _scope = new IfConditionalScope();
 
 		public void expr(final IExpression expr) {
 			this.expr = expr;
@@ -49,8 +51,6 @@ public class IfConditionalBuilder extends ElBuilder {
 			return _scope;
 		}
 	}
-
-	List<Doublet> doubles = new ArrayList<Doublet>();
 
 	@Override
 	protected IfConditional build() {

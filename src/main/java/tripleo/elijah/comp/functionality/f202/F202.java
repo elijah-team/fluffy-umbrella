@@ -21,10 +21,10 @@ import java.util.Collection;
  */
 public class F202 {
 	private final ErrSink errSink;
-	GetLogDirectoryBehavior gld;
-	GetLogNameBehavior      gln;
-	ProcessLogEntryBehavior ple;
-	ProgressBehavior        pre;
+	final GetLogDirectoryBehavior gld;
+	final GetLogNameBehavior gln;
+	final ProcessLogEntryBehavior ple;
+	final ProgressBehavior pre;
 
 	public F202(final ErrSink aErrSink, final Compilation c) {
 		errSink = aErrSink;

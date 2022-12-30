@@ -1,5 +1,6 @@
 package tripleo.elijah.stages.translate;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.util.TabbedOutputStream;
@@ -133,9 +134,9 @@ public class TranslateModule {
 		}
 	}
 
-	private void put_function_def(final FunctionDef functionDef, final TabbedOutputStream w) throws IOException {
+	private void put_function_def(final FunctionDef functionDef, final @NotNull TabbedOutputStream w) throws IOException {
 		for (final FunctionItem item : functionDef.getItems()) {
-			System.out.println("8003 "+item);
+			System.out.println("8003 " + item);
 			if (item instanceof AliasStatement) {
 
 			} else if (item instanceof CaseConditional) {

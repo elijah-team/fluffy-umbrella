@@ -72,7 +72,7 @@ public class ConstructStatement implements FunctionItem, StatementItem, OS_Eleme
 		return _expr;
 	}
 
-	public ExpressionList getArgs() {
+	public @Nullable ExpressionList getArgs() {
 		return _args;
 	}
 }

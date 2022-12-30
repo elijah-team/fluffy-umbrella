@@ -55,7 +55,7 @@ public class Helpers {
 		return qualidentToDotExpression2(q.parts(), 1);
 	}
 
-	public static IExpression qualidentToDotExpression2(@NotNull final List<IdentExpression> ts) {
+	public static @Nullable IExpression qualidentToDotExpression2(@NotNull final List<IdentExpression> ts) {
 		return qualidentToDotExpression2(ts, 1);
 	}
 
@@ -99,7 +99,7 @@ public class Helpers {
 				sb.append(separator);
 			}
 			final String ss = sb.toString();
-			final String substring = separator.substring(0, ss.length() - separator.length());
+			final @NotNull String substring = separator.substring(0, ss.length() - separator.length());
 			return substring;
 		}
 		// since Java 1.8
@@ -137,10 +137,10 @@ public class Helpers {
 	}
 
 	@Nullable
-	public static String getHashForFilenameJava(final String aFilename, final ErrSink aErrSink) throws IOException {
+	public static String getHashForFilenameJava(final @NotNull String aFilename, final ErrSink aErrSink) throws IOException {
 		final File file = new File(aFilename);
 		final long size = file.length();
-		final byte[] ba = new byte[(int)size];  // README Counting on reasonable sizes here
+		final byte[] ba = new byte[(int) size];  // README Counting on reasonable sizes here
 		FileInputStream bb = null;
 		try {
 			bb = new FileInputStream(file);

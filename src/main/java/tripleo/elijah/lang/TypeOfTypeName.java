@@ -1,5 +1,6 @@
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.stages.deduce.DeduceLookupUtils;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.ResolveError;
@@ -50,7 +51,7 @@ public class TypeOfTypeName implements TypeName {
 		return _ctx;
 	}
 
-	public TypeName resolve(final Context ctx, final DeduceTypes2 deduceTypes2) throws ResolveError {
+	public TypeName resolve(final @NotNull Context ctx, final DeduceTypes2 deduceTypes2) throws ResolveError {
 //		System.out.println(_typeOf.toString());
 		final LookupResultList lrl = DeduceLookupUtils.lookupExpression(_typeOf, ctx, deduceTypes2);
 		final OS_Element best = lrl.chooseBest(null);

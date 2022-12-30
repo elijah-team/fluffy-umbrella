@@ -10,7 +10,11 @@ package tripleo.elijah.stages.generate;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.stages.gen_fn.*;
+import tripleo.elijah.stages.gen_fn.GeneratedClass;
+import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
+import tripleo.elijah.stages.gen_fn.GeneratedFunction;
+import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
+import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 
@@ -27,7 +31,7 @@ public class ElSystem {
 	public boolean verbose = true;
 
 	public void generateOutputs(@NotNull final GenerateResult gr) {
-		final OutputStrategyC outputStrategyC = new OutputStrategyC(this.outputStrategy);
+		final @NotNull OutputStrategyC outputStrategyC = new OutputStrategyC(this.outputStrategy);
 
 		for (final GenerateResultItem ab : gr.results()) {
 			final String s = generateOutputs_Internal(ab.node, ab.ty, outputStrategyC);

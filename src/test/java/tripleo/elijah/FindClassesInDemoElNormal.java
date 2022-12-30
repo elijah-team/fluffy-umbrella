@@ -8,6 +8,7 @@
  */
 package tripleo.elijah;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
@@ -46,8 +47,8 @@ public class FindClassesInDemoElNormal {
 	@Test
 	public final void testListFolders() throws Exception {
 		final List<String> args = Helpers.List_of("test/demo-el-normal/listfolders/", "-sE");
-		final ErrSink      eee  = new StdErrSink();
-		final Compilation  c    = new CompilationImpl(eee, new IO());
+		final ErrSink eee = new StdErrSink();
+		final @NotNull Compilation c = new CompilationImpl(eee, new IO());
 
 		c.feedCmdLine(args);
 

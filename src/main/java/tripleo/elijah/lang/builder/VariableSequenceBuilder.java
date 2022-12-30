@@ -8,7 +8,13 @@
  */
 package tripleo.elijah.lang.builder;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IExpression;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.TypeModifiers;
+import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.lang.VariableSequence;
+import tripleo.elijah.lang.VariableStatement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +29,7 @@ public class VariableSequenceBuilder extends ElBuilder {
 	private TypeModifiers def = null;
 
 	private Context _context;
-	List<Triple> triples = new ArrayList<Triple>();
+	final List<Triple> triples = new ArrayList<Triple>();
 
 	public void defaultModifiers(final TypeModifiers modifiers) {
 		def = modifiers;
@@ -38,9 +44,9 @@ public class VariableSequenceBuilder extends ElBuilder {
 	}
 
 	static class Triple {
-		IExpression _initial;
-		IdentExpression _name;
-		TypeName _tn;
+		final IExpression _initial;
+		final IdentExpression _name;
+		final TypeName _tn;
 
 		public Triple(final IExpression _initial, final IdentExpression _name, final TypeName _tn) {
 			this._initial = _initial;

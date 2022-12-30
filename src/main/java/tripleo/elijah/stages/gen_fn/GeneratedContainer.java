@@ -13,7 +13,12 @@ import org.jdeferred2.DoneCallback;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.IExpression;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.lang.VariableStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,31 +30,19 @@ import java.util.List;
 public interface GeneratedContainer extends GeneratedNode {
 	OS_Element getElement();
 
-	VarTableEntry getVariable(String aVarName);
+	@Nullable VarTableEntry getVariable(String aVarName);
 
 	class VarTableEntry {
 		public final VariableStatement vs;
 		public final IdentExpression nameToken;
 		public final IExpression initialValue;
 		private final OS_Element parent;
-		public DeferredObject<UpdatePotentialTypesCB, Void, Void> updatePotentialTypesCBPromise = new DeferredObject<>();
-		TypeName typeName;
+		public final DeferredObject<UpdatePotentialTypesCB, Void, Void> updatePotentialTypesCBPromise = new DeferredObject<>();
+		public final List<ConnectionPair> connectionPairs = new ArrayList<>();
 		public OS_Type varType;
-		List<TypeTableEntry> potentialTypes = new ArrayList<TypeTableEntry>();
+		final TypeName typeName;
 		private GeneratedNode _resolvedType;
-
-		public VarTableEntry(final VariableStatement aVs,
-							 final @NotNull IdentExpression aNameToken,
-							 final IExpression aInitialValue,
-							 final @NotNull TypeName aTypeName,
-							 final @NotNull OS_Element aElement) {
-			vs              = aVs;
-			nameToken       = aNameToken;
-			initialValue    = aInitialValue;
-			typeName        = aTypeName;
-			varType         = new OS_Type(typeName);
-			parent          = aElement;
-		}
+		final List<TypeTableEntry> potentialTypes = new ArrayList<TypeTableEntry>();
 
 		public void addPotentialTypes(@NotNull final Collection<TypeTableEntry> aPotentialTypes) {
 			potentialTypes.addAll(aPotentialTypes);
@@ -72,7 +65,18 @@ public interface GeneratedContainer extends GeneratedNode {
 			connectionPairs.add(new ConnectionPair(aVte, aConstructor));
 		}
 
-		public List<ConnectionPair> connectionPairs = new ArrayList<>();
+		public VarTableEntry(final VariableStatement aVs,
+		                     final @NotNull IdentExpression aNameToken,
+		                     final IExpression aInitialValue,
+		                     final @NotNull TypeName aTypeName,
+		                     final @NotNull OS_Element aElement) {
+			vs = aVs;
+			nameToken = aNameToken;
+			initialValue = aInitialValue;
+			typeName = aTypeName;
+			varType = new OS_Type(typeName);
+			parent = aElement;
+		}
 
 		public interface UpdatePotentialTypesCB {
 			void call(final @NotNull GeneratedContainer aGeneratedContainer);

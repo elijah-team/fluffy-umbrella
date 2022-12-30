@@ -21,7 +21,7 @@ public class ConstructorDef extends BaseFunctionDef {
 	public static final IdentExpression emptyConstructorName = Helpers.string_to_ident("<>");
 
 	// TODO override name() ??
-	public static ConstructorDef defaultVirtualCtor = new ConstructorDef(null, null, null);
+	public static final ConstructorDef defaultVirtualCtor = new ConstructorDef(null, null, null);
 
 	private final OS_Element parent;
 

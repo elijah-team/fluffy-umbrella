@@ -4,6 +4,7 @@
 
 import antlr.*;
 import antlr.collections.impl.BitSet;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -92,7 +93,7 @@ public Token nextToken() throws TokenStreamException {
 	Token theRetToken=null;
 tryAgain:
 	for (;;) {
-		final Token _token = null;
+		final @Nullable Token _token = null;
 		int _ttype = Token.INVALID_TYPE;
 		resetText();
 		try {   // for char stream error handling
@@ -508,14 +509,16 @@ tryAgain:
 	}
 	
 	public final void mBECOMES(final boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		final int _ttype; Token _token=null; final int _begin=text.length();
+		final int _ttype;
+		@Nullable Token _token = null;
+		final int _begin = text.length();
 		_ttype = BECOMES;
 		int _saveIndex;
-		
+
 		match('=');
-		if ( _createToken && _token==null && _ttype!=Token.SKIP ) {
+		if (_createToken && _token == null && _ttype != Token.SKIP) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()-_begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
@@ -985,14 +988,16 @@ tryAgain:
 	}
 	
 	public final void mSEMI(final boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		final int _ttype; Token _token=null; final int _begin=text.length();
+		final int _ttype;
+		@Nullable Token _token = null;
+		final int _begin = text.length();
 		_ttype = SEMI;
 		int _saveIndex;
-		
+
 		match(';');
-		if ( _createToken && _token==null && _ttype!=Token.SKIP ) {
+		if (_createToken && _token == null && _ttype != Token.SKIP) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()-_begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
@@ -1904,23 +1909,22 @@ tryAgain:
 	}
 	
 	protected final void mFLOAT_SUFFIX(final boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		final int _ttype; Token _token=null; final int _begin=text.length();
+		final int _ttype;
+		@Nullable Token _token = null;
+		final int _begin = text.length();
 		_ttype = FLOAT_SUFFIX;
 		int _saveIndex;
-		
-		switch ( LA(1)) {
-		case 'f':
-		{
+
+		switch (LA(1)) {
+		case 'f': {
 			match('f');
 			break;
 		}
-		case 'F':
-		{
+		case 'F': {
 			match('F');
 			break;
 		}
-		case 'd':
-		{
+		case 'd': {
 			match('d');
 			break;
 		}

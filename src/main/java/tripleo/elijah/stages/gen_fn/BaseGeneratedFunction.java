@@ -26,7 +26,11 @@ import tripleo.elijah.util.Holder;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.util.range.Range;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 
@@ -38,14 +42,14 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	public FunctionInvocation fi;
 	private int code = 0;
 	private final List<Label> labelList = new ArrayList<Label>();
-	public @NotNull List<Instruction> instructionsList = new ArrayList<Instruction>();
-	public @NotNull List<Integer> deferred_calls = new ArrayList<Integer>();
+	public final @NotNull List<Instruction> instructionsList = new ArrayList<Instruction>();
+	public final @NotNull List<Integer> deferred_calls = new ArrayList<Integer>();
 	private int instruction_index = 0;
-	public @NotNull List<ConstantTableEntry> cte_list = new ArrayList<ConstantTableEntry>();
-	public @NotNull List<VariableTableEntry> vte_list = new ArrayList<VariableTableEntry>();
-	public @NotNull List<ProcTableEntry> prte_list = new ArrayList<ProcTableEntry>();
-	public @NotNull List<TypeTableEntry> tte_list = new ArrayList<TypeTableEntry>();
-	public @NotNull List<IdentTableEntry> idte_list = new ArrayList<IdentTableEntry>();
+	public final @NotNull List<ConstantTableEntry> cte_list = new ArrayList<ConstantTableEntry>();
+	public final @NotNull List<VariableTableEntry> vte_list = new ArrayList<VariableTableEntry>();
+	public final @NotNull List<ProcTableEntry> prte_list = new ArrayList<ProcTableEntry>();
+	public final @NotNull List<TypeTableEntry> tte_list = new ArrayList<TypeTableEntry>();
+	public final @NotNull List<IdentTableEntry> idte_list = new ArrayList<IdentTableEntry>();
 	private int label_count = 0;
 	private int _nextTemp = 0;
 	private GeneratedNode genClass;
@@ -280,22 +284,22 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return null;
 	}
 
+	final Map<OS_Element, DeduceElement> elements = new HashMap<OS_Element, DeduceElement>();
+
 	public @NotNull InstructionArgument get_assignment_path(@NotNull final IExpression expression,
 	                                                        @NotNull final GenerateFunctions generateFunctions,
-	                                                        final Context context) {
+	                                                        final @NotNull Context context) {
 		switch (expression.getKind()) {
-		case DOT_EXP:
-		{
+		case DOT_EXP: {
 			final DotExpression de = (DotExpression) expression;
 			final InstructionArgument left_part = get_assignment_path(de.getLeft(), generateFunctions, context);
 			return get_assignment_path(left_part, de.getRight(), generateFunctions, context);
 		}
 		case QIDENT:
 			throw new NotImplementedException();
-		case PROCEDURE_CALL:
-			{
-				final ProcedureCallExpression pce = (ProcedureCallExpression) expression;
-				if (pce.getLeft() instanceof IdentExpression) {
+		case PROCEDURE_CALL: {
+			final ProcedureCallExpression pce = (ProcedureCallExpression) expression;
+			if (pce.getLeft() instanceof IdentExpression) {
 					final IdentExpression identExpression = (IdentExpression) pce.getLeft();
 					final int idte_index = addIdentTableEntry(identExpression, identExpression.getContext());
 					final IdentIA identIA = new IdentIA(idte_index, this);
@@ -322,15 +326,26 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		}
 	}
 
+	public int nextTemp() {
+		return ++_nextTemp;
+	}
+
+	public @Nullable Label findLabel(final int index) {
+		for (final Label label : labelList) {
+			if (label.getIndex() == index)
+				return label;
+		}
+		return null;
+	}
+
 	private @NotNull InstructionArgument get_assignment_path(@NotNull final InstructionArgument prev,
-															 @NotNull final IExpression expression,
-															 @NotNull final GenerateFunctions generateFunctions,
-															 @NotNull final Context context) {
+	                                                         @NotNull final IExpression expression,
+	                                                         @NotNull final GenerateFunctions generateFunctions,
+	                                                         @NotNull final Context context) {
 		switch (expression.getKind()) {
-		case DOT_EXP:
-		{
+		case DOT_EXP: {
 			final DotExpression de = (DotExpression) expression;
-			final InstructionArgument left_part = get_assignment_path(de.getLeft(), generateFunctions, context);
+			final @NotNull InstructionArgument left_part = get_assignment_path(de.getLeft(), generateFunctions, context);
 			if (left_part instanceof IdentIA) {
 				((IdentIA)left_part).setPrev(prev);
 //				getIdentTableEntry(to_int(left_part)).addStatusListener(new DeduceTypes2.FoundParent());
@@ -357,20 +372,6 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 			throw new IllegalStateException("Unexpected value: " + expression.getKind());
 		}
 	}
-
-	public int nextTemp() {
-		return ++_nextTemp;
-	}
-
-	public @Nullable Label findLabel(final int index) {
-		for (final Label label : labelList) {
-			if (label.getIndex() == index)
-				return label;
-		}
-		return null;
-	}
-
-	public abstract VariableTableEntry getSelf();
 
 	/**
 	 * Returns first {@link IdentTableEntry} that matches expression
@@ -454,7 +455,9 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return toString();
 	}
 
-	public void resolveTypeDeferred(final GenType aType) {
+	public abstract @Nullable VariableTableEntry getSelf();
+
+	public void resolveTypeDeferred(final @NotNull GenType aType) {
 		if (typeDeferred.isPending())
 			typeDeferred.resolve(aType);
 		else {
@@ -468,8 +471,6 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 			System.err.printf("Trying to resolve function twice 1) %s 2) %s%n", holder.get().asString(), aType.asString());
 		}
 	}
-
-	Map<OS_Element, DeduceElement> elements = new HashMap<OS_Element, DeduceElement>();
 	public void addElement(final OS_Element aElement, final DeduceElement aDeduceElement) {
 		elements.put(aElement, aDeduceElement);
 	}

@@ -8,7 +8,12 @@
  */
 package tripleo.elijah.lang.builder;
 
-import tripleo.elijah.lang.*;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IExpression;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.MatchConditional;
+import tripleo.elijah.lang.TypeName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,14 +25,7 @@ public class MatchConditionalBuilder extends ElBuilder {
 	private Context _context;
 	private IExpression expr;
 
-	@Override
-	protected MatchConditional build() {
-		final MatchConditional matchConditional = new MatchConditional(_parent, _context);
-		matchConditional.expr(expr);
-
-		matchConditional.postConstruct();
-		return matchConditional;
-	}
+	final List<FakeMC1> parts = new ArrayList<FakeMC1>();
 
 	@Override
 	protected void setContext(final Context context) {
@@ -87,6 +85,15 @@ public class MatchConditionalBuilder extends ElBuilder {
 		}
 	}
 
+	@Override
+	protected @NotNull MatchConditional build() {
+		final MatchConditional matchConditional = new MatchConditional(_parent, _context);
+		matchConditional.expr(expr);
+
+		matchConditional.postConstruct();
+		return matchConditional;
+	}
+
 	class ValNormal implements FakeMC1 {
 
 		private final IdentExpression valMatch;
@@ -95,6 +102,7 @@ public class MatchConditionalBuilder extends ElBuilder {
 		public ValNormal(final IdentExpression i1) {
 			this.valMatch = i1;
 		}
+
 		public BaseScope scope() {
 			final BaseScope baseScope = new BaseScope() {
 			};
@@ -102,8 +110,6 @@ public class MatchConditionalBuilder extends ElBuilder {
 			return baseScope;
 		}
 	}
-
-	List<FakeMC1> parts = new ArrayList<FakeMC1>();
 
 	public BaseScope typeMatchscope(final IdentExpression i1, final TypeName tn) {
 		final TypeMatch typeMatch = new TypeMatch(i1, tn);

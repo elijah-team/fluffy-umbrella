@@ -9,7 +9,14 @@
 package tripleo.elijah.lang.builder;
 
 import antlr.Token;
-import tripleo.elijah.lang.*;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.lang.AnnotationClause;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.Documentable;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.NamespaceStatement;
+import tripleo.elijah.lang.NamespaceTypes;
+import tripleo.elijah.lang.OS_Element;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +39,7 @@ public class NamespaceStatementBuilder extends ElBuilder implements Documentable
 
 	@Override
 	public NamespaceStatement build() {
-		final NamespaceStatement cs = new NamespaceStatement(_parent, _parent_context);
+		final @NotNull NamespaceStatement cs = new NamespaceStatement(_parent, _parent_context);
 		cs.setType(_type);
 		cs.setName(_name);
 		for (final AnnotationClause annotation : annotations) {

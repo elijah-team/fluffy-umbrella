@@ -4,6 +4,7 @@
 
 import antlr.*;
 import antlr.collections.impl.BitSet;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -703,14 +704,16 @@ tryAgain:
 	}
 	
 	public final void mSR(final boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		final int _ttype; Token _token=null; final int _begin=text.length();
+		final int _ttype;
+		@Nullable Token _token = null;
+		final int _begin = text.length();
 		_ttype = SR;
 		int _saveIndex;
-		
+
 		match(">>");
-		if ( _createToken && _token==null && _ttype!=Token.SKIP ) {
+		if (_createToken && _token == null && _ttype != Token.SKIP) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()-_begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}
@@ -950,14 +953,16 @@ tryAgain:
 	}
 	
 	public final void mANNOT(final boolean _createToken) throws RecognitionException, CharStreamException, TokenStreamException {
-		final int _ttype; Token _token=null; final int _begin=text.length();
+		final int _ttype;
+		@Nullable Token _token = null;
+		final int _begin = text.length();
 		_ttype = ANNOT;
 		int _saveIndex;
-		
+
 		match("#[");
-		if ( _createToken && _token==null && _ttype!=Token.SKIP ) {
+		if (_createToken && _token == null && _ttype != Token.SKIP) {
 			_token = makeToken(_ttype);
-			_token.setText(new String(text.getBuffer(), _begin, text.length()-_begin));
+			_token.setText(new String(text.getBuffer(), _begin, text.length() - _begin));
 		}
 		_returnToken = _token;
 	}

@@ -10,6 +10,7 @@ package tripleo.elijah.comp;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -226,7 +227,7 @@ class OStageProcess implements RuntimeProcess {
 
 		final AccessBus ab = new AccessBus(comp);
 
-		final DeducePipeline   dpl = new DeducePipeline(ab);
+		final @NotNull DeducePipeline dpl = new DeducePipeline(ab);
 		final GeneratePipeline gpl = new GeneratePipeline(ab);
 		final WritePipeline    wpl = new WritePipeline(ab);
 //		final WriteMesonPipeline wmpl = new WriteMesonPipeline	(comp, pr, ppl, wpl);

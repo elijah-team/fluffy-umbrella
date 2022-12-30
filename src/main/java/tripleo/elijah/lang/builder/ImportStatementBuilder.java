@@ -8,8 +8,14 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.ImportContext;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.IdentList;
+import tripleo.elijah.lang.ImportStatement;
+import tripleo.elijah.lang.Qualident;
+import tripleo.elijah.lang.QualidentList;
 import tripleo.elijah.lang.imports.AssigningImportStatement;
 import tripleo.elijah.lang.imports.NormalImportStatement;
 import tripleo.elijah.lang.imports.QualifiedImportStatement;
@@ -30,13 +36,13 @@ public class ImportStatementBuilder extends ElBuilder {
 	private QualidentList qil;
 
 	// ASSIGNING
-	List<AssigningImportStatement.Part> aparts = new ArrayList<AssigningImportStatement.Part>();
+	final List<AssigningImportStatement.Part> aparts = new ArrayList<AssigningImportStatement.Part>();
 
 	// SELECTIVE/QUALIFIED
-	List<QualifiedImportStatement.Part> sparts = new ArrayList<QualifiedImportStatement.Part>();
+	final List<QualifiedImportStatement.Part> sparts = new ArrayList<QualifiedImportStatement.Part>();
 
 	// NORMAL
-	List<Qualident> nparts = new ArrayList<Qualident>();
+	final List<Qualident> nparts = new ArrayList<Qualident>();
 
 	//
 	//
@@ -62,7 +68,7 @@ public class ImportStatementBuilder extends ElBuilder {
 	}
 
 	@Override
-	protected ImportStatement build() {
+	protected @NotNull ImportStatement build() {
 		switch (state) {
 		case ROOTED:
 			final RootedImportStatement rootedImportStatement = new RootedImportStatement(_parent);

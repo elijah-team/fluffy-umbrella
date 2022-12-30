@@ -1,10 +1,11 @@
 package tripleo.elijah.stages.deduce.post_bytecode;
 
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.diagnostic.Diagnostic;
 
 public class Maybe<T> {
-	public final T          o;
-	public final Diagnostic exc;
+	public final T o;
+	public final @Nullable Diagnostic exc;
 
 	public Maybe(final T o, final Diagnostic exc) {
 		if (o == null) {

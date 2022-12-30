@@ -65,7 +65,7 @@ public class DefFunctionDef extends BaseFunctionDef {
 		_items.add(new StatementWrapper(_expr, getContext(), this));
 	}
 
-	List<FunctionItem> _items = new ArrayList<FunctionItem>();
+	final List<FunctionItem> _items = new ArrayList<FunctionItem>();
 
 
 	@Override

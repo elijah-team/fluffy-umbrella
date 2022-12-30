@@ -46,7 +46,7 @@ public class WlGenerateCtor implements WorkJob {
 	public void run(final WorkManager aWorkManager) {
 		if (functionInvocation.generateDeferred().isPending()) {
 			final ClassStatement klass = functionInvocation.getClassInvocation().getKlass();
-			final Holder<GeneratedClass> hGenClass = new Holder<>();
+			final @NotNull Holder<GeneratedClass> hGenClass = new Holder<>();
 			functionInvocation.getClassInvocation().resolvePromise().then(new DoneCallback<GeneratedClass>() {
 				@Override
 				public void onDone(final GeneratedClass result) {
@@ -70,7 +70,7 @@ public class WlGenerateCtor implements WorkJob {
 			final ConstructorDef cd;
 			if (ccc == null) {
 				cd = new ConstructorDef(constructorName, klass, klass.getContext());
-				final Scope3 scope3 = new Scope3(cd);
+				final @NotNull Scope3 scope3 = new Scope3(cd);
 				cd.scope(scope3);
 				for (final GeneratedContainer.VarTableEntry varTableEntry : genClass.varTable) {
 					if (varTableEntry.initialValue != IExpression.UNASSIGNED) {

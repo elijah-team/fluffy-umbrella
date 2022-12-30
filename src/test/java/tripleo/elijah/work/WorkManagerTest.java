@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.work;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class WorkManagerTest {
 	public void testWorkManager() {
 		final List<String> sink = new ArrayList<>();
 
-		final WorkManager workManager = new WorkManager();
+		final @NotNull WorkManager workManager = new WorkManager();
 
 		final WorkList wl = new WorkList();
 		wl.addJob(new AppendChar("A", 0, sink));

@@ -1,5 +1,6 @@
 package tripleo.elijah.nextgen.outputtree;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.nextgen.inputtree.EIT_Input;
 import tripleo.elijah.nextgen.outputstatement.EG_Statement;
@@ -17,7 +18,7 @@ public class EOT_OutputFile {
     private final EG_Statement _sequence; // TODO List<?> ??
 
     public EOT_OutputFile(final Compilation c,
-                          final List<EIT_Input> inputs,
+                          final @NotNull List<EIT_Input> inputs,
                           final String filename,
                           final EOT_OutputType type,
                           final EG_Statement sequence) {

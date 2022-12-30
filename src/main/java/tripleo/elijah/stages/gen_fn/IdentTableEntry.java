@@ -14,8 +14,16 @@ import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.lang.*;
-import tripleo.elijah.stages.deduce.*;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IExpression;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.stages.deduce.DeduceElementIdent;
+import tripleo.elijah.stages.deduce.DeducePath;
+import tripleo.elijah.stages.deduce.DeducePhase;
+import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.OnType;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.deduce.zero.ITE_Zero;
@@ -38,7 +46,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	private final Context pc;
 	public boolean preUpdateStatusListenerAdded;
 	InstructionArgument backlink;
-	public @NotNull Map<Integer, TypeTableEntry> potentialTypes = new HashMap<Integer, TypeTableEntry>();
+	public final @NotNull Map<Integer, TypeTableEntry> potentialTypes = new HashMap<Integer, TypeTableEntry>();
 	public TypeTableEntry type;
 	public GeneratedNode externalRef;
 	public boolean fefi = false;
@@ -176,7 +184,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		return constructableDeferred.promise();
 	}
 
-	DeferredObject<ProcTableEntry, Void, Void> constructableDeferred = new DeferredObject<>();
+	protected final DeferredObject<InstructionArgument, Void, Void> backlinkSet = new DeferredObject<InstructionArgument, Void, Void>();
 
 	// endregion constructable
 
@@ -200,7 +208,8 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		if (fefiDone.isPending())
 			fefiDone.resolve(aGenType);
 	}
-	protected DeferredObject<InstructionArgument, Void, Void> backlinkSet = new DeferredObject<InstructionArgument, Void, Void>();
+
+	final DeferredObject<ProcTableEntry, Void, Void> constructableDeferred = new DeferredObject<>();
 
 	public Promise<InstructionArgument, Void, Void> backlinkSet() {
 		return backlinkSet.promise();

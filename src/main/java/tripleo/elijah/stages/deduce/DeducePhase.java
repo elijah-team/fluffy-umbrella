@@ -19,7 +19,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.diagnostic.Diagnostic;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.NamespaceStatement;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.OS_UnknownType;
+import tripleo.elijah.lang.TypeName;
 import tripleo.elijah.nextgen.ClassDefinition;
 import tripleo.elijah.nextgen.diagnostic.CouldntGenerateClass;
 import tripleo.elijah.stages.deduce.declarations.DeferredMember;
@@ -29,7 +36,12 @@ import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -43,7 +55,7 @@ public class DeducePhase {
 
 	private final List<FoundElement> foundElements = new ArrayList<FoundElement>();
 	private final Map<IdentTableEntry, OnType> idte_type_callbacks = new HashMap<IdentTableEntry, OnType>();
-	public @NotNull GeneratedClasses generatedClasses = new GeneratedClasses();
+	public final @NotNull GeneratedClasses generatedClasses = new GeneratedClasses();
 	public final GeneratePhase generatePhase;
 
 	final PipelineLogic pipelineLogic;
@@ -70,20 +82,23 @@ public class DeducePhase {
 		idte_type_callbacks.put(entry, callback);
 	}
 
-	@NotNull Multimap<OS_Element, ResolvedVariables> resolved_variables = ArrayListMultimap.create();
+	@NotNull
+	final Multimap<OS_Element, ResolvedVariables> resolved_variables = ArrayListMultimap.create();
 
 	public void registerResolvedVariable(final IdentTableEntry identTableEntry, final OS_Element parent, final String varName) {
 		resolved_variables.put(parent, new ResolvedVariables(identTableEntry, parent, varName));
 	}
 
-	@NotNull Multimap<ClassStatement, OnClass> onclasses = ArrayListMultimap.create();
+	@NotNull
+	final Multimap<ClassStatement, OnClass> onclasses = ArrayListMultimap.create();
 
 	public void onClass(final ClassStatement aClassStatement, final OnClass callback) {
 		onclasses.put(aClassStatement, callback);
 	}
 
-//	Multimap<GeneratedClass, ClassInvocation> generatedClasses1 = ArrayListMultimap.create();
-	@NotNull Multimap<ClassStatement, ClassInvocation> classInvocationMultimap = ArrayListMultimap.create();
+	//	Multimap<GeneratedClass, ClassInvocation> generatedClasses1 = ArrayListMultimap.create();
+	@NotNull
+	final Multimap<ClassStatement, ClassInvocation> classInvocationMultimap = ArrayListMultimap.create();
 
 	private final List<DeferredMemberFunction> deferredMemberFunctions = new ArrayList<>();
 
@@ -92,39 +107,15 @@ public class DeducePhase {
 	}
 
 	private final ExecutorService classGenerator = Executors.newCachedThreadPool();
-
-	public Promise<ClassDefinition, Diagnostic, Void> generateClass(final GenerateFunctions gf, final ClassInvocation ci) {
-		@Nullable final WlGenerateClass gen = new WlGenerateClass(gf, ci, generatedClasses);
-		final ClassDefinition[] cds = new ClassDefinition[1];
-		final DeferredObject<ClassDefinition, Diagnostic, Void> ret = new DeferredObject<>();
-
-		classGenerator.submit(new Runnable() {
-			@Override
-			public void run()  {
-				gen.run(null);
-				final ClassDefinition cd = new ClassDefinition(ci);
-				final GeneratedClass genclass = gen.getResult();
-				if (genclass != null) {
-					cd.setNode(genclass);
-					cds[0] = cd;
-					ret.resolve(cd);
-				} else {
-					ret.reject(new CouldntGenerateClass(cd, gf, ci));
-				}
-			}
-		});
-
-		return ret;
-	}
+	@NotNull
+	final List<FunctionMapHook> functionMapHooks = new ArrayList<FunctionMapHook>();
 
 	public @NotNull ClassInvocation registerClassInvocation(final ClassStatement aParent) {
 		final ClassInvocation ci = new ClassInvocation(aParent, null);
 		return registerClassInvocation(ci);
 	}
-
-	public void finish(final GeneratedClasses aGeneratedNodes) {
-		int y=2;
-	}
+	@NotNull
+	final List<DeferredMember> deferredMembers = new ArrayList<DeferredMember>();
 
 	class RegisterClassInvocation {
 		// TODO this class is a mess
@@ -221,13 +212,37 @@ public class DeducePhase {
 		return nsi;
 	}
 
-	@NotNull List<FunctionMapHook> functionMapHooks = new ArrayList<FunctionMapHook>();
+	public void finish(final GeneratedClasses aGeneratedNodes) {
+		int y = 2;
+	}
 
 	public void addFunctionMapHook(final FunctionMapHook aFunctionMapHook) {
 		functionMapHooks.add(aFunctionMapHook);
 	}
 
-	@NotNull List<DeferredMember> deferredMembers = new ArrayList<DeferredMember>();
+	public @NotNull Promise<ClassDefinition, Diagnostic, Void> generateClass(final GenerateFunctions gf, final ClassInvocation ci) {
+		@Nullable final WlGenerateClass gen = new WlGenerateClass(gf, ci, generatedClasses);
+		final ClassDefinition[] cds = new ClassDefinition[1];
+		final DeferredObject<ClassDefinition, Diagnostic, Void> ret = new DeferredObject<>();
+
+		classGenerator.submit(new Runnable() {
+			@Override
+			public void run() {
+				gen.run(null);
+				final ClassDefinition cd = new ClassDefinition(ci);
+				final GeneratedClass genclass = gen.getResult();
+				if (genclass != null) {
+					cd.setNode(genclass);
+					cds[0] = cd;
+					ret.resolve(cd);
+				} else {
+					ret.reject(new CouldntGenerateClass(cd, gf, ci));
+				}
+			}
+		});
+
+		return ret;
+	}
 
 	public void addDeferredMember(final DeferredMember aDeferredMember) {
 		deferredMembers.add(aDeferredMember);
@@ -581,7 +596,7 @@ public class DeducePhase {
 				onSpecialVariable(specialVariable);
 				final int y = 2;
 			} else if (p instanceof ClassStatement) {
-				final Function<GeneratedNode, Map<FunctionDef, GeneratedFunction>> x = getFunctionMap(result);
+				final @NotNull Function<GeneratedNode, Map<FunctionDef, GeneratedFunction>> x = getFunctionMap(result);
 
 				// once again we need GeneratedFunction, not FunctionDef
 				// we seem to have it below, but there can be multiple
@@ -639,15 +654,15 @@ public class DeducePhase {
 				functionInvocation.generatePromise().
 						then(new DoneCallback<BaseGeneratedFunction>() {
 							@Override
-							public void onDone(final BaseGeneratedFunction gf) {
+							public void onDone(final @NotNull BaseGeneratedFunction gf) {
 								deferredMemberFunction.externalRefDeferred().resolve(gf);
 								gf.typePromise().
-										then(new DoneCallback<GenType>() {
-											@Override
-											public void onDone(final GenType result) {
-												deferredMemberFunction.typeResolved().resolve(result);
-											}
-										});
+								  then(new DoneCallback<GenType>() {
+									  @Override
+									  public void onDone(final GenType result) {
+										  deferredMemberFunction.typeResolved().resolve(result);
+									  }
+								  });
 							}
 						});
 				break;
@@ -750,7 +765,8 @@ public class DeducePhase {
 	}
 
 	public static class GeneratedClasses implements Iterable<GeneratedNode> {
-		@NotNull List<GeneratedNode> generatedClasses = new ArrayList<GeneratedNode>();
+		@NotNull
+		final List<GeneratedNode> generatedClasses = new ArrayList<GeneratedNode>();
 
 		public void add(final GeneratedNode aClass) {
 			generatedClasses.add(aClass);
@@ -765,7 +781,7 @@ public class DeducePhase {
 			return generatedClasses.size();
 		}
 
-		public List<GeneratedNode> copy() {
+		public @NotNull List<GeneratedNode> copy() {
 			return new ArrayList<GeneratedNode>(generatedClasses);
 		}
 

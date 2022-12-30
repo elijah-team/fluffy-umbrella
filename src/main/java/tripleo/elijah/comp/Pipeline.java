@@ -15,7 +15,7 @@ import java.util.List;
  * Created 8/21/21 10:09 PM
  */
 public class Pipeline {
-	List<PipelineMember> pls = new ArrayList<>();
+	final List<PipelineMember> pls = new ArrayList<>();
 
 	public void add(final PipelineMember aPipelineMember) {
 		pls.add(aPipelineMember);

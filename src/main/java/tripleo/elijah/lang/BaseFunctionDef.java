@@ -21,7 +21,7 @@ import java.util.List;
  */
 public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Container, OS_Element2 {
 
-	public Attached _a = new Attached();
+	public final Attached _a = new Attached();
 	protected Species _species;
 	List<AnnotationClause> annotations = null;
 	protected Scope3 scope3;
@@ -141,7 +141,7 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 		}
 	}
 
-	public Iterable<AnnotationPart> annotationIterable() {
+	public @NotNull Iterable<AnnotationPart> annotationIterable() {
 		final List<AnnotationPart> aps = new ArrayList<AnnotationPart>();
 		if (annotations == null) return aps;
 		for (final AnnotationClause annotationClause : annotations) {

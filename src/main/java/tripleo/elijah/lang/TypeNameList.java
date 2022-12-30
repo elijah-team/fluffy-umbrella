@@ -19,7 +19,7 @@ import java.util.List;
 
 public class TypeNameList {
 
-	List<TypeName> p = new ArrayList<TypeName>();
+	final List<TypeName> p = new ArrayList<TypeName>();
 
 	public void add(final TypeName tn) {
 		p.add(tn);

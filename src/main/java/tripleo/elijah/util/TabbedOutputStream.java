@@ -8,13 +8,20 @@
  */
 package tripleo.elijah.util;
 
-import java.io.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 public class TabbedOutputStream {
 
 	private boolean dont_close = false;
 	int tabwidth;
-	Writer myStream;
+	@Nullable Writer myStream;
 	private boolean do_tabs = false;
 
 	public TabbedOutputStream(final OutputStream os) {
@@ -122,7 +129,7 @@ public class TabbedOutputStream {
 		return myStream != null;
 	}
 
-	public void quote_string(final String s) throws IOException {
+	public void quote_string(final @NotNull String s) throws IOException {
 		if (!is_connected())
 			throw new IllegalStateException("is_connected assertion failed");
 

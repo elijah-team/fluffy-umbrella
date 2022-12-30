@@ -9,6 +9,7 @@
 package tripleo.elijah.comp.internal;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.IO;
@@ -31,7 +32,7 @@ public class CompilationImpl extends Compilation {
 		throw new NotImplementedException();
 	}
 
-	private EOT_OutputTree _output_tree = null;
+	private @Nullable EOT_OutputTree _output_tree = null;
 
 	@Override
 	@NotNull

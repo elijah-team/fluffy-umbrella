@@ -19,7 +19,7 @@ public class MethNameNode {
 
 	private final MethHdrNode _header;
 	private final String ident;
-	public String genName;
+	public final String genName;
 
 	public MethNameNode(final String method_name, final MethHdrNode header) {
 		// TODO Auto-generated constructor stub

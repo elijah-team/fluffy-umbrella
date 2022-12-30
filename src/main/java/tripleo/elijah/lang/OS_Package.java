@@ -23,8 +23,8 @@ public class OS_Package {
 	public final static OS_Package default_package = new OS_Package(null, 0);
 	private final List<OS_Element> elements = new ArrayList<OS_Element>();
 
-	int _code;
-	Qualident _name;
+	final int _code;
+	final Qualident _name;
 	private PackageContext _ctx;
 
 	// TODO packages, elements

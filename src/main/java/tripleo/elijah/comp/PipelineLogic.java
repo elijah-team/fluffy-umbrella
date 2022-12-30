@@ -14,7 +14,12 @@ import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.gen_c.GenerateC;
-import tripleo.elijah.stages.gen_fn.*;
+import tripleo.elijah.stages.gen_fn.GenerateFunctions;
+import tripleo.elijah.stages.gen_fn.GeneratePhase;
+import tripleo.elijah.stages.gen_fn.GeneratedClass;
+import tripleo.elijah.stages.gen_fn.GeneratedFunction;
+import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
+import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.elijah.stages.logging.ElLog;
@@ -34,7 +39,7 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	public final  DeducePhase   dp;
 	private final AccessBus     __ab;
 
-	public GenerateResult gr     = new GenerateResult();
+	public final GenerateResult gr = new GenerateResult();
 
 	private final ElLog.Verbosity verbosity;
 
@@ -76,10 +81,22 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 //		elLogs = dp.deduceLogs;
 	}
 
+	public static void debug_buffers(@NotNull final GenerateResult gr, final @NotNull PrintStream stream) {
+		for (final GenerateResultItem ab : gr.results()) {
+			stream.println("---------------------------------------------------------------");
+			stream.println(ab.counter);
+			stream.println(ab.ty);
+			stream.println(ab.output);
+			stream.println(ab.node.identityString());
+			stream.println(ab.buffer.getText());
+			stream.println("---------------------------------------------------------------");
+		}
+	}
+
 	public void generate(final List<GeneratedNode> lgc, final ErrSink aErrSink) {
 		final WorkManager wm = new WorkManager();
 		// README use any errSink, they should all be the same
-		for (final OS_Module mod : mods.getMods()) {
+		for (final @NotNull OS_Module mod : mods.getMods()) {
 			final GenerateC generateC = new GenerateC(mod, mod.parent.getErrSink(), verbosity, this);
 			final GenerateResult ggr = run3(mod, lgc, wm, generateC);
 			wm.drain();
@@ -87,10 +104,6 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 		}
 
 		__ab.resolveGenerateResult(gr);
-	}
-
-	public void subscribeMods(final AccessBus.AB_ModuleListListener l) {
-		__ab.subscribe_moduleList(l);
 	}
 
 	public void resolveMods() {
@@ -114,24 +127,16 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	                              final @NotNull WorkManager wm,
 	                              final @NotNull GenerateC ggc) {
 		final List<GeneratedNode> nodes = lgc.stream()
-				.filter(aGeneratedNode -> aGeneratedNode.module() == mod)
-				.collect(Collectors.toList());
+		  .filter(aGeneratedNode -> aGeneratedNode.module() == mod)
+		  .collect(Collectors.toList());
 
 		final GenerateResult gr2 = ggc.resultsFromNodes(nodes, wm);
 
 		return gr2;
 	}
 
-	public static void debug_buffers(@NotNull final GenerateResult gr, final PrintStream stream) {
-		for (final GenerateResultItem ab : gr.results()) {
-			stream.println("---------------------------------------------------------------");
-			stream.println(ab.counter);
-			stream.println(ab.ty);
-			stream.println(ab.output);
-			stream.println(ab.node.identityString());
-			stream.println(ab.buffer.getText());
-			stream.println("---------------------------------------------------------------");
-		}
+	public void subscribeMods(final AccessBus.@NotNull AB_ModuleListListener l) {
+		__ab.subscribe_moduleList(l);
 	}
 
 	@NotNull

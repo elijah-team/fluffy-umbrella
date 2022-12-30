@@ -1,7 +1,11 @@
 package tripleo.elijah.lang.imports;
 
 import tripleo.elijah.contexts.ImportContext;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.OS_Container;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.Qualident;
 import tripleo.elijah.util.NotImplementedException;
 
 import java.util.ArrayList;
@@ -16,8 +20,8 @@ public class AssigningImportStatement extends _BaseImportStatement {
 	private Context _ctx;
 
 	public static class Part { // public for ImportStatementBuilder
-		IdentExpression name;
-		Qualident value;
+		final IdentExpression name;
+		final Qualident value;
 
 		public Part(final IdentExpression i1, final Qualident q1) {
 			name = i1;

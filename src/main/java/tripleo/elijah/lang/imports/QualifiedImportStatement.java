@@ -1,7 +1,11 @@
 package tripleo.elijah.lang.imports;
 
 import tripleo.elijah.contexts.ImportContext;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IdentList;
+import tripleo.elijah.lang.OS_Container;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.Qualident;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +19,8 @@ public class QualifiedImportStatement extends _BaseImportStatement {
 	private Context _ctx;
 
 	public static class Part {
-		public Qualident base;
-		public IdentList idents;
+		public final Qualident base;
+		public final IdentList idents;
 
 		public Part(final Qualident q3, final IdentList il) {
 			base = q3;

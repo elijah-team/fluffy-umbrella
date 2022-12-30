@@ -10,13 +10,22 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
-import tripleo.elijah.stages.deduce.*;
+import tripleo.elijah.stages.deduce.ClassInvocation;
+import tripleo.elijah.stages.deduce.DeduceLookupUtils;
+import tripleo.elijah.stages.deduce.DeducePhase;
+import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.ResolveError;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created 10/29/20 4:26 AM
@@ -24,7 +33,7 @@ import java.util.*;
 public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 	private final OS_Module module;
 	private final ClassStatement klass;
-	public Map<ConstructorDef, GeneratedConstructor> constructors = new HashMap<ConstructorDef, GeneratedConstructor>();
+	public final Map<ConstructorDef, GeneratedConstructor> constructors = new HashMap<ConstructorDef, GeneratedConstructor>();
 	public ClassInvocation ci;
 	private boolean resolve_var_table_entries_already = false;
 
@@ -108,7 +117,7 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
         return module;
     }
 
-	public boolean resolve_var_table_entries(final DeducePhase aDeducePhase) {
+	public boolean resolve_var_table_entries(final @NotNull DeducePhase aDeducePhase) {
 		boolean Result = false;
 
 		if (resolve_var_table_entries_already) return true;
@@ -250,7 +259,7 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 									if (genType.resolved instanceof OS_GenericTypeNameType) {
 										final ClassInvocation xxci = ((GeneratedClass) aGeneratedContainer).ci;
 //											xxxci = ci;
-										for (final Map.Entry<TypeName, OS_Type> entry : xxci.genericPart.entrySet()) {
+										for (final Map.@NotNull Entry<TypeName, OS_Type> entry : xxci.genericPart.entrySet()) {
 											if (entry.getKey().equals(t.getTypeName())) {
 												varTableEntry.varType = entry.getValue();
 											}

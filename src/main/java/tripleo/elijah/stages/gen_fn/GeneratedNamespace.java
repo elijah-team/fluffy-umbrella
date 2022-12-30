@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
@@ -42,7 +43,7 @@ public class GeneratedNamespace extends GeneratedContainerNC {
 				final IExpression left = varTableEntry.nameToken;
 				final IExpression right = varTableEntry.initialValue;
 
-				final IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
+				final @NotNull IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
 				scope3.add(new StatementWrapper(e, fd.getContext(), fd));
 			} else {
 				if (getPragma("auto_construct")) {
@@ -64,15 +65,15 @@ public class GeneratedNamespace extends GeneratedContainerNC {
 		return this.namespaceStatement;
 	}
 
-    @Override
-    public String identityString() {
-        return ""+namespaceStatement;
-    }
+	@Override
+	public @NotNull String identityString() {
+		return "" + namespaceStatement;
+	}
 
-    @Override
-    public OS_Module module() {
-        return module;
-    }
+	@Override
+	public OS_Module module() {
+		return module;
+	}
 
 	@Override
 	public OS_Element getElement() {

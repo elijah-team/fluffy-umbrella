@@ -19,7 +19,7 @@ import java.util.List;
 abstract class _CommonNC {
 	protected final List<ClassItem> items = new ArrayList<ClassItem>();
 	private final List<String> mDocs = new ArrayList<String>();
-	public Attached _a = new Attached();
+	public final Attached _a = new Attached();
 	protected IdentExpression nameToken;
 	protected OS_Package _packageName;
 	List<AnnotationClause> annotations = null;

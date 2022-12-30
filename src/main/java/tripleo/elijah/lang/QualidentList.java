@@ -18,7 +18,7 @@ public class QualidentList {
 		parts.add(qid);
 	}
 	
-	public List<Qualident> parts = new ArrayList<Qualident>();
+	public final List<Qualident> parts = new ArrayList<Qualident>();
 }
 
 //

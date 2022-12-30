@@ -1,7 +1,12 @@
 package tripleo.elijah.stages.deduce.post_bytecode;
 
 import org.jetbrains.annotations.Contract;
-import tripleo.elijah.stages.gen_fn.*;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.stages.gen_fn.ConstantTableEntry;
+import tripleo.elijah.stages.gen_fn.IdentTableEntry;
+import tripleo.elijah.stages.gen_fn.ProcTableEntry;
+import tripleo.elijah.stages.gen_fn.TypeTableEntry;
+import tripleo.elijah.stages.gen_fn.VariableTableEntry;
 
 public interface DED {
 
@@ -52,7 +57,7 @@ public interface DED {
 		}
 
 		@Override
-		public Kind kind() {
+		public @NotNull Kind kind() {
 			return Kind.DED_Kind_ProcTableEntry;
 		}
 

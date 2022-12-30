@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.contexts;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
 
 import java.util.List;
@@ -46,7 +47,7 @@ public class FuncExprContext extends FunctionContext {
 				}
 			}
 		}
-		for (final FormalArgListItem arg : carrier.getArgs()) {
+		for (final @NotNull FormalArgListItem arg : carrier.getArgs()) {
 			if (arg.name().equals(name)) {
 				Result.add(name, level, arg, this);
 			}

@@ -11,7 +11,12 @@ package tripleo.elijah.stages.gen_fn;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.AccessNotation;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.deduce.FunctionMapDeferred;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.Dependency;
@@ -32,10 +37,10 @@ public abstract class GeneratedContainerNC extends AbstractDependencyTracker imp
 
 	private final Dependency dependency = new Dependency(this);
 
-	public Map<FunctionDef, GeneratedFunction> functionMap = new HashMap<FunctionDef, GeneratedFunction>();
-	public Map<ClassStatement, GeneratedClass> classMap = new HashMap<ClassStatement, GeneratedClass>();
+	public final Map<FunctionDef, GeneratedFunction> functionMap = new HashMap<FunctionDef, GeneratedFunction>();
+	public final Map<ClassStatement, GeneratedClass> classMap = new HashMap<ClassStatement, GeneratedClass>();
 
-	public List<VarTableEntry> varTable = new ArrayList<VarTableEntry>();
+	public final List<VarTableEntry> varTable = new ArrayList<VarTableEntry>();
 
 	public void addVarTableEntry(final AccessNotation an, final VariableStatement vs) {
 		// TODO dont ignore AccessNotation

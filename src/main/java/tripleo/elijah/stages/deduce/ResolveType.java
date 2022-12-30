@@ -22,10 +22,10 @@ import tripleo.elijah.util.NotImplementedException;
  */
 public class ResolveType {
 	static @NotNull GenType resolve_type(final OS_Module module,
-										 final @NotNull OS_Type type,
-										 final Context ctx,
-										 final ElLog LOG,
-										 final DeduceTypes2 dt2) throws ResolveError {
+	                                     final @NotNull OS_Type type,
+	                                     final Context ctx,
+	                                     final ElLog LOG,
+	                                     final @NotNull DeduceTypes2 dt2) throws ResolveError {
 		@NotNull final GenType R = new GenType();
 		if (type.getType() != OS_Type.Type.USER_CLASS)
 			R.typeName = type;

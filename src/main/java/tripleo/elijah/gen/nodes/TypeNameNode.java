@@ -17,7 +17,7 @@ public class TypeNameNode {
 		genType=return_type.getText(); // TODO wrong prolly
 	}
 
-	public String genType;
+	public final String genType;
 	
 	public String getText() {
 		return null;

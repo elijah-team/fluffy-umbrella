@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import tripleo.elijah.comp.AccessBus;
@@ -71,12 +72,12 @@ public class TypeOfTypeNameTest {
 		//
 		// VERIFY EXPECTATIONS
 		//
-		Compilation           compilation   = new CompilationImpl(new StdErrSink(), new IO());
-		final ElLog.Verbosity verbosity1    = compilation.gitlabCIVerbosity();
-		final PipelineLogic   pl            = new PipelineLogic(new AccessBus(compilation));
-		final GeneratePhase   generatePhase = new GeneratePhase(verbosity1, pl);
-		DeduceTypes2          deduceTypes2  = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
-		TypeName              tn            = t.resolve(ctx, deduceTypes2);
+		@NotNull Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
+		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
+		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
+		DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
+		TypeName tn = t.resolve(ctx, deduceTypes2);
 //		System.out.println(tn);
 		verify(ctx, mod, c);
 		Assert.assertEquals(typeNameString, tn.toString());
@@ -96,7 +97,7 @@ public class TypeOfTypeNameTest {
 		//
 		ErrSink e = new StdErrSink();
 
-		String typeNameString = "package.AbstractFactory";
+		@NotNull String typeNameString = "package.AbstractFactory";
 
 		VariableStatement var_x = new VariableStatement(null);
 		var_x.setName(Helpers.string_to_ident("x")); // not necessary
@@ -125,12 +126,12 @@ public class TypeOfTypeNameTest {
 		//
 		// VERIFY EXPECTATIONS
 		//
-		Compilation           compilation   = new CompilationImpl(new StdErrSink(), new IO());
-		final ElLog.Verbosity verbosity1    = compilation.gitlabCIVerbosity();
-		final PipelineLogic   pl            = new PipelineLogic(new AccessBus(compilation));
-		final GeneratePhase   generatePhase = new GeneratePhase(verbosity1, pl);
-		DeduceTypes2          deduceTypes2  = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
-		TypeName              tn            = t.resolve(ctx, deduceTypes2);
+		Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
+		final ElLog.@NotNull Verbosity verbosity1 = compilation.gitlabCIVerbosity();
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
+		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
+		DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
+		TypeName tn = t.resolve(ctx, deduceTypes2);
 //		System.out.println(tn);
 		verify(ctx, mod, c);
 		Assert.assertEquals(typeNameString, tn.toString());
@@ -225,7 +226,7 @@ public class TypeOfTypeNameTest {
 		VariableSequence vs = new VariableSequence(st_af.getContext());
 		VariableStatement var_y = vs.next();
 		var_y.setName(IdentExpression.forString("y"));
-		RegularTypeName rtn_y = new RegularTypeName(ctx);
+		@NotNull RegularTypeName rtn_y = new RegularTypeName(ctx);
 		rtn_y.setName(Helpers.string_to_qualident(typeNameString));
 		var_y.setTypeName(rtn_y);
 

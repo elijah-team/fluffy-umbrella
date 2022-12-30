@@ -43,7 +43,7 @@ public abstract class AbstractDependencyTracker implements DependencyTracker {
 		dependentFunctionsSubject.onNext(aFunction);
 	}
 
-	Subject<GenType> dependentTypesSubject = ReplaySubject.create(2);/*new Publisher<GenType>() {
+	final Subject<GenType> dependentTypesSubject = ReplaySubject.create(2);/*new Publisher<GenType>() {
 		List<Subscriber<GenType>> subscribers = new ArrayList<>(2);
 
 		@Override
@@ -56,7 +56,7 @@ public abstract class AbstractDependencyTracker implements DependencyTracker {
 		return dependentTypesSubject;
 	}
 
-	Subject<FunctionInvocation> dependentFunctionsSubject = ReplaySubject.create(2);/*new Publisher<FunctionInvocation>() {
+	final Subject<FunctionInvocation> dependentFunctionsSubject = ReplaySubject.create(2);/*new Publisher<FunctionInvocation>() {
 		List<Subscriber<FunctionInvocation>> subscribers = new ArrayList<>(2);
 
 		@Override

@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.NamespaceContext;
 import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
@@ -80,7 +81,7 @@ public class NamespaceStatement extends _CommonNC implements Documentable, Modul
 	}
 
 	@Override // OS_Element
-	public void visitGen(final ElElementVisitor visit) {
+	public void visitGen(final @NotNull ElElementVisitor visit) {
 		visit.visitNamespaceStatement(this);
 	}
 

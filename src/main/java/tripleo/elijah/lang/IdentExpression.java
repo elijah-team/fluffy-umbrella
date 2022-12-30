@@ -29,7 +29,7 @@ import java.io.File;
 public class IdentExpression implements IExpression, OS_Element, Resolvable, Locatable {
 
 	private final Token text;
-	public  Attached _a;
+	public final Attached _a;
 	private OS_Element _resolvedElement;
 
 	public IdentExpression(final Token r1) {
@@ -68,12 +68,12 @@ public class IdentExpression implements IExpression, OS_Element, Resolvable, Loc
 	}
 
 	@Override
-	public void setLeft(final IExpression iexpression) {
+	public void setLeft(final @NotNull IExpression iexpression) {
 //		if (iexpression instanceof IdentExpression) {
 //			text = ((IdentExpression) iexpression).text;
 //		} else {
 //			// NOTE was System.err.println
-			throw new IllegalArgumentException("Trying to set left-side of IdentExpression to " + iexpression.toString());
+		throw new IllegalArgumentException("Trying to set left-side of IdentExpression to " + iexpression.toString());
 //		}
 	}
 

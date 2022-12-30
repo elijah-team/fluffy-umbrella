@@ -9,6 +9,7 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.WithContext;
 import tripleo.elijah.lang2.ElElementVisitor;
 
@@ -51,9 +52,7 @@ public class WithStatement implements OS_Element, OS_Container, FunctionItem, St
 		return null;
 	}
 
-	public List<FunctionItem> getItems() {
-		return _items;
-	}
+	final VariableSequence hidden_seq = new VariableSequence();
 
 	public Collection<VariableStatement> getVarItems() {
 		return hidden_seq.items();
@@ -63,7 +62,9 @@ public class WithStatement implements OS_Element, OS_Container, FunctionItem, St
 		return hidden_seq.next();
 	}
 
-	VariableSequence hidden_seq = new VariableSequence();
+	public @NotNull List<FunctionItem> getItems() {
+		return _items;
+	}
 
 	public void setContext(final WithContext ctx) {
 		this.ctx = ctx;

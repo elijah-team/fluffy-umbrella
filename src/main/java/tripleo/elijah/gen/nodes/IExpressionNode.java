@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.gen.nodes;
 
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.gen.TypeRef;
 import tripleo.elijah.lang.IExpression;
@@ -20,16 +21,16 @@ public interface IExpressionNode {
 	boolean is_const_expr();
 	
 	boolean is_underscore();
-	
+
 	boolean is_var_ref();
-	
+
 	boolean is_simple();
-	
+
 	String genText(CompilerContext cctx);
-	
+
 	String genType();
-	
+
 	String genText();
-	
-	TypeRef getType();
+
+	@Nullable TypeRef getType();
 }

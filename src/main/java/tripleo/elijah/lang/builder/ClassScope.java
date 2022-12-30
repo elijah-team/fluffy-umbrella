@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang.builder;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.AccessNotation;
 import tripleo.elijah.lang.Documentable;
 
@@ -27,7 +28,7 @@ public class ClassScope extends ClassOrNamespaceScope implements Documentable {
 		return functionDefBuilder;
 	}
 
-	public TypeAliasBuilder typeAlias() {
+	public @NotNull TypeAliasBuilder typeAlias() {
 		final TypeAliasBuilder typeAliasBuilder = new TypeAliasBuilder();
 		add(typeAliasBuilder);
 		return typeAliasBuilder;

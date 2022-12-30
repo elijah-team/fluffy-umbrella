@@ -195,7 +195,7 @@ class Resolve_Ident_IA {
 		if (x instanceof IntegerIA) {
 			@NotNull final VariableTableEntry y = ((IntegerIA) x).getEntry();
 			if (el instanceof VariableStatement) {
-				final VariableStatement vs = (VariableStatement) el;
+				final @NotNull VariableStatement vs = (VariableStatement) el;
 				y.setStatus(BaseTableEntry.Status.KNOWN, dc.newGenericElementHolderWithType(el, vs.typeName()));
 			}
 			y.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolderWithDC(el, dc));
@@ -476,7 +476,7 @@ class Resolve_Ident_IA {
 	}
 
 	private @NotNull RIA_STATE action_IdentIA(@NotNull final IdentIA ia) {
-		final __Action_IdentIA action_identIA = new __Action_IdentIA(this, ia, foundElement, phase, generatedFunction, dc, LOG, identIA);
+		final @NotNull __Action_IdentIA action_identIA = new __Action_IdentIA(this, ia, foundElement, phase, generatedFunction, dc, LOG, identIA);
 		action_identIA.set(el, ectx); // !!
 		final RIA_STATE run = action_identIA.run();
 

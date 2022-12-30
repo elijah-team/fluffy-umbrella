@@ -49,7 +49,7 @@ public class DotExpressionToStackTest {
 //		DeduceTypes2 dt2 = new DeduceTypes2(null);
 		//
 		IdentExpression e = Helpers.string_to_ident("e");
-		IdentExpression d = Helpers.string_to_ident("d");
+		@NotNull IdentExpression d = Helpers.string_to_ident("d");
 		IdentExpression c = Helpers.string_to_ident("c");
 		IdentExpression b = Helpers.string_to_ident("b");
 		IdentExpression a = Helpers.string_to_ident("a");

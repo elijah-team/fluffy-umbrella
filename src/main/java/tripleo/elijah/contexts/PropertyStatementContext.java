@@ -8,7 +8,10 @@
  */
 package tripleo.elijah.contexts;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.PropertyStatement;
 
 import java.util.List;
 
@@ -17,7 +20,7 @@ import java.util.List;
  */
 public class PropertyStatementContext extends Context {
 
-	public PropertyStatement carrier;
+	public final PropertyStatement carrier;
 	private final Context _parent;
 
 	public PropertyStatementContext(final Context aParent, final OS_Element element) {

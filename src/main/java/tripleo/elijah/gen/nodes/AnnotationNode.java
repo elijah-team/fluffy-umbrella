@@ -21,7 +21,7 @@ public class AnnotationNode {
 		this.ac = ac;
 	}
 
-	AnnotationClause ac;
+	final AnnotationClause ac;
 }
 
 //

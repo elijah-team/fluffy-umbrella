@@ -9,6 +9,7 @@
 package tripleo.elijah.ci;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.IExpression;
 
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class LibraryStatementPart {
 		private final IExpression expression;
 		private final String name;
 
-		public Directive(final Token token_, final IExpression expression_) {
+		public Directive(final @NotNull Token token_, final IExpression expression_) {
 			name = token_.getText();
 			expression = expression_;
 		}

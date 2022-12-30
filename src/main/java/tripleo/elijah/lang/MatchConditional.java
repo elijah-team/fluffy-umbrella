@@ -9,6 +9,7 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.MatchConditionalContext;
 import tripleo.elijah.contexts.MatchContext;
 import tripleo.elijah.lang2.ElElementVisitor;
@@ -284,7 +285,7 @@ public class MatchConditional implements OS_Element, StatementItem, FunctionItem
 		}
 
 		@Override
-		public Context getContext() {
+		public @NotNull Context getContext() {
 			return ___ctx;
 		}
 

@@ -12,6 +12,7 @@
 package tripleo.elijah.gen.nodes;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.GenBuffer;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.gen.Node;
@@ -28,22 +29,22 @@ import java.util.List;
  *
  */
 public class MethHdrNode implements Node {
-	
+
 	private final TypeRef returnType2;
 	private final Node _parent;
-	public int argCount;
+	public final int argCount;
 	final public MethNameNode methName;
-	public TypeNameNode returnType;
+	public final TypeNameNode returnType;
 	private final List<ArgumentNode> argument_types;
 	private final int _code;
-	
-	public MethHdrNode(final Node parent, @NonNull final IdentExpression return_type, final String method_name, final List<ArgumentNode> argument_types, final int code) {
+
+	public MethHdrNode(final Node parent, @NonNull final IdentExpression return_type, final String method_name, final @NotNull List<ArgumentNode> argument_types, final int code) {
 		_parent = parent;
 		_code = code;
 		methName = new MethNameNode(method_name, this);
 		argCount = argument_types.size();
 		this.argument_types = argument_types;//.stream().map(ArgumentNode::make).collect(Collections);
-		returnType=new TypeNameNode(return_type);
+		returnType = new TypeNameNode(return_type);
 		//
 		returnType2 = null;
 	}
@@ -76,20 +77,20 @@ public class MethHdrNode implements Node {
 	public Iterable<ArgumentNode> ArgumentsIterator() {
 		// TODO Auto-generated method stub
 		return new Iterable<ArgumentNode>() {
-			
+
 			@Override
-			public Iterator<ArgumentNode> iterator() {
-			
-				return new Iterator<ArgumentNode>() {		
-				
+			public @NotNull Iterator<ArgumentNode> iterator() {
+
+				return new Iterator<ArgumentNode>() {
+
 					private int c = 0;
-		
+
 					@Override
 					public boolean hasNext() {
-						final MethHdrNode node=MethHdrNode.this;
-						return c<node.argCount;
+						final MethHdrNode node = MethHdrNode.this;
+						return c < node.argCount;
 					}
-		
+
 					@Override
 					public ArgumentNode next() {
 						final MethHdrNode node=MethHdrNode.this;
