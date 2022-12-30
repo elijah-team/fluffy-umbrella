@@ -399,8 +399,7 @@ public class Generate_Code_For_Method {
 	}
 
 	private void action_CALL(final BaseGeneratedFunction gf, final Instruction aInstruction, final DeduceTypes2 dt2) {
-		final StringBuilder sb = new StringBuilder();
-// 					LOG.err("9000 "+inst.getName());
+//		LOG.err("9000 "+inst.getName());
 		final InstructionArgument x = aInstruction.getArg(0);
 		assert x instanceof ProcIA;
 		final ProcTableEntry pte = gf.getProcTableEntry(((ProcIA) x).getIndex());
@@ -409,11 +408,8 @@ public class Generate_Code_For_Method {
 		de_pte.setInstruction(aInstruction);
 
 		final EG_Statement stmt = CReference.forDeduceElement3(de_pte, gc);
-
 		final String text1 = stmt.getText();
-		sb.append(text1);
-
-		tos.put_string_ln(sb.toString());
+		tos.put_string_ln(text1);
 	}
 
 	private void action_CONSTRUCT(BaseGeneratedFunction gf, Instruction aInstruction) {
