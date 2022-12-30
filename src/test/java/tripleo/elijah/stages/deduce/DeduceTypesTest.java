@@ -88,7 +88,7 @@ public class DeduceTypesTest {
 //		Assert.assertEquals(new OS_Type(tn).toString(), x.typeName.toString());
 	}
 
-	private boolean genTypeTypenameEquals(OS_Type aType, GenType genType) {
+	private boolean genTypeTypenameEquals(final OS_Type aType, final GenType genType) {
 		return genType.typeName.equals(aType);
 	}
 

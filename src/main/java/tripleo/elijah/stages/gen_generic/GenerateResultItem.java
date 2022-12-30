@@ -56,9 +56,9 @@ public class GenerateResultItem {
 //				return input.dref;
 //			}
 //		});
-		List<DependencyRef> x = dependency.getNotedDeps().stream()
-				.map(dep -> dep.dref)
-				.collect(Collectors.toList());
+		final List<DependencyRef> x = dependency.getNotedDeps().stream()
+		  .map(dep -> dep.dref)
+		  .collect(Collectors.toList());
 		return x;
 	}
 }

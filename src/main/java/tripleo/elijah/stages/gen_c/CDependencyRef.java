@@ -16,7 +16,7 @@ import tripleo.elijah.stages.gen_generic.DependencyRef;
 public class CDependencyRef implements DependencyRef {
 	private final String headerFile;
 	
-	public CDependencyRef(String aHeaderFile) {
+	public CDependencyRef(final String aHeaderFile) {
 		headerFile = aHeaderFile;
 	}
 	

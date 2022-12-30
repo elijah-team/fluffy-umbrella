@@ -11,7 +11,12 @@ import tripleo.elijah.stages.deduce.DeduceLookupUtils;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FoundElement;
 import tripleo.elijah.stages.deduce.ResolveError;
-import tripleo.elijah.stages.gen_fn.*;
+import tripleo.elijah.stages.gen_fn.BaseTableEntry;
+import tripleo.elijah.stages.gen_fn.GenType;
+import tripleo.elijah.stages.gen_fn.GenericElementHolder;
+import tripleo.elijah.stages.gen_fn.IElementHolder;
+import tripleo.elijah.stages.gen_fn.IdentTableEntry;
+import tripleo.elijah.stages.gen_fn.TypeTableEntry;
 
 public class ITE_Zero {
 	
@@ -72,9 +77,9 @@ public class ITE_Zero {
 		// TODO fill this in later with a Promise, perhaps
 	}
 	
-	public void preUpdateStatus_Change(IElementHolder eh, BaseTableEntry.Status newStatus, FoundElement foundElement, String normal_path) {
+	public void preUpdateStatus_Change(final IElementHolder eh, final BaseTableEntry.Status newStatus, final FoundElement foundElement, final String normal_path) {
 		if (_preUpdateStatus_Change_called) return;
-		
+
 		if (newStatus == BaseTableEntry.Status.KNOWN) {
 			_preUpdateStatus_Change_called = true;
 //			y.preUpdateStatusListenerAdded = true;

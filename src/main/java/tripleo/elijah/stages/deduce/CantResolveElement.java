@@ -14,7 +14,7 @@ public class CantResolveElement implements Diagnostic {
 	private final IdentTableEntry identTableEntry;
 	private final BaseGeneratedFunction generatedFunction;
 	
-	public CantResolveElement(String aMessage, IdentTableEntry aIdentTableEntry, BaseGeneratedFunction aBaseGeneratedFunction) {
+	public CantResolveElement(final String aMessage, final IdentTableEntry aIdentTableEntry, final BaseGeneratedFunction aBaseGeneratedFunction) {
 		message = aMessage;
 		identTableEntry = aIdentTableEntry;
 		generatedFunction = aBaseGeneratedFunction;
@@ -39,9 +39,9 @@ public class CantResolveElement implements Diagnostic {
 	public @NotNull List<Locatable> secondary() {
 		return null;
 	}
-	
+
 	@Override
-	public void report(PrintStream stream) {
+	public void report(final PrintStream stream) {
 		stream.println(message);
 	}
 }

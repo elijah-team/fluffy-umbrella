@@ -30,29 +30,29 @@ public class Dependency {
 	public DependencyRef dref;
 	public OS_Element resolved;
 	
-	public Dependency(IDependencyReferent aReferent) {
+	public Dependency(final IDependencyReferent aReferent) {
 		referent = aReferent;
 	}
-	
+
 	public DependencyRef getRef() {
 		return dref;
 	}
-	
-	public void setRef(DependencyRef aDref) {
+
+	public void setRef(final DependencyRef aDref) {
 		dref = aDref;
 	}
-	
-	public void noteDependencies(AbstractDependencyTracker aDependencyTracker,
-	                             List<FunctionInvocation> aDependentFunctions,
-	                             List<GenType> aDependentTypes) {
-		for (FunctionInvocation dependentFunction : aDependentFunctions) {
+
+	public void noteDependencies(final AbstractDependencyTracker aDependencyTracker,
+	                             final List<FunctionInvocation> aDependentFunctions,
+	                             final List<GenType> aDependentTypes) {
+		for (final FunctionInvocation dependentFunction : aDependentFunctions) {
 			final BaseGeneratedFunction generatedFunction = dependentFunction.getGenerated();
 			if (generatedFunction != null)
 				deps.add(generatedFunction.getDependency());
 			else
 				System.err.println("52 false FunctionInvocation " + dependentFunction);
 		}
-		for (GenType dependentType : aDependentTypes) {
+		for (final GenType dependentType : aDependentTypes) {
 			final GeneratedContainerNC node = (GeneratedContainerNC) dependentType.node;
 			if (node != null)
 				deps.add(node.getDependency());

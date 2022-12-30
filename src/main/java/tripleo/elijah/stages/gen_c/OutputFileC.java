@@ -29,17 +29,17 @@ public class OutputFileC implements IOutputFile {
 	private final List<Dependency> notedDeps = new ArrayList<>();
 	private final List<Buffer> buffers = new ArrayList<>(); // LinkedList??
 	
-	public OutputFileC(String aOutput) {
+	public OutputFileC(final String aOutput) {
 		output = aOutput;
 	}
-	
+
 	@Override
-	public void putDependencies(List<DependencyRef> aDependencies) {
+	public void putDependencies(final List<DependencyRef> aDependencies) {
 		dependencies.addAll(aDependencies);
 	}
-	
+
 	@Override
-	public void putBuffer(Buffer aBuffer) {
+	public void putBuffer(final Buffer aBuffer) {
 		buffers.add(aBuffer);
 	}
 	
@@ -48,7 +48,7 @@ public class OutputFileC implements IOutputFile {
 		final StringBuilder sb = new StringBuilder();
 
 		final @NotNull Predicate<Dependency> dependencyPredicate = next -> {
-			for (DependencyRef dependency : dependencies) {
+			for (final DependencyRef dependency : dependencies) {
 				if (next.dref == dependency) {
 					return true;
 				}
@@ -75,34 +75,34 @@ public class OutputFileC implements IOutputFile {
 			}
 		}
 */
-		
+
 		assert wnd.size() == dependencies.size();
-		
-		for (DependencyRef dependencyRaw : dependencies) {
-			CDependencyRef dependency = (CDependencyRef) dependencyRaw;
-			String headerFile = dependency.getHeaderFile();
-			String output = String.format("#include \"%s\"\n", headerFile.substring(1));
+
+		for (final DependencyRef dependencyRaw : dependencies) {
+			final CDependencyRef dependency = (CDependencyRef) dependencyRaw;
+			final String headerFile = dependency.getHeaderFile();
+			final String output = String.format("#include \"%s\"\n", headerFile.substring(1));
 			sb.append(output);
 		}
-		
+
 		sb.append('\n');
-		
-		for (Dependency dependency : wnd) {
-			String resolvedString = "" + dependency.resolved;
-			String output = String.format("//#include \"%s\" // for %s\n", "nothing.h", resolvedString);
+
+		for (final Dependency dependency : wnd) {
+			final String resolvedString = "" + dependency.resolved;
+			final String output = String.format("//#include \"%s\" // for %s\n", "nothing.h", resolvedString);
 			sb.append(output);
 		}
-		
+
 		sb.append('\n');
-		
-		for (Buffer buffer : buffers) {
+
+		for (final Buffer buffer : buffers) {
 			sb.append(buffer.getText());
 			sb.append('\n');
 		}
 		return sb.toString();
 	}
-	
-	public void putDependencies(Set<Dependency> aNotedDeps) {
+
+	public void putDependencies(final Set<Dependency> aNotedDeps) {
 		notedDeps.addAll(aNotedDeps);
 	}
 }

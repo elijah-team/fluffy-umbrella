@@ -43,7 +43,7 @@ public class ElSystemTest {
 		final GenerateResult[] gr = new GenerateResult[1];
 		ab.subscribe_GenerateResult(agr -> gr[0] = agr);
 
-		OutputStrategy os = new OutputStrategy();
+		final OutputStrategy os = new OutputStrategy();
 		os.per(OutputStrategy.Per.PER_CLASS);
 		sys.setOutputStrategy(os);
 		sys.generateOutputs(gr[0]);

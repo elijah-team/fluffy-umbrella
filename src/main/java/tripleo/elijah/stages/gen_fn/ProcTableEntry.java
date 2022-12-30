@@ -201,7 +201,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 			}
 		}
 		
-		String sb2 = "[" +
+		final String sb2 = "[" +
 		  Helpers.String_join(", ", l) +
 		  "]";
 		pte_string = sb2;

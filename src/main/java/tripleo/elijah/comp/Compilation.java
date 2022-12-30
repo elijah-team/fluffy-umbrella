@@ -551,7 +551,7 @@ public abstract class Compilation {
 		private boolean _addToCompilation = false;
 		private String _fn = null;
 
-		public ModuleBuilder(@NotNull Compilation aCompilation) {
+		public ModuleBuilder(@NotNull final Compilation aCompilation) {
 //          compilation = aCompilation;
 			mod = new OS_Module();
 			mod.setParent(aCompilation);
@@ -573,12 +573,12 @@ public abstract class Compilation {
 			return mod;
 		}
 
-		public ModuleBuilder withPrelude(String aPrelude) {
+		public ModuleBuilder withPrelude(final String aPrelude) {
 			mod.prelude = mod.getCompilation().findPrelude("c");
 			return this;
 		}
 
-		public ModuleBuilder withFileName(String aFn) {
+		public ModuleBuilder withFileName(final String aFn) {
 			_fn = aFn;
 			mod.setFileName(aFn);
 			return this;

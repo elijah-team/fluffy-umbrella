@@ -83,8 +83,8 @@ public class TestBasicSlir {
 
 	@Test
 	public final void testBasic_fact1() throws IOException {
-		String s0 = "test/basic/fact1";
-		String s = "test/basic/fact1/main2";
+		final String s0 = "test/basic/fact1";
+		final String s = "test/basic/fact1/main2";
 
 //		final Compilation c = new Compilation(new StdErrSink(), new IO());
 //

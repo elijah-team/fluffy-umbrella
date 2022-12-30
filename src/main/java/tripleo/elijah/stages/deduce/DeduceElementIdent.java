@@ -42,7 +42,7 @@ public class DeduceElementIdent {
 	}
 	
 	private void resolveIdentIA_(@NotNull final Context context, @NotNull final IdentIA identIA, final BaseGeneratedFunction generatedFunction, @NotNull final FoundElement foundElement) throws ResolveError {
-		DeduceTypes2.DeduceClient3 aDeduceClient3 = new DeduceTypes2.DeduceClient3(deduceTypes2);
+		final DeduceTypes2.DeduceClient3 aDeduceClient3 = new DeduceTypes2.DeduceClient3(deduceTypes2);
 		final Resolve_Ident_IA ria = new Resolve_Ident_IA(aDeduceClient3, context, identIA, generatedFunction, foundElement, deduceTypes2._errSink());
 		ria.action();
 	}

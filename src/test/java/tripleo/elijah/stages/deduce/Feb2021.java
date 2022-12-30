@@ -24,21 +24,21 @@ public class Feb2021 {
 
 	@Test
 	public void testProperty() throws Exception {
-		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/property/"));
 	}
 
 	@Test
 	public void testProperty2() throws Exception {
-		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/property2/"));
 	}
 
 	@Test
 	public void testProperty3() throws Exception {
-		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/property3/"));
 	}
@@ -47,7 +47,7 @@ public class Feb2021 {
 	@Ignore
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testFunction() throws Exception {
-		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/function/"));
 	}
@@ -55,7 +55,7 @@ public class Feb2021 {
 	@Test
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testHier() throws Exception {
-		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/hier/"));
 	}

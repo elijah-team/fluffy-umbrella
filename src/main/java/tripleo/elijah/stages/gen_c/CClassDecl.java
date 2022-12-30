@@ -26,11 +26,11 @@ public class CClassDecl {
 	public String prim_decl;
 	public boolean prim = false;
 
-	public CClassDecl(GeneratedClass generatedClass) {
+	public CClassDecl(final GeneratedClass generatedClass) {
 		this.generatedClass = generatedClass;
 	}
 
-	public void setDecl(String str) {
+	public void setDecl(final String str) {
 		prim_decl = str;
 	}
 
@@ -39,10 +39,10 @@ public class CClassDecl {
 	}
 
 	public void evaluatePrimitive() {
-		ClassStatement xx = generatedClass.getKlass();
+		final ClassStatement xx = generatedClass.getKlass();
 		xx.walkAnnotations(new AnnotationWalker() {
 			@Override
-			public void annotation(AnnotationPart anno) {
+			public void annotation(final AnnotationPart anno) {
 				if (anno.annoClass().equals(Helpers.string_to_qualident("C.repr"))) {
 					if (anno.getExprs() != null) {
 						final ArrayList<IExpression> expressions = new ArrayList<IExpression>(anno.getExprs().expressions());

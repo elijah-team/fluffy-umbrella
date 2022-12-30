@@ -23,32 +23,32 @@ public class ClassInstantiationTest {
 
 	@Test
 	public void classInstantiation() throws Exception {
-		String      f = "test/basic1/class_instantiation/";
-		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
+		final String f = "test/basic1/class_instantiation/";
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
 	}
 
 	@Test
 	public void classInstantiation2() throws Exception {
-		String      f = "test/basic1/class_instantiation2/";
-		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
+		final String f = "test/basic1/class_instantiation2/";
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
 	}
 
 	@Test
 	public void classInstantiation3() throws Exception {
-		String      f = "test/basic1/class_instantiation3/";
-		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
+		final String f = "test/basic1/class_instantiation3/";
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
 	}
 
 	@Test
 	public void classInstantiation4() throws Exception {
-		String      f = "test/basic1/class_instantiation4/";
-		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
+		final String f = "test/basic1/class_instantiation4/";
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
 

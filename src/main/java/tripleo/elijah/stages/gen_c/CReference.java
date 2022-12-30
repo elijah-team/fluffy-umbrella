@@ -45,7 +45,7 @@ public class CReference {
 	private List<Reference> refs;
 
 	@Contract("null, _ -> fail")
-	public static @NotNull EG_Statement forDeduceElement3(IDeduceElement3 deduceElement3, final GenerateC gc) {
+	public static @NotNull EG_Statement forDeduceElement3(final IDeduceElement3 deduceElement3, final GenerateC gc) {
 		//return deduceElement3.();
 		if (deduceElement3 instanceof DeduceElement3_ProcTableEntry) {
 			final DeduceElement3_ProcTableEntry de_pte = (DeduceElement3_ProcTableEntry) deduceElement3;
@@ -55,11 +55,11 @@ public class CReference {
 		throw new NotImplementedException();
 	}
 
-	private static @NotNull EG_Statement forDeduceElement3_ProcTableEntry(@NotNull DeduceElement3_ProcTableEntry de_pte, final GenerateC gc) {
+	private static @NotNull EG_Statement forDeduceElement3_ProcTableEntry(@NotNull final DeduceElement3_ProcTableEntry de_pte, final GenerateC gc) {
 		final EG_SingleStatement beginning;
 		final EG_SingleStatement ending;
 		final EG_Statement middle;
-		boolean indent = false;
+		final boolean indent = false;
 		final EX_Explanation explanation;
 
 
@@ -72,10 +72,10 @@ public class CReference {
 		{
 			if (pte.expression_num == null) {
 				final IdentExpression ptex = (IdentExpression) pte.expression;
-				String text = ptex.getText();
-				@Nullable InstructionArgument xx = gf.vte_lookup(text);
+				final String text = ptex.getText();
+				@Nullable final InstructionArgument xx = gf.vte_lookup(text);
 				assert xx != null;
-				String realTargetName = gc.getRealTargetName(gf, (IntegerIA) xx, Generate_Code_For_Method.AOG.GET);
+				final String realTargetName = gc.getRealTargetName(gf, (IntegerIA) xx, Generate_Code_For_Method.AOG.GET);
 				sb.append(Emit.emit("/*424*/") + realTargetName);
 				sb.append('(');
 				final List<String> sl3 = gc.getArgumentStrings(gf, () -> new InstructionFixedList(instruction));
@@ -87,7 +87,7 @@ public class CReference {
 				reference.getIdentIAPath(ia2, gf, Generate_Code_For_Method.AOG.GET, null);
 				final List<String> sl3 = gc.getArgumentStrings(gf, () -> new InstructionFixedList(instruction));
 				reference.args(sl3);
-				@NotNull String path = reference.build();
+				@NotNull final String path = reference.build();
 
 				sb.append(Emit.emit("/*427*/") + path + ";");
 			}
@@ -127,123 +127,35 @@ public class CReference {
 		}
 	}
 
-	enum Ref {
-		// https://www.baeldung.com/a-guide-to-java-enums
-		LOCAL {
-			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
-				String text = "vv" + ref.text;
-				sb.appendText(text, false);
-			}
-		},
-		MEMBER {
-			@Override
-			public void buildHelper(final Reference ref, final @NotNull BuildState sb) {
-				String text = "->vm" + ref.text;
-
-				final StringBuilder sb1 = new StringBuilder();
-
-				sb1.append(text);
-				if (ref.value != null) {
-					sb1.append(" = ");
-					sb1.append(ref.value);
-					sb1.append(";");
-				}
-
-				sb.appendText(sb1.toString(), false);
-			}
-		},
-		PROPERTY_GET {
-			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
-				String text;
-				final String s = sb.toString();
-				text = String.format("%s%s)", ref.text, s);
-				sb.open = false;
-//				if (!s.equals(""))
-				sb.needs_comma = false;
-				sb.appendText(text, true);
-			}
-		},
-		PROPERTY_SET {
-			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
-				String text;
-				final String s = sb.toString();
-				text = String.format("%s%s, %s);", ref.text, s, ref.value);
-				sb.open = false;
-//				if (!s.equals(""))
-				sb.needs_comma = false;
-				sb.appendText(text, true);
-			}
-		},
-		INLINE_MEMBER {
-			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
-				String text = Emit.emit("/*219*/") + ".vm" + ref.text;
-				sb.appendText(text, false);
-			}
-		},
-		CONSTRUCTOR {
-			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
-				String text;
-				final @NotNull String s = sb.toString();
-				text = String.format("%s(%s", ref.text, s);
-				sb.open = false;
-				if (!s.equals("")) sb.needs_comma = true;
-				sb.appendText(text + ")", true);
-			}
-		},
-		DIRECT_MEMBER {
-			@Override
-			public void buildHelper(final Reference ref, final @NotNull BuildState sb) {
-				String text;
-				text = Emit.emit("/*124*/") + "vsc->vm" + ref.text;
-
-				final StringBuilder sb1 = new StringBuilder();
-
-				sb1.append(text);
-				if (ref.value != null) {
-					sb1.append(" = ");
-					sb1.append(ref.value);
-					sb1.append(";");
-				}
-
-				sb.appendText(sb1.toString(), false);
-			}
-		},
-		LITERAL {
-			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
-				String text = ref.text;
-				sb.appendText(text, false);
-			}
-		},
-		FUNCTION {
-			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
-				String text;
-				final String s = sb.toString();
-				text = String.format("%s(%s", ref.text, s);
-				sb.open = true;
-				if (!s.equals("")) sb.needs_comma = true;
-				sb.appendText(text, true);
-			}
-		};
-
-		public abstract void buildHelper(final Reference ref, final BuildState sb);
+	@NotNull static List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
+		final List<InstructionArgument> s = new LinkedList<InstructionArgument>();
+		while (oo != null) {
+			if (oo instanceof IntegerIA) {
+				s.add(0, oo);
+				oo = null;
+			} else if (oo instanceof IdentIA) {
+				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
+				s.add(0, oo);
+				oo = ite1.getBacklink();
+			} else if (oo instanceof ProcIA) {
+//				final ProcTableEntry prte = ((ProcIA)oo).getEntry();
+				s.add(0, oo);
+				oo = null;
+			} else
+				throw new IllegalStateException("Invalid InstructionArgument");
+		}
+		return s;
 	}
 
-	void addRef(String text, Ref type) {
+	void addRef(final String text, final Ref type) {
 		refs.add(new Reference(text, type));
 	}
 
-	void addRef(String text, Ref type, String aValue) {
+	void addRef(final String text, final Ref type, final String aValue) {
 		refs.add(new Reference(text, type, aValue));
 	}
 
-	public String getIdentIAPath(final @NotNull IdentIA ia2, BaseGeneratedFunction generatedFunction, Generate_Code_For_Method.AOG aog, final String aValue) {
+	public String getIdentIAPath(final @NotNull IdentIA ia2, final BaseGeneratedFunction generatedFunction, final Generate_Code_For_Method.AOG aog, final String aValue) {
 		assert ia2.gf == generatedFunction;
 		final List<InstructionArgument> s = _getIdentIAPathList(ia2);
 		refs = new ArrayList<Reference>(s.size());
@@ -252,9 +164,9 @@ public class CReference {
 		// TODO NOT LOOKING UP THINGS, IE PROPERTIES, MEMBERS
 		//
 		String text = "";
-		List<String> sl = new ArrayList<String>();
+		final List<String> sl = new ArrayList<String>();
 		for (int i = 0, sSize = s.size(); i < sSize; i++) {
-			InstructionArgument ia = s.get(i);
+			final InstructionArgument ia = s.get(i);
 			if (ia instanceof IntegerIA) {
 				// should only be the first element if at all
 				assert i == 0;
@@ -263,8 +175,8 @@ public class CReference {
 				addRef(vte.getName(), Ref.LOCAL);
 			} else if (ia instanceof IdentIA) {
 				boolean skip = false;
-				final IdentTableEntry idte = ((IdentIA)ia).getEntry();
-				OS_Element resolved_element = idte.getResolvedElement();
+				final IdentTableEntry idte = ((IdentIA) ia).getEntry();
+				final OS_Element resolved_element = idte.getResolvedElement();
 				if (resolved_element != null) {
 					GeneratedNode resolved = null;
 					if (resolved_element instanceof ClassStatement) {
@@ -273,17 +185,17 @@ public class CReference {
 						if (resolved == null)
 							resolved = idte.resolvedType();
 					} else if (resolved_element instanceof FunctionDef) {
-						@Nullable ProcTableEntry pte = idte.getCallablePTE();
+						@Nullable final ProcTableEntry pte = idte.getCallablePTE();
 						if (pte != null) {
-							FunctionInvocation fi = pte.getFunctionInvocation();
+							final FunctionInvocation fi = pte.getFunctionInvocation();
 							if (fi != null) {
-								BaseGeneratedFunction gen = fi.getGenerated();
+								final BaseGeneratedFunction gen = fi.getGenerated();
 								if (gen != null)
 									resolved = gen;
 							}
 						}
 						if (resolved == null) {
-							GeneratedNode resolved1 = idte.resolvedType();
+							final GeneratedNode resolved1 = idte.resolvedType();
 							if (resolved1 instanceof GeneratedFunction)
 								resolved = resolved1;
 							else if (resolved1 instanceof GeneratedClass)
@@ -291,14 +203,14 @@ public class CReference {
 						}
 					} else if (resolved_element instanceof PropertyStatement) {
 						NotImplementedException.raise();
-						GeneratedNode resolved1 = idte.type.resolved();
-						int code;
+						final GeneratedNode resolved1 = idte.type.resolved();
+						final int code;
 						if (resolved1 != null)
 							code = ((GeneratedContainerNC) resolved1).getCode();
 						else
 							code = -1;
 						short state = 0;
-						if (i < sSize-1) {
+						if (i < sSize - 1) {
 							state = 1;
 						} else {
 							switch (aog) {
@@ -339,7 +251,7 @@ public class CReference {
 								_getIdentIAPath_IdentIAHelper(null, sl, i, sSize, resolved_element, generatedFunction, resolved, aValue);
 								text = null;
 							} else {
-								boolean b = _getIdentIAPath_IdentIAHelper(s.get(i + 1), sl, i, sSize, resolved_element, generatedFunction, resolved, aValue);
+								final boolean b = _getIdentIAPath_IdentIAHelper(s.get(i + 1), sl, i, sSize, resolved_element, generatedFunction, resolved, aValue);
 								if (b) i++;
 							}
 							break;
@@ -385,7 +297,7 @@ public class CReference {
 							text = Emit.emit("/*152*/") + "vm" + text1;
 						}
 						System.err.println("119 " + idte.getIdent() + " " + idte.getStatus());
-						String text2 = (Emit.emit("/*114*/") + String.format("%s is UNKNOWN", text1));
+						final String text2 = (Emit.emit("/*114*/") + String.format("%s is UNKNOWN", text1));
 						addRef(text2, Ref.MEMBER);
 						break;
 					default:
@@ -405,7 +317,7 @@ public class CReference {
 		return rtext;
 	}
 
-	public String getIdentIAPath_Proc(ProcTableEntry aPrte) {
+	public String getIdentIAPath_Proc(final ProcTableEntry aPrte) {
 		final String text;
 		final BaseGeneratedFunction generated = aPrte.getFunctionInvocation().getGenerated();
 
@@ -415,7 +327,7 @@ public class CReference {
 		final GeneratedContainerNC genClass = (GeneratedContainerNC) generated.getGenClass();
 
 		if (generated instanceof GeneratedConstructor) {
-			int y = 2;
+			final int y = 2;
 			final String constructorNameText = generated.getFunctionName();
 
 			text = String.format("ZC%d%s", genClass.getCode(), constructorNameText);
@@ -428,55 +340,55 @@ public class CReference {
 		return text;
 	}
 
-	boolean _getIdentIAPath_IdentIAHelper(InstructionArgument ia_next,
-										  List<String> sl,
-										  int i,
-										  int sSize,
-										  OS_Element resolved_element,
-										  BaseGeneratedFunction generatedFunction,
-										  GeneratedNode aResolved,
-										  final String aValue) {
+	boolean _getIdentIAPath_IdentIAHelper(final InstructionArgument ia_next,
+	                                      final List<String> sl,
+	                                      final int i,
+	                                      final int sSize,
+	                                      final OS_Element resolved_element,
+	                                      final BaseGeneratedFunction generatedFunction,
+	                                      final GeneratedNode aResolved,
+	                                      final String aValue) {
 		boolean b = false;
 		if (resolved_element instanceof ClassStatement) {
 			// Assuming constructor call
-			int code;
+			final int code;
 			if (aResolved != null) {
-				code = ((GeneratedContainerNC)aResolved).getCode();
+				code = ((GeneratedContainerNC) aResolved).getCode();
 			} else {
 				code = -1;
-				System.err.println("** 31116 not resolved "+resolved_element);
+				System.err.println("** 31116 not resolved " + resolved_element);
 			}
 			// README might be calling reflect or Type or Name
 			// TODO what about named constructors -- should be called with construct keyword
 			if (ia_next instanceof IdentIA) {
-				IdentTableEntry ite = ((IdentIA) ia_next).getEntry();
+				final IdentTableEntry ite = ((IdentIA) ia_next).getEntry();
 				final String text = ite.getIdent().getText();
 				if (text.equals("reflect")) {
 					b = true;
-					String text2 = String.format("ZS%d_reflect", code);
+					final String text2 = String.format("ZS%d_reflect", code);
 					addRef(text2, Ref.FUNCTION);
 				} else if (text.equals("Type")) {
 					b = true;
-					String text2 = String.format("ZST%d", code); // return a TypeInfo structure
+					final String text2 = String.format("ZST%d", code); // return a TypeInfo structure
 					addRef(text2, Ref.FUNCTION);
 				} else if (text.equals("Name")) {
 					b = true;
-					String text2 = String.format("ZSN%d", code);
+					final String text2 = String.format("ZSN%d", code);
 					addRef(text2, Ref.FUNCTION); // TODO make this not a function
 				} else {
 					assert i == sSize-1; // Make sure we are ending with a constructor call
 					// README Assuming this is for named constructors
-					String text2 = String.format("ZC%d%s", code, text);
+					final String text2 = String.format("ZC%d%s", code, text);
 					addRef(text2, Ref.CONSTRUCTOR);
 				}
 			} else {
 				assert i == sSize-1; // Make sure we are ending with a constructor call
-				String text2 = String.format("ZC%d", code);
+				final String text2 = String.format("ZC%d", code);
 				addRef(text2, Ref.CONSTRUCTOR);
 			}
 		} else if (resolved_element instanceof ConstructorDef) {
 			assert i == sSize - 1; // Make sure we are ending with a constructor call
-			int code;
+			final int code;
 			if (aResolved != null) {
 				code = ((BaseGeneratedFunction) aResolved).getCode();
 			} else {
@@ -484,16 +396,16 @@ public class CReference {
 				System.err.println("** 31161 not resolved " + resolved_element);
 			}
 			// README Assuming this is for named constructors
-			String text = ((ConstructorDef) resolved_element).name();
-			String text2 = String.format("ZC%d%s", code, text);
+			final String text = ((ConstructorDef) resolved_element).name();
+			final String text2 = String.format("ZC%d%s", code, text);
 			addRef(text2, Ref.CONSTRUCTOR);
 		} else if (resolved_element instanceof FunctionDef) {
-			OS_Element parent = resolved_element.getParent();
+			final OS_Element parent = resolved_element.getParent();
 			int code = -1;
 			if (aResolved != null) {
 				if (aResolved instanceof BaseGeneratedFunction) {
 					final BaseGeneratedFunction rf = (BaseGeneratedFunction) aResolved;
-					GeneratedNode gc = rf.getGenClass();
+					final GeneratedNode gc = rf.getGenClass();
 					if (gc instanceof GeneratedContainerNC) // and not another function
 						code = ((GeneratedContainerNC) gc).getCode();
 					else
@@ -509,15 +421,15 @@ public class CReference {
 			if (code == -1) {
 //				text2 = String.format("ZT%d_%d", enclosing_function._a.getCode(), closure_index);
 			}
-			String text2 = String.format("Z%d%s", code, ((FunctionDef) resolved_element).name());
+			final String text2 = String.format("Z%d%s", code, ((FunctionDef) resolved_element).name());
 			addRef(text2, Ref.FUNCTION);
 		} else if (resolved_element instanceof DefFunctionDef) {
-			OS_Element parent = resolved_element.getParent();
-			int code;
+			final OS_Element parent = resolved_element.getParent();
+			final int code;
 			if (aResolved != null) {
 				assert aResolved instanceof BaseGeneratedFunction;
 				final BaseGeneratedFunction rf = (BaseGeneratedFunction) aResolved;
-				GeneratedNode gc = rf.getGenClass();
+				final GeneratedNode gc = rf.getGenClass();
 				if (gc instanceof GeneratedContainerNC) // and not another function
 					code = ((GeneratedContainerNC) gc).getCode();
 				else
@@ -539,7 +451,7 @@ public class CReference {
 //				text2 = String.format("ZT%d_%d", enclosing_function._a.getCode(), closure_index);
 			}
 			final DefFunctionDef defFunctionDef = (DefFunctionDef) resolved_element;
-			String text2 = String.format("Z%d%s", code, defFunctionDef.name());
+			final String text2 = String.format("Z%d%s", code, defFunctionDef.name());
 			addRef(text2, Ref.FUNCTION);
 		} else if (resolved_element instanceof VariableStatement) {
 			// first getParent is VariableSequence
@@ -560,8 +472,8 @@ public class CReference {
 				}
 			}
 		} else if (resolved_element instanceof PropertyStatement) {
-			OS_Element parent = resolved_element.getParent();
-			int code;
+			final OS_Element parent = resolved_element.getParent();
+			final int code;
 			if (parent instanceof ClassStatement) {
 				code = ((ClassStatement) parent)._a.getCode();
 			} else if (parent instanceof NamespaceStatement) {
@@ -573,10 +485,10 @@ public class CReference {
 			sl.clear();  // don't we want all the text including from sl?
 //			if (text.equals("")) text = "vsc";
 //			text = String.format("ZP%dget_%s(%s)", code, ((PropertyStatement) resolved_element).name(), text); // TODO Don't know if get or set!
-			String text2 = String.format("ZP%dget_%s", code, ((PropertyStatement) resolved_element).name()); // TODO Don't know if get or set!
+			final String text2 = String.format("ZP%dget_%s", code, ((PropertyStatement) resolved_element).name()); // TODO Don't know if get or set!
 			addRef(text2, Ref.PROPERTY_GET);
 		} else if (resolved_element instanceof AliasStatement) {
-			int y=2;
+			final int y = 2;
 			NotImplementedException.raise();
 //			text = Emit.emit("/*167*/")+((AliasStatement)resolved_element).name();
 //			return _getIdentIAPath_IdentIAHelper(text, sl, i, sSize, _res)
@@ -588,49 +500,11 @@ public class CReference {
 		return b;
 	}
 
-	@NotNull static List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
-		List<InstructionArgument> s = new LinkedList<InstructionArgument>();
-		while (oo != null) {
-			if (oo instanceof IntegerIA) {
-				s.add(0, oo);
-				oo = null;
-			} else if (oo instanceof IdentIA) {
-				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
-				s.add(0, oo);
-				oo = ite1.getBacklink();
-			} else if (oo instanceof ProcIA) {
-//				final ProcTableEntry prte = ((ProcIA)oo).getEntry();
-				s.add(0, oo);
-				oo = null;
-			} else
-				throw new IllegalStateException("Invalid InstructionArgument");
-		}
-		return s;
-	}
-	
-	private final static class BuildState {
-		StringBuilder sb = new StringBuilder();
-		boolean open = false, needs_comma = false;
-		
-		public void appendText(final String text, final boolean erase) {
-			if (erase)
-				sb = new StringBuilder();
-			
-			sb.append(text);
-		}
-		
-		@Override
-		public String toString() {
-			return sb.toString();
-		}
-		//ABOVE 3a
-	}
-
 	@NotNull
 	public String build() {
 		final BuildState st = new BuildState();
 
-		for (Reference ref : refs) {
+		for (final Reference ref : refs) {
 			switch (ref.type) {
 			case LITERAL:
 			case DIRECT_MEMBER:
@@ -664,14 +538,140 @@ public class CReference {
 
 		return sb.toString();
 	}
+	
+	private final static class BuildState {
+		StringBuilder sb = new StringBuilder();
+		boolean open = false, needs_comma = false;
+		
+		public void appendText(final String text, final boolean erase) {
+			if (erase)
+				sb = new StringBuilder();
+			
+			sb.append(text);
+		}
+		
+		@Override
+		public String toString() {
+			return sb.toString();
+		}
+		//ABOVE 3a
+	}
 
 	/**
 	 * Call before you call build
 	 *
 	 * @param sl3
 	 */
-	public void args(List<String> sl3) {
+	public void args(final List<String> sl3) {
 		args = sl3;
+	}
+
+	enum Ref {
+		// https://www.baeldung.com/a-guide-to-java-enums
+		LOCAL {
+			@Override
+			public void buildHelper(final Reference ref, final BuildState sb) {
+				final String text = "vv" + ref.text;
+				sb.appendText(text, false);
+			}
+		},
+		MEMBER {
+			@Override
+			public void buildHelper(final Reference ref, final @NotNull BuildState sb) {
+				final String text = "->vm" + ref.text;
+
+				final StringBuilder sb1 = new StringBuilder();
+
+				sb1.append(text);
+				if (ref.value != null) {
+					sb1.append(" = ");
+					sb1.append(ref.value);
+					sb1.append(";");
+				}
+
+				sb.appendText(sb1.toString(), false);
+			}
+		},
+		PROPERTY_GET {
+			@Override
+			public void buildHelper(final Reference ref, final BuildState sb) {
+				final String text;
+				final String s = sb.toString();
+				text = String.format("%s%s)", ref.text, s);
+				sb.open = false;
+//				if (!s.equals(""))
+				sb.needs_comma = false;
+				sb.appendText(text, true);
+			}
+		},
+		PROPERTY_SET {
+			@Override
+			public void buildHelper(final Reference ref, final BuildState sb) {
+				final String text;
+				final String s = sb.toString();
+				text = String.format("%s%s, %s);", ref.text, s, ref.value);
+				sb.open = false;
+//				if (!s.equals(""))
+				sb.needs_comma = false;
+				sb.appendText(text, true);
+			}
+		},
+		INLINE_MEMBER {
+			@Override
+			public void buildHelper(final Reference ref, final BuildState sb) {
+				final String text = Emit.emit("/*219*/") + ".vm" + ref.text;
+				sb.appendText(text, false);
+			}
+		},
+		CONSTRUCTOR {
+			@Override
+			public void buildHelper(final Reference ref, final BuildState sb) {
+				final String text;
+				final @NotNull String s = sb.toString();
+				text = String.format("%s(%s", ref.text, s);
+				sb.open = false;
+				if (!s.equals("")) sb.needs_comma = true;
+				sb.appendText(text + ")", true);
+			}
+		},
+		DIRECT_MEMBER {
+			@Override
+			public void buildHelper(final Reference ref, final @NotNull BuildState sb) {
+				final String text;
+				text = Emit.emit("/*124*/") + "vsc->vm" + ref.text;
+
+				final StringBuilder sb1 = new StringBuilder();
+
+				sb1.append(text);
+				if (ref.value != null) {
+					sb1.append(" = ");
+					sb1.append(ref.value);
+					sb1.append(";");
+				}
+
+				sb.appendText(sb1.toString(), false);
+			}
+		},
+		LITERAL {
+			@Override
+			public void buildHelper(final Reference ref, final BuildState sb) {
+				final String text = ref.text;
+				sb.appendText(text, false);
+			}
+		},
+		FUNCTION {
+			@Override
+			public void buildHelper(final Reference ref, final BuildState sb) {
+				final String text;
+				final String s = sb.toString();
+				text = String.format("%s(%s", ref.text, s);
+				sb.open = true;
+				if (!s.equals("")) sb.needs_comma = true;
+				sb.appendText(text, true);
+			}
+		};
+
+		public abstract void buildHelper(final Reference ref, final BuildState sb);
 	}
 }
 

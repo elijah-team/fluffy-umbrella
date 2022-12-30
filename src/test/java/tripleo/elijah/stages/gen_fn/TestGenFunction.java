@@ -253,7 +253,7 @@ public class TestGenFunction {
 			c.use(ci, false);
 		}
 
-		Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
+		final Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
 		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
 		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
@@ -261,12 +261,12 @@ public class TestGenFunction {
 		final @NotNull List<GeneratedNode> lgc = new ArrayList<>();
 		gfm.generateAllTopLevelClasses(lgc);
 
-		DeducePhase dp = new DeducePhase(generatePhase, pl, verbosity1);
+		final DeducePhase dp = new DeducePhase(generatePhase, pl, verbosity1);
 
-		WorkManager wm = new WorkManager();
+		final WorkManager wm = new WorkManager();
 
-		List<GeneratedNode> lgf = new ArrayList<>();
-		for (GeneratedNode generatedNode : lgc) {
+		final List<GeneratedNode> lgf = new ArrayList<>();
+		for (final GeneratedNode generatedNode : lgc) {
 			if (generatedNode instanceof GeneratedClass)
 				lgf.addAll(((GeneratedClass) generatedNode).functionMap.values());
 			if (generatedNode instanceof GeneratedNamespace)
@@ -276,7 +276,7 @@ public class TestGenFunction {
 
 		for (final GeneratedNode gn : lgf) {
 			if (gn instanceof GeneratedFunction) {
-				GeneratedFunction gf = (GeneratedFunction) gn;
+				final GeneratedFunction gf = (GeneratedFunction) gn;
 				for (final Instruction instruction : gf.instructions()) {
 					System.out.println("8100 " + instruction);
 				}
@@ -289,7 +289,7 @@ public class TestGenFunction {
 
 		for (final GeneratedNode gn : lgf) {
 			if (gn instanceof GeneratedFunction) {
-				GeneratedFunction gf = (GeneratedFunction) gn;
+				final GeneratedFunction gf = (GeneratedFunction) gn;
 				System.out.println("----------------------------------------------------------");
 				System.out.println(gf.name());
 				System.out.println("----------------------------------------------------------");
@@ -300,12 +300,12 @@ public class TestGenFunction {
 
 //		Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
 		final PipelineLogic pipelineLogic = new PipelineLogic(new AccessBus(compilation));
-		GenerateC ggc = new GenerateC(m, eee, c.gitlabCIVerbosity(), pipelineLogic);
+		final GenerateC ggc = new GenerateC(m, eee, c.gitlabCIVerbosity(), pipelineLogic);
 		ggc.generateCode(lgf, wm);
 
-		GenerateResult gr = new GenerateResult();
+		final GenerateResult gr = new GenerateResult();
 
-		for (GeneratedNode generatedNode : lgc) {
+		for (final GeneratedNode generatedNode : lgc) {
 			if (generatedNode instanceof GeneratedClass) {
 				ggc.generate_class((GeneratedClass) generatedNode, gr);
 			} else {

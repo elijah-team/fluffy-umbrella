@@ -77,7 +77,7 @@ public class TestBasic {
 	@Ignore
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public final void testBasic_listfolders3() throws Exception {
-		String s = "test/basic/listfolders3/listfolders3.ez";
+		final String s = "test/basic/listfolders3/listfolders3.ez";
 
 		final ErrSink     eee = new StdErrSink();
 		final Compilation c   = new CompilationImpl(eee, new IO());
@@ -92,7 +92,7 @@ public class TestBasic {
 
 	@Test
 	public final void testBasic_listfolders4() throws Exception {
-		String s = "test/basic/listfolders4/listfolders4.ez";
+		final String s = "test/basic/listfolders4/listfolders4.ez";
 
 		final ErrSink     eee = new StdErrSink();
 		final Compilation c   = new CompilationImpl(eee, new IO());
@@ -107,7 +107,7 @@ public class TestBasic {
 
 	@Test
 	public final void testBasic_fact1() throws Exception {
-		String s = "test/basic/fact1/main2";
+		final String s = "test/basic/fact1/main2";
 
 		final ErrSink     eee = new StdErrSink();
 		final Compilation c   = new CompilationImpl(eee, new IO());

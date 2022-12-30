@@ -213,7 +213,7 @@ public class DeducePhase {
 	}
 
 	public void finish(final GeneratedClasses aGeneratedNodes) {
-		int y = 2;
+		final int y = 2;
 	}
 
 	public void addFunctionMapHook(final FunctionMapHook aFunctionMapHook) {

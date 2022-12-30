@@ -34,30 +34,30 @@ public class TypeOfTypeNameTest {
 		//
 		// CREATE MOCKS
 		//
-		Context ctx = mock(Context.class);
-		OS_Module mod = mock(OS_Module.class);
-		Compilation c = mock(Compilation.class);
+		final Context ctx = mock(Context.class);
+		final OS_Module mod = mock(OS_Module.class);
+		final Compilation c = mock(Compilation.class);
 
 		//
 		// CREATE VARIABLES
 		//
-		ErrSink e = new StdErrSink();
+		final ErrSink e = new StdErrSink();
 
-		String typeNameString = "AbstractFactory";
+		final String typeNameString = "AbstractFactory";
 
-		VariableStatement var_x = new VariableStatement(null);
+		final VariableStatement var_x = new VariableStatement(null);
 		var_x.setName(Helpers.string_to_ident("x")); // not necessary
-		RegularTypeName rtn = new RegularTypeName(ctx);
+		final RegularTypeName rtn = new RegularTypeName(ctx);
 		rtn.setName(Helpers.string_to_qualident(typeNameString));
 		var_x.setTypeName(rtn);
 
-		LookupResultList lrl = new LookupResultList();
+		final LookupResultList lrl = new LookupResultList();
 		lrl.add("x", 1, var_x, ctx);
 
 		//
 		// CREATE VARIABLE UNDER TEST
 		//
-		TypeOfTypeName t = new TypeOfTypeName(ctx);
+		final TypeOfTypeName t = new TypeOfTypeName(ctx);
 		t.typeOf(Helpers.string_to_qualident(var_x.getName()));
 
 		//
@@ -72,12 +72,12 @@ public class TypeOfTypeNameTest {
 		//
 		// VERIFY EXPECTATIONS
 		//
-		@NotNull Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
+		@NotNull final Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
 		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
 		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
-		DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
-		TypeName tn = t.resolve(ctx, deduceTypes2);
+		final DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
+		final TypeName tn = t.resolve(ctx, deduceTypes2);
 //		System.out.println(tn);
 		verify(ctx, mod, c);
 		Assert.assertEquals(typeNameString, tn.toString());
@@ -88,30 +88,30 @@ public class TypeOfTypeNameTest {
 		//
 		// CREATE MOCKS
 		//
-		Context ctx = mock(Context.class);
-		OS_Module mod = mock(OS_Module.class);
-		Compilation c = mock(Compilation.class);
+		final Context ctx = mock(Context.class);
+		final OS_Module mod = mock(OS_Module.class);
+		final Compilation c = mock(Compilation.class);
 
 		//
 		// CREATE VARIABLES
 		//
-		ErrSink e = new StdErrSink();
+		final ErrSink e = new StdErrSink();
 
-		@NotNull String typeNameString = "package.AbstractFactory";
+		@NotNull final String typeNameString = "package.AbstractFactory";
 
-		VariableStatement var_x = new VariableStatement(null);
+		final VariableStatement var_x = new VariableStatement(null);
 		var_x.setName(Helpers.string_to_ident("x")); // not necessary
-		RegularTypeName rtn = new RegularTypeName(ctx);
+		final RegularTypeName rtn = new RegularTypeName(ctx);
 		rtn.setName(Helpers.string_to_qualident(typeNameString));
 		var_x.setTypeName(rtn);
 
-		LookupResultList lrl = new LookupResultList();
+		final LookupResultList lrl = new LookupResultList();
 		lrl.add("x", 1, var_x, ctx);
 
 		//
 		// CREATE VARIABLE UNDER TEST
 		//
-		TypeOfTypeName t = new TypeOfTypeName(ctx);
+		final TypeOfTypeName t = new TypeOfTypeName(ctx);
 		t.typeOf(Helpers.string_to_qualident("x"));
 
 		//
@@ -126,12 +126,12 @@ public class TypeOfTypeNameTest {
 		//
 		// VERIFY EXPECTATIONS
 		//
-		Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
+		final Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
 		final ElLog.@NotNull Verbosity verbosity1 = compilation.gitlabCIVerbosity();
 		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
-		DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
-		TypeName tn = t.resolve(ctx, deduceTypes2);
+		final DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
+		final TypeName tn = t.resolve(ctx, deduceTypes2);
 //		System.out.println(tn);
 		verify(ctx, mod, c);
 		Assert.assertEquals(typeNameString, tn.toString());
@@ -205,63 +205,63 @@ public class TypeOfTypeNameTest {
 		//
 		// CREATE MOCK
 		//
-		Context ctx = mock(Context.class);
-		Context ctx4 = mock(Context.class);
+		final Context ctx = mock(Context.class);
+		final Context ctx4 = mock(Context.class);
 
 		//
 		// CREATE VARIABLES
 		//
-		String typeNameString1 = "AbstractFactory";
+		final String typeNameString1 = "AbstractFactory";
 		final String typeNameString = "SystemInteger";
 
-		OS_Module mod = new OS_Module();
+		final OS_Module mod = new OS_Module();
 		mod.parent = mock(Compilation.class);
-		Context mod_ctx = mod.getContext();
+		final Context mod_ctx = mod.getContext();
 
-		ClassStatement st_af = new ClassStatement(mod, mod_ctx);
+		final ClassStatement st_af = new ClassStatement(mod, mod_ctx);
 		st_af.setName(IdentExpression.forString("AbstractFactory"));
-		ClassStatement sysint = new ClassStatement(mod, mod_ctx);
+		final ClassStatement sysint = new ClassStatement(mod, mod_ctx);
 		sysint.setName(IdentExpression.forString("SystemInteger"));
 
-		VariableSequence vs = new VariableSequence(st_af.getContext());
-		VariableStatement var_y = vs.next();
+		final VariableSequence vs = new VariableSequence(st_af.getContext());
+		final VariableStatement var_y = vs.next();
 		var_y.setName(IdentExpression.forString("y"));
-		@NotNull RegularTypeName rtn_y = new RegularTypeName(ctx);
+		@NotNull final RegularTypeName rtn_y = new RegularTypeName(ctx);
 		rtn_y.setName(Helpers.string_to_qualident(typeNameString));
 		var_y.setTypeName(rtn_y);
 
 		st_af.add(vs);
 
-		VariableStatement var_x = new VariableStatement(null);
+		final VariableStatement var_x = new VariableStatement(null);
 		var_x.setName(Helpers.string_to_ident("x")); // not necessary
-		RegularTypeName rtn_x = new RegularTypeName(ctx);
+		final RegularTypeName rtn_x = new RegularTypeName(ctx);
 		rtn_x.setName(Helpers.string_to_qualident(typeNameString1));
 		var_x.setTypeName(rtn_x);
 
-		LookupResultList lrl = new LookupResultList();
+		final LookupResultList lrl = new LookupResultList();
 		lrl.add("x", 1, var_x, ctx);
-		LookupResultList lrl2 = new LookupResultList();
+		final LookupResultList lrl2 = new LookupResultList();
 		lrl2.add(typeNameString1, 1, st_af, ctx);
-		LookupResultList lrl3 = new LookupResultList();
+		final LookupResultList lrl3 = new LookupResultList();
 		lrl3.add("SystemInteger", 1, sysint, ctx);
-		LookupResultList lrl4 = new LookupResultList();
+		final LookupResultList lrl4 = new LookupResultList();
 		lrl4.add("y", 1, var_y, ctx4);
 
 		//
 		// CREATE VARIABLE UNDER TEST
 		//
-		TypeOfTypeName t = new TypeOfTypeName(ctx);
+		final TypeOfTypeName t = new TypeOfTypeName(ctx);
 		t.typeOf(Helpers.string_to_qualident("x.y"));
 
 		//
 		// SET UP EXPECTATIONS
 		//
 //		OS_Module mod = mock(OS_Module.class);
-		Compilation           compilation   = new CompilationImpl(new StdErrSink(), new IO());
-		final ElLog.Verbosity verbosity1    = compilation.gitlabCIVerbosity();
+		final Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
+		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
 		final PipelineLogic   pl            = new PipelineLogic(new AccessBus(compilation));
-		final GeneratePhase   generatePhase = new GeneratePhase(verbosity1, pl);
-		DeduceTypes2          deduceTypes2  = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
+		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
+		final DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, new DeducePhase(generatePhase, pl, verbosity1));
 //		expect(mod.getFileName()).andReturn("foo.elijah");
 		expect(ctx.lookup("x")).andReturn(lrl);
 //		expect(ctx.lookup("y")).andReturn(lrl4);
@@ -272,7 +272,7 @@ public class TypeOfTypeNameTest {
 		//
 		// VERIFY EXPECTATIONS
 		//
-		TypeName tn = t.resolve(ctx, deduceTypes2);
+		final TypeName tn = t.resolve(ctx, deduceTypes2);
 //		System.out.println(tn);
 		verify(ctx);
 		Assert.assertEquals(typeNameString, tn.toString());

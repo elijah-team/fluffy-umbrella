@@ -100,14 +100,14 @@ public class GenType {
 	}
 
 	public String asString() {
-		String sb = "GenType{" + "resolvedn=" + resolvedn +
-				", typeName=" + typeName +
-				", nonGenericTypeName=" + nonGenericTypeName +
-				", resolved=" + resolved +
-				", ci=" + ci +
-				", node=" + node +
-				", functionInvocation=" + functionInvocation +
-				'}';
+		final String sb = "GenType{" + "resolvedn=" + resolvedn +
+		  ", typeName=" + typeName +
+		  ", nonGenericTypeName=" + nonGenericTypeName +
+		  ", resolved=" + resolved +
+		  ", ci=" + ci +
+		  ", node=" + node +
+		  ", functionInvocation=" + functionInvocation +
+		  '}';
 		return sb;
 	}
 

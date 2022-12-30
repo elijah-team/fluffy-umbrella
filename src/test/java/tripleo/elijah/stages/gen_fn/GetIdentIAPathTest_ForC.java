@@ -39,7 +39,7 @@ public class GetIdentIAPathTest_ForC {
 	@Before
 	public void setUp() throws Exception {
 		mod = mock(OS_Module.class);
-		FunctionDef fd = mock(FunctionDef.class);
+		final FunctionDef fd = mock(FunctionDef.class);
 		gf = new GeneratedFunction(fd);
 
 		Emit.emitting = false;
@@ -47,43 +47,43 @@ public class GetIdentIAPathTest_ForC {
 
 	@Test
 	public void testManualXDotFoo() {
-		@NotNull IdentExpression x_ident = IdentExpression.forString("X");
-		@NotNull IdentExpression foo_ident = IdentExpression.forString("foo");
+		@NotNull final IdentExpression x_ident = IdentExpression.forString("X");
+		@NotNull final IdentExpression foo_ident = IdentExpression.forString("foo");
 		//
-		VariableSequence vsq = new VariableSequence(null);
+		final VariableSequence vsq = new VariableSequence(null);
 		vsq.setParent(mock(ClassStatement.class));
-		VariableStatement foo_vs = new VariableStatement(vsq);
+		final VariableStatement foo_vs = new VariableStatement(vsq);
 		foo_vs.setName(foo_ident);
 		//
-		OS_Type type = null;
-		TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, x_ident);
-		int int_index = gf.addVariableTableEntry("x", VariableTableType.VAR, tte, mock(VariableStatement.class));
-		int ite_index = gf.addIdentTableEntry(foo_ident, null);
-		IdentTableEntry ite = gf.getIdentTableEntry(ite_index);
+		final OS_Type type = null;
+		final TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, x_ident);
+		final int int_index = gf.addVariableTableEntry("x", VariableTableType.VAR, tte, mock(VariableStatement.class));
+		final int ite_index = gf.addIdentTableEntry(foo_ident, null);
+		final IdentTableEntry ite = gf.getIdentTableEntry(ite_index);
 		ite.setResolvedElement(foo_vs);
 		ite.setBacklink(new IntegerIA(int_index, gf));
-		IdentIA ident_ia = new IdentIA(ite_index, gf);
-		String x = getIdentIAPath(ident_ia, gf);
+		final IdentIA ident_ia = new IdentIA(ite_index, gf);
+		final String x = getIdentIAPath(ident_ia, gf);
 		Assert.assertEquals("vvx->vmfoo", x);
 	}
 
 	@Test
 	public void testManualXDotFoo2() {
-		@NotNull IdentExpression x_ident = IdentExpression.forString("x");
-		@NotNull IdentExpression foo_ident = IdentExpression.forString("foo");
+		@NotNull final IdentExpression x_ident = IdentExpression.forString("x");
+		@NotNull final IdentExpression foo_ident = IdentExpression.forString("foo");
 		//
 		final OS_Element mock_class = mock(ClassStatement.class);
 		expect(gf.getFD().getParent()).andReturn(mock_class);
 		expect(gf.getFD().getParent()).andReturn(mock_class);
 		replay(gf.getFD());
 
-		VariableSequence vsq = new VariableSequence(null);
+		final VariableSequence vsq = new VariableSequence(null);
 		vsq.setParent(mock(ClassStatement.class));
-		VariableStatement foo_vs = new VariableStatement(vsq);
+		final VariableStatement foo_vs = new VariableStatement(vsq);
 		foo_vs.setName(foo_ident);
-		VariableSequence vsq2 = new VariableSequence(null);
+		final VariableSequence vsq2 = new VariableSequence(null);
 		vsq.setParent(mock(ClassStatement.class));
-		VariableStatement x_vs = new VariableStatement(vsq2);
+		final VariableStatement x_vs = new VariableStatement(vsq2);
 		x_vs.setName(x_ident);
 
 /*
@@ -95,23 +95,23 @@ public class GetIdentIAPathTest_ForC {
 
 		//		el1.add(vsq);
 		//
-		@NotNull Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
+		@NotNull final Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
 		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
 		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
-		GenerateFunctions gen = generatePhase.getGenerateFunctions(mod);
-		Context ctx = mock(Context.class);
+		final GenerateFunctions gen = generatePhase.getGenerateFunctions(mod);
+		final Context ctx = mock(Context.class);
 		//
-		DotExpression expr = new DotExpression(x_ident, foo_ident);
-		InstructionArgument xx = gen.simplify_expression(expr, gf, ctx);
+		final DotExpression expr = new DotExpression(x_ident, foo_ident);
+		final InstructionArgument xx = gen.simplify_expression(expr, gf, ctx);
 		//
-		@NotNull IdentTableEntry x_ite = gf.getIdentTableEntry(0); // x
+		@NotNull final IdentTableEntry x_ite = gf.getIdentTableEntry(0); // x
 		x_ite.setResolvedElement(x_vs);
-		@NotNull IdentTableEntry foo_ite = gf.getIdentTableEntry(1); // foo
+		@NotNull final IdentTableEntry foo_ite = gf.getIdentTableEntry(1); // foo
 		foo_ite.setResolvedElement(foo_vs);
 		//
-		IdentIA ident_ia = (IdentIA) xx;
-		String x = getIdentIAPath(ident_ia, gf);
+		final IdentIA ident_ia = (IdentIA) xx;
+		final String x = getIdentIAPath(ident_ia, gf);
 //		Assert.assertEquals("vvx->vmfoo", x);  // TODO real expectation, IOW output below is wrong
 		// TODO actually compiler should comlain that it can't find x
 		Assert.assertEquals("->vmx->vmfoo", x);
@@ -119,52 +119,52 @@ public class GetIdentIAPathTest_ForC {
 
 	@Test
 	public void testManualXDotFoo3() {
-		IdentExpression x_ident = Helpers.string_to_ident("x");
-		@NotNull IdentExpression foo_ident = Helpers.string_to_ident("foo");
+		final IdentExpression x_ident = Helpers.string_to_ident("x");
+		@NotNull final IdentExpression foo_ident = Helpers.string_to_ident("foo");
 		//
-		Compilation           compilation   = new CompilationImpl(new StdErrSink(), new IO());
-		final ElLog.Verbosity verbosity1    = compilation.gitlabCIVerbosity();
-		final PipelineLogic   pl            = new PipelineLogic(new AccessBus(compilation));
-		final GeneratePhase   generatePhase = new GeneratePhase(verbosity1, pl);
-		GenerateFunctions     gen           = generatePhase.getGenerateFunctions(mod);
-		Context               ctx           = mock(Context.class);
+		final Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
+		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
+		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
+		final GenerateFunctions gen = generatePhase.getGenerateFunctions(mod);
+		final Context ctx = mock(Context.class);
 		//
-		OS_Type type = null;
-		TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, x_ident);
-		int int_index = gf.addVariableTableEntry("x", VariableTableType.VAR, tte, mock(VariableStatement.class));
+		final OS_Type type = null;
+		final TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, x_ident);
+		final int int_index = gf.addVariableTableEntry("x", VariableTableType.VAR, tte, mock(VariableStatement.class));
 		//
-		DotExpression expr = new DotExpression(x_ident, foo_ident);
-		InstructionArgument xx = gen.simplify_expression(expr, gf, ctx);
+		final DotExpression expr = new DotExpression(x_ident, foo_ident);
+		final InstructionArgument xx = gen.simplify_expression(expr, gf, ctx);
 		//
 /*
 		int ite_index = gf.addIdentTableEntry(foo_ident);
 		IdentTableEntry ite = gf.getIdentTableEntry(ite_index);
 		ite.backlink = new IntegerIA(int_index);
 */
-		VariableSequence vsq = new VariableSequence(null);
+		final VariableSequence vsq = new VariableSequence(null);
 		vsq.setParent(mock(ClassStatement.class));
-		VariableStatement foo_vs = new VariableStatement(vsq);
+		final VariableStatement foo_vs = new VariableStatement(vsq);
 		foo_vs.setName(foo_ident);
 
-		IdentIA ident_ia = (IdentIA) xx;
-		@NotNull IdentTableEntry ite = ((IdentIA) xx).getEntry();
+		final IdentIA ident_ia = (IdentIA) xx;
+		@NotNull final IdentTableEntry ite = ((IdentIA) xx).getEntry();
 		ite.setResolvedElement(foo_vs);
 
-		String x = getIdentIAPath(ident_ia, gf);
+		final String x = getIdentIAPath(ident_ia, gf);
 //		Assert.assertEquals("vvx->vmfoo", x); // TODO real expectation
 		Assert.assertEquals("vvx->vmfoo", x);
 	}
 
 	@Test
 	public void testManualXDotFooWithFooBeingFunction() {
-		@NotNull IdentExpression x_ident = Helpers.string_to_ident("x");
-		@NotNull IdentExpression foo_ident = Helpers.string_to_ident("foo");
+		@NotNull final IdentExpression x_ident = Helpers.string_to_ident("x");
+		@NotNull final IdentExpression foo_ident = Helpers.string_to_ident("foo");
 		//
-		Context ctx = mock(Context.class);
-		Context mockContext = mock(Context.class);
+		final Context ctx = mock(Context.class);
+		final Context mockContext = mock(Context.class);
 
-		@NotNull LookupResultList lrl = new LookupResultList();
-		LookupResultList lrl2 = new LookupResultList();
+		@NotNull final LookupResultList lrl = new LookupResultList();
+		final LookupResultList lrl2 = new LookupResultList();
 
 		expect(mod.pullPackageName()).andReturn(OS_Package.default_package);
 		expect(mod.getFileName()).andReturn("filename.elijah");
@@ -172,7 +172,7 @@ public class GetIdentIAPathTest_ForC {
 		mod.add(anyObject(ClassStatement.class));
 		replay(mod);
 
-		ClassStatement classStatement = new ClassStatement(mod, ctx);
+		final ClassStatement classStatement = new ClassStatement(mod, ctx);
 		classStatement.setName(Helpers.string_to_ident("X")); // README not explicitly necessary
 
 //		expect(mockContext.lookup(foo_ident.getText())).andReturn(lrl2);
@@ -182,7 +182,7 @@ public class GetIdentIAPathTest_ForC {
 		lrl.add(x_ident.getText(), 1, classStatement, ctx);
 		expect(ctx.lookup(x_ident.getText())).andReturn(lrl);
 
-		FunctionDef functionDef = new FunctionDef(classStatement, classStatement.getContext());
+		final FunctionDef functionDef = new FunctionDef(classStatement, classStatement.getContext());
 		functionDef.setName(foo_ident);
 		lrl2.add(foo_ident.getText(), 1, functionDef, mockContext);
 
@@ -191,7 +191,7 @@ public class GetIdentIAPathTest_ForC {
 		//
 		replay(ctx, mockContext);
 
-		LookupResultList lrl_expected = ctx.lookup(x_ident.getText());
+		final LookupResultList lrl_expected = ctx.lookup(x_ident.getText());
 
 		//
 		// VERIFY EXPECTATIONS
@@ -199,37 +199,37 @@ public class GetIdentIAPathTest_ForC {
 
 		//
 		final OS_Type type = classStatement.getOS_Type();
-		@NotNull TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, x_ident);
-		int int_index = gf.addVariableTableEntry("x", VariableTableType.VAR, tte, mock(VariableStatement.class));
+		@NotNull final TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, x_ident);
+		final int int_index = gf.addVariableTableEntry("x", VariableTableType.VAR, tte, mock(VariableStatement.class));
 		//
-		DotExpression expr = new DotExpression(x_ident, foo_ident);
+		final DotExpression expr = new DotExpression(x_ident, foo_ident);
 		//
-		Compilation           compilation   = new CompilationImpl(new StdErrSink(), new IO());
-		final ElLog.Verbosity verbosity1    = compilation.gitlabCIVerbosity();
-		final PipelineLogic   pl            = new PipelineLogic(new AccessBus(compilation));
-		final GeneratePhase   generatePhase = new GeneratePhase(verbosity1, pl);
-		GenerateFunctions     gen           = generatePhase.getGenerateFunctions(mod);
-		InstructionArgument   xx            = gen.simplify_expression(expr, gf, ctx);
+		final Compilation compilation = new CompilationImpl(new StdErrSink(), new IO());
+		final ElLog.Verbosity verbosity1 = compilation.gitlabCIVerbosity();
+		final PipelineLogic pl = new PipelineLogic(new AccessBus(compilation));
+		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
+		final GenerateFunctions gen = generatePhase.getGenerateFunctions(mod);
+		final InstructionArgument xx = gen.simplify_expression(expr, gf, ctx);
 
 		//
 		// This is the Deduce portion.
 		// Not very extensive is it?
 		//
-		IdentIA ident_ia = (IdentIA) xx;
-		IdentTableEntry ite = ident_ia.getEntry();
+		final IdentIA ident_ia = (IdentIA) xx;
+		final IdentTableEntry ite = ident_ia.getEntry();
 		ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(functionDef));
 
 		// This assumes we want a function call
 		// but what if we want a function pointer or a curry or function reference?
 		// IOW, a ProcedureCall is not specified
-		String x = getIdentIAPath(ident_ia, gf);
+		final String x = getIdentIAPath(ident_ia, gf);
 
 		verify(mod, ctx, mockContext);
 
 		Assert.assertEquals("Z-1foo(vvx)", x);
 	}
 
-	String getIdentIAPath(final IdentIA ia2, GeneratedFunction generatedFunction) {
+	String getIdentIAPath(final IdentIA ia2, final GeneratedFunction generatedFunction) {
 		final CReference reference = new CReference();
 		reference.getIdentIAPath(ia2, generatedFunction, Generate_Code_For_Method.AOG.GET, null);
 		return reference.build();
