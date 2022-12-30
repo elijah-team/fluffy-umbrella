@@ -281,12 +281,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		final String typeName;
 		if (o.resolvedType() != null) {
 			GeneratedNode xx = o.resolvedType();
-			if (xx instanceof GeneratedClass) {
-				typeName = getTypeName((GeneratedClass) xx);
-			} else if (xx instanceof GeneratedNamespace) {
-				typeName = getTypeName((GeneratedNamespace) xx);
-			} else
-				throw new NotImplementedException();
+			typeName = getTypeName(xx);
 		} else {
 			if (o.varType != null)
 				typeName = getTypeName(o.varType);
