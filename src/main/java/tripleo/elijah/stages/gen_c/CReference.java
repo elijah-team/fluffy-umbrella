@@ -65,33 +65,49 @@ public class CReference {
 
 		final ProcTableEntry pte = de_pte.getTablePrincipal();
 
-		final StringBuilder sb = new StringBuilder();
 		final BaseGeneratedFunction gf = de_pte.getGeneratedFunction();
 		final Instruction instruction = de_pte.getInstruction();
 
-		{
-			if (pte.expression_num == null) {
-				final IdentExpression ptex = (IdentExpression) pte.expression;
+		final StringBuilder sb = XXX_YYY.dispatch(pte, new XXX_YYY() {
+			@Override
+			public StringBuilder itsABoy(final IExpression expression) {
+				final IdentExpression ptex = (IdentExpression) expression;
 				final String text = ptex.getText();
+
 				@Nullable final InstructionArgument xx = gf.vte_lookup(text);
 				assert xx != null;
+
 				final String realTargetName = gc.getRealTargetName(gf, (IntegerIA) xx, Generate_Code_For_Method.AOG.GET);
-				sb.append(Emit.emit("/*424*/") + realTargetName);
-				sb.append('(');
 				final List<String> sl3 = gc.getArgumentStrings(gf, () -> new InstructionFixedList(instruction));
+
+				final StringBuilder sb = new StringBuilder();
+				sb.append(Emit.emit("/*424*/"));
+				sb.append(realTargetName);
+				sb.append('(');
 				sb.append(Helpers.String_join(", ", sl3));
 				sb.append(");");
-			} else {
+
+				return sb;
+			}
+
+			@Override
+			public StringBuilder itsAGirl(final InstructionArgument expression_num) {
+				final IdentIA identIA = (IdentIA) expression_num;
+
 				final CReference reference = new CReference();
-				final IdentIA ia2 = (IdentIA) pte.expression_num;
-				reference.getIdentIAPath(ia2, gf, Generate_Code_For_Method.AOG.GET, null);
+				reference.getIdentIAPath(identIA, Generate_Code_For_Method.AOG.GET, null);
 				final List<String> sl3 = gc.getArgumentStrings(gf, () -> new InstructionFixedList(instruction));
 				reference.args(sl3);
-				@NotNull final String path = reference.build();
+				final @NotNull String path = reference.build();
 
-				sb.append(Emit.emit("/*427*/") + path + ";");
+				final StringBuilder sb = new StringBuilder();
+				sb.append(Emit.emit("/*427*/"));
+				sb.append(path);
+				sb.append(";");
+
+				return sb;
 			}
-		}
+		});
 
 		beginning = new EG_SingleStatement("", new EX_Explanation() {
 		});
