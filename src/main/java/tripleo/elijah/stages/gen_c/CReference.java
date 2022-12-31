@@ -120,56 +120,6 @@ public class CReference {
 		//new EX_TableEntryExplanation();
 		return stmt;
 	}
-	
-	static class Reference {
-		final String text;
-		final Ref type;
-		final String value;
-		
-		public Reference(final String aText, final Ref aType, final String aValue) {
-			text = aText;
-			type = aType;
-			value = aValue;
-		}
-
-		public Reference(final String aText, final Ref aType) {
-			text = aText;
-			type = aType;
-			value = null;
-		}
-
-		public void buildHelper(final BuildState st) {
-			type.buildHelper(this, st);
-		}
-	}
-
-	@NotNull static List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
-		final List<InstructionArgument> s = new LinkedList<InstructionArgument>();
-		while (oo != null) {
-			if (oo instanceof IntegerIA) {
-				s.add(0, oo);
-				oo = null;
-			} else if (oo instanceof IdentIA) {
-				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
-				s.add(0, oo);
-				oo = ite1.getBacklink();
-			} else if (oo instanceof ProcIA) {
-//				final ProcTableEntry prte = ((ProcIA)oo).getEntry();
-				s.add(0, oo);
-				oo = null;
-			} else
-				throw new IllegalStateException("Invalid InstructionArgument");
-		}
-		return s;
-	}
-
-	void addRef(final String text, final Ref type) {
-		refs.add(new Reference(text, type));
-	}
-
-	void addRef(final String text, final Ref type, final String aValue) {
-		refs.add(new Reference(text, type, aValue));
-	}
 
 	@NotNull
 	static List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
@@ -352,6 +302,50 @@ public class CReference {
 		}
 		rtext = Helpers.String_join(".", sl);
 		return rtext;
+	}
+
+	void addRef(final String text, final Ref type) {
+		refs.add(new Reference(text, type));
+	}
+
+	void addRef(final String text, final Ref type, final String aValue) {
+		refs.add(new Reference(text, type, aValue));
+	}
+
+	interface XXX_YYY {
+		static StringBuilder dispatch(@NotNull ProcTableEntry pte, final XXX_YYY xy) {
+			if (pte.expression_num == null) {
+				return xy.itsABoy(pte.expression);
+			} else {
+				return xy.itsAGirl(pte.expression_num);
+			}
+		}
+
+		StringBuilder itsABoy(IExpression expression);
+
+		StringBuilder itsAGirl(InstructionArgument expreesion_num);
+	}
+
+	static class Reference {
+		final String text;
+		final Ref type;
+		final String value;
+
+		public Reference(final String aText, final Ref aType, final String aValue) {
+			text = aText;
+			type = aType;
+			value = aValue;
+		}
+
+		public Reference(final String aText, final Ref aType) {
+			text = aText;
+			type = aType;
+			value = null;
+		}
+
+		public void buildHelper(final BuildState st) {
+			type.buildHelper(this, st);
+		}
 	}
 
 	public String getIdentIAPath_Proc(final ProcTableEntry aPrte) {
