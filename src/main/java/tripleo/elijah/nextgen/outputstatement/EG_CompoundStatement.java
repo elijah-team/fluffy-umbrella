@@ -42,6 +42,6 @@ public class EG_CompoundStatement implements EG_Statement {
 	
 	@Override
 	public EX_Explanation getExplanation() {
-		return null;
+		return explanation;
 	}
 }
