@@ -382,7 +382,7 @@ public class Generate_Code_For_Method {
 			} else {
 				final IdentIA ia2 = (IdentIA) pte.expression_num;
 				reference = new CReference();
-				reference.getIdentIAPath(ia2, gf, AOG.GET, null);
+				reference.getIdentIAPath(ia2, AOG.GET, null);
 				final List<String> sl3 = gc.getArgumentStrings(gf, aInstruction);
 				reference.args(sl3);
 				final String path = reference.build();

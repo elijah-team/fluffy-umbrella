@@ -231,7 +231,7 @@ public class GetIdentIAPathTest_ForC {
 
 	String getIdentIAPath(final IdentIA ia2, final GeneratedFunction generatedFunction) {
 		final CReference reference = new CReference();
-		reference.getIdentIAPath(ia2, generatedFunction, Generate_Code_For_Method.AOG.GET, null);
+		reference.getIdentIAPath(ia2, Generate_Code_For_Method.AOG.GET, null);
 		return reference.build();
 	}
 

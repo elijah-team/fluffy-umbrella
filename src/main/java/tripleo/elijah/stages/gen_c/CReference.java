@@ -171,8 +171,29 @@ public class CReference {
 		refs.add(new Reference(text, type, aValue));
 	}
 
-	public String getIdentIAPath(final @NotNull IdentIA ia2, final BaseGeneratedFunction generatedFunction, final Generate_Code_For_Method.AOG aog, final String aValue) {
-		assert ia2.gf == generatedFunction;
+	@NotNull
+	static List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
+		final List<InstructionArgument> s = new LinkedList<InstructionArgument>();
+		while (oo != null) {
+			if (oo instanceof IntegerIA) {
+				s.add(0, oo);
+				oo = null;
+			} else if (oo instanceof IdentIA) {
+				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
+				s.add(0, oo);
+				oo = ite1.getBacklink();
+			} else if (oo instanceof ProcIA) {
+//				final ProcTableEntry prte = ((ProcIA)oo).getEntry();
+				s.add(0, oo);
+				oo = null;
+			} else
+				throw new IllegalStateException("Invalid InstructionArgument");
+		}
+		return s;
+	}
+
+	public String getIdentIAPath(final @NotNull IdentIA ia2, final Generate_Code_For_Method.AOG aog, final String aValue) {
+		final BaseGeneratedFunction generatedFunction = ia2.gf;
 		final List<InstructionArgument> s = _getIdentIAPathList(ia2);
 		refs = new ArrayList<Reference>(s.size());
 

@@ -495,7 +495,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 				sl3.add(Emit.emit("/*669*/") + "" + realTargetName);
 			} else if (ia instanceof IdentIA) {
 				final CReference reference = new CReference();
-				reference.getIdentIAPath((IdentIA) ia, gf, Generate_Code_For_Method.AOG.GET, null);
+				reference.getIdentIAPath((IdentIA) ia, Generate_Code_For_Method.AOG.GET, null);
 				final String text = reference.build();
 				sl3.add(Emit.emit("/*673*/") + "" + text);
 			} else if (ia instanceof ConstTableIA) {
@@ -571,7 +571,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 				throw new IllegalStateException("Invalid InstructionArgument for backlink");
 		}
 		final CReference reference = new CReference();
-		reference.getIdentIAPath(target, gf, aog, value);
+		reference.getIdentIAPath(target, aog, value);
 		final String path = reference.build();
 		LOG.info("932 "+path);
 		final String s = Helpers.String_join("->", ls);
@@ -779,7 +779,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 						final CReference reference = new CReference();
 						final FunctionInvocation functionInvocation = pte.getFunctionInvocation();
 						if (functionInvocation == null || functionInvocation.getFunction() == ConstructorDef.defaultVirtualCtor) {
-							reference.getIdentIAPath(ia2, gf, Generate_Code_For_Method.AOG.GET, null);
+							reference.getIdentIAPath(ia2, Generate_Code_For_Method.AOG.GET, null);
 							final List<String> sll = getAssignmentValueArgs(inst, gf, LOG);
 							reference.args(sll);
 							final String path = reference.build();
@@ -788,7 +788,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 							final BaseGeneratedFunction pte_generated = functionInvocation.getGenerated();
 							if (idte.resolvedType() == null && pte_generated != null)
 								idte.resolveTypeToClass(pte_generated);
-							reference.getIdentIAPath(ia2, gf, Generate_Code_For_Method.AOG.GET, null);
+							reference.getIdentIAPath(ia2, Generate_Code_For_Method.AOG.GET, null);
 							final List<String> sll = getAssignmentValueArgs(inst, gf, LOG);
 							reference.args(sll);
 							final String path = reference.build();
@@ -813,7 +813,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 					// TODO Why not expression_num?
 					reference = new CReference();
 					final IdentIA ia2 = (IdentIA) pte.expression_num;
-					reference.getIdentIAPath(ia2, gf, Generate_Code_For_Method.AOG.GET, null);
+					reference.getIdentIAPath(ia2, Generate_Code_For_Method.AOG.GET, null);
 					final List<String> sll = getAssignmentValueArgs(inst, gf, LOG);
 					reference.args(sll);
 					final String path = reference.build();
@@ -883,7 +883,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 						sll.add(String.format("%s is UNKNOWN", path));
 					} else {
 						final CReference reference = new CReference();
-						reference.getIdentIAPath((IdentIA) ia, gf, Generate_Code_For_Method.AOG.GET, null);
+						reference.getIdentIAPath((IdentIA) ia, Generate_Code_For_Method.AOG.GET, null);
 						final String path2 = reference.build();                        // return ZP105get_z(vvx.vmy)
 						if (path.equals(path2)) {
 							// should always fail
@@ -932,7 +932,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		public String IdentIA(final IdentIA identIA, final BaseGeneratedFunction gf) {
 			assert gf == identIA.gf;
 			final CReference reference = new CReference();
-			reference.getIdentIAPath(identIA, gf, Generate_Code_For_Method.AOG.GET, null);
+			reference.getIdentIAPath(identIA, Generate_Code_For_Method.AOG.GET, null);
 			return reference.build();
 		}
 
