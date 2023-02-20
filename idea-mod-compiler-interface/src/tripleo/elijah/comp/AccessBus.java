@@ -105,9 +105,10 @@ public class AccessBus {
 		for (final GeneratedNode generatedNode : lgc) {
 			if (generatedNode.module() != mod) continue; // README curious
 
-			if (generatedNode instanceof final GeneratedContainerNC nc) {
+			if (generatedNode instanceof GeneratedContainerNC) {
+				final GeneratedContainerNC nc = (GeneratedContainerNC) generatedNode;
 
-				// 1.
+// 1.
 				nc.generateCode(generateC, gr);
 
 				// 2.

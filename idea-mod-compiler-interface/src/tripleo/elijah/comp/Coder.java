@@ -24,18 +24,21 @@ public class Coder {
 	}
 
 	public void codeNodes(final OS_Module mod, final List<GeneratedNode> resolved_nodes, final GeneratedNode generatedNode) {
-		if (generatedNode instanceof final GeneratedFunction generatedFunction) {
+		if (generatedNode instanceof GeneratedFunction) {
+			final GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
 			codeNodeFunction(generatedFunction, mod);
-		} else if (generatedNode instanceof final GeneratedClass generatedClass) {
-
-//			assert generatedClass.getCode() == 0;
+		} else if (generatedNode instanceof GeneratedClass) {
+			final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
+			//			assert generatedClass.getCode() == 0;
 			if (generatedClass.getCode() == 0)
 				codeNodeClass(generatedClass, mod);
 
 			setClassmapNodeCodes(generatedClass.classMap, mod);
 
 			extractNodes_toResolvedNodes(generatedClass.functionMap, resolved_nodes);
-		} else if (generatedNode instanceof final GeneratedNamespace generatedNamespace) {
+
+		} else if (generatedNode instanceof GeneratedNamespace) {
+			final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
 
 			if (generatedNamespace.getCode() != 0)
 				codeNodeNamespace(generatedNamespace, mod);
@@ -43,6 +46,7 @@ public class Coder {
 			setClassmapNodeCodes(generatedNamespace.classMap, mod);
 
 			extractNodes_toResolvedNodes(generatedNamespace.functionMap, resolved_nodes);
+
 		}
 	}
 
@@ -62,11 +66,14 @@ public class Coder {
 	public void codeNode(final GeneratedNode generatedNode, final OS_Module mod) {
 		final Coder coder = this;
 
-		if (generatedNode instanceof final GeneratedFunction generatedFunction) {
+		if (generatedNode instanceof GeneratedFunction) {
+			final GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
 			coder.codeNodeFunction(generatedFunction, mod);
-		} else if (generatedNode instanceof final GeneratedClass generatedClass) {
+		} else if (generatedNode instanceof GeneratedClass) {
+			final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
 			coder.codeNodeClass(generatedClass, mod);
-		} else if (generatedNode instanceof final GeneratedNamespace generatedNamespace) {
+		} else if (generatedNode instanceof GeneratedNamespace) {
+			final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
 			coder.codeNodeNamespace(generatedNamespace, mod);
 		}
 	}

@@ -1,8 +1,11 @@
 package tripleo.elijah.test_help;
 
+import tripleo.elijah.lang.*;
+import tripleo.elijah.parsetree.*;
+import tripleo.elijah.lang.*;
+import tripleo.elijah.parsetree.*;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.ModuleContext;
-import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Module;

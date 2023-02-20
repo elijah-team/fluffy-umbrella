@@ -1,13 +1,14 @@
 package tripleo.elijah.stages.deduce;
 
+import tripleo.elijah.lang.*;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_BuiltinType;
 import tripleo.elijah.lang.types.OS_FuncType;
 import tripleo.elijah.lang.types.OS_UserClassType;
 import tripleo.elijah.lang2.BuiltInTypes;
+import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
 import tripleo.elijah.stages.gen_fn.BaseTableEntry;
 import tripleo.elijah.stages.gen_fn.GenType;

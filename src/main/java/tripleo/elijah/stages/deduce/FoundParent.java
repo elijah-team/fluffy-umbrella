@@ -11,7 +11,7 @@ import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.ConstructorDef;
 import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.LookupResultListImpl;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang.TypeName;
@@ -119,7 +119,7 @@ public class FoundParent implements BaseTableEntry.StatusListener {
 			}
 		} else {
 			deduceTypes2.LOG.info("1621");
-			@Nullable LookupResultList lrl = null;
+			@Nullable LookupResultListImpl lrl = null;
 			try {
 				lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ctx, deduceTypes2);
 				@Nullable final OS_Element best = lrl.chooseBest(null);

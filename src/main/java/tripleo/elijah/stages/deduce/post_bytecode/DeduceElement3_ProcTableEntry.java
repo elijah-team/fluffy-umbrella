@@ -8,7 +8,6 @@ import tripleo.elijah.lang.DotExpression;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.LookupResultList;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang.ProcedureCallExpression;

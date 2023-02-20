@@ -15,6 +15,8 @@ import tripleo.elijah.util.Helpers;
 
 import java.util.ArrayList;
 import java.util.List;
+import tripleo.elijah.lang.*;
+import tripleo.elijah.parsetree.*;
 
 public class BoilerplateFunctionBuilder {
 	final private List<BFB_Child> children = new ArrayList<>();

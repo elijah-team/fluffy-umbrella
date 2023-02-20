@@ -9,7 +9,7 @@
 package tripleo.elijah.contexts;
 
 import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.LookupResultListImpl;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.PropertyStatement;
 
@@ -29,7 +29,7 @@ public class PropertyStatementContext extends Context {
 	}
 
 	@Override
-	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	public LookupResultListImpl lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 
 		if (name.equals("get")) {

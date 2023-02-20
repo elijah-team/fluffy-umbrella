@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.LookupResultListImpl;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.nextgen.query.Operation2;
@@ -186,7 +186,7 @@ public class DeduceElement3_IdentTableEntry extends DefaultStateful implements I
 							} else {
 								final int yy = 2;
 								if (!ite.hasResolvedElement()) {
-									@Nullable LookupResultList lrl = null;
+									@Nullable LookupResultListImpl lrl = null;
 									try {
 										lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), aFunctionContext, dt2);
 										@Nullable final OS_Element best = lrl.chooseBest(null);

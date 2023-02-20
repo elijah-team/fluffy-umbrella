@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.LookupResultListImpl;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
@@ -142,9 +142,9 @@ public class DeducePath {
 		}
 
 		@Override
-		public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+		public LookupResultListImpl lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 //			if (index == 0)
-				return type.resolved.getElement().getContext().lookup(name, level, Result, alreadySearched, one);
+			return type.resolved.getElement().getContext().lookup(name, level, Result, alreadySearched, one);
 //			else
 //				return null;
 		}

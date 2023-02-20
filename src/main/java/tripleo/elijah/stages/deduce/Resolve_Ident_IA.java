@@ -11,11 +11,12 @@ package tripleo.elijah.stages.deduce;
 
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.Contract;
+import tripleo.elijah.lang.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_UserType;
+import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.stages.deduce.zero.ITE_Zero;
 import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
 import tripleo.elijah.stages.gen_fn.BaseTableEntry;
@@ -213,7 +214,7 @@ class Resolve_Ident_IA {
 		final @NotNull VariableTableEntry vte  = ((IntegerIA) ia).getEntry();
 		final @NotNull String             text = vte.getName();
 
-		final @NotNull LookupResultList lrl = ectx.lookup(text);
+		final @NotNull LookupResultListImpl lrl = ectx.lookup(text);
 		el = lrl.chooseBest(null);
 
 		if (el == null) {

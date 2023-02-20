@@ -21,14 +21,14 @@ import java.util.List;
  */
 public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Container, OS_Element2 {
 
-	public final Attached _a = new Attached();
+	public final Attached _a = new AttachedImpl();
 	protected    Species  _species;
 	List<AnnotationClause> annotations = null;
 	protected Scope3          scope3;
-	protected FormalArgList   mFal = new FormalArgList(); // remove final for FunctionDefBuilder
+	protected FormalArgList   mFal = new FormalArgListImpl(); // remove final for FunctionDefBuilder
 	private   IdentExpression funName;
 	private   AccessNotation  access_note;
-	private   El_Category     category;
+	private   El_CategoryImpl category;
 
 	// region arglist
 
@@ -174,12 +174,12 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 	// region ClassItem
 
 	@Override
-	public El_Category getCategory() {
+	public El_CategoryImpl getCategory() {
 		return category;
 	}
 
 	@Override
-	public void setCategory(final El_Category aCategory) {
+	public void setCategory(final El_CategoryImpl aCategory) {
 		category = aCategory;
 	}
 

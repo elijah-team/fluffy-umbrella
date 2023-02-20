@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import tripleo.elijah.lang.*;
+import tripleo.elijah.parsetree.*;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.diagnostic.Locatable;

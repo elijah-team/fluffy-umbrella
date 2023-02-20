@@ -10,6 +10,8 @@ package tripleo.elijah.stages.deduce;
 
 import org.jdeferred2.Promise;
 import org.jetbrains.annotations.Contract;
+import tripleo.elijah.lang.*;
+import tripleo.elijah.parsetree.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Before;

@@ -9,12 +9,11 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import tripleo.elijah.lang.*;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.lang.BaseFunctionDef;
-import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.FuncExpr;
 import tripleo.elijah.lang.FunctionDef;

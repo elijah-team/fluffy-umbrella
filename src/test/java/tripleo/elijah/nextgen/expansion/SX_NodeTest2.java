@@ -1,6 +1,8 @@
 package tripleo.elijah.nextgen.expansion;
 
 import junit.framework.TestCase;
+import tripleo.elijah.lang.*;
+import tripleo.elijah.parsetree.*;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;

@@ -10,6 +10,7 @@
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="idea-mod-compiler-interface/src"/>
 	<classpathentry kind="src" path="idea-mod-base/src"/>
+	<classpathentry kind="src" path="idea-mod-generate/src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Maven: io.reactivex.rxjava3:rxjava:3.1.0"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Maven: me.friwi:jcefmaven:105.3.36"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Maven: me.friwi:jcef-api:jcef-0cdd84c+cef-105.3.36+g88e0038+chromium-105.0.5195.102"/>

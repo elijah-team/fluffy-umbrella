@@ -16,7 +16,10 @@ public abstract class AbstractBlockScope implements Scope {
 
 	private final OS_Container _element;
 
-	@Override
+	//	@Override
+	public void addDocString(final Token aS) {
+		_element.addDocString(aS);
+	}//	@Override
 	public void add(final StatementItem aItem) {
 		if (aItem instanceof FunctionItem)
 			_element.add((OS_Element) aItem);
@@ -24,34 +27,31 @@ public abstract class AbstractBlockScope implements Scope {
 			System.err.printf("adding false FunctionItem %s%n", aItem.getClass().getName());
 	}
 
-	@Override
-	public void addDocString(final Token aS) {
-		_element.addDocString(aS);
-	}
 
-	@Override
+
+	//	@Override
 	public BlockStatement blockStatement() {
-		return new BlockStatement(this);
+		return new BlockStatementImpl(this);
 	}
 
-	@Override
+	//	@Override
 	public InvariantStatement invariantStatement() {
 		return null;
 	}
 
-	@Override
+	//	@Override
 	public StatementClosure statementClosure() {
 		return asc;
 	}
 
-	@Override
+	//	@Override
 	public void statementWrapper(final IExpression aExpr) {
-		add(new StatementWrapper(aExpr, getContext(), getParent()));
+		add(new StatementWrapperImpl(aExpr, getContext(), getParent()));
 	}
 
 	public abstract Context getContext();
 
-	@Override
+	//	@Override
 	public TypeAliasStatement typeAlias() {
 		return null;
 	}
@@ -59,12 +59,12 @@ public abstract class AbstractBlockScope implements Scope {
 	/* (non-Javadoc)
 	 * @see tripleo.elijah.lang.Scope#getParent()
 	 */
-	@Override
+//	@Override
 	public OS_Element getParent() {
 		return (OS_Element) _element;
 	}
 
-	@Override
+	//	@Override
 	public OS_Element getElement() {
 		return (OS_Element) _element;
 	}

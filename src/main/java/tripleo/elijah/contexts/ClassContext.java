@@ -9,20 +9,7 @@
 package tripleo.elijah.contexts;
 
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.AliasStatement;
-import tripleo.elijah.lang.BaseFunctionDef;
-import tripleo.elijah.lang.ClassItem;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.LookupResultList;
-import tripleo.elijah.lang.NamespaceStatement;
-import tripleo.elijah.lang.NormalTypeName;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_Element2;
-import tripleo.elijah.lang.PropertyStatement;
-import tripleo.elijah.lang.TypeName;
-import tripleo.elijah.lang.VariableSequence;
-import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.lang2.ElElementVisitor;
 
 import java.util.HashMap;
@@ -38,7 +25,7 @@ import static tripleo.elijah.contexts.ClassInfo.ClassInfoType.INHERITED;
  * <p>
  * Created 	Mar 26, 2020 at 6:04:02 AM
  */
-public class ClassContext extends Context {
+public class ClassContext extends ContextImpl {
 
 	private final ClassStatement                carrier;
 	public final  Map<TypeName, ClassStatement> _inheritance = new HashMap<>();
@@ -51,7 +38,7 @@ public class ClassContext extends Context {
 	}
 
 	@Override
-	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	public LookupResultListImpl lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 		for (final ClassItem item : carrier.getItems()) {
 			if (!(item instanceof ClassStatement) &&

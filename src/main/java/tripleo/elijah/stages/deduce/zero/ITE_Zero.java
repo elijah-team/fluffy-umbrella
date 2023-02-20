@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.LookupResultListImpl;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.DeduceLookupUtils;
@@ -60,7 +61,7 @@ public class ITE_Zero {
                 ele2 = ty.getClassOf(); // TODO might fail later (use getElement?)
             }
 
-            @Nullable LookupResultList lrl = null;
+	        @Nullable LookupResultListImpl lrl = null;
 
             lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele2.getContext(), deduceTypes2);
             @Nullable final OS_Element best = lrl.chooseBest(null);

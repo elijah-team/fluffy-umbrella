@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/elijah-v1-fluffy-umbrella.iml" filepath="$PROJECT_DIR$/elijah-v1-fluffy-umbrella.iml" />
       <module fileurl="file://$PROJECT_DIR$/idea-mod-base/idea-mod-base.iml" filepath="$PROJECT_DIR$/idea-mod-base/idea-mod-base.iml" />
       <module fileurl="file://$PROJECT_DIR$/idea-mod-compiler-interface/idea-mod-compiler-interface.iml" filepath="$PROJECT_DIR$/idea-mod-compiler-interface/idea-mod-compiler-interface.iml" />
     </modules>

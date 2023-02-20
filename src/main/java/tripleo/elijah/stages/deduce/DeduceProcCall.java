@@ -17,7 +17,7 @@ import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.FormalArgListItem;
 import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.LookupResultListImpl;
 import tripleo.elijah.lang.NormalTypeName;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;

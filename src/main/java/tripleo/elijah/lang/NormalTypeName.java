@@ -8,9 +8,6 @@
  */
 package tripleo.elijah.lang;
 
-// Referenced classes of package pak2:
-//			TypeNameList
-
 import java.util.Collection;
 
 public interface NormalTypeName extends TypeName, Resolvable {

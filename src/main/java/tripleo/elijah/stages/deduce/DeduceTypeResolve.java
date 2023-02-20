@@ -9,12 +9,12 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import tripleo.elijah.lang.*;
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.lang2.AbstractCodeGen;
 import tripleo.elijah.stages.gen_fn.BaseTableEntry;

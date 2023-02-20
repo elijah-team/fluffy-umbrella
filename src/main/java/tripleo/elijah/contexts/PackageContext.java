@@ -8,7 +8,12 @@
  */
 package tripleo.elijah.contexts;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.LookupResultListImpl;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Element2;
+import tripleo.elijah.lang.OS_Package;
 
 import java.util.List;
 
@@ -25,7 +30,7 @@ public class PackageContext extends Context {
 	}
 
 	@Override
-	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	public LookupResultListImpl lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(this);
 		for (final OS_Element element : carrier.getElements()) {
 			if (element instanceof OS_Element2) {

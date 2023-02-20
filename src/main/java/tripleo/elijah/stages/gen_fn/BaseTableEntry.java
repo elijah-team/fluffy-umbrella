@@ -67,8 +67,7 @@ public abstract class BaseTableEntry {
 
 	public void setStatus(final Status newStatus, final IElementHolder eh) {
 		status = newStatus;
-		if (newStatus == Status.KNOWN && eh.getElement() == null)
-			assert false;
+		assert newStatus != Status.KNOWN || eh.getElement() != null;
 		for (final StatusListener statusListener : statusListenerList) {
 			statusListener.onChange(eh, newStatus);
 		}

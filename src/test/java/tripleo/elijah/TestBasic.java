@@ -12,6 +12,8 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
+import tripleo.elijah.lang.*;
+import tripleo.elijah.parsetree.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;

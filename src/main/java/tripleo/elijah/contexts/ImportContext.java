@@ -9,7 +9,18 @@
 package tripleo.elijah.contexts;
 
 import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.ImportStatement;
+import tripleo.elijah.lang.LookupResult;
+import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.LookupResultListImpl;
+import tripleo.elijah.lang.NamespaceStatement;
+import tripleo.elijah.lang.NamespaceTypes;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Element2;
+import tripleo.elijah.lang.OS_Package;
+import tripleo.elijah.lang.Qualident;
 
 import java.util.List;
 
@@ -26,7 +37,7 @@ public class ImportContext extends Context {
 	}
 
 	@Override
-	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	public LookupResultListImpl lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(this);
 //		System.err.println("2002 "+importStatement.importList());
 		final Compilation compilation = compilation();

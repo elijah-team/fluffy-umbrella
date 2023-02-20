@@ -9,12 +9,13 @@
 package tripleo.elijah.stages.deduce;
 
 import org.jdeferred2.DoneCallback;
+import tripleo.elijah.lang.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.contexts.FunctionContext;
-import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_FuncExprType;
+import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
 import tripleo.elijah.stages.gen_fn.BaseTableEntry;
 import tripleo.elijah.stages.gen_fn.GenType;
@@ -145,12 +146,12 @@ class Resolve_Variable_Table_Entry {
 		if (iv != IExpression.UNASSIGNED) {
 			if (iv instanceof ProcedureCallExpression) {
 				final ProcedureCallExpression procedureCallExpression = (ProcedureCallExpression) iv;
-				final IExpression name_exp = procedureCallExpression.getLeft();
+				final IExpression             name_exp                = procedureCallExpression.getLeft();
 				assert name_exp instanceof IdentExpression;
 
-				final IdentExpression name2 = (IdentExpression) name_exp;
-				final LookupResultList lrl2 = ((IdentExpression) name_exp).getContext().lookup(name2.getText());
-				final @Nullable OS_Element el2 = lrl2.chooseBest(null);
+				final IdentExpression      name2 = (IdentExpression) name_exp;
+				final LookupResultList     lrl2  = ((IdentExpression) name_exp).getContext().lookup(name2.getText());
+				final @Nullable OS_Element el2   = lrl2.chooseBest(null);
 
 				if (el2 != null) {
 					if (el2 instanceof ClassStatement) {

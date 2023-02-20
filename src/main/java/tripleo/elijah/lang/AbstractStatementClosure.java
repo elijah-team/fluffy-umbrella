@@ -93,9 +93,9 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 		return pce;
 	}
 
-	@Override
+//	@Override
 	public VariableSequence varSeq(final Context ctx) {
-		vsq=new VariableSequence(ctx);
+		vsq = new VariableSequenceImpl(ctx);
 		vsq.setParent(parent_scope.getParent()/*this.getParent()*/); // TODO look at this
 //		vsq.setContext(ctx); //redundant
 		return (VariableSequence) add(vsq);
@@ -132,14 +132,14 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 
 	@Override
 	public CaseConditional caseConditional(final Context parentContext) {
-		final CaseConditional caseConditional = new CaseConditional(getParent(), parentContext);
+		final CaseConditional caseConditional = new CaseConditionalImpl(getParent(), parentContext);
 		add(caseConditional);
 		return caseConditional;
 	}
 
 	@Override
 	public MatchConditional matchConditional(final Context parentContext) {
-		final MatchConditional matchConditional = new MatchConditional(getParent(), parentContext);
+		final MatchConditional matchConditional = new MatchConditionalImpl(getParent(), parentContext);
 		add(matchConditional);
 		return matchConditional;
 	}

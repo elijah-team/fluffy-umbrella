@@ -13,7 +13,6 @@ import tripleo.elijah.lang.FormalArgList;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.IdentExpression;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,9 +20,9 @@ import java.util.List;
  */
 public abstract class BaseFunctionDefBuilder extends ElBuilder {
 	protected List<AnnotationClause> annotations = new ArrayList<AnnotationClause>();
-	protected IdentExpression _name;
-	protected FormalArgList mFal;
-	protected FunctionDef.Species _species = null;
+	protected IdentExpression        _name;
+	protected FormalArgList          mFal;
+	protected FunctionDef.Species    _species    = null;
 
 	public void addAnnotation(final AnnotationClause a) {
 		annotations.add(a);

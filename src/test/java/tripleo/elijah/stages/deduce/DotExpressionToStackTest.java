@@ -9,6 +9,8 @@
 
 package tripleo.elijah.stages.deduce;
 
+import tripleo.elijah.lang.*;
+import tripleo.elijah.parsetree.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Before;

@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.LookupResultListImpl;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang2.SpecialFunctions;

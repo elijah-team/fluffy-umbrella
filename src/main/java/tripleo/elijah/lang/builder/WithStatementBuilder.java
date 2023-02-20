@@ -12,6 +12,7 @@ import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.lang.WithStatement;
+import tripleo.elijah.lang.WithStatementImpl;
 
 /**
  * Created 12/23/20 4:57 AM
@@ -23,7 +24,7 @@ public class WithStatementBuilder extends ElBuilder {
 
     @Override
     protected WithStatement build() {
-        final WithStatement withStatement = new WithStatement(_parent);
+	    final WithStatement withStatement = new WithStatementImpl(_parent);
         for (final VariableSequenceBuilder.Triple triple : _sb.triples) {
             final VariableStatement vs = withStatement.nextVarStmt();
             vs.setName(triple._name);

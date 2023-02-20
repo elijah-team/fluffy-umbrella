@@ -8,7 +8,16 @@
  */
 package tripleo.elijah.contexts;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.AliasStatement;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.LookupResultListImpl;
+import tripleo.elijah.lang.ModuleItem;
+import tripleo.elijah.lang.NamespaceStatement;
+import tripleo.elijah.lang.NamespaceTypes;
+import tripleo.elijah.lang.OS_Element2;
+import tripleo.elijah.lang.OS_Module;
 
 import java.util.List;
 
@@ -25,10 +34,11 @@ public class ModuleContext extends Context {
 		this.carrier = module;
 	}
 
-	@Override public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	@Override
+	public LookupResultListImpl lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 		// TODO look all this up in a table, not by iteration
-		for (final ModuleItem item: carrier.getItems()) {
+		for (final ModuleItem item : carrier.getItems()) {
 			//
 //			List<String> items;
 //			if ((item instanceof ClassStatement)) {

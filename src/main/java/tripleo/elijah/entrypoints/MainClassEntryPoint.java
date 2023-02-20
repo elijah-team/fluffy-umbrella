@@ -9,7 +9,11 @@
 package tripleo.elijah.entrypoints;
 
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.ClassItem;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.OS_Package;
+import tripleo.elijah.lang.TypeName;
 
 import java.util.Collection;
 

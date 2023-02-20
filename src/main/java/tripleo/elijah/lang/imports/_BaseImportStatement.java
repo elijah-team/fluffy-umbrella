@@ -9,7 +9,7 @@
 package tripleo.elijah.lang.imports;
 
 import tripleo.elijah.lang.AccessNotation;
-import tripleo.elijah.lang.El_Category;
+import tripleo.elijah.lang.El_CategoryImpl;
 import tripleo.elijah.lang.ImportStatement;
 
 /**
@@ -18,12 +18,12 @@ import tripleo.elijah.lang.ImportStatement;
 public abstract class _BaseImportStatement implements ImportStatement {
 	// region ClassItem
 
-	private AccessNotation access_note;
-	private El_Category category;
+	private AccessNotation  access_note;
+	private El_CategoryImpl category;
 
 	@Override
-	public void setCategory(final El_Category aCategory) {
-		category = aCategory;
+	public El_CategoryImpl getCategory() {
+		return category;
 	}
 
 	@Override
@@ -32,8 +32,8 @@ public abstract class _BaseImportStatement implements ImportStatement {
 	}
 
 	@Override
-	public El_Category getCategory() {
-		return category;
+	public void setCategory(final El_CategoryImpl aCategory) {
+		category = aCategory;
 	}
 
 	@Override

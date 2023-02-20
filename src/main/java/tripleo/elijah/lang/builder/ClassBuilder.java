@@ -8,7 +8,16 @@
  */
 package tripleo.elijah.lang.builder;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.AnnotationClause;
+import tripleo.elijah.lang.ClassInheritance;
+import tripleo.elijah.lang.ClassInheritanceImpl;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.ClassStatementImpl;
+import tripleo.elijah.lang.ClassTypes;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.TypeNameList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,20 +27,20 @@ import java.util.List;
  */
 public class ClassBuilder {
 	private final List<AnnotationClause> annotations = new ArrayList<AnnotationClause>();
-    private ClassTypes _type;
-	private OS_Element _parent;
-	private Context _parent_context;
-	private IdentExpression _name;
-	private final ClassScope _scope = new ClassScope();
-	private final ClassInheritance _inh = new ClassInheritance();
-	private TypeNameList genericPart;
+	private final ClassScope             _scope      = new ClassScopeImpl();
+	private final ClassInheritance       _inh        = new ClassInheritanceImpl();
+	private       ClassTypes             _type;
+	private       OS_Element             _parent;
+	private       Context                _parent_context;
+	private       IdentExpression        _name;
+	private       TypeNameList           genericPart;
 
 	public void setType(final ClassTypes classTypes) {
 		_type = classTypes;
 	}
 
 	public ClassStatement build() {
-		final ClassStatement cs = new ClassStatement(_parent, _parent_context);
+		final ClassStatement cs = new ClassStatementImpl(_parent, _parent_context);
 		cs.setType(_type);
 		assert _name != null;
 		cs.setName(_name);

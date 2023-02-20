@@ -1,5 +1,7 @@
 package tripleo.elijah.test_help;
 
+import tripleo.elijah.lang.*;
+import tripleo.elijah.parsetree.*;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ICompilationAccess;

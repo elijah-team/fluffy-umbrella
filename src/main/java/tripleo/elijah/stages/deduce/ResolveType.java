@@ -9,14 +9,13 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import tripleo.elijah.lang.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.ClassContext;
-import tripleo.elijah.lang.AliasStatement;
-import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.LookupResultListImpl;
 import tripleo.elijah.lang.NormalTypeName;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Module;

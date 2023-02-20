@@ -53,7 +53,7 @@ public class PTE_Zero {
         @NotNull final BaseFunctionDef ele = constructorDef.getFD();
 
         try {
-            final LookupResultList     lrl  = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
+            final LookupResultLis      lrl  = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
             @Nullable final OS_Element best = lrl.chooseBest(null);
 //            ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
             final GenericElementHolder elementHolder = new GenericElementHolder(best);

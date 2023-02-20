@@ -21,7 +21,7 @@ import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.LookupResult;
-import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.LookupResultListImpl;
 import tripleo.elijah.lang.NormalTypeName;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;

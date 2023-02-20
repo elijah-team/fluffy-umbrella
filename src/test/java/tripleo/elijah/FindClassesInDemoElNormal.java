@@ -8,6 +8,8 @@
  */
 package tripleo.elijah;
 
+import tripleo.elijah.lang.*;
+import tripleo.elijah.parsetree.*;
 import org.junit.Assert;
 import org.junit.Test;
 import tripleo.elijah.comp.Compilation;

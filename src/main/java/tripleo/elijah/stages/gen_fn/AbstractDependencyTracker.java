@@ -10,6 +10,8 @@ package tripleo.elijah.stages.gen_fn;
 
 import io.reactivex.rxjava3.subjects.ReplaySubject;
 import io.reactivex.rxjava3.subjects.Subject;
+import tripleo.elijah.lang.*;
+import tripleo.elijah.parsetree.*;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 

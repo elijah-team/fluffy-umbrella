@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import tripleo.elijah.lang.*;
+import tripleo.elijah.parsetree.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Ignore;
 import org.junit.Test;

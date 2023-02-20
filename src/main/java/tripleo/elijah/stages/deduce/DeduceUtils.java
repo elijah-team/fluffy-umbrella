@@ -3,10 +3,9 @@ package tripleo.elijah.stages.deduce;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import tripleo.elijah.lang.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.lang.*;
 import tripleo.elijah.util.NotImplementedException;
 
 import java.util.List;
