@@ -93,13 +93,14 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 	}
 
 	private static void noteNonsenseErr(int code, String message) {
-		System.err.printf("%d %s%n", code, message);
+		System.err.printf("** [noteNonsenseErr] %d %s%n", code, message);
 	}
 
 	private static void __one_potential(final DeducePhase aDeducePhase,
 										final GeneratedContainer.VarTableEntry varTableEntry,
 										final @NotNull List<TypeTableEntry> potentialTypes,
-										final TypeName typeName, final ClassInvocation ci) throws STOP {
+										final TypeName typeName,
+										final ClassInvocation ci) throws STOP {
 		boolean sc = false;
 
 		TypeTableEntry potentialType = potentialTypes.get(0);
