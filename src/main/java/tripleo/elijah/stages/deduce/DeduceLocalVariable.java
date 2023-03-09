@@ -228,7 +228,7 @@ public class DeduceLocalVariable {
 					final OS_Element           self_class = generatedFunction.getFD().getParent();
 
 					if (e == null) {
-						___pt1_work_001b(generatedFunction, dp, self_class, o);
+						//___pt1_work_001b(generatedFunction, dp, self_class, o);
 						callbackFlag = true;
 					} else {
 						Self = ___pt1_work_001(generatedFunction, e, self_class);
@@ -320,7 +320,38 @@ public class DeduceLocalVariable {
 								final Object[] o) {
 		final OS_Element Self = (OS_Element) o[0];
 
-		final @Nullable DeferredMemberFunction dm = deduceTypes2.deferred_member_function(Self, null, (BaseFunctionDef) procTableEntry.getResolvedElement(), procTableEntry.getFunctionInvocation());
+		final OS_Element                       resolvedElement1 = procTableEntry.getResolvedElement();
+		OS_Element                       resolvedElement0       = resolvedElement1;
+
+		while (resolvedElement0 instanceof AliasStatement) {
+			try {
+				resolvedElement0 = DeduceLookupUtils._resolveAlias2((AliasStatement) resolvedElement1, deduceTypes2);
+			} catch (ResolveError aE) {
+				//throw new RuntimeException(aE);
+				return;
+			}
+		}
+
+		if (Self == null) {
+			System.err.println("336 ======================================================");
+			System.err.println("336 ======================================================");
+			System.err.println("336 ======================================================");
+			System.err.println("336 ======================================================");
+			System.err.println("336 ======================================================");
+			System.err.println("336 ======================================================");
+			System.err.println("336 ======================================================");
+			System.err.println("336 ======================================================");
+			System.err.println("336 ======================================================");
+			System.err.println("336 ======================================================");
+			System.err.println("336 ======================================================");
+			System.err.println("336 ======================================================");
+			System.err.println("336 ======================================================");
+			System.err.println("336 ======================================================");
+
+			return;
+		}
+
+		final @Nullable DeferredMemberFunction dm              = deduceTypes2.deferred_member_function(Self, null, (BaseFunctionDef) resolvedElement0, procTableEntry.getFunctionInvocation());
 		dm.externalRef().then(new DoneCallback<BaseGeneratedFunction>() {
 			@Override
 			public void onDone(final BaseGeneratedFunction result) {

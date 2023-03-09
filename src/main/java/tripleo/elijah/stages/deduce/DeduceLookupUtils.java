@@ -217,6 +217,7 @@ public class DeduceLookupUtils {
 			R.resolved = ((ClassStatement) best).getOS_Type();
 			result = R;
 		} else {
+			if (best != null)
 			switch (DecideElObjectType.getElObjectType(best)) {
 			case VAR:
 				final @Nullable VariableStatement vs = (VariableStatement) best;
