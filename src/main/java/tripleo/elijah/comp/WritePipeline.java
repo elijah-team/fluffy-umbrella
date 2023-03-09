@@ -8,7 +8,6 @@
  */
 package tripleo.elijah.comp;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import io.reactivex.rxjava3.annotations.NonNull;
@@ -141,43 +140,267 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 	}
 
 	private void __int__steps(final GenerateResult result, final GenerateResult rs) {
-		//
-		//
-		//
+		@NotNull final List<WP_Indiviual_Step> s = new ArrayList<>();
 
 		// 0. prepare to change to DoubleLatch instead of/an or in addition to Promise
 		assert result == rs;
 
-		// 1. GenerateOutputs with ElSystem
-		st.sys.generateOutputs(result);
+		s.add(new WPIS_GenerateOutputs(result));
+		s.add(new WPIS_MakeOutputDirectory());
+		s.add(new WPIS_WriteInputs());
+		s.add(new WPIS_WriteFiles());
+		s.add(new WPIS_WriteBuffers());
 
-		// 2. make output directory
-		// TODO check first
-		boolean made = st.file_prefix.mkdirs();
 
-		// 3. write inputs
-		// TODO ... 1/ output(s) per input and 2/ exceptions ... and 3/ plan
-		//  "plan", effects; input(s), output(s)
-		// TODO flag?
+		final WP_Flow f = new WP_Flow(s);
 		try {
-			write_inputs();
-		} catch (IOException aE) {
+			f.act();
+		} catch (Exception aE) {
 			throw new RuntimeException(aE);
 		}
+	}
 
-		// 4. write files
-		try {
-			write_files();
-		} catch (IOException aE) {
-			throw new RuntimeException(aE);
+	class WPIS_WriteBuffers implements WP_Indiviual_Step {
+		@Override
+		public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
+			// 5. write buffers
+			// TODO flag?
+			try {
+				st.file_prefix.mkdirs();
+
+				debug_buffers();
+			} catch (FileNotFoundException aE) {
+				sc.exception(aE);
+			}
 		}
 
-		// 5. write buffers
-		// TODO flag?
-		try {
-			write_buffers();
-		} catch (FileNotFoundException aE) {
-			throw new RuntimeException(aE);
+		private void debug_buffers() throws FileNotFoundException {
+			// TODO can/should this fail??
+
+			final List<GenerateResultItem> generateResultItems1 = st.getGr().results();
+
+			prom.then(new DoneCallback<GenerateResult>() {
+				@Override
+				public void onDone(final GenerateResult result) {
+					PrintStream db_stream = null;
+
+					try {
+						final File file = new File(st.file_prefix, "buffers.txt");
+						db_stream = new PrintStream(file);
+
+						final List<GenerateResultItem> generateResultItems = result.results();
+
+						for (final GenerateResultItem ab : generateResultItems) {
+							db_stream.println("---------------------------------------------------------------");
+							db_stream.println(ab.counter);
+							db_stream.println(ab.ty);
+							db_stream.println(ab.output);
+							db_stream.println(ab.node.identityString());
+							db_stream.println(ab.buffer.getText());
+							db_stream.println("---------------------------------------------------------------");
+						}
+					} catch (FileNotFoundException aE) {
+						throw new RuntimeException(aE);
+					} finally {
+						if (db_stream != null)
+							db_stream.close();
+					}
+				}
+			});
+		}
+	}
+
+	class WPIS_WriteFiles implements WP_Indiviual_Step {
+		@Override
+		public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
+			// 4. write files
+			Multimap<String, Buffer> mb = ArrayListMultimap.create();
+
+			final List<GenerateResultItem> generateResultItems = st.getGr().results();
+
+			prom.then(new DoneCallback<GenerateResult>() {
+				@Override
+				public void onDone(final GenerateResult result) {
+	/*
+					for (final GenerateResultItem ab : generateResultItems) {
+						mb.put(((CDependencyRef) ab.getDependency().getRef()).getHeaderFile(), ab.buffer); // TODO see above
+					}
+
+					assert st.mmb.equals(mb);
+	*/
+
+					try {
+						final String prefix = st.file_prefix.toString();
+
+						for (final Map.Entry<String, Collection<Buffer>> entry : mb.asMap().entrySet()) {
+							final String                       key = entry.getKey();
+							final Supplier<Collection<Buffer>> e   = entry::getValue;
+
+							write_files_helper_each(prefix, key, e);
+						}
+					} catch (Exception aE) {
+						throw new RuntimeException(aE);
+					}
+				}
+
+				@Contract("_, null, _ -> fail")
+				private void write_files_helper_each(final String prefix,
+													 final String key,
+													 final @NotNull Supplier<Collection<Buffer>> e) throws Exception {
+					assert key != null;
+
+					final Path path = FileSystems.getDefault().getPath(prefix, key);
+					// final BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
+
+					path.getParent().toFile().mkdirs();
+
+					// TODO functionality
+					System.out.println("201 Writing path: " + path);
+					try (final DisposableCharSink fileCharSink = st.c.getIO().openWrite(path)) {
+						for (final Buffer buffer : e.get()) {
+							fileCharSink.accept(buffer.getText());
+						}
+					}
+				}
+			});
+
+/*
+			for (final GenerateResultItem ab : generateResultItems) {
+				mb.put(((CDependencyRef) ab.getDependency().getRef()).getHeaderFile(), ab.buffer); // TODO see above
+			}
+
+			assert st.mmb.equals(mb);
+
+			write_files_helper(mb);
+*/
+		}
+	}
+
+	class WPIS_WriteInputs  implements WP_Indiviual_Step {
+		@Override
+		public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
+			// 3. write inputs
+			// TODO ... 1/ output(s) per input and 2/ exceptions ... and 3/ plan
+			//  "plan", effects; input(s), output(s)
+			// TODO flag?
+			try {
+				final String fn1 = new File(WritePipeline.this.st.file_prefix, "inputs.txt").toString();
+
+				DefaultBuffer buf = new DefaultBuffer("");
+//			FileBackedBuffer buf = new FileBackedBuffer(fn1);
+//			for (OS_Module module : modules) {
+//				final String fn = module.getFileName();
+//
+//				append_hash(buf, fn);
+//			}
+//
+//			for (CompilerInstructions ci : cis) {
+//				final String fn = ci.getFilename();
+//
+//				append_hash(buf, fn);
+//			}
+				for (File file : WritePipeline.this.st.c.getIO().recordedreads) {
+					final String fn = file.toString();
+
+					append_hash(buf, fn, WritePipeline.this.st.c.getErrSink());
+				}
+				String s = buf.getText();
+				Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn1, true)));
+				w.write(s);
+				w.close();
+			} catch (IOException aE) {
+				throw new RuntimeException(aE);
+			}
+		}
+	}
+
+	class WPIS_MakeOutputDirectory implements WP_Indiviual_Step {
+
+		@Override
+		public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
+			// 2. make output directory
+			// TODO check first
+			boolean made = st.file_prefix.mkdirs();
+		}
+	}
+
+	class WPIS_GenerateOutputs implements WP_Indiviual_Step {
+
+		private final GenerateResult result;
+
+		WPIS_GenerateOutputs(final GenerateResult aResult) {
+			// 1. GenerateOutputs with ElSystem
+			result = aResult;
+		}
+
+		@Override
+		public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
+			st.sys.generateOutputs(result);
+		}
+	}
+
+
+	interface WP_State_Control {
+		void exception(final Exception e);
+
+		void clear();
+
+		boolean hasException();
+
+		Exception getException();
+	}
+
+	class WP_State_Control_1 implements WP_State_Control {
+		private Exception e;
+
+		@Override
+		public void exception(final Exception ee) {
+			e = ee;
+		}
+
+		@Override
+		public void clear() {
+			e = null;
+		}
+
+		@Override
+		public boolean hasException() {
+			return e != null;
+		}
+
+		// TODO DiagnosticException
+		@Override
+		public Exception getException() {
+			return e;
+		}
+	}
+
+	interface WP_Indiviual_Step {
+		void act(final WritePipelineSharedState st, final WP_State_Control sc);
+	}
+
+	class WP_Flow {
+		private final List<WP_Indiviual_Step> steps = new ArrayList<>();
+
+		WP_Flow(final Collection<? extends WP_Indiviual_Step> s) {
+			steps.addAll(s);
+		}
+		WP_Flow() {
+			//steps.addAll(s);
+		}
+
+		void act() throws Exception {
+			final WP_State_Control_1 sc = new WP_State_Control_1();
+
+			for (WP_Indiviual_Step step : steps) {
+				sc.clear();
+
+				step.act(st, sc);
+
+				if (sc.hasException()) {
+					throw sc.getException();
+				}
+			}
 		}
 	}
 
@@ -242,69 +465,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 	//
 	//}
 
-	public void write_files() throws IOException {
-		Multimap<String, Buffer> mb = ArrayListMultimap.create();
-
-		final List<GenerateResultItem> generateResultItems = st.getGr().results();
-
-		prom.then(new DoneCallback<GenerateResult>() {
-			@Override
-			public void onDone(final GenerateResult result) {
-/*
-				for (final GenerateResultItem ab : generateResultItems) {
-					mb.put(((CDependencyRef) ab.getDependency().getRef()).getHeaderFile(), ab.buffer); // TODO see above
-				}
-
-				assert st.mmb.equals(mb);
-*/
-
-				try {
-					final String prefix = st.file_prefix.toString();
-
-					for (final Map.Entry<String, Collection<Buffer>> entry : mb.asMap().entrySet()) {
-						final String                       key = entry.getKey();
-						final Supplier<Collection<Buffer>> e   = entry::getValue;
-
-						write_files_helper_each(prefix, key, e);
-					}
-				} catch (Exception aE) {
-					throw new RuntimeException(aE);
-				}
-			}
-
-			@Contract("_, null, _ -> fail")
-			private void write_files_helper_each(final String prefix,
-												 final String key,
-												 final @NotNull Supplier<Collection<Buffer>> e) throws Exception {
-				assert key != null;
-
-				final Path path = FileSystems.getDefault().getPath(prefix, key);
-				// final BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
-
-				path.getParent().toFile().mkdirs();
-
-				// TODO functionality
-				System.out.println("201 Writing path: " + path);
-				try (final DisposableCharSink fileCharSink = st.c.getIO().openWrite(path)) {
-					for (final Buffer buffer : e.get()) {
-						fileCharSink.accept(buffer.getText());
-					}
-				}
-			}
-		});
-
-/*
-		for (final GenerateResultItem ab : generateResultItems) {
-			mb.put(((CDependencyRef) ab.getDependency().getRef()).getHeaderFile(), ab.buffer); // TODO see above
-		}
-
-		assert st.mmb.equals(mb);
-
-		write_files_helper(mb);
-*/
-	}
-
-/*
+	/*
 	private void write_files_helper(@NotNull Multimap<String, Buffer> mb) throws IOException {
 		String prefix = st.file_prefix.toString();
 
@@ -326,33 +487,6 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		}
 	}
 */
-
-	private void write_inputs() throws IOException {
-		final String fn1 = new File(st.file_prefix, "inputs.txt").toString();
-
-		DefaultBuffer buf = new DefaultBuffer("");
-//			FileBackedBuffer buf = new FileBackedBuffer(fn1);
-//			for (OS_Module module : modules) {
-//				final String fn = module.getFileName();
-//
-//				append_hash(buf, fn);
-//			}
-//
-//			for (CompilerInstructions ci : cis) {
-//				final String fn = ci.getFilename();
-//
-//				append_hash(buf, fn);
-//			}
-		for (File file : st.c.getIO().recordedreads) {
-			final String fn = file.toString();
-
-			append_hash(buf, fn, st.c.getErrSink());
-		}
-		String s = buf.getText();
-		Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn1, true)));
-		w.write(s);
-		w.close();
-	}
 
 	static class HashBufferList extends DefaultBuffer {
 		public HashBufferList(final String string) {
@@ -414,47 +548,6 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 			outputBuffer.append(" ");
 			outputBuffer.append_ln(aFilename);
 		}
-	}
-
-	public void write_buffers() throws FileNotFoundException {
-		st.file_prefix.mkdirs();
-
-		debug_buffers();
-	}
-
-	private void debug_buffers() throws FileNotFoundException {
-		// TODO can/should this fail??
-
-		final List<GenerateResultItem> generateResultItems1 = st.getGr().results();
-
-		prom.then(new DoneCallback<GenerateResult>() {
-			@Override
-			public void onDone(final GenerateResult result) {
-				PrintStream db_stream = null;
-
-				try {
-					final File file = new File(st.file_prefix, "buffers.txt");
-					db_stream = new PrintStream(file);
-
-					final List<GenerateResultItem> generateResultItems = result.results();
-
-					for (final GenerateResultItem ab : generateResultItems) {
-						db_stream.println("---------------------------------------------------------------");
-						db_stream.println(ab.counter);
-						db_stream.println(ab.ty);
-						db_stream.println(ab.output);
-						db_stream.println(ab.node.identityString());
-						db_stream.println(ab.buffer.getText());
-						db_stream.println("---------------------------------------------------------------");
-					}
-				} catch (FileNotFoundException aE) {
-					throw new RuntimeException(aE);
-				} finally {
-					if (db_stream != null)
-						db_stream.close();
-				}
-			}
-		});
 	}
 
 	@Override
