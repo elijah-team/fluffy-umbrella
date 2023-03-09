@@ -26,13 +26,13 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 	private final Compilation    c;
 
 	@Contract(pure = true)
-	public GeneratePipeline(Compilation aCompilation, @NotNull DeducePipeline aDpl) {
+	public GeneratePipeline(Compilation aCompilation, @NotNull DeducePipeline aDeducePipeline) {
 		c = aCompilation;
 
-		aDpl.lgcp(new DoneCallback<List<GeneratedNode>>() {
+		aDeducePipeline.lgcp(new DoneCallback<List<GeneratedNode>>() {
 			@Override
-			public void onDone(final List<GeneratedNode> result) {
-				latch.set(result);
+			public void onDone(final List<GeneratedNode> a_lgc) {
+				latch.set(a_lgc);
 				latch.run();
 			}
 		});
