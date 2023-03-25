@@ -327,13 +327,17 @@ public class GenType {
 				return nonGenericTypeName(genType, deduceTypes2, errSink, phase);
 			}
 			if (genType.resolved != null) {
-				if (genType.resolved.getType() == OS_Type.Type.USER_CLASS) {
+				final OS_Type.Type resolvedType = genType.resolved.getType();
+
+				switch (resolvedType) {
+				case USER_CLASS:
 					return resolvedUserClass(genType, aGenericTypeName, phase, deduceTypes2, errSink);
-				} else if (genType.resolved.getType() == OS_Type.Type.FUNCTION) {
+				case FUNCTION:
 					return resolvedFunction(genType, aGenericTypeName, deduceTypes2, errSink, phase);
-				} else if (genType.resolved.getType() == OS_Type.Type.FUNC_EXPR) {
+				case FUNC_EXPR:
 					// TODO what to do here?
 					NotImplementedException.raise();
+					break;
 				}
 			}
 			return null;
