@@ -60,7 +60,7 @@ public class DeduceLocalVariable {
 			if (genType.typeName != null && genType.typeName == genType.resolved) {
 				try {
 					genType.resolved = deduceTypes2.resolve_type(genType.typeName, ctx/*genType.typeName.getTypeName().getContext()*/).resolved;
-					deduceTypes2.genCIForGenType2(genType);
+					genType.genCIForGenType2(deduceTypes2);
 					vte.resolveType(genType);
 					vte.resolveTypeToClass(genType.node);
 					int y=2;
@@ -116,7 +116,7 @@ public class DeduceLocalVariable {
 				if (genType.typeName != null && genType.typeName == genType.resolved) {
 					try {
 						genType.resolved = deduceTypes2.resolve_type(genType.typeName, ctx/*genType.typeName.getTypeName().getContext()*/).resolved;
-						deduceTypes2.genCIForGenType2(genType);
+						genType.genCIForGenType2(deduceTypes2);
 						vte.resolveType(genType);
 						vte.resolveTypeToClass(genType.node);
 					} catch (ResolveError aResolveError) {
@@ -153,7 +153,7 @@ public class DeduceLocalVariable {
 
 					switch (state) {
 					case 1:
-						deduceTypes2.genCIForGenType2(genType); // TODO what is this doing here? huh?
+						genType.genCIForGenType2(deduceTypes2); // TODO what is this doing here? huh?
 						break;
 					case 2:
 						{

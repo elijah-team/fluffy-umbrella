@@ -277,6 +277,49 @@ public class GenType {
 		return ci;
 	}
 
+	/**
+	 * Sets the invocation ({@code genType#ci}) and the node for a GenType
+	 *
+	 * @param aDeduceTypes2
+	 */
+	public void genCIForGenType2(final DeduceTypes2 aDeduceTypes2) {
+		genCI(nonGenericTypeName, aDeduceTypes2, aDeduceTypes2._errSink(), aDeduceTypes2.phase);
+		final IInvocation invocation = ci;
+		if (invocation instanceof NamespaceInvocation) {
+			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
+			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
+				@Override
+				public void onDone(final GeneratedNamespace result) {
+					node = result;
+				}
+			});
+		} else if (invocation instanceof ClassInvocation) {
+			final ClassInvocation classInvocation = (ClassInvocation) invocation;
+			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
+				@Override
+				public void onDone(final GeneratedClass result) {
+					node = result;
+				}
+			});
+		} else {
+			if (resolved instanceof OS_FuncExprType) {
+				final OS_FuncExprType funcExprType = (OS_FuncExprType) resolved;
+				final @NotNull GenerateFunctions genf = aDeduceTypes2.getGenerateFunctions(funcExprType.getElement().getContext().module());
+				final FunctionInvocation fi = new FunctionInvocation((BaseFunctionDef) funcExprType.getElement(),
+																	 null,
+																	 null,
+																	 aDeduceTypes2.phase.generatePhase);
+				WlGenerateFunction gen = new WlGenerateFunction(genf, fi);
+				gen.run(null);
+				node = gen.getResult();
+			} else if (resolved instanceof OS_FuncType) {
+				final OS_FuncType funcType = (OS_FuncType) resolved;
+				int y=2;
+			} else
+				throw new IllegalStateException("invalid invocation");
+		}
+	}
+
 	static class SetGenCI {
 
 		public ClassInvocation call(@NotNull GenType genType, TypeName aGenericTypeName, final DeduceTypes2 deduceTypes2, final ErrSink errSink, final DeducePhase phase) {

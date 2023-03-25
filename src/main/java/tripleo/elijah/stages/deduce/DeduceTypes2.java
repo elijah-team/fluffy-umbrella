@@ -156,6 +156,10 @@ public class DeduceTypes2 {
 		_pendingResolves.add(aResolvable);
 	}
 
+	public ErrSink _errSink() {
+		return errSink;
+	}
+
 	public interface IElementProcessor {
 		void elementIsNull();
 		void hasElement(OS_Element el);
@@ -914,7 +918,7 @@ public class DeduceTypes2 {
 									yy.typeName = null;
 								}
 
-								genCIForGenType2(yy);
+								yy.genCIForGenType2(this);
 								variableTableEntry.resolveType(yy);
 								variableTableEntry.resolveTypeToClass(yy.node);
 //								variableTableEntry.dlv.type.resolve(yy);
@@ -1733,49 +1737,6 @@ public class DeduceTypes2 {
 		}
 	}
 
-	/**
-	 * Sets the invocation ({@code genType#ci}) and the node for a GenType
-	 *
-	 * @param aGenType the GenType to modify. doesn't care about  nonGenericTypeName
-	 */
-	public void genCIForGenType2(final GenType aGenType) {
-		aGenType.genCI(aGenType.nonGenericTypeName, this, errSink, phase);
-		final IInvocation invocation = aGenType.ci;
-		if (invocation instanceof NamespaceInvocation) {
-			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
-			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
-				@Override
-				public void onDone(final GeneratedNamespace result) {
-					aGenType.node = result;
-				}
-			});
-		} else if (invocation instanceof ClassInvocation) {
-			final ClassInvocation classInvocation = (ClassInvocation) invocation;
-			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
-				@Override
-				public void onDone(final GeneratedClass result) {
-					aGenType.node = result;
-				}
-			});
-		} else {
-			if (aGenType.resolved instanceof OS_FuncExprType) {
-				final OS_FuncExprType funcExprType = (OS_FuncExprType) aGenType.resolved;
-				final @NotNull GenerateFunctions genf = getGenerateFunctions(funcExprType.getElement().getContext().module());
-				final FunctionInvocation fi = new FunctionInvocation((BaseFunctionDef) funcExprType.getElement(),
-						null,
-						null,
-						phase.generatePhase);
-				WlGenerateFunction gen = new WlGenerateFunction(genf, fi);
-				gen.run(null);
-				aGenType.node = gen.getResult();
-			} else if (aGenType.resolved instanceof OS_FuncType) {
-				final OS_FuncType funcType = (OS_FuncType) aGenType.resolved;
-				int y=2;
-			} else
-				throw new IllegalStateException("invalid invocation");
-		}
-	}
-
 	public static class OS_SpecialVariable implements OS_Element {
 		private final VariableTableEntry variableTableEntry;
 		private final VariableTableType type;
@@ -1997,7 +1958,7 @@ public class DeduceTypes2 {
 							}
 							final VariableTableEntry x = (VariableTableEntry) (deducePath.getEntry(i - 1));
 							x.resolveType(resolved);
-							genCIForGenType2(resolved);
+							resolved.genCIForGenType2(DeduceTypes2.this);
 							return;
 						} else {
 							if (i+1 == deducePath.size() && deducePath.size() > 1) {
@@ -2012,7 +1973,7 @@ public class DeduceTypes2 {
 
 									final VariableTableEntry x = (VariableTableEntry) (deducePath.getEntry(i - 1));
 									if (type.ci == null && type.node == null)
-										genCIForGenType2(type);
+										type.genCIForGenType2(DeduceTypes2.this);
 									assert x != null;
 									x.resolveTypeToClass(type.node);
 								} else
@@ -2300,7 +2261,7 @@ public class DeduceTypes2 {
 		}
 
 		public void genCIForGenType2(final GenType genType) {
-			dt2.genCIForGenType2(genType);
+			genType.genCIForGenType2(dt2);
 		}
 
 		public void LOG_err(String aS) {
@@ -2853,7 +2814,7 @@ public class DeduceTypes2 {
 								}
 							}
 							if (!skip)
-								genCIForGenType2(ite.type.genType);
+								ite.type.genType.genCIForGenType2(DeduceTypes2.this);
 						}
 					}
 				} catch (ResolveError aResolveError) {
@@ -3273,7 +3234,7 @@ public class DeduceTypes2 {
 		}
 
 		public void genCIForGenType2(final GenType genType) {
-			deduceTypes2.genCIForGenType2(genType);
+			genType.genCIForGenType2(deduceTypes2);
 		}
 
 		public @NotNull FunctionInvocation newFunctionInvocation(final BaseFunctionDef aFunctionDef, final ProcTableEntry aPte, final @NotNull IInvocation aInvocation) {

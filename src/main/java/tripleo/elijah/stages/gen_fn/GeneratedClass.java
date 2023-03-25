@@ -229,7 +229,7 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 								if (typeName instanceof NormalTypeName && ((NormalTypeName) typeName).getGenericPart().size() > 0)
 									genType.nonGenericTypeName = typeName;
 							}
-							aDeduceTypes2.genCIForGenType2(genType);
+							genType.genCIForGenType2(aDeduceTypes2);
 							potentialTypes.add(genType);
 						} catch (ResolveError aResolveError) {
 							aResolveError.printStackTrace();
