@@ -2179,6 +2179,28 @@ public class DeduceTypes2 {
 		return new Implement_construct(generatedFunction, instruction);
 	}
 
+	class Zero {
+		final Map<Object, IDeduceElement3> l = new HashMap<>();
+
+		public DeduceElement3_Function get(final BaseGeneratedFunction aGeneratedFunction) {
+			if (l.containsKey(aGeneratedFunction)) {
+				return (DeduceElement3_Function) l.get(aGeneratedFunction);
+			}
+
+			final DeduceElement3_Function de3 = new DeduceElement3_Function(DeduceTypes2.this, aGeneratedFunction);
+			l.put(aGeneratedFunction, de3);
+			return de3;
+		}
+
+
+		//public IDeduceElement3 get(final Object o) {
+		//	return null;
+		//}
+	}
+
+
+	private final Zero _zero = new Zero();
+
 	void resolve_function_return_type(@NotNull BaseGeneratedFunction generatedFunction) {
 		final GenType gt = resolve_function_return_type_int(generatedFunction);
 		if (gt != null)
