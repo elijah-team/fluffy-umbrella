@@ -28,6 +28,8 @@ import tripleo.elijah.lang2.SpecialVariables;
 import tripleo.elijah.nextgen.ClassDefinition;
 import tripleo.elijah.stages.deduce.declarations.DeferredMember;
 import tripleo.elijah.stages.deduce.declarations.DeferredMemberFunction;
+import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_Function;
+import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.stages.logging.ElLog;
@@ -2202,48 +2204,12 @@ public class DeduceTypes2 {
 	private final Zero _zero = new Zero();
 
 	void resolve_function_return_type(@NotNull BaseGeneratedFunction generatedFunction) {
-		final GenType gt = resolve_function_return_type_int(generatedFunction);
+		final DeduceElement3_Function f = _zero.get(generatedFunction);
+
+		final GenType gt = f.resolve_function_return_type_int(generatedFunction, errSink);
 		if (gt != null)
 			//phase.typeDecided((GeneratedFunction) generatedFunction, gt);
 			generatedFunction.resolveTypeDeferred(gt);
-	}
-
-	private @Nullable GenType resolve_function_return_type_int(final @NotNull BaseGeneratedFunction generatedFunction) {
-		// TODO what about resolved?
-		@NotNull GenType unitType = new GenType();
-		unitType.typeName = new OS_Type(BuiltInTypes.Unit);
-
-		// MODERNIZATION Does this have any affinity with DeferredMember?
-		@Nullable final InstructionArgument vte_index = generatedFunction.vte_lookup("Result");
-		if (vte_index != null) {
-			final @NotNull VariableTableEntry vte = generatedFunction.getVarTableEntry(to_int(vte_index));
-
-			if (vte.type.getAttached() != null) {
-				vte.resolveType(vte.type.genType); // TODO doesn't fit pattern of returning and then setting
-				return vte.type.genType;
-			} else {
-				@NotNull Collection<TypeTableEntry> pot1 = vte.potentialTypes();
-				@NotNull ArrayList<TypeTableEntry> pot = new ArrayList<TypeTableEntry>(pot1);
-				if (pot.size() == 1) {
-					return pot.get(0).genType;
-				} else if (pot.size() == 0) {
-					return unitType;
-				} else {
-					// TODO report some kind of error/diagnostic and/or let ForFunction know...
-					errSink.reportWarning("Can't resolve type of `Result'. potentialTypes > 1 for "+vte);
-				}
-			}
-		} else {
-			if (generatedFunction instanceof GeneratedConstructor) {
-				// cant set return type of constructors
-			} else {
-				// if Result is not present, then make function return Unit
-				// TODO May not be correct in all cases, such as when Value is present
-				// but works for current code structure, where Result is a always present
-				return unitType;
-			}
-		}
-		return null;
 	}
 
 	public static class DeduceClient1 {
