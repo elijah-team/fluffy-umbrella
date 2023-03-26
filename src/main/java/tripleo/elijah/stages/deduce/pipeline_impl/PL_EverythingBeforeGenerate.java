@@ -12,6 +12,6 @@ class PL_EverythingBeforeGenerate implements PipelineLogicRunnable {
 
 	@Override
 	public void run(final @NotNull PipelineLogic pipelineLogic) {
-		pipelineLogic.everythingBeforeGenerate(deducePipeline.lgc); // FIXME inline
+		pipelineLogic.everythingBeforeGenerate(deducePipeline.lgc); // FIXME inline; not moved b/c of run2
 	}
 }

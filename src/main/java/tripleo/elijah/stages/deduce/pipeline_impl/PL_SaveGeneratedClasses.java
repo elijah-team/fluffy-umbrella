@@ -12,6 +12,6 @@ class PL_SaveGeneratedClasses implements PipelineLogicRunnable {
 
 	@Override
 	public void run(final @NotNull PipelineLogic pipelineLogic) {
-		deducePipeline.lgc = pipelineLogic.dp.generatedClasses.copy();
+		deducePipeline.saveGeneratedClasses(pipelineLogic.dp.generatedClasses.copy());
 	}
 }

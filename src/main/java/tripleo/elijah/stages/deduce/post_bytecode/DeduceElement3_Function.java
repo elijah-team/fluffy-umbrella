@@ -69,14 +69,14 @@ public class DeduceElement3_Function implements IDeduceElement3 {
 		return DeduceElement3_Kind.FUNCTION;
 	}
 
-
+	// TODO what about resolved?
+	public static final @NotNull GenType unitType = new GenType();
+	static {
+		unitType.typeName = new OS_Type(BuiltInTypes.Unit);
+	}
 
 	@Nullable
-	public GenType resolve_function_return_type_int(final @NotNull BaseGeneratedFunction generatedFunction, final ErrSink errSink) {
-		// TODO what about resolved?
-		@NotNull GenType unitType = new GenType();
-		unitType.typeName = new OS_Type(BuiltInTypes.Unit);
-
+	public GenType resolve_function_return_type_int(final ErrSink errSink) {
 		// MODERNIZATION Does this have any affinity with DeferredMember?
 		@Nullable final InstructionArgument vte_index = generatedFunction.vte_lookup("Result");
 		if (vte_index != null) {
@@ -88,13 +88,16 @@ public class DeduceElement3_Function implements IDeduceElement3 {
 			} else {
 				@NotNull Collection<TypeTableEntry> pot1 = vte.potentialTypes();
 				@NotNull ArrayList<TypeTableEntry>  pot  = new ArrayList<TypeTableEntry>(pot1);
-				if (pot.size() == 1) {
+
+				switch (pot.size()) {
+				case 1:
 					return pot.get(0).genType;
-				} else if (pot.size() == 0) {
+				case 0:
 					return unitType;
-				} else {
+				default:
 					// TODO report some kind of error/diagnostic and/or let ForFunction know...
-					errSink.reportWarning("Can't resolve type of `Result'. potentialTypes > 1 for "+vte);
+					errSink.reportWarning("Can't resolve type of `Result'. potentialTypes > 1 for " + vte);
+					break;
 				}
 			}
 		} else {
