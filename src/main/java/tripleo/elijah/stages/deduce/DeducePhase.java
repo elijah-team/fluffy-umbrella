@@ -432,8 +432,13 @@ public class DeducePhase {
 				final @NotNull EvaContainer   evaContainer = (EvaContainer) generatedNode;
 				Collection<ResolvedVariables> x            = resolved_variables.get(evaContainer.getElement());
 				for (@NotNull DeducePhase.ResolvedVariables resolvedVariables : x) {
-					final GeneratedContainer.VarTableEntry variable = generatedContainer.getVariable(resolvedVariables.varName);
-					assert variable != null;
+					final @NotNull Maybe<EvaContainer.VarTableEntry> variable_m = evaContainer.getVariable(resolvedVariables.varName);
+
+					if (variable_m.isException())
+						assert false;
+
+					final @NotNull EvaContainer.VarTableEntry variable = variable_m.o;
+
 					final TypeTableEntry type = resolvedVariables.identTableEntry.type;
 					if (type != null)
 						variable.addPotentialTypes(List_of(type));
@@ -476,9 +481,13 @@ public class DeducePhase {
 				nsi.resolveDeferred()
 						.done(new DoneCallback<EvaNamespace>() {
 							@Override
-							public void onDone(@NotNull GeneratedNamespace result) {
-								GeneratedContainer.@Nullable VarTableEntry v = result.getVariable(deferredMember.getVariableStatement().getName());
-								assert v != null;
+							public void onDone(@NotNull EvaNamespace result) {
+								@NotNull Maybe<EvaContainer.VarTableEntry> v_m = result.getVariable(deferredMember.getVariableStatement().getName());
+
+								if (v_m.isException())
+									assert false;
+
+								EvaContainer.VarTableEntry       v = v_m.o;
 
 								// TODO varType, potentialTypes and _resolved: which?
 								//final OS_Type varType = v.varType;

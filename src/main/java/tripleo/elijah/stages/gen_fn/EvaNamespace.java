@@ -82,13 +82,12 @@ public class EvaNamespace extends EvaContainerNC implements GNCoded {
 	}
 
 	@Override
-	@Nullable
-	public VarTableEntry getVariable(String aVarName) {
+	public @NotNull Maybe<VarTableEntry> getVariable(String aVarName) {
 		for (VarTableEntry varTableEntry : varTable) {
 			if (varTableEntry.nameToken.getText().equals(aVarName))
-				return varTableEntry;
+				return new Maybe<>(varTableEntry, null);
 		}
-		return null;
+		return new Maybe<>(null, _def_VarNotFound);
 	}
 
 	@Override
