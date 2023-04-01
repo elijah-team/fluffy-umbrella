@@ -52,10 +52,10 @@ public class VTE_TypePromises {
 													   final @NotNull ProcTableEntry aProcTableEntry,
 													   final ClassInvocation aCi,
 													   final ProcTableListener aProcTableListener) {
-		aCi.resolvePromise().done(new DoneCallback<GeneratedClass>() {
+		aCi.resolvePromise().done(new DoneCallback<EvaClass>() {
 			@Override
-			public void onDone(final GeneratedClass result) {
-				for (GeneratedContainer.VarTableEntry varTableEntry : result.varTable) {
+			public void onDone(final EvaClass result) {
+				for (EvaContainer.VarTableEntry varTableEntry : result.varTable) {
 					if (varTableEntry.nameToken.getText().equals(variableStatement.getName())) {
 						assert varTableEntry.varType.getClassOf() == fd.getParent();
 

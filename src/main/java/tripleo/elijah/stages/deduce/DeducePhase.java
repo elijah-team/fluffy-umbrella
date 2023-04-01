@@ -25,6 +25,7 @@ import tripleo.elijah.nextgen.ClassDefinition;
 import tripleo.elijah.nextgen.diagnostic.CouldntGenerateClass;
 import tripleo.elijah.stages.deduce.declarations.DeferredMember;
 import tripleo.elijah.stages.deduce.declarations.DeferredMemberFunction;
+import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
@@ -107,8 +108,8 @@ public class DeducePhase {
 			@Override
 			public void run()  {
 				gen.run(null);
-				final ClassDefinition cd = new ClassDefinition(ci);
-				final GeneratedClass genclass = gen.getResult();
+				final ClassDefinition cd       = new ClassDefinition(ci);
+				final EvaClass        genclass = gen.getResult();
 				if (genclass != null) {
 					cd.setNode(genclass);
 					cds[0] = cd;
@@ -142,9 +143,9 @@ public class DeducePhase {
 							continue;
 
 						/*if (ci.resolvePromise().isResolved())*/ {
-							ci.resolvePromise().then(new DoneCallback<GeneratedClass>() {
+							ci.resolvePromise().then(new DoneCallback<EvaClass>() {
 								@Override
-								public void onDone(final GeneratedClass result) {
+								public void onDone(final EvaClass result) {
 									aClassInvocation.resolveDeferred().resolve(result);
 								}
 							});
@@ -276,11 +277,11 @@ public class DeducePhase {
 		for (GeneratedNode generatedNode : generatedClasses.copy()) {
 			if (generatedNode.module() != m) continue;
 
-			if (generatedNode instanceof GeneratedClass) {
-				final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
+			if (generatedNode instanceof EvaClass) {
+				final EvaClass evaClass = (EvaClass) generatedNode;
 
-				generatedClass.fixupUserClasses(deduceTypes2, generatedClass.getKlass().getContext());
-				deduceTypes2.deduceOneClass(generatedClass);
+				evaClass.fixupUserClasses(deduceTypes2, evaClass.getKlass().getContext());
+				deduceTypes2.deduceOneClass(evaClass);
 			}
 		}
 
@@ -371,20 +372,20 @@ public class DeducePhase {
 		// TODO rewrite with classInvocationMultimap
 		for (ClassStatement classStatement : onclasses.keySet()) {
 			for (GeneratedNode generatedNode : generatedClasses) {
-				if (generatedNode instanceof GeneratedClass) {
-					final @NotNull GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-					if (generatedClass.getKlass() == classStatement) {
+				if (generatedNode instanceof EvaClass) {
+					final @NotNull EvaClass evaClass = (EvaClass) generatedNode;
+					if (evaClass.getKlass() == classStatement) {
 						Collection<OnClass> ks = onclasses.get(classStatement);
 						for (@NotNull OnClass k : ks) {
-							k.classFound(generatedClass);
+							k.classFound(evaClass);
 						}
 					} else {
-						@NotNull Collection<GeneratedClass> cmv = generatedClass.classMap.values();
-						for (@NotNull GeneratedClass aClass : cmv) {
+						@NotNull Collection<EvaClass> cmv = evaClass.classMap.values();
+						for (@NotNull EvaClass aClass : cmv) {
 							if (aClass.getKlass() == classStatement) {
 								Collection<OnClass> ks = onclasses.get(classStatement);
 								for (@NotNull OnClass k : ks) {
-									k.classFound(generatedClass);
+									k.classFound(evaClass);
 								}
 							}
 						}
@@ -397,15 +398,15 @@ public class DeducePhase {
 	public void setGeneratedClassParents() {
 		// TODO all GeneratedFunction nodes have a genClass member
 		for (GeneratedNode generatedNode : generatedClasses) {
-			if (generatedNode instanceof GeneratedClass) {
-				final @NotNull GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-				@NotNull Collection<GeneratedFunction> functions = generatedClass.functionMap.values();
+			if (generatedNode instanceof EvaClass) {
+				final @NotNull EvaClass                evaClass  = (EvaClass) generatedNode;
+				@NotNull Collection<GeneratedFunction> functions = evaClass.functionMap.values();
 				for (@NotNull GeneratedFunction generatedFunction : functions) {
-					generatedFunction.setParent(generatedClass);
+					generatedFunction.setParent(evaClass);
 				}
-			} else if (generatedNode instanceof GeneratedNamespace) {
-				final @NotNull GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
-				@NotNull Collection<GeneratedFunction> functions = generatedNamespace.functionMap.values();
+			} else if (generatedNode instanceof EvaNamespace) {
+				final @NotNull EvaNamespace            generatedNamespace = (EvaNamespace) generatedNode;
+				@NotNull Collection<GeneratedFunction> functions          = generatedNamespace.functionMap.values();
 				for (@NotNull GeneratedFunction generatedFunction : functions) {
 					generatedFunction.setParent(generatedNamespace);
 				}
@@ -427,9 +428,9 @@ public class DeducePhase {
 
 	public void handleResolvedVariables() {
 		for (GeneratedNode generatedNode : generatedClasses.copy()) {
-			if (generatedNode instanceof GeneratedContainer) {
-				final @NotNull GeneratedContainer generatedContainer = (GeneratedContainer) generatedNode;
-				Collection<ResolvedVariables> x = resolved_variables.get(generatedContainer.getElement());
+			if (generatedNode instanceof EvaContainer) {
+				final @NotNull EvaContainer   evaContainer = (EvaContainer) generatedNode;
+				Collection<ResolvedVariables> x            = resolved_variables.get(evaContainer.getElement());
 				for (@NotNull DeducePhase.ResolvedVariables resolvedVariables : x) {
 					final GeneratedContainer.VarTableEntry variable = generatedContainer.getVariable(resolvedVariables.varName);
 					assert variable != null;
@@ -437,21 +438,21 @@ public class DeducePhase {
 					if (type != null)
 						variable.addPotentialTypes(List_of(type));
 					variable.addPotentialTypes(resolvedVariables.identTableEntry.potentialTypes());
-					variable.updatePotentialTypes(generatedContainer);
+					variable.updatePotentialTypes(evaContainer);
 				}
 			}
 		}
 	}
 
 	public void resolveAllVariableTableEntries() {
-		@NotNull List<GeneratedClass> gcs = new ArrayList<GeneratedClass>();
-		boolean all_resolve_var_table_entries = false;
+		@NotNull List<EvaClass> gcs                           = new ArrayList<EvaClass>();
+		boolean                 all_resolve_var_table_entries = false;
 		while (!all_resolve_var_table_entries) {
 			if (generatedClasses.size() == 0) break;
 			for (GeneratedNode generatedNode : generatedClasses.copy()) {
-				if (generatedNode instanceof GeneratedClass) {
-					final @NotNull GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-					all_resolve_var_table_entries = generatedClass.resolve_var_table_entries(this); // TODO use a while loop to get all classes
+				if (generatedNode instanceof EvaClass) {
+					final @NotNull EvaClass evaClass = (EvaClass) generatedNode;
+					all_resolve_var_table_entries = evaClass.resolve_var_table_entries(this); // TODO use a while loop to get all classes
 				}
 			}
 		}
@@ -473,7 +474,7 @@ public class DeducePhase {
 				final @NotNull NamespaceStatement parent = (NamespaceStatement) deferredMember.getParent();
 				final NamespaceInvocation nsi = registerNamespaceInvocation(parent);
 				nsi.resolveDeferred()
-						.done(new DoneCallback<GeneratedNamespace>() {
+						.done(new DoneCallback<EvaNamespace>() {
 							@Override
 							public void onDone(@NotNull GeneratedNamespace result) {
 								GeneratedContainer.@Nullable VarTableEntry v = result.getVariable(deferredMember.getVariableStatement().getName());
@@ -518,18 +519,18 @@ public class DeducePhase {
 
 				// because deferredMember.invocation is null, we must create one here
 				final @Nullable ClassInvocation ci = registerClassInvocation(parent, null);
-				ci.resolvePromise().then(new DoneCallback<GeneratedClass>() {
+				ci.resolvePromise().then(new DoneCallback<EvaClass>() {
 					@Override
-					public void onDone(final GeneratedClass result) {
-						final List<GeneratedContainer.VarTableEntry> vt = result.varTable;
-						for (GeneratedContainer.VarTableEntry gc_vte : vt) {
+					public void onDone(final EvaClass result) {
+						final List<EvaContainer.VarTableEntry> vt = result.varTable;
+						for (EvaContainer.VarTableEntry gc_vte : vt) {
 							if (gc_vte.nameToken.getText().equals(name)) {
 								// check connections
 								// unify pot. types (prol. shuld be done already -- we don't want to be reporting errors here)
 								// call typePromises and externalRefPromisess
 
 								// TODO just getting first element here (without processing of any kind); HACK
-								final List<GeneratedContainer.VarTableEntry.ConnectionPair> connectionPairs = gc_vte.connectionPairs;
+								final List<EvaContainer.VarTableEntry.ConnectionPair> connectionPairs = gc_vte.connectionPairs;
 								if (connectionPairs.size() > 0) {
 									final GenType ty = connectionPairs.get(0).vte.type.genType;
 									assert ty.resolved != null;
@@ -563,14 +564,14 @@ public class DeducePhase {
 		static class GetFunctionMapClass implements Function<GeneratedNode, Map<FunctionDef, GeneratedFunction>> {
 			@Override
 			public Map<FunctionDef, GeneratedFunction> apply(final GeneratedNode aClass) {
-				return ((GeneratedClass) aClass).functionMap;
+				return ((EvaClass) aClass).functionMap;
 			}
 		}
 
 		static class GetFunctionMapNamespace implements Function<GeneratedNode, Map<FunctionDef, GeneratedFunction>> {
 			@Override
 			public Map<FunctionDef, GeneratedFunction> apply(final GeneratedNode aNamespace) {
-				return ((GeneratedNamespace) aNamespace).functionMap;
+				return ((EvaNamespace) aNamespace).functionMap;
 			}
 		}
 
@@ -605,9 +606,9 @@ public class DeducePhase {
 		@NotNull
 		private <T extends GeneratedNode> Function<GeneratedNode, Map<FunctionDef, GeneratedFunction>> getFunctionMap(final T result) {
 			final Function<GeneratedNode, Map<FunctionDef, GeneratedFunction>> x;
-			if (result instanceof GeneratedNamespace)
+			if (result instanceof EvaNamespace)
 				x = new GetFunctionMapNamespace();
-			else if (result instanceof GeneratedClass)
+			else if (result instanceof EvaClass)
 				x = new GetFunctionMapClass();
 			else
 				throw new NotImplementedException();
@@ -616,16 +617,16 @@ public class DeducePhase {
 
 		void action() {
 			if (invocation instanceof ClassInvocation)
-				((ClassInvocation) invocation).resolvePromise().then(new DoneCallback<GeneratedClass>() {
+				((ClassInvocation) invocation).resolvePromise().then(new DoneCallback<EvaClass>() {
 					@Override
-					public void onDone(final GeneratedClass result) {
+					public void onDone(final EvaClass result) {
 						defaultAction(result);
 					}
 				});
 			else if (invocation instanceof NamespaceInvocation)
-				((NamespaceInvocation) invocation).resolvePromise().then(new DoneCallback<GeneratedNamespace>() {
+				((NamespaceInvocation) invocation).resolvePromise().then(new DoneCallback<EvaNamespace>() {
 					@Override
-					public void onDone(final GeneratedNamespace result) {
+					public void onDone(final EvaNamespace result) {
 						defaultAction(result);
 					}
 				});
@@ -658,9 +659,9 @@ public class DeducePhase {
 				else {
 					final ClassInvocation classInvocation = (ClassInvocation) invocation;
 					classInvocation.resolvePromise().
-							then(new DoneCallback<GeneratedClass>() {
+							then(new DoneCallback<EvaClass>() {
 								@Override
-								public void onDone(final GeneratedClass element_generated) {
+								public void onDone(final EvaClass element_generated) {
 									// once again we need GeneratedFunction, not FunctionDef
 									// we seem to have it below, but there can be multiple
 									// specializations of each function
@@ -697,9 +698,9 @@ public class DeducePhase {
 //				final ClassStatement classStatement = (ClassStatement) deferredMemberFunction.getParent();
 				final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) deferredMemberFunction.getInvocation();
 				namespaceInvocation.resolvePromise().
-						then(new DoneCallback<GeneratedNamespace>() {
+						then(new DoneCallback<EvaNamespace>() {
 					@Override
-					public void onDone(final GeneratedNamespace result) {
+					public void onDone(final EvaNamespace result) {
 						final NamespaceInvocation x = namespaceInvocation;
 						final @NotNull DeferredMemberFunction z = deferredMemberFunction;
 						int y=2;
@@ -709,18 +710,18 @@ public class DeducePhase {
 		}
 
 		for (GeneratedNode generatedNode : generatedClasses) {
-			if (generatedNode instanceof GeneratedContainerNC) {
-				final GeneratedContainerNC nc = (GeneratedContainerNC) generatedNode;
+			if (generatedNode instanceof EvaContainerNC) {
+				final EvaContainerNC nc = (EvaContainerNC) generatedNode;
 				nc.noteDependencies(nc.getDependency()); // TODO is this right?
 
 				for (GeneratedFunction generatedFunction : nc.functionMap.values()) {
 					generatedFunction.noteDependencies(nc.getDependency());
 				}
-				if (nc instanceof GeneratedClass) {
-					final GeneratedClass generatedClass = (GeneratedClass) nc;
+				if (nc instanceof EvaClass) {
+					final EvaClass evaClass = (EvaClass) nc;
 
-					for (GeneratedConstructor generatedConstructor : generatedClass.constructors.values()) {
-						generatedConstructor.noteDependencies(nc.getDependency());
+					for (EvaConstructor evaConstructor : evaClass.constructors.values()) {
+						evaConstructor.noteDependencies(nc.getDependency());
 					}
 				}
 			}
@@ -729,12 +730,12 @@ public class DeducePhase {
 
 	private void sanityChecks() {
 		for (GeneratedNode generatedNode : generatedClasses) {
-			if (generatedNode instanceof GeneratedClass) {
-				final @NotNull GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-				sanityChecks(generatedClass.functionMap.values());
+			if (generatedNode instanceof EvaClass) {
+				final @NotNull EvaClass evaClass = (EvaClass) generatedNode;
+				sanityChecks(evaClass.functionMap.values());
 //				sanityChecks(generatedClass.constructors.values()); // TODO reenable
-			} else if (generatedNode instanceof GeneratedNamespace) {
-				final @NotNull GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
+			} else if (generatedNode instanceof EvaNamespace) {
+				final @NotNull EvaNamespace generatedNamespace = (EvaNamespace) generatedNode;
 				sanityChecks(generatedNamespace.functionMap.values());
 //				sanityChecks(generatedNamespace.constructors.values());
 			}

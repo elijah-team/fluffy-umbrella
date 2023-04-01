@@ -8,8 +8,9 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.post_deduce.IPostDeduce;
@@ -19,10 +20,10 @@ import tripleo.elijah.util.NotImplementedException;
 /**
  * Created 12/22/20 5:39 PM
  */
-public class GeneratedNamespace extends GeneratedContainerNC implements GNCoded {
-	public GeneratedNamespace(NamespaceStatement namespace1, OS_Module module) {
-		this.namespaceStatement = namespace1;
-		this.module = module;
+public class EvaNamespace extends EvaContainerNC implements GNCoded {
+	public EvaNamespace(NamespaceStatement aNamespaceStatement, OS_Module aModule) {
+		namespaceStatement = aNamespaceStatement;
+		module = aModule;
 	}
 
 	private final OS_Module module;

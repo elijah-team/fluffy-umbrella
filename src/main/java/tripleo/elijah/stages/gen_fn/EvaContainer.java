@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VarTableEntry;
+import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,10 +25,10 @@ import java.util.List;
 /**
  * Created 2/28/21 3:23 AM
  */
-public interface GeneratedContainer extends GeneratedNode {
+public interface EvaContainer extends GeneratedNode {
 	OS_Element getElement();
 
-	VarTableEntry getVariable(String aVarName);
+	@NotNull Maybe<VarTableEntry> getVariable(String aVarName);
 
 	public class VarTableEntry {
 		public final VariableStatement vs;
@@ -74,7 +75,7 @@ public interface GeneratedContainer extends GeneratedNode {
 			return parent;
 		}
 
-		public void connect(final VariableTableEntry aVte, final GeneratedConstructor aConstructor) {
+		public void connect(final VariableTableEntry aVte, final EvaConstructor aConstructor) {
 			connectionPairs.add(new ConnectionPair(aVte, aConstructor));
 		}
 
@@ -92,27 +93,27 @@ public interface GeneratedContainer extends GeneratedNode {
 		private DeferredObject<OS_Type, Void, Void> _resolve_varType_Promise = new DeferredObject<>();
 
 		public interface UpdatePotentialTypesCB {
-			void call(final @NotNull GeneratedContainer aGeneratedContainer);
+			void call(final @NotNull EvaContainer aEvaContainer);
 		}
 
 		UpdatePotentialTypesCB updatePotentialTypesCB;
 
-		public void updatePotentialTypes(final @NotNull GeneratedContainer aGeneratedContainer) {
+		public void updatePotentialTypes(final @NotNull EvaContainer aEvaContainer) {
 //			assert aGeneratedContainer == GeneratedContainer.this;
 			updatePotentialTypesCBPromise.then(new DoneCallback<UpdatePotentialTypesCB>() {
 				@Override
 				public void onDone(final UpdatePotentialTypesCB result) {
-					result.call(aGeneratedContainer);
+					result.call(aEvaContainer);
 				}
 			});
 		}
 
 		public static class ConnectionPair {
 			public final VariableTableEntry vte;
-			final GeneratedConstructor constructor;
+			final        EvaConstructor     constructor;
 
 			@Contract(pure = true)
-			public ConnectionPair(final VariableTableEntry aVte, final GeneratedConstructor aConstructor) {
+			public ConnectionPair(final VariableTableEntry aVte, final EvaConstructor aConstructor) {
 				vte = aVte;
 				constructor = aConstructor;
 			}

@@ -16,7 +16,7 @@ import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang.OS_UnknownType;
 import tripleo.elijah.lang.TypeName;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
+import tripleo.elijah.stages.gen_fn.EvaClass;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +28,8 @@ import java.util.Map;
 public class ClassInvocation implements IInvocation {
 	private final @NotNull ClassStatement cls;
 	public final @Nullable Map<TypeName, OS_Type> genericPart;
-	private final String constructorName;
-	private final DeferredObject<GeneratedClass, Void, Void> resolvePromise = new DeferredObject<GeneratedClass, Void, Void>();
+	private final String                               constructorName;
+	private final DeferredObject<EvaClass, Void, Void> resolvePromise = new DeferredObject<EvaClass, Void, Void>();
 
 	public ClassInvocation(@NotNull ClassStatement aClassStatement, String aConstructorName) {
 		cls = aClassStatement;
@@ -45,7 +45,7 @@ public class ClassInvocation implements IInvocation {
 		constructorName = aConstructorName;
 	}
 
-	public @NotNull DeferredObject<GeneratedClass, Void, Void> resolveDeferred() {
+	public @NotNull DeferredObject<EvaClass, Void, Void> resolveDeferred() {
 		return resolvePromise;
 	}
 
@@ -58,7 +58,7 @@ public class ClassInvocation implements IInvocation {
 		return cls;
 	}
 
-	public @NotNull Promise<GeneratedClass, Void, Void> resolvePromise() {
+	public @NotNull Promise<EvaClass, Void, Void> resolvePromise() {
 		return resolvePromise.promise();
 	}
 

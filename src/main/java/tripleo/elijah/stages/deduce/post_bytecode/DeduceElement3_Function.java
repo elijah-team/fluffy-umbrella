@@ -101,7 +101,7 @@ public class DeduceElement3_Function implements IDeduceElement3 {
 				}
 			}
 		} else {
-			if (generatedFunction instanceof GeneratedConstructor) {
+			if (generatedFunction instanceof EvaConstructor) {
 				// cant set return type of constructors
 			} else {
 				// if Result is not present, then make function return Unit

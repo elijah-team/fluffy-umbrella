@@ -19,8 +19,6 @@ import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkJob;
 import tripleo.elijah.work.WorkManager;
 
-import java.util.List;
-
 /**
  * Created 5/31/21 3:01 AM
  */
@@ -29,8 +27,8 @@ public class WlGenerateNamespace implements WorkJob {
 	private final NamespaceStatement namespaceStatement;
 	private final NamespaceInvocation namespaceInvocation;
 	private final DeducePhase.@Nullable GeneratedClasses coll;
-	private boolean _isDone = false;
-	private GeneratedNamespace result;
+	private boolean      _isDone = false;
+	private EvaNamespace result;
 
 	public WlGenerateNamespace(@NotNull GenerateFunctions aGenerateFunctions,
 							   @NotNull NamespaceInvocation aNamespaceInvocation,
@@ -43,10 +41,10 @@ public class WlGenerateNamespace implements WorkJob {
 
 	@Override
 	public void run(WorkManager aWorkManager) {
-		final DeferredObject<GeneratedNamespace, Void, Void> resolvePromise = namespaceInvocation.resolveDeferred();
+		final DeferredObject<EvaNamespace, Void, Void> resolvePromise = namespaceInvocation.resolveDeferred();
 		switch (resolvePromise.state()) {
 		case PENDING:
-			@NotNull GeneratedNamespace ns = generateFunctions.generateNamespace(namespaceStatement);
+			@NotNull EvaNamespace ns = generateFunctions.generateNamespace(namespaceStatement);
 			ns.setCode(generateFunctions.module.getCompilation().nextClassCode());
 			if (coll != null)
 				coll.add(ns);
@@ -55,9 +53,9 @@ public class WlGenerateNamespace implements WorkJob {
 			result = ns;
 			break;
 		case RESOLVED:
-			resolvePromise.then(new DoneCallback<GeneratedNamespace>() {
+			resolvePromise.then(new DoneCallback<EvaNamespace>() {
 				@Override
-				public void onDone(GeneratedNamespace result) {
+				public void onDone(EvaNamespace result) {
 					WlGenerateNamespace.this.result = result;
 				}
 			});

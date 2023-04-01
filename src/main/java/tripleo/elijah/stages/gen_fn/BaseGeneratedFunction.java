@@ -37,7 +37,7 @@ import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 /**
  * Created 9/10/20 2:57 PM
  */
-public abstract class BaseGeneratedFunction extends AbstractDependencyTracker implements GeneratedNode, DeduceTypes2.ExpectationBase, IDependencyReferent {
+public abstract class BaseGeneratedFunction extends AbstractDependencyTracker implements GeneratedNode, DeduceTypes2.ExpectationBase, IDependencyReferent, IEvaFunctionBase {
 	public boolean deducedAlready;
 	public FunctionInvocation fi;
 	private int code = 0;
@@ -52,56 +52,14 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	public @NotNull List<IdentTableEntry> idte_list = new ArrayList<IdentTableEntry>();
 	private int label_count = 0;
 	private int _nextTemp = 0;
-	private GeneratedNode genClass;
-	private GeneratedContainerNC parent;
+	private GeneratedNode                       genClass;
+	private EvaContainerNC                      parent;
 	private DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
 	private final Dependency dependency = new Dependency(this);
-
-	public static void printTables(GeneratedFunction gf) {
-		System.out.println("VariableTable ");
-		for (VariableTableEntry variableTableEntry : gf.vte_list) {
-			System.out.println("\t"+variableTableEntry);
-		}
-		System.out.println("ConstantTable ");
-		for (ConstantTableEntry constantTableEntry : gf.cte_list) {
-			System.out.println("\t"+constantTableEntry);
-		}
-		System.out.println("ProcTable     ");
-		for (ProcTableEntry procTableEntry : gf.prte_list) {
-			System.out.println("\t"+procTableEntry);
-		}
-		System.out.println("TypeTable     ");
-		for (TypeTableEntry typeTableEntry : gf.tte_list) {
-			System.out.println("\t"+typeTableEntry);
-		}
-		System.out.println("IdentTable    ");
-		for (IdentTableEntry identTableEntry : gf.idte_list) {
-			System.out.println("\t"+identTableEntry);
-		}
-	}
 
 	//
 	// region Ident-IA
 	//
-
-	public static @NotNull List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
-		LinkedList<InstructionArgument> s = new LinkedList<InstructionArgument>();
-		while (oo != null) {
-			if (oo instanceof IntegerIA) {
-				s.addFirst(oo);
-				oo = null;
-			} else if (oo instanceof IdentIA) {
-				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
-				s.addFirst(oo);
-				oo = ite1.getBacklink();
-			} else if (oo instanceof ProcIA) {
-				s.addFirst(oo);
-				oo = null;
-			} else
-				throw new IllegalStateException("Invalid InstructionArgument");
-		}
-		return s;
-	}
 
 	/**
 	 * Returns a string that represents the path encoded by ia2.
@@ -113,6 +71,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	 * @param ia2 the path
 	 * @return a string that represents the path encoded by ia2
 	 */
+	@Override
 	public String getIdentIAPathNormal(final IdentIA ia2) {
 		final List<InstructionArgument> s = _getIdentIAPathList(ia2);
 
@@ -146,14 +105,17 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	// region INSTRUCTIONS
 	//
 
+	@Override
 	public @NotNull List<Instruction> instructions() {
 		return instructionsList;
 	}
 
+	@Override
 	public Instruction getInstruction(final int anIndex) {
 		return instructionsList.get(anIndex);
 	}
 
+	@Override
 	public int add(final InstructionName aName, final List<InstructionArgument> args_, final Context ctx) {
 		final Instruction i = new Instruction();
 		i.setIndex(instruction_index++);
@@ -170,10 +132,12 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	// region LABELS
 	//
 
+	@Override
 	public @NotNull Label addLabel() {
 		return addLabel("__label", true);
 	}
 
+	@Override
 	public @NotNull Label addLabel(final String base_name, final boolean append_int) {
 		final Label label = new Label(this);
 		final String name;
@@ -189,10 +153,12 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return label;
 	}
 
+	@Override
 	public void place(@NotNull final Label label) {
 		label.setIndex(instruction_index);
 	}
 
+	@Override
 	public @NotNull List<Label> labels() {
 		return labelList;
 	}
@@ -203,40 +169,49 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	// region get-entries
 	//
 
+	@Override
 	@NotNull public VariableTableEntry getVarTableEntry(final int index) {
 		return vte_list.get(index);
 	}
 
+	@Override
 	@NotNull public IdentTableEntry getIdentTableEntry(final int index) {
 		return idte_list.get(index);
 	}
 
+	@Override
 	@NotNull public ConstantTableEntry getConstTableEntry(final int index) {
 		return cte_list.get(index);
 	}
 
+	@Override
 	@NotNull public TypeTableEntry getTypeTableEntry(final int index) {
 		return tte_list.get(index);
 	}
 
+	@Override
 	@NotNull public ProcTableEntry getProcTableEntry(final int index) {
 		return prte_list.get(index);
 	}
 
 	// endregion
 
+	@Override
 	public @NotNull TypeTableEntry newTypeTableEntry(final TypeTableEntry.Type type1, final OS_Type type) {
 		return newTypeTableEntry(type1, type, null, null);
 	}
 
+	@Override
 	public @NotNull TypeTableEntry newTypeTableEntry(final TypeTableEntry.Type type1, final OS_Type type, TableEntryIV aTableEntryIV) {
 		return newTypeTableEntry(type1, type, null, aTableEntryIV);
 	}
 
+	@Override
 	public @NotNull TypeTableEntry newTypeTableEntry(final TypeTableEntry.Type type1, final OS_Type type, final IExpression expression) {
 		return newTypeTableEntry(type1, type, expression, null);
 	}
 
+	@Override
 	public @NotNull TypeTableEntry newTypeTableEntry(final TypeTableEntry.Type type1, final OS_Type type, final IExpression expression, TableEntryIV aTableEntryIV) {
 		final TypeTableEntry typeTableEntry = new TypeTableEntry(tte_list.size(), type1, type, expression, aTableEntryIV);
 		typeTableEntry.setAttached(type); // README make sure tio call callback
@@ -244,10 +219,12 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return typeTableEntry;
 	}
 
+	@Override
 	public void addContext(final Context context, final Range r) {
 //		contextToRangeMap.put(r, context);
 	}
 
+	@Override
 	public Context getContextFromPC(final int pc) {
 //		for (Map.Entry<Range, Context> rangeContextEntry : contextToRangeMap.entrySet()) {
 //			if (rangeContextEntry.getKey().has(pc))
@@ -264,6 +241,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	 * @param text variable name from the source file
 	 * @return {@link IntegerIA} or {@link ConstTableIA} or null if not found, meaning not a local variable
 	 */
+	@Override
 	public @Nullable InstructionArgument vte_lookup(final String text) {
 		int index = 0;
 		for (final VariableTableEntry variableTableEntry : vte_list) {
@@ -284,6 +262,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return null;
 	}
 
+	@Override
 	public @NotNull InstructionArgument get_assignment_path(@NotNull final IExpression expression,
 															@NotNull final GenerateFunctions generateFunctions,
 															Context context) {
@@ -362,10 +341,12 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		}
 	}
 
+	@Override
 	public int nextTemp() {
 		return ++_nextTemp;
 	}
 
+	@Override
 	public @Nullable Label findLabel(final int index) {
 		for (final Label label : labelList) {
 			if (label.getIndex() == index)
@@ -374,8 +355,6 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return null;
 	}
 
-	public abstract VariableTableEntry getSelf();
-
 	/**
 	 * Returns first {@link IdentTableEntry} that matches expression
 	 * Only works for IdentExpressions
@@ -383,6 +362,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	 * @param expression {@link IdentExpression} to test for
 	 * @return IdentTableEntry or null
 	 */
+	@Override
 	public IdentTableEntry getIdentTableEntryFor(IExpression expression) {
 		for (IdentTableEntry identTableEntry : idte_list) {
 			// TODO make this work for Qualidents and DotExpressions
@@ -393,6 +373,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return null;
 	}
 
+	@Override
 	public int addIdentTableEntry(final IdentExpression ident, final Context context) {
 		for (int i = 0; i < idte_list.size(); i++) {
 			if (idte_list.get(i).getIdent() == ident && idte_list.get(i).getPC() == context)
@@ -403,43 +384,50 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return idte.getIndex();
 	}
 
+	@Override
 	public int addVariableTableEntry(final String name, final VariableTableType vtt, final TypeTableEntry type, OS_Element el) {
 		final VariableTableEntry vte = new VariableTableEntry(vte_list.size(), vtt, name, type, el);
 		vte_list.add(vte);
 		return vte.getIndex();
 	}
 
+	@Override
 	public int getCode() {
 		return code;
 	}
 
+	@Override
 	public void setCode(int aCode) {
 		code = aCode;
 	}
 
-	public void setParent(GeneratedContainerNC aGeneratedContainerNC) {
+	@Override
+	public void setParent(EvaContainerNC aGeneratedContainerNC) {
 		parent = aGeneratedContainerNC;
 	}
 
-	public GeneratedContainerNC getParent() {
+	@Override
+	public EvaContainerNC getParent() {
 		return parent;
 	}
 
+	@Override
 	public void setClass(@NotNull GeneratedNode aNode) {
-		assert aNode instanceof GeneratedClass || aNode instanceof GeneratedNamespace;
+		assert aNode instanceof EvaClass || aNode instanceof EvaNamespace;
 		genClass = aNode;
 	}
 
+	@Override
 	public GeneratedNode getGenClass() {
 		return genClass;
 	}
 
-	public abstract BaseFunctionDef getFD();
-
+	@Override
 	public Promise<GenType, Void, Void> typePromise() {
 		return typeDeferred.promise();
 	}
 
+	@Override
 	public DeferredObject<GenType, Void, Void> typeDeferred() {
 		return typeDeferred;
 	}
@@ -449,6 +437,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return toString();
 	}
 
+	@Override
 	public void resolveTypeDeferred(final GenType aType) {
 		if (typeDeferred.isPending())
 			typeDeferred.resolve(aType);
@@ -465,13 +454,15 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	}
 
 	Map<OS_Element, DeduceElement> elements = new HashMap<OS_Element, DeduceElement>();
+	@Override
 	public void addElement(final OS_Element aElement, final DeduceElement aDeduceElement) {
 		elements.put(aElement, aDeduceElement);
 	}
 
+	@Override
 	public String getFunctionName() {
 		// TODO change to abstract with override??
-		if (this instanceof GeneratedConstructor) {
+		if (this instanceof EvaConstructor) {
 			int y = 2;
 			final IdentExpression constructorName = this.getFD().getNameNode();
 			final String constructorNameText;
@@ -486,9 +477,54 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		}
 	}
 
+	@Override
 	public Dependency getDependency() {
 		return dependency;
 	}
+
+
+	static void printTables(GeneratedFunction gf) {
+		System.out.println("VariableTable ");
+		for (VariableTableEntry variableTableEntry : gf.vte_list) {
+			System.out.println("\t" + variableTableEntry);
+		}
+		System.out.println("ConstantTable ");
+		for (ConstantTableEntry constantTableEntry : gf.cte_list) {
+			System.out.println("\t" + constantTableEntry);
+		}
+		System.out.println("ProcTable     ");
+		for (ProcTableEntry procTableEntry : gf.prte_list) {
+			System.out.println("\t" + procTableEntry);
+		}
+		System.out.println("TypeTable     ");
+		for (TypeTableEntry typeTableEntry : gf.tte_list) {
+			System.out.println("\t" + typeTableEntry);
+		}
+		System.out.println("IdentTable    ");
+		for (IdentTableEntry identTableEntry : gf.idte_list) {
+			System.out.println("\t" + identTableEntry);
+		}
+	}
+
+	public static @NotNull List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
+		LinkedList<InstructionArgument> s = new LinkedList<InstructionArgument>();
+		while (oo != null) {
+			if (oo instanceof IntegerIA) {
+				s.addFirst(oo);
+				oo = null;
+			} else if (oo instanceof IdentIA) {
+				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
+				s.addFirst(oo);
+				oo = ite1.getBacklink();
+			} else if (oo instanceof ProcIA) {
+				s.addFirst(oo);
+				oo = null;
+			} else
+				throw new IllegalStateException("Invalid InstructionArgument");
+		}
+		return s;
+	}
+
 }
 
 //

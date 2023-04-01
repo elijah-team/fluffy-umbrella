@@ -13,7 +13,7 @@ import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.gen_fn.AbstractDependencyTracker;
 import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
 import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedContainerNC;
+import tripleo.elijah.stages.gen_fn.EvaContainerNC;
 
 import java.util.HashSet;
 import java.util.List;
@@ -52,7 +52,7 @@ public class Dependency {
 				System.err.println("52 false FunctionInvocation "+dependentFunction);
 		}
 		for (GenType dependentType : aDependentTypes) {
-			final GeneratedContainerNC node = (GeneratedContainerNC) dependentType.node;
+			final EvaContainerNC node = (EvaContainerNC) dependentType.node;
 			if (node != null)
 				deps.add(node.getDependency());
 			else {

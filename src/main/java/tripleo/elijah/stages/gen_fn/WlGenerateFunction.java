@@ -58,9 +58,9 @@ public class WlGenerateFunction implements WorkJob {
 			if (parent instanceof NamespaceStatement) {
 				final NamespaceInvocation nsi = functionInvocation.getNamespaceInvocation();
 				assert nsi != null;
-				nsi.resolveDeferred().done(new DoneCallback<GeneratedNamespace>() {
+				nsi.resolveDeferred().done(new DoneCallback<EvaNamespace>() {
 					@Override
-					public void onDone(GeneratedNamespace result) {
+					public void onDone(EvaNamespace result) {
 						if (result.getFunction(functionDef) == null) {
 							gf.setCode(generateFunctions.module.getCompilation().nextFunctionCode());
 							result.addFunction(functionDef, gf);
@@ -70,9 +70,9 @@ public class WlGenerateFunction implements WorkJob {
 				});
 			} else {
 				final ClassInvocation ci = functionInvocation.getClassInvocation();
-				ci.resolvePromise().done(new DoneCallback<GeneratedClass>() {
+				ci.resolvePromise().done(new DoneCallback<EvaClass>() {
 					@Override
-					public void onDone(GeneratedClass result) {
+					public void onDone(EvaClass result) {
 						if (result.getFunction(functionDef) == null) {
 							gf.setCode(generateFunctions.module.getCompilation().nextFunctionCode());
 							result.addFunction(functionDef, gf);

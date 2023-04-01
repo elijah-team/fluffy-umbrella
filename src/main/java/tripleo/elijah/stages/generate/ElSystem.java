@@ -11,11 +11,8 @@ package tripleo.elijah.stages.generate;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.stages.gen_c.OutputFileC;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_fn.*;
+import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_c.CDependencyRef;
 import tripleo.elijah.stages.gen_generic.Dependency;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
@@ -107,19 +104,19 @@ public class ElSystem {
 	String getFilenameForNode(GeneratedNode node, GenerateResult.TY ty, OutputStrategyC outputStrategyC) {
 		String s, ss;
 		//GeneratedNode // todo: find stupid iterator
-		if (node instanceof GeneratedNamespace) {
-			final GeneratedNamespace generatedNamespace = (GeneratedNamespace) node;
+		if (node instanceof EvaNamespace) {
+			final EvaNamespace generatedNamespace = (EvaNamespace) node;
 			s = outputStrategyC.nameForNamespace(generatedNamespace, ty);
 //			System.out.println("41 "+generatedNamespace+" "+s);
 			for (GeneratedFunction gf : generatedNamespace.functionMap.values()) {
 				ss = getFilenameForNode(gf, ty, outputStrategyC);
 				gfm_map.put(gf, ss);
 			}
-		} else if (node instanceof GeneratedClass) {
-			final GeneratedClass generatedClass = (GeneratedClass) node;
-			s = outputStrategyC.nameForClass(generatedClass, ty);
+		} else if (node instanceof EvaClass) {
+			final EvaClass evaClass = (EvaClass) node;
+			s = outputStrategyC.nameForClass(evaClass, ty);
 //			System.out.println("48 "+generatedClass+" "+s);
-			for (GeneratedFunction gf : generatedClass.functionMap.values()) {
+			for (GeneratedFunction gf : evaClass.functionMap.values()) {
 				ss = getFilenameForNode(gf, ty, outputStrategyC);
 				gfm_map.put(gf, ss);
 			}
@@ -127,9 +124,9 @@ public class ElSystem {
 			final GeneratedFunction generatedFunction = (GeneratedFunction) node;
 			s = outputStrategyC.nameForFunction(generatedFunction, ty);
 //			System.out.println("55 "+generatedFunction+" "+s);
-		} else if (node instanceof GeneratedConstructor) {
-			final GeneratedConstructor generatedConstructor = (GeneratedConstructor) node;
-			s = outputStrategyC.nameForConstructor(generatedConstructor, ty);
+		} else if (node instanceof EvaConstructor) {
+			final EvaConstructor evaConstructor = (EvaConstructor) node;
+			s = outputStrategyC.nameForConstructor(evaConstructor, ty);
 //			System.out.println("55 "+generatedConstructor+" "+s);
 		} else
 			throw new IllegalStateException("Can't be here.");

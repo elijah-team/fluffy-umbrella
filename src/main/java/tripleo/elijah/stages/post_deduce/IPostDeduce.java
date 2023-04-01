@@ -9,17 +9,16 @@
 
 package tripleo.elijah.stages.post_deduce;
 
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
-import tripleo.elijah.stages.gen_generic.GenerateResult;
+import tripleo.elijah.stages.gen_fn.EvaClass;
+import tripleo.elijah.stages.gen_fn.EvaNamespace;
 
 /**
  * Created 7/10/21 11:39 PM
  */
 public interface IPostDeduce {
-	void analyze_class(GeneratedClass x);
+	void analyze_class(EvaClass x);
 
-	void analyze_namespace(GeneratedNamespace x);
+	void analyze_namespace(EvaNamespace x);
 }
 
 //

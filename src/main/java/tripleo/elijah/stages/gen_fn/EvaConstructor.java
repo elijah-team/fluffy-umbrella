@@ -14,17 +14,16 @@ import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.ConstructorDef;
 import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 
 /**
  * Created 6/27/21 9:45 AM
  */
-public class GeneratedConstructor extends BaseGeneratedFunction {
+public class EvaConstructor extends BaseGeneratedFunction {
 	public final @Nullable ConstructorDef cd;
 
-	public GeneratedConstructor(final @Nullable ConstructorDef aConstructorDef) {
+	public EvaConstructor(final @Nullable ConstructorDef aConstructorDef) {
 		cd = aConstructorDef;
 	}
 

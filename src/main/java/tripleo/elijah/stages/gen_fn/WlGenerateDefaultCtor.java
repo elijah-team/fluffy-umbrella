@@ -36,15 +36,15 @@ public class WlGenerateDefaultCtor implements WorkJob {
 	@Override
 	public void run(WorkManager aWorkManager) {
 		if (functionInvocation.generateDeferred().isPending()) {
-			final ClassStatement klass = functionInvocation.getClassInvocation().getKlass();
-			Holder<GeneratedClass> hGenClass = new Holder<>();
-			functionInvocation.getClassInvocation().resolvePromise().then(new DoneCallback<GeneratedClass>() {
+			final ClassStatement klass     = functionInvocation.getClassInvocation().getKlass();
+			Holder<EvaClass>     hGenClass = new Holder<>();
+			functionInvocation.getClassInvocation().resolvePromise().then(new DoneCallback<EvaClass>() {
 				@Override
-				public void onDone(GeneratedClass result) {
+				public void onDone(EvaClass result) {
 					hGenClass.set(result);
 				}
 			});
-			GeneratedClass genClass = hGenClass.get();
+			EvaClass genClass = hGenClass.get();
 			assert genClass != null;
 
 			ConstructorDef cd = new ConstructorDef(null, klass, klass.getContext());
@@ -52,7 +52,7 @@ public class WlGenerateDefaultCtor implements WorkJob {
 			cd.setName(ConstructorDef.emptyConstructorName);
 			Scope3 scope3 = new Scope3(cd);
 			cd.scope(scope3);
-			for (GeneratedContainer.VarTableEntry varTableEntry : genClass.varTable) {
+			for (EvaContainer.VarTableEntry varTableEntry : genClass.varTable) {
 				if (varTableEntry.initialValue != IExpression.UNASSIGNED) {
 					IExpression left = varTableEntry.nameToken;
 					IExpression right = varTableEntry.initialValue;
@@ -68,13 +68,13 @@ public class WlGenerateDefaultCtor implements WorkJob {
 
 			OS_Element classStatement = cd.getParent();
 			assert classStatement instanceof ClassStatement;
-			@NotNull GeneratedConstructor gf = generateFunctions.generateConstructor(cd, (ClassStatement) classStatement, functionInvocation);
+			@NotNull EvaConstructor gf = generateFunctions.generateConstructor(cd, (ClassStatement) classStatement, functionInvocation);
 //		lgf.add(gf);
 
 			final ClassInvocation ci = functionInvocation.getClassInvocation();
-			ci.resolvePromise().done(new DoneCallback<GeneratedClass>() {
+			ci.resolvePromise().done(new DoneCallback<EvaClass>() {
 				@Override
-				public void onDone(GeneratedClass result) {
+				public void onDone(EvaClass result) {
 					gf.setCode(generateFunctions.module.getCompilation().nextFunctionCode());
 					gf.setClass(result);
 					result.constructors.put(cd, gf);

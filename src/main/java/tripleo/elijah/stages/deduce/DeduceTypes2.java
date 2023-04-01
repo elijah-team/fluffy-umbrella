@@ -90,7 +90,7 @@ public class DeduceTypes2 {
 	/**
 	 * Deduce functions or constructors contained in classes list
 	 *
-	 * @param aGeneratedClasses assumed to be a list of {@link GeneratedContainerNC}
+	 * @param aGeneratedClasses assumed to be a list of {@link EvaContainerNC}
 	 * @param dfhi specifies what to select for:<br>
 	 *             {@link dfhi_functions} will select all functions from {@code functionMap}, and <br>
 	 *             {@link dfhi_constructors} will select all constructors from {@code constructors}.
@@ -100,8 +100,8 @@ public class DeduceTypes2 {
 	<T> int df_helper(@NotNull List<GeneratedNode> aGeneratedClasses, @NotNull df_helper_i<T> dfhi) {
 		int size = 0;
 		for (GeneratedNode generatedNode : aGeneratedClasses) {
-			@NotNull GeneratedContainerNC generatedContainerNC = (GeneratedContainerNC) generatedNode;
-			final @Nullable df_helper<T> dfh = dfhi.get(generatedContainerNC);
+			@NotNull EvaContainerNC      generatedContainerNC = (EvaContainerNC) generatedNode;
+			final @Nullable df_helper<T> dfh                  = dfhi.get(generatedContainerNC);
 			if (dfh == null) continue;
 			@NotNull Collection<T> lgf2 = dfh.collection();
 			for (final T generatedConstructor : lgf2) {
@@ -114,17 +114,17 @@ public class DeduceTypes2 {
 
 	public void deduceClasses(final List<GeneratedNode> lgc) {
 		for (GeneratedNode generatedNode : lgc) {
-			if (!(generatedNode instanceof GeneratedClass)) continue;
+			if (!(generatedNode instanceof EvaClass)) continue;
 
-			final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-			deduceOneClass(generatedClass);
+			final EvaClass evaClass = (EvaClass) generatedNode;
+			deduceOneClass(evaClass);
 		}
 	}
 
-	public void deduceOneClass(final @NotNull GeneratedClass aGeneratedClass) {
-		for (GeneratedContainer.VarTableEntry entry : aGeneratedClass.varTable) {
+	public void deduceOneClass(final @NotNull EvaClass aEvaClass) {
+		for (EvaContainer.VarTableEntry entry : aEvaClass.varTable) {
 			final OS_Type vt = entry.varType;
-			GenType genType = GenType.makeFromOSType(vt, aGeneratedClass.ci.genericPart, this, phase, LOG, errSink);
+			GenType genType = GenType.makeFromOSType(vt, aEvaClass.ci.genericPart, this, phase, LOG, errSink);
 			if (genType != null)
 				entry.resolve(genType.node);
 
@@ -178,14 +178,14 @@ public class DeduceTypes2 {
 	}
 
 	interface df_helper_i<T> {
-		@Nullable df_helper<T> get(GeneratedContainerNC generatedClass);
+		@Nullable df_helper<T> get(EvaContainerNC generatedClass);
 	}
 
-	class dfhi_constructors implements df_helper_i<GeneratedConstructor> {
+	class dfhi_constructors implements df_helper_i<EvaConstructor> {
 		@Override
-		public @Nullable df_helper_Constructors get(GeneratedContainerNC aGeneratedContainerNC) {
-			if (aGeneratedContainerNC instanceof GeneratedClass) // TODO namespace constructors
-				return new df_helper_Constructors((GeneratedClass) aGeneratedContainerNC);
+		public @Nullable df_helper_Constructors get(EvaContainerNC aGeneratedContainerNC) {
+			if (aGeneratedContainerNC instanceof EvaClass) // TODO namespace constructors
+				return new df_helper_Constructors((EvaClass) aGeneratedContainerNC);
 			else
 				return null;
 		}
@@ -193,7 +193,7 @@ public class DeduceTypes2 {
 
 	class dfhi_functions implements df_helper_i<GeneratedFunction> {
 		@Override
-		public @NotNull df_helper_Functions get(GeneratedContainerNC aGeneratedContainerNC) {
+		public @NotNull df_helper_Functions get(EvaContainerNC aGeneratedContainerNC) {
 			return new df_helper_Functions(aGeneratedContainerNC);
 		}
 	}
@@ -204,28 +204,28 @@ public class DeduceTypes2 {
 		boolean deduce(T generatedConstructor);
 	}
 
-	class df_helper_Constructors implements df_helper<GeneratedConstructor> {
-		private final GeneratedClass generatedClass;
+	class df_helper_Constructors implements df_helper<EvaConstructor> {
+		private final EvaClass evaClass;
 
-		public df_helper_Constructors(GeneratedClass aGeneratedClass) {
-			generatedClass = aGeneratedClass;
+		public df_helper_Constructors(EvaClass aEvaClass) {
+			evaClass = aEvaClass;
 		}
 
 		@Override
-		public @NotNull Collection<GeneratedConstructor> collection() {
-			return generatedClass.constructors.values();
+		public @NotNull Collection<EvaConstructor> collection() {
+			return evaClass.constructors.values();
 		}
 
 		@Override
-		public boolean deduce(@NotNull GeneratedConstructor generatedConstructor) {
-			return deduceOneConstructor(generatedConstructor, phase);
+		public boolean deduce(@NotNull EvaConstructor aEvaConstructor) {
+			return deduceOneConstructor(aEvaConstructor, phase);
 		}
 	}
 
 	class df_helper_Functions implements df_helper<GeneratedFunction> {
-		private final GeneratedContainerNC generatedContainerNC;
+		private final EvaContainerNC generatedContainerNC;
 
-		public df_helper_Functions(GeneratedContainerNC aGeneratedContainerNC) {
+		public df_helper_Functions(EvaContainerNC aGeneratedContainerNC) {
 			generatedContainerNC = aGeneratedContainerNC;
 		}
 
@@ -309,15 +309,15 @@ public class DeduceTypes2 {
 		return true;
 	}
 
-	public boolean deduceOneConstructor(@NotNull GeneratedConstructor aGeneratedConstructor, @NotNull DeducePhase aDeducePhase) {
-		if (aGeneratedConstructor.deducedAlready) return false;
-		deduce_generated_function_base(aGeneratedConstructor, aGeneratedConstructor.getFD());
-		aGeneratedConstructor.deducedAlready = true;
-		for (@NotNull IdentTableEntry identTableEntry : aGeneratedConstructor.idte_list) {
+	public boolean deduceOneConstructor(@NotNull EvaConstructor aEvaConstructor, @NotNull DeducePhase aDeducePhase) {
+		if (aEvaConstructor.deducedAlready) return false;
+		deduce_generated_function_base(aEvaConstructor, aEvaConstructor.getFD());
+		aEvaConstructor.deducedAlready = true;
+		for (@NotNull IdentTableEntry identTableEntry : aEvaConstructor.idte_list) {
 			if (identTableEntry.getResolvedElement() instanceof VariableStatement) {
 				final @NotNull VariableStatement vs = (VariableStatement) identTableEntry.getResolvedElement();
 				OS_Element el = vs.getParent().getParent();
-				OS_Element el2 = aGeneratedConstructor.getFD().getParent();
+				OS_Element el2 = aEvaConstructor.getFD().getParent();
 				if (el != el2) {
 					if (el instanceof ClassStatement || el instanceof NamespaceStatement)
 						// NOTE there is no concept of gf here
@@ -326,7 +326,7 @@ public class DeduceTypes2 {
 			}
 		}
 		{
-			final @NotNull GeneratedConstructor gf = aGeneratedConstructor;
+			final @NotNull EvaConstructor gf = aEvaConstructor;
 
 			@Nullable InstructionArgument result_index = gf.vte_lookup("Result");
 			if (result_index == null) {
@@ -387,9 +387,9 @@ public class DeduceTypes2 {
 		aVte.genType.resolved = aA; // README assuming OS_Type cannot represent namespaces
 		aVte.genType.ci = ci;
 
-		ci.resolvePromise().done(new DoneCallback<GeneratedClass>() {
+		ci.resolvePromise().done(new DoneCallback<EvaClass>() {
 			@Override
-			public void onDone(GeneratedClass result) {
+			public void onDone(EvaClass result) {
 				aVte.resolveTypeToClass(result);
 			}
 		});
@@ -401,7 +401,7 @@ public class DeduceTypes2 {
 		onRunnables.add(r);
 	}
 
-	public void deduce_generated_constructor(final @NotNull GeneratedConstructor generatedFunction) {
+	public void deduce_generated_constructor(final @NotNull EvaConstructor generatedFunction) {
 		final @NotNull ConstructorDef fd = (ConstructorDef) generatedFunction.getFD();
 		deduce_generated_function_base(generatedFunction, fd);
 	}
@@ -799,8 +799,8 @@ public class DeduceTypes2 {
 		//
 		@NotNull Resolve_Variable_Table_Entry rvte = new Resolve_Variable_Table_Entry(generatedFunction, aContext, this);
 		@NotNull DeduceTypes2.IVariableConnector connector;
-		if (generatedFunction instanceof GeneratedConstructor) {
-			connector = new CtorConnector((GeneratedConstructor) generatedFunction);
+		if (generatedFunction instanceof EvaConstructor) {
+			connector = new CtorConnector((EvaConstructor) generatedFunction);
 		} else {
 			connector = new NullConnector();
 		}
@@ -846,9 +846,9 @@ public class DeduceTypes2 {
 							@NotNull GenType genType = new GenType(attached, ((ClassStatement) best).getOS_Type(), true, x, this, errSink, phase);
 							vte.type.genType.copy(genType);
 							// set node when available
-							((ClassInvocation) vte.type.genType.ci).resolvePromise().done(new DoneCallback<GeneratedClass>() {
+							((ClassInvocation) vte.type.genType.ci).resolvePromise().done(new DoneCallback<EvaClass>() {
 								@Override
-								public void onDone(GeneratedClass result) {
+								public void onDone(EvaClass result) {
 									vte.type.genType.node = result;
 									vte.resolveTypeToClass(result);
 									vte.genType = vte.type.genType; // TODO who knows if this is necessary?
@@ -951,18 +951,18 @@ public class DeduceTypes2 {
 	}
 
 	static class CtorConnector implements IVariableConnector {
-		private final GeneratedConstructor generatedConstructor;
+		private final EvaConstructor evaConstructor;
 
-		public CtorConnector(final GeneratedConstructor aGeneratedConstructor) {
-			generatedConstructor = aGeneratedConstructor;
+		public CtorConnector(final EvaConstructor aEvaConstructor) {
+			evaConstructor = aEvaConstructor;
 		}
 
 		@Override
 		public void connect(final VariableTableEntry aVte, final String aName) {
-			final List<GeneratedContainer.VarTableEntry> vt = ((GeneratedClass) generatedConstructor.getGenClass()).varTable;
-			for (GeneratedContainer.VarTableEntry gc_vte : vt) {
+			final List<EvaContainer.VarTableEntry> vt = ((EvaClass) evaConstructor.getGenClass()).varTable;
+			for (EvaContainer.VarTableEntry gc_vte : vt) {
 				if (gc_vte.nameToken.getText().equals(aName)) {
-					gc_vte.connect(aVte, generatedConstructor);
+					gc_vte.connect(aVte, evaConstructor);
 					break;
 				}
 			}
@@ -1181,22 +1181,22 @@ public class DeduceTypes2 {
 					generatedFunction1.deducedAlready= true;
 				}
 			} else if (workJob instanceof WlGenerateDefaultCtor) {
-				final GeneratedConstructor generatedConstructor = (GeneratedConstructor) ((WlGenerateDefaultCtor) workJob).getResult();
-				if (!coll.contains(generatedConstructor)) {
-					coll.add(generatedConstructor);
-					if (!generatedConstructor.deducedAlready) {
-						deduce_generated_constructor(generatedConstructor);
+				final EvaConstructor evaConstructor = (EvaConstructor) ((WlGenerateDefaultCtor) workJob).getResult();
+				if (!coll.contains(evaConstructor)) {
+					coll.add(evaConstructor);
+					if (!evaConstructor.deducedAlready) {
+						deduce_generated_constructor(evaConstructor);
 					}
-					generatedConstructor.deducedAlready= true;
+					evaConstructor.deducedAlready = true;
 				}
 			} else if (workJob instanceof WlGenerateCtor) {
-				final GeneratedConstructor generatedConstructor = ((WlGenerateCtor) workJob).getResult();
-				if (!coll.contains(generatedConstructor)) {
-					coll.add(generatedConstructor);
-					if (!generatedConstructor.deducedAlready) {
-						deduce_generated_constructor(generatedConstructor);
+				final EvaConstructor evaConstructor = ((WlGenerateCtor) workJob).getResult();
+				if (!coll.contains(evaConstructor)) {
+					coll.add(evaConstructor);
+					if (!evaConstructor.deducedAlready) {
+						deduce_generated_constructor(evaConstructor);
 					}
-					generatedConstructor.deducedAlready= true;
+					evaConstructor.deducedAlready = true;
 				}
 			} else
 				throw new NotImplementedException();
@@ -1233,9 +1233,9 @@ public class DeduceTypes2 {
 
 				wl.addJob(gen);
 
-				ni.resolvePromise().then(new DoneCallback<GeneratedNamespace>() {
+				ni.resolvePromise().then(new DoneCallback<EvaNamespace>() {
 					@Override
-					public void onDone(final GeneratedNamespace result) {
+					public void onDone(final EvaNamespace result) {
 						genType.node = result;
 						result.dependentTypes().add(genType);
 					}
@@ -1265,7 +1265,7 @@ public class DeduceTypes2 {
 				pcd.then(new DoneCallback<ClassDefinition>() {
 					@Override
 					public void onDone(final ClassDefinition result) {
-						final GeneratedClass genclass = result.getNode();
+						final EvaClass genclass = result.getNode();
 
 						genType.node = genclass;
 						genclass.dependentTypes().add(genType);
@@ -1288,17 +1288,17 @@ public class DeduceTypes2 {
 						assert false;
 					mod = ni.getNamespace().getContext().module();
 
-					ni.resolvePromise().then(new DoneCallback<GeneratedNamespace>() {
+					ni.resolvePromise().then(new DoneCallback<EvaNamespace>() {
 						@Override
-						public void onDone(final GeneratedNamespace result) {
+						public void onDone(final EvaNamespace result) {
 							result.dependentFunctions().add(aDependentFunction);
 						}
 					});
 				} else {
 					mod = ci.getKlass().getContext().module();
-					ci.resolvePromise().then(new DoneCallback<GeneratedClass>() {
+					ci.resolvePromise().then(new DoneCallback<EvaClass>() {
 						@Override
-						public void onDone(final GeneratedClass result) {
+						public void onDone(final EvaClass result) {
 							result.dependentFunctions().add(aDependentFunction);
 						}
 					});
@@ -1925,9 +1925,9 @@ public class DeduceTypes2 {
 			if (co != null) {
 				co.setConstructable(pte);
 				assert classInvocation != null;
-				classInvocation.resolvePromise().done(new DoneCallback<GeneratedClass>() {
+				classInvocation.resolvePromise().done(new DoneCallback<EvaClass>() {
 					@Override
-					public void onDone(GeneratedClass result) {
+					public void onDone(EvaClass result) {
 						co.resolveTypeToClass(result);
 					}
 				});
@@ -1949,10 +1949,10 @@ public class DeduceTypes2 {
 					}
 					WlGenerateCtor gen = new WlGenerateCtor(generateFunctions, pte.getFunctionInvocation(), cc.getNameNode());
 					gen.run(null);
-					final GeneratedConstructor gc = gen.getResult();
-					classInvocation.resolveDeferred().then(new DoneCallback<GeneratedClass>() {
+					final EvaConstructor gc = gen.getResult();
+					classInvocation.resolveDeferred().then(new DoneCallback<EvaClass>() {
 						@Override
-						public void onDone(final GeneratedClass result) {
+						public void onDone(final EvaClass result) {
 							result.addConstructor(gc.cd, gc);
 							final WorkList wl = new WorkList();
 							wl.addJob(new WlDeduceFunction(gen, new ArrayList()));
@@ -2610,7 +2610,7 @@ public class DeduceTypes2 {
 	}
 
 	public void resolveIdentIA2_(@NotNull Context context, @NotNull IdentIA identIA, @NotNull GeneratedFunction generatedFunction, @NotNull FoundElement foundElement) {
-		final @NotNull List<InstructionArgument> s = generatedFunction._getIdentIAPathList(identIA);
+		final @NotNull List<InstructionArgument> s = BaseGeneratedFunction._getIdentIAPathList(identIA);
 		resolveIdentIA2_(context, identIA, s, generatedFunction, foundElement);
 	}
 
@@ -2803,7 +2803,7 @@ public class DeduceTypes2 {
 						fi.generateDeferred().done(new DoneCallback<BaseGeneratedFunction>() {
 							@Override
 							public void onDone(BaseGeneratedFunction result) {
-								@NotNull GeneratedConstructor constructorDef = (GeneratedConstructor) result;
+								@NotNull EvaConstructor constructorDef = (EvaConstructor) result;
 
 								@NotNull BaseFunctionDef ele = constructorDef.getFD();
 
@@ -2992,9 +2992,9 @@ public class DeduceTypes2 {
 				final TypeName typeName = vte.type.genType.nonGenericTypeName;
 				final @Nullable ClassInvocation ci = genType.genCI(typeName, DeduceTypes2.this, errSink, phase);
 //							resolve_vte_for_class(vte, klass);
-				ci.resolvePromise().done(new DoneCallback<GeneratedClass>() {
+				ci.resolvePromise().done(new DoneCallback<EvaClass>() {
 					@Override
-					public void onDone(GeneratedClass result) {
+					public void onDone(EvaClass result) {
 						vte.resolveTypeToClass(result);
 					}
 				});
@@ -3025,9 +3025,9 @@ public class DeduceTypes2 {
 	public void register_and_resolve(@NotNull VariableTableEntry aVte, @NotNull ClassStatement aKlass) {
 		@Nullable ClassInvocation ci = new ClassInvocation(aKlass, null);
 		ci = phase.registerClassInvocation(ci);
-		ci.resolvePromise().done(new DoneCallback<GeneratedClass>() {
+		ci.resolvePromise().done(new DoneCallback<EvaClass>() {
 			@Override
-			public void onDone(GeneratedClass result) {
+			public void onDone(EvaClass result) {
 				aVte.resolveTypeToClass(result);
 			}
 		});

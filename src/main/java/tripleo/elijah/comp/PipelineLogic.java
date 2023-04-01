@@ -141,14 +141,14 @@ public class PipelineLogic {
 					break;
 				}
 				case CLASS: {
-					final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
+					final EvaClass evaClass = (EvaClass) generatedNode;
 //					if (generatedClass.getCode() == 0)
 //						generatedClass.setCode(mod.getCompilation().nextClassCode());
-					for (GeneratedClass generatedClass2 : generatedClass.classMap.values()) {
-						if (generatedClass2.getCode() == 0)
-							generatedClass2.setCode(mod.getCompilation().nextClassCode());
+					for (EvaClass evaClass2 : evaClass.classMap.values()) {
+						if (evaClass2.getCode() == 0)
+							evaClass2.setCode(mod.getCompilation().nextClassCode());
 					}
-					for (GeneratedFunction generatedFunction : generatedClass.functionMap.values()) {
+					for (GeneratedFunction generatedFunction : evaClass.functionMap.values()) {
 						for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
 							if (identTableEntry.isResolved()) {
 								GeneratedNode node = identTableEntry.resolvedType();
@@ -160,12 +160,12 @@ public class PipelineLogic {
 				}
 				case NAMESPACE:
 				{
-					final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
+					final EvaNamespace generatedNamespace = (EvaNamespace) generatedNode;
 					if (coded.getCode() == 0)
 						coded.setCode(mod.getCompilation().nextClassCode());
-					for (GeneratedClass generatedClass : generatedNamespace.classMap.values()) {
-						if (generatedClass.getCode() == 0)
-							generatedClass.setCode(mod.getCompilation().nextClassCode());
+					for (EvaClass evaClass : generatedNamespace.classMap.values()) {
+						if (evaClass.getCode() == 0)
+							evaClass.setCode(mod.getCompilation().nextClassCode());
 					}
 					for (GeneratedFunction generatedFunction : generatedNamespace.functionMap.values()) {
 						for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
@@ -251,14 +251,14 @@ public class PipelineLogic {
 		for (GeneratedNode generatedNode : lgc) {
 			if (generatedNode.module() != mod) continue; // README curious
 
-			if (generatedNode instanceof GeneratedContainerNC) {
-				final GeneratedContainerNC nc = (GeneratedContainerNC) generatedNode;
+			if (generatedNode instanceof EvaContainerNC) {
+				final EvaContainerNC nc = (EvaContainerNC) generatedNode;
 
 				nc.generateCode(ggc, gr);
-				if (nc instanceof GeneratedClass) {
-					final GeneratedClass generatedClass = (GeneratedClass) nc;
+				if (nc instanceof EvaClass) {
+					final EvaClass evaClass = (EvaClass) nc;
 
-					final @NotNull Collection<GeneratedNode> gn2 = GenerateFiles.constructors_to_list_of_generated_nodes(generatedClass.constructors.values());
+					final @NotNull Collection<GeneratedNode> gn2 = GenerateFiles.constructors_to_list_of_generated_nodes(evaClass.constructors.values());
 					GenerateResult gr3 = ggc.generateCode(gn2, wm);
 					gr.additional(gr3);
 				}
@@ -286,7 +286,7 @@ public class PipelineLogic {
 		for (final GeneratedNode generatedNode : lgc) {
 			if (generatedNode instanceof GeneratedFunction) {
 
-			} else if (generatedNode instanceof GeneratedClass) {
+			} else if (generatedNode instanceof EvaClass) {
 //				final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
 //				for (GeneratedFunction generatedFunction : generatedClass.functionMap.values()) {
 //					for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
@@ -303,7 +303,7 @@ public class PipelineLogic {
 //						}
 //					}
 //				}
-			} else if (generatedNode instanceof GeneratedNamespace) {
+			} else if (generatedNode instanceof EvaNamespace) {
 //				final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
 //				NamespaceStatement namespaceStatement = generatedNamespace.getNamespaceStatement();
 //				for (GeneratedFunction generatedFunction : generatedNamespace.functionMap.values()) {

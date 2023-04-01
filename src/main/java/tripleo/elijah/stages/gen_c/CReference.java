@@ -21,16 +21,8 @@ import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.PropertyStatement;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
-import tripleo.elijah.stages.gen_fn.GeneratedContainerNC;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
-import tripleo.elijah.stages.gen_fn.IdentTableEntry;
-import tripleo.elijah.stages.gen_fn.ProcTableEntry;
-import tripleo.elijah.stages.gen_fn.VariableTableEntry;
+import tripleo.elijah.stages.gen_fn.*;
+import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
@@ -233,7 +225,7 @@ public class CReference {
 							GeneratedNode resolved1 = idte.resolvedType();
 							if (resolved1 instanceof GeneratedFunction)
 								resolved = resolved1;
-							else if (resolved1 instanceof GeneratedClass)
+							else if (resolved1 instanceof EvaClass)
 								resolved = resolved1;
 						}
 					} else if (resolved_element instanceof PropertyStatement) {
@@ -241,7 +233,7 @@ public class CReference {
 						GeneratedNode resolved1 = idte.type.resolved();
 						int code;
 						if (resolved1 != null)
-							code = ((GeneratedContainerNC) resolved1).getCode();
+							code = ((EvaContainerNC) resolved1).getCode();
 						else
 							code = -1;
 						short state = 0;
@@ -295,12 +287,12 @@ public class CReference {
 								final String text2 = ((VariableStatement) resolved_element).getName();
 
 								final GeneratedNode externalRef = idte.externalRef;
-								if (externalRef instanceof GeneratedNamespace) {
-									final String text3 = String.format("zN%d_instance", ((GeneratedNamespace) externalRef).getCode());
+								if (externalRef instanceof EvaNamespace) {
+									final String text3 = String.format("zN%d_instance", ((EvaNamespace) externalRef).getCode());
 									addRef(text3, Ref.LITERAL, null);
-								} else if (externalRef instanceof GeneratedClass) {
+								} else if (externalRef instanceof EvaClass) {
 									assert false;
-									final String text3 = String.format("zN%d_instance", ((GeneratedClass) externalRef).getCode());
+									final String text3 = String.format("zN%d_instance", ((EvaClass) externalRef).getCode());
 									addRef(text3, Ref.LITERAL, null);
 								} else
 									throw new IllegalStateException();
@@ -359,9 +351,9 @@ public class CReference {
 		if (generated == null)
 			throw new IllegalStateException();
 
-		final GeneratedContainerNC genClass = (GeneratedContainerNC) generated.getGenClass();
+		final EvaContainerNC genClass = (EvaContainerNC) generated.getGenClass();
 
-		if (generated instanceof GeneratedConstructor) {
+		if (generated instanceof EvaConstructor) {
 			int y = 2;
 			final String constructorNameText = generated.getFunctionName();
 
@@ -388,7 +380,7 @@ public class CReference {
 			// Assuming constructor call
 			int code;
 			if (aResolved != null) {
-				code = ((GeneratedContainerNC)aResolved).getCode();
+				code = ((EvaContainerNC)aResolved).getCode();
 			} else {
 				code = -1;
 				System.err.println("** 31116 not resolved "+resolved_element);
@@ -441,13 +433,13 @@ public class CReference {
 				if (aResolved instanceof BaseGeneratedFunction) {
 					final BaseGeneratedFunction rf = (BaseGeneratedFunction) aResolved;
 					GeneratedNode gc = rf.getGenClass();
-					if (gc instanceof GeneratedContainerNC) // and not another function
-						code = ((GeneratedContainerNC) gc).getCode();
+					if (gc instanceof EvaContainerNC) // and not another function
+						code = ((EvaContainerNC) gc).getCode();
 					else
 						code = -2;
-				} else if (aResolved instanceof GeneratedClass) {
-					final GeneratedClass generatedClass = (GeneratedClass) aResolved;
-					code = generatedClass.getCode();
+				} else if (aResolved instanceof EvaClass) {
+					final EvaClass evaClass = (EvaClass) aResolved;
+					code = evaClass.getCode();
 				}
 			}
 			// TODO what about overloaded functions
@@ -465,8 +457,8 @@ public class CReference {
 				assert aResolved instanceof BaseGeneratedFunction;
 				final BaseGeneratedFunction rf = (BaseGeneratedFunction) aResolved;
 				GeneratedNode gc = rf.getGenClass();
-				if (gc instanceof GeneratedContainerNC) // and not another function
-					code = ((GeneratedContainerNC) gc).getCode();
+				if (gc instanceof EvaContainerNC) // and not another function
+					code = ((EvaContainerNC) gc).getCode();
 				else
 					code = -2;
 			} else {

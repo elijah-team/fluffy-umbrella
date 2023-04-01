@@ -12,25 +12,25 @@ import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.NamespaceStatement;
-import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
+import tripleo.elijah.stages.gen_fn.EvaNamespace;
 
 /**
  * Created 5/31/21 12:00 PM
  */
 public class NamespaceInvocation implements IInvocation {
 
-	private final DeferredObject<GeneratedNamespace, Void, Void> resolveDeferred = new DeferredObject<GeneratedNamespace, Void, Void>();
-	private final NamespaceStatement namespaceStatement;
+	private final DeferredObject<EvaNamespace, Void, Void> resolveDeferred = new DeferredObject<EvaNamespace, Void, Void>();
+	private final NamespaceStatement                       namespaceStatement;
 
 	public NamespaceInvocation(NamespaceStatement aNamespaceStatement) {
 		namespaceStatement = aNamespaceStatement;
 	}
 
-	public @NotNull DeferredObject<GeneratedNamespace, Void, Void> resolveDeferred() {
+	public @NotNull DeferredObject<EvaNamespace, Void, Void> resolveDeferred() {
 		return resolveDeferred;
 	}
 
-	public @NotNull Promise<GeneratedNamespace, Void, Void> resolvePromise() {
+	public @NotNull Promise<EvaNamespace, Void, Void> resolvePromise() {
 		return resolveDeferred.promise();
 	}
 

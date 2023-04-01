@@ -22,16 +22,16 @@ import java.util.*;
 /**
  * Created 10/29/20 4:26 AM
  */
-public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
+public class EvaClass extends EvaContainerNC implements GNCoded {
 	private final OS_Module module;
-	private final ClassStatement klass;
-	public Map<ConstructorDef, GeneratedConstructor> constructors = new HashMap<ConstructorDef, GeneratedConstructor>();
-	public ClassInvocation ci;
+	private final ClassStatement               klass;
+	public Map<ConstructorDef, EvaConstructor> constructors = new HashMap<ConstructorDef, EvaConstructor>();
+	public ClassInvocation                     ci;
 	private boolean resolve_var_table_entries_already = false;
 
-	public GeneratedClass(ClassStatement klass, OS_Module module) {
-		this.klass = klass;
-		this.module = module;
+	public EvaClass(ClassStatement aClassStatement, OS_Module aModule) {
+		klass = aClassStatement;
+		module = aModule;
 	}
 
 	public boolean isGeneric() {
@@ -91,7 +91,7 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 		return Helpers.String_join(", ", ls);
 	}
 
-	public void addConstructor(ConstructorDef aConstructorDef, @NotNull GeneratedConstructor aGeneratedFunction) {
+	public void addConstructor(ConstructorDef aConstructorDef, @NotNull EvaConstructor aGeneratedFunction) {
 		constructors.put(aConstructorDef, aGeneratedFunction);
 	}
 
@@ -151,7 +151,7 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 		for (VarTableEntry varTableEntry : varTable) {
 			varTableEntry.updatePotentialTypesCB = new VarTableEntry.UpdatePotentialTypesCB() {
 				@Override
-				public void call(final @NotNull GeneratedContainer aGeneratedContainer) {
+				public void call(final @NotNull EvaContainer aEvaContainer) {
 					List<GenType> potentialTypes = getPotentialTypes();
 					//
 
@@ -183,7 +183,7 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 								try {
 									final @NotNull GenType genType = aDeduceTypes2.resolve_type(t, t.getTypeName().getContext());
 									if (genType.resolved instanceof OS_GenericTypeNameType) {
-										final ClassInvocation xxci = ((GeneratedClass) aGeneratedContainer).ci;
+										final ClassInvocation xxci = ((EvaClass) aEvaContainer).ci;
 //											xxxci = ci;
 										for (Map.Entry<TypeName, OS_Type> entry : xxci.genericPart.entrySet()) {
 											if (entry.getKey().equals(t.getTypeName())) {

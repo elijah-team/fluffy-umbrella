@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
-	private final GeneratedContainer.VarTableEntry _principal;
+	private final EvaContainer.VarTableEntry _principal;
 
 	@Contract(pure = true)
-	public DeduceElement3_VarTableEntry(final GeneratedContainer.VarTableEntry aVarTableEntry) {
+	public DeduceElement3_VarTableEntry(final EvaContainer.VarTableEntry aVarTableEntry) {
 		_principal = aVarTableEntry;
 	}
 
@@ -68,7 +68,7 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 	}
 
 	public void resolve_var_table_entries(final DeducePhase aDeducePhase, final ClassInvocation ci) {
-		final GeneratedContainer.VarTableEntry varTableEntry  = _principal;
+		final EvaContainer.VarTableEntry varTableEntry = _principal;
 
 		final List<TypeTableEntry>             potentialTypes = varTableEntry.potentialTypes;
 		final TypeName                         typeName       = varTableEntry.typeName;
@@ -97,7 +97,7 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 	}
 
 	private static void __one_potential(final DeducePhase aDeducePhase,
-										final GeneratedContainer.VarTableEntry varTableEntry,
+										final EvaContainer.VarTableEntry varTableEntry,
 										final @NotNull List<TypeTableEntry> potentialTypes,
 										final TypeName typeName,
 										final ClassInvocation ci) throws STOP {
@@ -165,7 +165,7 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 	}
 
 	@Contract("_, null -> fail")
-	private void __zero_potential(final GeneratedContainer.VarTableEntry varTableEntry, final TypeName tn) {
+	private void __zero_potential(final EvaContainer.VarTableEntry varTableEntry, final TypeName tn) {
 		Preconditions.checkNotNull(tn);
 		assert tn instanceof NormalTypeName;
 
@@ -181,7 +181,7 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 		}
 	}
 
-	private void __zero_potential__1(final @NotNull GeneratedContainer.VarTableEntry varTableEntry,
+	private void __zero_potential__1(final @NotNull EvaContainer.VarTableEntry varTableEntry,
 									 final @NotNull NormalTypeName aNormalTypeName) {
 		// 0. preflight
 		if (aNormalTypeName.isNull())

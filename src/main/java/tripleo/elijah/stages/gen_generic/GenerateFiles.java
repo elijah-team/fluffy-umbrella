@@ -3,8 +3,8 @@ package tripleo.elijah.stages.gen_generic;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
+import tripleo.elijah.stages.gen_fn.EvaClass;
+import tripleo.elijah.stages.gen_fn.EvaConstructor;
 import tripleo.elijah.stages.gen_fn.GeneratedFunction;
 import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.work.WorkManager;
@@ -24,22 +24,22 @@ public interface GenerateFiles extends CodeGenerator {
 	}
 
 	@NotNull
-	static Collection<GeneratedNode> constructors_to_list_of_generated_nodes(Collection<GeneratedConstructor> aGeneratedConstructors) {
-		return Collections2.transform(aGeneratedConstructors, new Function<GeneratedConstructor, GeneratedNode>() {
+	static Collection<GeneratedNode> constructors_to_list_of_generated_nodes(Collection<EvaConstructor> aEvaConstructors) {
+		return Collections2.transform(aEvaConstructors, new Function<EvaConstructor, GeneratedNode>() {
 			@org.checkerframework.checker.nullness.qual.Nullable
 			@Override
-			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable GeneratedConstructor input) {
+			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable EvaConstructor input) {
 				return input;
 			}
 		});
 	}
 
 	@NotNull
-	static Collection<GeneratedNode> classes_to_list_of_generated_nodes(Collection<GeneratedClass> aGeneratedClasses) {
-		return Collections2.transform(aGeneratedClasses, new Function<GeneratedClass, GeneratedNode>() {
+	static Collection<GeneratedNode> classes_to_list_of_generated_nodes(Collection<EvaClass> aEvaClasses) {
+		return Collections2.transform(aEvaClasses, new Function<EvaClass, GeneratedNode>() {
 			@org.checkerframework.checker.nullness.qual.Nullable
 			@Override
-			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable GeneratedClass input) {
+			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable EvaClass input) {
 				return input;
 			}
 		});

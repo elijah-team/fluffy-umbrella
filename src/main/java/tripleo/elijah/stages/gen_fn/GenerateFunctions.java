@@ -68,10 +68,10 @@ public class GenerateFunctions {
 		aPipelineLogic.addLog(LOG);
 	}
 
-	public @NotNull GeneratedConstructor generateConstructor(@NotNull ConstructorDef aConstructorDef,
-	                                                         ClassStatement parent, // TODO Namespace constructors
-	                                                         @NotNull FunctionInvocation aFunctionInvocation) {
-		final @NotNull GeneratedConstructor gf = new GeneratedConstructor(aConstructorDef);
+	public @NotNull EvaConstructor generateConstructor(@NotNull ConstructorDef aConstructorDef,
+													   ClassStatement parent, // TODO Namespace constructors
+													   @NotNull FunctionInvocation aFunctionInvocation) {
+		final @NotNull EvaConstructor gf = new EvaConstructor(aConstructorDef);
 		gf.setFunctionInvocation(aFunctionInvocation);
 		if (parent instanceof ClassStatement) {
 			final OS_Type                  parentType = parent.getOS_Type();
@@ -211,8 +211,8 @@ public class GenerateFunctions {
 	 * @param aClassInvocation
 	 * @return
 	 */
-	public GeneratedClass generateClass11(ClassStatement aClassStatement, ClassInvocation aClassInvocation) {
-		@NotNull GeneratedClass Result = generateClass(aClassStatement);
+	public EvaClass generateClass11(ClassStatement aClassStatement, ClassInvocation aClassInvocation) {
+		@NotNull EvaClass Result = generateClass(aClassStatement);
 		Result.ci = aClassInvocation;
 		return Result;
 	}
@@ -609,8 +609,8 @@ public class GenerateFunctions {
 			gi.generate_case_conditional((CaseConditional) item);
 		} else if (item instanceof ClassStatement) {
 			// TODO this still has no ClassInvocation
-			@NotNull GeneratedClass gc        = generateClass((ClassStatement) item);
-			int                     ite_index = gf.addIdentTableEntry(((ClassStatement) item).getNameNode(), cctx);
+			@NotNull EvaClass gc        = generateClass((ClassStatement) item);
+			int               ite_index = gf.addIdentTableEntry(((ClassStatement) item).getNameNode(), cctx);
 			@NotNull IdentTableEntry ite       = gf.getIdentTableEntry(ite_index);
 			ite.resolveTypeToClass(gc);
 		} else if (item instanceof StatementWrapper) {
@@ -664,7 +664,7 @@ public class GenerateFunctions {
 			LOG = aLOG;
 		}
 
-		void processItem(@NotNull ClassStatement klass, final @NotNull ClassItem item, final GeneratedClass gc) {
+		void processItem(@NotNull ClassStatement klass, final @NotNull ClassItem item, final EvaClass gc) {
 			@Nullable AccessNotation an = null;
 
 			if (item instanceof AliasStatement) {
@@ -718,8 +718,8 @@ public class GenerateFunctions {
 		private final ElLog LOG;
 	}
 
-	public @NotNull GeneratedClass generateClass(@NotNull ClassStatement klass) {
-		final GeneratedClass  gc   = new GeneratedClass(klass, module);
+	public @NotNull EvaClass generateClass(@NotNull ClassStatement klass) {
+		final EvaClass        gc   = new EvaClass(klass, module);
 		final __GenerateClass gcgc = new __GenerateClass(LOG);
 
 		for (final ClassItem item : new ArrayList<>(klass.getItems())) {
@@ -808,8 +808,8 @@ public class GenerateFunctions {
 	 * @param aClassInvocation
 	 * @return
 	 */
-	public @NotNull GeneratedClass generateClass(@NotNull ClassStatement aClassStatement, ClassInvocation aClassInvocation) {
-		@NotNull GeneratedClass Result = generateClass(aClassStatement);
+	public @NotNull EvaClass generateClass(@NotNull ClassStatement aClassStatement, ClassInvocation aClassInvocation) {
+		@NotNull EvaClass Result = generateClass(aClassStatement);
 		Result.ci = aClassInvocation;
 		return Result;
 	}
@@ -855,11 +855,11 @@ public class GenerateFunctions {
 		for (final ModuleItem item : module.getItems()) {
 			if (item instanceof NamespaceStatement) {
 				final @NotNull NamespaceStatement namespaceStatement = (NamespaceStatement) item;
-				@NotNull GeneratedNamespace       ns                 = generateNamespace(namespaceStatement);
+				@NotNull EvaNamespace             ns                 = generateNamespace(namespaceStatement);
 				lgc.add(ns);
 			} else if (item instanceof ClassStatement) {
 				final @NotNull ClassStatement classStatement = (ClassStatement) item;
-				@NotNull GeneratedClass       kl             = generateClass(classStatement);
+				@NotNull EvaClass             kl             = generateClass(classStatement);
 				lgc.add(kl);
 			}
 			// TODO enums, datatypes, (type)aliases
@@ -867,8 +867,8 @@ public class GenerateFunctions {
 	}
 
 	@NotNull
-	public GeneratedNamespace generateNamespace(@NotNull NamespaceStatement namespace1) {
-		@NotNull GeneratedNamespace                        gn = new GeneratedNamespace(namespace1, module);
+	public EvaNamespace generateNamespace(@NotNull NamespaceStatement namespace1) {
+		@NotNull EvaNamespace                              gn = new EvaNamespace(namespace1, module);
 		@org.jetbrains.annotations.Nullable AccessNotation an = null;
 
 		for (ClassItem item : namespace1.getItems()) {

@@ -106,7 +106,11 @@ public class DoAssignCall {
 								@Override
 								public void onDone(final GenType result) {
 									LOG.info("2717 " + dmf.getFunctionDef() + " " + result);
-									pte.typeDeferred().resolve(result);
+									if (pte.typeDeferred().isPending())
+										pte.typeDeferred().resolve(result);
+									else {
+										int y=2;
+									}
 								}
 							});
 						}
@@ -331,9 +335,9 @@ public class DoAssignCall {
 										if (vte.resolvedType() == null) {
 											final @Nullable ClassInvocation ci = dc.genCI(aType, null);
 											vte.type.genTypeCI(ci);
-											ci.resolvePromise().then(new DoneCallback<GeneratedClass>() {
+											ci.resolvePromise().then(new DoneCallback<EvaClass>() {
 												@Override
-												public void onDone(GeneratedClass result) {
+												public void onDone(EvaClass result) {
 													vte.resolveTypeToClass(result);
 												}
 											});

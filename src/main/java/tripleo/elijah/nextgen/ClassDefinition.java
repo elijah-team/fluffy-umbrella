@@ -12,7 +12,7 @@ package tripleo.elijah.nextgen;
 import tripleo.elijah.nextgen.composable.*;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.stages.deduce.ClassInvocation;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
+import tripleo.elijah.stages.gen_fn.EvaClass;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,8 +24,8 @@ public class ClassDefinition {
 	final ClassStatement primary;
 	final Set<ClassStatement> extended = new HashSet<ClassStatement>();
 	ClassInvocation invocation;
-	GeneratedClass node;
-	IComposable composable;
+	EvaClass        node;
+	IComposable     composable;
 
 	public ClassDefinition(final ClassStatement aPrimary) {
 		primary = aPrimary;
@@ -48,7 +48,7 @@ public class ClassDefinition {
 		return invocation;
 	}
 
-	public GeneratedClass getNode() {
+	public EvaClass getNode() {
 		return node;
 	}
 
@@ -60,7 +60,7 @@ public class ClassDefinition {
 		invocation = aInvocation;
 	}
 
-	public void setNode(final GeneratedClass aNode) {
+	public void setNode(final EvaClass aNode) {
 		node = aNode;
 	}
 

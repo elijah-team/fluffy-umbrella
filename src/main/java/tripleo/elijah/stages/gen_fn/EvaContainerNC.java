@@ -10,18 +10,22 @@ package tripleo.elijah.stages.gen_fn;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.diagnostic.Diagnostic;
+import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.lang.AccessNotation;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.deduce.FunctionMapDeferred;
+import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.Dependency;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.IDependencyReferent;
 import tripleo.elijah.stages.post_deduce.IPostDeduce;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,13 +35,13 @@ import java.util.Map;
 /**
  * Created 3/16/21 10:45 AM
  */
-public abstract class GeneratedContainerNC extends AbstractDependencyTracker implements GeneratedContainer, IDependencyReferent {
+public abstract class EvaContainerNC extends AbstractDependencyTracker implements EvaContainer, IDependencyReferent {
 	public boolean generatedAlready = false;
 	private int code = 0;
 	private final Dependency dependency = new Dependency(this);
 
 	public Map<FunctionDef, GeneratedFunction> functionMap = new HashMap<FunctionDef, GeneratedFunction>();
-	public Map<ClassStatement, GeneratedClass> classMap = new HashMap<ClassStatement, GeneratedClass>();
+	public Map<ClassStatement, EvaClass>       classMap    = new HashMap<ClassStatement, EvaClass>();
 
 	public List<VarTableEntry> varTable = new ArrayList<VarTableEntry>();
 
@@ -47,17 +51,46 @@ public abstract class GeneratedContainerNC extends AbstractDependencyTracker imp
 	}
 
 	@Override
-	@Nullable
-	public VarTableEntry getVariable(String aVarName) {
+	public @NotNull Maybe<VarTableEntry> getVariable(String aVarName) {
 		for (VarTableEntry varTableEntry : varTable) {
 			if (varTableEntry.nameToken.getText().equals(aVarName))
-				return varTableEntry;
+				return new Maybe<>(varTableEntry, null);
 		}
-		return null;
+		return new Maybe<>(null, _def_VarNotFound);
 	}
 
-	public void addClass(ClassStatement aClassStatement, GeneratedClass aGeneratedClass) {
-		classMap.put(aClassStatement, aGeneratedClass);
+
+	static Diagnostic _def_VarNotFound = new VarNotFound();
+
+	static class VarNotFound implements Diagnostic {
+		@Override
+		public String code() {
+			return null;
+		}
+
+		@Override
+		public Severity severity() {
+			return null;
+		}
+
+		@Override
+		public @NotNull Locatable primary() {
+			return null;
+		}
+
+		@Override
+		public @NotNull List<Locatable> secondary() {
+			return null;
+		}
+
+		@Override
+		public void report(final PrintStream stream) {
+
+		}
+	}
+
+	public void addClass(ClassStatement aClassStatement, EvaClass aEvaClass) {
+		classMap.put(aClassStatement, aEvaClass);
 	}
 
 	public void addFunction(FunctionDef functionDef, GeneratedFunction generatedFunction) {

@@ -19,11 +19,8 @@ import tripleo.elijah.lang.NamespaceTypes;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_fn.*;
+import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 
 import java.io.File;
@@ -38,7 +35,7 @@ public class OutputStrategyC {
 		this.outputStrategy = outputStrategy;
 	}
 
-	public String nameForNamespace(GeneratedNamespace generatedNamespace, GenerateResult.TY aTy) {
+	public String nameForNamespace(EvaNamespace generatedNamespace, GenerateResult.TY aTy) {
 		if (generatedNamespace.module().isPrelude()) {
 			// We are dealing with the Prelude
 			StringBuilder sb = new StringBuilder();
@@ -114,25 +111,25 @@ public class OutputStrategyC {
 	public String nameForFunction(GeneratedFunction generatedFunction, GenerateResult.TY aTy) {
 		GeneratedNode c = generatedFunction.getGenClass();
 		if (c == null) c = generatedFunction.getParent(); // TODO fixme
-		if (c instanceof GeneratedClass)
-			return nameForClass((GeneratedClass) c, aTy);
-		else if (c instanceof GeneratedNamespace)
-			return nameForNamespace((GeneratedNamespace) c, aTy);
+		if (c instanceof EvaClass)
+			return nameForClass((EvaClass) c, aTy);
+		else if (c instanceof EvaNamespace)
+			return nameForNamespace((EvaNamespace) c, aTy);
 		return null;
 	}
 
-	public String nameForConstructor(GeneratedConstructor generatedConstructor, GenerateResult.TY aTy) {
-		GeneratedNode c = generatedConstructor.getGenClass();
-		if (c == null) c = generatedConstructor.getParent(); // TODO fixme
-		if (c instanceof GeneratedClass)
-			return nameForClass((GeneratedClass) c, aTy);
-		else if (c instanceof GeneratedNamespace)
-			return nameForNamespace((GeneratedNamespace) c, aTy);
+	public String nameForConstructor(EvaConstructor aEvaConstructor, GenerateResult.TY aTy) {
+		GeneratedNode c = aEvaConstructor.getGenClass();
+		if (c == null) c = aEvaConstructor.getParent(); // TODO fixme
+		if (c instanceof EvaClass)
+			return nameForClass((EvaClass) c, aTy);
+		else if (c instanceof EvaNamespace)
+			return nameForNamespace((EvaNamespace) c, aTy);
 		return null;
 	}
 
-	public String nameForClass(GeneratedClass generatedClass, GenerateResult.TY aTy) {
-		if (generatedClass.module().isPrelude()) {
+	public String nameForClass(EvaClass aEvaClass, GenerateResult.TY aTy) {
+		if (aEvaClass.module().isPrelude()) {
 			// We are dealing with the Prelude
 			StringBuilder sb = new StringBuilder();
 			sb.append("/Prelude/");
@@ -142,33 +139,33 @@ public class OutputStrategyC {
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("/");
-		final LibraryStatementPart lsp = generatedClass.module().getLsp();
+		final LibraryStatementPart lsp = aEvaClass.module().getLsp();
 		if (lsp == null)
 			sb.append("______________");
 		else
 //			sb.append(generatedClass.module.lsp.getName());
 			sb.append(lsp.getInstructions().getName());
 		sb.append("/");
-		OS_Package pkg = generatedClass.getKlass().getPackageName();
+		OS_Package pkg = aEvaClass.getKlass().getPackageName();
 		if (pkg != OS_Package.default_package) {
 			if (pkg == null)
-				pkg = findPackage(generatedClass.getKlass());
+				pkg = findPackage(aEvaClass.getKlass());
 			sb.append(pkg.getName());
 			sb.append("/");
 		}
 		switch (outputStrategy.per()) {
 		case PER_CLASS:
 			{
-				if (generatedClass.isGeneric())
-					sb.append(generatedClass.getNumberedName());
+				if (aEvaClass.isGeneric())
+					sb.append(aEvaClass.getNumberedName());
 				else
-					sb.append(generatedClass.getName());
+					sb.append(aEvaClass.getName());
 			}
 			break;
 		case PER_MODULE:
 			{
 //					mod = generatedClass.getKlass().getContext().module();
-				OS_Module mod = generatedClass.module();
+				OS_Module mod = aEvaClass.module();
 				File f = new File(mod.getFileName());
 				String ff = f.getName();
 				int y=2;
@@ -179,7 +176,7 @@ public class OutputStrategyC {
 			break;
 		case PER_PACKAGE:
 			{
-				final OS_Package pkg2 = generatedClass.getKlass().getPackageName();
+				final OS_Package pkg2 = aEvaClass.getKlass().getPackageName();
 				String pkgName;
 				if (pkg2 != OS_Package.default_package) {
 					pkgName = "$default_package";

@@ -83,13 +83,13 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 				generate_function(generatedFunction, gr, wl);
 				if (!wl.isEmpty())
 					wm.addJobs(wl);
-			} else if (generatedNode instanceof GeneratedContainerNC) {
-				GeneratedContainerNC containerNC = (GeneratedContainerNC) generatedNode;
+			} else if (generatedNode instanceof EvaContainerNC) {
+				EvaContainerNC containerNC = (EvaContainerNC) generatedNode;
 				containerNC.generateCode(this, gr);
-			} else if (generatedNode instanceof GeneratedConstructor) {
-				final GeneratedConstructor generatedConstructor = (GeneratedConstructor) generatedNode;
-				WorkList wl = new WorkList();
-				generate_constructor(generatedConstructor, gr, wl);
+			} else if (generatedNode instanceof EvaConstructor) {
+				final EvaConstructor evaConstructor = (EvaConstructor) generatedNode;
+				WorkList             wl             = new WorkList();
+				generate_constructor(evaConstructor, gr, wl);
 				if (!wl.isEmpty())
 					wm.addJobs(wl);
 			}
@@ -100,10 +100,10 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 
 	@NotNull
 	public String getTypeName(GeneratedNode aNode) {
-		if (aNode instanceof GeneratedClass)
-			return getTypeName((GeneratedClass) aNode);
-		if (aNode instanceof GeneratedNamespace)
-			return getTypeName((GeneratedNamespace) aNode);
+		if (aNode instanceof EvaClass)
+			return getTypeName((EvaClass) aNode);
+		if (aNode instanceof EvaNamespace)
+			return getTypeName((EvaNamespace) aNode);
 		throw new IllegalStateException("Must be class or namespace.");
 	}
 
@@ -127,7 +127,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 			if (gf instanceof GeneratedFunction)
 				generateC.generate_function((GeneratedFunction) gf, gr, wl);
 			else
-				generateC.generate_constructor((GeneratedConstructor) gf, gr, wl);
+				generateC.generate_constructor((EvaConstructor) gf, gr, wl);
 			_isDone = true;
 		}
 
@@ -143,8 +143,8 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 			if (identTableEntry.isResolved()) {
 				GeneratedNode x = identTableEntry.resolvedType();
 
-				if (x instanceof GeneratedClass) {
-					generate_class((GeneratedClass) x, gr);
+				if (x instanceof EvaClass) {
+					generate_class((EvaClass) x, gr);
 				} else if (x instanceof GeneratedFunction) {
 					wl.addJob(new WlGenerateFunctionC((GeneratedFunction) x, gr, wl, this));
 				} else {
@@ -172,14 +172,14 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		}
 	}
 
-	public void generate_constructor(GeneratedConstructor aGeneratedConstructor, GenerateResult gr, WorkList wl) {
-		generateCodeForConstructor(aGeneratedConstructor, gr, wl);
-		for (IdentTableEntry identTableEntry : aGeneratedConstructor.idte_list) {
+	public void generate_constructor(EvaConstructor aEvaConstructor, GenerateResult gr, WorkList wl) {
+		generateCodeForConstructor(aEvaConstructor, gr, wl);
+		for (IdentTableEntry identTableEntry : aEvaConstructor.idte_list) {
 			if (identTableEntry.isResolved()) {
 				GeneratedNode x = identTableEntry.resolvedType();
 
-				if (x instanceof GeneratedClass) {
-					generate_class((GeneratedClass) x, gr);
+				if (x instanceof EvaClass) {
+					generate_class((EvaClass) x, gr);
 				} else if (x instanceof GeneratedFunction) {
 					wl.addJob(new WlGenerateFunctionC((GeneratedFunction) x, gr, wl, this));
 				} else {
@@ -188,7 +188,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 				}
 			}
 		}
-		for (ProcTableEntry pte : aGeneratedConstructor.prte_list) {
+		for (ProcTableEntry pte : aEvaConstructor.prte_list) {
 //			ClassInvocation ci = pte.getClassInvocation();
 			FunctionInvocation fi = pte.getFunctionInvocation();
 			if (fi == null) {
@@ -204,7 +204,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	}
 
 	@Override
-	public void generate_class(GeneratedClass x, GenerateResult gr) {
+	public void generate_class(EvaClass x, GenerateResult gr) {
 		if (x.generatedAlready) return;
 		switch (x.getKlass().getType()) {
 			// Don't generate class definition for these three
@@ -222,7 +222,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 			tosHdr.incr_tabs();
 			tosHdr.put_string_ln("int _tag;");
 			if (!decl.prim) {
-				for (GeneratedClass.VarTableEntry o : x.varTable){
+				for (EvaClass.VarTableEntry o : x.varTable){
 					final String typeName = getTypeNameGNCForVarTableEntry(o);
 					tosHdr.put_string_ln(String.format("%s vm%s;", typeName, o.nameToken));
 				}
@@ -255,7 +255,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 					else if (decl.prim_decl.equals("bool"))
 						tos.put_string_ln("R->vsv = false;");
 				} else {
-					for (GeneratedClass.VarTableEntry o : x.varTable) {
+					for (EvaClass.VarTableEntry o : x.varTable) {
 //					final String typeName = getTypeNameForVarTableEntry(o);
 						// TODO this should be the result of getDefaultValue for each type
 						tos.put_string_ln(String.format("R->vm%s = 0;", o.nameToken));
@@ -280,14 +280,14 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		x.generatedAlready = true;
 	}
 
-	@NotNull public String getTypeNameGNCForVarTableEntry(GeneratedContainer.VarTableEntry o) {
+	@NotNull public String getTypeNameGNCForVarTableEntry(EvaContainer.VarTableEntry o) {
 		final String typeName;
 		if (o.resolvedType() != null) {
 			GeneratedNode xx = o.resolvedType();
-			if (xx instanceof GeneratedClass) {
-				typeName = getTypeName((GeneratedClass) xx);
-			} else if (xx instanceof GeneratedNamespace) {
-				typeName = getTypeName((GeneratedNamespace) xx);
+			if (xx instanceof EvaClass) {
+				typeName = getTypeName((EvaClass) xx);
+			} else if (xx instanceof EvaNamespace) {
+				typeName = getTypeName((EvaNamespace) xx);
 			} else
 				throw new NotImplementedException();
 		} else {
@@ -300,7 +300,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	}
 
 	@Override
-	public void generate_namespace(GeneratedNamespace x, GenerateResult gr) {
+	public void generate_namespace(EvaNamespace x, GenerateResult gr) {
 		if (x.generatedAlready) return;
 		// TODO do we need `self' parameters for namespace?
 		final BufferTabbedOutputStream tosHdr = new BufferTabbedOutputStream();
@@ -310,7 +310,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 				tosHdr.put_string_ln("typedef struct {");
 				tosHdr.incr_tabs();
 //				tosHdr.put_string_ln("int _tag;");
-				for (GeneratedNamespace.VarTableEntry o : x.varTable) {
+				for (EvaNamespace.VarTableEntry o : x.varTable) {
 					final String typeName = getTypeNameGNCForVarTableEntry(o);
 
 					tosHdr.put_string_ln(String.format("%s* vm%s;", o.varType == null ? "void " : typeName, o.nameToken));
@@ -334,7 +334,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 				// TODO multiple calls of namespace function (need if/else statement)
 				tos.put_string_ln(String.format("%s* R = GC_malloc(sizeof(%s));", class_name, class_name));
 //				tos.put_string_ln(String.format("R->_tag = %d;", class_code));
-				for (GeneratedNamespace.VarTableEntry o : x.varTable) {
+				for (EvaNamespace.VarTableEntry o : x.varTable) {
 //					final String typeName = getTypeNameForVarTableEntry(o);
 					tosHdr.put_string_ln(String.format("R->vm%s = 0;", o.nameToken));
 				}
@@ -367,7 +367,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		gcfm.generateCodeForMethod(gf, gr, aWorkList);
 	}
 
-	private void generateCodeForConstructor(GeneratedConstructor gf, GenerateResult gr, WorkList aWorkList) {
+	private void generateCodeForConstructor(EvaConstructor gf, GenerateResult gr, WorkList aWorkList) {
 		if (gf.getFD() == null) return;
 		Generate_Code_For_Method gcfm = new Generate_Code_For_Method(this, LOG);
 		gcfm.generateCodeForConstructor(gf, gr, aWorkList);
@@ -376,10 +376,10 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	static class GetTypeName {
 		static String getTypeNameForGenClass(@NotNull GeneratedNode aGenClass) {
 			String ty;
-			if (aGenClass instanceof GeneratedClass)
-				ty = forGenClass((GeneratedClass) aGenClass);
-			else if (aGenClass instanceof GeneratedNamespace)
-				ty = forGenNamespace((GeneratedNamespace) aGenClass);
+			if (aGenClass instanceof EvaClass)
+				ty = forGenClass((EvaClass) aGenClass);
+			else if (aGenClass instanceof EvaNamespace)
+				ty = forGenNamespace((EvaNamespace) aGenClass);
 			else
 				ty = "Error_Unknown_GenClass";
 			return ty;
@@ -411,23 +411,23 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 				throw new NotImplementedException();
 		}
 
-		static String forGenNamespace(@NotNull GeneratedNamespace aGeneratedNamespace) {
+		static String forGenNamespace(@NotNull EvaNamespace aGeneratedNamespace) {
 			String z;
 			z = String.format("Z%d", aGeneratedNamespace.getCode());
 			return z;
 		}
 
-		static String forGenClass(@NotNull GeneratedClass aGeneratedClass) {
+		static String forGenClass(@NotNull EvaClass aEvaClass) {
 			String z;
-			z = String.format("Z%d", aGeneratedClass.getCode());
+			z = String.format("Z%d", aEvaClass.getCode());
 			return z;
 		}
 
 		static String forTypeTableEntry(@NotNull TypeTableEntry tte) {
 			GeneratedNode res = tte.resolved();
-			if (res instanceof GeneratedContainerNC) {
-				final GeneratedContainerNC nc = (GeneratedContainerNC) res;
-				int code = nc.getCode();
+			if (res instanceof EvaContainerNC) {
+				final EvaContainerNC nc   = (EvaContainerNC) res;
+				int                  code = nc.getCode();
 				return "Z"+code;
 			} else
 				return "Z<-1>";
@@ -501,12 +501,12 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		return GetTypeName.forVTE(input);
 	}
 
-	String getTypeName(@NotNull GeneratedNamespace aGeneratedNamespace) {
+	String getTypeName(@NotNull EvaNamespace aGeneratedNamespace) {
 		return GetTypeName.forGenNamespace(aGeneratedNamespace);
 	}
 
-	String getTypeName(@NotNull GeneratedClass aGeneratedClass) {
-		return GetTypeName.forGenClass(aGeneratedClass);
+	String getTypeName(@NotNull EvaClass aEvaClass) {
+		return GetTypeName.forGenClass(aEvaClass);
 	}
 
 	String getTypeName(@NotNull TypeTableEntry tte) {
@@ -848,10 +848,10 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 					// statement (semantic block, loop, match, etc) or a GeneratedContainerNC
 					int y=2;
 					GeneratedNode er = identTableEntry.externalRef;
-					if (er instanceof GeneratedContainerNC) {
-						final GeneratedContainerNC nc = (GeneratedContainerNC) er;
-						assert nc instanceof GeneratedNamespace;
-						GeneratedNamespace ns = (GeneratedNamespace) nc;
+					if (er instanceof EvaContainerNC) {
+						final EvaContainerNC nc = (EvaContainerNC) er;
+						assert nc instanceof EvaNamespace;
+						EvaNamespace ns = (EvaNamespace) nc;
 //						if (ns.isInstance()) {}
 						state = 1;
 						code = nc.getCode();

@@ -72,7 +72,7 @@ class Resolve_Ident_IA {
 
 			System.out.println("  70 " + el2);
 
-			final @NotNull List<InstructionArgument> s = generatedFunction._getIdentIAPathList(identIA);
+			final @NotNull List<InstructionArgument> s = BaseGeneratedFunction._getIdentIAPathList(identIA);
 
 			ectx = context;
 			el   = null;
@@ -277,9 +277,9 @@ class Resolve_Ident_IA {
 			if (fi.getFunction() instanceof ConstructorDef) {
 				@NotNull GenType genType = new GenType(ci.getKlass());
 				genType.ci = ci;
-				ci.resolvePromise().then(new DoneCallback<GeneratedClass>() {
+				ci.resolvePromise().then(new DoneCallback<EvaClass>() {
 					@Override
-					public void onDone(GeneratedClass result) {
+					public void onDone(EvaClass result) {
 						genType.node = result;
 					}
 				});
@@ -320,9 +320,9 @@ class Resolve_Ident_IA {
 		if (fi.getFunction() instanceof ConstructorDef) {
 			@NotNull GenType genType = new GenType(ci.getKlass());
 			genType.ci = ci;
-			ci.resolvePromise().then(new DoneCallback<GeneratedClass>() {
+			ci.resolvePromise().then(new DoneCallback<EvaClass>() {
 				@Override
-				public void onDone(GeneratedClass result) {
+				public void onDone(EvaClass result) {
 					genType.node = result;
 				}
 			});

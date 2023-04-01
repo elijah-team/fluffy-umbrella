@@ -95,9 +95,9 @@ public class DeduceLocalVariable {
 					vte.type.genType.genCI(null, deduceTypes2, deduceTypes2.errSink, deduceTypes2.phase);
 					final ClassInvocation classInvocation = (ClassInvocation) vte.type.genType.ci;
 					if (classInvocation != null) {
-						classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
+						classInvocation.resolvePromise().then(new DoneCallback<EvaClass>() {
 							@Override
-							public void onDone(final GeneratedClass result) {
+							public void onDone(final EvaClass result) {
 								vte.type.genType.node = result;
 								vte.resolveTypeToClass(result);
 								vte.genType = vte.type.genType; // TODO who knows if this is necessary?
@@ -173,9 +173,9 @@ public class DeduceLocalVariable {
 					}
 
 					if (genType.ci != null) { // TODO we may need this call...
-						((ClassInvocation) genType.ci).resolvePromise().then(new DoneCallback<GeneratedClass>() {
+						((ClassInvocation) genType.ci).resolvePromise().then(new DoneCallback<EvaClass>() {
 							@Override
-							public void onDone(GeneratedClass result) {
+							public void onDone(EvaClass result) {
 								genType.node = result;
 								if (!vte.typePromise().isResolved()) { // HACK
 									if (genType.resolved instanceof OS_FuncType) {
