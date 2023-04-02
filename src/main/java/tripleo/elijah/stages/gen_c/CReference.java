@@ -17,6 +17,7 @@ import tripleo.elijah.lang.RegularTypeName;
 import tripleo.elijah.lang.types.OS_FuncType;
 import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.stages.deduce.ClassInvocation;
+import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
@@ -117,9 +118,18 @@ public class CReference {
 	}
 
 	public String getIdentIAPath_Proc(final @NotNull ProcTableEntry aPrte) {
-		final String[]              text      = new String[1];
-		final BaseEvaFunction generated = aPrte.getFunctionInvocation().getGenerated();
-		final IDeduceElement3       de_pte    = aPrte.getDeduceElement3();
+		final String[]           text      = new String[1];
+		final FunctionInvocation fi        = aPrte.getFunctionInvocation();
+
+		if (fi == null) {
+			System.err.println("7777777777777777 fi getIdentIAPath_Proc "+fi.getFunction().name());
+
+			throw new IllegalStateException();
+		}
+
+
+		final BaseEvaFunction    generated = fi.getGenerated();
+		final IDeduceElement3    de_pte    = aPrte.getDeduceElement3();
 
 		if (generated == null)
 			throw new IllegalStateException();
