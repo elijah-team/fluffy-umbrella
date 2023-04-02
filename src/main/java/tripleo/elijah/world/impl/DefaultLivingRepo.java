@@ -16,7 +16,9 @@ import tripleo.elijah.world.i.LivingFunction;
 import tripleo.elijah.world.i.LivingPackage;
 import tripleo.elijah.world.i.LivingRepo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DefaultLivingRepo implements LivingRepo {
@@ -118,11 +120,33 @@ public class DefaultLivingRepo implements LivingRepo {
 		final DefaultLivingClass living = new DefaultLivingClass(aClass);
 		aClass._living = living;
 
+		repo.add(living);
+
 		return living;
 	}
+
+	List<LivingNode> repo = new ArrayList<>();
 
 	@Override
 	public void addNamespace(final EvaNamespace aNamespace, final Add aNone) {
 		throw new NotImplementedException();
+	}
+
+	@Override
+	public LivingClass getClass(final EvaClass aEvaClass) {
+		for (LivingNode livingNode : repo) {
+			if (livingNode instanceof LivingClass) {
+				final LivingClass livingClass = (LivingClass) livingNode;
+				if (livingClass.evaNode().getKlass().equals(aEvaClass))
+					return livingClass;
+			}
+		}
+
+		final DefaultLivingClass living = new DefaultLivingClass(aEvaClass);
+		//klass._living = living;
+
+		repo.add(living);
+
+		return living;
 	}
 }

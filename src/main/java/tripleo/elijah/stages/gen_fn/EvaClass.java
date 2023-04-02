@@ -19,6 +19,7 @@ import tripleo.elijah.stages.post_deduce.IPostDeduce;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.world.impl.DefaultLivingClass;
+import tripleo.elijah.world.impl.LivingNode;
 
 import java.util.*;
 

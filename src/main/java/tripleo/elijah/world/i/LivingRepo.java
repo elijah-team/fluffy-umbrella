@@ -26,5 +26,7 @@ public interface LivingRepo {
 
 	void addNamespace(EvaNamespace aNamespace, Add aNone);
 
+	LivingClass getClass(EvaClass aEvaClass);
+
 	enum Add {NONE, MAIN_FUNCTION, MAIN_CLASS}
 }

@@ -17,10 +17,12 @@ import com.google.common.collect.ImmutableList;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.world.i.LivingClass;
 
 /**
  * Created 8/21/21 10:16 PM
@@ -78,6 +80,8 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 		void add(EvaNode node);
 
 		void additional(GenerateResult aGenerateResult);
+
+		LivingClass getClass(EvaClass aEvaClass);
 	}
 
 	public class DefaultGenerateResultSink implements GenerateResultSink {
@@ -97,6 +101,11 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 				gris.add(result);
 				add(result.node);
 			}
+		}
+
+		@Override
+		public LivingClass getClass(final EvaClass aEvaClass) {
+			return c._repo.getClass(aEvaClass);
 		}
 
 		public List<GenerateResultItem> resultList() {

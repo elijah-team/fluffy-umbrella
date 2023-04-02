@@ -39,6 +39,7 @@ import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkJob;
 import tripleo.elijah.work.WorkList;
 import tripleo.elijah.work.WorkManager;
+import tripleo.elijah.world.i.LivingClass;
 import tripleo.util.buffer.Buffer;
 
 import java.util.ArrayList;
@@ -222,83 +223,12 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	}
 
 	@Override
-	public void generate_class(EvaClass x, GenerateResult gr, final GeneratePipeline.GenerateResultSink aResultSink) {
-		if (x.generatedAlready) throw new Error();
-		switch (x.getKlass().getType()) {
-			// Don't generate class definition for these three
-			case INTERFACE:
-			case SIGNATURE:
-			case ABSTRACT:
-				return;
-		}
-		final CClassDecl decl = new CClassDecl(x);
-		decl.evaluatePrimitive();
-		final BufferTabbedOutputStream tosHdr = new BufferTabbedOutputStream();
-		final BufferTabbedOutputStream tos = new BufferTabbedOutputStream();
-		try {
-			tosHdr.put_string_ln("typedef struct {");
-			tosHdr.incr_tabs();
-			tosHdr.put_string_ln("int _tag;");
-			if (!decl.prim) {
-				for (EvaClass.VarTableEntry o : x.varTable){
-					final String typeName = getTypeNameGNCForVarTableEntry(o);
-					tosHdr.put_string_ln(String.format("%s vm%s;", typeName, o.nameToken));
-				}
-			} else {
-				tosHdr.put_string_ln(String.format("%s vsv;", decl.prim_decl));
-			}
-
-			String class_name = getTypeName(x);
-			int class_code = x.getCode();
-
-			tosHdr.dec_tabs();
-			tosHdr.put_string_ln("");
-//			tosHdr.put_string_ln(String.format("} %s;", class_name));
-			tosHdr.put_string_ln(String.format("} %s;  // class %s%s", class_name, decl.prim ? "box " : "", x.getName()));
-
-			tosHdr.put_string_ln("");
-			tosHdr.put_string_ln("");
-
-			// TODO remove this block when constructors are added in dependent functions, etc in Deduce
-			{
-				// TODO what about named constructors and ctor$0 and "the debug stack"
-				tos.put_string_ln(String.format("%s* ZC%d() {", class_name, class_code));
-				tos.incr_tabs();
-				tos.put_string_ln(String.format("%s* R = GC_malloc(sizeof(%s));", class_name, class_name));
-				tos.put_string_ln(String.format("R->_tag = %d;", class_code));
-				if (decl.prim) {
-					// TODO consider NULL, and floats and longs, etc
-					if (!decl.prim_decl.equals("bool"))
-						tos.put_string_ln("R->vsv = 0;");
-					else if (decl.prim_decl.equals("bool"))
-						tos.put_string_ln("R->vsv = false;");
-				} else {
-					for (EvaClass.VarTableEntry o : x.varTable) {
-//					final String typeName = getTypeNameForVarTableEntry(o);
-						// TODO this should be the result of getDefaultValue for each type
-						tos.put_string_ln(String.format("R->vm%s = 0;", o.nameToken));
-					}
-				}
-				tos.put_string_ln("return R;");
-				tos.dec_tabs();
-				tos.put_string_ln(String.format("} // class %s%s", decl.prim ? "box " : "", x.getName()));
-				tos.put_string_ln("");
-			}
-			tos.flush();
-		} finally {
-			tos.close();
-			tosHdr.close();
-			Buffer buf = tos.getBuffer();
-//			LOG.info(buf.getText());
-			gr.addClass(GenerateResult.TY.IMPL, x, buf, x.module().getLsp());
-			Buffer buf2 = tosHdr.getBuffer();
-//			LOG.info(buf2.getText());
-			gr.addClass(GenerateResult.TY.HEADER, x, buf2, x.module().getLsp());
-		}
-		x.generatedAlready = true;
+	public void generate_class(EvaClass x, GenerateResult gr, final GeneratePipeline.@NotNull GenerateResultSink aResultSink) {
+		final LivingClass lc = aResultSink.getClass(x); // TODO could also add _living property
+		lc.garish(this, gr, aResultSink);
 	}
 
-	@NotNull public String getTypeNameGNCForVarTableEntry(EvaContainer.VarTableEntry o) {
+	@NotNull public String getTypeNameGNCForVarTableEntry(EvaContainer.@NotNull VarTableEntry o) {
 		final String typeName;
 		if (o.resolvedType() != null) {
 			EvaNode xx = o.resolvedType();
