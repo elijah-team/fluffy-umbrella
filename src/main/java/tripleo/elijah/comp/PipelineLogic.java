@@ -113,7 +113,10 @@ public class PipelineLogic {
 
 
 
-			if (lsp == null) continue;
+			if (lsp == null) {
+				System.err.println("7777777777777777777 mod.getFilename "+mod.getFileName());
+				continue;
+			}
 
 
 
