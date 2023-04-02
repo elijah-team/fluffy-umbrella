@@ -8,15 +8,18 @@
  */
 package tripleo.elijah.comp;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.google.common.collect.ImmutableList;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
+import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.elijah.util.NotImplementedException;
 
 /**
@@ -55,6 +58,7 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 
 	private class GPL implements Runnable {
 		private List<EvaNode> result;
+		private DefaultGenerateResultSink grs = new DefaultGenerateResultSink();
 
 		@Contract(mutates = "this")
 		public void set(final List<EvaNode> aResult) {
@@ -63,8 +67,42 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 
 		@Override
 		public void run() {
-			c.pipelineLogic.generate(result);
+			c.pipelineLogic.generate(result, grs);
+
+			final List<GenerateResultItem> x = grs.resultList();
+			int                            y = 2;
 		}
+	}
+
+	public interface GenerateResultSink {
+		void add(EvaNode node);
+
+		void additional(GenerateResult aGenerateResult);
+	}
+
+	public class DefaultGenerateResultSink implements GenerateResultSink {
+
+
+		private final List<GenerateResultItem> gris = new ArrayList<>();
+
+
+		@Override
+		public void add(EvaNode node){
+			int y=2;
+		}
+
+		@Override
+		public void additional(final GenerateResult aGenerateResult) {
+			for (GenerateResultItem result : aGenerateResult.results()) {
+				gris.add(result);
+				add(result.node);
+			}
+		}
+
+		public List<GenerateResultItem> resultList() {
+			return ImmutableList.copyOf(gris);
+		}
+
 	}
 }
 

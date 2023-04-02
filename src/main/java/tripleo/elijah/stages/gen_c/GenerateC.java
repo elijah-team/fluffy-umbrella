@@ -10,6 +10,7 @@ package tripleo.elijah.stages.gen_c;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.ErrSink;
+import tripleo.elijah.comp.GeneratePipeline;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_FuncExprType;
@@ -76,23 +77,23 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	}
 
 	@Override
-	public GenerateResult generateCode(final Collection<EvaNode> lgn, final WorkManager wm) {
+	public GenerateResult generateCode(final Collection<EvaNode> lgn, final WorkManager wm, final GeneratePipeline.GenerateResultSink aResultSink) {
 		GenerateResult gr = new GenerateResult();
 
 		for (final EvaNode evaNode : lgn) {
 			if (evaNode instanceof EvaFunction) {
 				EvaFunction generatedFunction = (EvaFunction) evaNode;
 				WorkList    wl                = new WorkList();
-				generate_function(generatedFunction, gr, wl);
+				generate_function(generatedFunction, gr, wl, aResultSink);
 				if (!wl.isEmpty())
 					wm.addJobs(wl);
 			} else if (evaNode instanceof EvaContainerNC) {
 				EvaContainerNC containerNC = (EvaContainerNC) evaNode;
-				containerNC.generateCode(this, gr);
+				containerNC.generateCode(this, gr, aResultSink);
 			} else if (evaNode instanceof EvaConstructor) {
 				final EvaConstructor evaConstructor = (EvaConstructor) evaNode;
 				WorkList             wl             = new WorkList();
-				generate_constructor(evaConstructor, gr, wl);
+				generate_constructor(evaConstructor, gr, wl, aResultSink);
 				if (!wl.isEmpty())
 					wm.addJobs(wl);
 			}
@@ -125,22 +126,24 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		private final BaseEvaFunction gf;
 		private final GenerateResult  gr;
 		private final WorkList wl;
-		private final GenerateC generateC;
+		private final GenerateFiles generateC;
 		private boolean _isDone = false;
+		private final GeneratePipeline.GenerateResultSink resultSink;
 
-		public WlGenerateFunctionC(BaseEvaFunction aGf, GenerateResult aGr, WorkList aWl, GenerateC aGenerateC) {
+		public WlGenerateFunctionC(BaseEvaFunction aGf, GenerateResult aGr, WorkList aWl, GenerateC aGenerateC, final GeneratePipeline.GenerateResultSink aResultSink) {
 			gf = aGf;
 			gr = aGr;
 			wl = aWl;
 			generateC = aGenerateC;
+			resultSink = aResultSink;
 		}
 
 		@Override
 		public void run(WorkManager aWorkManager) {
 			if (gf instanceof EvaFunction)
-				generateC.generate_function((EvaFunction) gf, gr, wl);
+				generateC.generate_function((EvaFunction) gf, gr, wl, resultSink);
 			else
-				generateC.generate_constructor((EvaConstructor) gf, gr, wl);
+				generateC.generate_constructor((EvaConstructor) gf, gr, wl, resultSink);
 			_isDone = true;
 		}
 
@@ -150,16 +153,17 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		}
 	}
 
-	public void generate_function(EvaFunction aGeneratedFunction, GenerateResult gr, WorkList wl) {
+	@Override
+	public void generate_function(EvaFunction aGeneratedFunction, GenerateResult gr, WorkList wl, final GeneratePipeline.GenerateResultSink aResultSink) {
 		generateCodeForMethod(aGeneratedFunction, gr, wl);
 		for (IdentTableEntry identTableEntry : aGeneratedFunction.idte_list) {
 			if (identTableEntry.isResolved()) {
 				EvaNode x = identTableEntry.resolvedType();
 
 				if (x instanceof EvaClass) {
-					generate_class((EvaClass) x, gr);
+					generate_class((EvaClass) x, gr, aResultSink);
 				} else if (x instanceof EvaFunction) {
-					wl.addJob(new WlGenerateFunctionC((EvaFunction) x, gr, wl, this));
+					wl.addJob(new WlGenerateFunctionC((EvaFunction) x, gr, wl, this, aResultSink));
 				} else {
 					LOG.err(x.toString());
 					throw new NotImplementedException();
@@ -179,22 +183,23 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 			} else {
 				BaseEvaFunction gf = fi.getGenerated();
 				if (gf != null) {
-					wl.addJob(new WlGenerateFunctionC(gf, gr, wl, this));
+					wl.addJob(new WlGenerateFunctionC(gf, gr, wl, this, aResultSink));
 				}
 			}
 		}
 	}
 
-	public void generate_constructor(EvaConstructor aEvaConstructor, GenerateResult gr, WorkList wl) {
+	@Override
+	public void generate_constructor(EvaConstructor aEvaConstructor, GenerateResult gr, WorkList wl, final GeneratePipeline.GenerateResultSink aResultSink) {
 		generateCodeForConstructor(aEvaConstructor, gr, wl);
 		for (IdentTableEntry identTableEntry : aEvaConstructor.idte_list) {
 			if (identTableEntry.isResolved()) {
 				EvaNode x = identTableEntry.resolvedType();
 
 				if (x instanceof EvaClass) {
-					generate_class((EvaClass) x, gr);
+					generate_class((EvaClass) x, gr, aResultSink);
 				} else if (x instanceof EvaFunction) {
-					wl.addJob(new WlGenerateFunctionC((EvaFunction) x, gr, wl, this));
+					wl.addJob(new WlGenerateFunctionC((EvaFunction) x, gr, wl, this, aResultSink));
 				} else {
 					LOG.err(x.toString());
 					throw new NotImplementedException();
@@ -210,7 +215,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 			} else {
 				BaseEvaFunction gf = fi.getGenerated();
 				if (gf != null) {
-					wl.addJob(new WlGenerateFunctionC(gf, gr, wl, this));
+					wl.addJob(new WlGenerateFunctionC(gf, gr, wl, this, aResultSink));
 				}
 			}
 		}

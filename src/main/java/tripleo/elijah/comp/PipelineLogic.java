@@ -99,7 +99,7 @@ public class PipelineLogic {
 		om.onComplete();
 	}
 
-	public void generate(List<EvaNode> lgc) {
+	public void generate(List<EvaNode> lgc, final GeneratePipeline.GenerateResultSink aResultSink) {
 		final WorkManager wm = new WorkManager();
 
 		for (final OS_Module mod : mods) {
@@ -150,9 +150,9 @@ public class PipelineLogic {
 
 
 			final OutputFileFactoryParams params        = new OutputFileFactoryParams(mod, errSink, verbosity, this);
-			final GenerateFiles           generateFiles = OutputFileFactory.create("c"/*lang*/, params);
+			final GenerateFiles           generateFiles = OutputFileFactory.create(lang, params);
 			//final GenerateC               generateC     = new GenerateC(mod, errSink, verbosity, this);
-			final GenerateResult          ggr           = run3(mod, lgc, wm, generateFiles);
+			final GenerateResult          ggr           = run3(mod, lgc, wm, generateFiles, aResultSink);
 			wm.drain();
 			gr.results().addAll(ggr.results());
 		}
@@ -284,7 +284,7 @@ public class PipelineLogic {
 		return generatePhase.getGenerateFunctions(mod);
 	}
 
-	protected GenerateResult run3(OS_Module mod, @NotNull List<EvaNode> lgc, WorkManager wm, GenerateFiles ggc) {
+	protected GenerateResult run3(OS_Module mod, @NotNull List<EvaNode> lgc, WorkManager wm, GenerateFiles ggc, final GeneratePipeline.GenerateResultSink aResultSink) {
 		GenerateResult gr = new GenerateResult();
 
 		for (EvaNode evaNode : lgc) {
@@ -293,22 +293,25 @@ public class PipelineLogic {
 			if (evaNode instanceof EvaContainerNC) {
 				final EvaContainerNC nc = (EvaContainerNC) evaNode;
 
-				nc.generateCode(ggc, gr);
+				nc.generateCode(ggc, gr, aResultSink);
 				if (nc instanceof EvaClass) {
 					final EvaClass evaClass = (EvaClass) nc;
 
 					final @NotNull Collection<EvaNode> gn2 = GenerateFiles.constructors_to_list_of_generated_nodes(evaClass.constructors.values());
-					GenerateResult                     gr3 = ggc.generateCode(gn2, wm);
+					GenerateResult                     gr3 = ggc.generateCode(gn2, wm, aResultSink);
 					gr.additional(gr3);
+					aResultSink.additional(gr3);
 				}
 
 				final @NotNull Collection<EvaNode> gn1 = GenerateFiles.functions_to_list_of_generated_nodes(nc.functionMap.values());
-				GenerateResult                     gr2 = ggc.generateCode(gn1, wm);
+				GenerateResult                     gr2 = ggc.generateCode(gn1, wm, aResultSink);
 				gr.additional(gr2);
+				aResultSink.additional(gr2);
 
 				final @NotNull Collection<EvaNode> gn2 = GenerateFiles.classes_to_list_of_generated_nodes(nc.classMap.values());
-				GenerateResult                     gr3 = ggc.generateCode(gn2, wm);
-				gr.additional(gr3);
+				GenerateResult                     gr4 = ggc.generateCode(gn2, wm, aResultSink);
+				gr.additional(gr4);
+				aResultSink.additional(gr4);
 			} else {
 				System.out.println("2009 " + evaNode.getClass().getName());
 			}
