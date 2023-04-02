@@ -1,0 +1,3674 @@
+       
+       
+     1	2022-09-29 19:01           ApacheOptionsProcessor.java            Page 1
+       
+       
+     2	package tripleo.elijah.comp;
+       
+     3	import org.apache.commons.cli.CommandLine;
+     4	import org.apache.commons.cli.CommandLineParser;
+     5	import org.apache.commons.cli.DefaultParser;
+     6	import org.apache.commons.cli.Options;
+       
+     7	import org.jetbrains.annotations.Contract;
+     8	import org.jetbrains.annotations.NotNull;
+       
+     9	import java.util.List;
+       
+    10	public class ApacheOptionsProcessor implements OptionsProcessor {
+    11		final Options           options = new Options();
+    12		final CommandLineParser clp     = new DefaultParser();
+       
+    13		@Contract(pure = true)
+    14		public ApacheOptionsProcessor() {
+    15			options.addOption("s", 		true,  "stage: E: parse; O: output");
+    16			options.addOption("showtree", 	false, "show tree");
+    17			options.addOption("out", 		false, "make debug files");
+    18			options.addOption("silent", 	false, "suppress DeduceType output to console");
+    19		}
+       
+    20		@Override
+    21		public String[] process(final @NotNull Compilation c,
+    22								final @NotNull List<String> args) throws Exception {
+    23			final CommandLine cmd;
+    24			//try {
+    25				cmd = clp.parse(options, args.toArray(new String[args.size()]));
+    26			//} catch (ParseException aE) {
+    27			//	throw new RuntimeException(aE);
+    28			//}
+       
+    29			if (cmd.hasOption("s")) 		{ new CC_SetStage(cmd.getOptionValue('s')).apply(c); }
+    30			if (cmd.hasOption("showtree")) 	{ new CC_SetShowTree(true).apply(c); }
+    31			if (cmd.hasOption("out")) 		{ new CC_SetDoOut(true).apply(c); }
+       
+    32			if (Compilation.isGitlab_ci() || cmd.hasOption("silent")) { new CC_SetSilent(true).apply(c); }
+       
+    33			return cmd.getArgs();
+    34		}
+    35	}
+    36	-------------------------------------
+       
+    37	2022-09-30 15:01                     CCI.java                     Page 1
+       
+       
+    38	package tripleo.elijah.comp;
+       
+    39	import org.jetbrains.annotations.Contract;
+    40	import org.jetbrains.annotations.NotNull;
+    41	import tripleo.elijah.ci.CompilerInstructions;
+    42	import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
+       
+    43	class CCI {
+    44		//private final @NotNull Compilation compilation;
+    45		private final Compilation.CIS _cis;
+       
+    46		@Contract(pure = true)
+    47		CCI(final @NotNull Compilation aCompilation, final Compilation.CIS aCis) {
+    48			//compilation = aCompilation;
+    49			_cis        = aCis;
+    50		}
+       
+    51		public void accept(final @NotNull Maybe<ILazyCompilerInstructions> mcci) {
+    52			if (mcci.isException()) return;
+       
+    53			final ILazyCompilerInstructions cci = mcci.o;
+    54			final CompilerInstructions      ci  = cci.get();
+       
+    55			System.err.println("*** " + ci.getName());
+       
+    56			_cis.onNext(ci);
+    57			//compilation.pushItem(ci);
+    58		}
+    59	}
+    60	-------------------------------------
+       
+    61	2022-09-26 18:17              CompilationChange.java              Page 1
+       
+       
+    62	package tripleo.elijah.comp;
+       
+    63	import org.jetbrains.annotations.Contract;
+    64	import org.jetbrains.annotations.NotNull;
+       
+    65	interface CompilationChange {
+    66		void apply(final Compilation c);
+    67	}
+       
+    68	class CC_SetStage implements CompilationChange {
+    69		private final String s;
+       
+    70		@Contract(pure = true)
+    71		public CC_SetStage(final String aS) {
+    72			s = aS;
+    73		}
+       
+    74		@Override
+    75		public void apply(final @NotNull Compilation c) {
+    76			c.stage = Stages.valueOf(s);
+    77		}
+    78	}
+       
+    79	class CC_SetShowTree implements CompilationChange {
+    80		private final boolean flag;
+       
+    81		public CC_SetShowTree(final boolean aB) {
+    82			flag = aB;
+    83		}
+       
+    84		@Override
+    85		public void apply(final Compilation c) {
+    86			c.showTree = flag;
+    87		}
+    88	}
+       
+    89	class CC_SetDoOut implements CompilationChange {
+    90		private final boolean flag;
+       
+    91		public CC_SetDoOut(final boolean aB) {
+    92			flag = aB;
+    93		}
+       
+    94		@Override
+    95		public void apply(final Compilation c) {
+    96			c.do_out = flag;
+    97		}
+    98	}
+       
+    99	class CC_SetSilent implements CompilationChange {
+   100		private final boolean flag;
+       
+   101		public CC_SetSilent(final boolean aB) {
+   102			flag = aB;
+   103		}
+       
+   104		@Override
+   105		public void apply(final Compilation c) {
+   106			c.silent = flag;
+   107		}
+   108	}
+   109	-------------------------------------
+       
+   110	2022-09-30 13:29               CompilationHelp.java               Page 1
+       
+       
+   111	/*
+   112	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   113	 *
+   114	 * The contents of this library are released under the LGPL licence v3,
+   115	 * the GNU Lesser General Public License text was downloaded from
+   116	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   117	 *
+   118	 */
+   119	package tripleo.elijah.comp;
+       
+   120	import com.google.common.base.Preconditions;
+   121	import org.jetbrains.annotations.Contract;
+   122	import org.jetbrains.annotations.NotNull;
+       
+   123	import java.util.ArrayList;
+   124	import java.util.List;
+   125	import java.util.logging.Level;
+   126	import java.util.logging.Logger;
+   127	import org.jdeferred2.impl.DeferredObject;
+       
+   128	import static tripleo.elijah.util.Helpers.List_of;
+       
+   129	interface RuntimeProcess {
+   130		void run(final Compilation aCompilation);
+       
+   131		void postProcess();
+       
+   132		void prepare();
+   133	}
+       
+   134	class StageToRuntime {
+   135		@Contract("_, _, _ -> new")
+   136		@NotNull
+   137		public static RuntimeProcesses get(final @NotNull Stages stage,
+   138										   final @NotNull ICompilationAccess ca,
+   139										   final @NotNull ProcessRecord aPr) {
+   140			final RuntimeProcesses r = new RuntimeProcesses(ca, aPr);
+       
+   141			r.add(stage.getProcess(ca, aPr));
+       
+   142			return r;
+   143		}
+   144	}
+       
+   145	class RuntimeProcesses {
+   146		private final List<RuntimeProcess> processes = new ArrayList<>();
+   147		private final ICompilationAccess   ca;
+   148		private final ProcessRecord pr;
+       
+   149		public RuntimeProcesses(final @NotNull ICompilationAccess aca, final @NotNull ProcessRecord aPr) {
+   150			ca = aca;
+   151			pr = aPr;
+   152		}
+       
+   153		public void run() {
+   154			final Compilation comp = ca.getCompilation();
+       
+   155			for (RuntimeProcess runtimeProcess : processes) {
+   156				System.err.println("***** RuntimeProcess [run    ] named " + runtimeProcess);
+   157				runtimeProcess.run(comp);
+   158			}
+   159		}
+       
+   160		public void prepare() {
+   161			for (RuntimeProcess runtimeProcess : processes) {
+   162				System.err.println("***** RuntimeProcess [prepare] named " + runtimeProcess);
+   163				runtimeProcess.prepare();
+   164			}
+   165		}
+       
+   166	-------------------------------------
+       
+   167	2022-09-30 13:29               CompilationHelp.java               Page 2
+       
+       
+   168		public void add(final RuntimeProcess aProcess) {
+   169			processes.add(aProcess);
+   170		}
+       
+   171		public void postProcess(ProcessRecord pr) {
+   172			for (RuntimeProcess runtimeProcess : processes) {
+   173				System.err.println("***** RuntimeProcess [postProcess] named " + runtimeProcess);
+   174				runtimeProcess.postProcess();
+   175			}
+       
+   176			System.err.println("***** RuntimeProcess^ [postProcess/writeLogs]");
+   177			pr.writeLogs(ca);
+   178		}
+       
+   179		public int size() {
+   180			return processes.size();
+   181		}
+       
+   182		public void run_better() {
+   183			// do nothing. job over
+   184			if (ca.getCompilation().stage == Stages.E) return;
+       
+   185			final RuntimeProcesses rt = this;
+       
+   186			rt.prepare();
+   187			rt.run();
+   188			rt.postProcess(pr);
+   189		}
+       
+   190		private void addPipeline(final PipelineMember aPipelineMember) {
+   191		}
+       
+   192		private static class FakePipelines {
+   193			int size() { return 4; }
+       
+   194			public void run() {	}
+   195		}
+       
+   196		public void run_loser() {
+   197			if (false) {
+   198				final PipelineLogic pipelineLogic;
+   199				final Compilation   comp      = null;
+   200				final Stages        stage     = null;
+   201				final FakePipelines pipelines = new FakePipelines();
+       
+   202				pipelineLogic = pr.pipelineLogic;
+       
+   203				final DeducePipeline dpl = pr.dpl;
+   204				addPipeline(dpl);
+       
+   205				if (stage == Stages.O) {
+   206					pr.setGenerateResult(null);
+       
+   207					final GeneratePipeline gpl = new GeneratePipeline(comp, dpl);
+   208					addPipeline(gpl);
+   209					final WritePipeline wpl = new WritePipeline(comp, pr, null);
+   210					pr.consumeGenerateResult(wpl);
+   211					addPipeline(wpl);
+   212					final WriteMesonPipeline wmpl = new WriteMesonPipeline(comp, pr, null, wpl);
+   213					pr.consumeGenerateResult(wmpl);
+   214					addPipeline(wmpl);
+   215				} else
+   216					assert stage == Stages.D;
+       
+   217				assert pipelines.size() == 4;
+   218				pipelines.run();
+       
+   219				ca.writeLogs();
+   220			}
+   221		}
+   222	-------------------------------------
+       
+   223	2022-09-30 13:29               CompilationHelp.java               Page 3
+       
+       
+   224	}
+       
+   225	final class EmptyProcess implements RuntimeProcess {
+   226		public EmptyProcess(final ICompilationAccess aCompilationAccess, final ProcessRecord aPr) { }
+   227		@Override public void run(final Compilation aCompilation) { }
+   228		@Override public void postProcess() { }
+   229		@Override public void prepare() { }
+   230	}
+       
+   231	class DStageProcess implements RuntimeProcess {
+   232		private final ICompilationAccess ca;
+   233		private final ProcessRecord pr;
+       
+   234		@Contract(pure = true)
+   235		public DStageProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
+   236			ca = aCa;
+   237			pr = aPr;
+   238		}
+       
+   239		@Override
+   240		public void run(final Compilation aCompilation) {
+   241			int y=2;
+   242		}
+       
+   243		@Override
+   244		public void postProcess() {
+   245		}
+       
+   246		@Override
+   247		public void prepare() {
+   248			//assert pr.stage == Stages.D; // FIXME
+   249		}
+   250	}
+       
+   251	class OStageProcess implements RuntimeProcess {
+   252		private final ProcessRecord pr;
+   253		private final ICompilationAccess ca;
+       
+   254		OStageProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
+   255			ca = aCa;
+   256			pr = aPr;
+   257		}
+       
+   258		@Override
+   259		public void run(final Compilation aCompilation) {
+   260			Pipeline ps = aCompilation.pipelines;
+   261			
+   262			try {
+   263				ps.run();
+   264			} catch (Exception ex) {
+   265				Logger.getLogger(OStageProcess.class.getName()).log(Level.SEVERE, null, ex);
+   266			}
+   267		}
+       
+   268		@Override
+   269		public void postProcess() {
+   270		}
+       
+   271		@Override
+   272		public void prepare() {
+   273			Preconditions.checkNotNull(pr);
+   274			Preconditions.checkNotNull(pr.dpl);
+       
+   275			Preconditions.checkNotNull(pr.pipelineLogic);
+   276			Preconditions.checkNotNull(pr.pipelineLogic.gr);
+       
+   277			final DeferredObject<PipelineLogic, Void, Void> ppl = new DeferredObject<>();
+   278			ppl.resolve(pr.pipelineLogic);
+   279			
+   280			final Compilation        comp = ca.getCompilation();
+   281	-------------------------------------
+       
+   282	2022-09-30 13:29               CompilationHelp.java               Page 4
+       
+       
+   283			
+   284			final DeducePipeline     dpl  = new DeducePipeline      (ca);
+   285			final GeneratePipeline   gpl  = new GeneratePipeline	(comp, dpl);
+   286			final WritePipeline      wpl  = new WritePipeline		(comp, pr, ppl);
+   287			final WriteMesonPipeline wmpl = new WriteMesonPipeline	(comp, pr, ppl, wpl);
+       
+   288			List_of(dpl, gpl, wpl, wmpl)
+   289					.forEach(ca::addPipeline);
+   290			
+   291			pr.setGenerateResult(pr.pipelineLogic.gr);
+       
+   292			// NOTE Java needs help!
+   293			//Helpers.<Consumer<Supplier<GenerateResult>>>List_of(wpl.consumer(), wmpl.consumer())
+   294			List_of(wpl.consumer(), wmpl.consumer())
+   295					.forEach(pr::consumeGenerateResult);
+   296		}
+   297	}
+       
+   298	//
+   299	//
+   300	//
+   301	-------------------------------------
+       
+   302	2022-10-01 14:46                 Compilation.java                 Page 1
+       
+       
+   303	/*
+   304	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+   305	 *
+   306	 * The contents of this library are released under the LGPL licence v3,
+   307	 * the GNU Lesser General Public License text was downloaded from
+   308	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+   309	 *
+   310	 */
+   311	package tripleo.elijah.comp;
+       
+   312	import antlr.ANTLRException;
+   313	import antlr.RecognitionException;
+   314	import antlr.TokenStreamException;
+   315	import io.reactivex.rxjava3.annotations.NonNull;
+   316	import io.reactivex.rxjava3.core.Observer;
+   317	import io.reactivex.rxjava3.disposables.Disposable;
+   318	import io.reactivex.rxjava3.subjects.ReplaySubject;
+   319	import io.reactivex.rxjava3.subjects.Subject;
+   320	import org.jetbrains.annotations.Contract;
+   321	import org.jetbrains.annotations.NotNull;
+   322	import org.picocontainer.DefaultPicoContainer;
+   323	import org.picocontainer.MutablePicoContainer;
+   324	import org.picocontainer.PicoContainer;
+   325	import tripleo.elijah.ci.CompilerInstructions;
+   326	import tripleo.elijah.ci.LibraryStatementPart;
+   327	import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
+   328	import tripleo.elijah.comp.diagnostic.FileNotFoundDiagnostic;
+   329	import tripleo.elijah.comp.queries.QuerySourceFileToModule;
+   330	import tripleo.elijah.comp.queries.QuerySourceFileToModuleParams;
+   331	import tripleo.elijah.diagnostic.Diagnostic;
+   332	import tripleo.elijah.lang.ClassStatement;
+   333	import tripleo.elijah.lang.OS_Module;
+   334	import tripleo.elijah.lang.OS_Package;
+   335	import tripleo.elijah.lang.Qualident;
+   336	import tripleo.elijah.stages.deduce.FunctionMapHook;
+   337	import tripleo.elijah.stages.logging.ElLog;
+   338	import tripleo.elijah.util.Helpers;
+   339	import tripleo.elijah.util.NotImplementedException;
+       
+   340	import java.io.File;
+   341	import java.io.FilenameFilter;
+   342	import java.io.InputStream;
+   343	import java.util.*;
+   344	import java.util.regex.Pattern;
+       
+   345	import static tripleo.elijah.nextgen.query.Mode.SUCCESS;
+       
+   346	public class Compilation {
+       
+   347		public final  List<OS_Module>                   modules   = new ArrayList<OS_Module>();
+   348		final         ErrSink                           errSink;
+   349		final         Map<String, CompilerInstructions> fn2ci     = new HashMap<String, CompilerInstructions>();
+   350		final         Pipeline                          pipelines = new Pipeline();
+   351		private final int                               _compilationNumber;
+   352		private final Map<String, OS_Package>           _packages = new HashMap<String, OS_Package>();
+   353		public        Stages                            stage     = Stages.O; // Output
+   354		public        boolean                           silent    = false;
+   355		CompilerInstructions rootCI;
+   356		boolean              showTree = false;
+   357		private IO io;
+   358		//
+   359		//
+   360		public PipelineLogic pipelineLogic;
+   361		//
+   362		//
+   363		private int                _packageCode  = 1;
+   364		private int                _classCode    = 101;
+   365		private int                _functionCode = 1001;
+   366		private CompilationRunner __cr;
+       
+   367	-------------------------------------
+       
+   368	2022-10-01 14:46                 Compilation.java                 Page 2
+       
+       
+   369		public Compilation(final ErrSink errSink, final IO io) {
+   370			this.errSink            = errSink;
+   371			this.io                 = io;
+   372			this._compilationNumber = new Random().nextInt(Integer.MAX_VALUE);
+   373		}
+       
+   374		public String getProjectName() {
+   375			return rootCI.getName();
+   376		}
+       
+   377		public IO getIO() {
+   378			return io;
+   379		}
+       
+   380		public void setIO(final IO io) {
+   381			this.io = io;
+   382		}
+       
+   383		protected boolean do_out = false;
+       
+   384		public @NotNull Operation<CompilerInstructions> parseEzFile(final File aFile) {
+   385			try {
+   386				return __cr.parseEzFile1(aFile, aFile.getPath(), this.errSink, this.io, this); // FIXME
+   387			} catch (Exception aE) {
+   388				return Operation.failure(aE);
+   389			}
+   390		}
+       
+   391		static class MainModule {
+       
+   392			public static @NotNull PicoContainer newContainer() {
+   393				final MutablePicoContainer pico = new DefaultPicoContainer();
+       
+   394				pico.addComponent(PicoContainer   .class, pico);
+   395				pico.addComponent(OptionsProcessor.class, new ApacheOptionsProcessor());
+       
+   396				//pico.addComponent(CompilerInstructionsObserver.class); // TODO not yet
+       
+   397				//pico.addComponent(InfoWindowProvider.class);
+   398				//pico.addComponent(ShowInfoWindowAction.class);
+   399				//pico.addComponent(ShowInfoWindowButton.class);
+       
+   400				return pico;
+   401			}
+   402		}
+       
+   403		public void feedCmdLine(final @NotNull List<String> args) throws Exception {
+   404			final PicoContainer pico = MainModule.newContainer();
+       
+   405	/*
+   406			SwingUtilities.invokeLater(new Runnable() {
+   407				@Override public void run() {
+   408					MainWindow mainWindow = pico.getComponent(MainWindow.class);
+   409					mainWindow.show();
+   410				}
+   411			});
+   412	*/
+       
+   413			if (args.size() < 1) {
+   414				System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
+   415				return;
+   416			}
+       
+   417			final OptionsProcessor op = pico.getComponent(OptionsProcessor.class);
+       
+   418			final CompilerInstructionsObserver cio = new CompilerInstructionsObserver(this, op);
+   419			_cis._cio = cio;
+       
+   420			subscribeCI(cio);
+       
+   421	-------------------------------------
+       
+   422	2022-10-01 14:46                 Compilation.java                 Page 3
+       
+       
+   423			final String[] args2 = op.process(this, args);
+       
+   424			__cr = new CompilationRunner(this, _cis);
+   425			__cr.doFindCIs(args2);
+   426		}
+       
+   427		private void subscribeCI(final Observer<CompilerInstructions> aCio) {
+   428			_cis.subscribe(aCio);
+   429		}
+       
+   430		private final CIS _cis = new CIS();
+       
+   431		class CIS implements Observer<CompilerInstructions> {
+       
+   432			private final Subject<CompilerInstructions> compilerInstructionsSubject = ReplaySubject.<CompilerInstructions>create();
+   433			CompilerInstructionsObserver _cio;
+       
+   434			@Override
+   435			public void onSubscribe(@NonNull final Disposable d) {
+   436				compilerInstructionsSubject.onSubscribe(d);
+   437			}
+       
+   438			@Override
+   439			public void onNext(@NonNull final CompilerInstructions aCompilerInstructions) {
+   440				compilerInstructionsSubject.onNext(aCompilerInstructions);
+   441			}
+       
+   442			@Override
+   443			public void onError(@NonNull final Throwable e) {
+   444				compilerInstructionsSubject.onError(e);
+   445			}
+       
+   446			@Override
+   447			public void onComplete() {
+   448				throw new IllegalStateException();
+   449				//compilerInstructionsSubject.onComplete();
+   450			}
+       
+   451			public void almostComplete() {
+   452				//NotImplementedException.raise();
+   453				_cio.almostComplete();
+   454			}
+       
+   455			public void subscribe(final Observer<CompilerInstructions> aCio) {
+   456				compilerInstructionsSubject.subscribe(aCio);
+   457			}
+   458		}
+       
+   459		void hasInstructions(final @NotNull List<CompilerInstructions> cis,
+   460							 final boolean do_out,
+   461							 final @NotNull OptionsProcessor op) throws Exception {
+   462			//assert cis.size() == 1;
+       
+   463			assert cis.size() > 0;
+       
+   464			rootCI = cis.get(0);
+       
+   465			//assert __cr == null;
+   466			if (__cr != null) {
+   467				System.err.println("200 __cr != null");
+   468				//throw new AssertionError();
+   469			}
+       
+   470			assert _cis != null; // final; redundant
+       
+   471			if (__cr == null)
+   472				__cr = new CompilationRunner(this, _cis);
+       
+   473			__cr.start(rootCI/*cis.get(0)*/, do_out, op);
+   474		}
+   475	-------------------------------------
+       
+   476	2022-10-01 14:46                 Compilation.java                 Page 4
+       
+       
+       
+   477		public void pushItem(CompilerInstructions aci) {
+   478			_cis.onNext(aci);
+   479		}
+       
+   480		public void addPipeline(PipelineMember aPl) {
+   481			pipelines.add(aPl);
+   482		}
+       
+   483		static class USE {
+   484			private final Compilation c;
+   485			private final ErrSink errSink;
+       
+   486			@Contract(pure = true)
+   487			public USE(final Compilation aCompilation) {
+   488				c       = aCompilation;
+   489				errSink = c.getErrSink();
+   490			}
+       
+   491			public void use(final @NotNull CompilerInstructions compilerInstructions, final boolean do_out) throws Exception {
+   492				final File instruction_dir = new File(compilerInstructions.getFilename()).getParentFile();
+   493				for (final LibraryStatementPart lsp : compilerInstructions.lsps) {
+   494					final String dir_name = Helpers.remove_single_quotes_from_string(lsp.getDirName());
+   495					File         dir;// = new File(dir_name);
+   496					if (dir_name.equals(".."))
+   497						dir = instruction_dir/*.getAbsoluteFile()*/.getParentFile();
+   498					else
+   499						dir = new File(instruction_dir, dir_name);
+   500					use_internal(dir, do_out, lsp);
+   501				}
+   502				final LibraryStatementPart lsp = new LibraryStatementPart();
+   503				lsp.setName(Helpers.makeToken("default")); // TODO: make sure this doesn't conflict
+   504				lsp.setDirName(Helpers.makeToken(String.format("\"%s\"", instruction_dir)));
+   505				lsp.setInstructions(compilerInstructions);
+   506				use_internal(instruction_dir, do_out, lsp);
+   507			}
+       
+   508			private void use_internal(final @NotNull File dir, final boolean do_out, LibraryStatementPart lsp) throws Exception {
+   509				if (!dir.isDirectory()) {
+   510					errSink.reportError("9997 Not a directory " + dir);
+   511					return;
+   512				}
+   513				//
+   514				final File[] files = dir.listFiles(accept_source_files);
+   515				if (files != null) {
+   516					for (final File file : files) {
+   517						parseElijjahFile(file, file.toString(), do_out, lsp);
+   518					}
+   519				}
+   520			}
+       
+   521			private static final FilenameFilter accept_source_files = new FilenameFilter() {
+   522				@Override
+   523				public boolean accept(final File directory, final String file_name) {
+   524					final boolean matches = Pattern.matches(".+\\.elijah$", file_name)
+   525							|| Pattern.matches(".+\\.elijjah$", file_name);
+   526					return matches;
+   527				}
+   528			};
+       
+   529			public Operation2<OS_Module> findPrelude(final String prelude_name) {
+   530				final File local_prelude = new File("lib_elijjah/lib-" + prelude_name + "/Prelude.elijjah");
+       
+   531				if (!(local_prelude.exists())) {
+   532					return Operation2.failure(new FileNotFoundDiagnostic(local_prelude));
+   533				}
+       
+   534				try {
+   535					final Operation2<OS_Module> om = realParseElijjahFile2(local_prelude.getName(), local_prelude, false);
+       
+   536	-------------------------------------
+       
+   537	2022-10-01 14:46                 Compilation.java                 Page 5
+       
+       
+   538					assert om.mode() == SUCCESS;
+       
+   539					return Operation2.success(om.success());
+   540				} catch (final Exception e) {
+   541					errSink.exception(e);
+   542					return Operation2.failure(new ExceptionDiagnostic(e));
+   543				}
+   544			}
+       
+   545			private Operation2<OS_Module> parseElijjahFile(final @NotNull File f,
+   546														   final @NotNull String file_name,
+   547														   final boolean do_out,
+   548														   final @NotNull LibraryStatementPart lsp) {
+   549				System.out.printf("   %s%n", f.getAbsolutePath());
+       
+   550				if (f.exists()) {
+   551					final Operation2<OS_Module> om = realParseElijjahFile2(file_name, f, do_out);
+       
+   552					if (om.mode() == SUCCESS) {
+   553						// TODO we dont know which prelude to find yet
+   554						final Operation2<OS_Module> pl = findPrelude(CompilationAlways.defaultPrelude());
+       
+   555						// NOTE Go. infectious. tedious. also slightly lazy
+   556						assert pl.mode() == SUCCESS;
+       
+   557						final OS_Module mm = om.success();
+       
+   558						assert mm.getLsp() == null;
+   559						assert mm.prelude  == null;
+       
+   560						mm.setLsp(lsp);
+   561						mm.prelude = pl.success();
+       
+   562						return Operation2.success(mm);
+   563					} else {
+   564						final Diagnostic e = new UnknownExceptionDiagnostic(om);
+   565						return Operation2.failure(e);
+   566					}
+   567				} else {
+   568					final Diagnostic e = new FileNotFoundDiagnostic(f);
+       
+   569					return Operation2.failure(e);
+   570				}
+   571			}
+       
+   572			public Operation2<OS_Module> realParseElijjahFile2(final String f, final @NotNull File file, final boolean do_out) {
+   573				final Operation<OS_Module> om;
+       
+   574				try {
+   575					om = realParseElijjahFile(f, file, do_out);
+   576				} catch (Exception aE) {
+   577					return Operation2.failure(new ExceptionDiagnostic(aE));
+   578				}
+       
+   579				switch (om.mode()) {
+   580				case SUCCESS:
+   581					return Operation2.success(om.success());
+   582				case FAILURE:
+   583					final Exception e = om.failure();
+   584					errSink.exception(e);
+   585					return Operation2.failure(new ExceptionDiagnostic(e));
+   586				default:
+   587					throw new IllegalStateException("Unexpected value: " + om.mode());
+   588				}
+   589			}
+       
+   590			private Operation<OS_Module> parseFile_(final String f, final InputStream s, final boolean do_out) throws RecognitionException, TokenStreamException {
+   591				final QuerySourceFileToModuleParams qp = new QuerySourceFileToModuleParams(s, f, do_out);
+   592				return new QuerySourceFileToModule(qp, c).calculate();
+   593			}
+   594	-------------------------------------
+       
+   595	2022-10-01 14:46                 Compilation.java                 Page 6
+       
+       
+       
+   596			private final Map<String, OS_Module>            fn2m      = new HashMap<String, OS_Module>();
+       
+   597			public Operation<OS_Module> realParseElijjahFile(final String f, final @NotNull File file, final boolean do_out) throws Exception {
+   598				final String absolutePath = file.getCanonicalFile().toString();
+   599				if (fn2m.containsKey(absolutePath)) { // don't parse twice
+   600					final OS_Module m = fn2m.get(absolutePath);
+   601					return Operation.success(m);
+   602				}
+       
+   603				final IO io = c.getIO();
+       
+   604				// tree add something
+       
+   605				final InputStream s = io.readFile(file);
+   606				try {
+   607					final Operation<OS_Module> om = parseFile_(f, s, do_out);
+   608					if (om.mode() != SUCCESS) {
+   609						final Exception e = om.failure();
+   610						assert e != null;
+       
+   611						System.err.println(("parser exception: " + e));
+   612						e.printStackTrace(System.err);
+   613						s.close();
+   614						return Operation.failure(e);
+   615					}
+   616					final OS_Module R = om.success();
+   617					fn2m.put(absolutePath, R);
+   618					s.close();
+   619					return Operation.success(R);
+   620				} catch (final ANTLRException e) {
+   621					System.err.println(("parser exception: " + e));
+   622					e.printStackTrace(System.err);
+   623					s.close();
+   624					return Operation.failure(e);
+   625				}
+   626			}
+       
+   627			public void addModule(final OS_Module aModule, final String aFn) {
+   628				fn2m.put(aFn, aModule);
+   629			}
+   630		}
+       
+   631		final private USE use = new USE(this);
+       
+   632		public void use(final @NotNull CompilerInstructions compilerInstructions, final boolean do_out) throws Exception {
+   633			use.use(compilerInstructions, do_out);	// NOTE Rust
+   634		}
+       
+   635		@Deprecated
+   636		public int instructionCount() {
+   637			return 4; // TODO shim !!!cis.size();
+   638		}
+       
+   639		public static class CompilationAlways {
+   640			@NotNull
+   641			public static String defaultPrelude() {
+   642				return "c";
+   643			}
+   644		}
+       
+   645		public ModuleBuilder moduleBuilder() {
+   646			return new ModuleBuilder(this);
+   647		}
+       
+   648		public List<ClassStatement> findClass(final String aClassName) {
+   649			final List<ClassStatement> l = new ArrayList<ClassStatement>();
+   650			for (final OS_Module module : modules) {
+   651				if (module.hasClass(aClassName)) {
+   652					l.add((ClassStatement) module.findClass(aClassName));
+   653	-------------------------------------
+       
+   654	2022-10-01 14:46                 Compilation.java                 Page 7
+       
+       
+   655				}
+   656			}
+   657			return l;
+   658		}
+       
+   659		public int errorCount() {
+   660			return errSink.errorCount();
+   661		}
+       
+   662		public Operation2<OS_Module> findPrelude(final String prelude_name) {
+   663			return use.findPrelude(prelude_name);
+   664		}
+       
+   665		public void addModule(final OS_Module module, final String fn) {
+   666			modules.add(module);
+   667			use.addModule(module, fn);
+   668		}
+       
+   669		//
+   670		// region MODULE STUFF
+   671		//
+       
+   672		// endregion
+       
+   673		//
+   674		// region PACKAGES
+   675		//
+       
+   676		public boolean isPackage(final String pkg) {
+   677			return _packages.containsKey(pkg);
+   678		}
+       
+   679		public OS_Package getPackage(final Qualident pkg_name) {
+   680			return _packages.get(pkg_name.toString());
+   681		}
+       
+   682		public OS_Package makePackage(final Qualident pkg_name) {
+   683			if (!isPackage(pkg_name.toString())) {
+   684				final OS_Package newPackage = new OS_Package(pkg_name, nextPackageCode());
+   685				_packages.put(pkg_name.toString(), newPackage);
+   686				return newPackage;
+   687			} else
+   688				return _packages.get(pkg_name.toString());
+   689		}
+       
+   690		private int nextPackageCode() {
+   691			return _packageCode++;
+   692		}
+       
+   693		// endregion
+       
+   694		//
+   695		// region CLASS AND FUNCTION CODES
+   696		//
+       
+   697		public int nextClassCode() {
+   698			return _classCode++;
+   699		}
+       
+   700		public int nextFunctionCode() {
+   701			return _functionCode++;
+   702		}
+       
+   703		//
+   704		// endregion
+   705		//
+       
+   706		//
+   707		// region COMPILATION-SHIT
+   708		//
+   709	-------------------------------------
+       
+   710	2022-10-01 14:46                 Compilation.java                 Page 8
+       
+       
+       
+   711		public int compilationNumber() {
+   712			return _compilationNumber;
+   713		}
+       
+   714		public String getCompilationNumberString() {
+   715			return String.format("%08x", _compilationNumber);
+   716		}
+       
+   717		// endregion
+       
+   718		public ErrSink getErrSink() {
+   719			return errSink;
+   720		}
+       
+   721		public void addFunctionMapHook(FunctionMapHook aFunctionMapHook) {
+   722			pipelineLogic.dp.addFunctionMapHook(aFunctionMapHook);
+   723		}
+       
+   724		public static ElLog.Verbosity gitlabCIVerbosity() {
+   725			final boolean gitlab_ci = isGitlab_ci();
+   726			return gitlab_ci ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
+   727		}
+       
+   728		public static boolean isGitlab_ci() {
+   729			return System.getenv("GITLAB_CI") != null;
+   730		}
+   731	}
+       
+   732	//
+   733	//
+   734	//
+   735	-------------------------------------
+       
+   736	2022-10-01 06:23              CompilationRunner.java              Page 1
+       
+       
+   737	package tripleo.elijah.comp;
+       
+   738	import antlr.ANTLRException;
+   739	import antlr.RecognitionException;
+   740	import antlr.TokenStreamException;
+   741	import org.jetbrains.annotations.Contract;
+   742	import org.jetbrains.annotations.NotNull;
+   743	import org.jetbrains.annotations.Nullable;
+   744	import tripleo.elijah.ci.CompilerInstructions;
+   745	import tripleo.elijah.comp.diagnostic.TooManyEz_ActuallyNone;
+   746	import tripleo.elijah.comp.diagnostic.TooManyEz_BeSpecific;
+   747	import tripleo.elijah.comp.queries.QueryEzFileToModule;
+   748	import tripleo.elijah.comp.queries.QueryEzFileToModuleParams;
+   749	import tripleo.elijah.diagnostic.Diagnostic;
+   750	import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
+   751	import tripleo.elijah.util.NotImplementedException;
+       
+   752	import java.io.*;
+   753	import java.util.ArrayList;
+   754	import java.util.List;
+   755	import java.util.regex.Pattern;
+       
+   756	import static tripleo.elijah.nextgen.query.Mode.FAILURE;
+   757	import static tripleo.elijah.nextgen.query.Mode.SUCCESS;
+       
+   758	class CompilationRunner {
+   759		private final Compilation     compilation;
+   760		private final Compilation.CIS cis;
+   761		private final CCI             cci;
+       
+   762		@Contract(pure = true)
+   763		CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis) {
+   764			compilation = aCompilation;
+   765			cis         = a_cis;
+   766			cci         = new CCI(compilation, a_cis);
+   767		}
+       
+   768		void start(final CompilerInstructions ci, final boolean do_out, final @NotNull OptionsProcessor ignoredOp) throws Exception {
+   769			// 0. debugging
+   770			NotImplementedException.raise();
+       
+   771			// 1. find stdlib
+   772			//   -- question placement
+   773			//   -- ...
+   774			{
+   775				final Operation<CompilerInstructions> x = findStdLib(Compilation.CompilationAlways.defaultPrelude(), compilation);
+   776				if (x.mode() == FAILURE) {
+   777					compilation.errSink.exception(x.failure());
+   778					return;
+   779				}
+   780				logProgress(130, "GEN_LANG: " + x.success().genLang());
+   781			}
+       
+   782			// 2. process the initial
+   783			compilation.use(ci, do_out);
+       
+   784			// 3. do rest
+   785			final ICompilationAccess ca = new DefaultCompilationAccess(compilation);
+   786			final ProcessRecord      pr = new ProcessRecord(ca);
+   787			final RuntimeProcesses   rt = StageToRuntime.get(compilation.stage, ca, pr);
+       
+   788			rt.run_better();
+   789		}
+       
+   790		/*
+   791		 * Design question:
+   792		 *   - why push and return?
+   793		 *     we only want to check error
+   794		 *     utilize exceptions --> only one usage
+   795		 *     or inline (esp use of Compilation)
+   796	-------------------------------------
+       
+   797	2022-10-01 06:23              CompilationRunner.java              Page 2
+       
+       
+   798		 */
+   799		private @NotNull Operation<CompilerInstructions> findStdLib(final String prelude_name, final @NotNull Compilation c) {
+   800			final ErrSink errSink = c.getErrSink();
+   801			final IO      io      = c.getIO();
+       
+   802			// TODO stdlib path here
+   803			final File local_stdlib = new File("lib_elijjah/lib-" + prelude_name + "/stdlib.ez");
+   804			if (local_stdlib.exists()) {
+   805				try {
+   806					final Operation<CompilerInstructions> oci = realParseEzFile(local_stdlib.getName(), io.readFile(local_stdlib), local_stdlib, c);
+   807					if (oci.mode() == SUCCESS) {
+   808						c.pushItem(oci.success());
+   809						return oci;
+   810					}
+   811				} catch (final Exception e) {
+   812					return Operation.failure(e);
+   813				}
+   814			}
+   815			//return false;
+   816			return Operation.failure(new Exception() {
+   817				public String message() {
+   818					return "No stdlib found";
+   819				}
+   820			});
+   821		}
+       
+   822		private Operation<CompilerInstructions> parseEzFile_(final String f, final InputStream s) throws RecognitionException, TokenStreamException {
+   823			final QueryEzFileToModuleParams qp = new QueryEzFileToModuleParams(f, s);
+   824			return new QueryEzFileToModule(qp).calculate();
+   825		}
+       
+   826		protected void find_cis(final @NotNull String @NotNull [] args2,
+   827								final @NotNull Compilation c,
+   828								final @NotNull ErrSink errSink,
+   829								final @NotNull IO io) {
+   830			CompilerInstructions ez_file;
+   831			for (int i = 0; i < args2.length; i++) {
+   832				final String  file_name = args2[i];
+   833				final File    f         = new File(file_name);
+   834				final boolean matches2  = Pattern.matches(".+\\.ez$", file_name);
+   835				if (matches2) {
+   836					ILazyCompilerInstructions ilci = ILazyCompilerInstructions.of(f, c);
+   837					cci.accept(new Maybe<>(ilci, null));
+   838				} else {
+   839					//errSink.reportError("9996 Not an .ez file "+file_name);
+   840					if (f.isDirectory()) {
+   841						final List<CompilerInstructions> ezs = searchEzFiles(f, errSink, io, c);
+       
+   842						switch (ezs.size()) {
+   843						case 0:
+   844							final Diagnostic                       d_toomany = new TooManyEz_ActuallyNone();
+   845							final Maybe<ILazyCompilerInstructions> m         = new Maybe<>(null, d_toomany);
+   846							cci.accept(m);
+   847							break;
+   848						case 1:
+   849							ez_file = ezs.get(0);
+   850							cci.accept(new Maybe<>(ILazyCompilerInstructions.of(ez_file), null));
+   851							break;
+   852						default:
+   853							//final Diagnostic d_toomany = new TooManyEz_UseFirst();
+   854							//add_ci(ezs.get(0));
+       
+   855							// more than 1 (negative is not possible)
+   856							final Diagnostic                       d_toomany2 = new TooManyEz_BeSpecific();
+   857							final Maybe<ILazyCompilerInstructions> m2         = new Maybe<>(null, d_toomany2);
+   858							cci.accept(m2);
+   859							break;
+   860						}
+   861					} else
+   862						errSink.reportError("9995 Not a directory " + f.getAbsolutePath());
+   863	-------------------------------------
+       
+   864	2022-10-01 06:23              CompilationRunner.java              Page 3
+       
+       
+   865				}
+   866			}
+   867		}
+       
+   868		private @NotNull List<CompilerInstructions> searchEzFiles(final @NotNull File directory, final ErrSink errSink, final IO io, final Compilation c) {
+   869			final List<CompilerInstructions> R = new ArrayList<CompilerInstructions>();
+   870			final FilenameFilter filter = new FilenameFilter() {
+   871				@Override
+   872				public boolean accept(final File file, final String s) {
+   873					final boolean matches2 = Pattern.matches(".+\\.ez$", s);
+   874					return matches2;
+   875				}
+   876			};
+   877			final String[] list = directory.list(filter);
+   878			if (list != null) {
+   879				for (final String file_name : list) {
+   880					try {
+   881						final File                 file   = new File(directory, file_name);
+   882						final CompilerInstructions ezFile = parseEzFile(file, file.toString(), errSink, io, c);
+   883						if (ezFile != null)
+   884							R.add(ezFile);
+   885						else
+   886							errSink.reportError("9995 ezFile is null " + file);
+   887					} catch (final Exception e) {
+   888						errSink.exception(e);
+   889					}
+   890				}
+   891			}
+   892			return R;
+   893		}
+       
+   894		public @NotNull Operation<CompilerInstructions> parseEzFile1(final @NotNull File f,
+   895																	 final String file_name,
+   896																	 final ErrSink errSink,
+   897																	 final IO io,
+   898																	 final Compilation c) {
+   899			System.out.printf("   %s%n", f.getAbsolutePath());
+   900			if (!f.exists()) {
+   901				errSink.reportError(
+   902						"File doesn't exist " + f.getAbsolutePath());
+   903				return null;
+   904			} else {
+   905				final Operation<CompilerInstructions> om = realParseEzFile(file_name/*, io.readFile(f), f*/, io, c);
+   906				return om;
+   907			}
+   908		}
+       
+   909		@Nullable CompilerInstructions parseEzFile(final @NotNull File f, final String file_name, final ErrSink errSink, final IO io, final Compilation c) throws Exception {
+   910			final Operation<CompilerInstructions> om = parseEzFile1(f, file_name, errSink, io, c);
+       
+   911			final CompilerInstructions m;
+       
+   912			if (om.mode() == SUCCESS) {
+   913				m = om.success();
+       
+   914	/*
+   915			final String prelude;
+   916			final String xprelude = m.genLang();
+   917			System.err.println("230 " + prelude);
+   918			if (xprelude == null)
+   919				prelude = CompilationAlways.defaultPrelude(); // TODO should be java for eljc
+   920			else
+   921				prelude = null;
+   922	*/
+   923			} else {
+   924				m = null;
+   925			}
+       
+   926			return m;
+   927		}
+   928	-------------------------------------
+       
+   929	2022-10-01 06:23              CompilationRunner.java              Page 4
+       
+       
+       
+   930		private Operation<CompilerInstructions> realParseEzFile(final String f, final @NotNull IO io, final Compilation c) {
+   931			final File file = new File(f);
+       
+   932			try {
+   933				return realParseEzFile(f, io.readFile(file), file, c);
+   934			} catch (FileNotFoundException aE) {
+   935				return Operation.failure(aE);
+   936			}
+   937		}
+       
+   938		public Operation<CompilerInstructions> realParseEzFile(final String f,
+   939															   final InputStream s,
+   940															   final @NotNull File file,
+   941															   final Compilation c) {
+   942			final String absolutePath;
+   943			try {
+   944				absolutePath = file.getCanonicalFile().toString();
+   945			} catch (IOException aE) {
+   946				//throw new RuntimeException(aE);
+   947				return Operation.failure(aE);
+   948			}
+       
+   949			if (c.fn2ci.containsKey(absolutePath)) { // don't parse twice
+   950				return Operation.success(c.fn2ci.get(absolutePath));
+   951			}
+       
+   952			try {
+   953				try {
+   954					final Operation<CompilerInstructions> cio = parseEzFile_(f, s);
+       
+   955					if (cio.mode() != SUCCESS) {
+   956						final Exception e = cio.failure();
+   957						assert e != null;
+       
+   958						System.err.println(("parser exception: " + e));
+   959						e.printStackTrace(System.err);
+   960						//s.close();
+   961						return cio;
+   962					}
+       
+   963					final CompilerInstructions R = cio.success();
+   964					R.setFilename(file.toString());
+   965					c.fn2ci.put(absolutePath, R);
+   966					return cio;
+   967				} catch (final ANTLRException e) {
+   968					System.err.println(("parser exception: " + e));
+   969					e.printStackTrace(System.err);
+   970					return Operation.failure(e);
+   971				}
+   972			} finally {
+   973				if (s != null) {
+   974					try {
+   975						s.close();
+   976					} catch (IOException aE) {
+   977						// TODO return inside finally: is this ok??
+   978						return new Operation<>(null, aE, FAILURE);
+   979					}
+   980				}
+   981			}
+   982		}
+       
+   983		public void doFindCIs(final String[] args2) {
+   984			final ErrSink errSink1 = compilation.getErrSink();
+   985			final IO      io       = compilation.getIO();
+       
+   986			// TODO map + "extract"
+   987			find_cis(args2, compilation, errSink1, io);
+       
+   988			cis.almostComplete();
+   989	-------------------------------------
+       
+   990	2022-10-01 06:23              CompilationRunner.java              Page 5
+       
+       
+   991		}
+       
+   992		private void logProgress(final int number, final String text) {
+   993			if (number == 130) return;
+       
+   994			System.err.println(number + " " + text);
+   995		}
+       
+   996	}
+   997	-------------------------------------
+       
+   998	2022-09-29 19:32        CompilerInstructionsObserver.java         Page 1
+       
+       
+   999	package tripleo.elijah.comp;
+       
+  1000	import io.reactivex.rxjava3.annotations.NonNull;
+  1001	import io.reactivex.rxjava3.core.Observer;
+  1002	import io.reactivex.rxjava3.disposables.Disposable;
+  1003	import tripleo.elijah.ci.CompilerInstructions;
+  1004	import tripleo.elijah.util.NotImplementedException;
+       
+  1005	import java.util.ArrayList;
+  1006	import java.util.List;
+       
+  1007	class CompilerInstructionsObserver implements Observer<CompilerInstructions> {
+  1008		private final List<CompilerInstructions> l = new ArrayList<>();
+  1009		private final Compilation                compilation;
+  1010		private final OptionsProcessor           op;
+       
+  1011		public CompilerInstructionsObserver(final Compilation aCompilation, final OptionsProcessor aOp) {
+  1012			compilation = aCompilation;
+  1013			op = aOp;
+  1014		}
+       
+  1015		@Override
+  1016		public void onSubscribe(@NonNull final Disposable d) {
+  1017			//Disposable x = d;
+  1018			//NotImplementedException.raise();
+  1019		}
+       
+  1020		@Override
+  1021		public void onNext(@NonNull final CompilerInstructions aCompilerInstructions) {
+  1022			l.add(aCompilerInstructions);
+  1023		}
+       
+  1024		@Override
+  1025		public void onError(@NonNull final Throwable e) {
+  1026			NotImplementedException.raise();
+  1027		}
+       
+  1028		@Override
+  1029		public void onComplete() {
+  1030			throw new RuntimeException();
+  1031		}
+       
+  1032		public void almostComplete() {
+  1033			try {
+  1034				compilation.hasInstructions(l, compilation.do_out, op);
+  1035			} catch (Exception aE) {
+  1036				NotImplementedException.raise();
+  1037				throw new RuntimeException(aE);
+  1038			}
+  1039		}
+  1040	}
+  1041	-------------------------------------
+       
+  1042	2022-10-01 06:18               DeducePipeline.java                Page 1
+       
+       
+  1043	/*
+  1044	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  1045	 *
+  1046	 * The contents of this library are released under the LGPL licence v3,
+  1047	 * the GNU Lesser General Public License text was downloaded from
+  1048	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  1049	 *
+  1050	 */
+  1051	package tripleo.elijah.comp;
+       
+  1052	import org.jdeferred2.DoneCallback;
+  1053	import org.jdeferred2.impl.DeferredObject;
+  1054	import org.jetbrains.annotations.NotNull;
+  1055	import tripleo.elijah.stages.deduce.pipeline_impl.DeducePipelineImpl;
+  1056	import tripleo.elijah.stages.gen_fn.EvaNode;
+       
+  1057	import java.util.List;
+  1058	import java.util.function.Consumer;
+  1059	import java.util.function.Supplier;
+  1060	import tripleo.elijah.stages.gen_generic.GenerateResult;
+  1061	import tripleo.elijah.util.NotImplementedException;
+       
+  1062	/**
+  1063	 * Created 8/21/21 10:10 PM
+  1064	 */
+  1065	public class DeducePipeline implements PipelineMember, Consumer<Supplier<GenerateResult>> {
+  1066		protected void logProgress(final String g) {
+  1067			System.err.println(g);
+  1068		}
+       
+  1069		private final DeducePipelineImpl impl;
+       
+  1070		public DeducePipeline(final @NotNull ICompilationAccess aCa) {
+  1071			logProgress("***** Hit DeducePipeline constructor");
+  1072			impl = new DeducePipelineImpl(aCa.getCompilation());
+  1073		}
+       
+  1074		@Override
+  1075		public void run() {
+  1076			logProgress("***** Hit DeducePipeline #run");
+  1077			impl.run();
+  1078		}
+       
+  1079		public void setPipelineLogic(final PipelineLogic aPipelineLogic) {
+  1080			logProgress("***** Hit DeducePipeline #setPipeline");
+  1081			impl.setPipelineLogic(aPipelineLogic);
+  1082		}
+       
+  1083		public @NotNull List<GeneratedNode> lgc() {
+  1084			return impl.lgc; // almost caught myself java'ing and returning a Supplier (but how is this *not* correct?)
+  1085		}
+       
+  1086		@Override
+  1087		public void accept(final Supplier<GenerateResult> t) {
+  1088			NotImplementedException.raise();
+  1089		}
+       
+  1090		public void lgcp(final DoneCallback<List<GeneratedNode>> aListDoneCallback) {
+  1091			_lgcp.then(aListDoneCallback);
+  1092		}
+       
+  1093		private final DeferredObject<List<GeneratedNode>, Void, Void> _lgcp = new DeferredObject<>();
+  1094	}
+       
+  1095	//
+  1096	//
+  1097	//
+  1098	-------------------------------------
+       
+  1099	2022-09-26 18:17          DefaultCompilationAccess.java           Page 1
+       
+       
+  1100	package tripleo.elijah.comp;
+       
+  1101	import com.google.common.collect.ArrayListMultimap;
+  1102	import com.google.common.collect.Multimap;
+  1103	import io.reactivex.rxjava3.functions.Consumer;
+  1104	import org.jdeferred2.DoneCallback;
+  1105	import org.jetbrains.annotations.NotNull;
+  1106	import tripleo.elijah.comp.functionality.f202.F202;
+  1107	import tripleo.elijah.stages.deduce.FunctionMapHook;
+  1108	import tripleo.elijah.stages.gen_fn.DeferredObject2;
+  1109	import tripleo.elijah.stages.logging.ElLog;
+       
+  1110	import java.util.Collection;
+  1111	import java.util.List;
+  1112	import java.util.Map;
+       
+  1113	public class DefaultCompilationAccess implements ICompilationAccess {
+  1114		protected final Compilation                                compilation;
+  1115		private         DeferredObject2<PipelineLogic, Void, Void> pipelineLogicDeferred = new DeferredObject2<>();
+       
+  1116		public DefaultCompilationAccess(final Compilation aCompilation) {
+  1117			compilation = aCompilation;
+  1118		}
+       
+  1119		void registerPipelineLogic(final Consumer<PipelineLogic> aPipelineLogicConsumer) {
+  1120			pipelineLogicDeferred.then(new DoneCallback<PipelineLogic>() {
+  1121				@Override
+  1122				public void onDone(final PipelineLogic result) {
+  1123					try {
+  1124						aPipelineLogicConsumer.accept(result);
+  1125					} catch (Throwable aE) {
+  1126						throw new RuntimeException(aE);
+  1127					}
+  1128				}
+  1129			});
+  1130		}
+       
+  1131		@Override
+  1132		public void setPipelineLogic(final PipelineLogic pl) {
+  1133			compilation.pipelineLogic = pl;
+       
+  1134	//		pipelineLogicDeferred.resolve(pl);
+       
+  1135	//		compilation.pr.setGenerateResult(pl.gr);
+  1136		}
+       
+  1137		@Override
+  1138		public void addPipeline(final PipelineMember pl) {
+  1139			compilation.addPipeline(pl);
+  1140		}
+       
+  1141		@Override
+  1142		@NotNull
+  1143		public ElLog.Verbosity testSilence() {
+  1144			//final boolean isSilent = compilation.silent; // TODO No such thing. silent is a local var
+  1145			final boolean isSilent = false; // TODO fix this
+       
+  1146			return isSilent ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
+  1147		}
+       
+  1148		@Override
+  1149		public Compilation getCompilation() {
+  1150			return compilation;
+  1151		}
+       
+  1152		@Override
+  1153		public void writeLogs() {
+  1154			final boolean silent = testSilence() == ElLog.Verbosity.SILENT;
+       
+  1155			__writeLogs(silent, compilation.pipelineLogic.elLogs);
+  1156	-------------------------------------
+       
+  1157	2022-09-26 18:17          DefaultCompilationAccess.java           Page 2
+       
+       
+  1158		}
+       
+  1159		@Override
+  1160		public List<FunctionMapHook> functionMapHooks() {
+  1161			return compilation.pipelineLogic.dp.functionMapHooks;
+  1162		}
+       
+  1163		private void __writeLogs(boolean aSilent, List<ElLog> aLogs) {
+  1164			Multimap<String, ElLog> logMap = ArrayListMultimap.create();
+  1165			if (true || aSilent) {
+  1166				for (ElLog deduceLog : aLogs) {
+  1167					logMap.put(deduceLog.getFileName(), deduceLog);
+  1168				}
+  1169				for (Map.Entry<String, Collection<ElLog>> stringCollectionEntry : logMap.asMap().entrySet()) {
+  1170					final F202 f202 = new F202(compilation.getErrSink(), compilation);
+  1171					f202.processLogs(stringCollectionEntry.getValue());
+  1172				}
+  1173			}
+  1174		}
+  1175	}
+  1176	-------------------------------------
+       
+  1177	2022-09-16 15:32                   ErrSink.java                   Page 1
+       
+       
+  1178	/*
+  1179	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  1180	 * 
+  1181	 * The contents of this library are released under the LGPL licence v3, 
+  1182	 * the GNU Lesser General Public License text was downloaded from
+  1183	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  1184	 * 
+  1185	 */
+  1186	package tripleo.elijah.comp;
+       
+  1187	import tripleo.elijah.diagnostic.Diagnostic;
+       
+  1188	public interface ErrSink {
+  1189		
+  1190		void exception(Exception exception);
+       
+  1191	    /*@ ensures errorCount() == \old errorCount + 1*/
+  1192	    void reportError(String s);
+       
+  1193	    void reportWarning(String s);
+       
+  1194	    int errorCount();
+       
+  1195	    void info(String format);
+       
+  1196		void reportDiagnostic(Diagnostic diagnostic);
+       
+  1197		enum Errors {
+  1198	        ERROR, WARNING, INFO
+  1199	    }
+  1200	}
+       
+  1201	//
+  1202	//
+  1203	//
+  1204	-------------------------------------
+       
+  1205	2022-09-16 15:32                 FileOption.java                  Page 1
+       
+       
+  1206	/*
+  1207	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  1208	 * 
+  1209	 * The contents of this library are released under the LGPL licence v3, 
+  1210	 * the GNU Lesser General Public License text was downloaded from
+  1211	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  1212	 * 
+  1213	 */
+  1214	package tripleo.elijah.comp;
+       
+  1215	public enum FileOption  { READ, WRITE }
+       
+  1216	//
+  1217	//
+  1218	//
+  1219	-------------------------------------
+       
+  1220	2022-09-16 15:32                  GenBuffer.java                  Page 1
+       
+       
+  1221	/*
+  1222	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  1223	 * 
+  1224	 * The contents of this library are released under the LGPL licence v3, 
+  1225	 * the GNU Lesser General Public License text was downloaded from
+  1226	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  1227	 * 
+  1228	 */
+  1229	package tripleo.elijah.comp;
+       
+  1230	import tripleo.elijah.gen.CompilerContext;
+  1231	import tripleo.elijah.gen.nodes.ImportNode;
+  1232	import tripleo.elijah.gen.nodes.LocalDeclAgnNode;
+  1233	import tripleo.util.NotImplementedException;
+  1234	import tripleo.util.buffer.FileBackedBuffer;
+  1235	import tripleo.util.buffer.TextBuffer;
+       
+  1236	import java.io.FileOutputStream;
+  1237	import java.io.IOException;
+  1238	import java.util.HashMap;
+  1239	import java.util.Map;
+       
+  1240	public class GenBuffer {
+       
+  1241		private final Map<String, TextBuffer> hdr_bufs = new HashMap<String, TextBuffer>();
+  1242		private final Map<String, TextBuffer> reg_bufs = new HashMap<String, TextBuffer>();
+       
+  1243		public void GenImportStmt(final CompilerContext cctx, final ImportNode impn) {
+  1244			// TODO Auto-generated method stub
+  1245			NotImplementedException.raise();
+       
+  1246		}
+       
+  1247		public void InitMod(final CompilerContext cctx, final String string) {
+  1248			// TODO Auto-generated method stub
+  1249			NotImplementedException.raise();
+       
+  1250		}
+       
+  1251		public TextBuffer moduleBufHdr(final String module) {
+  1252	//		NotImplementedException.raise();
+  1253			if (hdr_bufs.containsKey(module)) {
+  1254				return hdr_bufs.get(module);
+  1255			} else {
+  1256				final TextBuffer buf = new FileBackedBuffer(module + ".h");
+  1257				hdr_bufs.put(module, buf);
+  1258				return buf;
+  1259			}
+  1260		}
+       
+  1261		public TextBuffer moduleBufImpl(final String module) {
+  1262			// TODO Auto-generated method stub
+  1263	//		NotImplementedException.raise();
+  1264			if (reg_bufs.containsKey(module)) {
+  1265				return reg_bufs.get(module);
+  1266			} else {
+  1267				final TextBuffer buf = new FileBackedBuffer(module + ".c");
+  1268				reg_bufs.put(module, buf);
+  1269				return buf;
+  1270			}
+  1271		}
+       
+  1272	//	public CodeGen getCodeGen() {
+  1273	//		// TODO Auto-generated method stub
+  1274	//		return new CodeGen() {
+  1275	//
+  1276	//			@Override
+  1277	//			public void appendHeader(String module, String build) {
+  1278	//				// TODO Auto-generated method stub
+  1279	//				super.appendHeader(module, build);
+  1280	-------------------------------------
+       
+  1281	2022-09-16 15:32                  GenBuffer.java                  Page 2
+       
+       
+  1282	//			}
+  1283	//
+  1284	//		};
+  1285	//	}
+  1286		
+  1287		public void writeBuffers() throws IOException {
+  1288			for (final Map.Entry<String, TextBuffer> entry : reg_bufs.entrySet()) {
+  1289				final String module = entry.getKey();
+  1290				final TextBuffer build  = entry.getValue();
+  1291				//
+  1292				final FileOutputStream fileOutputStream;
+  1293				fileOutputStream = new FileOutputStream(module + ".c", true); // append
+  1294				final String buildText = build.getText();
+  1295				fileOutputStream.write(buildText.getBytes());
+  1296				fileOutputStream.close();
+  1297				
+  1298			}
+  1299		}
+       
+  1300		public void GenLocalDeclAgn(final CompilerContext cctx, final LocalDeclAgnNode ldan1) {
+  1301			// TODO Auto-generated method stub
+  1302			NotImplementedException.raise();
+  1303		}
+       
+  1304		public void GenLocalAgn(final CompilerContext cctx, final LocalDeclAgnNode ldan_f1) {
+  1305			// TODO Auto-generated method stub
+  1306			NotImplementedException.raise();
+  1307		}
+  1308	}
+       
+  1309	//
+  1310	//
+  1311	//
+  1312	-------------------------------------
+       
+  1313	2022-09-30 16:42              GeneratePipeline.java               Page 1
+       
+       
+  1314	/*
+  1315	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  1316	 *
+  1317	 * The contents of this library are released under the LGPL licence v3,
+  1318	 * the GNU Lesser General Public License text was downloaded from
+  1319	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  1320	 *
+  1321	 */
+  1322	package tripleo.elijah.comp;
+       
+  1323	import java.util.List;
+  1324	import java.util.function.Consumer;
+  1325	import java.util.function.Supplier;
+       
+  1326	import org.jdeferred2.DoneCallback;
+  1327	import org.jetbrains.annotations.Contract;
+  1328	import org.jetbrains.annotations.NotNull;
+  1329	import tripleo.elijah.stages.gen_fn.EvaNode;
+  1330	import tripleo.elijah.stages.gen_generic.GenerateResult;
+  1331	import tripleo.elijah.util.NotImplementedException;
+       
+  1332	/**
+  1333	 * Created 8/21/21 10:16 PM
+  1334	 */
+  1335	public class GeneratePipeline implements PipelineMember, Consumer<Supplier<GenerateResult>> {
+  1336		private final Compilation    c;
+       
+  1337		@Contract(pure = true)
+  1338		public GeneratePipeline(Compilation aCompilation, @NotNull DeducePipeline aDpl) {
+  1339			c = aCompilation;
+       
+  1340			aDpl.lgcp(new DoneCallback<List<GeneratedNode>>() {
+  1341				@Override
+  1342				public void onDone(final List<GeneratedNode> result) {
+  1343					latch.set(result);
+  1344					latch.run();
+  1345				}
+  1346			});
+  1347		}
+       
+  1348		final private GPL latch = new GPL();
+       
+  1349		@Override
+  1350		public void run() {
+  1351			NotImplementedException.raise();
+  1352		}
+       
+  1353		@Override
+  1354		public void accept(Supplier<GenerateResult> t) {
+  1355			NotImplementedException.raise();
+  1356		}
+       
+  1357		private class GPL implements Runnable {
+  1358			private List<GeneratedNode> result;
+       
+  1359			@Contract(mutates = "this")
+  1360			public void set(final List<GeneratedNode> aResult) {
+  1361				result = aResult;
+  1362			}
+       
+  1363			@Override
+  1364			public void run() {
+  1365				c.pipelineLogic.generate(result);
+  1366			}
+  1367		}
+  1368	}
+       
+  1369	//
+  1370	//
+  1371	//
+  1372	-------------------------------------
+       
+  1373	2022-09-17 09:04             ICompilationAccess.java              Page 1
+       
+       
+  1374	package tripleo.elijah.comp;
+       
+  1375	import tripleo.elijah.stages.deduce.FunctionMapHook;
+  1376	import tripleo.elijah.stages.logging.ElLog;
+       
+  1377	import java.util.List;
+       
+  1378	public interface ICompilationAccess {
+  1379		void setPipelineLogic(final PipelineLogic pl);
+       
+  1380		void addPipeline(final PipelineMember pl);
+       
+  1381		ElLog.Verbosity testSilence();
+       
+  1382		Compilation getCompilation();
+       
+  1383		void writeLogs();
+       
+  1384		List<FunctionMapHook> functionMapHooks();
+  1385	}
+  1386	-------------------------------------
+       
+  1387	2022-09-25 17:39          ILazyCompilerInstructions.java          Page 1
+       
+       
+  1388	package tripleo.elijah.comp;
+       
+  1389	import org.jetbrains.annotations.Contract;
+  1390	import org.jetbrains.annotations.NotNull;
+  1391	import tripleo.elijah.ci.CompilerInstructions;
+       
+  1392	import java.io.File;
+  1393	import java.util.Objects;
+       
+  1394	interface ILazyCompilerInstructions {
+  1395		@Contract(value = "_ -> new", pure = true)
+  1396		static @NotNull ILazyCompilerInstructions of(final CompilerInstructions aCompilerInstructions) {
+  1397			return new ILazyCompilerInstructions() {
+  1398				@Override
+  1399				public CompilerInstructions get() {
+  1400					return aCompilerInstructions;
+  1401				}
+  1402			};
+  1403		}
+       
+  1404		@Contract(value = "_, _ -> new", pure = true)
+  1405		static @NotNull ILazyCompilerInstructions of(final File aFile, final Compilation c) {
+  1406			return new ILazyCompilerInstructions() {
+  1407				@Override
+  1408				public CompilerInstructions get() {
+  1409					try {
+  1410						final @NotNull Operation<CompilerInstructions> parsed = c.parseEzFile(aFile);
+  1411						return Objects.requireNonNull(parsed).success();
+  1412					} catch (Exception aE) {
+  1413						throw new RuntimeException(aE); // TODO ugh
+  1414					}
+  1415				}
+  1416			};
+  1417		}
+       
+  1418		CompilerInstructions get();
+  1419	}
+  1420	-------------------------------------
+       
+  1421	2022-09-16 21:41                     IO.java                      Page 1
+       
+       
+  1422	/*
+  1423	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  1424	 * 
+  1425	 * The contents of this library are released under the LGPL licence v3, 
+  1426	 * the GNU Lesser General Public License text was downloaded from
+  1427	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  1428	 * 
+  1429	 */
+  1430	package tripleo.elijah.comp;
+       
+  1431	import org.jetbrains.annotations.NotNull;
+  1432	import tripleo.util.io.DisposableCharSink;
+  1433	import tripleo.util.io.CharSource;
+  1434	import tripleo.util.io.FileCharSink;
+       
+  1435	import java.io.File;
+  1436	import java.io.FileInputStream;
+  1437	import java.io.FileNotFoundException;
+  1438	import java.io.IOException;
+  1439	import java.io.InputStream;
+  1440	import java.nio.file.Files;
+  1441	import java.nio.file.Path;
+  1442	import java.util.ArrayList;
+  1443	import java.util.List;
+       
+  1444	public class IO {
+       
+  1445		// exists, delete, isType ....
+       
+  1446		final List<File> recordedreads  = new ArrayList<File>();
+  1447		final List<File> recordedwrites = new ArrayList<File>();
+  1448		
+  1449		public boolean recordedRead(final File file) {
+  1450			return recordedreads.contains(file);
+  1451		}
+       
+  1452		public boolean recordedWrite(final File file) {
+  1453			return recordedwrites.contains(file);
+  1454		}
+       
+  1455		public CharSource openRead(final Path p) {
+  1456			record(FileOption.READ, p);
+  1457			return null;
+  1458		}
+       
+  1459		public DisposableCharSink openWrite(final Path p) throws IOException {
+  1460			record(FileOption.WRITE, p);				
+  1461			return new FileCharSink(Files.newOutputStream(p));
+  1462		}
+       
+  1463		private void record(final FileOption read, @NotNull final Path p) {
+  1464			record(read, p.toFile());
+  1465		}
+       
+  1466		private void record(@NotNull final FileOption read, @NotNull final File file) {
+  1467			switch (read) {
+  1468				case WRITE:
+  1469					recordedwrites.add(file);
+  1470					break;
+  1471				case READ:
+  1472					recordedreads.add(file);
+  1473					break;
+  1474				default:
+  1475					throw new IllegalStateException("Cant be here");
+  1476			}
+  1477		}
+       
+  1478		public InputStream readFile(final File f) throws FileNotFoundException {
+  1479			record(FileOption.READ, f);
+  1480			return new FileInputStream(f);
+  1481	-------------------------------------
+       
+  1482	2022-09-16 21:41                     IO.java                      Page 2
+       
+       
+  1483		}
+  1484	}
+       
+  1485	//
+  1486	//
+  1487	//
+  1488	-------------------------------------
+       
+  1489	2022-09-26 11:46                ModuleBuilder.java                Page 1
+       
+       
+  1490	package tripleo.elijah.comp;
+       
+  1491	import tripleo.elijah.contexts.ModuleContext;
+  1492	import tripleo.elijah.lang.OS_Module;
+  1493	import tripleo.elijah.nextgen.query.Mode;
+       
+  1494	public class ModuleBuilder {
+  1495		//		private final Compilation compilation;
+  1496		private final OS_Module mod;
+  1497		private       boolean   _addToCompilation = false;
+  1498		private       String    _fn               = null;
+       
+  1499		public ModuleBuilder(Compilation aCompilation) {
+  1500	//			compilation = aCompilation;
+  1501			mod = new OS_Module();
+  1502			mod.setParent(aCompilation);
+  1503		}
+       
+  1504		public ModuleBuilder setContext() {
+  1505			final ModuleContext mctx = new ModuleContext(mod);
+  1506			mod.setContext(mctx);
+  1507			return this;
+  1508		}
+       
+  1509		public OS_Module build() {
+  1510			if (_addToCompilation) {
+  1511				if (_fn == null) throw new IllegalStateException("Filename not set in ModuleBuilder");
+  1512				mod.getCompilation().addModule(mod, _fn);
+  1513			}
+  1514			return mod;
+  1515		}
+       
+  1516		public ModuleBuilder withPrelude(String aPrelude) {
+  1517			final Operation2<OS_Module> p = mod.getCompilation().findPrelude(aPrelude);
+       
+  1518			assert p.mode() == Mode.SUCCESS;
+       
+  1519			mod.prelude = p.success();
+       
+  1520			return this;
+  1521		}
+       
+  1522		public ModuleBuilder withFileName(String aFn) {
+  1523			_fn = aFn;
+  1524			mod.setFileName(aFn);
+  1525			return this;
+  1526		}
+       
+  1527		public ModuleBuilder addToCompilation() {
+  1528			_addToCompilation = true;
+  1529			return this;
+  1530		}
+  1531	}
+  1532	-------------------------------------
+       
+  1533	2022-09-26 11:20                 Operation2.java                  Page 1
+       
+       
+  1534	package tripleo.elijah.comp;
+       
+  1535	import tripleo.elijah.diagnostic.Diagnostic;
+  1536	import tripleo.elijah.nextgen.query.Mode;
+       
+  1537	import static tripleo.elijah.nextgen.query.Mode.FAILURE;
+  1538	import static tripleo.elijah.nextgen.query.Mode.SUCCESS;
+       
+  1539	/**
+  1540	 * An emulation of Rust's Result type
+  1541	 *
+  1542	 * @param <T> the success type
+  1543	 */
+  1544	public class Operation2<T> {
+  1545		private final T          succ;
+  1546		private final Diagnostic exc;
+  1547		private final Mode       mode;
+       
+  1548		public Operation2(final T aSuccess, final Diagnostic aException, final Mode aMode) {
+  1549			succ = aSuccess;
+  1550			exc  = aException;
+  1551			mode = aMode;
+       
+  1552			assert succ != exc;
+  1553		}
+       
+  1554		public Mode mode() {
+  1555			return mode;
+  1556		}
+       
+  1557		public static <T> tripleo.elijah.comp.Operation2<T> failure(final Diagnostic aException) {
+  1558			final Operation2<T> op = new tripleo.elijah.comp.Operation2<>(null, aException, FAILURE);
+  1559			return op;
+  1560		}
+       
+  1561		public static <T> tripleo.elijah.comp.Operation2<T> success(final T aSuccess) {
+  1562			final Operation2<T> op = new tripleo.elijah.comp.Operation2<>(aSuccess, null, SUCCESS);
+  1563			return op;
+  1564		}
+       
+  1565		public T success() {
+  1566			return succ;
+  1567		}
+       
+  1568		public Diagnostic failure() {
+  1569			return exc;
+  1570		}
+  1571	}
+  1572	-------------------------------------
+       
+  1573	2022-09-26 18:17                  Operation.java                  Page 1
+       
+       
+  1574	package tripleo.elijah.comp;
+       
+  1575	import tripleo.elijah.diagnostic.Diagnostic;
+  1576	import tripleo.elijah.nextgen.query.Mode;
+       
+  1577	import static tripleo.elijah.nextgen.query.Mode.FAILURE;
+  1578	import static tripleo.elijah.nextgen.query.Mode.SUCCESS;
+       
+  1579	/**
+  1580	 * An emulation of Rust's Result type
+  1581	 *
+  1582	 * @param <T> the success type
+  1583	 */
+  1584	public class Operation<T> {
+  1585		private final T         succ;
+  1586		private final Exception exc;
+  1587		private final Mode      mode;
+       
+  1588		public Operation(final T aSuccess, final Exception aException, final Mode aMode) {
+  1589			succ = aSuccess;
+  1590			exc  = aException;
+  1591			mode = aMode;
+       
+  1592			assert succ != exc;
+  1593		}
+       
+  1594		public Mode mode() {
+  1595			return mode;
+  1596		}
+       
+  1597		public static <T> Operation<T> failure(final Exception aException) {
+  1598			final Operation<T> op = new Operation<>(null, aException, FAILURE);
+  1599			return op;
+  1600		}
+       
+  1601		public static <T> Operation<T> success(final T aSuccess) {
+  1602			final Operation<T> op = new Operation<>(aSuccess, null, SUCCESS);
+  1603			return op;
+  1604		}
+       
+  1605		public T success() {
+  1606			return succ;
+  1607		}
+       
+  1608		public Exception failure() {
+  1609			return exc;
+  1610		}
+  1611	}
+  1612	-------------------------------------
+       
+  1613	2022-09-29 19:01              OptionsProcessor.java               Page 1
+       
+       
+  1614	package tripleo.elijah.comp;
+       
+  1615	import java.util.List;
+       
+  1616	@FunctionalInterface
+  1617	public interface OptionsProcessor {
+  1618		String[] process(final Compilation c, final List<String> args) throws Exception;
+  1619	}
+  1620	-------------------------------------
+       
+  1621	2022-09-26 18:17                  Pipeline.java                   Page 1
+       
+       
+  1622	/*
+  1623	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  1624	 *
+  1625	 * The contents of this library are released under the LGPL licence v3,
+  1626	 * the GNU Lesser General Public License text was downloaded from
+  1627	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  1628	 *
+  1629	 */
+  1630	package tripleo.elijah.comp;
+       
+  1631	import java.util.ArrayList;
+  1632	import java.util.List;
+       
+  1633	/**
+  1634	 * Created 8/21/21 10:09 PM
+  1635	 */
+  1636	public class Pipeline {
+  1637		private List<PipelineMember> pls = new ArrayList<>();
+       
+  1638		public void add(PipelineMember aPipelineMember) {
+  1639			pls.add(aPipelineMember);
+  1640		}
+       
+  1641		public void run() throws Exception {
+  1642			for (final PipelineMember pl : pls) {
+  1643				pl.run();
+  1644			}
+  1645		}
+       
+  1646		public int size() {
+  1647			return pls.size();
+  1648		}
+  1649	}
+       
+  1650	//
+  1651	//
+  1652	//
+  1653	-------------------------------------
+       
+  1654	2022-09-29 18:18                PipelineLogic.java                Page 1
+       
+       
+  1655	/*
+  1656	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  1657	 *
+  1658	 * The contents of this library are released under the LGPL licence v3,
+  1659	 * the GNU Lesser General Public License text was downloaded from
+  1660	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  1661	 *
+  1662	 */
+  1663	package tripleo.elijah.comp;
+       
+  1664	import io.reactivex.rxjava3.core.Observer;
+  1665	import io.reactivex.rxjava3.disposables.Disposable;
+  1666	import java.util.ArrayList;
+  1667	import java.util.Collection;
+  1668	import java.util.LinkedList;
+  1669	import java.util.List;
+  1670	import org.checkerframework.checker.nullness.qual.Nullable;
+  1671	import org.jetbrains.annotations.NotNull;
+  1672	import tripleo.elijah.ci.CompilerInstructions;
+  1673	import tripleo.elijah.ci.LibraryStatementPart;
+  1674	import tripleo.elijah.entrypoints.EntryPoint;
+  1675	import tripleo.elijah.lang.OS_Module;
+  1676	import tripleo.elijah.stages.deduce.DeducePhase;
+  1677	import tripleo.elijah.stages.gen_fn.*;
+  1678	import tripleo.elijah.stages.gen_generic.GenerateFiles;
+  1679	import tripleo.elijah.stages.gen_generic.GenerateResult;
+  1680	import tripleo.elijah.stages.gen_generic.OutputFileFactory;
+  1681	import tripleo.elijah.stages.gen_generic.OutputFileFactoryParams;
+  1682	import tripleo.elijah.stages.logging.ElLog;
+  1683	import tripleo.elijah.util.NotImplementedException;
+  1684	import tripleo.elijah.work.WorkManager;
+       
+  1685	/**
+  1686	 * Created 12/30/20 2:14 AM
+  1687	 */
+  1688	public class PipelineLogic {
+  1689		public final  DeducePhase     dp;
+  1690		private final ElLog.Verbosity verbosity;
+  1691		public final  GeneratePhase   generatePhase;
+  1692		private final List<OS_Module> mods              = new ArrayList<OS_Module>();
+  1693		final GenerateResult  gr                = new GenerateResult();
+  1694		final List<ElLog>     elLogs            = new LinkedList<ElLog>();
+       
+  1695	/*
+  1696		public PipelineLogic(ElLog.Verbosity aVerbosity) {
+  1697			verbosity     = aVerbosity;
+  1698			generatePhase = new GeneratePhase(aVerbosity, this);
+  1699			dp            = new DeducePhase(generatePhase, this, verbosity, null);
+  1700		}
+  1701	*/
+       
+  1702		public PipelineLogic(final @NotNull ICompilationAccess aCa) {
+  1703			verbosity     = aCa.testSilence();
+  1704			generatePhase = new GeneratePhase(verbosity, this);
+  1705			dp            = new DeducePhase(generatePhase, this, verbosity, aCa);
+       
+  1706			aCa.setPipelineLogic(this);
+  1707		}
+       
+  1708		public final Observer<OS_Module> om = new Observer<OS_Module>() {
+  1709			@Override
+  1710			public void onSubscribe(Disposable d) {
+  1711				throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+  1712			}
+       
+  1713			@Override
+  1714			public void onNext(OS_Module mod) {
+  1715				NotImplementedException.raise();
+  1716				run2(mod, mod.entryPoints);
+  1717			}
+  1718	-------------------------------------
+       
+  1719	2022-09-29 18:18                PipelineLogic.java                Page 2
+       
+       
+       
+  1720			@Override
+  1721			public void onError(Throwable e) {
+  1722				throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+  1723			}
+       
+  1724			@Override
+  1725			public void onComplete() {
+  1726				NotImplementedException.raise();
+       
+  1727				dp.finish();
+       
+  1728	//			dp.generatedClasses.addAll(lgc);
+       
+  1729	//			elLogs = dp.deduceLogs;
+  1730			}
+  1731		};
+  1732		
+  1733		public void everythingBeforeGenerate(final List<GeneratedNode> lgc) {
+  1734			assert lgc.size() == 0;
+  1735			
+  1736			for (final OS_Module mod : mods) {
+  1737				om.onNext(mod);
+  1738			}
+  1739			
+  1740			om.onComplete();
+  1741		}
+       
+  1742		public void generate(List<GeneratedNode> lgc) {
+  1743			final WorkManager wm = new WorkManager();
+       
+  1744			for (final OS_Module mod : mods) {
+  1745				// README use any errSink, they should all be the same
+  1746				final ErrSink              errSink = mod.getCompilation().getErrSink();
+       
+  1747				final LibraryStatementPart lsp     = mod.getLsp();
+  1748				final CompilerInstructions ci      = lsp.getInstructions();
+  1749				final @Nullable String     lang    = ci.genLang();
+       
+  1750				final OutputFileFactoryParams params        = new OutputFileFactoryParams(mod, errSink, verbosity, this);
+  1751				final GenerateFiles           generateFiles = OutputFileFactory.create(lang, params);
+  1752				//final GenerateC               generateC     = new GenerateC(mod, errSink, verbosity, this);
+  1753				final GenerateResult          ggr           = run3(mod, lgc, wm, generateFiles);
+  1754				wm.drain();
+  1755				gr.results().addAll(ggr.results());
+  1756			}
+  1757		}
+       
+  1758		protected void run2(OS_Module mod, @NotNull List<EntryPoint> epl) {
+  1759			final GenerateFunctions gfm = getGenerateFunctions(mod);
+  1760			gfm.generateFromEntryPoints(epl, dp);
+       
+  1761	//		WorkManager wm = new WorkManager();
+  1762	//		WorkList wl = new WorkList();
+       
+  1763			DeducePhase.@NotNull GeneratedClasses lgc = dp.generatedClasses;
+  1764			List<GeneratedNode> resolved_nodes = new ArrayList<GeneratedNode>();
+       
+  1765			for (final GeneratedNode evaNode : lgc) {
+  1766				if (evaNode instanceof GNCoded) {
+  1767					final GNCoded coded = (GNCoded) evaNode;
+       
+  1768					switch (coded.getRole()) {
+  1769					case FUNCTION: {
+  1770	//					GeneratedFunction aEvaFunction = (GeneratedFunction) evaNode;
+  1771						if (coded.getCode() == 0)
+  1772							coded.setCode(mod.getCompilation().nextFunctionCode());
+  1773						break;
+  1774					}
+  1775					case CLASS: {
+  1776	-------------------------------------
+       
+  1777	2022-09-29 18:18                PipelineLogic.java                Page 3
+       
+       
+  1778						final GeneratedClass evaClass = (GeneratedClass) evaNode;
+  1779	//					if (evaClass.getCode() == 0)
+  1780	//						evaClass.setCode(mod.getCompilation().nextClassCode());
+  1781						for (GeneratedClass evaClass2 : evaClass.classMap.values()) {
+  1782							if (evaClass2.getCode() == 0)
+  1783								evaClass2.setCode(mod.getCompilation().nextClassCode());
+  1784						}
+  1785						for (GeneratedFunction aEvaFunction : evaClass.functionMap.values()) {
+  1786							for (IdentTableEntry identTableEntry : aEvaFunction.idte_list) {
+  1787								if (identTableEntry.isResolved()) {
+  1788									GeneratedNode node = identTableEntry.resolvedType();
+  1789									resolved_nodes.add(node);
+  1790								}
+  1791							}
+  1792						}
+  1793						break;
+  1794					}
+  1795					case NAMESPACE:
+  1796					{
+  1797						final GeneratedNamespace generatedNamespace = (GeneratedNamespace) evaNode;
+  1798						if (coded.getCode() == 0)
+  1799							coded.setCode(mod.getCompilation().nextClassCode());
+  1800						for (GeneratedClass evaClass : generatedNamespace.classMap.values()) {
+  1801							if (evaClass.getCode() == 0)
+  1802								evaClass.setCode(mod.getCompilation().nextClassCode());
+  1803						}
+  1804						for (GeneratedFunction aEvaFunction : generatedNamespace.functionMap.values()) {
+  1805							for (IdentTableEntry identTableEntry : aEvaFunction.idte_list) {
+  1806								if (identTableEntry.isResolved()) {
+  1807									GeneratedNode node = identTableEntry.resolvedType();
+  1808									resolved_nodes.add(node);
+  1809								}
+  1810							}
+  1811						}
+  1812						break;
+  1813					}
+  1814					default:
+  1815						throw new IllegalStateException("Unexpected value: " + coded.getRole());
+  1816					}
+       
+  1817				} else {
+  1818					throw new IllegalStateException("node must be coded");
+  1819				}
+  1820			}
+       
+  1821			for (final GeneratedNode evaNode : resolved_nodes) {
+  1822	/*
+  1823				if (evaNode instanceof GeneratedFunction) {
+  1824					GeneratedFunction aEvaFunction = (GeneratedFunction) evaNode;
+  1825					if (aEvaFunction.getCode() == 0)
+  1826						aEvaFunction.setCode(mod.getCompilation().nextFunctionCode());
+  1827				} else if (evaNode instanceof GeneratedClass) {
+  1828					final GeneratedClass evaClass = (GeneratedClass) evaNode;
+  1829					if (evaClass.getCode() == 0)
+  1830						evaClass.setCode(mod.getCompilation().nextClassCode());
+  1831				} else if (evaNode instanceof GeneratedNamespace) {
+  1832					final GeneratedNamespace generatedNamespace = (GeneratedNamespace) evaNode;
+  1833					if (generatedNamespace.getCode() == 0)
+  1834						generatedNamespace.setCode(mod.getCompilation().nextClassCode());
+  1835				}
+  1836	*/
+  1837				if (evaNode instanceof GNCoded) {
+  1838					final GNCoded coded = (GNCoded) evaNode;
+  1839					final int code;
+  1840					if (coded.getCode() == 0) {
+  1841						switch (coded.getRole()) {
+  1842						case FUNCTION:
+  1843							code = (mod.getCompilation().nextFunctionCode());
+  1844							break;
+  1845						case NAMESPACE:
+  1846	-------------------------------------
+       
+  1847	2022-09-29 18:18                PipelineLogic.java                Page 4
+       
+       
+  1848						case CLASS:
+  1849							code = mod.getCompilation().nextClassCode();
+  1850							break;
+  1851						default:
+  1852							throw new IllegalStateException("Invalid coded role");
+  1853						}
+  1854						coded.setCode(code);
+  1855					}
+  1856				} else
+  1857					throw new IllegalStateException("node is not coded");
+  1858			}
+       
+  1859			dp.deduceModule(mod, lgc, verbosity);
+       
+  1860			resolveCheck(lgc);
+       
+  1861	//		for (final GeneratedNode gn : lgf) {
+  1862	//			if (gn instanceof GeneratedFunction) {
+  1863	//				GeneratedFunction gf = (GeneratedFunction) gn;
+  1864	//				System.out.println("----------------------------------------------------------");
+  1865	//				System.out.println(gf.name());
+  1866	//				System.out.println("----------------------------------------------------------");
+  1867	//				GeneratedFunction.printTables(gf);
+  1868	//				System.out.println("----------------------------------------------------------");
+  1869	//			}
+  1870	//		}
+       
+  1871		}
+       
+  1872		@NotNull
+  1873		private GenerateFunctions getGenerateFunctions(OS_Module mod) {
+  1874			return generatePhase.getGenerateFunctions(mod);
+  1875		}
+       
+  1876		protected GenerateResult run3(OS_Module mod, @NotNull List<GeneratedNode> lgc, WorkManager wm, GenerateFiles ggc) {
+  1877			GenerateResult gr = new GenerateResult();
+       
+  1878			for (GeneratedNode evaNode : lgc) {
+  1879				if (evaNode.module() != mod) continue; // README curious
+       
+  1880				if (evaNode instanceof GeneratedContainerNC) {
+  1881					final GeneratedContainerNC nc = (GeneratedContainerNC) evaNode;
+       
+  1882					nc.generateCode(ggc, gr);
+  1883					if (nc instanceof GeneratedClass) {
+  1884						final GeneratedClass evaClass = (GeneratedClass) nc;
+       
+  1885						final @NotNull Collection<GeneratedNode> gn2 = GenerateFiles.constructors_to_list_of_generated_nodes(evaClass.constructors.values());
+  1886						GenerateResult gr3 = ggc.generateCode(gn2, wm);
+  1887						gr.additional(gr3);
+  1888					}
+  1889					final @NotNull Collection<GeneratedNode> gn1 = GenerateFiles.functions_to_list_of_generated_nodes(nc.functionMap.values());
+  1890					GenerateResult gr2 = ggc.generateCode(gn1, wm);
+  1891					gr.results().addAll(gr2.results());
+  1892					final @NotNull Collection<GeneratedNode> gn2 = GenerateFiles.classes_to_list_of_generated_nodes(nc.classMap.values());
+  1893					GenerateResult gr3 = ggc.generateCode(gn2, wm);
+  1894					gr.results().addAll(gr3.results());
+  1895				} else {
+  1896					System.out.println("2009 " + evaNode.getClass().getName());
+  1897				}
+  1898			}
+       
+  1899			return gr;
+  1900		}
+       
+  1901		public void addModule(OS_Module m) {
+  1902			mods.add(m);
+  1903		}
+       
+  1904		private void resolveCheck(DeducePhase.GeneratedClasses lgc) {
+  1905	-------------------------------------
+       
+  1906	2022-09-29 18:18                PipelineLogic.java                Page 5
+       
+       
+  1907			for (final GeneratedNode evaNode : lgc) {
+  1908				if (evaNode instanceof GeneratedFunction) {
+       
+  1909				} else if (evaNode instanceof GeneratedClass) {
+  1910	//				final GeneratedClass evaClass = (GeneratedClass) evaNode;
+  1911	//				for (GeneratedFunction aEvaFunction : evaClass.functionMap.values()) {
+  1912	//					for (IdentTableEntry identTableEntry : aEvaFunction.idte_list) {
+  1913	//						final IdentIA ia2 = new IdentIA(identTableEntry.getIndex(), aEvaFunction);
+  1914	//						final String s = aEvaFunction.getIdentIAPathNormal(ia2);
+  1915	//						if (identTableEntry/*.isResolved()*/.getStatus() == BaseTableEntry.Status.KNOWN) {
+  1916	////							GeneratedNode node = identTableEntry.resolved();
+  1917	////							resolved_nodes.add(node);
+  1918	//							System.out.println("91 Resolved IDENT "+ s);
+  1919	//						} else {
+  1920	////							assert identTableEntry.getStatus() == BaseTableEntry.Status.UNKNOWN;
+  1921	////							identTableEntry.setStatus(BaseTableEntry.Status.UNKNOWN, null);
+  1922	//							System.out.println("92 Unresolved IDENT "+ s);
+  1923	//						}
+  1924	//					}
+  1925	//				}
+  1926				} else if (evaNode instanceof GeneratedNamespace) {
+  1927	//				final GeneratedNamespace generatedNamespace = (GeneratedNamespace) evaNode;
+  1928	//				NamespaceStatement namespaceStatement = generatedNamespace.getNamespaceStatement();
+  1929	//				for (GeneratedFunction aEvaFunction : generatedNamespace.functionMap.values()) {
+  1930	//					for (IdentTableEntry identTableEntry : aEvaFunction.idte_list) {
+  1931	//						if (identTableEntry.isResolved()) {
+  1932	//							GeneratedNode node = identTableEntry.resolved();
+  1933	//							resolved_nodes.add(node);
+  1934	//						}
+  1935	//					}
+  1936	//				}
+  1937				}
+  1938			}
+  1939		}
+       
+  1940	/*
+  1941		public ElLog.Verbosity getVerbosity() {
+  1942			return verbosity; // ? ElLog.Verbosity.VERBOSE : ElLog.Verbosity.SILENT;
+  1943		}
+  1944	*/
+       
+  1945		public void addLog(ElLog aLog) {
+  1946			elLogs.add(aLog);
+  1947		}
+       
+  1948	}
+       
+  1949	//
+  1950	//
+  1951	//
+  1952	-------------------------------------
+       
+  1953	2022-09-16 15:32               PipelineMember.java                Page 1
+       
+       
+  1954	/*
+  1955	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  1956	 *
+  1957	 * The contents of this library are released under the LGPL licence v3,
+  1958	 * the GNU Lesser General Public License text was downloaded from
+  1959	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  1960	 *
+  1961	 */
+       
+  1962	package tripleo.elijah.comp;
+       
+  1963	/**
+  1964	 * Created 8/21/21 10:10 PM
+  1965	 */
+  1966	public interface PipelineMember {
+  1967		void run() throws Exception;
+  1968	}
+       
+  1969	//
+  1970	//
+  1971	//
+  1972	-------------------------------------
+       
+  1973	2022-09-30 13:21                ProcessRecord.java                Page 1
+       
+       
+  1974	package tripleo.elijah.comp;
+       
+  1975	import org.jdeferred2.Promise;
+  1976	import org.jdeferred2.impl.DeferredObject;
+  1977	import org.jetbrains.annotations.NotNull;
+  1978	import tripleo.elijah.stages.gen_generic.GenerateResult;
+       
+  1979	import java.util.function.Consumer;
+  1980	import java.util.function.Supplier;
+       
+  1981	public class ProcessRecord {
+  1982		public final  PipelineLogic                              pipelineLogic;
+  1983		final         DeducePipeline                             dpl;
+  1984		//private final ICompilationAccess                         ca;
+  1985		private       DeferredObject<GenerateResult, Void, Void> _pgr;
+       
+  1986		public ProcessRecord(final @NotNull ICompilationAccess ca0) {
+  1987			//ca            = ca0;
+       
+  1988			pipelineLogic = new PipelineLogic(ca0);
+  1989			dpl           = new DeducePipeline(ca0);
+  1990		}
+       
+  1991		public void writeLogs(final ICompilationAccess aCa) {
+  1992			final ICompilationAccess ca = aCa;
+       
+  1993			ca.getCompilation().stage.writeLogs(ca);
+  1994		}
+       
+  1995		public Promise<GenerateResult, Void, Void> generateResultPromise() {
+  1996			if (_pgr == null) {
+  1997				_pgr = new DeferredObject<>();
+  1998			}
+  1999			return _pgr;
+  2000		}
+       
+  2001		public void setGenerateResult(final GenerateResult gr) {
+  2002			_pgr.resolve(gr);
+  2003		}
+       
+  2004		public void consumeGenerateResult(final @NotNull Consumer<Supplier<GenerateResult>> csgr) {
+  2005			csgr.accept(() -> {
+  2006				final GenerateResult[] xx = new GenerateResult[1];
+  2007				generateResultPromise().then((x) -> xx[0] = x);
+  2008				return xx[0];
+  2009			});
+  2010		}
+  2011	}
+  2012	-------------------------------------
+       
+  2013	2022-09-25 16:38                   Stages.java                    Page 1
+       
+       
+  2014	package tripleo.elijah.comp;
+       
+  2015	import org.jetbrains.annotations.Contract;
+  2016	import tripleo.elijah.util.NotImplementedException;
+       
+  2017	enum Stages {
+  2018		E("E") {
+  2019			@Override
+  2020			public void writeLogs(final ICompilationAccess aCompilationAccess) {
+  2021				NotImplementedException.raise();
+  2022			}
+       
+  2023			@Override
+  2024			public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
+  2025				return new EmptyProcess(aCa, aPr);
+  2026			}
+  2027		},
+  2028		D("D") {
+  2029			@Override
+  2030			public void writeLogs(final ICompilationAccess aCompilationAccess) {
+  2031				aCompilationAccess.writeLogs();
+  2032			}
+       
+  2033			@Override
+  2034			public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
+  2035				return new DStageProcess(aCa, aPr);
+  2036			}
+  2037		},
+  2038		S("S") {
+  2039			@Override
+  2040			public void writeLogs(final ICompilationAccess aCompilationAccess) {
+  2041				aCompilationAccess.writeLogs();
+  2042			}
+       
+  2043			@Override
+  2044			public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
+  2045				throw new NotImplementedException();
+  2046			}
+  2047		},  // ??
+  2048		O("O") {
+  2049			@Override
+  2050			public void writeLogs(final ICompilationAccess aCompilationAccess) {
+  2051				aCompilationAccess.writeLogs();
+  2052			}
+       
+  2053			@Override
+  2054			public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
+  2055				return new OStageProcess(aCa, aPr);
+  2056			}
+  2057		}  // Output
+  2058		;
+       
+  2059		private final String s;
+       
+  2060		@Contract(pure = true)
+  2061		Stages(final String aO) {
+  2062			s = aO;
+  2063		}
+       
+  2064		public abstract void writeLogs(final ICompilationAccess aCompilationAccess);
+       
+  2065		public abstract RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr);
+  2066	}
+  2067	-------------------------------------
+       
+  2068	2022-09-16 21:41                 StdErrSink.java                  Page 1
+       
+       
+  2069	/*
+  2070	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  2071	 * 
+  2072	 * The contents of this library are released under the LGPL licence v3, 
+  2073	 * the GNU Lesser General Public License text was downloaded from
+  2074	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  2075	 * 
+  2076	 */
+  2077	/**
+  2078	 * Created Mar 25, 2019 at 3:00:39 PM
+  2079	 *
+  2080	 */
+  2081	package tripleo.elijah.comp;
+       
+  2082	import tripleo.elijah.diagnostic.Diagnostic;
+       
+  2083	/**
+  2084	 * @author tripleo(sb)
+  2085	 *
+  2086	 */
+  2087	public class StdErrSink implements ErrSink {
+       
+  2088		private int _errorCount;
+       
+  2089		@Override
+  2090		public void exception(final Exception e) {
+  2091			_errorCount++;
+  2092			System.err.println("exception: " + e);
+  2093			e.printStackTrace(System.err);
+  2094		}
+       
+  2095		@Override
+  2096		public void reportError(final String s) {
+  2097			_errorCount++;
+  2098			System.err.printf("ERROR: %s%n", s);
+  2099		}
+       
+  2100		@Override
+  2101		public void reportWarning(final String s) {
+  2102			System.err.printf("WARNING: %s%n", s);
+  2103		}
+       
+  2104		@Override
+  2105		public int errorCount() {
+  2106			return _errorCount;
+  2107		}
+       
+  2108		@Override
+  2109		public void info(final String message) {
+  2110			System.err.printf("INFO: %s%n", message);
+  2111		}
+       
+  2112		@Override
+  2113		public void reportDiagnostic(Diagnostic diagnostic) {
+  2114			if (diagnostic.severity() == Diagnostic.Severity.ERROR)
+  2115				_errorCount++;
+  2116			diagnostic.report(System.err);
+  2117		}
+  2118	}
+       
+  2119	//
+  2120	//
+  2121	//
+  2122	-------------------------------------
+       
+  2123	2022-09-27 03:49         UnknownExceptionDiagnostic.java          Page 1
+       
+       
+  2124	package tripleo.elijah.comp;
+       
+  2125	import org.jetbrains.annotations.NotNull;
+  2126	import tripleo.elijah.diagnostic.Diagnostic;
+  2127	import tripleo.elijah.diagnostic.Locatable;
+  2128	import tripleo.elijah.lang.OS_Module;
+       
+  2129	import java.io.PrintStream;
+  2130	import java.util.List;
+       
+  2131	class UnknownExceptionDiagnostic implements Diagnostic {
+  2132		private final Operation2<OS_Module> m;
+       
+  2133		public UnknownExceptionDiagnostic(final Operation2<OS_Module> aM) {
+  2134			m = aM;
+  2135		}
+       
+  2136		@Override
+  2137		public String code() {
+  2138			return "9002";
+  2139		}
+       
+  2140		@Override
+  2141		public Severity severity() {
+  2142			return Severity.ERROR;
+  2143		}
+       
+  2144		@Override
+  2145		public @NotNull Locatable primary() {
+  2146			return null;
+  2147		}
+       
+  2148		@Override
+  2149		public @NotNull List<Locatable> secondary() {
+  2150			return null;
+  2151		}
+       
+  2152		@Override
+  2153		public void report(final PrintStream stream) {
+  2154			stream.printf("%s Some error %s%n", code(), m.failure());
+  2155		}
+  2156	}
+  2157	-------------------------------------
+       
+  2158	2022-10-01 15:13             WriteMesonPipeline.java              Page 1
+       
+       
+  2159	/*
+  2160	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  2161	 *
+  2162	 * The contents of this library are released under the LGPL licence v3,
+  2163	 * the GNU Lesser General Public License text was downloaded from
+  2164	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  2165	 *
+  2166	 */
+  2167	package tripleo.elijah.comp;
+       
+  2168	import com.google.common.collect.Multimap;
+  2169	import org.jetbrains.annotations.NotNull;
+  2170	import org.jetbrains.annotations.Nullable;
+  2171	import tripleo.elijah.ci.CompilerInstructions;
+  2172	import tripleo.elijah.stages.gen_generic.DoubleLatch;
+  2173	import tripleo.elijah.stages.gen_generic.GenerateResult;
+  2174	import tripleo.util.io.CharSink;
+  2175	import tripleo.util.io.FileCharSink;
+       
+  2176	import java.io.IOException;
+  2177	import java.nio.file.FileSystems;
+  2178	import java.nio.file.Path;
+  2179	import java.util.Collection;
+  2180	import java.util.LinkedList;
+  2181	import java.util.List;
+  2182	import java.util.Set;
+  2183	import java.util.function.Consumer;
+  2184	import java.util.function.Supplier;
+  2185	import java.util.regex.Matcher;
+  2186	import java.util.regex.Pattern;
+  2187	import java.util.stream.Collectors;
+  2188	import org.jdeferred2.Promise;
+       
+  2189	import static tripleo.elijah.util.Helpers.List_of;
+  2190	import static tripleo.elijah.util.Helpers.String_join;
+  2191	import tripleo.elijah.util.NotImplementedException;
+       
+  2192	/**
+  2193	 * Created 9/13/21 11:58 PM
+  2194	 */
+  2195	public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Supplier<GenerateResult>> {
+  2196	//	private final File file_prefix;
+  2197	//	private final GenerateResult gr;
+       
+  2198		private final WritePipeline            writePipeline;
+  2199		private final Compilation              c;
+  2200		private       Supplier<GenerateResult> grs;
+       
+  2201		public WriteMesonPipeline(final Compilation aCompilation,
+  2202				final ProcessRecord ignoredAPr, 
+  2203				final @NotNull Promise<PipelineLogic, Void, Void> ppl,
+  2204				final WritePipeline aWritePipeline) {
+  2205			c = aCompilation;
+  2206	//		gr = aGr;
+  2207			writePipeline = aWritePipeline;
+       
+  2208	//		file_prefix = new File("COMP", c.getCompilationNumberString());
+       
+  2209			ppl.then((x) -> {
+  2210				final GenerateResult ignoredAGr;
+  2211				
+  2212				ignoredAGr = x.gr;
+       
+  2213				grs = () -> ignoredAGr;
+  2214			});
+  2215		}
+       
+  2216		DoubleLatch<Multimap<CompilerInstructions, String>> write_makefiles_latch = new DoubleLatch<>(this::write_makefiles_action);
+       
+  2217		private void write_makefiles_action(final Multimap<CompilerInstructions, String> lsp_outputs) {
+  2218	-------------------------------------
+       
+  2219	2022-10-01 15:13             WriteMesonPipeline.java              Page 2
+       
+       
+  2220			List<String> dep_dirs = new LinkedList<String>();
+       
+  2221			try {
+  2222				write_root(lsp_outputs, dep_dirs);
+       
+  2223				for (final CompilerInstructions compilerInstructions : lsp_outputs.keySet()) {
+  2224					int y=2;
+       
+  2225					final String sub_dir = compilerInstructions.getName();
+  2226					final Path   dpath   = getPath(sub_dir);
+       
+  2227					if (dpath.toFile().exists()) {
+  2228						write_lsp(lsp_outputs, compilerInstructions, sub_dir);
+  2229					}
+  2230				}
+       
+  2231				write_prelude();
+  2232			} catch (IOException aE) {
+  2233				throw new RuntimeException(aE);
+  2234			}
+       
+  2235		}
+       
+  2236		private Consumer<Multimap<CompilerInstructions, String>> _wmc;
+       
+  2237		public Consumer<Multimap<CompilerInstructions, String>> write_makefiles_consumer() {
+  2238			if (_wmc != null)
+  2239				return _wmc;
+       
+  2240			final Consumer<Multimap<CompilerInstructions, String>> consumer = (aCompilerInstructionsStringMultimap) -> {
+  2241				write_makefiles_latch.notify(aCompilerInstructionsStringMultimap);
+  2242			};
+       
+  2243			_wmc = consumer;
+       
+  2244			return _wmc;
+  2245		}
+       
+  2246		private void write_makefiles() {
+  2247			//Multimap<CompilerInstructions, String> lsp_outputs = writePipeline.getLspOutputs(); // TODO move this
+       
+  2248			//write_makefiles_latch.notify(lsp_outputs);
+  2249			write_makefiles_latch.notify(true);
+  2250		}
+       
+  2251		private void write_root(@NotNull Multimap<CompilerInstructions, String> lsp_outputs, List<String> aDep_dirs) throws IOException {
+  2252			CharSink root_file = c.getIO().openWrite(getPath("meson.build"));
+  2253			try {
+  2254				String project_name = c.getProjectName();
+  2255				String project_string = String.format("project('%s', 'c', version: '1.0.0', meson_version: '>= 0.48.0',)", project_name);
+  2256				root_file.accept(project_string);
+  2257				root_file.accept("\n");
+       
+  2258				for (CompilerInstructions compilerInstructions : lsp_outputs.keySet()) {
+  2259					String name = compilerInstructions.getName();
+  2260					final Path dpath = getPath(name);
+  2261					if (dpath.toFile().exists()) {
+  2262						String name_subdir_string = String.format("subdir('%s')\n", name);
+  2263						root_file.accept(name_subdir_string);
+  2264						aDep_dirs.add(name);
+  2265					}
+  2266				}
+  2267				aDep_dirs.add("Prelude");
+  2268	//			String prelude_string = String.format("subdir(\"Prelude_%s\")\n", /*c.defaultGenLang()*/"c");
+  2269				String prelude_string = "subdir('Prelude')\n";
+  2270				root_file.accept(prelude_string);
+       
+  2271	//			root_file.accept("\n");
+       
+  2272				String deps_names = String_join(", ", aDep_dirs.stream()
+  2273	-------------------------------------
+       
+  2274	2022-10-01 15:13             WriteMesonPipeline.java              Page 3
+       
+       
+  2275						.map(x -> String.format("%s", x)) // TODO _lib ??
+  2276						.collect(Collectors.toList()));
+  2277				root_file.accept(String.format("%s_bin = executable('%s', link_with: [ %s ], install: true)", project_name, project_name, deps_names)); // dependencies, include_directories
+  2278			} finally {
+  2279				((FileCharSink) root_file).close();
+  2280			}
+  2281		}
+       
+  2282		@NotNull
+  2283		private Path getPath(String aName) {
+  2284			return FileSystems.getDefault().getPath("COMP",
+  2285					c.getCompilationNumberString(),
+  2286					aName);
+  2287		}
+       
+  2288		private void write_lsp(@NotNull Multimap<CompilerInstructions, String> lsp_outputs, CompilerInstructions compilerInstructions, String aSub_dir) throws IOException {
+  2289			final Path path = FileSystems.getDefault().getPath("COMP",
+  2290					c.getCompilationNumberString(),
+  2291					aSub_dir,
+  2292					"meson.build");
+  2293			CharSink sub_file = c.getIO().openWrite(path);
+  2294			try {
+  2295				int yy = 2;
+  2296				Collection<String> files_ = lsp_outputs.get(compilerInstructions);
+  2297				Set<String> files = files_.stream()
+  2298						.filter(x -> x.endsWith(".c"))
+  2299						.map(x -> String.format("\t'%s',", pullFileName(x)))
+  2300						.collect(Collectors.toSet()); // TODO .toUnmodifiableSet -- language level 10
+  2301				sub_file.accept(String.format("%s_sources = files(\n%s\n)", aSub_dir, String_join("\n", files)));
+  2302				sub_file.accept("\n");
+  2303				sub_file.accept(String.format("%s = static_library('%s', %s_sources, install: false,)", aSub_dir, aSub_dir, aSub_dir)); // include_directories, dependencies: [],
+  2304				sub_file.accept("\n");
+  2305				sub_file.accept("\n");
+  2306				sub_file.accept(String.format("%s_dep = declare_dependency( link_with: %s )", aSub_dir, aSub_dir)); // include_directories
+  2307				sub_file.accept("\n");
+  2308			} finally {
+  2309				((FileCharSink) sub_file).close();
+  2310			}
+  2311		}
+       
+  2312		private void write_prelude() throws IOException {
+  2313			final Path ppath1 = getPath("Prelude");
+  2314			final Path ppath = ppath1.resolve("meson.build"); // Java is wierd
+       
+  2315			ppath.getParent().toFile().mkdirs(); // README just in case -- but should be unnecessary at this point
+       
+  2316			CharSink prel_file = c.getIO().openWrite(ppath);
+  2317			try {
+  2318	//			Collection<String> files_ = lsp_outputs.get(compilerInstructions);
+  2319				List<String> files = List_of("'Prelude.c'")/*files_.stream()
+  2320						.filter(x -> x.endsWith(".c"))
+  2321						.map(x -> String.format("\t'%s',", x))
+  2322						.collect(Collectors.toList())*/;
+  2323				prel_file.accept(String.format("Prelude_sources = files(\n%s\n)", String_join("\n", files)));
+  2324				prel_file.accept("\n");
+  2325				prel_file.accept("Prelude = static_library('Prelude', Prelude_sources, install: false,)"); // include_directories, dependencies: [],
+  2326				prel_file.accept("\n");
+  2327				prel_file.accept("\n");
+  2328				prel_file.accept(String.format("%s_dep = declare_dependency( link_with: %s )", "Prelude", "Prelude")); // include_directories
+  2329				prel_file.accept("\n");
+  2330			} finally {
+  2331				((FileCharSink) prel_file).close();
+  2332			}
+  2333		}
+       
+  2334		final Pattern pullPat = Pattern.compile("/[^/]+/(.+)");
+  2335		private @Nullable String pullFileName(String aFilename) {
+  2336			//return aFilename.substring(aFilename.lastIndexOf('/')+1);
+  2337			Matcher x = pullPat.matcher(aFilename);
+  2338			try {
+  2339	-------------------------------------
+       
+  2340	2022-10-01 15:13             WriteMesonPipeline.java              Page 4
+       
+       
+  2341				if (x.matches())
+  2342					return x.group(1);
+  2343			} catch (IllegalStateException aE) {
+  2344			}
+  2345			return null;
+  2346		}
+       
+  2347		@Override
+  2348		public void run() throws Exception {
+  2349			write_makefiles();
+  2350		}
+       
+  2351		@Override
+  2352		public void accept(final @NotNull Supplier<GenerateResult> aGenerateResultSupplier) {
+  2353			final GenerateResult gr = aGenerateResultSupplier.get();
+  2354			grs = aGenerateResultSupplier;
+  2355			int y=2;
+  2356		}
+       
+  2357		public Consumer<Supplier<GenerateResult>> consumer() {
+  2358			return new Consumer<Supplier<GenerateResult>>() {
+  2359				@Override
+  2360				public void accept(final Supplier<GenerateResult> aGenerateResultSupplier) {
+  2361					if (grs != null) {
+  2362						System.err.println("234 grs not null "+grs.getClass().getName());
+  2363						return;
+  2364					}
+       
+  2365					assert false;
+  2366					grs = aGenerateResultSupplier;
+  2367					//final GenerateResult gr = aGenerateResultSupplier.get();
+  2368				}
+  2369			};
+  2370		}
+  2371	}
+       
+  2372	//
+  2373	//
+  2374	//
+  2375	-------------------------------------
+       
+  2376	2022-10-01 15:01                WritePipeline.java                Page 1
+       
+       
+  2377	/*
+  2378	 * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
+  2379	 *
+  2380	 * The contents of this library are released under the LGPL licence v3,
+  2381	 * the GNU Lesser General Public License text was downloaded from
+  2382	 * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+  2383	 *
+  2384	 */
+  2385	package tripleo.elijah.comp;
+       
+  2386	import com.google.common.base.Preconditions;
+  2387	import com.google.common.collect.ArrayListMultimap;
+  2388	import com.google.common.collect.Multimap;
+  2389	import io.reactivex.rxjava3.annotations.NonNull;
+  2390	import io.reactivex.rxjava3.core.Observer;
+  2391	import io.reactivex.rxjava3.disposables.Disposable;
+  2392	import org.jdeferred2.DoneCallback;
+  2393	import org.jdeferred2.Promise;
+  2394	import org.jetbrains.annotations.Contract;
+  2395	import org.jetbrains.annotations.NotNull;
+  2396	import org.jetbrains.annotations.Nullable;
+  2397	import tripleo.elijah.ci.CompilerInstructions;
+  2398	import tripleo.elijah.stages.gen_c.CDependencyRef;
+  2399	import tripleo.elijah.stages.gen_c.OutputFileC;
+  2400	import tripleo.elijah.stages.gen_generic.*;
+  2401	import tripleo.elijah.stages.generate.ElSystem;
+  2402	import tripleo.elijah.stages.generate.OutputStrategy;
+  2403	import tripleo.elijah.util.Helpers;
+  2404	import tripleo.elijah.util.NotImplementedException;
+  2405	import tripleo.util.buffer.Buffer;
+  2406	import tripleo.util.buffer.DefaultBuffer;
+  2407	import tripleo.util.buffer.TextBuffer;
+  2408	import tripleo.util.io.DisposableCharSink;
+       
+  2409	import java.io.BufferedWriter;
+  2410	import java.io.File;
+  2411	import java.io.FileNotFoundException;
+  2412	import java.io.FileOutputStream;
+  2413	import java.io.IOException;
+  2414	import java.io.OutputStreamWriter;
+  2415	import java.io.PrintStream;
+  2416	import java.io.Writer;
+  2417	import java.nio.file.FileSystems;
+  2418	import java.nio.file.Path;
+  2419	import java.util.*;
+  2420	import java.util.concurrent.Executor;
+  2421	import java.util.function.Consumer;
+  2422	import java.util.function.Supplier;
+       
+  2423	/**
+  2424	 * Created 8/21/21 10:19 PM
+  2425	 */
+  2426	public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier<GenerateResult>> {
+  2427		private final CompletedItemsHandler               cih;
+  2428		private final WritePipelineSharedState            st;
+  2429		private final Promise<GenerateResult, Void, Void> prom;
+  2430		private Supplier<GenerateResult>                  grs;
+       
+  2431		public WritePipeline(final @NotNull Compilation aCompilation,
+  2432							 final @NotNull ProcessRecord aPr,
+  2433							 final @NotNull Promise<PipelineLogic, Void, Void> ppl) {
+  2434			st = new WritePipelineSharedState();
+       
+  2435			// given
+  2436			st.c = aCompilation;
+  2437			//st.setGr(aGr);
+       
+  2438			// computed
+  2439			st.file_prefix = new File("COMP", st.c.getCompilationNumberString());
+       
+  2440	-------------------------------------
+       
+  2441	2022-10-01 15:01                WritePipeline.java                Page 2
+       
+       
+  2442			// created
+  2443	/*
+  2444			// TODO should we be doing this? see below comment
+  2445			st.os = new OutputStrategy();
+  2446			st.os.per(OutputStrategy.Per.PER_CLASS); // TODO this needs to be configured per lsp
+  2447	*/
+       
+  2448			// state
+  2449			st.mmb         = ArrayListMultimap.create();
+  2450			st.lsp_outputs = ArrayListMultimap.create();
+       
+  2451			// ??
+  2452			st.sys = new ElSystem(false, st.c, this::createOutputStratgy);
+  2453	/*
+  2454			st.sys.verbose = false; // TODO flag? ie CompilationOptions
+  2455			st.sys.setCompilation(st.c);
+  2456			st.sys.setOutputStrategy(st.os);
+  2457	*/
+  2458	/*
+  2459			st.sys.generateOutputs(gr);
+  2460	*/
+       
+  2461			ppl.then((aPipelineLogic) -> {
+  2462				st.setGr(aPipelineLogic.gr);
+       
+  2463				//NotImplementedException.raise();
+  2464			});
+       
+  2465			cih = new CompletedItemsHandler(st);
+       
+  2466			//		pr.consumeGenerateResult(wpl.consumer());
+  2467			prom = aPr.generateResultPromise();
+  2468			prom.then(gr1 -> {
+  2469				NotImplementedException.raise();
+  2470				;
+  2471				Objects.requireNonNull(gr1);
+       
+  2472				// FIXME also setGr here ...
+       
+  2473				gr1.subscribeCompletedItems(cih.observer());
+  2474			});
+  2475			//st.gr.subscribeCompletedItems(cih.observer());
+       
+  2476			//new BlackHoleChannel().write("Stupidity and Bullshit");
+  2477		}
+       
+  2478		OutputStrategy createOutputStratgy() {
+  2479			final OutputStrategy os = new OutputStrategy();
+  2480			os.per(OutputStrategy.Per.PER_CLASS); // TODO this needs to be configured per lsp
+       
+  2481			return os;
+  2482		}
+       
+       
+  2483		@Override
+  2484		public void run() throws Exception {
+  2485	/*
+  2486			latch = new Guard();
+       
+  2487			final Guard[] guards = {latch, hasGr};
+       
+  2488			int which = new Alternative(guards)
+  2489					.select();
+  2490	*/
+       
+  2491			final GenerateResult rs = grs.get();
+       
+  2492			prom.then((final GenerateResult result) -> {
+  2493				__int__steps(result, rs);
+  2494			});
+  2495	-------------------------------------
+       
+  2496	2022-10-01 15:01                WritePipeline.java                Page 3
+       
+       
+  2497		}
+       
+  2498		private void __int__steps(final GenerateResult result, final GenerateResult rs) {
+  2499			//
+  2500			//
+  2501			//
+       
+  2502			// 0. prepare to change to DoubleLatch instead of/an or in addition to Promise
+  2503			assert result == rs;
+       
+  2504			// 1. GenerateOutputs with ElSystem
+  2505			st.sys.generateOutputs(result);
+       
+  2506			// 2. make output directory
+  2507			// TODO check first
+  2508			boolean made = st.file_prefix.mkdirs();
+       
+  2509			// 3. write inputs
+  2510			// TODO ... 1/ output(s) per input and 2/ exceptions ... and 3/ plan
+  2511			//  "plan", effects; input(s), output(s)
+  2512			// TODO flag?
+  2513			try {
+  2514				write_inputs();
+  2515			} catch (IOException aE) {
+  2516				throw new RuntimeException(aE);
+  2517			}
+       
+  2518			// 4. write files
+  2519			try {
+  2520				write_files();
+  2521			} catch (IOException aE) {
+  2522				throw new RuntimeException(aE);
+  2523			}
+       
+  2524			// 5. write buffers
+  2525			// TODO flag?
+  2526			try {
+  2527				write_buffers();
+  2528			} catch (FileNotFoundException aE) {
+  2529				throw new RuntimeException(aE);
+  2530			}
+  2531		}
+       
+  2532	//	@Override
+  2533	//	public void accept(final Supplier<GenerateResult> aGenerateResultSupplier) {
+  2534	//		grs = aGenerateResultSupplier;
+  2535	//	}
+       
+  2536		//public class AltingBarrierGadget0 implements CSProcess {
+  2537		//	private final AltingChannelInput click;
+  2538		//	private final AltingBarrier      group;
+  2539		//	private final ChannelOutput      configure;
+  2540		//
+  2541		//	public AltingBarrierGadget0(
+  2542		//			AltingChannelInput click, AltingBarrier group, ChannelOutput configure
+  2543		//							   ) {
+  2544		//		this.click     = click;
+  2545		//		this.group     = group;
+  2546		//		this.configure = configure;
+  2547		//	}
+  2548		//
+  2549		//	@Override
+  2550		//	public void run() {
+  2551		//
+  2552		//		final Alternative clickGroup =
+  2553		//				new Alternative(new Guard[]{click, group});
+  2554		//
+  2555		//		final int CLICK = 0, GROUP = 1;
+  2556		//
+  2557		//		int n = 0;
+  2558	-------------------------------------
+       
+  2559	2022-10-01 15:01                WritePipeline.java                Page 4
+       
+       
+  2560		//		configure.write(String.valueOf(n));
+  2561		//
+  2562		//		while (true) {
+  2563		//
+  2564		//			configure.write(Color.green);                // pretty
+  2565		//
+  2566		//			while (!click.pending()) {                  // individual work mode
+  2567		//				n++;                                       // work on our own
+  2568		//				configure.write(String.valueOf(n));      // work on our own
+  2569		//			}
+  2570		//			click.read();                               // must consume the click
+  2571		//
+  2572		//			configure.write(Color.red);                 // pretty
+  2573		//
+  2574		//			boolean group = true;                        // group work mode
+  2575		//			while (group) {
+  2576		//				switch (clickGroup.priSelect()) {         // offer to work with the group
+  2577		//				case CLICK:
+  2578		//					click.read();                         // must consume the click
+  2579		//					group = false;                         // back to individual work mode
+  2580		//					break;
+  2581		//				case GROUP:
+  2582		//					n--;                                   // work with the group
+  2583		//					configure.write(String.valueOf(n));  // work with the group
+  2584		//					break;
+  2585		//				}
+  2586		//			}
+  2587		//
+  2588		//		}
+  2589		//
+  2590		//	}
+  2591		//
+  2592		//}
+       
+  2593		public void write_files() throws IOException {
+  2594			Multimap<String, Buffer> mb = ArrayListMultimap.create();
+       
+  2595			final List<GenerateResultItem> generateResultItems = st.getGr().results();
+       
+  2596			prom.then(new DoneCallback<GenerateResult>() {
+  2597				@Override
+  2598				public void onDone(final GenerateResult result) {
+  2599	/*
+  2600					for (final GenerateResultItem ab : generateResultItems) {
+  2601						mb.put(((CDependencyRef) ab.getDependency().getRef()).getHeaderFile(), ab.buffer); // TODO see above
+  2602					}
+       
+  2603					assert st.mmb.equals(mb);
+  2604	*/
+       
+  2605					try {
+  2606						final String prefix = st.file_prefix.toString();
+       
+  2607						for (final Map.Entry<String, Collection<Buffer>> entry : mb.asMap().entrySet()) {
+  2608							final String                       key = entry.getKey();
+  2609							final Supplier<Collection<Buffer>> e   = entry::getValue;
+       
+  2610							write_files_helper_each(prefix, key, e);
+  2611						}
+  2612					} catch (Exception aE) {
+  2613						throw new RuntimeException(aE);
+  2614					}
+  2615				}
+       
+  2616				@Contract("_, null, _ -> fail")
+  2617				private void write_files_helper_each(final String prefix,
+  2618													 final String key,
+  2619													 final @NotNull Supplier<Collection<Buffer>> e) throws Exception {
+  2620					assert key != null;
+       
+  2621	-------------------------------------
+       
+  2622	2022-10-01 15:01                WritePipeline.java                Page 5
+       
+       
+  2623					final Path path = FileSystems.getDefault().getPath(prefix, key);
+  2624					// final BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
+       
+  2625					path.getParent().toFile().mkdirs();
+       
+  2626					// TODO functionality
+  2627					System.out.println("201 Writing path: " + path);
+  2628					try (final DisposableCharSink fileCharSink = st.c.getIO().openWrite(path)) {
+  2629						for (final Buffer buffer : e.get()) {
+  2630							fileCharSink.accept(buffer.getText());
+  2631						}
+  2632					}
+  2633				}
+  2634			});
+       
+  2635	/*
+  2636			for (final GenerateResultItem ab : generateResultItems) {
+  2637				mb.put(((CDependencyRef) ab.getDependency().getRef()).getHeaderFile(), ab.buffer); // TODO see above
+  2638			}
+       
+  2639			assert st.mmb.equals(mb);
+       
+  2640			write_files_helper(mb);
+  2641	*/
+  2642		}
+       
+  2643	/*
+  2644		private void write_files_helper(@NotNull Multimap<String, Buffer> mb) throws IOException {
+  2645			String prefix = st.file_prefix.toString();
+       
+  2646			for (Map.Entry<String, Collection<Buffer>> entry : mb.asMap().entrySet()) {
+  2647				final String key = entry.getKey();
+  2648				assert key != null;
+  2649				Path path = FileSystems.getDefault().getPath(prefix, key);
+  2650	//			BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
+       
+  2651				path.getParent().toFile().mkdirs();
+       
+  2652				// TODO functionality
+  2653				System.out.println("201 Writing path: " + path);
+  2654				CharSink x = st.c.getIO().openWrite(path);
+  2655				for (Buffer buffer : entry.getValue()) {
+  2656					x.accept(buffer.getText());
+  2657				}
+  2658				((FileCharSink) x).close();
+  2659			}
+  2660		}
+  2661	*/
+       
+  2662		private void write_inputs() throws IOException {
+  2663			final String fn1 = new File(st.file_prefix, "inputs.txt").toString();
+       
+  2664			DefaultBuffer buf = new DefaultBuffer("");
+  2665	//			FileBackedBuffer buf = new FileBackedBuffer(fn1);
+  2666	//			for (OS_Module module : modules) {
+  2667	//				final String fn = module.getFileName();
+  2668	//
+  2669	//				append_hash(buf, fn);
+  2670	//			}
+  2671	//
+  2672	//			for (CompilerInstructions ci : cis) {
+  2673	//				final String fn = ci.getFilename();
+  2674	//
+  2675	//				append_hash(buf, fn);
+  2676	//			}
+  2677			for (File file : st.c.getIO().recordedreads) {
+  2678				final String fn = file.toString();
+       
+  2679				append_hash(buf, fn, st.c.getErrSink());
+  2680			}
+  2681	-------------------------------------
+       
+  2682	2022-10-01 15:01                WritePipeline.java                Page 6
+       
+       
+  2683			String s = buf.getText();
+  2684			Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn1, true)));
+  2685			w.write(s);
+  2686			w.close();
+  2687		}
+       
+  2688		static class HashBufferList extends DefaultBuffer {
+  2689			public HashBufferList(final String string) {
+  2690				super(string);
+  2691			}
+  2692		}
+       
+       
+  2693		/*
+  2694		 * intent: HashBuffer
+  2695		 *  - contains 3 sub-buffers: hash, space, and filename
+  2696		 *  - has all logic to update and present hash
+  2697		 *    - codec: MTL sha2 here
+  2698		 *    - encoding: reg or multihash (hint hint...)
+  2699		 */
+  2700		static class HashBuffer extends DefaultBuffer {
+  2701			private final HashBufferList parent;
+       
+  2702			public HashBuffer(final String string) {
+  2703				super(string);
+       
+  2704				parent = null;
+  2705			}
+       
+  2706			public HashBuffer(final String aFileName, final HashBufferList aHashBufferList, final Executor aExecutor, final ErrSink errSink) {
+  2707				super("");
+       
+  2708				String[] y = new String[1];
+  2709				DoubleLatch<String> dl = new DoubleLatch<>(aFilename -> {
+  2710					y[0] = aFilename;
+       
+  2711					final HashBuffer outputBuffer = this;
+       
+  2712					@Nullable final String hh;
+  2713					try {
+  2714						hh = Helpers.getHashForFilename(aFilename, errSink);
+  2715					} catch (IOException aE) {
+  2716						throw new RuntimeException(aE);
+  2717					}
+       
+  2718					if (hh != null) {
+  2719						outputBuffer.append(hh);
+  2720						outputBuffer.append(" ");
+  2721						outputBuffer.append_ln(aFilename);
+  2722					}
+  2723				});
+       
+  2724				dl.notify(aFileName);
+       
+  2725				parent = aHashBufferList;
+  2726				//parent.setNext(this);
+  2727			}
+  2728		}
+       
+  2729		private void append_hash(TextBuffer outputBuffer, String aFilename, ErrSink errSink) throws IOException {
+  2730			@Nullable final String hh = Helpers.getHashForFilename(aFilename, errSink);
+  2731			if (hh != null) {
+  2732				outputBuffer.append(hh);
+  2733				outputBuffer.append(" ");
+  2734				outputBuffer.append_ln(aFilename);
+  2735			}
+  2736		}
+       
+  2737		public void write_buffers() throws FileNotFoundException {
+  2738			st.file_prefix.mkdirs();
+  2739	-------------------------------------
+       
+  2740	2022-10-01 15:01                WritePipeline.java                Page 7
+       
+       
+       
+  2741			debug_buffers();
+  2742		}
+       
+  2743		private void debug_buffers() throws FileNotFoundException {
+  2744			// TODO can/should this fail??
+       
+  2745			final List<GenerateResultItem> generateResultItems1 = st.getGr().results();
+       
+  2746			prom.then(new DoneCallback<GenerateResult>() {
+  2747				@Override
+  2748				public void onDone(final GenerateResult result) {
+  2749					PrintStream db_stream = null;
+       
+  2750					try {
+  2751						final File file = new File(st.file_prefix, "buffers.txt");
+  2752						db_stream = new PrintStream(file);
+       
+  2753						final List<GenerateResultItem> generateResultItems = result.results();
+       
+  2754						for (final GenerateResultItem ab : generateResultItems) {
+  2755							db_stream.println("---------------------------------------------------------------");
+  2756							db_stream.println(ab.counter);
+  2757							db_stream.println(ab.ty);
+  2758							db_stream.println(ab.output);
+  2759							db_stream.println(ab.node.identityString());
+  2760							db_stream.println(ab.buffer.getText());
+  2761							db_stream.println("---------------------------------------------------------------");
+  2762						}
+  2763					} catch (FileNotFoundException aE) {
+  2764						throw new RuntimeException(aE);
+  2765					} finally {
+  2766						if (db_stream != null)
+  2767							db_stream.close();
+  2768					}
+  2769				}
+  2770			});
+  2771		}
+       
+  2772		@Override
+  2773		public void accept(final Supplier<GenerateResult> aGenerateResultSupplier) {
+  2774			final GenerateResult gr = aGenerateResultSupplier.get();
+  2775			grs = aGenerateResultSupplier;
+  2776			int y=2;
+  2777		}
+       
+  2778		public Consumer<Supplier<GenerateResult>> consumer() {
+  2779			return new Consumer<Supplier<GenerateResult>>() {
+  2780				@Override
+  2781				public void accept(final Supplier<GenerateResult> aGenerateResultSupplier) {
+  2782					grs = aGenerateResultSupplier;
+  2783					//final GenerateResult gr = aGenerateResultSupplier.get();
+  2784				}
+  2785			};
+  2786		}
+       
+  2787		/**
+  2788		 * Really a record, but state is not all set at once
+  2789		 */
+  2790		private final static class WritePipelineSharedState {
+  2791			//private @NotNull /*final*/ OutputStrategy os;
+  2792			private @NotNull /*final*/ ElSystem       sys;
+  2793			private @NotNull /*final*/ Multimap<CompilerInstructions, String> lsp_outputs;
+  2794			private /*final*/ @NotNull Compilation    c;
+  2795			private /*final*/ @NotNull GenerateResult gr;
+  2796			private /*final*/ @NotNull File file_prefix;
+  2797			private /*final*/ @NotNull Multimap<String, Buffer> mmb;
+       
+  2798			@Contract(pure = true)
+  2799			public @NotNull GenerateResult getGr() {
+  2800	-------------------------------------
+       
+  2801	2022-10-01 15:01                WritePipeline.java                Page 8
+       
+       
+  2802				return gr;
+  2803			}
+       
+  2804			@Contract(mutates = "this")
+  2805			public void setGr(final @NotNull GenerateResult aGr) {
+  2806				gr = aGr;
+  2807			}
+  2808		}
+       
+  2809		private static class CompletedItemsHandler {
+  2810			//private final Compilation c;
+  2811			//private final Multimap<String, Buffer> mmb;
+  2812			//private final Multimap<CompilerInstructions, String> lsp_outputs;
+  2813			//private final GenerateResult gr;
+  2814			//private final File file_prefix;
+       
+  2815			// region state
+  2816			final Multimap<Dependency, GenerateResultItem> gris = ArrayListMultimap.create();
+  2817			// README debugging purposes
+  2818			final List<GenerateResultItem> abs = new ArrayList<>();
+  2819			private final WritePipelineSharedState     sharedState;
+  2820			private       Observer<GenerateResultItem> observer;
+       
+  2821			public CompletedItemsHandler(final WritePipelineSharedState aSharedState) {
+  2822				sharedState = aSharedState;
+  2823			}
+       
+  2824			// endregion state
+       
+  2825			public void addItem(final @NotNull GenerateResultItem ab) {
+  2826				NotImplementedException.raise();
+       
+  2827				// README debugging purposes
+  2828				abs.add(ab);
+       
+  2829				final Dependency dependency = ab.getDependency();
+       
+  2830				// README debugging purposes
+  2831				final DependencyRef dependencyRef = dependency.getRef();
+       
+  2832				if (dependencyRef == null) {
+  2833					gris.put(dependency, ab);
+  2834				} else {
+  2835					final String output = ((CDependencyRef) dependency.getRef()).getHeaderFile();
+  2836					sharedState.mmb.put(output, ab.buffer);
+  2837					sharedState.lsp_outputs.put(ab.lsp.getInstructions(), output);
+  2838					for (GenerateResultItem generateResultItem : gris.get(dependency)) {
+  2839						final String output1 = generateResultItem.output;
+  2840						sharedState.mmb.put(output1, generateResultItem.buffer);
+  2841						sharedState.lsp_outputs.put(generateResultItem.lsp.getInstructions(), output1);
+  2842					}
+  2843					gris.removeAll(dependency);
+  2844				}
+  2845			}
+       
+  2846			@Contract(pure = true)
+  2847			public void completeSequence(int y) {
+  2848				NotImplementedException.raise();
+  2849			}
+       
+  2850			private void ___completeSequence(final @NotNull Map<String, OutputFileC> outputFiles) {
+  2851				final String         prefix         = sharedState.file_prefix.toString();
+       
+  2852				NotImplementedException.raise();
+       
+  2853				for (final Map.Entry<String, OutputFileC> entry : outputFiles.entrySet()) {
+  2854					final String key = entry.getKey();
+  2855					assert key != null;
+       
+  2856					final Path path = FileSystems.getDefault().getPath(prefix, key);
+  2857	-------------------------------------
+       
+  2858	2022-10-01 15:01                WritePipeline.java                Page 9
+       
+       
+       
+  2859					boolean made = path.getParent().toFile().mkdirs();
+       
+  2860					// TODO functionality
+  2861					System.out.println("201a Writing path: " + path);
+  2862					try (DisposableCharSink x = sharedState.c.getIO().openWrite(path)) {
+  2863						x.accept(entry.getValue().getOutput());
+       
+  2864						//((FileCharSink) x).close();
+  2865						//x.dispose(); // README close automatically because of try-with-resources
+  2866					} catch (Exception aE) {
+  2867						sharedState.c.getErrSink().exception(aE);
+  2868					}
+  2869				}
+  2870			}
+       
+  2871			public void completeSequence() {
+  2872				final @NotNull GenerateResult generateResult = sharedState.getGr();
+       
+  2873				generateResult.outputFiles(new Consumer<Map<String, OutputFileC>>() {
+  2874					@Override
+  2875					public void accept(final Map<String, OutputFileC> outputFiles) {
+  2876						___completeSequence(outputFiles);
+  2877					}
+  2878				});
+  2879			}
+       
+  2880			@Contract(mutates = "this")
+  2881			public Observer<GenerateResultItem> observer() {
+  2882				if (observer == null) {
+  2883					observer = new Observer<GenerateResultItem>() {
+  2884						@Override
+  2885						public void onSubscribe(@NonNull Disposable d) {
+  2886						}
+       
+  2887						@Override
+  2888						public void onNext(@NonNull GenerateResultItem ab) {
+  2889							addItem(ab);
+  2890						}
+       
+  2891						@Override
+  2892						public void onError(@NonNull Throwable e) {
+  2893						}
+       
+  2894						@Override
+  2895						public void onComplete() {
+  2896							completeSequence();
+  2897						}
+  2898					};
+  2899				}
+       
+  2900				return observer;
+  2901			}
+  2902		}
+  2903	}
+       
+  2904	//
+  2905	//
+  2906	//
+  2907	-------------------------------------

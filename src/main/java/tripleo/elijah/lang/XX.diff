@@ -1,0 +1,229 @@
+--- /home/olu/local/src/WORK/secondaryline/src/main/java/tripleo/elijah/lang/OS_Module.java	2023-02-21 10:37:52.068147191 -0500
++++ OS_Module.java	2022-09-16 21:41:59.000000000 -0400
+@@ -15,34 +15,39 @@
+ package tripleo.elijah.lang;
+ 
+ import antlr.Token;
++import com.google.common.base.Function;
+ import com.google.common.base.Predicate;
++import com.google.common.collect.ArrayListMultimap;
+ import com.google.common.collect.Collections2;
++import com.google.common.collect.Multimap;
+ import org.eclipse.jdt.annotation.Nullable;
+ import org.jetbrains.annotations.NotNull;
+ import tripleo.elijah.ci.LibraryStatementPart;
+ import tripleo.elijah.comp.Compilation;
+ import tripleo.elijah.contexts.ModuleContext;
+-import tripleo.elijah.entrypoints.EntryPointList;
++import tripleo.elijah.entrypoints.EntryPoint;
++import tripleo.elijah.entrypoints.MainClassEntryPoint;
+ import tripleo.elijah.lang2.ElElementVisitor;
+-import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
+-import tripleo.elijah.stages.deduce.fluffy.i.FluffyModule;
+ import tripleo.elijah.util.NotImplementedException;
+ 
+ import java.util.ArrayList;
+ import java.util.Collection;
++import java.util.HashSet;
+ import java.util.List;
++import java.util.Set;
+ import java.util.Stack;
+ 
+ public class OS_Module implements OS_Element, OS_Container {
+ 
+-	public final @NotNull                      List<ModuleItem>     items          = new ArrayList<ModuleItem>();
+-	public final @NotNull                      Attached             _a             = new Attached();
+-	public final @NotNull                      EntryPointList       entryPoints    = new EntryPointList();
+ 	private final                              Stack<Qualident>     packageNames_q = new Stack<Qualident>();
+-	public @org.jetbrains.annotations.Nullable OS_Module            prelude;
+-	public                                     Compilation          parent;
++	public @NotNull List<ModuleItem> items = new ArrayList<ModuleItem>();
++	public @NotNull Attached _a = new Attached();
++	public OS_Module prelude;
++
++	private Compilation parent;
+ 	private                                    LibraryStatementPart lsp;
+ 	private                                    String               _fileName;
++	public @NotNull List<EntryPoint> entryPoints = new ArrayList<EntryPoint>();
+ 	private                                    IndexingStatement    indexingStatement;
+ 
+ 	public @org.jetbrains.annotations.Nullable OS_Element findClass(final String aClassName) {
+@@ -85,7 +90,7 @@
+ 	public @NotNull List<OS_Element2> items() {
+ 		final Collection<ModuleItem> c = Collections2.filter(getItems(), new Predicate<ModuleItem>() {
+ 			@Override
+-			public boolean apply(@org.jetbrains.annotations.Nullable final ModuleItem input) {
++			public boolean apply(@org.checkerframework.checker.nullness.qual.Nullable final ModuleItem input) {
+ 				final boolean b = input instanceof OS_Element2;
+ 				return b;
+ 			}
+@@ -109,7 +114,7 @@
+ 
+ //	public void modify_namespace(Qualident q, NamespaceModify aModification) { // TODO aModification is unused
+ ////		NotImplementedException.raise();
+-//		tripleo.elijah.util.Stupidity.println_err2("[OS_Module#modify_namespace] " + q + " " + aModification);
++//		System.err.println("[OS_Module#modify_namespace] " + q + " " + aModification);
+ //		//
+ //		// DON'T MODIFY  NAMETABLE
+ //		//
+@@ -120,7 +125,7 @@
+ //
+ //	public void modify_namespace(ImportStatement imp, Qualident q, NamespaceModify aModification) { // TODO aModification is unused
+ ////		NotImplementedException.raise();
+-//		tripleo.elijah.util.Stupidity.println_err2("[OS_Module#modify_namespace] " + imp + " " + q + " " + aModification);
++//		System.err.println("[OS_Module#modify_namespace] " + imp + " " + q + " " + aModification);
+ ///*
+ //		getContext().add(imp, q); // TODO prolly wrong; do a second pass later to add definition...?
+ //*/
+@@ -162,11 +167,13 @@
+ 	@NotNull public OS_Package pullPackageName() {
+ 		if (packageNames_q.empty())
+ 			return OS_Package.default_package;
++		// Dont know if this is correct behavior
+ 		return parent.makePackage(packageNames_q.peek());
+ 	}
+ 
+-	public void pushPackageName(final Qualident xyz) {
+-		packageNames_q.push(xyz);
++	public OS_Package pushPackageNamed(final Qualident aPackageName) {
++		packageNames_q.push(aPackageName);
++		return parent.makePackage(aPackageName);
+ 	}
+ 
+ 	/**
+@@ -187,12 +194,96 @@
+ 	}
+ 
+ 	public void postConstruct() {
+-		final FluffyComp fc = getContext().module().getCompilation().getFluffy();
++		find_multiple_items();
++		//
++		// FIND ALL ENTRY POINTS (should only be one per module)
++		//
++		for (final ModuleItem item : items) {
++			if (item instanceof ClassStatement) {
++				ClassStatement classStatement = (ClassStatement) item;
++				if (MainClassEntryPoint.isMainClass(classStatement)) {
++					Collection<ClassItem> x = classStatement.findFunction("main");
++					Collection<ClassItem> found = Collections2.filter(x, new Predicate<ClassItem>() {
++						@Override
++						public boolean apply(@org.checkerframework.checker.nullness.qual.Nullable ClassItem input) {
++							assert input != null;
++							FunctionDef fd = (FunctionDef) input;
++							return MainClassEntryPoint.is_main_function_with_no_args(fd);
++						}
++					});
++//					Iterator<ClassStatement> zz = x.stream()
++//							.filter(ci -> ci instanceof FunctionDef)
++//							.filter(fd -> is_main_function_with_no_args((FunctionDef) fd))
++//							.map(found1 -> (ClassStatement) found1.getParent())
++//							.iterator();
++
++/*
++					List<ClassStatement> entrypoints_stream = x.stream()
++							.filter(ci -> ci instanceof FunctionDef)
++							.filter(fd -> is_main_function_with_no_args((FunctionDef) fd))
++							.map(found1 -> (ClassStatement) found1.getParent())
++							.collect(Collectors.toList());
++*/
++
++					final int eps = entryPoints.size();
++					for (ClassItem classItem : found) {
++						entryPoints.add(new MainClassEntryPoint((ClassStatement) classItem.getParent()));
++					}
++					assert entryPoints.size() == eps || entryPoints.size() == eps+1; // TODO this will fail one day
++
++					System.out.println("243 " + entryPoints +" "+ _fileName);
++//					break; // allow for "extend" class
++				}
++			}
++
++
++		}
++	}
+ 
+-		final FluffyModule fm = fc.module(this);
++	private void find_multiple_items() {
++		Multimap<String, ModuleItem> items_map = ArrayListMultimap.create(items.size(), 1);
++		for (final ModuleItem item : items) {
++			if (!(item instanceof OS_Element2/* && item != anElement*/))
++				continue;
++			final String item_name = ((OS_Element2) item).name();
++			items_map.put(item_name, item);
++		}
++		for (String key : items_map.keys()) {
++			boolean warn = false;
++
++			Collection<ModuleItem> moduleItems = items_map.get(key);
++			if (moduleItems.size() < 2) // README really 1
++				continue;
+ 
+-		fm.find_multiple_items(fc);
+-		fm.find_all_entry_points();
++			Collection<ElObjectType> t = Collections2.transform(moduleItems, new Function<ModuleItem, ElObjectType>() {
++				@Override
++				public ElObjectType apply(@org.checkerframework.checker.nullness.qual.Nullable ModuleItem input) {
++					assert input != null;
++					return DecideElObjectType.getElObjectType(input);
++				}
++			});
++
++			Set<ElObjectType> st = new HashSet<ElObjectType>(t);
++			if (st.size() > 1)
++				warn = true;
++			if (moduleItems.size() > 1)
++				if (moduleItems.iterator().next() instanceof NamespaceStatement && st.size() == 1)
++					;
++				else
++					warn = true;
++
++			//
++			//
++			//
++
++			if (warn) {
++				final String module_name = this.toString(); // TODO print module name or something
++				final String s = String.format(
++						"[Module#add] %s Already has a member by the name of %s",
++						module_name, key);
++				parent.getErrSink().reportWarning(s);
++			}
++		}
+ 	}
+ 
+ 	public void setContext(final ModuleContext mctx) {
+@@ -204,14 +295,10 @@
+ 		throw new NotImplementedException();
+ 	}
+ 
+-	public void remove(final ClassStatement cls) {
++	public void remove(ClassStatement cls) {
+ 		items.remove(cls);
+ 	}
+ 
+-	public void addIndexingStatement(final IndexingStatement indexingStatement) {
+-		this.indexingStatement = indexingStatement;
+-	}
+-
+ 	public boolean isPrelude() {
+ 		return prelude == this;
+ 	}
+@@ -220,13 +307,17 @@
+ 		return lsp;
+ 	}
+ 
+-	public void setLsp(final @NotNull LibraryStatementPart aLsp) {
++	public void setLsp(LibraryStatementPart aLsp) {
+ 		lsp = aLsp;
+ 	}
+ 
+ 	public Compilation getCompilation() {
+ 		return parent;
+ 	}
++
++	public void setIndexingStatement(final IndexingStatement i) {
++		indexingStatement = i;
++	}
+ }
+ 
+ //
