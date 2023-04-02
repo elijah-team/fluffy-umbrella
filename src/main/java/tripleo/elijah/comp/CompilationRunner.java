@@ -37,8 +37,8 @@ public class CompilationRunner {
 		cis         = a_cis;
 		cci         = new DefaultCCI(compilation, a_cis, new IProgressSink() {
 			@Override
-			public void note(final int aCode, final ProgressSinkComponent aCci, final int aType, final Object[] aParams) {
-				throw new Error();
+			public void note(final int aCode, final ProgressSinkComponent aProgressSinkComponent, final int aType, final Object[] aParams) {
+				System.err.println(aProgressSinkComponent.printErr(aCode, aType, aParams));
 			}
 		});
 	}
@@ -115,7 +115,13 @@ public class CompilationRunner {
 
 
 
-		final IProgressSink ps = cis.ps;
+		//final IProgressSink ps = cis.ps;
+		final IProgressSink ps = new IProgressSink() {
+			@Override
+			public void note(final int aCode, final ProgressSinkComponent aCci, final int aType, final Object[] aParams) {
+				System.err.println(aCci.printErr(aCode, aType, aParams));
+			}
+		};
 
 
 
