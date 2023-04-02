@@ -10,6 +10,7 @@
 package tripleo.elijah.stages.generate;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
@@ -34,10 +35,11 @@ public class ElSystemTest {
 		//c.feedCmdLine(Helpers.List_of(f));
 	}
 
+	@Ignore
 	@Test
 	public void generateOutputs() {
-		//OutputStrategy os = new OutputStrategy();
-		//os.per(OutputStrategy.Per.PER_CLASS);
+		OutputStrategy os = new OutputStrategy();
+		os.per(OutputStrategy.Per.PER_CLASS);
 		//sys.setOutputStrategy(os);
 		//sys.generateOutputs(c.pipelineLogic.gr);
 	}

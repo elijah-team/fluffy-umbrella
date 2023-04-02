@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.work;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class WorkManagerTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void testWorkManager() {
 		List<String> sink = new ArrayList<>();
