@@ -98,7 +98,7 @@ public class DeduceElement3_IdentTableEntry extends DefaultStateful implements I
 	}
 
 	public void assign_type_to_idte(final Context aFunctionContext, final Context aContext) {
-		throw new Error();
+		new ST.ExitGetType().assign_type_to_idte(principal, generatedFunction, aFunctionContext, aContext, deduceTypes2, deduceTypes2._phase());
 	}
 
 	public static class ST {

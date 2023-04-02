@@ -127,7 +127,7 @@ class Resolve_Variable_Table_Entry {
 		}
 	}
 
-	private void action_VAR_pot_1_tableEntry_null(final VariableStatement aVariableStatement) {
+	private void action_VAR_pot_1_tableEntry_null(final @NotNull VariableStatement aVariableStatement) {
 		final @NotNull IExpression iv = aVariableStatement.initialValue();
 		if (iv != IExpression.UNASSIGNED) {
 			if (iv instanceof ProcedureCallExpression) {
@@ -147,6 +147,9 @@ class Resolve_Variable_Table_Entry {
 						genCIForGenType2(genType);
 					}
 				}
+			} else if (iv instanceof IdentExpression) {
+				final String ident = ((IdentExpression) iv).getText();
+				int y=2;
 			} else
 				assert false;
 		} else

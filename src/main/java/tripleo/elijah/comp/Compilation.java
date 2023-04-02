@@ -320,11 +320,11 @@ public abstract class Compilation {
 
 					final OS_Module mm = om.success();
 
-					assert mm.getLsp() == null;
-					assert mm.prelude  == null;
-
-					mm.setLsp(lsp);
-					mm.prelude = pl.success();
+					if (mm.getLsp() == null) {
+						//assert mm.prelude  == null;
+						mm.setLsp(lsp);
+						mm.prelude = pl.success();
+					}
 
 					return Operation2.success(mm);
 				} else {

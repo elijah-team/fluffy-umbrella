@@ -628,17 +628,17 @@ public class DeduceTypes2 {
 						@Override
 						public void foundElement(final OS_Element e) {
 							found_element_for_ite(generatedFunction, idte, e, aContext);
+							assert idte.getResolvedElement() != null;
+							vte.addPotentialType(instruction.getIndex(), idte.type);
 						}
 
 						@Override
 						public void noFoundElement() {
 							// TODO: log error
+							int y=2;
 						}
 					});
 				}
-				assert idte.type != null;
-				assert idte.getResolvedElement() != null;
-				vte.addPotentialType(instruction.getIndex(), idte.type);
 			} else if (i2 instanceof ProcIA) {
 				throw new NotImplementedException();
 			} else
@@ -2300,7 +2300,7 @@ public class DeduceTypes2 {
 				assert false;
 			result = aResult;
 			satisfied = true;
-			LOG.info(String.format("Expectation (%s, %d)%s met: %s %s", DeduceTypes2.this, counter, satisfied_already, desc, base.expectationString()));
+////////			LOG.info(String.format("Expectation (%s, %d)%s met: %s %s", DeduceTypes2.this, counter, satisfied_already, desc, base.expectationString()));
 		}
 
 		public void fail() {
@@ -2317,7 +2317,7 @@ public class DeduceTypes2 {
 		public void setCounter(long aCounter) {
 			counter = aCounter;
 
-			LOG.info(String.format("Expectation (%s, %d) set: %s %s", DeduceTypes2.this, counter, desc, base.expectationString()));
+///////			LOG.info(String.format("Expectation (%s, %d) set: %s %s", DeduceTypes2.this, counter, desc, base.expectationString()));
 		}
 	}
 
