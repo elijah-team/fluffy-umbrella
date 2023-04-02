@@ -216,7 +216,7 @@ class OStageProcess implements RuntimeProcess {
 		
 		final Compilation        comp = ca.getCompilation();
 		
-		final DeducePipeline     dpl  = new DeducePipeline      (ca);
+		final DeducePipeline     dpl  = pr.dpl; //new DeducePipeline      (ca);
 		final GeneratePipeline   gpl  = new GeneratePipeline	(comp, dpl);
 		final WritePipeline      wpl  = new WritePipeline		(comp, pr, ppl);
 		final WriteMesonPipeline wmpl = new WriteMesonPipeline	(comp, pr, ppl, wpl);
