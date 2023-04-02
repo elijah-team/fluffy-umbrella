@@ -217,8 +217,8 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	}
 
 	@Override
-	public void generate_class(EvaClass x, GenerateResult gr) {
-		if (x.generatedAlready) return;
+	public void generate_class(EvaClass x, GenerateResult gr, final GeneratePipeline.GenerateResultSink aResultSink) {
+		if (x.generatedAlready) throw new Error();
 		switch (x.getKlass().getType()) {
 			// Don't generate class definition for these three
 			case INTERFACE:
@@ -313,8 +313,8 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	}
 
 	@Override
-	public void generate_namespace(EvaNamespace x, GenerateResult gr) {
-		if (x.generatedAlready) return;
+	public void generate_namespace(final EvaNamespace x, final GenerateResult gr, final GeneratePipeline.GenerateResultSink aResultSink) {
+		if (x.generatedAlready) throw new Error();
 		// TODO do we need `self' parameters for namespace?
 		final BufferTabbedOutputStream tosHdr = new BufferTabbedOutputStream();
 		final BufferTabbedOutputStream tos = new BufferTabbedOutputStream();
