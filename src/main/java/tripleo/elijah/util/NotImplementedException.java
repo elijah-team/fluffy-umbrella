@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Contract;
 public class NotImplementedException extends RuntimeException {
 public NotImplementedException() {
 	final int y=2;
-	System.err.println("Should not be here");
+	System.err.println("Should not be here 2");
 }
 
 @Contract(pure = true)
