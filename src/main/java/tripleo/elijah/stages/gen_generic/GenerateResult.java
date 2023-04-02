@@ -46,6 +46,24 @@ public class GenerateResult {
 	}
 
 	public void add(Buffer b, EvaNode n, TY ty, LibraryStatementPart aLsp, @NotNull Dependency d) {
+
+
+
+
+
+
+		if (aLsp == null) {
+			System.err.println("*************************** buffer --> "+b.getText());
+			return;
+		}
+
+
+
+
+
+
+
+
 		final GenerateResultItem item = new GenerateResultItem(ty, b, n, aLsp, d, ++bufferCounter);
 		_res.add(item);
 //		items.onNext(item);

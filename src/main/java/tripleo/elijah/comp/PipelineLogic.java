@@ -107,11 +107,23 @@ public class PipelineLogic {
 			final ErrSink              errSink = mod.getCompilation().getErrSink();
 
 			final LibraryStatementPart lsp     = mod.getLsp();
+
+
+
+
+
+
+			if (lsp == null) continue;
+
+
+
+
+
 			final CompilerInstructions ci      = lsp.getInstructions();
 			final @Nullable String     lang    = ci.genLang();
 
 			final OutputFileFactoryParams params        = new OutputFileFactoryParams(mod, errSink, verbosity, this);
-			final GenerateFiles           generateFiles = OutputFileFactory.create(lang, params);
+			final GenerateFiles           generateFiles = OutputFileFactory.create("c"/*lang*/, params);
 			//final GenerateC               generateC     = new GenerateC(mod, errSink, verbosity, this);
 			final GenerateResult          ggr           = run3(mod, lgc, wm, generateFiles);
 			wm.drain();
