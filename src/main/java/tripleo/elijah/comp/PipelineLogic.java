@@ -120,7 +120,31 @@ public class PipelineLogic {
 
 
 			final CompilerInstructions ci      = lsp.getInstructions();
-			final @Nullable String     lang    = ci.genLang();
+			final @Nullable String     lang2    = ci.genLang();
+
+
+
+
+
+
+
+
+
+
+
+
+			final @Nullable String     lang    = lang2==null?"c":lang2;
+
+
+
+
+
+
+
+
+
+
+
 
 			final OutputFileFactoryParams params        = new OutputFileFactoryParams(mod, errSink, verbosity, this);
 			final GenerateFiles           generateFiles = OutputFileFactory.create("c"/*lang*/, params);
