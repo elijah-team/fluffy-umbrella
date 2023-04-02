@@ -36,5 +36,6 @@
     <orderEntry type="library" name="picocontainer" level="project" />
     <orderEntry type="library" name="apache.commons.lang3" level="project" />
     <orderEntry type="library" name="net.java.dev.jna" level="project" />
+    <orderEntry type="library" name="easymock" level="project" />
   </component>
 </module>
