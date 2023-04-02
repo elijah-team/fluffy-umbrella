@@ -33,16 +33,19 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 			@Override
 			public void onDone(final List<EvaNode> a_lgc) {
 				latch.set(a_lgc);
-				latch.run();
+				//lp.then((x) -> latch.run());
 			}
 		});
 	}
+
+	//DeferredObject<Object, Void, Void> lp = new DeferredObject<>();
 
 	final private GPL latch = new GPL();
 
 	@Override
 	public void run() {
-		NotImplementedException.raise();
+		//lp.resolve(new Object());
+		latch.run();
 	}
 
 	@Override
