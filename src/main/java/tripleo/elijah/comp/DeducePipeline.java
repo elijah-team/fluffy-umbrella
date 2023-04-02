@@ -39,6 +39,8 @@ public class DeducePipeline implements PipelineMember, Consumer<Supplier<Generat
 	public void run() {
 		logProgress("***** Hit DeducePipeline #run");
 		impl.run();
+
+		lgcpdd(impl.lgc);
 	}
 
 	//public void setPipelineLogic(final PipelineLogic aPipelineLogic) {
