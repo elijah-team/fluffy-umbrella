@@ -14,8 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Type;
-import tripleo.elijah.lang.OS_UnknownType;
 import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.lang.types.OS_UnknownType;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 
 import java.util.HashMap;

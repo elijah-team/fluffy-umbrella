@@ -20,7 +20,7 @@ import tripleo.elijah.stages.deduce.FunctionInvocation;
 /**
  * Created 6/27/21 9:45 AM
  */
-public class EvaConstructor extends BaseGeneratedFunction {
+public class EvaConstructor extends BaseEvaFunction {
 	public final @Nullable ConstructorDef cd;
 
 	public EvaConstructor(final @Nullable ConstructorDef aConstructorDef) {

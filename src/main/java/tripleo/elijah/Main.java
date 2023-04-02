@@ -16,6 +16,7 @@ import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +53,7 @@ public class Main {
 
 		if (false) {
 			final StdErrSink errSink = new StdErrSink();
-			final Compilation cc = new Compilation(errSink, new IO());
+			final Compilation cc = new CompilationImpl(errSink, new IO());
 			final List<String> ls = new ArrayList<String>();
 			ls.addAll(Arrays.asList(args));
 

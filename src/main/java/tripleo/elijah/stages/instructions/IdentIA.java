@@ -10,10 +10,10 @@ package tripleo.elijah.stages.instructions;
 
 import org.jdeferred2.Promise;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.Constructable;
 import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
 
@@ -21,8 +21,8 @@ import tripleo.elijah.stages.gen_fn.ProcTableEntry;
  * Created 10/2/20 2:36 PM
  */
 public class IdentIA implements InstructionArgument, Constructable {
-	private final int id;
-	public final BaseGeneratedFunction gf;
+	private final int             id;
+	public final  BaseEvaFunction gf;
 //	private InstructionArgument prev;
 
 /*
@@ -32,7 +32,7 @@ public class IdentIA implements InstructionArgument, Constructable {
 	}
 */
 
-	public IdentIA(final int ite, final BaseGeneratedFunction generatedFunction) {
+	public IdentIA(final int ite, final BaseEvaFunction generatedFunction) {
 		this.gf = generatedFunction;
 		this.id = ite;
 	}
@@ -63,7 +63,7 @@ public class IdentIA implements InstructionArgument, Constructable {
 	}
 
 	@Override
-	public void resolveTypeToClass(GeneratedNode aNode) {
+	public void resolveTypeToClass(EvaNode aNode) {
 		getEntry().resolveTypeToClass(aNode);
 	}
 

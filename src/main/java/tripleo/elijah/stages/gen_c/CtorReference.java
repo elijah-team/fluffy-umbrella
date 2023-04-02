@@ -11,9 +11,9 @@ package tripleo.elijah.stages.gen_c;
 import tripleo.elijah.lang.ConstructorDef;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.deduce.ClassInvocation;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.EvaContainerNC;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
 import tripleo.elijah.stages.instructions.IdentIA;
@@ -36,13 +36,13 @@ public class CtorReference {
 	private String ctorName = "";
 	private List<String> args;
 	List<CReference.Reference> refs = new ArrayList<CReference.Reference>();
-	private GeneratedNode _resolved;
+	private EvaNode _resolved;
 
 	void addRef(String text, CReference.Ref type) {
 		refs.add(new CReference.Reference(text, type));
 	}
 
-	public void getConstructorPath(InstructionArgument ia2, BaseGeneratedFunction gf) {
+	public void getConstructorPath(InstructionArgument ia2, BaseEvaFunction gf) {
 		final List<InstructionArgument> s = CReference._getIdentIAPathList(ia2);
 
 		for (int i = 0, sSize = s.size(); i < sSize; i++) {
@@ -52,7 +52,7 @@ public class CtorReference {
 				assert i == 0;
 				final VariableTableEntry vte = gf.getVarTableEntry(to_int(ia));
 				if (sSize == 1) {
-					final GeneratedNode resolved = vte.type.resolved();
+					final EvaNode resolved = vte.type.resolved();
 					if (resolved != null) {
 						_resolved = resolved;
 					} else {

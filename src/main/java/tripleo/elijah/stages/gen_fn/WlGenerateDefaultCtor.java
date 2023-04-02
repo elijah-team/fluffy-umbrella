@@ -24,8 +24,8 @@ import tripleo.elijah.work.WorkManager;
 public class WlGenerateDefaultCtor implements WorkJob {
 	private final GenerateFunctions generateFunctions;
 	private final FunctionInvocation functionInvocation;
-	private boolean _isDone = false;
-	private BaseGeneratedFunction Result;
+	private boolean         _isDone = false;
+	private BaseEvaFunction Result;
 
 	@Contract(pure = true)
 	public WlGenerateDefaultCtor(@NotNull GenerateFunctions aGenerateFunctions, FunctionInvocation aFunctionInvocation) {
@@ -85,9 +85,9 @@ public class WlGenerateDefaultCtor implements WorkJob {
 			functionInvocation.setGenerated(gf);
 			Result = gf;
 		} else {
-			functionInvocation.generatePromise().then(new DoneCallback<BaseGeneratedFunction>() {
+			functionInvocation.generatePromise().then(new DoneCallback<BaseEvaFunction>() {
 				@Override
-				public void onDone(final BaseGeneratedFunction result) {
+				public void onDone(final BaseEvaFunction result) {
 					Result = result;
 				}
 			});
@@ -105,7 +105,7 @@ public class WlGenerateDefaultCtor implements WorkJob {
 		return _isDone;
 	}
 
-	public BaseGeneratedFunction getResult() {
+	public BaseEvaFunction getResult() {
 		return Result;
 	}
 }

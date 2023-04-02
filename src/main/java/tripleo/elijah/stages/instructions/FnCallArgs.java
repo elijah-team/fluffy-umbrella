@@ -13,7 +13,7 @@ import com.google.common.collect.Collections2;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
 import tripleo.elijah.stages.gen_fn.TypeTableEntry;
 import tripleo.elijah.util.Helpers;
@@ -25,9 +25,9 @@ import java.util.List;
  * Created 9/10/20 3:36 PM
  */
 public class FnCallArgs implements InstructionArgument {
-	public final Instruction expression_to_call;
-	private final @NotNull BaseGeneratedFunction gf;
-	private TypeTableEntry _type; // the return type of the function call
+	public final           Instruction     expression_to_call;
+	private final @NotNull BaseEvaFunction gf;
+	private                TypeTableEntry  _type; // the return type of the function call
 
 	@Override
 	public String toString() {
@@ -53,7 +53,7 @@ public class FnCallArgs implements InstructionArgument {
 
 	}
 
-	public FnCallArgs(final Instruction expression_to_call, final @NotNull BaseGeneratedFunction generatedFunction) {
+	public FnCallArgs(final Instruction expression_to_call, final @NotNull BaseEvaFunction generatedFunction) {
 		this.expression_to_call = expression_to_call;
 		this.gf = generatedFunction;
 	}

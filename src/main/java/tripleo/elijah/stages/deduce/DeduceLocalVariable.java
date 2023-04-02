@@ -13,6 +13,7 @@ import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_FuncType;
 import tripleo.elijah.stages.deduce.declarations.DeferredMemberFunction;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VariableTableEntry;
 import tripleo.elijah.stages.gen_fn.*;
@@ -33,8 +34,8 @@ public class DeduceLocalVariable {
 	private final VariableTableEntry variableTableEntry;
 	public DeferredObject2<GenType, Void, Void> type = new DeferredObject2();
 	private DeduceTypes2 deduceTypes2;
-	private Context context;
-	private BaseGeneratedFunction generatedFunction;
+	private Context         context;
+	private BaseEvaFunction generatedFunction;
 
 	private DeduceElement3_VariableTableEntry de3;
 
@@ -42,7 +43,7 @@ public class DeduceLocalVariable {
 		variableTableEntry = aVariableTableEntry;
 	}
 
-	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseGeneratedFunction aGeneratedFunction) {
+	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseEvaFunction aGeneratedFunction) {
 		deduceTypes2      = aDeduceTypes2;
 		context           = aContext;
 		generatedFunction = aGeneratedFunction;
@@ -182,7 +183,7 @@ public class DeduceLocalVariable {
 										final OS_FuncType resolved = (OS_FuncType) genType.resolved;
 										result.functionMapDeferred(((FunctionDef) resolved.getElement()), new FunctionMapDeferred() {
 											@Override
-											public void onNotify(final GeneratedFunction aGeneratedFunction) {
+											public void onNotify(final EvaFunction aGeneratedFunction) {
 												// TODO check args (hint functionInvocation.pte)
 												//  but against what? (vte *should* have callable_pte)
 												//  if not, then try potential types for a PCE
@@ -205,7 +206,7 @@ public class DeduceLocalVariable {
 		}
 	}
 
-	public void resolve_var_table_entry_potential_types_1(final @NotNull VariableTableEntry vte, final BaseGeneratedFunction generatedFunction) {
+	public void resolve_var_table_entry_potential_types_1(final @NotNull VariableTableEntry vte, final BaseEvaFunction generatedFunction) {
 		switch (vte.potentialTypes().size()) {
 		case 1:
 			final TypeTableEntry tte1 = vte.potentialTypes().iterator().next();
@@ -251,9 +252,9 @@ public class DeduceLocalVariable {
 
 	private void __pt_work_002(final @NotNull VariableTableEntry vte, final ProcTableEntry procTableEntry, final OS_Element Self) {
 		final @Nullable DeferredMemberFunction dm = deduceTypes2.deferred_member_function(Self, null, (BaseFunctionDef) procTableEntry.getResolvedElement(), procTableEntry.getFunctionInvocation());
-		dm.externalRef().then(new DoneCallback<BaseGeneratedFunction>() {
+		dm.externalRef().then(new DoneCallback<BaseEvaFunction>() {
 			@Override
-			public void onDone(final BaseGeneratedFunction result) {
+			public void onDone(final BaseEvaFunction result) {
 				NotImplementedException.raise();
 			}
 		});
@@ -274,7 +275,7 @@ public class DeduceLocalVariable {
 	}
 
 	@Nullable
-	private static OS_Element ___pt1_work_001(final BaseGeneratedFunction generatedFunction,
+	private static OS_Element ___pt1_work_001(final BaseEvaFunction generatedFunction,
 											  final @NotNull OS_Element e,
 											  final OS_Element self_class) {
 		final OS_Element Self;
@@ -352,9 +353,9 @@ public class DeduceLocalVariable {
 		}
 
 		final @Nullable DeferredMemberFunction dm              = deduceTypes2.deferred_member_function(Self, null, (BaseFunctionDef) resolvedElement0, procTableEntry.getFunctionInvocation());
-		dm.externalRef().then(new DoneCallback<BaseGeneratedFunction>() {
+		dm.externalRef().then(new DoneCallback<BaseEvaFunction>() {
 			@Override
-			public void onDone(final BaseGeneratedFunction result) {
+			public void onDone(final BaseEvaFunction result) {
 				NotImplementedException.raise();
 			}
 		});
@@ -375,7 +376,7 @@ public class DeduceLocalVariable {
 	}
 
 	@Nullable
-	private static OS_Element ___pt1_work_001b(final BaseGeneratedFunction generatedFunction,
+	private static OS_Element ___pt1_work_001b(final BaseEvaFunction generatedFunction,
 											   final @NotNull DeducePath dp,
 											   final OS_Element self_class,
 											   final Object[] aO) {

@@ -104,11 +104,11 @@ public class TypeTableEntry {
 		return index;
 	}
 
-	public void resolve(GeneratedNode aResolved) {
+	public void resolve(EvaNode aResolved) {
 		genType.node = aResolved;
 	}
 
-	public GeneratedNode resolved() {
+	public EvaNode resolved() {
 		return genType.node;
 	}
 

@@ -1,9 +1,10 @@
 package tripleo.elijah.comp;
 
 import org.jetbrains.annotations.Contract;
+import tripleo.elijah.comp.i.RuntimeProcess;
 import tripleo.elijah.util.NotImplementedException;
 
-enum Stages {
+public enum Stages {
 	E("E") {
 		@Override
 		public void writeLogs(final ICompilationAccess aCompilationAccess) {

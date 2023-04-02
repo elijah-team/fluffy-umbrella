@@ -45,13 +45,13 @@ public class GenerateResult {
 		return _res;
 	}
 
-	public void add(Buffer b, GeneratedNode n, TY ty, LibraryStatementPart aLsp, @NotNull Dependency d) {
+	public void add(Buffer b, EvaNode n, TY ty, LibraryStatementPart aLsp, @NotNull Dependency d) {
 		final GenerateResultItem item = new GenerateResultItem(ty, b, n, aLsp, d, ++bufferCounter);
 		_res.add(item);
 //		items.onNext(item);
 	}
 
-	public void addFunction(BaseGeneratedFunction aGeneratedFunction, Buffer aBuffer, TY aTY, LibraryStatementPart aLsp) {
+	public void addFunction(BaseEvaFunction aGeneratedFunction, Buffer aBuffer, TY aTY, LibraryStatementPart aLsp) {
 		add(aBuffer, aGeneratedFunction, aTY, aLsp, aGeneratedFunction.getDependency());
 	}
 

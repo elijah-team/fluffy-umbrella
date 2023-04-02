@@ -40,8 +40,8 @@ public abstract class EvaContainerNC extends AbstractDependencyTracker implement
 	private int code = 0;
 	private final Dependency dependency = new Dependency(this);
 
-	public Map<FunctionDef, GeneratedFunction> functionMap = new HashMap<FunctionDef, GeneratedFunction>();
-	public Map<ClassStatement, EvaClass>       classMap    = new HashMap<ClassStatement, EvaClass>();
+	public Map<FunctionDef, EvaFunction> functionMap = new HashMap<FunctionDef, EvaFunction>();
+	public Map<ClassStatement, EvaClass> classMap    = new HashMap<ClassStatement, EvaClass>();
 
 	public List<VarTableEntry> varTable = new ArrayList<VarTableEntry>();
 
@@ -93,7 +93,7 @@ public abstract class EvaContainerNC extends AbstractDependencyTracker implement
 		classMap.put(aClassStatement, aEvaClass);
 	}
 
-	public void addFunction(FunctionDef functionDef, GeneratedFunction generatedFunction) {
+	public void addFunction(FunctionDef functionDef, EvaFunction generatedFunction) {
 		if (functionMap.containsKey(functionDef))
 			throw new IllegalStateException("Function already generated"); // TODO there can be overloads, although we don't handle that yet
 		functionMap.put(functionDef, generatedFunction);
@@ -106,13 +106,13 @@ public abstract class EvaContainerNC extends AbstractDependencyTracker implement
 	}
 
 	/**
-	 * Get a {@link GeneratedFunction}
+	 * Get a {@link EvaFunction}
 	 *
 	 * @param fd the function searching for
 	 *
 	 * @return null if no such key exists
 	 */
-	public GeneratedFunction getFunction(FunctionDef fd) {
+	public EvaFunction getFunction(FunctionDef fd) {
 		return functionMap.get(fd);
 	}
 

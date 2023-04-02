@@ -5,13 +5,16 @@ import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
-import tripleo.elijah.stages.gen_fn.*;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
+import tripleo.elijah.stages.gen_fn.GenType;
+import tripleo.elijah.stages.gen_fn.IdentTableEntry;
+import tripleo.elijah.stages.gen_fn.VariableTableEntry;
 
 class DeduceType3 implements DED {
 	private final OS_Type         osType;
 	private final Diagnostic      diagnostic;
 	private final IDeduceElement3 deduceElement3;
-	private GenType _genType;
+	private       GenType         _genType;
 
 	public DeduceType3(final OS_Type aOSType, final Diagnostic aDiagnostic) {
 		deduceElement3 = null;
@@ -29,15 +32,15 @@ class DeduceType3 implements DED {
 		return aVariableTableEntry.getDeduceElement3();
 	}
 
-	public static IDeduceElement3 dispatch(final @NotNull IdentTableEntry aIdentTableEntry) {
-		return aIdentTableEntry.getDeduceElement3(null/*aDeduceTypes2*/, null/*aGeneratedFunction*/);
-	}
+//	public static IDeduceElement3 dispatch(final @NotNull IdentTableEntry aIdentTableEntry) {
+//		return aIdentTableEntry.getDeduceElement3(null/*aDeduceTypes2*/, null/*aGeneratedFunction*/);
+//	}
 
-	public static IDeduceElement3 dispatch(final @NotNull ConstantTableEntry aConstantTableEntry) {
-		return aConstantTableEntry.getDeduceElement3();
-	}
+//	public static IDeduceElement3 dispatch(final @NotNull ConstantTableEntry aConstantTableEntry) {
+//		return aConstantTableEntry.getDeduceElement3();
+//	}
 
-	public static IDeduceElement3 dispatch(final IdentTableEntry aIdentTableEntry, final DeduceTypes2 aDeduceTypes2, final BaseGeneratedFunction aGeneratedFunction) {
+	public static IDeduceElement3 dispatch(final IdentTableEntry aIdentTableEntry, final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aGeneratedFunction) {
 		return aIdentTableEntry.getDeduceElement3(aDeduceTypes2, aGeneratedFunction);
 	}
 
@@ -46,14 +49,14 @@ class DeduceType3 implements DED {
 		return Kind.DED_Kind_Type;
 	}
 
-	public boolean isException() {
-		return diagnostic != null;
-	}
-
 	public void reportDiagnostic(final @NotNull ErrSink aErrSink) {
 		assert isException();
 
 		aErrSink.reportDiagnostic(diagnostic);
+	}
+
+	public boolean isException() {
+		return diagnostic != null;
 	}
 
 	public GenType getGenType() {

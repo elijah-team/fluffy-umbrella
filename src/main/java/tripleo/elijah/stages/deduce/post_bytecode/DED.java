@@ -1,32 +1,33 @@
 package tripleo.elijah.stages.deduce.post_bytecode;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.stages.gen_fn.*;
 
 public interface DED {
 
-	static DED dispatch(ConstantTableEntry aCte) {
+	static DED dispatch(final ConstantTableEntry aCte) {
 		return new DED_CTE(aCte);
 	}
 
-	static DED dispatch(IdentTableEntry aIte) {
+	static DED dispatch(final IdentTableEntry aIte) {
 		return new DED_ITE(aIte);
 	}
 
-	static DED dispatch(VariableTableEntry aVte) {
+	static DED dispatch(final VariableTableEntry aVte) {
 		return new DED_VTE(aVte);
 	}
 
-	static DED dispatch(ProcTableEntry aPte) {
+	static DED dispatch(final ProcTableEntry aPte) {
 		return new DED_PTE(aPte);
 	}
 
-	static DED dispatch(TypeTableEntry aCte) {
+	static DED dispatch(final TypeTableEntry aCte) {
 		return new DED_TTE(aCte);
 	}
 
-	static DED dispatch(DeduceElement3_VarTableEntry aDeduceElement3_varTableEntry) {
-		return new DED_GC_VTE(aDeduceElement3_varTableEntry);
+	static DED dispatch(EvaContainer.VarTableEntry aPrincipal) {
+		throw new Error();
 	}
 
 	Kind kind();
@@ -44,20 +45,20 @@ public interface DED {
 			DED_Kind_GeneratedFunction,
 		 */
 		DED_Kind_Type,
-		DED_Kind_GC_VarTableEntry, DED_Kind_TypeTableEntry
+		DED_Kind_VarTableEntry, DED_Kind_TypeTableEntry
 	}
 
 	class DED_PTE implements DED {
 
 		private final ProcTableEntry principal;
 
-		public DED_PTE(ProcTableEntry aPte) {
+		public DED_PTE(final ProcTableEntry aPte) {
 			principal = aPte;
 		}
 
 		@Override
-		public Kind kind() {
-			throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		public @NotNull Kind kind() {
+			return Kind.DED_Kind_ProcTableEntry;
 		}
 
 	}
@@ -66,7 +67,7 @@ public interface DED {
 
 		private final TypeTableEntry principal;
 
-		public DED_TTE(TypeTableEntry aTte) {
+		public DED_TTE(final TypeTableEntry aTte) {
 			principal = aTte;
 		}
 
@@ -77,12 +78,27 @@ public interface DED {
 
 	}
 
+	class DED_VTE1 implements DED {
+
+		private final TypeTableEntry principal;
+
+		public DED_VTE1(final TypeTableEntry aTte) {
+			principal = aTte;
+		}
+
+		@Override
+		public Kind kind() {
+			return Kind.DED_Kind_VarTableEntry;
+		}
+
+	}
+
 	class DED_CTE implements DED {
 
 		private final ConstantTableEntry constantTableEntry;
 
 		@Contract(pure = true)
-		public DED_CTE(ConstantTableEntry aConstantTableEntry) {
+		public DED_CTE(final ConstantTableEntry aConstantTableEntry) {
 			constantTableEntry = aConstantTableEntry;
 		}
 
@@ -100,7 +116,7 @@ public interface DED {
 
 		private final IdentTableEntry identTableEntry;
 
-		public DED_ITE(IdentTableEntry aIdentTableEntry) {
+		public DED_ITE(final IdentTableEntry aIdentTableEntry) {
 			identTableEntry = aIdentTableEntry;
 		}
 
@@ -119,7 +135,7 @@ public interface DED {
 
 		private final VariableTableEntry variableTableEntry;
 
-		public DED_VTE(VariableTableEntry aVariableTableEntry) {
+		public DED_VTE(final VariableTableEntry aVariableTableEntry) {
 			variableTableEntry = aVariableTableEntry;
 		}
 
@@ -134,17 +150,4 @@ public interface DED {
 
 	}
 
-	class DED_GC_VTE implements DED {
-		private final DeduceElement3_VarTableEntry deduceElement3_varTableEntry;
-
-		@Contract(pure = true)
-		public DED_GC_VTE(final DeduceElement3_VarTableEntry aDeduceElement3_varTableEntry) {
-			deduceElement3_varTableEntry = aDeduceElement3_varTableEntry;
-		}
-
-		@Override
-		public Kind kind() {
-			return Kind.DED_Kind_GC_VarTableEntry;
-		}
-	}
 }

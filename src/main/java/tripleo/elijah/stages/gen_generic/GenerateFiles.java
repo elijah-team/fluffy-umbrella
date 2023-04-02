@@ -5,53 +5,56 @@ import com.google.common.collect.Collections2;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_fn.EvaConstructor;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_fn.EvaFunction;
+import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.work.WorkManager;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface GenerateFiles extends CodeGenerator {
 	@NotNull
-	static Collection<GeneratedNode> functions_to_list_of_generated_nodes(Collection<GeneratedFunction> generatedFunctions) {
-		return Collections2.transform(generatedFunctions, new Function<GeneratedFunction, GeneratedNode>() {
+	static Collection<EvaNode> functions_to_list_of_generated_nodes(Collection<EvaFunction> generatedFunctions) {
+		return Collections2.transform(generatedFunctions, new Function<EvaFunction, EvaNode>() {
 			@org.checkerframework.checker.nullness.qual.Nullable
 			@Override
-			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable GeneratedFunction input) {
+			public EvaNode apply(@org.checkerframework.checker.nullness.qual.Nullable EvaFunction input) {
 				return input;
 			}
 		});
 	}
 
 	@NotNull
-	static Collection<GeneratedNode> constructors_to_list_of_generated_nodes(Collection<EvaConstructor> aEvaConstructors) {
-		return Collections2.transform(aEvaConstructors, new Function<EvaConstructor, GeneratedNode>() {
+	static Collection<EvaNode> constructors_to_list_of_generated_nodes(Collection<EvaConstructor> aEvaConstructors) {
+		return Collections2.transform(aEvaConstructors, new Function<EvaConstructor, EvaNode>() {
 			@org.checkerframework.checker.nullness.qual.Nullable
 			@Override
-			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable EvaConstructor input) {
+			public EvaNode apply(@org.checkerframework.checker.nullness.qual.Nullable EvaConstructor input) {
 				return input;
 			}
 		});
 	}
 
 	@NotNull
-	static Collection<GeneratedNode> classes_to_list_of_generated_nodes(Collection<EvaClass> aEvaClasses) {
-		return Collections2.transform(aEvaClasses, new Function<EvaClass, GeneratedNode>() {
+	static Collection<EvaNode> classes_to_list_of_generated_nodes(Collection<EvaClass> aEvaClasses) {
+		return Collections2.transform(aEvaClasses, new Function<EvaClass, EvaNode>() {
 			@org.checkerframework.checker.nullness.qual.Nullable
 			@Override
-			public GeneratedNode apply(@org.checkerframework.checker.nullness.qual.Nullable EvaClass input) {
+			public EvaNode apply(@org.checkerframework.checker.nullness.qual.Nullable EvaClass input) {
 				return input;
 			}
 		});
 	}
 
-	GenerateResult generateCode(Collection<GeneratedNode> aNodeCollection, WorkManager aWorkManager);
+	GenerateResult generateCode(Collection<EvaNode> aNodeCollection, WorkManager aWorkManager);
+
+	GenerateResult resultsFromNodes(List<EvaNode> aNodes, WorkManager aWm);
 
 /*
 	@Override
-	void generate_namespace(GeneratedNamespace aGeneratedNamespace, GenerateResult aGenerateResult);
+	void generate_namespace(EvaNamespace aGeneratedNamespace, GenerateResult aGenerateResult);
 
 	@Override
-	void generate_class(GeneratedClass aGeneratedClass, GenerateResult aGenerateResult);
+	void generate_class(EvaClass aGeneratedClass, GenerateResult aGenerateResult);
 */
 }

@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeduceLocalVariable;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VariableTableEntry;
@@ -36,8 +37,8 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	public @NotNull Map<Integer, TypeTableEntry> potentialTypes = new HashMap<Integer, TypeTableEntry>();
 	public int tempNum = -1;
 	public ProcTableEntry constructable_pte;
-	public GenType genType = new GenType();
-	private GeneratedNode _resolvedType;
+	public  GenType                           genType = new GenType();
+	private EvaNode                           _resolvedType;
 	private DeduceElement3_VariableTableEntry _de3;
 
 	public VariableTableEntry(final int aIndex, final VariableTableType aVtt, final String aName, final TypeTableEntry aTTE, final OS_Element el) {
@@ -149,13 +150,13 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	}
 
 	@Override
-	public void resolveTypeToClass(GeneratedNode aNode) {
+	public void resolveTypeToClass(EvaNode aNode) {
 		_resolvedType = aNode;
 		genType.node = aNode;
 		type.resolve(aNode); // TODO maybe this obviates above
 	}
 
-	public GeneratedNode resolvedType() {
+	public EvaNode resolvedType() {
 		return _resolvedType;
 	}
 
@@ -193,7 +194,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	}
 
 	public DeduceLocalVariable dlv = new DeduceLocalVariable(this);
-	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseGeneratedFunction aGeneratedFunction) {
+	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseEvaFunction aGeneratedFunction) {
 		dlv.setDeduceTypes2(aDeduceTypes2, aContext, aGeneratedFunction);
 	}
 
@@ -216,6 +217,22 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 			//_de3.deduceTypes2 = deduceTypes2;
 		}
 		return _de3;
+	}
+
+
+	public void setLikelyType(final GenType aGenType) {
+		final GenType bGenType = type.genType;
+
+		// 1. copy arg into member
+		bGenType.copy(aGenType);
+
+		// 2. set node when available
+		((ClassInvocation) bGenType.ci).resolvePromise().done(aGeneratedClass -> {
+			bGenType.node = aGeneratedClass;
+			resolveTypeToClass(aGeneratedClass);
+			genType = bGenType; // TODO who knows if this is necessary?
+		});
+
 	}
 }
 

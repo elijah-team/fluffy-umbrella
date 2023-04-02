@@ -26,10 +26,10 @@ import java.util.function.Supplier;
  * Created 1/8/21 11:02 PM
  */
 public class ElSystem {
-	private final Supplier<OutputStrategy>       outputStrategyCreator;
+	private final Supplier<OutputStrategy> outputStrategyCreator;
 	//private       OutputStrategy                 outputStrategy;
-	private final Map<GeneratedFunction, String> gfm_map = new HashMap<GeneratedFunction, String>();
-	public        boolean                        verbose;
+	private final Map<EvaFunction, String> gfm_map = new HashMap<EvaFunction, String>();
+	public        boolean                  verbose;
 	//private       Compilation                    compilation;
 
 	public ElSystem(final boolean aB, final Compilation aC, final Supplier<OutputStrategy> aCreateOutputStratgy) {
@@ -58,7 +58,7 @@ public class ElSystem {
 
 			for (final Dependency dependency : dependency1.getNotedDeps()) {
 				if (dependency.referent != null) {
-					final String filename1 = getFilenameForNode((GeneratedNode) dependency.referent, GenerateResult.TY.HEADER, outputStrategyC);
+					final String filename1 = getFilenameForNode((EvaNode) dependency.referent, GenerateResult.TY.HEADER, outputStrategyC);
 					dependency.setRef(new CDependencyRef(filename1));
 				} else {
 					int y=2;
@@ -71,7 +71,7 @@ public class ElSystem {
 
 		if (verbose) {
 			for (GenerateResultItem ab : gr.results()) {
-				if (ab.node instanceof GeneratedFunction) continue;
+				if (ab.node instanceof EvaFunction) continue;
 				System.out.println("** "+ab.node+" "+ ab.output/*((CDependencyRef)ab.getDependency().getRef()).getHeaderFile()*/);
 			}
 		}
@@ -101,14 +101,14 @@ public class ElSystem {
 		gr.signalDone(outputFiles);
 	}
 
-	String getFilenameForNode(GeneratedNode node, GenerateResult.TY ty, OutputStrategyC outputStrategyC) {
+	String getFilenameForNode(EvaNode node, GenerateResult.TY ty, OutputStrategyC outputStrategyC) {
 		String s, ss;
 		//GeneratedNode // todo: find stupid iterator
 		if (node instanceof EvaNamespace) {
 			final EvaNamespace generatedNamespace = (EvaNamespace) node;
 			s = outputStrategyC.nameForNamespace(generatedNamespace, ty);
 //			System.out.println("41 "+generatedNamespace+" "+s);
-			for (GeneratedFunction gf : generatedNamespace.functionMap.values()) {
+			for (EvaFunction gf : generatedNamespace.functionMap.values()) {
 				ss = getFilenameForNode(gf, ty, outputStrategyC);
 				gfm_map.put(gf, ss);
 			}
@@ -116,12 +116,12 @@ public class ElSystem {
 			final EvaClass evaClass = (EvaClass) node;
 			s = outputStrategyC.nameForClass(evaClass, ty);
 //			System.out.println("48 "+generatedClass+" "+s);
-			for (GeneratedFunction gf : evaClass.functionMap.values()) {
+			for (EvaFunction gf : evaClass.functionMap.values()) {
 				ss = getFilenameForNode(gf, ty, outputStrategyC);
 				gfm_map.put(gf, ss);
 			}
-		} else if (node instanceof GeneratedFunction) {
-			final GeneratedFunction generatedFunction = (GeneratedFunction) node;
+		} else if (node instanceof EvaFunction) {
+			final EvaFunction generatedFunction = (EvaFunction) node;
 			s = outputStrategyC.nameForFunction(generatedFunction, ty);
 //			System.out.println("55 "+generatedFunction+" "+s);
 		} else if (node instanceof EvaConstructor) {

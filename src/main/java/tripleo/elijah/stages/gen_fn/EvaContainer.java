@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VarTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
 
@@ -25,13 +26,13 @@ import java.util.List;
 /**
  * Created 2/28/21 3:23 AM
  */
-public interface EvaContainer extends GeneratedNode {
+public interface EvaContainer extends EvaNode {
 	OS_Element getElement();
 
 	@NotNull Maybe<VarTableEntry> getVariable(String aVarName);
 
 	public class VarTableEntry {
-		public final VariableStatement vs;
+		public final  VariableStatement                                  vs;
 		public final  IdentExpression                                    nameToken;
 		public final  IExpression                                        initialValue;
 		private final OS_Element                                         parent;
@@ -39,7 +40,7 @@ public interface EvaContainer extends GeneratedNode {
 		public        TypeName                                           typeName;
 		public        OS_Type                                            varType;
 		public        List<TypeTableEntry>                               potentialTypes                = new ArrayList<TypeTableEntry>();
-		private       GeneratedNode                                      _resolvedType;
+		private       EvaNode                                            _resolvedType;
 
 		public VarTableEntry(final VariableStatement aVs,
 							 final @NotNull IdentExpression aNameToken,
@@ -50,7 +51,7 @@ public interface EvaContainer extends GeneratedNode {
 			nameToken       = aNameToken;
 			initialValue    = aInitialValue;
 			typeName        = aTypeName;
-			varType         = new OS_Type(typeName);
+			varType         = new OS_UserType(typeName);
 			parent          = aElement;
 		}
 
@@ -62,12 +63,12 @@ public interface EvaContainer extends GeneratedNode {
 			potentialTypes.addAll(aPotentialTypes);
 		}
 
-		public void resolve(@NotNull GeneratedNode aResolvedType) {
+		public void resolve(@NotNull EvaNode aResolvedType) {
 			System.out.println(String.format("** [GeneratedContainer 56] resolving VarTableEntry %s to %s", nameToken, aResolvedType.identityString()));
 			_resolvedType = aResolvedType;
 		}
 
-		public @Nullable GeneratedNode resolvedType() {
+		public @Nullable EvaNode resolvedType() {
 			return _resolvedType;
 		}
 

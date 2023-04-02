@@ -13,11 +13,10 @@ import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.deduce.IInvocation;
 import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_fn.EvaNode;
 
 /**
  * Created 6/27/21 1:41 AM
@@ -27,7 +26,7 @@ public class DeferredMember {
 	private final IInvocation invocation;
 	private final VariableStatement variableStatement;
 	private final DeferredObject<GenType, Diagnostic, Void> typePromise = new DeferredObject<GenType, Diagnostic, Void>();
-	private final DeferredObject<GeneratedNode, Void, Void> externalRef = new DeferredObject<GeneratedNode, Void, Void>();
+	private final DeferredObject<EvaNode, Void, Void>       externalRef = new DeferredObject<EvaNode, Void, Void>();
 
 	public DeferredMember(OS_Element aParent, IInvocation aInvocation, VariableStatement aVariableStatement) {
 		parent = aParent;
@@ -56,11 +55,11 @@ public class DeferredMember {
 		return typePromise;
 	}
 
-	public Promise<GeneratedNode, Void, Void> externalRef() {
+	public Promise<EvaNode, Void, Void> externalRef() {
 		return externalRef.promise();
 	}
 
-	public @NotNull DeferredObject<GeneratedNode, Void, Void> externalRefDeferred() {
+	public @NotNull DeferredObject<EvaNode, Void, Void> externalRefDeferred() {
 		return externalRef;
 	}
 

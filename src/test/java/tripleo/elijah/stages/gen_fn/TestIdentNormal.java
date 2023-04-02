@@ -61,8 +61,8 @@ public class TestIdentNormal {
 
 		final GenerateFunctions generateFunctions = new GenerateFunctions(generatePhase, boilerplate.defaultMod(), boilerplate.pipelineLogic);
 
-		final GeneratedFunction generatedFunction = new GeneratedFunction(fd);
-		final VariableSequence  seq = new VariableSequence(ctx1);
+		final EvaFunction      generatedFunction = new EvaFunction(fd);
+		final VariableSequence seq               = new VariableSequence(ctx1);
 		final VariableStatement vs  = new VariableStatement(seq);
 		final IdentExpression   x   = IdentExpression.forString("x");
 		vs.setName(x);
@@ -71,7 +71,7 @@ public class TestIdentNormal {
 		pce.setLeft(new DotExpression(x, foo));
 
 		final InstructionArgument                s = generateFunctions.simplify_expression(pce, generatedFunction, ctx2);
-		@NotNull final List<InstructionArgument> l = BaseGeneratedFunction._getIdentIAPathList(s);
+		@NotNull final List<InstructionArgument> l = BaseEvaFunction._getIdentIAPathList(s);
 		System.out.println(l);
 //      System.out.println(generatedFunction.getIdentIAPathNormal());
 
@@ -94,7 +94,7 @@ public class TestIdentNormal {
 		final DeducePhase  phase = boilerplate.pr.pipelineLogic.dp;
 		final DeduceTypes2 d2    = new DeduceTypes2(boilerplate.defaultMod(), phase);
 
-		final List<InstructionArgument> ss = BaseGeneratedFunction._getIdentIAPathList(identIA);
+		final List<InstructionArgument> ss = BaseEvaFunction._getIdentIAPathList(identIA);
 		d2.resolveIdentIA2_(ctx2, null, ss/*identIA*/, generatedFunction, new FoundElement(phase) {
 			@Override
 			public void foundElement(final OS_Element e) {
@@ -131,8 +131,8 @@ public class TestIdentNormal {
 		FunctionDef fd2 = new FunctionDef(cs, cs.getContext());
 		fd2.setName(IdentExpression.forString("foo"));
 
-//		GeneratedFunction generatedFunction = new GeneratedFunction(fd);
-//		TypeTableEntry tte = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, new OS_Type(cs));
+//		EvaFunction generatedFunction = new EvaFunction(fd);
+//		TypeTableEntry tte = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, new OS_UserType(cs));
 //		generatedFunction.addVariableTableEntry("x", VariableTableType.VAR, tte, cs);
 
 		//
@@ -171,7 +171,7 @@ public class TestIdentNormal {
 //		expect(fd.fal()).andReturn(formalArgList);
 //		expect(fd.fal()).andReturn(formalArgList);
 //		expect(fd2.returnType()).andReturn(null);
-		GeneratedFunction generatedFunction = generateFunctions.generateFunction(fd, cs, fi);
+		EvaFunction generatedFunction = generateFunctions.generateFunction(fd, cs, fi);
 
 /*
 		InstructionArgument es = generateFunctions.simplify_expression(e, generatedFunction, ctx2);
@@ -201,8 +201,8 @@ public class TestIdentNormal {
 		ClassInvocation invocation2 = new ClassInvocation(cs, null);
 		invocation2 = phase.registerClassInvocation(invocation2);
 		ProcTableEntry pte3 = null;
-		FunctionInvocation fi2 = new FunctionInvocation(fd2, pte3, invocation2, generatePhase);
-		GeneratedFunction generatedFunction2 = generateFunctions.generateFunction(fd2, fd2.getParent(), fi2);//new GeneratedFunction(fd2);
+		FunctionInvocation fi2                = new FunctionInvocation(fd2, pte3, invocation2, generatePhase);
+		EvaFunction        generatedFunction2 = generateFunctions.generateFunction(fd2, fd2.getParent(), fi2);//new EvaFunction(fd2);
 //		generatedFunction2.addVariableTableEntry("self", VariableTableType.SELF, null, null);
 //		final TypeTableEntry type = null;
 //		int res = generatedFunction2.addVariableTableEntry("Result", VariableTableType.RESULT, type, null);

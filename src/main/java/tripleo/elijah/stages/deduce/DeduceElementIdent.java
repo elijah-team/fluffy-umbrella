@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.util.Holder;
@@ -27,14 +27,14 @@ import tripleo.elijah.util.Holder;
 public class DeduceElementIdent implements IDeduceElement_old {
 	private final IdentTableEntry identTableEntry;
 	private DeduceTypes2 deduceTypes2;
-	private Context context;
-	private BaseGeneratedFunction generatedFunction;
+	private Context         context;
+	private BaseEvaFunction generatedFunction;
 
 	public DeduceElementIdent(final IdentTableEntry aIdentTableEntry) {
 		identTableEntry = aIdentTableEntry;
 	}
 
-	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final @NotNull BaseGeneratedFunction aGeneratedFunction) {
+	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final @NotNull BaseEvaFunction aGeneratedFunction) {
 		deduceTypes2 = aDeduceTypes2;
 		context = aContext;
 		generatedFunction = aGeneratedFunction;

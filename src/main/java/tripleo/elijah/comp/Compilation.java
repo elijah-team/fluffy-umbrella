@@ -25,26 +25,30 @@ import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
 import tripleo.elijah.comp.diagnostic.FileNotFoundDiagnostic;
+import tripleo.elijah.comp.i.IProgressSink;
+import tripleo.elijah.comp.internal.CompilationBus;
 import tripleo.elijah.comp.queries.QuerySourceFileToModule;
 import tripleo.elijah.comp.queries.QuerySourceFileToModuleParams;
 import tripleo.elijah.diagnostic.Diagnostic;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.lang.OS_Package;
-import tripleo.elijah.lang.Qualident;
+import tripleo.elijah.lang.*;
+import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 import tripleo.elijah.stages.deduce.FunctionMapHook;
+import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
+import tripleo.elijah.world.i.LivingRepo;
+import tripleo.elijah.world.impl.DefaultLivingRepo;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static tripleo.elijah.nextgen.query.Mode.SUCCESS;
 
-public class Compilation {
+public abstract class Compilation {
 
 	public final  List<OS_Module>                   modules   = new ArrayList<OS_Module>();
 	final         ErrSink                           errSink;
@@ -54,6 +58,7 @@ public class Compilation {
 	private final Map<String, OS_Package>           _packages = new HashMap<String, OS_Package>();
 	public        Stages                            stage     = Stages.O; // Output
 	public        boolean                           silent    = false;
+	public LivingRepo _repo = new DefaultLivingRepo();
 	CompilerInstructions rootCI;
 	boolean              showTree = false;
 	private IO io;
@@ -65,7 +70,8 @@ public class Compilation {
 	private int                _packageCode  = 1;
 	private int                _classCode    = 101;
 	private int                _functionCode = 1001;
-	private CompilationRunner __cr;
+	CompilationRunner __cr;
+	private CompilationBus cb;
 
 	public Compilation(final ErrSink errSink, final IO io) {
 		this.errSink            = errSink;
@@ -94,6 +100,10 @@ public class Compilation {
 			return Operation.failure(aE);
 		}
 	}
+
+	public abstract @NotNull EOT_OutputTree getOutputTree();
+
+	public abstract @NotNull FluffyComp getFluffy();
 
 	static class MainModule {
 
@@ -137,9 +147,15 @@ public class Compilation {
 
 		subscribeCI(cio);
 
-		final String[] args2 = op.process(this, args);
+		cb = new CompilationBus(this);
 
-		__cr = new CompilationRunner(this, _cis);
+		final List<CompilerInput> args3 = args.stream()
+				.map(s -> new CompilerInput(s))
+				.collect(Collectors.toList());
+
+		final String[] args2 = op.process(this, args3, cb);
+
+		__cr = new CompilationRunner(this, _cis, cb);
 		__cr.doFindCIs(args2);
 	}
 
@@ -147,11 +163,12 @@ public class Compilation {
 		_cis.subscribe(aCio);
 	}
 
-	private final CIS _cis = new CIS();
+	final CIS _cis = new CIS();
 
 	class CIS implements Observer<CompilerInstructions> {
 
 		private final Subject<CompilerInstructions> compilerInstructionsSubject = ReplaySubject.<CompilerInstructions>create();
+		public IProgressSink ps;
 		CompilerInstructionsObserver _cio;
 
 		@Override
@@ -202,7 +219,7 @@ public class Compilation {
 		assert _cis != null; // final; redundant
 
 		if (__cr == null)
-			__cr = new CompilationRunner(this, _cis);
+			__cr = new CompilationRunner(this, _cis, cb);
 
 		__cr.start(rootCI, do_out, op);
 	}

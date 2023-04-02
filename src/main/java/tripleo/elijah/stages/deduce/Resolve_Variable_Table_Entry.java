@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_FuncExprType;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.logging.ElLog;
@@ -27,8 +28,8 @@ import java.util.ArrayList;
  * Created 9/5/21 2:54 AM
  */
 class Resolve_Variable_Table_Entry {
-	private final BaseGeneratedFunction generatedFunction;
-	private final Context ctx;
+	private final BaseEvaFunction generatedFunction;
+	private final Context         ctx;
 
 	private final DeduceTypes2 deduceTypes2;
 	private final @NotNull ElLog LOG;
@@ -36,7 +37,7 @@ class Resolve_Variable_Table_Entry {
 	private final @NotNull DeducePhase phase;
 	private final ErrSink errSink;
 
-	public Resolve_Variable_Table_Entry(BaseGeneratedFunction aGeneratedFunction, Context aCtx, DeduceTypes2 aDeduceTypes2) {
+	public Resolve_Variable_Table_Entry(BaseEvaFunction aGeneratedFunction, Context aCtx, DeduceTypes2 aDeduceTypes2) {
 		generatedFunction = aGeneratedFunction;
 		ctx = aCtx;
 		deduceTypes2 = aDeduceTypes2;
@@ -183,7 +184,7 @@ class Resolve_Variable_Table_Entry {
 					public void onDone(EvaClass result) {
 						result.functionMapDeferred(functionDef, new FunctionMapDeferred() {
 							@Override
-							public void onNotify(final GeneratedFunction aGeneratedFunction) {
+							public void onNotify(final EvaFunction aGeneratedFunction) {
 								aGt.node = aGeneratedFunction;
 							}
 						});
@@ -198,7 +199,7 @@ class Resolve_Variable_Table_Entry {
 					public void onDone(EvaNamespace result) {
 						result.functionMapDeferred(functionDef, new FunctionMapDeferred() {
 							@Override
-							public void onNotify(final GeneratedFunction aGeneratedFunction) {
+							public void onNotify(final EvaFunction aGeneratedFunction) {
 								aGt.node = aGeneratedFunction;
 							}
 						});
@@ -265,7 +266,7 @@ class Resolve_Variable_Table_Entry {
 					return "FuncType..."; // TODO
 				}
 			}, "FuncType Result");
-			((GeneratedFunction) aGenType.node).typePromise().then(new DoneCallback<GenType>() {
+			((EvaFunction) aGenType.node).typePromise().then(new DoneCallback<GenType>() {
 				@Override
 				public void onDone(GenType result) {
 					pe.satisfy(result);
@@ -280,7 +281,7 @@ class Resolve_Variable_Table_Entry {
 			vte.setCallablePTE(callable_pte);
 	}
 
-	private @Nullable ProcTableEntry findProcTableEntry(@NotNull BaseGeneratedFunction aGeneratedFunction, IExpression aExpression) {
+	private @Nullable ProcTableEntry findProcTableEntry(@NotNull BaseEvaFunction aGeneratedFunction, IExpression aExpression) {
 		for (@NotNull ProcTableEntry procTableEntry : aGeneratedFunction.prte_list) {
 			if (procTableEntry.expression == aExpression)
 				return procTableEntry;

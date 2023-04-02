@@ -17,15 +17,19 @@ import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ICompilationAccess;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_UnknownType;
 import tripleo.elijah.nextgen.ClassDefinition;
 import tripleo.elijah.nextgen.diagnostic.CouldntGenerateClass;
 import tripleo.elijah.stages.deduce.declarations.DeferredMember;
 import tripleo.elijah.stages.deduce.declarations.DeferredMemberFunction;
+import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
+import tripleo.elijah.stages.deduce.post_bytecode.State;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
@@ -51,6 +55,10 @@ public class DeducePhase {
 	private final @NotNull ElLog                        LOG;
 	private final @NotNull ICompilationAccess           ca;
 
+	private final List<State> registeredStates = new ArrayList<>();
+//	private final Compilation _compilation;
+
+
 	public DeducePhase(final GeneratePhase aGeneratePhase,
 					   final PipelineLogic aPipelineLogic,
 					   final ElLog.Verbosity verbosity,
@@ -64,7 +72,7 @@ public class DeducePhase {
 		pipelineLogic.addLog(LOG);
 	}
 
-	public void addFunction(GeneratedFunction generatedFunction, FunctionDef fd) {
+	public void addFunction(EvaFunction generatedFunction, FunctionDef fd) {
 		functionMap.put(fd, generatedFunction);
 	}
 
@@ -88,7 +96,7 @@ public class DeducePhase {
 		onclasses.put(aClassStatement, callback);
 	}
 
-//	Multimap<GeneratedClass, ClassInvocation> generatedClasses1 = ArrayListMultimap.create();
+//	Multimap<EvaClass, ClassInvocation> generatedClasses1 = ArrayListMultimap.create();
 	@NotNull Multimap<ClassStatement, ClassInvocation> classInvocationMultimap = ArrayListMultimap.create();
 
 	private List<DeferredMemberFunction> deferredMemberFunctions = new ArrayList<>();
@@ -121,6 +129,10 @@ public class DeducePhase {
 		});
 
 		return ret;
+	}
+
+	public ClassInvocation registerClassInvocation(final ClassStatement aParent) {
+		return registerClassInvocation(new ClassInvocation(aParent, null));
 	}
 
 	class RegisterClassInvocation {
@@ -173,7 +185,7 @@ public class DeducePhase {
 				classInvocationMultimap.put(aClassInvocation.getKlass(), aClassInvocation);
 			}
 
-			// 3. Generate new GeneratedClass
+			// 3. Generate new EvaClass
 			final @NotNull WorkList wl = new WorkList();
 			final @NotNull OS_Module mod = aClassInvocation.getKlass().getContext().module();
 			wl.addJob(new WlGenerateClass(generatePhase.getGenerateFunctions(mod), aClassInvocation, generatedClasses)); // TODO why add now?
@@ -259,13 +271,13 @@ public class DeducePhase {
 		}
 	}
 
-	private final Multimap<FunctionDef, GeneratedFunction> functionMap = ArrayListMultimap.create();
+	private final Multimap<FunctionDef, EvaFunction> functionMap = ArrayListMultimap.create();
 
-	public @NotNull DeduceTypes2 deduceModule(@NotNull OS_Module m, @NotNull Iterable<GeneratedNode> lgf, ElLog.Verbosity verbosity) {
+	public @NotNull DeduceTypes2 deduceModule(@NotNull OS_Module m, @NotNull Iterable<EvaNode> lgf, ElLog.Verbosity verbosity) {
 		final @NotNull DeduceTypes2 deduceTypes2 = new DeduceTypes2(m, this, verbosity);
 //		LOG.err("196 DeduceTypes "+deduceTypes2.getFileName());
 		{
-			final ArrayList<GeneratedNode> p = new ArrayList<GeneratedNode>();
+			final ArrayList<EvaNode> p = new ArrayList<EvaNode>();
 			Iterables.addAll(p, lgf);
 			LOG.info("197 lgf.size " + p.size());
 		}
@@ -274,11 +286,11 @@ public class DeducePhase {
 //				.filter(c -> c.module() == m)
 //				.collect(Collectors.toList()));
 
-		for (GeneratedNode generatedNode : generatedClasses.copy()) {
-			if (generatedNode.module() != m) continue;
+		for (EvaNode evaNode : generatedClasses.copy()) {
+			if (evaNode.module() != m) continue;
 
-			if (generatedNode instanceof EvaClass) {
-				final EvaClass evaClass = (EvaClass) generatedNode;
+			if (evaNode instanceof EvaClass) {
+				final EvaClass evaClass = (EvaClass) evaNode;
 
 				evaClass.fixupUserClasses(deduceTypes2, evaClass.getKlass().getContext());
 				deduceTypes2.deduceOneClass(evaClass);
@@ -290,9 +302,9 @@ public class DeducePhase {
 
 	public void forFunction(DeduceTypes2 deduceTypes2, @NotNull FunctionInvocation fi, @NotNull ForFunction forFunction) {
 //		LOG.err("272 forFunction\n\t"+fi.getFunction()+"\n\t"+fi.pte);
-		fi.generateDeferred().promise().then(new DoneCallback<BaseGeneratedFunction>() {
+		fi.generateDeferred().promise().then(new DoneCallback<BaseEvaFunction>() {
 			@Override
-			public void onDone(@NotNull BaseGeneratedFunction result) {
+			public void onDone(@NotNull BaseEvaFunction result) {
 				result.typePromise().then(new DoneCallback<GenType>() {
 					@Override
 					public void onDone(GenType result) {
@@ -307,16 +319,16 @@ public class DeducePhase {
 		setGeneratedClassParents();
 		/*
 		for (GeneratedNode generatedNode : generatedClasses) {
-			if (generatedNode instanceof GeneratedClass) {
-				final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
+			if (generatedNode instanceof EvaClass) {
+				final EvaClass generatedClass = (EvaClass) generatedNode;
 				final ClassStatement cs = generatedClass.getKlass();
 				Collection<ClassInvocation> cis = classInvocationMultimap.get(cs);
 				for (ClassInvocation ci : cis) {
 					if (equivalentGenericPart(generatedClass.ci, ci)) {
-						final DeferredObject<GeneratedClass, Void, Void> deferredObject = (DeferredObject<GeneratedClass, Void, Void>) ci.promise();
-						deferredObject.then(new DoneCallback<GeneratedClass>() {
+						final DeferredObject<EvaClass, Void, Void> deferredObject = (DeferredObject<EvaClass, Void, Void>) ci.promise();
+						deferredObject.then(new DoneCallback<EvaClass>() {
 							@Override
-							public void onDone(GeneratedClass result) {
+							public void onDone(EvaClass result) {
 								assert result == generatedClass;
 							}
 						});
@@ -329,7 +341,7 @@ public class DeducePhase {
 		handleOnClassCallbacks();
 		handleIdteTypeCallbacks();
 /*
-		for (Map.Entry<GeneratedFunction, OS_Type> entry : typeDecideds.entrySet()) {
+		for (Map.Entry<EvaFunction, OS_Type> entry : typeDecideds.entrySet()) {
 			for (Triplet triplet : forFunctions) {
 				if (triplet.gf.getGenerated() == entry.getKey()) {
 					synchronized (triplet.deduceTypes2) {
@@ -340,10 +352,10 @@ public class DeducePhase {
 		}
 */
 /*
-		for (Map.Entry<FunctionDef, GeneratedFunction> entry : functionMap.entries()) {
+		for (Map.Entry<FunctionDef, EvaFunction> entry : functionMap.entries()) {
 			FunctionInvocation fi = new FunctionInvocation(entry.getKey(), null);
 			for (Triplet triplet : forFunctions) {
-//				Collection<GeneratedFunction> x = functionMap.get(fi);
+//				Collection<EvaFunction> x = functionMap.get(fi);
 				triplet.forFunction.finish();
 			}
 		}
@@ -371,9 +383,9 @@ public class DeducePhase {
 	public void handleOnClassCallbacks() {
 		// TODO rewrite with classInvocationMultimap
 		for (ClassStatement classStatement : onclasses.keySet()) {
-			for (GeneratedNode generatedNode : generatedClasses) {
-				if (generatedNode instanceof EvaClass) {
-					final @NotNull EvaClass evaClass = (EvaClass) generatedNode;
+			for (EvaNode evaNode : generatedClasses) {
+				if (evaNode instanceof EvaClass) {
+					final @NotNull EvaClass evaClass = (EvaClass) evaNode;
 					if (evaClass.getKlass() == classStatement) {
 						Collection<OnClass> ks = onclasses.get(classStatement);
 						for (@NotNull OnClass k : ks) {
@@ -396,18 +408,18 @@ public class DeducePhase {
 	}
 
 	public void setGeneratedClassParents() {
-		// TODO all GeneratedFunction nodes have a genClass member
-		for (GeneratedNode generatedNode : generatedClasses) {
-			if (generatedNode instanceof EvaClass) {
-				final @NotNull EvaClass                evaClass  = (EvaClass) generatedNode;
-				@NotNull Collection<GeneratedFunction> functions = evaClass.functionMap.values();
-				for (@NotNull GeneratedFunction generatedFunction : functions) {
+		// TODO all EvaFunction nodes have a genClass member
+		for (EvaNode evaNode : generatedClasses) {
+			if (evaNode instanceof EvaClass) {
+				final @NotNull EvaClass          evaClass  = (EvaClass) evaNode;
+				@NotNull Collection<EvaFunction> functions = evaClass.functionMap.values();
+				for (@NotNull EvaFunction generatedFunction : functions) {
 					generatedFunction.setParent(evaClass);
 				}
-			} else if (generatedNode instanceof EvaNamespace) {
-				final @NotNull EvaNamespace            generatedNamespace = (EvaNamespace) generatedNode;
-				@NotNull Collection<GeneratedFunction> functions          = generatedNamespace.functionMap.values();
-				for (@NotNull GeneratedFunction generatedFunction : functions) {
+			} else if (evaNode instanceof EvaNamespace) {
+				final @NotNull EvaNamespace      generatedNamespace = (EvaNamespace) evaNode;
+				@NotNull Collection<EvaFunction> functions          = generatedNamespace.functionMap.values();
+				for (@NotNull EvaFunction generatedFunction : functions) {
 					generatedFunction.setParent(generatedNamespace);
 				}
 			}
@@ -427,9 +439,9 @@ public class DeducePhase {
 	}
 
 	public void handleResolvedVariables() {
-		for (GeneratedNode generatedNode : generatedClasses.copy()) {
-			if (generatedNode instanceof EvaContainer) {
-				final @NotNull EvaContainer   evaContainer = (EvaContainer) generatedNode;
+		for (EvaNode evaNode : generatedClasses.copy()) {
+			if (evaNode instanceof EvaContainer) {
+				final @NotNull EvaContainer   evaContainer = (EvaContainer) evaNode;
 				Collection<ResolvedVariables> x            = resolved_variables.get(evaContainer.getElement());
 				for (@NotNull DeducePhase.ResolvedVariables resolvedVariables : x) {
 					final @NotNull Maybe<EvaContainer.VarTableEntry> variable_m = evaContainer.getVariable(resolvedVariables.varName);
@@ -454,9 +466,9 @@ public class DeducePhase {
 		boolean                 all_resolve_var_table_entries = false;
 		while (!all_resolve_var_table_entries) {
 			if (generatedClasses.size() == 0) break;
-			for (GeneratedNode generatedNode : generatedClasses.copy()) {
-				if (generatedNode instanceof EvaClass) {
-					final @NotNull EvaClass evaClass = (EvaClass) generatedNode;
+			for (EvaNode evaNode : generatedClasses.copy()) {
+				if (evaNode instanceof EvaClass) {
+					final @NotNull EvaClass evaClass = (EvaClass) evaNode;
 					all_resolve_var_table_entries = evaClass.resolve_var_table_entries(this); // TODO use a while loop to get all classes
 				}
 			}
@@ -464,7 +476,7 @@ public class DeducePhase {
 	}
 
 	public void handleFunctionMapHooks() {
-		for (Map.@NotNull Entry<FunctionDef, Collection<GeneratedFunction>> entry : functionMap.asMap().entrySet()) {
+		for (Map.@NotNull Entry<FunctionDef, Collection<EvaFunction>> entry : functionMap.asMap().entrySet()) {
 			for (@NotNull FunctionMapHook functionMapHook : ca.functionMapHooks()) {
 				if (functionMapHook.matches(entry.getKey())) {
 					functionMapHook.apply(entry.getValue());
@@ -497,9 +509,9 @@ public class DeducePhase {
 									genType.set(varType);
 
 //								if (deferredMember.getInvocation() instanceof NamespaceInvocation) {
-//									((NamespaceInvocation) deferredMember.getInvocation()).resolveDeferred().done(new DoneCallback<GeneratedNamespace>() {
+//									((NamespaceInvocation) deferredMember.getInvocation()).resolveDeferred().done(new DoneCallback<EvaNamespace>() {
 //										@Override
-//										public void onDone(GeneratedNamespace result) {
+//										public void onDone(EvaNamespace result) {
 //											result;
 //										}
 //									});
@@ -570,21 +582,21 @@ public class DeducePhase {
 			parent = deferredMemberFunction.getParent();//.getParent().getParent();
 		}
 
-		static class GetFunctionMapClass implements Function<GeneratedNode, Map<FunctionDef, GeneratedFunction>> {
+		static class GetFunctionMapClass implements Function<EvaNode, Map<FunctionDef, EvaFunction>> {
 			@Override
-			public Map<FunctionDef, GeneratedFunction> apply(final GeneratedNode aClass) {
+			public Map<FunctionDef, EvaFunction> apply(final EvaNode aClass) {
 				return ((EvaClass) aClass).functionMap;
 			}
 		}
 
-		static class GetFunctionMapNamespace implements Function<GeneratedNode, Map<FunctionDef, GeneratedFunction>> {
+		static class GetFunctionMapNamespace implements Function<EvaNode, Map<FunctionDef, EvaFunction>> {
 			@Override
-			public Map<FunctionDef, GeneratedFunction> apply(final GeneratedNode aNamespace) {
+			public Map<FunctionDef, EvaFunction> apply(final EvaNode aNamespace) {
 				return ((EvaNamespace) aNamespace).functionMap;
 			}
 		}
 
-		<T extends GeneratedNode> void defaultAction(final T result) {
+		<T extends EvaNode> void defaultAction(final T result) {
 			final OS_Element p = deferredMemberFunction.getParent();
 
 			if (p instanceof DeduceTypes2.OS_SpecialVariable) {
@@ -592,13 +604,13 @@ public class DeducePhase {
 				onSpecialVariable(specialVariable);
 				int y = 2;
 			} else if (p instanceof ClassStatement) {
-				final Function<GeneratedNode, Map<FunctionDef, GeneratedFunction>> x = getFunctionMap(result);
+				final Function<EvaNode, Map<FunctionDef, EvaFunction>> x = getFunctionMap(result);
 
-				// once again we need GeneratedFunction, not FunctionDef
+				// once again we need EvaFunction, not FunctionDef
 				// we seem to have it below, but there can be multiple
 				// specializations of each function
 
-				final GeneratedFunction gf = x.apply(result).get((FunctionDef) deferredMemberFunction.getFunctionDef());
+				final EvaFunction gf = x.apply(result).get((FunctionDef) deferredMemberFunction.getFunctionDef());
 				if (gf != null) {
 					deferredMemberFunction.externalRefDeferred().resolve(gf);
 					gf.typePromise().then(new DoneCallback<GenType>() {
@@ -613,8 +625,8 @@ public class DeducePhase {
 		}
 
 		@NotNull
-		private <T extends GeneratedNode> Function<GeneratedNode, Map<FunctionDef, GeneratedFunction>> getFunctionMap(final T result) {
-			final Function<GeneratedNode, Map<FunctionDef, GeneratedFunction>> x;
+		private <T extends EvaNode> Function<EvaNode, Map<FunctionDef, EvaFunction>> getFunctionMap(final T result) {
+			final Function<EvaNode, Map<FunctionDef, EvaFunction>> x;
 			if (result instanceof EvaNamespace)
 				x = new GetFunctionMapNamespace();
 			else if (result instanceof EvaClass)
@@ -648,9 +660,9 @@ public class DeducePhase {
 			case INHERITED:
 				final FunctionInvocation functionInvocation = deferredMemberFunction.functionInvocation();
 				functionInvocation.generatePromise().
-						then(new DoneCallback<BaseGeneratedFunction>() {
+						then(new DoneCallback<BaseEvaFunction>() {
 							@Override
-							public void onDone(final BaseGeneratedFunction gf) {
+							public void onDone(final BaseEvaFunction gf) {
 								deferredMemberFunction.externalRefDeferred().resolve(gf);
 								gf.typePromise().
 										then(new DoneCallback<GenType>() {
@@ -671,10 +683,10 @@ public class DeducePhase {
 							then(new DoneCallback<EvaClass>() {
 								@Override
 								public void onDone(final EvaClass element_generated) {
-									// once again we need GeneratedFunction, not FunctionDef
+									// once again we need EvaFunction, not FunctionDef
 									// we seem to have it below, but there can be multiple
 									// specializations of each function
-									final GeneratedFunction gf = element_generated.functionMap.get((FunctionDef) deferredMemberFunction.getFunctionDef());
+									final EvaFunction gf = element_generated.functionMap.get((FunctionDef) deferredMemberFunction.getFunctionDef());
 									deferredMemberFunction.externalRefDeferred().resolve(gf);
 									gf.typePromise().
 											then(new DoneCallback<GenType>() {
@@ -718,12 +730,12 @@ public class DeducePhase {
 			}
 		}
 
-		for (GeneratedNode generatedNode : generatedClasses) {
-			if (generatedNode instanceof EvaContainerNC) {
-				final EvaContainerNC nc = (EvaContainerNC) generatedNode;
+		for (EvaNode evaNode : generatedClasses) {
+			if (evaNode instanceof EvaContainerNC) {
+				final EvaContainerNC nc = (EvaContainerNC) evaNode;
 				nc.noteDependencies(nc.getDependency()); // TODO is this right?
 
-				for (GeneratedFunction generatedFunction : nc.functionMap.values()) {
+				for (EvaFunction generatedFunction : nc.functionMap.values()) {
 					generatedFunction.noteDependencies(nc.getDependency());
 				}
 				if (nc instanceof EvaClass) {
@@ -738,21 +750,21 @@ public class DeducePhase {
 	}
 
 	private void sanityChecks() {
-		for (GeneratedNode generatedNode : generatedClasses) {
-			if (generatedNode instanceof EvaClass) {
-				final @NotNull EvaClass evaClass = (EvaClass) generatedNode;
+		for (EvaNode evaNode : generatedClasses) {
+			if (evaNode instanceof EvaClass) {
+				final @NotNull EvaClass evaClass = (EvaClass) evaNode;
 				sanityChecks(evaClass.functionMap.values());
 //				sanityChecks(generatedClass.constructors.values()); // TODO reenable
-			} else if (generatedNode instanceof EvaNamespace) {
-				final @NotNull EvaNamespace generatedNamespace = (EvaNamespace) generatedNode;
+			} else if (evaNode instanceof EvaNamespace) {
+				final @NotNull EvaNamespace generatedNamespace = (EvaNamespace) evaNode;
 				sanityChecks(generatedNamespace.functionMap.values());
 //				sanityChecks(generatedNamespace.constructors.values());
 			}
 		}
 	}
 
-	private void sanityChecks(@NotNull Collection<GeneratedFunction> aGeneratedFunctions) {
-		for (@NotNull GeneratedFunction generatedFunction : aGeneratedFunctions) {
+	private void sanityChecks(@NotNull Collection<EvaFunction> aGeneratedFunctions) {
+		for (@NotNull EvaFunction generatedFunction : aGeneratedFunctions) {
 			for (@NotNull IdentTableEntry identTableEntry : generatedFunction.idte_list) {
 				switch (identTableEntry.getStatus()) {
 					case UNKNOWN:
@@ -778,15 +790,15 @@ public class DeducePhase {
 		}
 	}
 
-	public static class GeneratedClasses implements Iterable<GeneratedNode> {
-		@NotNull List<GeneratedNode> generatedClasses = new ArrayList<GeneratedNode>();
+	public static class GeneratedClasses implements Iterable<EvaNode> {
+		@NotNull List<EvaNode> generatedClasses = new ArrayList<EvaNode>();
 
-		public void add(GeneratedNode aClass) {
+		public void add(EvaNode aClass) {
 			generatedClasses.add(aClass);
 		}
 
 		@Override
-		public @NotNull Iterator<GeneratedNode> iterator() {
+		public @NotNull Iterator<EvaNode> iterator() {
 			return generatedClasses.iterator();
 		}
 
@@ -794,15 +806,33 @@ public class DeducePhase {
 			return generatedClasses.size();
 		}
 
-		public List<GeneratedNode> copy() {
-			return new ArrayList<GeneratedNode>(generatedClasses);
+		public List<EvaNode> copy() {
+			return new ArrayList<EvaNode>(generatedClasses);
 		}
 
-		public void addAll(List<GeneratedNode> lgc) {
+		public void addAll(List<EvaNode> lgc) {
 			// TODO is this method really needed
 			generatedClasses.addAll(lgc);
 		}
 	}
+
+	public State register(final State aState) {
+		if (!(registeredStates.contains(aState))) {
+			registeredStates.add(aState);
+
+			final int id = registeredStates.indexOf(aState);
+
+			aState.setIdentity(id);
+			return aState;
+		}
+
+		return aState;
+	}
+
+	public Compilation _compilation() {
+		return ca.getCompilation();
+	}
+
 }
 
 //

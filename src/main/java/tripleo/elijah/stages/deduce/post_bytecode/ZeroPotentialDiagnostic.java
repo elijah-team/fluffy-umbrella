@@ -36,6 +36,6 @@ public class ZeroPotentialDiagnostic implements Diagnostic {
 	@Override
 	public void report(final PrintStream stream) {
 		NotImplementedException.raise();
-		int y = 2;
+		final int y = 2;
 	}
 }

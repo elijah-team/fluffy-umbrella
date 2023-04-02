@@ -14,6 +14,8 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.contexts.ClassContext;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_FuncExprType;
+import tripleo.elijah.lang.types.OS_FuncType;
 import tripleo.elijah.stages.deduce.*;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
@@ -29,8 +31,8 @@ public class GenType {
 	public OS_Type typeName; // TODO or just TypeName ??
 	public TypeName nonGenericTypeName;
 	public OS_Type resolved;
-	public IInvocation ci;
-	public GeneratedNode node;
+	public IInvocation        ci;
+	public EvaNode            node;
 	public FunctionInvocation functionInvocation;
 
 	public GenType(NamespaceStatement aNamespaceStatement) {
@@ -314,7 +316,7 @@ public class GenType {
 				node = gen.getResult();
 			} else if (resolved instanceof OS_FuncType) {
 				final OS_FuncType funcType = (OS_FuncType) resolved;
-				int y=2;
+				int               y        =2;
 			} else
 				throw new IllegalStateException("invalid invocation");
 		}

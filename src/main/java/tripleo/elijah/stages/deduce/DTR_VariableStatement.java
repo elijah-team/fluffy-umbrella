@@ -4,6 +4,7 @@ import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.util.NotImplementedException;
 
@@ -57,7 +58,7 @@ class DTR_VariableStatement {
 			final DeduceTypes2                 dt2  = eh1.getDeduceTypes2();
 			final OS_Type                      type = eh1.getType();
 
-			genType.typeName = new OS_Type(normalTypeName);
+			genType.typeName = new OS_UserType(normalTypeName);
 			try {
 				final @NotNull GenType resolved = dt2.resolve_type(genType.typeName, variableStatement.getContext());
 				if (resolved.resolved.getType() == OS_Type.Type.GENERIC_TYPENAME) {
@@ -74,7 +75,7 @@ class DTR_VariableStatement {
 		} else if (eh instanceof DeduceElement3Holder) {
 			NotImplementedException.raise();
 		} else
-			genType.typeName = new OS_Type(normalTypeName);
+			genType.typeName = new OS_UserType(normalTypeName);
 	}
 
 	private /*static*/ void normalTypeName_generic_butNotNull_resolveToNonGeneric(final @NotNull GenType genType, final @NotNull GenType resolved) {
@@ -126,7 +127,7 @@ class DTR_VariableStatement {
 
 		assert normalTypeName == type.getTypeName();
 
-		OS_Type typeName = new OS_Type(normalTypeName);
+		OS_Type typeName = new OS_UserType(normalTypeName);
 		try {
 			final @NotNull GenType resolved = dt2.resolve_type(typeName, variableStatement.getContext());
 			genType.resolved = resolved.resolved;

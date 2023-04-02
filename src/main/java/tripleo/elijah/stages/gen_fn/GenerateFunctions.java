@@ -19,6 +19,10 @@ import tripleo.elijah.entrypoints.ArbitraryFunctionEntryPoint;
 import tripleo.elijah.entrypoints.EntryPoint;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_BuiltinType;
+import tripleo.elijah.lang.types.OS_FuncExprType;
+import tripleo.elijah.lang.types.OS_UnitType;
+import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.lang2.SpecialFunctions;
 import tripleo.elijah.stages.deduce.ClassInvocation;
@@ -94,7 +98,7 @@ public class GenerateFunctions {
 				final @NotNull GenType genType  = new GenType();
 				final TypeName         typeName = fali.typeName();
 				if (typeName != null)
-					genType.typeName = new OS_Type(typeName);
+					genType.typeName = new OS_UserType(typeName);
 				genType.resolved = attached;
 
 				final @org.jetbrains.annotations.Nullable OS_Type attached1;
@@ -122,21 +126,21 @@ public class GenerateFunctions {
 //		for (Instruction instruction : gf.instructionsList) {
 //			LOG.info(instruction);
 //		}
-//		GeneratedFunction.printTables(gf);
+//		EvaFunction.printTables(gf);
 		gf.fi = aFunctionInvocation;
 		return gf;
 	}
 
-	private int add_i(@NotNull final BaseGeneratedFunction gf, final InstructionName x, final List<InstructionArgument> list_of, final Context ctx) {
+	private int add_i(@NotNull final BaseEvaFunction gf, final InstructionName x, final List<InstructionArgument> list_of, final Context ctx) {
 		final int i = gf.add(x, list_of, ctx);
 		return i;
 	}
 
-	@NotNull GeneratedFunction generateFunction11(@NotNull final FunctionDef fd,
-												final OS_Element parent,
-												@NotNull FunctionInvocation aFunctionInvocation) {
+	@NotNull EvaFunction generateFunction11(@NotNull final FunctionDef fd,
+											final OS_Element parent,
+											@NotNull FunctionInvocation aFunctionInvocation) {
 //		LOG.err("601.1 fn "+fd.name() + " " + parent);
-		final GeneratedFunction gf = new GeneratedFunction(fd);
+		final EvaFunction gf = new EvaFunction(fd);
 		if (parent instanceof ClassStatement)
 			gf.addVariableTableEntry("self",
 					VariableTableType.SELF,
@@ -145,9 +149,9 @@ public class GenerateFunctions {
 		final OS_Type returnType;
 		final TypeName returnType1 = fd.returnType();
 		if (returnType1 == null)
-			returnType = new OS_Type.OS_UnitType();
+			returnType = new OS_UnitType();
 		else
-			returnType = new OS_Type(returnType1);
+			returnType = new OS_UserType(returnType1);
 		gf.addVariableTableEntry("Result",
 				VariableTableType.RESULT,
 				gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, returnType, IdentExpression.forString("Result")),
@@ -167,7 +171,7 @@ public class GenerateFunctions {
 				final GenType genType = new GenType();
 				final TypeName typeName = fali.typeName();
 				if (typeName != null)
-					genType.typeName = new OS_Type(typeName);
+					genType.typeName = new OS_UserType(typeName);
 				genType.resolved = attached;
 
 				final OS_Type attached1;
@@ -198,7 +202,7 @@ public class GenerateFunctions {
 //		for (Instruction instruction : gf.instructionsList) {
 //			LOG.info(instruction);
 //		}
-//		GeneratedFunction.printTables(gf);
+//		EvaFunction.printTables(gf);
 
 		gf.fi = aFunctionInvocation;
 		return gf;
@@ -225,10 +229,10 @@ public class GenerateFunctions {
 //	 * @param aFunctionInvocation
 //	 * @return
 //	 */
-//	public GeneratedFunction generateFunction(@NotNull FunctionDef aFunctionDef,
+//	public EvaFunction generateFunction(@NotNull FunctionDef aFunctionDef,
 //											  @NotNull OS_Element aClassStatement,
 //											  @NotNull FunctionInvocation aFunctionInvocation) {
-//		@NotNull GeneratedFunction Result = generateFunction(aFunctionDef, aClassStatement);
+//		@NotNull EvaFunction Result = generateFunction(aFunctionDef, aClassStatement);
 //		Result.fi = aFunctionInvocation;
 //		return Result;
 //	}
@@ -244,7 +248,7 @@ public class GenerateFunctions {
 //			throw new NotImplementedException();
 		}
 
-		private void generate_match_conditional(@NotNull final MatchConditional mc, final @NotNull BaseGeneratedFunction gf) {
+		private void generate_match_conditional(@NotNull final MatchConditional mc, final @NotNull BaseEvaFunction gf) {
 			final int     y    = 2;
 			final Context cctx = mc.getParent().getContext(); // TODO MatchConditional.getContext returns NULL!!!
 			{
@@ -264,7 +268,7 @@ public class GenerateFunctions {
 
 							final int begin0 = add_i(gf, InstructionName.ES, null, cctx);
 
-							final int                   tmp     = addTempTableEntry(new OS_Type(tn), id, gf, id); // TODO no context!
+							final int                   tmp     = addTempTableEntry(new OS_UserType(tn), id, gf, id); // TODO no context!
 							@NotNull VariableTableEntry vte_tmp = gf.getVarTableEntry(tmp);
 							final TypeTableEntry        t       = vte_tmp.type;
 							add_i(gf, InstructionName.IS_A, List_of(i, new IntegerIA(t.getIndex(), gf), /*TODO not*/new LabelIA(label_next)), cctx);
@@ -311,7 +315,7 @@ public class GenerateFunctions {
 			}
 		}
 
-		private void generate_if(@NotNull final IfConditional ifc, final @NotNull BaseGeneratedFunction gf) {
+		private void generate_if(@NotNull final IfConditional ifc, final @NotNull BaseEvaFunction gf) {
 			final Context                  cctx         = ifc.getContext();
 			final @NotNull IdentExpression Boolean_true = Helpers.string_to_ident("true");
 			final @NotNull Label           label_next   = gf.addLabel();
@@ -321,7 +325,7 @@ public class GenerateFunctions {
 				final IExpression         expr   = ifc.getExpr();
 				final InstructionArgument i      = simplify_expression(expr, gf, cctx);
 //				LOG.info("711 " + i);
-				final int const_true = addConstantTableEntry("true", Boolean_true, new OS_Type(BuiltInTypes.Boolean), gf);
+				final int const_true = addConstantTableEntry("true", Boolean_true, new OS_BuiltinType(BuiltInTypes.Boolean), gf);
 				add_i(gf, InstructionName.JNE, List_of(i, new ConstTableIA(const_true, gf), label_next), cctx);
 				final int begin_1st = add_i(gf, InstructionName.ES, null, cctx);
 				final int begin_2nd = add_i(gf, InstructionName.ES, null, cctx);
@@ -358,7 +362,7 @@ public class GenerateFunctions {
 			}
 		}
 
-		private void generate_loop(@NotNull final Loop loop, final @NotNull BaseGeneratedFunction gf) {
+		private void generate_loop(@NotNull final Loop loop, final @NotNull BaseEvaFunction gf) {
 			final Context cctx = loop.getContext();
 			final int     e2   = add_i(gf, InstructionName.ES, null, cctx);
 //			LOG.info("702 "+loop.getType());
@@ -383,7 +387,7 @@ public class GenerateFunctions {
 			gf.addContext(loop.getContext(), r);
 		}
 
-		private void generate_loop_FROM_TO_TYPE(@NotNull Loop loop, @NotNull BaseGeneratedFunction gf, @NotNull Context cctx) {
+		private void generate_loop_FROM_TO_TYPE(@NotNull Loop loop, @NotNull BaseEvaFunction gf, @NotNull Context cctx) {
 			final IdentExpression iterNameToken = loop.getIterNameToken();
 			final String          iterName      = iterNameToken.getText();
 			final int             iter_temp     = addTempTableEntry(null, iterNameToken, gf, iterNameToken); // TODO deduce later
@@ -409,10 +413,10 @@ public class GenerateFunctions {
 			gf.place(label_bottom);
 		}
 
-		private void generate_loop_EXPR_TYPE(@NotNull Loop loop, @NotNull BaseGeneratedFunction gf, @NotNull Context cctx) {
+		private void generate_loop_EXPR_TYPE(@NotNull Loop loop, @NotNull BaseEvaFunction gf, @NotNull Context cctx) {
 			final int loop_iterator = addTempTableEntry(null, gf); // TODO deduce later
 			add_i(gf, InstructionName.DECL, List_of(new SymbolIA("tmp"), new IntegerIA(loop_iterator, gf)), cctx);
-			final int                          i2  = addConstantTableEntry("", new NumericExpression(0), new OS_Type(BuiltInTypes.SystemInteger), gf);
+			final int                          i2  = addConstantTableEntry("", new NumericExpression(0), new OS_BuiltinType(BuiltInTypes.SystemInteger), gf);
 			final @NotNull InstructionArgument ia1 = new ConstTableIA(i2, gf);
 //			if (ia1 instanceof ConstTableIA)
 			add_i(gf, InstructionName.AGNK, List_of(new IntegerIA(loop_iterator, gf), ia1), cctx);
@@ -435,7 +439,7 @@ public class GenerateFunctions {
 			gf.place(label_bottom);
 		}
 
-		private void generate_variable_sequence(@NotNull VariableSequence item, @NotNull BaseGeneratedFunction gf, @NotNull Context cctx) {
+		private void generate_variable_sequence(@NotNull VariableSequence item, @NotNull BaseEvaFunction gf, @NotNull Context cctx) {
 			for (final @NotNull VariableStatement vs : item.items()) {
 				int state = 0;
 //				LOG.info("8004 " + vs);
@@ -478,7 +482,7 @@ public class GenerateFunctions {
 					case 3: {
 						final @NotNull TypeTableEntry tte;
 						if (initialValue == IExpression.UNASSIGNED && vs.typeName() != null) {
-							tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, new OS_Type(vs.typeName()), vs.getNameToken());
+							tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, new OS_UserType(vs.typeName()), vs.getNameToken());
 						} else {
 							tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, initialValue.getType(), vs.getNameToken());
 						}
@@ -503,7 +507,7 @@ public class GenerateFunctions {
 		private void generate_statement_wrapper(final StatementWrapper aStatementWrapper,
 		                                        @NotNull IExpression x,
 		                                        @NotNull ExpressionKind expressionKind,
-		                                        @NotNull BaseGeneratedFunction gf,
+		                                        @NotNull BaseEvaFunction gf,
 		                                        @NotNull Context cctx) {
 //			LOG.err("106-1 "+x.getKind()+" "+x);
 			if (x.is_simple()) {
@@ -563,7 +567,7 @@ public class GenerateFunctions {
 			}
 		}
 
-		public void generate_construct_statement(@NotNull ConstructStatement aConstructStatement, @NotNull BaseGeneratedFunction gf, @NotNull Context cctx) {
+		public void generate_construct_statement(@NotNull ConstructStatement aConstructStatement, @NotNull BaseEvaFunction gf, @NotNull Context cctx) {
 			final IExpression    left = aConstructStatement.getExpr(); // TODO need type of this expr, not expr!!
 			final ExpressionList args = aConstructStatement.getArgs();
 			//
@@ -601,7 +605,7 @@ public class GenerateFunctions {
 
 	// endregion
 
-	private void generate_item(final OS_Element item, @NotNull final BaseGeneratedFunction gf, final @NotNull Context cctx) {
+	private void generate_item(final OS_Element item, @NotNull final BaseEvaFunction gf, final @NotNull Context cctx) {
 		@NotNull Generate_Item gi = new Generate_Item();
 		if (item instanceof AliasStatement) {
 			gi.generate_alias_statement((AliasStatement) item);
@@ -650,10 +654,10 @@ public class GenerateFunctions {
 //	 * @param aFunctionInvocation
 //	 * @return
 //	 */
-//	public GeneratedFunction generateFunction(@NotNull FunctionDef aFunctionDef,
+//	public EvaFunction generateFunction(@NotNull FunctionDef aFunctionDef,
 //											  @NotNull OS_Element aClassStatement,
 //											  @NotNull FunctionInvocation aFunctionInvocation) {
-//		@NotNull GeneratedFunction Result = generateFunction(aFunctionDef, aClassStatement);
+//		@NotNull EvaFunction Result = generateFunction(aFunctionDef, aClassStatement);
 //		Result.fi = aFunctionInvocation;
 //		return Result;
 //	}
@@ -672,7 +676,7 @@ public class GenerateFunctions {
 //				throw new NotImplementedException();
 			} else if (item instanceof ClassStatement) {
 //				final ClassStatement classStatement = (ClassStatement) item;
-//				@NotNull GeneratedClass gen_c = generateClass(classStatement);
+//				@NotNull EvaClass gen_c = generateClass(classStatement);
 //				gc.addClass(classStatement, gen_c);
 			} else if (item instanceof ConstructorDef) {
 //				final ConstructorDef constructorDef = (ConstructorDef) item;
@@ -681,11 +685,11 @@ public class GenerateFunctions {
 			} else if (item instanceof DestructorDef) {
 				throw new NotImplementedException();
 			} else if (item instanceof DefFunctionDef) {
-//				@NotNull GeneratedFunction f = generateFunction((DefFunctionDef) item, klass);
+//				@NotNull EvaFunction f = generateFunction((DefFunctionDef) item, klass);
 //				gc.addFunction((DefFunctionDef) item, f);
 			} else if (item instanceof FunctionDef) {
 				// README handled in WlGenerateFunction
-//				@NotNull GeneratedFunction f = generateFunction((FunctionDef) item, klass);
+//				@NotNull EvaFunction f = generateFunction((FunctionDef) item, klass);
 //				gc.addFunction((FunctionDef) item, f);
 			} else if (item instanceof NamespaceStatement) {
 				throw new NotImplementedException();
@@ -729,11 +733,11 @@ public class GenerateFunctions {
 		return gc;
 	}
 
-	@NotNull GeneratedFunction generateFunction(@NotNull final FunctionDef fd,
-	                                            final OS_Element parent,
-	                                            @NotNull FunctionInvocation aFunctionInvocation) {
+	@NotNull EvaFunction generateFunction(@NotNull final FunctionDef fd,
+										  final OS_Element parent,
+										  @NotNull FunctionInvocation aFunctionInvocation) {
 //		LOG.err("601.1 fn "+fd.name() + " " + parent);
-		final @NotNull GeneratedFunction gf = new GeneratedFunction(fd);
+		final @NotNull EvaFunction gf = new EvaFunction(fd);
 		if (parent instanceof ClassStatement)
 			gf.addVariableTableEntry("self",
 					VariableTableType.SELF,
@@ -742,9 +746,9 @@ public class GenerateFunctions {
 		final @NotNull OS_Type                             returnType;
 		final @org.jetbrains.annotations.Nullable TypeName returnType1 = fd.returnType();
 		if (returnType1 == null)
-			returnType = new OS_Type.OS_UnitType();
+			returnType = new OS_UnitType();
 		else
-			returnType = new OS_Type(returnType1);
+			returnType = new OS_UserType(returnType1);
 		gf.addVariableTableEntry("Result",
 				VariableTableType.RESULT,
 				gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, returnType, IdentExpression.forString("Result")),
@@ -764,7 +768,7 @@ public class GenerateFunctions {
 				final @NotNull GenType genType  = new GenType();
 				final TypeName         typeName = fali.typeName();
 				if (typeName != null)
-					genType.typeName = new OS_Type(typeName);
+					genType.typeName = new OS_UserType(typeName);
 				genType.resolved = attached;
 
 				final @org.jetbrains.annotations.Nullable OS_Type attached1;
@@ -795,7 +799,7 @@ public class GenerateFunctions {
 //		for (Instruction instruction : gf.instructionsList) {
 //			LOG.info(instruction);
 //		}
-//		GeneratedFunction.printTables(gf);
+//		EvaFunction.printTables(gf);
 
 		gf.fi = aFunctionInvocation;
 		return gf;
@@ -851,7 +855,7 @@ public class GenerateFunctions {
 //		return R;
 //	}
 
-	public void generateAllTopLevelClasses(@NotNull List<GeneratedNode> lgc) {
+	public void generateAllTopLevelClasses(@NotNull List<EvaNode> lgc) {
 		for (final ModuleItem item : module.getItems()) {
 			if (item instanceof NamespaceStatement) {
 				final @NotNull NamespaceStatement namespaceStatement = (NamespaceStatement) item;
@@ -883,7 +887,7 @@ public class GenerateFunctions {
 				throw new NotImplementedException();
 			} else if (item instanceof FunctionDef) {
 				//throw new NotImplementedException();
-//				@NotNull GeneratedFunction f = generateFunction((FunctionDef) item, namespace1);
+//				@NotNull EvaFunction f = generateFunction((FunctionDef) item, namespace1);
 //				gn.addFunction((FunctionDef) item, f);
 			} else if (item instanceof DefFunctionDef) {
 				throw new NotImplementedException();
@@ -911,7 +915,7 @@ public class GenerateFunctions {
 		return gn;
 	}
 
-	private void generate_item_assignment(final StatementWrapper aStatementWrapper, @NotNull final IExpression x, @NotNull final BaseGeneratedFunction gf, final @NotNull Context cctx) {
+	private void generate_item_assignment(final StatementWrapper aStatementWrapper, @NotNull final IExpression x, @NotNull final BaseEvaFunction gf, final @NotNull Context cctx) {
 //		LOG.err(String.format("801 %s %s", x.getLeft(), ((BasicBinaryExpression) x).getRight()));
 		final @NotNull BasicBinaryExpression    bbe    = (BasicBinaryExpression) x;
 		final IExpression                       right1 = bbe.getRight();
@@ -951,7 +955,7 @@ public class GenerateFunctions {
 	private void generate_item_dot_expression(@org.jetbrains.annotations.Nullable final InstructionArgument backlink,
 	                                          final IExpression left,
 	                                          @NotNull final IExpression right,
-	                                          final @NotNull BaseGeneratedFunction gf,
+	                                          final @NotNull BaseEvaFunction gf,
 	                                          final Context cctx) {
 		final int y=2;
 		final int x = gf.addIdentTableEntry((IdentExpression) left, cctx);
@@ -970,7 +974,7 @@ public class GenerateFunctions {
 			generate_item_dot_expression(new IdentIA(x, gf), right.getLeft(), ((BasicBinaryExpression) right).getRight(), gf, cctx);
 	}
 
-	private void assign_variable(final @NotNull BaseGeneratedFunction gf, final int vte, @NotNull final IExpression value, final @NotNull Context cctx) {
+	private void assign_variable(final @NotNull BaseEvaFunction gf, final int vte, @NotNull final IExpression value, final @NotNull Context cctx) {
 		if (value == IExpression.UNASSIGNED) return; // default_expression
 		switch (value.getKind()) {
 			case PROCEDURE_CALL:
@@ -1018,12 +1022,12 @@ public class GenerateFunctions {
 		}
 	}
 
-	private @NotNull TypeTableEntry getType(@NotNull final IExpression arg, final @NotNull BaseGeneratedFunction gf) {
+	private @NotNull TypeTableEntry getType(@NotNull final IExpression arg, final @NotNull BaseEvaFunction gf) {
 		final @NotNull TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, arg.getType(), arg);
 		return tte;
 	}
 
-	private void simplify_procedure_call(@NotNull final ProcedureCallExpression pce, final @NotNull BaseGeneratedFunction gf, final @NotNull Context cctx) {
+	private void simplify_procedure_call(@NotNull final ProcedureCallExpression pce, final @NotNull BaseEvaFunction gf, final @NotNull Context cctx) {
 		final IExpression    left = pce.getLeft();
 		final ExpressionList args = pce.getArgs();
 		//
@@ -1053,7 +1057,7 @@ public class GenerateFunctions {
 		}
 	}
 
-	private @NotNull List<InstructionArgument> simplify_args(@org.jetbrains.annotations.Nullable final ExpressionList args, final @NotNull BaseGeneratedFunction gf, final Context cctx) {
+	private @NotNull List<InstructionArgument> simplify_args(@org.jetbrains.annotations.Nullable final ExpressionList args, final @NotNull BaseEvaFunction gf, final Context cctx) {
 		final @NotNull List<InstructionArgument> R = new ArrayList<InstructionArgument>();
 		if (args == null) return R;
 		//
@@ -1069,7 +1073,7 @@ public class GenerateFunctions {
 		return R;
 	}
 
-	private @NotNull Collection<InstructionArgument> simplify_args2(@org.jetbrains.annotations.Nullable final ExpressionList args, @NotNull final GeneratedFunction gf, final Context cctx) {
+	private @NotNull Collection<InstructionArgument> simplify_args2(@org.jetbrains.annotations.Nullable final ExpressionList args, @NotNull final EvaFunction gf, final Context cctx) {
 		@NotNull Collection<InstructionArgument> R = new ArrayList<InstructionArgument>();
 		if (args == null) return R;
 		//
@@ -1090,7 +1094,7 @@ public class GenerateFunctions {
 		return R;
 	}
 
-	public int addProcTableEntry(final IExpression expression, final InstructionArgument expression_num, final List<TypeTableEntry> args, final @NotNull BaseGeneratedFunction gf) {
+	public int addProcTableEntry(final IExpression expression, final InstructionArgument expression_num, final List<TypeTableEntry> args, final @NotNull BaseEvaFunction gf) {
 		final @NotNull ProcTableEntry pte = new ProcTableEntry(gf.prte_list.size(), expression, expression_num, args);
 		gf.prte_list.add(pte);
 		if (expression_num instanceof IdentIA) {
@@ -1101,7 +1105,7 @@ public class GenerateFunctions {
 		return pte.index;
 	}
 
-	InstructionArgument simplify_expression(@NotNull final IExpression expression, final @NotNull BaseGeneratedFunction gf, final Context cctx) {
+	InstructionArgument simplify_expression(@NotNull final IExpression expression, final @NotNull BaseEvaFunction gf, final Context cctx) {
 		final ExpressionKind expressionKind = expression.getKind();
 		switch (expressionKind) {
 		case PROCEDURE_CALL:
@@ -1109,13 +1113,13 @@ public class GenerateFunctions {
 		case CAST_TO: {
 			@NotNull TypeCastExpression tce  = (TypeCastExpression) expression;
 			InstructionArgument         simp = simplify_expression(tce.getLeft(), gf, cctx);
-			@NotNull TypeTableEntry tte_index = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, new OS_Type(tce.getTypeName()));
+			@NotNull TypeTableEntry tte_index = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, new OS_UserType(tce.getTypeName()));
 			final int               x         = add_i(gf, InstructionName.CAST_TO, List_of(simp, new IntegerIA(tte_index.getIndex(), gf)), cctx);
 		}
 		case AS_CAST: {
 			@NotNull TypeCastExpression tce  = (TypeCastExpression) expression;
 			InstructionArgument         simp = simplify_expression(tce.getLeft(), gf, cctx);
-			@NotNull TypeTableEntry tte_index = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, new OS_Type(tce.getTypeName()));
+			@NotNull TypeTableEntry tte_index = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, new OS_UserType(tce.getTypeName()));
 			final int               x         = add_i(gf, InstructionName.AS_CAST, List_of(simp, new IntegerIA(tte_index.getIndex(), gf)), cctx);
 		}
 		case DOT_EXP: {
@@ -1194,7 +1198,7 @@ public class GenerateFunctions {
 				final @NotNull TypeTableEntry tte_left  = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null, left);
 				final @NotNull TypeTableEntry tte_right = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null, right);
 				final int                     pte       = addProcTableEntry(expr_kind_name, null, List_of(tte_left, tte_right), gf);
-				final int            tmp       = addTempTableEntry(new OS_Type(BuiltInTypes.Boolean), gf); // README should be Boolean
+				final int            tmp       = addTempTableEntry(new OS_BuiltinType(BuiltInTypes.Boolean), gf); // README should be Boolean
 				add_i(gf, InstructionName.DECL, List_of(new SymbolIA("tmp"), new IntegerIA(tmp, gf)), cctx);
 				final @NotNull Instruction inst = new Instruction();
 				inst.setName(InstructionName.CALLS);
@@ -1265,7 +1269,7 @@ public class GenerateFunctions {
 				final @NotNull TypeTableEntry tte_left  = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null, left);
 				final @NotNull TypeTableEntry tte_right = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null, right);
 				final int                     pte       = addProcTableEntry(expr_kind_name, null, List_of(tte_left, tte_right), gf);
-				final int            tmp       = addTempTableEntry(new OS_Type(BuiltInTypes.Boolean), gf);
+				final int            tmp       = addTempTableEntry(new OS_BuiltinType(BuiltInTypes.Boolean), gf);
 				add_i(gf, InstructionName.DECL, List_of(new SymbolIA("tmp"), new IntegerIA(tmp, gf)), cctx);
 				final @NotNull Instruction inst = new Instruction();
 				inst.setName(InstructionName.CALLS);
@@ -1299,7 +1303,7 @@ public class GenerateFunctions {
 //					TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null, expr_kind_name);
 				final @NotNull TypeTableEntry tte_left = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null, left);
 				final int                     pte      = addProcTableEntry(expr_kind_name, null, List_of(tte_left), gf);
-				final int            tmp      = addTempTableEntry(new OS_Type(BuiltInTypes.Boolean), gf);
+				final int            tmp      = addTempTableEntry(new OS_BuiltinType(BuiltInTypes.Boolean), gf);
 				add_i(gf, InstructionName.DECL, List_of(new SymbolIA("tmp"), new IntegerIA(tmp, gf)), cctx);
 				final @NotNull Instruction inst = new Instruction();
 				inst.setName(InstructionName.CALLS);
@@ -1324,7 +1328,7 @@ public class GenerateFunctions {
 	}
 
 	@NotNull
-	private InstructionArgument simplify_expression_procedure_call(@NotNull IExpression expression, @NotNull BaseGeneratedFunction gf, Context cctx) {
+	private InstructionArgument simplify_expression_procedure_call(@NotNull IExpression expression, @NotNull BaseEvaFunction gf, Context cctx) {
 		final @NotNull ProcedureCallExpression   pce  = (ProcedureCallExpression) expression;
 		final IExpression                        left = pce.getLeft();
 		final ExpressionList                     args = pce.getArgs();
@@ -1402,7 +1406,7 @@ public class GenerateFunctions {
 	}
 
 	@NotNull List<TypeTableEntry> get_args_types(@org.jetbrains.annotations.Nullable final ExpressionList args,
-	                                             final @NotNull BaseGeneratedFunction gf,
+	                                             final @NotNull BaseEvaFunction gf,
 	                                             @NotNull final Context aContext) {
 		final @NotNull List<TypeTableEntry> R = new ArrayList<TypeTableEntry>();
 		if (args == null) return R;
@@ -1436,7 +1440,7 @@ public class GenerateFunctions {
 	}
 
 	private @NotNull List<TypeTableEntry> get_args_types(final @NotNull List<FormalArgListItem> args,
-	                                                     final @NotNull BaseGeneratedFunction gf) {
+	                                                     final @NotNull BaseEvaFunction gf) {
 		final @NotNull List<TypeTableEntry> R = new ArrayList<TypeTableEntry>();
 		//
 		for (final @NotNull FormalArgListItem arg : args) {
@@ -1445,7 +1449,7 @@ public class GenerateFunctions {
 			if (arg.typeName() == null || arg.typeName().isNull())
 				ty = null;
 			else
-				ty = new OS_Type(arg.typeName());
+				ty = new OS_UserType(arg.typeName());
 
 			tte = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, ty, arg.getNameToken());
 
@@ -1456,7 +1460,7 @@ public class GenerateFunctions {
 	}
 
 	private @NotNull Instruction expression_to_call(@NotNull final ProcedureCallExpression pce,
-	                                                @NotNull final BaseGeneratedFunction gf,
+	                                                @NotNull final BaseEvaFunction gf,
 	                                                @NotNull final Context cctx) {
 		final IExpression left = pce.getLeft();
 		switch (left.getKind()) {
@@ -1478,7 +1482,7 @@ public class GenerateFunctions {
 	}
 
 	@NotNull
-	private Instruction expression_to_call_add_entry(final @NotNull BaseGeneratedFunction gf,
+	private Instruction expression_to_call_add_entry(final @NotNull BaseEvaFunction gf,
 	                                                 @NotNull final ProcedureCallExpression pce,
 	                                                 final @NotNull IExpression left,
 	                                                 final @NotNull Context cctx) {
@@ -1496,7 +1500,7 @@ public class GenerateFunctions {
 	}
 
 	@NotNull
-	private Instruction expression_to_call_add_entry(final @NotNull BaseGeneratedFunction gf,
+	private Instruction expression_to_call_add_entry(final @NotNull BaseEvaFunction gf,
 	                                                 @NotNull final ProcedureCallExpression pce,
 	                                                 final IExpression left,
 	                                                 final InstructionArgument left1,
@@ -1512,11 +1516,11 @@ public class GenerateFunctions {
 		return i;
 	}
 
-	private void simplify_qident(final Qualident left, final GeneratedFunction gf) {
+	private void simplify_qident(final Qualident left, final EvaFunction gf) {
 		throw new NotImplementedException();
 	}
 
-	private @NotNull InstructionArgument simplify_dot_expression(final @NotNull DotExpression dotExpression, final @NotNull BaseGeneratedFunction gf, Context cctx) {
+	private @NotNull InstructionArgument simplify_dot_expression(final @NotNull DotExpression dotExpression, final @NotNull BaseEvaFunction gf, Context cctx) {
 		@NotNull InstructionArgument x = gf.get_assignment_path(dotExpression, this, cctx);
 		LOG.info("1117 " + x);
 		return x;
@@ -1526,17 +1530,17 @@ public class GenerateFunctions {
 	// region add-table-entries
 	//
 
-	private int addVariableTableEntry(final String name, final TypeTableEntry type, final @NotNull BaseGeneratedFunction gf, OS_Element el) {
+	private int addVariableTableEntry(final String name, final TypeTableEntry type, final @NotNull BaseEvaFunction gf, OS_Element el) {
 		return gf.addVariableTableEntry(name, VariableTableType.VAR, type, el);
 	}
 
-	private int addTempTableEntry(final OS_Type type, final @NotNull BaseGeneratedFunction gf) {
+	private int addTempTableEntry(final OS_Type type, final @NotNull BaseEvaFunction gf) {
 		return addTempTableEntry(type, null, gf, null);
 	}
 
 	private int addTempTableEntry(final OS_Type type,
 	                              @Nullable final IdentExpression name,
-	                              @NotNull final BaseGeneratedFunction gf,
+	                              @NotNull final BaseEvaFunction gf,
 	                              @Nullable OS_Element el) {
 		final @org.jetbrains.annotations.Nullable String theName;
 		final int                     num;
@@ -1568,7 +1572,7 @@ public class GenerateFunctions {
 	 * @param gf
 	 * @return the cte table index
 	 */
-	private int addConstantTableEntry(final String name, final IExpression initialValue, final OS_Type type, final @NotNull BaseGeneratedFunction gf) {
+	private int addConstantTableEntry(final String name, final IExpression initialValue, final OS_Type type, final @NotNull BaseEvaFunction gf) {
 		final @NotNull TypeTableEntry     tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, initialValue);
 		final @NotNull ConstantTableEntry cte = new ConstantTableEntry(gf.cte_list.size(), name, initialValue, tte);
 		gf.cte_list.add(cte);
@@ -1584,7 +1588,7 @@ public class GenerateFunctions {
 	 * @param gf
 	 * @return the cte table index
 	 */
-	private int addConstantTableEntry2(final String name, final IExpression initialValue, final OS_Type type, final @NotNull BaseGeneratedFunction gf) {
+	private int addConstantTableEntry2(final String name, final IExpression initialValue, final OS_Type type, final @NotNull BaseEvaFunction gf) {
 		final @NotNull TypeTableEntry     tte = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, type, initialValue);
 		final @NotNull ConstantTableEntry cte = new ConstantTableEntry(gf.cte_list.size(), name, initialValue, tte);
 
@@ -1616,7 +1620,7 @@ public class GenerateFunctions {
 //			throw new NotImplementedException();
 		}
 
-		private void generate_match_conditional(@NotNull final MatchConditional mc, final @NotNull BaseGeneratedFunction gf) {
+		private void generate_match_conditional(@NotNull final MatchConditional mc, final @NotNull BaseEvaFunction gf) {
 			final int     y    = 2;
 			final Context cctx = mc.getParent().getContext(); // TODO MatchConditional.getContext returns NULL!!!
 			{
@@ -1636,7 +1640,7 @@ public class GenerateFunctions {
 
 							final int begin0 = add_i(gf, InstructionName.ES, null, cctx);
 
-							final int                   tmp     = addTempTableEntry(new OS_Type(tn), id, gf, id); // TODO no context!
+							final int                   tmp     = addTempTableEntry(new OS_UserType(tn), id, gf, id); // TODO no context!
 							@NotNull VariableTableEntry vte_tmp = gf.getVarTableEntry(tmp);
 							final TypeTableEntry        t       = vte_tmp.type;
 							add_i(gf, InstructionName.IS_A, List_of(i, new IntegerIA(t.getIndex(), gf), /*TODO not*/new LabelIA(label_next)), cctx);
@@ -1683,7 +1687,7 @@ public class GenerateFunctions {
 			}
 		}
 
-		private void generate_if(@NotNull final IfConditional ifc, final @NotNull BaseGeneratedFunction gf) {
+		private void generate_if(@NotNull final IfConditional ifc, final @NotNull BaseEvaFunction gf) {
 			final Context                  cctx         = ifc.getContext();
 			final @NotNull IdentExpression Boolean_true = Helpers.string_to_ident("true");
 			final @NotNull Label           label_next   = gf.addLabel();
@@ -1693,7 +1697,7 @@ public class GenerateFunctions {
 				final IExpression         expr   = ifc.getExpr();
 				final InstructionArgument i      = simplify_expression(expr, gf, cctx);
 //				LOG.info("711 " + i);
-				final int const_true = addConstantTableEntry("true", Boolean_true, new OS_Type(BuiltInTypes.Boolean), gf);
+				final int const_true = addConstantTableEntry("true", Boolean_true, new OS_BuiltinType(BuiltInTypes.Boolean), gf);
 				add_i(gf, InstructionName.JNE, List_of(i, new ConstTableIA(const_true, gf), label_next), cctx);
 				final int begin_1st = add_i(gf, InstructionName.ES, null, cctx);
 				final int begin_2nd = add_i(gf, InstructionName.ES, null, cctx);
@@ -1730,7 +1734,7 @@ public class GenerateFunctions {
 			}
 		}
 
-		private void generate_loop(@NotNull final Loop loop, final @NotNull BaseGeneratedFunction gf) {
+		private void generate_loop(@NotNull final Loop loop, final @NotNull BaseEvaFunction gf) {
 			final Context cctx = loop.getContext();
 			final int     e2   = add_i(gf, InstructionName.ES, null, cctx);
 //			LOG.info("702 "+loop.getType());
@@ -1755,7 +1759,7 @@ public class GenerateFunctions {
 			gf.addContext(loop.getContext(), r);
 		}
 
-		private void generate_loop_FROM_TO_TYPE(@NotNull Loop loop, @NotNull BaseGeneratedFunction gf, @NotNull Context cctx) {
+		private void generate_loop_FROM_TO_TYPE(@NotNull Loop loop, @NotNull BaseEvaFunction gf, @NotNull Context cctx) {
 			final IdentExpression iterNameToken = loop.getIterNameToken();
 			final String          iterName      = iterNameToken.getText();
 			final int             iter_temp     = addTempTableEntry(null, iterNameToken, gf, iterNameToken); // TODO deduce later
@@ -1781,10 +1785,10 @@ public class GenerateFunctions {
 			gf.place(label_bottom);
 		}
 
-		private void generate_loop_EXPR_TYPE(@NotNull Loop loop, @NotNull BaseGeneratedFunction gf, @NotNull Context cctx) {
+		private void generate_loop_EXPR_TYPE(@NotNull Loop loop, @NotNull BaseEvaFunction gf, @NotNull Context cctx) {
 			final int loop_iterator = addTempTableEntry(null, gf); // TODO deduce later
 			add_i(gf, InstructionName.DECL, List_of(new SymbolIA("tmp"), new IntegerIA(loop_iterator, gf)), cctx);
-			final int                          i2  = addConstantTableEntry("", new NumericExpression(0), new OS_Type(BuiltInTypes.SystemInteger), gf);
+			final int                          i2  = addConstantTableEntry("", new NumericExpression(0), new OS_BuiltinType(BuiltInTypes.SystemInteger), gf);
 			final @NotNull InstructionArgument ia1 = new ConstTableIA(i2, gf);
 //			if (ia1 instanceof ConstTableIA)
 			add_i(gf, InstructionName.AGNK, List_of(new IntegerIA(loop_iterator, gf), ia1), cctx);
@@ -1807,7 +1811,7 @@ public class GenerateFunctions {
 			gf.place(label_bottom);
 		}
 
-		private void generate_variable_sequence(@NotNull VariableSequence item, @NotNull BaseGeneratedFunction gf, @NotNull Context cctx) {
+		private void generate_variable_sequence(@NotNull VariableSequence item, @NotNull BaseEvaFunction gf, @NotNull Context cctx) {
 			for (final @NotNull VariableStatement vs : item.items()) {
 				int state = 0;
 //				LOG.info("8004 " + vs);
@@ -1850,7 +1854,7 @@ public class GenerateFunctions {
 					case 3: {
 						final @NotNull TypeTableEntry tte;
 						if (initialValue == IExpression.UNASSIGNED && vs.typeName() != null) {
-							tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, new OS_Type(vs.typeName()), vs.getNameToken());
+							tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, new OS_UserType(vs.typeName()), vs.getNameToken());
 						} else {
 							tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, initialValue.getType(), vs.getNameToken());
 						}
@@ -1875,7 +1879,7 @@ public class GenerateFunctions {
 		private void generate_statement_wrapper(final StatementWrapper aStatementWrapper,
 		                                        @NotNull IExpression x,
 		                                        @NotNull ExpressionKind expressionKind,
-		                                        @NotNull BaseGeneratedFunction gf,
+		                                        @NotNull BaseEvaFunction gf,
 		                                        @NotNull Context cctx) {
 //			LOG.err("106-1 "+x.getKind()+" "+x);
 			if (x.is_simple()) {
@@ -1935,7 +1939,7 @@ public class GenerateFunctions {
 			}
 		}
 
-		public void generate_construct_statement(@NotNull ConstructStatement aConstructStatement, @NotNull BaseGeneratedFunction gf, @NotNull Context cctx) {
+		public void generate_construct_statement(@NotNull ConstructStatement aConstructStatement, @NotNull BaseEvaFunction gf, @NotNull Context cctx) {
 			final IExpression    left = aConstructStatement.getExpr(); // TODO need type of this expr, not expr!!
 			final ExpressionList args = aConstructStatement.getArgs();
 			//
@@ -1984,11 +1988,11 @@ public class GenerateFunctions {
 		private final GenerateFunctions gfs;
 
 		private final Generate_item_assignment generate_item_assign;
-		private final BaseGeneratedFunction    gf;
+		private final BaseEvaFunction          gf;
 		private final Context                  cctx;
 
 		public GIA__procedure_call__one(final @NotNull BasicBinaryExpression bbe,
-		                                final BaseGeneratedFunction gf,
+		                                final BaseEvaFunction gf,
 		                                final Context cctx,
 		                                final @NotNull Generate_item_assignment generate_item_assignment,
 		                                final ProcedureCallExpression pce,
@@ -2059,11 +2063,11 @@ public class GenerateFunctions {
 
 		//
 
-		int add_i(final BaseGeneratedFunction aGf, final InstructionName aAgn, final List<InstructionArgument> aList_of_fn_call, final Context aCctx) {
+		int add_i(final BaseEvaFunction aGf, final InstructionName aAgn, final List<InstructionArgument> aList_of_fn_call, final Context aCctx) {
 			return gfs.add_i(aGf, aAgn, aList_of_fn_call, aCctx);
 		}
 
-		int addVariableTableEntry(final String aText, final @NotNull TypeTableEntry aTte, final BaseGeneratedFunction aGf, final IdentExpression aIdentExpression) {
+		int addVariableTableEntry(final String aText, final @NotNull TypeTableEntry aTte, final BaseEvaFunction aGf, final IdentExpression aIdentExpression) {
 			return gfs.addVariableTableEntry(aText, aTte, aGf, aIdentExpression);
 		}
 
@@ -2071,7 +2075,7 @@ public class GenerateFunctions {
 
 	class Generate_item_assignment {
 
-		public void procedure_call(final StatementWrapper aStatementWrapper, @NotNull BaseGeneratedFunction gf, @NotNull BasicBinaryExpression bbe, @NotNull ProcedureCallExpression pce, @NotNull Context cctx) {
+		public void procedure_call(final StatementWrapper aStatementWrapper, @NotNull BaseEvaFunction gf, @NotNull BasicBinaryExpression bbe, @NotNull ProcedureCallExpression pce, @NotNull Context cctx) {
 /*
 			final IExpression left = bbe.getLeft();
 
@@ -2123,7 +2127,7 @@ public class GenerateFunctions {
 */
 		}
 
-		public void dot(@NotNull BaseGeneratedFunction gf, @NotNull DotExpression left, @NotNull IExpression right, Context cctx) {
+		public void dot(@NotNull BaseEvaFunction gf, @NotNull DotExpression left, @NotNull IExpression right, Context cctx) {
 			final InstructionArgument simple_left  = simplify_expression(left, gf, cctx);
 			final InstructionArgument simple_right = simplify_expression(right, gf, cctx);
 
@@ -2161,7 +2165,7 @@ public class GenerateFunctions {
 			int y = 2;
 		}
 
-		public void ident(@NotNull BaseGeneratedFunction gf, @NotNull IdentExpression left, @NotNull IdentExpression right, Context cctx) {
+		public void ident(@NotNull BaseEvaFunction gf, @NotNull IdentExpression left, @NotNull IdentExpression right, Context cctx) {
 			final @org.jetbrains.annotations.Nullable InstructionArgument vte_left = gf.vte_lookup(left.getText());
 			final int                                                     ident_left;
 			int                                                           ident_right;
@@ -2189,7 +2193,7 @@ public class GenerateFunctions {
 			}
 		}
 
-		public void numeric(@NotNull BaseGeneratedFunction gf, @NotNull IExpression left, @NotNull NumericExpression ne, Context cctx) {
+		public void numeric(@NotNull BaseEvaFunction gf, @NotNull IExpression left, @NotNull NumericExpression ne, Context cctx) {
 			@NotNull final InstructionArgument agn_path = gf.get_assignment_path(left, GenerateFunctions.this, cctx);
 			final int                          cte      = addConstantTableEntry("", ne, ne.getType(), gf);
 
@@ -2197,7 +2201,7 @@ public class GenerateFunctions {
 			// TODO what now??
 		}
 
-		public void mathematical(@NotNull BaseGeneratedFunction gf, @NotNull IExpression left, ExpressionKind kind, @NotNull IExpression right1, Context cctx) {
+		public void mathematical(@NotNull BaseEvaFunction gf, @NotNull IExpression left, ExpressionKind kind, @NotNull IExpression right1, Context cctx) {
 			// TODO doesn't use kind
 			final @NotNull TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, right1.getType(), right1);
 
@@ -2218,15 +2222,15 @@ public class GenerateFunctions {
 			}
 		}
 
-		public void string_literal(@NotNull BaseGeneratedFunction gf, @NotNull IExpression left, StringExpression right, Context aContext) {
+		public void string_literal(@NotNull BaseEvaFunction gf, @NotNull IExpression left, StringExpression right, Context aContext) {
 			@NotNull final InstructionArgument agn_path = gf.get_assignment_path(left, GenerateFunctions.this, aContext);
-			final int                          cte      = addConstantTableEntry("", right, new OS_Type(BuiltInTypes.String_)/*right.getType()*/, gf);
+			final int                          cte      = addConstantTableEntry("", right, new OS_BuiltinType(BuiltInTypes.String_)/*right.getType()*/, gf);
 
 			final int agn_inst = add_i(gf, InstructionName.AGN, List_of(agn_path, new ConstTableIA(cte, gf)), aContext);
 			// TODO what now??
 		}
 
-		public void neg(@NotNull BaseGeneratedFunction gf, @NotNull IExpression left, ExpressionKind aKind, @NotNull IExpression right1, Context cctx) {
+		public void neg(@NotNull BaseEvaFunction gf, @NotNull IExpression left, ExpressionKind aKind, @NotNull IExpression right1, Context cctx) {
 			// TODO doesn't use kind
 			final @NotNull TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, right1.getType(), right1);
 

@@ -17,6 +17,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_BuiltinType;
+import tripleo.elijah.lang.types.OS_UnknownType;
+import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.stages.deduce.declarations.DeferredMemberFunction;
 import tripleo.elijah.stages.gen_fn.*;
@@ -35,11 +38,11 @@ import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 public class DoAssignCall {
 	private final ElLog LOG;
 	private final DeduceTypes2.DeduceClient4 dc;
-	private final BaseGeneratedFunction generatedFunction;
-	private final OS_Module module;
+	private final BaseEvaFunction            generatedFunction;
+	private final OS_Module                  module;
 	private final ErrSink errSink;
 
-	public DoAssignCall(final DeduceTypes2.DeduceClient4 aDeduceClient4, final @NotNull BaseGeneratedFunction aGeneratedFunction) {
+	public DoAssignCall(final DeduceTypes2.DeduceClient4 aDeduceClient4, final @NotNull BaseEvaFunction aGeneratedFunction) {
 		dc = aDeduceClient4;
 		generatedFunction = aGeneratedFunction;
 		//
@@ -140,9 +143,9 @@ public class DoAssignCall {
 					pte.onFunctionInvocation(new DoneCallback<FunctionInvocation>() {
 						@Override
 						public void onDone(@NotNull FunctionInvocation result) {
-							result.generateDeferred().done(new DoneCallback<BaseGeneratedFunction>() {
+							result.generateDeferred().done(new DoneCallback<BaseEvaFunction>() {
 								@Override
-								public void onDone(@NotNull BaseGeneratedFunction bgf) {
+								public void onDone(@NotNull BaseEvaFunction bgf) {
 									@NotNull DeduceTypes2.PromiseExpectation<GenType> pe = dc.promiseExpectation(bgf, "Function Result type");
 									bgf.typePromise().then(new DoneCallback<GenType>() {
 										@Override
@@ -175,11 +178,11 @@ public class DoAssignCall {
 			if (e instanceof SubExpression) e = ((SubExpression) e).getExpression();
 			switch (e.getKind()) {
 			case NUMERIC:
-				tte.setAttached(new OS_Type(BuiltInTypes.SystemInteger));
+				tte.setAttached(new OS_BuiltinType(BuiltInTypes.SystemInteger));
 				//vte.type = tte;
 				break;
 			case CHAR_LITERAL:
-				tte.setAttached(new OS_Type(BuiltInTypes.SystemCharacter));
+				tte.setAttached(new OS_BuiltinType(BuiltInTypes.SystemCharacter));
 				break;
 			case IDENT:
 				do_assign_call_args_ident(generatedFunction, ctx, vte, instructionIndex, pte, i, tte, (IdentExpression) e);
@@ -310,7 +313,7 @@ public class DoAssignCall {
 							@NotNull FunctionDef fd = (FunctionDef) el;
 							final @Nullable IInvocation invocation;
 							if (fd.getParent() == generatedFunction.getFD().getParent()) {
-								invocation = dc.getInvocation((GeneratedFunction) generatedFunction);
+								invocation = dc.getInvocation((EvaFunction) generatedFunction);
 							} else {
 								if (fd.getParent() instanceof NamespaceStatement) {
 									NamespaceInvocation ni = dc.registerNamespaceInvocation((NamespaceStatement) fd.getParent());
@@ -372,7 +375,7 @@ public class DoAssignCall {
 		}
 	}
 
-	private void do_assign_call_args_ident(@NotNull BaseGeneratedFunction generatedFunction,
+	private void do_assign_call_args_ident(@NotNull BaseEvaFunction generatedFunction,
 										   @NotNull Context ctx,
 										   @NotNull VariableTableEntry vte,
 										   int aInstructionIndex,
@@ -392,7 +395,7 @@ public class DoAssignCall {
 				@Override
 				public void run() {
 					if (isDone) return;
-					final @NotNull List<TypeTableEntry> ll = dc.getPotentialTypesVte((GeneratedFunction) generatedFunction, vte_ia);
+					final @NotNull List<TypeTableEntry> ll = dc.getPotentialTypesVte((EvaFunction) generatedFunction, vte_ia);
 					doLogic(ll);
 					isDone = true;
 				}
@@ -433,7 +436,7 @@ public class DoAssignCall {
 						@Nullable OS_Element best = lrl.chooseBest(null);
 						if (best instanceof FormalArgListItem) {
 							@NotNull final FormalArgListItem fali = (FormalArgListItem) best;
-							final @NotNull OS_Type osType = new OS_Type(fali.typeName());
+							final @NotNull OS_Type osType = new OS_UserType(fali.typeName());
 							if (!osType.equals(vte.type.getAttached())) {
 								@NotNull TypeTableEntry tte1 = generatedFunction.newTypeTableEntry(
 										TypeTableEntry.Type.SPECIFIED, osType, fali.getNameToken(), vte1);
@@ -524,7 +527,7 @@ public class DoAssignCall {
 		}
 	}
 
-	private void do_assign_call_GET_ITEM(@NotNull GetItemExpression gie, TypeTableEntry tte, @NotNull BaseGeneratedFunction generatedFunction, Context ctx) {
+	private void do_assign_call_GET_ITEM(@NotNull GetItemExpression gie, TypeTableEntry tte, @NotNull BaseEvaFunction generatedFunction, Context ctx) {
 		try {
 			final LookupResultList lrl = dc.lookupExpression(gie.getLeft(), ctx);
 			final @Nullable OS_Element best = lrl.chooseBest(null);
@@ -564,7 +567,7 @@ public class DoAssignCall {
 										if (best2 instanceof FunctionDef) {
 											@NotNull FunctionDef fd = (FunctionDef) best2;
 											@Nullable ProcTableEntry pte = null;
-											final IInvocation invocation = dc.getInvocation((GeneratedFunction) generatedFunction);
+											final IInvocation invocation = dc.getInvocation((EvaFunction) generatedFunction);
 											dc.forFunction(dc.newFunctionInvocation(fd, pte, invocation), new ForFunction() {
 												@Override
 												public void typeDecided(final @NotNull GenType aType) {
@@ -592,7 +595,7 @@ public class DoAssignCall {
 						});
 						if (ty == null) {
 							@NotNull TypeTableEntry tte3 = generatedFunction.newTypeTableEntry(
-									TypeTableEntry.Type.SPECIFIED, new OS_Type(vs.typeName()), vs.getNameToken());
+									TypeTableEntry.Type.SPECIFIED, new OS_UserType(vs.typeName()), vs.getNameToken());
 							idte.type = tte3;
 //							ty = idte.type.getAttached();
 						}
@@ -621,7 +624,7 @@ public class DoAssignCall {
 	/*
 						if (ty2 == null) {
 							@NotNull TypeTableEntry tte3 = generatedFunction.newTypeTableEntry(
-									TypeTableEntry.Type.SPECIFIED, new OS_Type(fali.typeName()), fali.getNameToken());
+									TypeTableEntry.Type.SPECIFIED, new OS_UserType(fali.typeName()), fali.getNameToken());
 							vte2.type = tte3;
 	//						ty2 = vte2.type.attached; // TODO this is final, but why assign anyway?
 						}

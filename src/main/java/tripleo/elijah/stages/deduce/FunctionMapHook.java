@@ -9,7 +9,7 @@
 package tripleo.elijah.stages.deduce;
 
 import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
+import tripleo.elijah.stages.gen_fn.EvaFunction;
 
 import java.util.Collection;
 
@@ -19,7 +19,7 @@ import java.util.Collection;
 public interface FunctionMapHook {
 	boolean matches(FunctionDef aFunctionDef);
 
-	void apply(Collection<GeneratedFunction> aGeneratedFunctions);
+	void apply(Collection<EvaFunction> aGeneratedFunctions);
 }
 
 //

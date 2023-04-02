@@ -12,20 +12,14 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.gen_c.CReference;
 import tripleo.elijah.stages.gen_c.Emit;
 import tripleo.elijah.stages.gen_c.Generate_Code_For_Method;
-import tripleo.elijah.stages.gen_generic.GenerateFiles;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.stages.instructions.VariableTableType;
-import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.test_help.Boilerplate;
 import tripleo.elijah.util.Helpers;
 
@@ -33,14 +27,14 @@ import static org.easymock.EasyMock.*;
 
 public class GetIdentIAPathTest_ForC {
 
-	GeneratedFunction gf;
-	OS_Module mod;
+	EvaFunction gf;
+	OS_Module   mod;
 
 	@Before
 	public void setUp() throws Exception {
 		mod = mock(OS_Module.class);
 		FunctionDef fd = mock(FunctionDef.class);
-		gf = new GeneratedFunction(fd);
+		gf = new EvaFunction(fd);
 
 		Emit.emitting = false;
 	}
@@ -235,7 +229,7 @@ public class GetIdentIAPathTest_ForC {
 		Assert.assertEquals("Z-1foo(vvx)", x);
 	}
 
-	String getIdentIAPath(final IdentIA ia2, GeneratedFunction generatedFunction) {
+	String getIdentIAPath(final IdentIA ia2, EvaFunction generatedFunction) {
 		final CReference reference = new CReference();
 		reference.getIdentIAPath(ia2, generatedFunction, Generate_Code_For_Method.AOG.GET, null);
 		return reference.build();

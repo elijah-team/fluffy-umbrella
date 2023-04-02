@@ -42,11 +42,11 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	public boolean preUpdateStatusListenerAdded;
 	InstructionArgument backlink;
 	public @NotNull Map<Integer, TypeTableEntry> potentialTypes = new HashMap<Integer, TypeTableEntry>();
-	public TypeTableEntry type;
-	public GeneratedNode externalRef;
-	public boolean fefi = false;
-	private GeneratedNode resolvedType;
-	public ProcTableEntry constructable_pte;
+	public  TypeTableEntry type;
+	public  EvaNode        externalRef;
+	public  boolean        fefi = false;
+	private EvaNode        resolvedType;
+	public  ProcTableEntry constructable_pte;
 	private DeduceElementIdent dei = new DeduceElementIdent(this);
 
 	public DeduceTypes2.PromiseExpectation<String> resolveExpectation;
@@ -82,7 +82,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		return resolved_element;
 	}
 
-	public void setDeduceTypes2(final @NotNull DeduceTypes2 aDeduceTypes2, final Context aContext, final @NotNull BaseGeneratedFunction aGeneratedFunction) {
+	public void setDeduceTypes2(final @NotNull DeduceTypes2 aDeduceTypes2, final Context aContext, final @NotNull BaseEvaFunction aGeneratedFunction) {
 		dei.setDeduceTypes2(aDeduceTypes2, aContext, aGeneratedFunction);
 	}
 
@@ -113,7 +113,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	}
 
 	@Override
-	public void resolveTypeToClass(GeneratedNode gn) {
+	public void resolveTypeToClass(EvaNode gn) {
 		resolvedType = gn;
 		if (type != null) // TODO maybe find a more robust solution to this, like another Promise? or just setType? or onPossiblesResolve?
 			type.resolve(gn); // TODO maybe this obviates the above?
@@ -133,7 +133,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		return resolvedType != null;
 	}
 
-	public GeneratedNode resolvedType() {
+	public EvaNode resolvedType() {
 		return resolvedType;
 	}
 
@@ -182,7 +182,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 
 	// endregion constructable
 
-	public DeducePath buildDeducePath(BaseGeneratedFunction generatedFunction) {
+	public DeducePath buildDeducePath(BaseEvaFunction generatedFunction) {
 		@NotNull List<InstructionArgument> x = generatedFunction._getIdentIAPathList(new IdentIA(index, generatedFunction));
 		return new DeducePath(this, x);
 	}
@@ -226,15 +226,15 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		backlinkSet.resolve(backlink);
 	}
 
-	public void makeType(final BaseGeneratedFunction aGeneratedFunction, final TypeTableEntry.Type aType, final OS_Type aOS_Type) {
+	public void makeType(final BaseEvaFunction aGeneratedFunction, final TypeTableEntry.Type aType, final OS_Type aOS_Type) {
 		type = aGeneratedFunction.newTypeTableEntry(aType, aOS_Type, getIdent(), this);
 	}
 
-	public void makeType(final BaseGeneratedFunction aGeneratedFunction, final TypeTableEntry.Type aType, final IExpression aExpression) {
+	public void makeType(final BaseEvaFunction aGeneratedFunction, final TypeTableEntry.Type aType, final IExpression aExpression) {
 		type = aGeneratedFunction.newTypeTableEntry(aType, null, aExpression, this);
 	}
 
-	public IDeduceElement3 getDeduceElement3(DeduceTypes2 aDeduceTypes2, BaseGeneratedFunction aGeneratedFunction) {
+	public IDeduceElement3 getDeduceElement3(DeduceTypes2 aDeduceTypes2, BaseEvaFunction aGeneratedFunction) {
 		if (_de3 == null) {
 			_de3 = new DeduceElement3_IdentTableEntry(this);
 			_de3.deduceTypes2 = aDeduceTypes2;

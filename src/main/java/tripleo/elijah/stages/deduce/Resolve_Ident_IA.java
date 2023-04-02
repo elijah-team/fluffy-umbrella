@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
@@ -31,9 +32,9 @@ import java.util.List;
  */
 class Resolve_Ident_IA {
 	private final @NotNull Context context;
-	private final @NotNull IdentIA identIA;
-	private final BaseGeneratedFunction generatedFunction;
-	private final @NotNull FoundElement foundElement;
+	private final @NotNull IdentIA         identIA;
+	private final          BaseEvaFunction generatedFunction;
+	private final @NotNull FoundElement    foundElement;
 	private final @NotNull ErrSink errSink;
 
 	private final @NotNull DeduceTypes2.DeduceClient3 dc;
@@ -45,7 +46,7 @@ class Resolve_Ident_IA {
 	public Resolve_Ident_IA(final @NotNull DeduceTypes2.DeduceClient3 aDeduceClient3,
 							final @NotNull Context aContext,
 							final @NotNull IdentIA aIdentIA,
-							final BaseGeneratedFunction aGeneratedFunction,
+							final BaseEvaFunction aGeneratedFunction,
 							final @NotNull FoundElement aFoundElement,
 							final @NotNull ErrSink aErrSink) {
 		dc = aDeduceClient3;
@@ -72,7 +73,7 @@ class Resolve_Ident_IA {
 
 			System.out.println("  70 " + el2);
 
-			final @NotNull List<InstructionArgument> s = BaseGeneratedFunction._getIdentIAPathList(identIA);
+			final @NotNull List<InstructionArgument> s = BaseEvaFunction._getIdentIAPathList(identIA);
 
 			ectx = context;
 			el   = null;
@@ -583,7 +584,7 @@ class Resolve_Ident_IA {
 				ci = phase.registerClassInvocation(ci);
 				fi = new FunctionInvocation(null, pte, ci, phase.generatePhase);
 			} else if (resolvedElement instanceof FunctionDef) {
-				final IInvocation invocation = dc.getInvocation((GeneratedFunction) generatedFunction);
+				final IInvocation invocation = dc.getInvocation((EvaFunction) generatedFunction);
 				fi = new FunctionInvocation((FunctionDef) resolvedElement, pte, invocation, phase.generatePhase);
 				if (fi.getFunction().getParent() instanceof ClassStatement) {
 					final ClassStatement classStatement = (ClassStatement) fi.getFunction().getParent();
@@ -627,7 +628,7 @@ class Resolve_Ident_IA {
 					// for example from match conditional
 					final TypeName tn = ((MatchConditional.MatchArm_TypeMatch) el).getTypeName();
 					try {
-						final @NotNull GenType ty = dc.resolve_type(new OS_Type(tn), tn.getContext());
+						final @NotNull GenType ty = dc.resolve_type(new OS_UserType(tn), tn.getContext());
 						ectx = ty.resolved.getElement().getContext();
 					} catch (ResolveError resolveError) {
 						resolveError.printStackTrace();

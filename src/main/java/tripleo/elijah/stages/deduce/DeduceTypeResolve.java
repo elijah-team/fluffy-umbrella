@@ -15,6 +15,7 @@ import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
@@ -134,7 +135,7 @@ public class DeduceTypeResolve {
 
 						@Override
 						public void visitPropertyStatement(final PropertyStatement aPropertyStatement) {
-							genType.typeName = new OS_Type(aPropertyStatement.getTypeName());
+							genType.typeName = new OS_UserType(aPropertyStatement.getTypeName());
 							// TODO resolve??
 						}
 
@@ -200,7 +201,7 @@ public class DeduceTypeResolve {
 									final EvaClass evaClass = (EvaClass) result.node;
 									evaClass.functionMapDeferred((FunctionDef) eh.getElement(), new FunctionMapDeferred() {
 										@Override
-										public void onNotify(final GeneratedFunction aGeneratedFunction) {
+										public void onNotify(final EvaFunction aGeneratedFunction) {
 											result.node = aGeneratedFunction;
 										}
 									});

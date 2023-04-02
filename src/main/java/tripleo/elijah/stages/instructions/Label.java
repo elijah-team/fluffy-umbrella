@@ -8,13 +8,13 @@
  */
 package tripleo.elijah.stages.instructions;
 
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 
 /**
  * Created 9/10/20 3:17 PM
  */
 public class Label implements InstructionArgument {
-	private final BaseGeneratedFunction gf;
+	private final BaseEvaFunction gf;
 	String name;
 	long index;
 	private int number;
@@ -23,7 +23,7 @@ public class Label implements InstructionArgument {
 //		this.name = name;
 //	}
 
-	public Label(final BaseGeneratedFunction gf) {
+	public Label(final BaseEvaFunction gf) {
 		this.gf = gf;
 	}
 

@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.diagnostic.TooManyEz_ActuallyNone;
 import tripleo.elijah.comp.diagnostic.TooManyEz_BeSpecific;
+import tripleo.elijah.comp.i.IProgressSink;
+import tripleo.elijah.comp.i.ProgressSinkComponent;
+import tripleo.elijah.comp.internal.CompilationBus;
 import tripleo.elijah.comp.queries.QueryEzFileToModule;
 import tripleo.elijah.comp.queries.QueryEzFileToModuleParams;
 import tripleo.elijah.diagnostic.Diagnostic;
@@ -23,16 +26,21 @@ import java.util.regex.Pattern;
 import static tripleo.elijah.nextgen.query.Mode.FAILURE;
 import static tripleo.elijah.nextgen.query.Mode.SUCCESS;
 
-class CompilationRunner {
-	private final Compilation     compilation;
+public class CompilationRunner {
+	public final  Compilation     compilation;
 	private final Compilation.CIS cis;
 	private final CCI             cci;
 
 	@Contract(pure = true)
-	CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis) {
+	CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis, CompilationBus cb) {
 		compilation = aCompilation;
 		cis         = a_cis;
-		cci         = new CCI(compilation, a_cis);
+		cci         = new DefaultCCI(compilation, a_cis, new IProgressSink() {
+			@Override
+			public void note(final int aCode, final ProgressSinkComponent aCci, final int aType, final Object[] aParams) {
+				throw new Error();
+			}
+		});
 	}
 
 	void start(final CompilerInstructions ci, final boolean do_out, final @NotNull OptionsProcessor ignoredOp) throws Exception {
@@ -103,6 +111,18 @@ class CompilationRunner {
 							final @NotNull Compilation c,
 							final @NotNull ErrSink errSink,
 							final @NotNull IO io) {
+
+
+
+
+		final IProgressSink ps = cis.ps;
+
+
+
+
+
+
+
 		CompilerInstructions ez_file;
 		for (int i = 0; i < args2.length; i++) {
 			final String  file_name = args2[i];
@@ -110,7 +130,7 @@ class CompilationRunner {
 			final boolean matches2  = Pattern.matches(".+\\.ez$", file_name);
 			if (matches2) {
 				ILazyCompilerInstructions ilci = ILazyCompilerInstructions.of(f, c);
-				cci.accept(new Maybe<>(ilci, null));
+				cci.accept(new Maybe<>(ilci, null), ps);
 			} else {
 				//errSink.reportError("9996 Not an .ez file "+file_name);
 				if (f.isDirectory()) {
@@ -120,11 +140,11 @@ class CompilationRunner {
 					case 0:
 						final Diagnostic                       d_toomany = new TooManyEz_ActuallyNone();
 						final Maybe<ILazyCompilerInstructions> m         = new Maybe<>(null, d_toomany);
-						cci.accept(m);
+						cci.accept(m, ps);
 						break;
 					case 1:
 						ez_file = ezs.get(0);
-						cci.accept(new Maybe<>(ILazyCompilerInstructions.of(ez_file), null));
+						cci.accept(new Maybe<>(ILazyCompilerInstructions.of(ez_file), null), ps);
 						break;
 					default:
 						//final Diagnostic d_toomany = new TooManyEz_UseFirst();
@@ -133,7 +153,7 @@ class CompilationRunner {
 						// more than 1 (negative is not possible)
 						final Diagnostic                       d_toomany2 = new TooManyEz_BeSpecific();
 						final Maybe<ILazyCompilerInstructions> m2         = new Maybe<>(null, d_toomany2);
-						cci.accept(m2);
+						cci.accept(m2, ps);
 						break;
 					}
 				} else
@@ -286,4 +306,7 @@ class CompilationRunner {
 		System.err.println(number + " " + text);
 	}
 
+	public void doFindCIs(final List<CompilerInput> aInputs, final String[] aArgs2, final CompilationBus aCb) {
+		doFindCIs(aArgs2);
+	}
 }

@@ -20,6 +20,7 @@ import tripleo.elijah.lang.*;
 import tripleo.elijah.contexts.*;
 import tripleo.elijah.ci.*;
 import tripleo.elijah.ci.IndexingStatement;
+import tripleo.elijah.lang.types.OS_BuiltinType;
 import tripleo.elijah.lang2.*;
 import tripleo.elijah.*;
 
@@ -1231,7 +1232,7 @@ public EzParser(ParserSharedInputState state) {
 					e3=shiftExpression();
 					if ( inputState.guessing==0 ) {
 						ee=ExpressionBuilder.build(ee,e2,e3);
-																ee.setType(new OS_Type(BuiltInTypes.Boolean));
+																ee.setType(new OS_BuiltinType(BuiltInTypes.Boolean));
 					}
 				}
 				else {

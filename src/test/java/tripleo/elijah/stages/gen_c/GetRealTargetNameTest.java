@@ -21,7 +21,7 @@ import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
+import tripleo.elijah.stages.gen_fn.EvaFunction;
 import tripleo.elijah.stages.gen_fn.TypeTableEntry;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.IntegerIA;
@@ -34,14 +34,14 @@ import static org.easymock.EasyMock.*;
 public class GetRealTargetNameTest {
 	private Boilerplate boilerPlate; // NOTE hmm. (reduce) boilerplate reductionism
 
-	GeneratedFunction gf;
-	OS_Module mod;
+	EvaFunction gf;
+	OS_Module   mod;
 
 	@Before
 	public void setUp() throws Exception {
 		mod = mock(OS_Module.class);
 		FunctionDef fd = mock(FunctionDef.class);
-		gf = new GeneratedFunction(fd);
+		gf = new EvaFunction(fd);
 
 		boilerPlate = new Boilerplate();
 		boilerPlate.get();

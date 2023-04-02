@@ -12,7 +12,7 @@ package tripleo.elijah.stages.deduce;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.ConstructStatement;
 import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.ProcIA;
 
@@ -22,14 +22,14 @@ import java.util.List;
  * Created 12/11/21 9:27 PM
  */
 public class DeduceConstructStatement implements DeduceElement {
-	private final BaseGeneratedFunction generatedFunction;
+	private final BaseEvaFunction    generatedFunction;
 	private final ConstructStatement constructStatement;
 	public boolean toEvaluateTarget;
 	public InstructionArgument target;
 	public List<InstructionArgument> args;
 	public ProcIA call;
 
-	public DeduceConstructStatement(final @NotNull BaseGeneratedFunction aGeneratedFunction, final ConstructStatement aConstructStatement) {
+	public DeduceConstructStatement(final @NotNull BaseEvaFunction aGeneratedFunction, final ConstructStatement aConstructStatement) {
 		generatedFunction = aGeneratedFunction;
 		constructStatement = aConstructStatement;
 	}

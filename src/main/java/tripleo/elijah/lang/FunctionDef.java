@@ -15,6 +15,7 @@ package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.FunctionContext;
+import tripleo.elijah.lang.types.OS_FuncType;
 import tripleo.elijah.lang2.ElElementVisitor;
 
 // TODO FunctionDef is not a Container is it?

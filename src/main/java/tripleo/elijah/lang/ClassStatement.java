@@ -16,6 +16,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.ClassContext;
+import tripleo.elijah.lang.types.OS_UserClassType;
 import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
 
@@ -262,7 +263,7 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 
 	public OS_Type getOS_Type() {
 		if (osType == null)
-			osType = new OS_Type(this);
+			osType = new OS_UserClassType(this);
 		return osType;
 	}
 }

@@ -22,6 +22,7 @@ import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.builder.*;
 import tripleo.elijah.contexts.*;
 import tripleo.elijah.lang.imports.*;
+import tripleo.elijah.lang.types.OS_BuiltinType;
 import tripleo.elijah.lang2.*;
 import tripleo.elijah.*;
 
@@ -4842,7 +4843,7 @@ inputState.guessing--;
 						e3=shiftExpression();
 						if ( inputState.guessing==0 ) {
 							ee=ExpressionBuilder.build(ee,e2,e3);
-																	ee.setType(new OS_Type(BuiltInTypes.Boolean));
+																	ee.setType(new OS_BuiltinType(BuiltInTypes.Boolean));
 						}
 					}
 					else {

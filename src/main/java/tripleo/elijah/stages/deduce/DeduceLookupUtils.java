@@ -13,6 +13,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_BuiltinType;
+import tripleo.elijah.lang.types.OS_UnknownType;
+import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
@@ -138,7 +141,7 @@ public class DeduceLookupUtils {
 			return deduceIdentExpression(aDeduceTypes2, (IdentExpression) n, context);
 		case NUMERIC:
 			final @NotNull GenType genType = new GenType();
-			genType.resolved = new OS_Type(BuiltInTypes.SystemInteger);
+			genType.resolved = new OS_BuiltinType(BuiltInTypes.SystemInteger);
 			return genType;
 		case DOT_EXP:
 			final @NotNull DotExpression de = (DotExpression) n;
@@ -183,14 +186,14 @@ public class DeduceLookupUtils {
 				} else if (best instanceof FunctionDef) {
 					final @Nullable FunctionDef fd = (FunctionDef) best;
 					if (fd.returnType() != null && !fd.returnType().isNull()) {
-						result.resolved = new OS_Type(fd.returnType());
+						result.resolved = new OS_UserType(fd.returnType());
 					} else {
 						result.resolved = new OS_UnknownType(fd);// TODO still must register somewhere
 					}
 				} else if (best instanceof FuncExpr) {
 					final @NotNull FuncExpr funcExpr = (FuncExpr) best;
 					if (funcExpr.returnType() != null && !funcExpr.returnType().isNull()) {
-						result.resolved = new OS_Type(funcExpr.returnType());
+						result.resolved = new OS_UserType(funcExpr.returnType());
 					} else {
 						result.resolved = new OS_UnknownType(funcExpr);// TODO still must register somewhere
 					}
@@ -224,7 +227,7 @@ public class DeduceLookupUtils {
 				if (!vs.typeName().isNull()) {
 					try {
 						@Nullable OS_Module lets_hope_we_dont_need_this = null;
-						@NotNull GenType ty = aDeduceTypes2.resolve_type(lets_hope_we_dont_need_this, new OS_Type(vs.typeName()), ctx);
+						@NotNull GenType ty = aDeduceTypes2.resolve_type(lets_hope_we_dont_need_this, new OS_UserType(vs.typeName()), ctx);
 						result = ty;
 					} catch (ResolveError aResolveError) {
 						// TODO This is the cheap way to do it
@@ -232,7 +235,7 @@ public class DeduceLookupUtils {
 						aResolveError.printStackTrace();
 					}
 					if (result == null) {
-						R.typeName = new OS_Type(vs.typeName());
+						R.typeName = new OS_UserType(vs.typeName());
 						result = R;
 					}
 				} else if (vs.initialValue() == IExpression.UNASSIGNED) {
@@ -265,7 +268,7 @@ public class DeduceLookupUtils {
 				if (!fali.typeName().isNull()) {
 					try {
 						@Nullable OS_Module lets_hope_we_dont_need_this = null;
-						@NotNull GenType ty = aDeduceTypes2.resolve_type(lets_hope_we_dont_need_this, new OS_Type(fali.typeName()), ctx);
+						@NotNull GenType ty = aDeduceTypes2.resolve_type(lets_hope_we_dont_need_this, new OS_UserType(fali.typeName()), ctx);
 						result = ty;
 					} catch (ResolveError aResolveError) {
 						// TODO This is the cheap way to do it
@@ -273,7 +276,7 @@ public class DeduceLookupUtils {
 						aResolveError.printStackTrace();
 					}
 					if (result == null) {
-						R.typeName = new OS_Type(fali.typeName());
+						R.typeName = new OS_UserType(fali.typeName());
 					}
 				} else {
 					R.typeName = new OS_UnknownType(fali);
@@ -316,7 +319,7 @@ public class DeduceLookupUtils {
 				if (!vs.typeName().isNull()) {
 					try {
 						@Nullable OS_Module lets_hope_we_dont_need_this = null;
-						@NotNull GenType ty = dt2.resolve_type(lets_hope_we_dont_need_this, new OS_Type(vs.typeName()), ctx);
+						@NotNull GenType ty = dt2.resolve_type(lets_hope_we_dont_need_this, new OS_UserType(vs.typeName()), ctx);
 						result = ty;
 					} catch (ResolveError aResolveError) {
 						// TODO This is the cheap way to do it
@@ -324,7 +327,7 @@ public class DeduceLookupUtils {
 						aResolveError.printStackTrace();
 					}
 					if (result == null) {
-						R.typeName = new OS_Type(vs.typeName());
+						R.typeName = new OS_UserType(vs.typeName());
 						result = R;
 					}
 				} else if (vs.initialValue() == IExpression.UNASSIGNED) {
@@ -357,7 +360,7 @@ public class DeduceLookupUtils {
 				if (!fali.typeName().isNull()) {
 					try {
 						@Nullable OS_Module lets_hope_we_dont_need_this = null;
-						@NotNull GenType ty = dt2.resolve_type(lets_hope_we_dont_need_this, new OS_Type(fali.typeName()), ctx);
+						@NotNull GenType ty = dt2.resolve_type(lets_hope_we_dont_need_this, new OS_UserType(fali.typeName()), ctx);
 						result = ty;
 					} catch (ResolveError aResolveError) {
 						// TODO This is the cheap way to do it
@@ -365,7 +368,7 @@ public class DeduceLookupUtils {
 						aResolveError.printStackTrace();
 					}
 					if (result == null) {
-						R.typeName = new OS_Type(fali.typeName());
+						R.typeName = new OS_UserType(fali.typeName());
 					}
 				} else {
 					R.typeName = new OS_UnknownType(fali);

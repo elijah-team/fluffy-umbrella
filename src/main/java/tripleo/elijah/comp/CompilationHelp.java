@@ -17,9 +17,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jdeferred2.impl.DeferredObject;
+import tripleo.elijah.comp.i.RuntimeProcess;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
+/*
 interface RuntimeProcess {
 	void run(final Compilation aCompilation);
 
@@ -27,6 +29,7 @@ interface RuntimeProcess {
 
 	void prepare();
 }
+*/
 
 class StageToRuntime {
 	@Contract("_, _, _ -> new")
@@ -61,7 +64,7 @@ class RuntimeProcesses {
 		}
 	}
 
-	public void prepare() {
+	public void prepare() throws Exception {
 		for (RuntimeProcess runtimeProcess : processes) {
 			System.err.println("***** RuntimeProcess [prepare] named " + runtimeProcess);
 			runtimeProcess.prepare();
@@ -92,7 +95,11 @@ class RuntimeProcesses {
 
 		final RuntimeProcesses rt = this;
 
-		rt.prepare();
+		try {
+			rt.prepare();
+		} catch (Exception aE) {
+			throw new RuntimeException(aE);
+		}
 		rt.run();
 		rt.postProcess(pr);
 	}

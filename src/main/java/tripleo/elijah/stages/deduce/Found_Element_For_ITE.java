@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.stages.deduce.declarations.DeferredMember;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
@@ -24,13 +25,13 @@ import tripleo.elijah.stages.logging.ElLog;
  */
 class Found_Element_For_ITE {
 
-	private final BaseGeneratedFunction generatedFunction;
-	private final Context ctx;
+	private final BaseEvaFunction generatedFunction;
+	private final Context         ctx;
 	private final ElLog LOG;
 	private final ErrSink errSink;
 	private final DeduceTypes2.DeduceClient1 dc;
 
-	public Found_Element_For_ITE(BaseGeneratedFunction aGeneratedFunction, Context aCtx, ElLog aLOG, ErrSink aErrSink, DeduceTypes2.DeduceClient1 aDeduceClient1) {
+	public Found_Element_For_ITE(BaseEvaFunction aGeneratedFunction, Context aCtx, ElLog aLOG, ErrSink aErrSink, DeduceTypes2.DeduceClient1 aDeduceClient1) {
 		generatedFunction = aGeneratedFunction;
 		ctx = aCtx;
 		LOG = aLOG;
@@ -78,11 +79,11 @@ class Found_Element_For_ITE {
 		OS_Type attached;
 		switch (ps.getTypeName().kindOfType()) {
 			case GENERIC:
-				attached = new OS_Type(ps.getTypeName());
+				attached = new OS_UserType(ps.getTypeName());
 				break;
 			case NORMAL:
 				try {
-					attached = (dc.resolve_type(new OS_Type(ps.getTypeName()), ctx).resolved.getClassOf()).getOS_Type();
+					attached = (dc.resolve_type(new OS_UserType(ps.getTypeName()), ctx).resolved.getClassOf()).getOS_Type();
 				} catch (ResolveError resolveError) {
 					LOG.err("378 resolveError");
 					resolveError.printStackTrace();
@@ -122,13 +123,13 @@ class Found_Element_For_ITE {
 			if (!(typeName.isNull())) {
 				if (ite.type == null)
 					ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, vs.initialValue());
-				ite.type.setAttached(new OS_Type(typeName));
+				ite.type.setAttached(new OS_UserType(typeName));
 			} else {
 				final OS_Element parent = vs.getParent().getParent();
 				if (parent instanceof NamespaceStatement || parent instanceof ClassStatement) {
 					boolean state;
-					if (generatedFunction instanceof GeneratedFunction) {
-						final @NotNull GeneratedFunction generatedFunction1 = (GeneratedFunction) generatedFunction;
+					if (generatedFunction instanceof EvaFunction) {
+						final @NotNull EvaFunction generatedFunction1 = (EvaFunction) generatedFunction;
 						state = (parent != generatedFunction1.getFD().getParent());
 					} else {
 						state = (parent != ((EvaConstructor) generatedFunction).getFD().getParent());

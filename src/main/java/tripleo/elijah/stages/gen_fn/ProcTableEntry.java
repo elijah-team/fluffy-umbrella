@@ -21,6 +21,8 @@ import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeduceProcCall;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_ProcTableEntry;
+import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
@@ -45,6 +47,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	private FunctionInvocation functionInvocation;
 	private DeferredObject<ProcTableEntry, Void, Void> completeDeferred = new DeferredObject<ProcTableEntry, Void, Void>();
 	private DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<FunctionInvocation, Void, Void>();
+	private DeduceElement3_ProcTableEntry _de3;
 
 	public ProcTableEntry(final int aIndex, final IExpression aExpression, final InstructionArgument aExpressionNum, final List<TypeTableEntry> aArgs) {
 		index = aIndex;
@@ -202,9 +205,30 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		return dpc;
 	}
 
-	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseGeneratedFunction aGeneratedFunction, final ErrSink aErrSink) {
+	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseEvaFunction aGeneratedFunction, final ErrSink aErrSink) {
 		dpc.setDeduceTypes2(aDeduceTypes2, aContext, aGeneratedFunction, aErrSink);
 	}
+
+	public IDeduceElement3 getDeduceElement3(final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aGeneratedFunction) {
+		if (_de3 == null) {
+			_de3 = new DeduceElement3_ProcTableEntry(this, aDeduceTypes2, aGeneratedFunction);
+		}
+		return _de3;
+	}
+
+
+	public IDeduceElement3 getDeduceElement3() {
+		assert dpc._deduceTypes2() != null; // TODO setDeduce... called; Promise?
+
+		return getDeduceElement3(dpc._deduceTypes2(), dpc._generatedFunction());
+	}
+
+	//public PTE_Zero zero() {
+	//	if (_zero == null)
+	//		_zero = new PTE_Zero(this);
+	//
+	//	return _zero;
+	//}
 }
 
 //

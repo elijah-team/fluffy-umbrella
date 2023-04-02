@@ -10,12 +10,14 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_GenericTypeNameType;
 import tripleo.elijah.stages.deduce.*;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.post_deduce.IPostDeduce;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.world.impl.DefaultLivingClass;
 
 import java.util.*;
 
@@ -27,6 +29,7 @@ public class EvaClass extends EvaContainerNC implements GNCoded {
 	private final ClassStatement               klass;
 	public Map<ConstructorDef, EvaConstructor> constructors = new HashMap<ConstructorDef, EvaConstructor>();
 	public ClassInvocation                     ci;
+	public DefaultLivingClass _living;
 	private boolean resolve_var_table_entries_already = false;
 
 	public EvaClass(ClassStatement aClassStatement, OS_Module aModule) {

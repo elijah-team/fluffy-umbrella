@@ -30,10 +30,12 @@ import tripleo.elijah.lang.Scope3;
 import tripleo.elijah.lang.VariableSequence;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.lang.VariableTypeName;
+import tripleo.elijah.lang.types.OS_BuiltinType;
+import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.nextgen.query.Mode;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.logging.ElLog;
@@ -95,7 +97,7 @@ public class DeduceTypesTest {
 
 		//final @NotNull GenerateFunctions gf = boilerplate.pr.pipelineLogic.generatePhase.getGenerateFunctions(mod);
 
-		final BaseGeneratedFunction bgf = mock(BaseGeneratedFunction.class);
+		final BaseEvaFunction bgf = mock(BaseEvaFunction.class);
 
 		final IdentTableEntry                ite     = new IdentTableEntry(0, x1, x1.getContext());
 		final DeduceElementIdent             dei     = new DeduceElementIdent(ite);
@@ -116,7 +118,7 @@ public class DeduceTypesTest {
 	 */
 	@Test(expected = ResolveError.class)
 	public void testDeduceIdentExpression1() {
-		final BuiltInTypes bi_integer = new OS_Type(BuiltInTypes.SystemInteger).getBType();
+		final BuiltInTypes bi_integer = new OS_BuiltinType(BuiltInTypes.SystemInteger).getBType();
 		final BuiltInTypes inferred_t = x.resolved.getBType();
 
 		Assert.assertEquals(bi_integer, inferred_t);
@@ -131,7 +133,7 @@ public class DeduceTypesTest {
 		final Qualident tnq = new Qualident();
 		tnq.append(Helpers.string_to_ident("Integer"));
 		tn.setName(tnq);
-		Assert.assertTrue(genTypeTypenameEquals(new OS_Type(tn), x/*.getTypeName()*/));
+		Assert.assertTrue(genTypeTypenameEquals(new OS_UserType(tn), x/*.getTypeName()*/));
 	}
 	@Test
 	public void testDeduceIdentExpression3() {
@@ -139,8 +141,8 @@ public class DeduceTypesTest {
 		final Qualident tnq = new Qualident();
 		tnq.append(Helpers.string_to_ident("Integer"));
 		tn.setName(tnq);
-		Assert.assertEquals(new OS_Type(tn).getTypeName(), x.typeName.getTypeName());
-		Assert.assertTrue(genTypeTypenameEquals(new OS_Type(tn), x));
+		Assert.assertEquals(new OS_UserType(tn).getTypeName(), x.typeName.getTypeName());
+		Assert.assertTrue(genTypeTypenameEquals(new OS_UserType(tn), x));
 	}
 	@Test
 	public void testDeduceIdentExpression4() {
@@ -148,9 +150,9 @@ public class DeduceTypesTest {
 		final Qualident tnq = new Qualident();
 		tnq.append(Helpers.string_to_ident("Integer"));
 		tn.setName(tnq);
-		Assert.assertEquals(new OS_Type(tn).getTypeName(), x.typeName.getTypeName());
-		Assert.assertTrue(genTypeTypenameEquals(new OS_Type(tn), x));
-		Assert.assertEquals(new OS_Type(tn).toString(), x.typeName.toString());
+		Assert.assertEquals(new OS_UserType(tn).getTypeName(), x.typeName.getTypeName());
+		Assert.assertTrue(genTypeTypenameEquals(new OS_UserType(tn), x));
+		Assert.assertEquals(new OS_UserType(tn).toString(), x.typeName.toString());
 	}
 
 	private boolean genTypeTypenameEquals(OS_Type aType, GenType genType) {

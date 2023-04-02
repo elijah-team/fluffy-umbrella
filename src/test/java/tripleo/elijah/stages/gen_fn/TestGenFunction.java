@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
@@ -44,7 +45,7 @@ public class TestGenFunction {
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testDemoElNormalFact1Elijah() throws Exception {
 //		final StdErrSink eee = new StdErrSink();
-//		final Compilation c = new Compilation(eee, new IO());
+//		final Compilation c = new CompilationImpl(eee, new IO());
 //
 //		final String f = "test/demo-el-normal/fact1.elijah";
 //		final File file = new File(f);
@@ -77,10 +78,10 @@ public class TestGenFunction {
 ///*
 //		List<GeneratedNode> lgf = new ArrayList<>();
 //		for (GeneratedNode generatedNode : lgc) {
-//			if (generatedNode instanceof GeneratedClass)
-//				lgf.addAll(((GeneratedClass) generatedNode).functionMap.values());
-//			if (generatedNode instanceof GeneratedNamespace)
-//				lgf.addAll(((GeneratedNamespace) generatedNode).functionMap.values());
+//			if (generatedNode instanceof EvaClass)
+//				lgf.addAll(((EvaClass) generatedNode).functionMap.values());
+//			if (generatedNode instanceof EvaNamespace)
+//				lgf.addAll(((EvaNamespace) generatedNode).functionMap.values());
 //			// TODO enum
 //		}
 //*/
@@ -97,10 +98,10 @@ public class TestGenFunction {
 //			}
 //
 //			@Override
-//			public void apply(Collection<GeneratedFunction> aGeneratedFunctions) {
+//			public void apply(Collection<EvaFunction> aGeneratedFunctions) {
 //				assert aGeneratedFunctions.size() == 1;
 //
-//				GeneratedFunction gf = aGeneratedFunctions.iterator().next();
+//				EvaFunction gf = aGeneratedFunctions.iterator().next();
 //
 //				int pc = 0;
 //				Assert.assertEquals(InstructionName.E, gf.getInstruction(pc++).getName());
@@ -123,10 +124,10 @@ public class TestGenFunction {
 //			}
 //
 //			@Override
-//			public void apply(Collection<GeneratedFunction> aGeneratedFunctions) {
+//			public void apply(Collection<EvaFunction> aGeneratedFunctions) {
 //				assert aGeneratedFunctions.size() == 1;
 //
-//				GeneratedFunction gf = aGeneratedFunctions.iterator().next();
+//				EvaFunction gf = aGeneratedFunctions.iterator().next();
 //
 //				int pc = 0;
 //				Assert.assertEquals(InstructionName.E, gf.getInstruction(pc++).getName());
@@ -155,10 +156,10 @@ public class TestGenFunction {
 //			}
 //
 //			@Override
-//			public void apply(Collection<GeneratedFunction> aGeneratedFunctions) {
+//			public void apply(Collection<EvaFunction> aGeneratedFunctions) {
 //				assert aGeneratedFunctions.size() == 1;
 //
-//				GeneratedFunction gf = aGeneratedFunctions.iterator().next();
+//				EvaFunction gf = aGeneratedFunctions.iterator().next();
 //
 //				System.out.println("main\n====");
 //				for (int i = 0; i < gf.vte_list.size(); i++) {
@@ -183,10 +184,10 @@ public class TestGenFunction {
 //			}
 //
 //			@Override
-//			public void apply(Collection<GeneratedFunction> aGeneratedFunctions) {
+//			public void apply(Collection<EvaFunction> aGeneratedFunctions) {
 //				assert aGeneratedFunctions.size() == 1;
 //
-//				GeneratedFunction gf = aGeneratedFunctions.iterator().next();
+//				EvaFunction gf = aGeneratedFunctions.iterator().next();
 //
 //				System.out.println("factorial\n=========");
 //				for (int i = 0; i < gf.vte_list.size(); i++) {
@@ -214,7 +215,7 @@ public class TestGenFunction {
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testGenericA() throws Exception {
 		final ErrSink     errSink = new StdErrSink();
-		final Compilation c       = new Compilation(errSink, new IO());
+		final Compilation c       = new CompilationImpl(errSink, new IO());
 
 		final String f = "test/basic1/genericA/";
 
@@ -229,7 +230,7 @@ public class TestGenFunction {
 		boilerplate.getGenerateFiles(boilerplate.defaultMod());
 
 		//final ErrSink     eee = new StdErrSink();
-		//final Compilation c   = new Compilation(eee, new IO());
+		//final Compilation c   = new CompilationImpl(eee, new IO());
 
 		final String f = "test/basic1/backlink1.elijah";
 		//final File file = new File(f);
@@ -256,16 +257,16 @@ public class TestGenFunction {
 		//
 		//List<GeneratedNode> lgf = new ArrayList<>();
 		//for (GeneratedNode generatedNode : lgc) {
-		//	if (generatedNode instanceof GeneratedClass)
-		//		lgf.addAll(((GeneratedClass) generatedNode).functionMap.values());
-		//	if (generatedNode instanceof GeneratedNamespace)
-		//		lgf.addAll(((GeneratedNamespace) generatedNode).functionMap.values());
+		//	if (generatedNode instanceof EvaClass)
+		//		lgf.addAll(((EvaClass) generatedNode).functionMap.values());
+		//	if (generatedNode instanceof EvaNamespace)
+		//		lgf.addAll(((EvaNamespace) generatedNode).functionMap.values());
 			// TODO enum
 		//}
 		//
 		//for (final GeneratedNode gn : lgf) {
-		//	if (gn instanceof GeneratedFunction) {
-		//		GeneratedFunction gf = (GeneratedFunction) gn;
+		//	if (gn instanceof EvaFunction) {
+		//		EvaFunction gf = (EvaFunction) gn;
 		//		for (final Instruction instruction : gf.instructions()) {
 		//			System.out.println("8100 " + instruction);
 		//		}
@@ -277,12 +278,12 @@ public class TestGenFunction {
 //		new DeduceTypes2(m).deduceFunctions(lgf);
 
 		//for (final GeneratedNode gn : lgf) {
-		//	if (gn instanceof GeneratedFunction) {
-		//		GeneratedFunction gf = (GeneratedFunction) gn;
+		//	if (gn instanceof EvaFunction) {
+		//		EvaFunction gf = (EvaFunction) gn;
 		//		System.out.println("----------------------------------------------------------");
 		//		System.out.println(gf.name());
 		//		System.out.println("----------------------------------------------------------");
-		//		GeneratedFunction.printTables(gf);
+		//		EvaFunction.printTables(gf);
 				//System.out.println("----------------------------------------------------------");
 			//}
 		//}
@@ -294,8 +295,8 @@ public class TestGenFunction {
 		//GenerateResult gr = new GenerateResult();
 		//
 		//for (GeneratedNode generatedNode : lgc) {
-		//	if (generatedNode instanceof GeneratedClass) {
-		//		ggc.generate_class((GeneratedClass) generatedNode, gr);
+		//	if (generatedNode instanceof EvaClass) {
+		//		ggc.generate_class((EvaClass) generatedNode, gr);
 		//	} else {
 		//		System.out.println(lgc.getClass().getName());
 		//	}
@@ -305,7 +306,7 @@ public class TestGenFunction {
 	@Test
 	public void testBasic1Backlink3Elijah() throws Exception {
 		final StdErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final Compilation c = new CompilationImpl(eee, new IO());
 
 		final String ff = "test/basic1/backlink3/";
 		c.feedCmdLine(List_of(ff));

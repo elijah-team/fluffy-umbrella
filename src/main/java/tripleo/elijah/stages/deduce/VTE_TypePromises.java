@@ -96,7 +96,7 @@ public class VTE_TypePromises {
 
 	// region DeduceTypes2
 
-	static void getItemFali(final @NotNull BaseGeneratedFunction generatedFunction,
+	static void getItemFali(final @NotNull BaseEvaFunction generatedFunction,
 							final @NotNull Context ctx,
 							final @NotNull VariableTableEntry aVte2,
 							final @NotNull DeduceTypes2 aDeduceTypes2) {
@@ -119,7 +119,7 @@ public class VTE_TypePromises {
 						if (best2 instanceof FunctionDef) {
 							@Nullable FunctionDef fd = (FunctionDef) best2;
 							@Nullable ProcTableEntry pte = null;
-							final IInvocation invocation = aDeduceTypes2.getInvocation((GeneratedFunction) generatedFunction);
+							final IInvocation invocation = aDeduceTypes2.getInvocation((EvaFunction) generatedFunction);
 							aDeduceTypes2.forFunction(aDeduceTypes2.newFunctionInvocation(fd, pte, invocation, aDeduceTypes2.phase), new ForFunction() {
 								@Override
 								public void typeDecided(final @NotNull GenType aType) {
@@ -182,7 +182,7 @@ public class VTE_TypePromises {
 	}
 
 	static void found_parent(final @NotNull DeduceTypes2.PromiseExpectation<GenType> aPromiseExpectation,
-					  final BaseGeneratedFunction generatedFunction,
+					  final BaseEvaFunction generatedFunction,
 					  final VariableTableEntry aBte,
 					  final IdentTableEntry ite,
 					  final DeduceTypes2 aDeduceTypes2) {

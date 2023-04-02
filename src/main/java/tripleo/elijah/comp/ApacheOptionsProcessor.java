@@ -1,14 +1,13 @@
 package tripleo.elijah.comp;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
+import org.apache.commons.cli.*;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.internal.CompilationBus;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ApacheOptionsProcessor implements OptionsProcessor {
 	final Options           options = new Options();
@@ -23,8 +22,13 @@ public class ApacheOptionsProcessor implements OptionsProcessor {
 	}
 
 	@Override
-	public String[] process(final @NotNull Compilation c,
-							final @NotNull List<String> args) throws Exception {
+	public String[] process(final Compilation c, final @NotNull List<CompilerInput> aInputs, final CompilationBus aCb) throws Exception {
+
+		final List<String> args = aInputs.stream()
+				.map(inp -> inp.getInp())
+				.collect(Collectors.toList());
+
+
 		final CommandLine cmd;
 		//try {
 			cmd = clp.parse(options, args.toArray(new String[args.size()]));

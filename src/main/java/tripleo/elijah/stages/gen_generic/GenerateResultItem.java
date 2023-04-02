@@ -10,7 +10,7 @@ package tripleo.elijah.stages.gen_generic;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.LibraryStatementPart;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.util.buffer.Buffer;
 
 import java.util.List;
@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
  */
 public class GenerateResultItem {
 	public final @NotNull GenerateResult.TY ty;
-	public final @NotNull Buffer buffer;
-	public final @NotNull GeneratedNode node;
+	public final @NotNull Buffer               buffer;
+	public final @NotNull EvaNode              node;
 	public final @NotNull LibraryStatementPart lsp;
 	private final Dependency dependency;
 	public final int counter;
@@ -31,7 +31,7 @@ public class GenerateResultItem {
 
 	public GenerateResultItem(final @NotNull GenerateResult.TY aTy,
 							  final @NotNull Buffer aBuffer,
-							  final @NotNull GeneratedNode aNode,
+							  final @NotNull EvaNode aNode,
 							  final @NotNull LibraryStatementPart aLsp,
 							  final @NotNull Dependency aDependency,
 							  final int aCounter) {

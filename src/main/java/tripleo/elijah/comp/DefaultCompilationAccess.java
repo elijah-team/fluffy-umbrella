@@ -75,6 +75,37 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 		return compilation.pipelineLogic.dp.functionMapHooks;
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+
+	@Override
+	public Stages getStage() {
+		return Stages.O;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	private void __writeLogs(boolean aSilent, List<ElLog> aLogs) {
 		Multimap<String, ElLog> logMap = ArrayListMultimap.create();
 		if (true || aSilent) {

@@ -82,9 +82,9 @@ public interface IEvaFunctionBase {
 
 	EvaContainerNC getParent();
 
-	void setClass(@NotNull GeneratedNode aNode);
+	void setClass(@NotNull EvaNode aNode);
 
-	GeneratedNode getGenClass();
+	EvaNode getGenClass();
 
 	BaseFunctionDef getFD();
 

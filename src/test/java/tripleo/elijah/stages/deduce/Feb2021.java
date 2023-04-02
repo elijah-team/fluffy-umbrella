@@ -13,6 +13,7 @@ import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationImpl;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
@@ -23,21 +24,21 @@ public class Feb2021 {
 
 	@Test
 	public void testProperty() throws Exception {
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/property/"));
 	}
 
 	@Test
 	public void testProperty2() throws Exception {
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/property2/"));
 	}
 
 	@Test
 	public void testProperty3() throws Exception {
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/property3/"));
 	}
@@ -46,7 +47,7 @@ public class Feb2021 {
 	@Test
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testFunction() throws Exception {
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/function/"));
 	}
@@ -55,7 +56,7 @@ public class Feb2021 {
 	@Test
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testHier() throws Exception {
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/hier/"));
 	}

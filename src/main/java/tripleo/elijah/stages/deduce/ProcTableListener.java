@@ -23,13 +23,13 @@ import tripleo.elijah.stages.logging.ElLog;
  * Created 9/10/21 3:42 AM
  */
 public class ProcTableListener implements BaseTableEntry.StatusListener {
-	private final ProcTableEntry pte;
-	private final BaseGeneratedFunction generatedFunction;
+	private final ProcTableEntry  pte;
+	private final BaseEvaFunction generatedFunction;
 
 	private final DeduceTypes2.@NotNull DeduceClient2 dc;
 	private final @NotNull ElLog LOG;
 
-	public ProcTableListener(ProcTableEntry pte, BaseGeneratedFunction generatedFunction, DeduceTypes2.@NotNull DeduceClient2 dc) {
+	public ProcTableListener(ProcTableEntry pte, BaseEvaFunction generatedFunction, DeduceTypes2.@NotNull DeduceClient2 dc) {
 		this.pte = pte;
 		this.generatedFunction = generatedFunction;
 		this.dc = dc;

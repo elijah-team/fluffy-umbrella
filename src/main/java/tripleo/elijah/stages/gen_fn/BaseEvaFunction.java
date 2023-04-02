@@ -14,16 +14,14 @@ import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
-import tripleo.elijah.stages.deduce.DeduceElement;
-import tripleo.elijah.stages.deduce.DeduceTypes2;
-import tripleo.elijah.stages.deduce.FoundElement;
-import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.deduce.*;
 import tripleo.elijah.stages.gen_generic.Dependency;
 import tripleo.elijah.stages.gen_generic.IDependencyReferent;
 import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.Holder;
 import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.world.impl.DefaultLivingFunction;
 import tripleo.util.range.Range;
 
 import java.util.ArrayList;
@@ -37,23 +35,24 @@ import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 /**
  * Created 9/10/20 2:57 PM
  */
-public abstract class BaseGeneratedFunction extends AbstractDependencyTracker implements GeneratedNode, DeduceTypes2.ExpectationBase, IDependencyReferent, IEvaFunctionBase {
-	public boolean deducedAlready;
-	public FunctionInvocation fi;
-	private int code = 0;
-	private final List<Label> labelList = new ArrayList<Label>();
-	public @NotNull List<Instruction> instructionsList = new ArrayList<Instruction>();
-	public @NotNull List<Integer> deferred_calls = new ArrayList<Integer>();
-	private int instruction_index = 0;
+public abstract class BaseEvaFunction extends AbstractDependencyTracker implements EvaNode, DeduceTypes2.ExpectationBase, IDependencyReferent, IEvaFunctionBase {
+	public          boolean                  deducedAlready;
+	public          FunctionInvocation       fi;
+	public          DefaultLivingFunction    _living;
+	private         int                      code = 0;
+	private final   List<Label>              labelList = new ArrayList<Label>();
+	public @NotNull List<Instruction>        instructionsList = new ArrayList<Instruction>();
+	public @NotNull List<Integer>            deferred_calls = new ArrayList<Integer>();
+	private         int                      instruction_index = 0;
 	public @NotNull List<ConstantTableEntry> cte_list = new ArrayList<ConstantTableEntry>();
 	public @NotNull List<VariableTableEntry> vte_list = new ArrayList<VariableTableEntry>();
 	public @NotNull List<ProcTableEntry> prte_list = new ArrayList<ProcTableEntry>();
 	public @NotNull List<TypeTableEntry> tte_list = new ArrayList<TypeTableEntry>();
 	public @NotNull List<IdentTableEntry> idte_list = new ArrayList<IdentTableEntry>();
 	private int label_count = 0;
-	private int _nextTemp = 0;
-	private GeneratedNode                       genClass;
-	private EvaContainerNC                      parent;
+	private         int                      _nextTemp = 0;
+	private         EvaNode                  genClass;
+	private         EvaContainerNC           parent;
 	private DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
 	private final Dependency dependency = new Dependency(this);
 
@@ -64,9 +63,9 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	/**
 	 * Returns a string that represents the path encoded by ia2.
 	 * Does not transform the string into target language (ie C).
-	 * Called from {@link DeduceTypes2#do_assign_call(BaseGeneratedFunction, Context, IdentTableEntry, FnCallArgs, int)}
-	 * or {@link DeduceTypes2#deduce_generated_function(GeneratedFunction)}
-	 * or {@link DeduceTypes2#resolveIdentIA_(Context, IdentIA, BaseGeneratedFunction, FoundElement)}
+	 * Called from {@link DeduceTypes2#do_assign_call(BaseEvaFunction, Context, IdentTableEntry, FnCallArgs, int)}
+	 * or {@link DeduceTypes2#deduce_generated_function(EvaFunction)}
+	 * or {@link DeduceTypes2#resolveIdentIA_(Context, IdentIA, BaseEvaFunction, FoundElement)}
 	 *
 	 * @param ia2 the path
 	 * @return a string that represents the path encoded by ia2
@@ -412,13 +411,13 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	}
 
 	@Override
-	public void setClass(@NotNull GeneratedNode aNode) {
+	public void setClass(@NotNull EvaNode aNode) {
 		assert aNode instanceof EvaClass || aNode instanceof EvaNamespace;
 		genClass = aNode;
 	}
 
 	@Override
-	public GeneratedNode getGenClass() {
+	public EvaNode getGenClass() {
 		return genClass;
 	}
 
@@ -483,7 +482,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	}
 
 
-	static void printTables(GeneratedFunction gf) {
+	static void printTables(EvaFunction gf) {
 		System.out.println("VariableTable ");
 		for (VariableTableEntry variableTableEntry : gf.vte_list) {
 			System.out.println("\t" + variableTableEntry);
@@ -525,6 +524,14 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return s;
 	}
 
+	private final DeferredObject<EvaClass, Void, Void> _gcP = new DeferredObject<>();
+
+	/*
+	 * Hook in for GeneratedClass
+	 */
+	public void onGenClass(final OnGenClass aOnGenClass) {
+		_gcP.then(aOnGenClass::accept);
+	}
 }
 
 //

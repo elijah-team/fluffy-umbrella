@@ -26,8 +26,8 @@ public class WlGenerateFunction implements WorkJob {
 	private final FunctionDef functionDef;
 	private final GenerateFunctions generateFunctions;
 	private final FunctionInvocation functionInvocation;
-	private boolean _isDone = false;
-	private GeneratedFunction result;
+	private boolean     _isDone = false;
+	private EvaFunction result;
 
 	public WlGenerateFunction(GenerateFunctions aGenerateFunctions, @NotNull FunctionInvocation aFunctionInvocation) {
 		functionDef = (FunctionDef) aFunctionInvocation.getFunction();
@@ -40,8 +40,8 @@ public class WlGenerateFunction implements WorkJob {
 //		if (_isDone) return;
 
 		if (functionInvocation.getGenerated() == null) {
-			OS_Element parent = functionDef.getParent();
-			@NotNull GeneratedFunction gf = generateFunctions.generateFunction(functionDef, parent, functionInvocation);
+			OS_Element           parent = functionDef.getParent();
+			@NotNull EvaFunction gf     = generateFunctions.generateFunction(functionDef, parent, functionInvocation);
 
 			{
 				int i = 0;
@@ -85,7 +85,7 @@ public class WlGenerateFunction implements WorkJob {
 			functionInvocation.setGenerated(result);
 			functionInvocation.generateDeferred().resolve(result);
 		} else {
-			result = (GeneratedFunction) functionInvocation.getGenerated();
+			result = (EvaFunction) functionInvocation.getGenerated();
 		}
 		_isDone = true;
 	}
@@ -95,7 +95,7 @@ public class WlGenerateFunction implements WorkJob {
 		return _isDone;
 	}
 
-	public GeneratedFunction getResult() {
+	public EvaFunction getResult() {
 		return result;
 	}
 }

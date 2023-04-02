@@ -11,8 +11,10 @@ package tripleo.elijah.stages.deduce;
 import org.junit.Assert;
 import org.junit.Test;
 import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.gen_fn.GeneratePhase;
 import tripleo.elijah.stages.logging.ElLog;
@@ -26,7 +28,7 @@ public class DeduceTypesTest2 {
 	public void testDeduceIdentExpression() throws ResolveError {
 /*
 		final OS_Module mod = new OS_Module();
-		mod.parent = new Compilation(new StdErrSink(), new IO());
+		mod.parent = new CompilationImpl(new StdErrSink(), new IO());
 		mod.prelude = mod.parent.findPrelude("c");
 		final ModuleContext mctx = new ModuleContext(mod);
 		mod.setContext(mctx);
@@ -34,7 +36,7 @@ public class DeduceTypesTest2 {
 		cs.setName(Helpers.string_to_ident("Test"));
 */
 
-		final Compilation c = new Compilation(new StdErrSink(), new IO());
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 		final OS_Module mod = c.moduleBuilder()
 				.withPrelude("c")
 				.setContext()
@@ -77,7 +79,7 @@ public class DeduceTypesTest2 {
 
 		final GenType x = DeduceLookupUtils.deduceExpression(d, x1, fc);
 		System.out.println(x);
-//		Assert.assertEquals(new OS_Type(BuiltInTypes.SystemInteger).getBType(), x.getBType());
+//		Assert.assertEquals(new OS_BuiltInType(BuiltInTypes..SystemInteger).getBType(), x.getBType());
 //		final RegularTypeName tn = new RegularTypeName();
 		final VariableTypeName tn = new VariableTypeName();
 		final Qualident tnq = new Qualident();
@@ -85,9 +87,9 @@ public class DeduceTypesTest2 {
 		tn.setName(tnq);
 		tn.setContext(fd.getContext());
 
-//		Assert.assertEquals(new OS_Type(tn).getTypeName(), x.getTypeName());
-		Assert.assertTrue(genTypeEquals(d.resolve_type(new OS_Type(tn), tn.getContext()), x));
-//		Assert.assertEquals(new OS_Type(tn).toString(), x.toString());
+//		Assert.assertEquals(new OS_UserType(tn).getTypeName(), x.getTypeName());
+		Assert.assertTrue(genTypeEquals(d.resolve_type(new OS_UserType(tn), tn.getContext()), x));
+//		Assert.assertEquals(new OS_UserType(tn).toString(), x.toString());
 	}
 
 	private boolean genTypeEquals(GenType a, GenType b) {

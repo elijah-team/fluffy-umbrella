@@ -108,8 +108,8 @@ public class OutputStrategyC {
 		return aFilename;
 	}
 
-	public String nameForFunction(GeneratedFunction generatedFunction, GenerateResult.TY aTy) {
-		GeneratedNode c = generatedFunction.getGenClass();
+	public String nameForFunction(EvaFunction generatedFunction, GenerateResult.TY aTy) {
+		EvaNode c = generatedFunction.getGenClass();
 		if (c == null) c = generatedFunction.getParent(); // TODO fixme
 		if (c instanceof EvaClass)
 			return nameForClass((EvaClass) c, aTy);
@@ -119,7 +119,7 @@ public class OutputStrategyC {
 	}
 
 	public String nameForConstructor(EvaConstructor aEvaConstructor, GenerateResult.TY aTy) {
-		GeneratedNode c = aEvaConstructor.getGenClass();
+		EvaNode c = aEvaConstructor.getGenClass();
 		if (c == null) c = aEvaConstructor.getParent(); // TODO fixme
 		if (c instanceof EvaClass)
 			return nameForClass((EvaClass) c, aTy);

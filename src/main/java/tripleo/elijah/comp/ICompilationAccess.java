@@ -17,4 +17,6 @@ public interface ICompilationAccess {
 	void writeLogs();
 
 	List<FunctionMapHook> functionMapHooks();
+
+	Stages getStage();
 }

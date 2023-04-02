@@ -37,7 +37,7 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 
 	@Override
 	public DED elementDiscriminator() {
-		return DED.dispatch(this);
+		return DED.dispatch(_principal);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 	}
 
 	@Override
-	public BaseGeneratedFunction generatedFunction() {
+	public BaseEvaFunction generatedFunction() {
 		throw new NotImplementedException();
 		//return null;
 	}

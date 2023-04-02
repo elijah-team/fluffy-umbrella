@@ -15,6 +15,9 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_FuncType;
+import tripleo.elijah.lang.types.OS_UnknownType;
+import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
@@ -33,16 +36,16 @@ import java.util.List;
 class Resolve_Ident_IA2 {
 	private final DeduceTypes2 deduceTypes2;
 	private final ErrSink errSink;
-	private final DeducePhase phase;
-	private final @NotNull BaseGeneratedFunction generatedFunction;
-	private final @NotNull FoundElement foundElement;
+	private final          DeducePhase     phase;
+	private final @NotNull BaseEvaFunction generatedFunction;
+	private final @NotNull FoundElement    foundElement;
 	
 	private final @NotNull ElLog LOG;
 	
 	public Resolve_Ident_IA2(final DeduceTypes2 aDeduceTypes2,
 							 ErrSink aErrSink,
 							 DeducePhase aPhase,
-							 @NotNull BaseGeneratedFunction aGeneratedFunction,
+							 @NotNull BaseEvaFunction aGeneratedFunction,
 							 @NotNull FoundElement aFoundElement) {
 		deduceTypes2 = aDeduceTypes2;
 		errSink = aErrSink;
@@ -262,9 +265,9 @@ class Resolve_Ident_IA2 {
 				pte.setFunctionInvocation(fi);
 			}
 
-			pte.getFunctionInvocation().generatePromise().then(new DoneCallback<BaseGeneratedFunction>() {
+			pte.getFunctionInvocation().generatePromise().then(new DoneCallback<BaseEvaFunction>() {
 				@Override
-				public void onDone(@NotNull BaseGeneratedFunction result) {
+				public void onDone(@NotNull BaseEvaFunction result) {
 					result.typePromise().then(new DoneCallback<GenType>() {
 						@Override
 						public void onDone(GenType result) {
@@ -321,7 +324,7 @@ class Resolve_Ident_IA2 {
 					attached = DeduceLookupUtils.deduceExpression(deduceTypes2, vs.initialValue(), ctx);
 				} else { // if (vs.typeName() != null) {
 					attached = new GenType();
-					attached.set(new OS_Type(vs.typeName()));
+					attached.set(new OS_UserType(vs.typeName()));
 				}
 
 				@Nullable IExpression initialValue;
@@ -329,7 +332,7 @@ class Resolve_Ident_IA2 {
 				if (has_initial_value) {
 					initialValue = vs.initialValue();
 				} else {
-//					attached = new OS_Type(vs.typeName());
+//					attached = new OS_UserType(vs.typeName());
 					initialValue = null; // README presumably there is none, ie when generated
 				}
 
@@ -419,9 +422,9 @@ class Resolve_Ident_IA2 {
 		if (te instanceof ProcTableEntry) {
 			final @NotNull ProcTableEntry procTableEntry = (ProcTableEntry) te;
 			// This is how it should be done, with an Incremental
-			procTableEntry.getFunctionInvocation().generateDeferred().done(new DoneCallback<BaseGeneratedFunction>() {
+			procTableEntry.getFunctionInvocation().generateDeferred().done(new DoneCallback<BaseEvaFunction>() {
 				@Override
-				public void onDone(@NotNull BaseGeneratedFunction result) {
+				public void onDone(@NotNull BaseEvaFunction result) {
 					result.typePromise().then(new DoneCallback<GenType>() {
 						@Override
 						public void onDone(GenType result) {
@@ -513,7 +516,7 @@ class Resolve_Ident_IA2 {
 				}
 			}
 			if (fd != null) {
-				final IInvocation invocation = deduceTypes2.getInvocation((GeneratedFunction) generatedFunction);
+				final IInvocation invocation = deduceTypes2.getInvocation((EvaFunction) generatedFunction);
 				final @Nullable FunctionDef fd2 = fd;
 				deduceTypes2.forFunction(deduceTypes2.newFunctionInvocation(fd2, pte, invocation, phase), new ForFunction() {
 					@Override

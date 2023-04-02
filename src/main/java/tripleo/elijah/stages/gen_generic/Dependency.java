@@ -11,7 +11,7 @@ package tripleo.elijah.stages.gen_generic;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.gen_fn.AbstractDependencyTracker;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.gen_fn.EvaContainerNC;
 
@@ -45,7 +45,7 @@ public class Dependency {
 								 List<FunctionInvocation> aDependentFunctions,
 								 List<GenType> aDependentTypes) {
 		for (FunctionInvocation dependentFunction : aDependentFunctions) {
-			final BaseGeneratedFunction generatedFunction = dependentFunction.getGenerated();
+			final BaseEvaFunction generatedFunction = dependentFunction.getGenerated();
 			if (generatedFunction != null)
 				deps.add(generatedFunction.getDependency());
 			else

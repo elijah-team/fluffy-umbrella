@@ -8,6 +8,7 @@ import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.ProcessRecord;
 import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.gen_generic.GenerateFiles;
@@ -22,7 +23,7 @@ public class Boilerplate {
 	public GenerateFiles generateFiles;
 
 	public void get() {
-		comp          = new Compilation(new StdErrSink(), new IO());
+		comp          = new CompilationImpl(new StdErrSink(), new IO());
 		aca           = new DefaultCompilationAccess(comp);
 		pr            = new ProcessRecord(aca);
 		pipelineLogic = pr.pipelineLogic;

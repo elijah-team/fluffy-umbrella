@@ -7,7 +7,7 @@ import tripleo.elijah.ci.CompilerInstructions;
 import java.io.File;
 import java.util.Objects;
 
-interface ILazyCompilerInstructions {
+public interface ILazyCompilerInstructions {
 	@Contract(value = "_ -> new", pure = true)
 	static @NotNull ILazyCompilerInstructions of(final CompilerInstructions aCompilerInstructions) {
 		return new ILazyCompilerInstructions() {

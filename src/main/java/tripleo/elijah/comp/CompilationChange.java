@@ -3,7 +3,7 @@ package tripleo.elijah.comp;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-interface CompilationChange {
+public interface CompilationChange {
 	void apply(final Compilation c);
 }
 
