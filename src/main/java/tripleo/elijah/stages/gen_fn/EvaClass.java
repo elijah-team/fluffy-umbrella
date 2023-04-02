@@ -229,8 +229,12 @@ public class EvaClass extends EvaContainerNC implements GNCoded {
 							}
 							if (genType.typeName != null) {
 								final TypeName typeName = genType.typeName.getTypeName();
-								if (typeName instanceof NormalTypeName && ((NormalTypeName) typeName).getGenericPart().size() > 0)
-									genType.nonGenericTypeName = typeName;
+								if (typeName instanceof NormalTypeName) {
+									final TypeNameList genericPart = ((NormalTypeName) typeName).getGenericPart();
+									if (genericPart != null && genericPart.size() > 0) {
+										genType.nonGenericTypeName = typeName;
+									}
+								}
 							}
 							genType.genCIForGenType2(aDeduceTypes2);
 							potentialTypes.add(genType);
