@@ -43,7 +43,7 @@ import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.test_help.Boilerplate;
 import tripleo.elijah.util.Helpers;
 
-import static org.easymock.EasyMock.mock;
+import static org.mockito.Mockito.mock;
 import static tripleo.elijah.util.Helpers.List_of;
 
 /**

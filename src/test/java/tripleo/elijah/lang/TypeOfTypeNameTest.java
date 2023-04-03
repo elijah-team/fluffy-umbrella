@@ -20,10 +20,7 @@ import tripleo.elijah.stages.deduce.ResolveError;
 import tripleo.elijah.test_help.Boilerplate;
 import tripleo.elijah.util.Helpers;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.mock;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static tripleo.elijah.util.Helpers.List_of;
 
@@ -68,7 +65,6 @@ public class TypeOfTypeNameTest {
 		when(c.getErrSink()).thenReturn(e);
 		when(mod.getCompilation()).thenReturn(c);
 		when(ctx.lookup(var_x.getName())).thenReturn(lrl);
-		replay(ctx, mod, c);
 
 		//
 		// VERIFY EXPECTATIONS
@@ -82,7 +78,6 @@ public class TypeOfTypeNameTest {
 		final DeduceTypes2    deduceTypes2  = new DeduceTypes2(mod, pl.dp);
 		final TypeName        tn            = t.resolve(ctx, deduceTypes2);
 //		System.out.println(tn);
-		verify(ctx, mod, c);
 		Assert.assertEquals(typeNameString, tn.toString());
 	}
 
@@ -125,7 +120,6 @@ public class TypeOfTypeNameTest {
 		when(mod.getCompilation()).thenReturn(c);
 		when(c.getErrSink()).thenReturn(e);
 		when(ctx.lookup("x")).thenReturn(lrl);
-		replay(ctx, mod, c);
 
 		//
 		// VERIFY EXPECTATIONS
@@ -138,7 +132,6 @@ public class TypeOfTypeNameTest {
 		final DeduceTypes2    deduceTypes2  = new DeduceTypes2(mod, pl.dp);
 		TypeName tn = t.resolve(ctx, deduceTypes2);
 //		System.out.println(tn);
-		verify(ctx, mod, c);
 		Assert.assertEquals(typeNameString, tn.toString());
 	}
 
@@ -195,7 +188,6 @@ public class TypeOfTypeNameTest {
 		//
 		when(ctx.lookup("x")).thenReturn(lrl);
 		when(ctx.lookup("package1")).thenReturn(lrl2);
-		replay(ctx);
 
 		//
 		// VERIFY EXPECTATIONS
@@ -209,7 +201,6 @@ public class TypeOfTypeNameTest {
 
 		TypeName tn = t.resolve(ctx, deduceTypes2);
 //		System.out.println(tn);
-		verify(ctx);
 		Assert.assertEquals(typeNameString, tn.toString());
 	}
 
@@ -286,14 +277,12 @@ public class TypeOfTypeNameTest {
 //		when(ctx.lookup("y")).thenReturn(lrl4);
 		when(ctx.lookup(typeNameString1)).thenReturn(lrl2);
 //		when(ctx.lookup("SystemInteger")).thenReturn(lrl3);
-		replay(ctx);
 
 		//
 		// VERIFY EXPECTATIONS
 		//
 		TypeName tn = t.resolve(ctx, deduceTypes2);
 //		System.out.println(tn);
-		verify(ctx);
 		Assert.assertEquals(typeNameString, tn.toString());
 	}
 

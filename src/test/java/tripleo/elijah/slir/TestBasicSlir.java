@@ -19,7 +19,8 @@ import tripleo.elijah.util.Helpers;
 
 import java.io.IOException;
 
-import static org.easymock.EasyMock.mock;
+import static org.mockito.Mockito.mock;
+
 
 /**
  * Created 11/6/21 8:11 AM

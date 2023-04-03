@@ -25,7 +25,6 @@
     <orderEntry type="library" scope="TEST" name="com.google.guava:guava:29.0-jre" level="project" />
     <orderEntry type="library" name="range-v1-0.0.3b" level="project" />
     <orderEntry type="library" name="buffers-v1-0.0.3" level="project" />
-    <orderEntry type="library" name="org.easymock:easymock:4.2" level="project" />
     <orderEntry type="library" name="antlr-2.7.7" level="project" />
     <orderEntry type="library" name="org.jdeferred.v2:jdeferred-core:2.0.0" level="project" />
     <orderEntry type="library" name="log4j:log4j:1.2.17" level="project" />
