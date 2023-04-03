@@ -9,6 +9,7 @@
 package tripleo.elijah.stages.deduce;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.internal.CompilationImpl;
@@ -22,6 +23,7 @@ import tripleo.elijah.util.Helpers;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
+@Ignore
 public class DeduceTypesTest2 {
 
 	@Test

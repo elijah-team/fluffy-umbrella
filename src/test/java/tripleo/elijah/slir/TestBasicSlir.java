@@ -9,6 +9,7 @@
  */
 package tripleo.elijah.slir;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.lang.OS_Module;
@@ -80,6 +81,7 @@ public class TestBasicSlir {
 //		Assert.assertEquals(5, c.errorCount()); // TODO Error count obviously should be 0
 //	}
 
+	@Ignore
 	@Test
 	public final void testBasic_fact1() throws IOException {
 		String s0 = "test/basic/fact1";

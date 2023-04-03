@@ -12,12 +12,9 @@ package tripleo.elijah.stages.gen_c;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.LookupResultList;
-import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.contexts.FunctionContext;
+import tripleo.elijah.contexts.ModuleContext;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.gen_fn.GenType;
@@ -29,7 +26,8 @@ import tripleo.elijah.stages.instructions.VariableTableType;
 import tripleo.elijah.test_help.Boilerplate;
 import tripleo.elijah.test_help.XX;
 
-import static org.easymock.EasyMock.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class GetRealTargetNameTest {
 	private Boilerplate boilerPlate; // NOTE hmm. (reduce) boilerplate reductionism
@@ -39,8 +37,16 @@ public class GetRealTargetNameTest {
 
 	@Before
 	public void setUp() throws Exception {
-		mod = mock(OS_Module.class);
-		FunctionDef fd = mock(FunctionDef.class);
+		//mod = mock(OS_Module.class);
+		//FunctionDef fd = mock(FunctionDef.class);
+
+		final OS_Module mod2 = new OS_Module();
+		final ModuleContext ctx = new ModuleContext(mod2);
+		final ClassStatement cs = new ClassStatement(mod2, ctx);
+
+
+
+		FunctionDef fd = new FunctionDef(cs, ctx);
 		gf = new EvaFunction(fd);
 
 		boilerPlate = new Boilerplate();
@@ -79,18 +85,16 @@ public class GetRealTargetNameTest {
 
 		final DeducePhase  phase        = boilerPlate.getDeducePhase();
 		final DeduceTypes2 deduceTypes2 = new DeduceTypes2(mod, phase);
-		final Context      ctx          = mock(Context.class);
+		final Context      ctx          =mock(Context.class);
 
 		(gf.getIdentTableEntry(0)).setDeduceTypes2(deduceTypes2, ctx, gf);
 
 		final LookupResultList lrl = new LookupResultList();
 		lrl.add(x_ident.getText(), 1,x_var, null);
 
-//		expect(ctx.lookup(foo_ident.getText())).andReturn(lrl);
-		expect(ctx.lookup(x_ident.getText())).andReturn(lrl);
-		expect(ctx.lookup(x_ident.getText())).andReturn(lrl);
-
-		replay(ctx);
+//		when(ctx.lookup(foo_ident.getText())).thenReturn(lrl);
+		when(ctx.lookup(x_ident.getText())).thenReturn(lrl);
+		when(ctx.lookup(x_ident.getText())).thenReturn(lrl);
 
 		final GenType genType = new GenType();
 		genType.typeName = tte.getAttached();

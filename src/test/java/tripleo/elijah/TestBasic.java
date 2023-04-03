@@ -74,7 +74,7 @@ public class TestBasic {
 		Assert.assertEquals(9, (int)errorCount.get(2)); // TODO Error count obviously should be 0
 	}
 
-	@Ignore
+	//@Ignore
 	@Test
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public final void testBasic_listfolders3() throws Exception {
@@ -88,7 +88,7 @@ public class TestBasic {
 		if (c.errorCount() != 0)
 			System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
 
-		Assert.assertEquals(13, c.errorCount()); // TODO Error count obviously should be 0
+		Assert.assertEquals(2, c.errorCount()); // TODO Error count obviously should be 0
 	}
 
 	@Test

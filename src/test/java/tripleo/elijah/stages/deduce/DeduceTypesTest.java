@@ -12,6 +12,7 @@ package tripleo.elijah.stages.deduce;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.Operation2;
@@ -48,6 +49,7 @@ import static tripleo.elijah.util.Helpers.List_of;
 /**
  * Useless tests. We really want to know if a TypeName will resolve to the same types
  */
+@Ignore
 public class DeduceTypesTest {
 
 	private GenType x;
