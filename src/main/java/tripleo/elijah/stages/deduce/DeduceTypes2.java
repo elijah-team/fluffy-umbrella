@@ -1444,6 +1444,14 @@ public class DeduceTypes2 {
 
 									final ClassInvocation ci = phase.registerClassInvocation(classStatement);
 									pte.setClassInvocation(ci);
+								} else if (e instanceof FunctionDef) {
+									FunctionDef functionDef = (FunctionDef) e;
+
+
+									ClassStatement classStatement = (ClassStatement) e.getParent();
+
+									final ClassInvocation ci = phase.registerClassInvocation(classStatement);
+									pte.setClassInvocation(ci);
 								} else
 									throw new NotImplementedException();
 							}
