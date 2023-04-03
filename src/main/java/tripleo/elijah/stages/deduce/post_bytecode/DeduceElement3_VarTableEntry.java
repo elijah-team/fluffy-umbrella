@@ -172,6 +172,9 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 		if (tn != null) {
 			if (tn instanceof NormalTypeName) {
 				final NormalTypeName tn2 = (NormalTypeName) tn;
+
+				if (tn2.isNull()) return;
+
 				__zero_potential__1(varTableEntry, tn2);
 			} else
 				assert false;

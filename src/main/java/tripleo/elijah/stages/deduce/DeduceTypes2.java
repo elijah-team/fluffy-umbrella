@@ -34,6 +34,7 @@ import tripleo.elijah.stages.deduce.declarations.DeferredMember;
 import tripleo.elijah.stages.deduce.declarations.DeferredMemberFunction;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_Function;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
+import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_ProcTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.*;
@@ -1428,7 +1429,60 @@ public class DeduceTypes2 {
 
 		public void action(@NotNull ProcTableEntry pte) {
 			FunctionInvocation fi = pte.getFunctionInvocation();
-			if (fi == null) return;
+			if (fi == null) {
+
+				if (pte.expression != null && pte.expression_num != null) {
+					if (pte.expression instanceof ProcedureCallExpression) {
+						ProcedureCallExpression exp = (ProcedureCallExpression) pte.expression;
+						if (exp.getLeft() instanceof final IdentExpression expLeft) {
+							String                     left = expLeft.getText();
+							final LookupResultList     lrl  = expLeft.getContext().lookup(left);
+							@Nullable final OS_Element e    = lrl.chooseBest(null);
+							if (e != null) {
+								if (e instanceof ClassStatement) {
+									ClassStatement classStatement = (ClassStatement) e;
+
+									final ClassInvocation ci = phase.registerClassInvocation(classStatement);
+									pte.setClassInvocation(ci);
+								} else
+									throw new NotImplementedException();
+							}
+						}
+					}
+				}
+
+				final ClassInvocation invocation = pte.getClassInvocation();
+
+
+
+
+
+
+
+				if (invocation == null) return;
+
+
+
+
+
+
+				@NotNull FunctionInvocation fi2                   = new FunctionInvocation(ConstructorDef.defaultVirtualCtor, pte, invocation, phase.generatePhase);
+
+				//cfi =
+				final WlGenerateDefaultCtor wldc = new WlGenerateDefaultCtor(getGenerateFunctions(invocation.getKlass().getContext().module()), fi2);
+				wldc.run(null);
+				BaseEvaFunction ef = wldc.getResult();
+
+
+
+				DeduceElement3_ProcTableEntry zp = _zero.get(pte, ef);
+
+
+
+
+				fi = newFunctionInvocation(ef.getFD(), pte, invocation, phase);
+
+				/*return;*/}
 
 			if (fi.getFunction() == null) {
 				if (fi.pte == null) {
@@ -2105,6 +2159,16 @@ public class DeduceTypes2 {
 			}
 
 			final DeduceElement3_Function de3 = new DeduceElement3_Function(DeduceTypes2.this, aGeneratedFunction);
+			l.put(aGeneratedFunction, de3);
+			return de3;
+		}
+
+		public DeduceElement3_ProcTableEntry get(final ProcTableEntry pte, final BaseEvaFunction aGeneratedFunction) {
+			if (l.containsKey(pte)) {
+				return (DeduceElement3_ProcTableEntry) l.get(pte);
+			}
+
+			final DeduceElement3_ProcTableEntry de3 = new DeduceElement3_ProcTableEntry(pte, DeduceTypes2.this, aGeneratedFunction);
 			l.put(aGeneratedFunction, de3);
 			return de3;
 		}
