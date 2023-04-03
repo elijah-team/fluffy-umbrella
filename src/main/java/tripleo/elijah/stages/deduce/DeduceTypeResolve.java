@@ -182,6 +182,23 @@ public class DeduceTypeResolve {
 					identTableEntry.typeResolvePromise().done(new DoneCallback<GenType>() {
 						@Override
 						public void onDone(final GenType result) {
+
+
+
+
+
+
+
+
+							if (identTableEntry.type == null) return;
+
+
+
+
+
+
+
+
 							identTableEntry.type.setAttached(result);
 						}
 					});

@@ -150,6 +150,32 @@ public class DeducePath {
 		@Override
 		public LookupResultList lookup(String name, int level, LookupResultList Result, List<Context> alreadySearched, boolean one) {
 //			if (index == 0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+			if (type.resolved == null) return null;
+
+
+
+
+
+
+
+
+
+
+
+
 				return type.resolved.getElement().getContext().lookup(name, level, Result, alreadySearched, one);
 //			else
 //				return null;
