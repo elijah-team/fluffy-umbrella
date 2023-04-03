@@ -190,7 +190,9 @@ public class DeduceTypeResolve {
 
 
 
-							if (identTableEntry.type == null) return;
+							if (identTableEntry.type == null) {
+								identTableEntry.type = new TypeTableEntry(999, TypeTableEntry.Type.TRANSIENT, result.typeName, identTableEntry.getIdent(), null);
+							}
 
 
 

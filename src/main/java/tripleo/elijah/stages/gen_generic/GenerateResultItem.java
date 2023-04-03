@@ -49,13 +49,6 @@ public class GenerateResultItem {
 	}
 
 	public List<DependencyRef> dependencies() {
-//		List<DependencyRef> x = Lists.transform(new ArrayList<>(dependency.deps), new Function<Dependency, DependencyRef>() {
-//			@Override
-//			public DependencyRef apply(@Nullable Dependency input) {
-//				assert input != null;
-//				return input.dref;
-//			}
-//		});
 		List<DependencyRef> x = dependency.getNotedDeps().stream()
 				.map(dep -> dep.dref)
 				.collect(Collectors.toList());

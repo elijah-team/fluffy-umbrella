@@ -53,7 +53,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 	private final CompletedItemsHandler               cih;
 	private final WritePipelineSharedState            st;
 	private final Promise<GenerateResult, Void, Void> prom;
-	private Supplier<GenerateResult>                  grs;
+	private       Supplier<GenerateResult>            grs;
 
 	public WritePipeline(final @NotNull Compilation aCompilation,
 						 final @NotNull ProcessRecord aPr,
@@ -276,7 +276,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		}
 	}
 
-	class WPIS_WriteInputs  implements WP_Indiviual_Step {
+	class WPIS_WriteInputs implements WP_Indiviual_Step {
 		@Override
 		public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
 			// 3. write inputs
@@ -335,6 +335,15 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 
 		@Override
 		public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
+
+
+			result.results().stream()
+					.forEach(gri -> {
+						System.err.println(gri.ty);
+						System.err.println("" + gri.buffer.getText());
+					});
+
+
 			st.sys.generateOutputs(result);
 		}
 	}
@@ -385,6 +394,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		WP_Flow(final Collection<? extends WP_Indiviual_Step> s) {
 			steps.addAll(s);
 		}
+
 		WP_Flow() {
 			//steps.addAll(s);
 		}
@@ -572,12 +582,12 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 	 */
 	private final static class WritePipelineSharedState {
 		//private @NotNull /*final*/ OutputStrategy os;
-		private @NotNull /*final*/ ElSystem       sys;
+		private @NotNull /*final*/ ElSystem                               sys;
 		private @NotNull /*final*/ Multimap<CompilerInstructions, String> lsp_outputs;
-		private /*final*/ @NotNull Compilation    c;
-		private /*final*/ @NotNull GenerateResult gr;
-		private /*final*/ @NotNull File file_prefix;
-		private /*final*/ @NotNull Multimap<String, Buffer> mmb;
+		private /*final*/ @NotNull Compilation                            c;
+		private /*final*/ @NotNull GenerateResult                         gr;
+		private /*final*/ @NotNull File                                   file_prefix;
+		private /*final*/ @NotNull Multimap<String, Buffer>               mmb;
 
 		@Contract(pure = true)
 		public @NotNull GenerateResult getGr() {
@@ -598,11 +608,11 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		//private final File file_prefix;
 
 		// region state
-		final Multimap<Dependency, GenerateResultItem> gris = ArrayListMultimap.create();
+		final         Multimap<Dependency, GenerateResultItem> gris = ArrayListMultimap.create();
 		// README debugging purposes
-		final List<GenerateResultItem> abs = new ArrayList<>();
-		private final WritePipelineSharedState     sharedState;
-		private       Observer<GenerateResultItem> observer;
+		final         List<GenerateResultItem>                 abs  = new ArrayList<>();
+		private final WritePipelineSharedState                 sharedState;
+		private       Observer<GenerateResultItem>             observer;
 
 		public CompletedItemsHandler(final WritePipelineSharedState aSharedState) {
 			sharedState = aSharedState;
@@ -642,7 +652,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		//}
 
 		private void ___completeSequence(final @NotNull Map<String, OutputFileC> outputFiles) {
-			final String         prefix         = sharedState.file_prefix.toString();
+			final String prefix = sharedState.file_prefix.toString();
 
 			NotImplementedException.raise();
 
@@ -671,7 +681,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 			final @NotNull GenerateResult generateResult = sharedState.getGr();
 
 			generateResult.outputFiles((final Map<String, OutputFileC> outputFiles) -> {
-					___completeSequence(outputFiles);
+				___completeSequence(outputFiles);
 			});
 		}
 
