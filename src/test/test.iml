@@ -31,11 +31,11 @@
     <orderEntry type="library" name="log4j:log4j:1.2.17" level="project" />
     <orderEntry type="library" name="org.slf4j:slf4j-simple:1.7.25" level="project" />
     <orderEntry type="library" name="commons-codec:commons-codec:1.151" level="project" />
-    <orderEntry type="library" name="org.reactivestreams:reactive-streams:1.0.3" level="project" />
     <orderEntry type="library" name="io.reactivex.rxjava3:rxjava:3.1.0" level="project" />
     <orderEntry type="library" name="picocontainer" level="project" />
     <orderEntry type="library" name="apache.commons.lang3" level="project" />
     <orderEntry type="library" name="net.java.dev.jna" level="project" />
     <orderEntry type="library" name="easymock" level="project" />
+    <orderEntry type="library" name="mockito.core" level="project" />
   </component>
 </module>
