@@ -448,7 +448,7 @@ public abstract class BaseEvaFunction extends AbstractDependencyTracker implemen
 					holder.set(result);
 				}
 			});
-			System.err.println(String.format("Trying to resolve function twice 1) %s 2) %s", holder.get().asString(), aType.asString()));
+			tripleo.elijah.util.Stupidity.println_err_2(String.format("Trying to resolve function twice 1) %s 2) %s", holder.get().asString(), aType.asString()));
 		}
 	}
 
@@ -483,25 +483,25 @@ public abstract class BaseEvaFunction extends AbstractDependencyTracker implemen
 
 
 	static void printTables(EvaFunction gf) {
-		System.out.println("VariableTable ");
+		tripleo.elijah.util.Stupidity.println_out_2("VariableTable ");
 		for (VariableTableEntry variableTableEntry : gf.vte_list) {
-			System.out.println("\t" + variableTableEntry);
+			tripleo.elijah.util.Stupidity.println_out_2("\t" + variableTableEntry);
 		}
-		System.out.println("ConstantTable ");
+		tripleo.elijah.util.Stupidity.println_out_2("ConstantTable ");
 		for (ConstantTableEntry constantTableEntry : gf.cte_list) {
-			System.out.println("\t" + constantTableEntry);
+			tripleo.elijah.util.Stupidity.println_out_2("\t" + constantTableEntry);
 		}
-		System.out.println("ProcTable     ");
+		tripleo.elijah.util.Stupidity.println_out_2("ProcTable     ");
 		for (ProcTableEntry procTableEntry : gf.prte_list) {
-			System.out.println("\t" + procTableEntry);
+			tripleo.elijah.util.Stupidity.println_out_2("\t" + procTableEntry);
 		}
-		System.out.println("TypeTable     ");
+		tripleo.elijah.util.Stupidity.println_out_2("TypeTable     ");
 		for (TypeTableEntry typeTableEntry : gf.tte_list) {
-			System.out.println("\t" + typeTableEntry);
+			tripleo.elijah.util.Stupidity.println_out_2("\t" + typeTableEntry);
 		}
-		System.out.println("IdentTable    ");
+		tripleo.elijah.util.Stupidity.println_out_2("IdentTable    ");
 		for (IdentTableEntry identTableEntry : gf.idte_list) {
-			System.out.println("\t" + identTableEntry);
+			tripleo.elijah.util.Stupidity.println_out_2("\t" + identTableEntry);
 		}
 	}
 

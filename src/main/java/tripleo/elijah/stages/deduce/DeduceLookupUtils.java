@@ -171,7 +171,7 @@ public class DeduceLookupUtils {
 	private static @Nullable GenType deduceProcedureCall(final @NotNull ProcedureCallExpression pce, final @NotNull Context ctx, @NotNull DeduceTypes2 deduceTypes2) {
 		@Nullable GenType result = new GenType();
 		boolean finished = false;
-		System.err.println("979 During deduceProcedureCall " + pce);
+		tripleo.elijah.util.Stupidity.println_err_2("979 During deduceProcedureCall " + pce);
 		@Nullable OS_Element best = null;
 		try {
 			best = lookup(pce.getLeft(), ctx, deduceTypes2);
@@ -198,7 +198,7 @@ public class DeduceLookupUtils {
 						result.resolved = new OS_UnknownType(funcExpr);// TODO still must register somewhere
 					}
 				} else {
-					System.err.println("992 " + best.getClass().getName());
+					tripleo.elijah.util.Stupidity.println_err_2("992 " + best.getClass().getName());
 					throw new NotImplementedException();
 				}
 			}
@@ -399,7 +399,7 @@ public class DeduceLookupUtils {
 			@Nullable OS_Element best3 = lrl3.chooseBest(null);
 			return best3;
 //		default:
-//			System.err.println("1242 "+expression);
+//			tripleo.elijah.util.Stupidity.println_err_2("1242 "+expression);
 //			throw new NotImplementedException();
 		default:
 			throw new IllegalStateException("1242 Unexpected value: " + expression.getKind());

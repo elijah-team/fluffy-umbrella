@@ -77,7 +77,7 @@ public class TypeOfTypeNameTest {
 		final PipelineLogic   pl            = boilerplate.pipelineLogic;
 		final DeduceTypes2    deduceTypes2  = new DeduceTypes2(mod, pl.dp);
 		final TypeName        tn            = t.resolve(ctx, deduceTypes2);
-//		System.out.println(tn);
+//		tripleo.elijah.util.Stupidity.println_out_2(tn);
 		Assert.assertEquals(typeNameString, tn.toString());
 	}
 
@@ -131,7 +131,7 @@ public class TypeOfTypeNameTest {
 		final PipelineLogic   pl            = boilerplate.pipelineLogic;
 		final DeduceTypes2    deduceTypes2  = new DeduceTypes2(mod, pl.dp);
 		TypeName tn = t.resolve(ctx, deduceTypes2);
-//		System.out.println(tn);
+//		tripleo.elijah.util.Stupidity.println_out_2(tn);
 		Assert.assertEquals(typeNameString, tn.toString());
 	}
 
@@ -200,7 +200,7 @@ public class TypeOfTypeNameTest {
 		final DeduceTypes2    deduceTypes2  = new DeduceTypes2(mod, pl.dp);
 
 		TypeName tn = t.resolve(ctx, deduceTypes2);
-//		System.out.println(tn);
+//		tripleo.elijah.util.Stupidity.println_out_2(tn);
 		Assert.assertEquals(typeNameString, tn.toString());
 	}
 
@@ -282,7 +282,7 @@ public class TypeOfTypeNameTest {
 		// VERIFY EXPECTATIONS
 		//
 		TypeName tn = t.resolve(ctx, deduceTypes2);
-//		System.out.println(tn);
+//		tripleo.elijah.util.Stupidity.println_out_2(tn);
 		Assert.assertEquals(typeNameString, tn.toString());
 	}
 

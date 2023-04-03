@@ -39,7 +39,7 @@ public class FuncExprContext extends FunctionContext {
 					Result.add(name, level, (OS_Element) item, this);
 				}
 			} else if (item instanceof VariableSequence) {
-//				System.out.println("[FunctionContext#lookup] VariableSequence "+item);
+//				tripleo.elijah.util.Stupidity.println_out_2("[FunctionContext#lookup] VariableSequence "+item);
 				for (final VariableStatement vs : ((VariableSequence) item).items()) {
 					if (vs.getName().equals(name))
 						Result.add(name, level, vs, this);

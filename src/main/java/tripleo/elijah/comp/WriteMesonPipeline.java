@@ -232,7 +232,7 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 			@Override
 			public void accept(final Supplier<GenerateResult> aGenerateResultSupplier) {
 				if (grs != null) {
-					System.err.println("234 grs not null "+grs.getClass().getName());
+					tripleo.elijah.util.Stupidity.println_err_2("234 grs not null "+grs.getClass().getName());
 					return;
 				}
 

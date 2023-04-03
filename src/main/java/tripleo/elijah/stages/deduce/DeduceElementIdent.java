@@ -52,7 +52,7 @@ public class DeduceElementIdent implements IDeduceElement_old {
 
 	public OS_Element getResolvedElement() {
 		if (deduceTypes2 == null) { // TODO remove this ASAP. Should never happen
-			System.err.println("5454 Should never happen. gf is not deduced.");
+			tripleo.elijah.util.Stupidity.println_err_2("5454 Should never happen. gf is not deduced.");
 			return null;
 		}
 
@@ -86,7 +86,7 @@ public class DeduceElementIdent implements IDeduceElement_old {
 			});
 		}
 		final OS_Element R = holder.get();
-		System.err.println("8989 "+(R!=null));
+		tripleo.elijah.util.Stupidity.println_err_2("8989 "+(R!=null));
 		return R;
 	}
 }

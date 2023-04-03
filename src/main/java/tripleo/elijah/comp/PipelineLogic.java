@@ -114,7 +114,7 @@ public class PipelineLogic {
 
 
 			if (lsp == null) {
-				System.err.println("7777777777777777777 mod.getFilename "+mod.getFileName());
+				tripleo.elijah.util.Stupidity.println_err_2("7777777777777777777 mod.getFilename "+mod.getFileName());
 				continue;
 			}
 
@@ -313,7 +313,7 @@ public class PipelineLogic {
 				gr.additional(gr4);
 				aResultSink.additional(gr4);
 			} else {
-				System.out.println("2009 " + evaNode.getClass().getName());
+				tripleo.elijah.util.Stupidity.println_out_2("2009 " + evaNode.getClass().getName());
 			}
 		}
 
@@ -337,11 +337,11 @@ public class PipelineLogic {
 //						if (identTableEntry/*.isResolved()*/.getStatus() == BaseTableEntry.Status.KNOWN) {
 ////							GeneratedNode node = identTableEntry.resolved();
 ////							resolved_nodes.add(node);
-//							System.out.println("91 Resolved IDENT "+ s);
+//							tripleo.elijah.util.Stupidity.println_out_2("91 Resolved IDENT "+ s);
 //						} else {
 ////							assert identTableEntry.getStatus() == BaseTableEntry.Status.UNKNOWN;
 ////							identTableEntry.setStatus(BaseTableEntry.Status.UNKNOWN, null);
-//							System.out.println("92 Unresolved IDENT "+ s);
+//							tripleo.elijah.util.Stupidity.println_out_2("92 Unresolved IDENT "+ s);
 //						}
 //					}
 //				}

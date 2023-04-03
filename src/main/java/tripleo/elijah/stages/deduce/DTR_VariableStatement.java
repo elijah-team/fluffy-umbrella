@@ -47,7 +47,7 @@ class DTR_VariableStatement {
 			break;
 		default:
 			//throw new IllegalStateException("Unexpected value: " + state);
-			System.err.println("Unexpected value: " + state);
+			tripleo.elijah.util.Stupidity.println_err_2("Unexpected value: " + state);
 			break;
 		}
 	}

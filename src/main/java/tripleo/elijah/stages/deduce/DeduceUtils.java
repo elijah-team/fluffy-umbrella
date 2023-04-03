@@ -65,7 +65,7 @@ public class DeduceUtils {
 
 //				return true; // TODO
 			}
-			System.out.println(o);
+			tripleo.elijah.util.Stupidity.println_out_2(""+o);
 			return false;
 		}
 	}
@@ -80,7 +80,7 @@ public class DeduceUtils {
 		public boolean apply(final OS_Element o) {
 			assert o instanceof ClassItem;
 			//  TODO what about __call__ and __ctor__ for ClassStatement?
-//			System.out.println("2000 "+o);
+//			tripleo.elijah.util.Stupidity.println_out_2("2000 "+o);
 			if (!(o instanceof FunctionDef)) return false;
 			//
 			final ExpressionList args = pce.getArgs();

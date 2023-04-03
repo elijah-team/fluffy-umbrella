@@ -22,14 +22,14 @@ public class Loop implements  StatementItem, FunctionItem, OS_Element {
 	@Deprecated public Loop(final OS_Element aParent) {
 		// document assumption
 		if (!(aParent instanceof FunctionDef) && !(aParent instanceof Loop))
-			System.out.println("parent is not FunctionDef or Loop");
+			tripleo.elijah.util.Stupidity.println_out_2("parent is not FunctionDef or Loop");
 		parent = aParent;
 	}
 
 	public Loop(final OS_Element aParent, final Context ctx) {
 		// document assumption
 		if (!(aParent instanceof FunctionDef) && !(aParent instanceof Loop))
-			System.out.println("parent is not FunctionDef or Loop");
+			tripleo.elijah.util.Stupidity.println_out_2("parent is not FunctionDef or Loop");
 		parent = aParent;
 		_a.setContext(new LoopContext(ctx, this));
 	}

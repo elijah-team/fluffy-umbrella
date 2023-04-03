@@ -48,7 +48,7 @@ public class WlGenerateFunction implements WorkJob {
 				for (TypeTableEntry tte : functionInvocation.getArgs()) {
 					i = i + 1;
 					if (tte.getAttached() == null) {
-						System.err.println(String.format("4949 null tte #%d %s in %s", i, tte, gf));
+						tripleo.elijah.util.Stupidity.println_err_2(String.format("4949 null tte #%d %s in %s", i, tte, gf));
 					}
 				}
 			}

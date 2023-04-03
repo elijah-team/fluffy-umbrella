@@ -1023,7 +1023,7 @@ public class DeduceTypes2 {
 								if (identIA2 != null) {
 									@NotNull IdentTableEntry idte2 = identIA.getEntry();
 									@Nullable ProcTableEntry procTableEntry = idte2.getCallablePTE();
-									if (procTableEntry == pte) System.err.println("940 procTableEntry == pte");
+									if (procTableEntry == pte) tripleo.elijah.util.Stupidity.println_err_2("940 procTableEntry == pte");
 									if (procTableEntry != null) {
 										// TODO doesn't seem like we need this
 										procTableEntry.onFunctionInvocation(new DoneCallback<FunctionInvocation>() {
@@ -1040,7 +1040,7 @@ public class DeduceTypes2 {
 													if (functionInvocation.getClassInvocation() == fi.getClassInvocation() &&
 														functionInvocation.getFunction() == fi.getFunction() &&
 														functionInvocation.pte == fi.pte)
-														System.err.println("955 It seems like we are generating the same thing...");
+														tripleo.elijah.util.Stupidity.println_err_2("955 It seems like we are generating the same thing...");
 													else {
 														int ok=2;
 													}
@@ -1418,7 +1418,7 @@ public class DeduceTypes2 {
 			try {
 				cte.getTypeTableEntry().setAttached(resolve_type(new OS_BuiltinType(aBuiltInType), aContext));
 			} catch (ResolveError resolveError) {
-				System.out.println("117 Can't be here");
+				tripleo.elijah.util.Stupidity.println_out_2("117 Can't be here");
 //				resolveError.printStackTrace(); // TODO print diagnostic
 			}
 		}
@@ -2250,7 +2250,7 @@ public class DeduceTypes2 {
 
 	void found_element_for_ite(BaseEvaFunction generatedFunction, @NotNull IdentTableEntry ite, @Nullable OS_Element y, Context ctx) {
 		if (y != ite.getResolvedElement())
-			System.err.println(String.format("2571 Setting FoundElement for ite %s to %s when it is already %s", ite, y, ite.getResolvedElement()));
+			tripleo.elijah.util.Stupidity.println_err_2(String.format("2571 Setting FoundElement for ite %s to %s when it is already %s", ite, y, ite.getResolvedElement()));
 
 		@NotNull Found_Element_For_ITE fefi = new Found_Element_For_ITE(generatedFunction, ctx, LOG, errSink, new DeduceClient1(this));
 		fefi.action(ite);

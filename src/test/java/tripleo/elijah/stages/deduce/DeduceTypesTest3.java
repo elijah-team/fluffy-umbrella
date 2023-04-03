@@ -63,7 +63,7 @@ public class DeduceTypesTest3 {
 //		DeduceTypes2 d = dp.deduceModule(mod);
 ////		final DeduceTypes d = new DeduceTypes(mod);
 //		this.x = DeduceLookupUtils.deduceExpression(x1, fc);
-//		System.out.println(this.x);
+//		tripleo.elijah.util.Stupidity.println_out_2(this.x);
 //	}
 //
 ////	/**

@@ -64,7 +64,7 @@ public interface EvaContainer extends EvaNode {
 		}
 
 		public void resolve(@NotNull EvaNode aResolvedType) {
-			System.out.println(String.format("** [GeneratedContainer 56] resolving VarTableEntry %s to %s", nameToken, aResolvedType.identityString()));
+			tripleo.elijah.util.Stupidity.println_out_2(String.format("** [GeneratedContainer 56] resolving VarTableEntry %s to %s", nameToken, aResolvedType.identityString()));
 			_resolvedType = aResolvedType;
 		}
 

@@ -107,7 +107,7 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 	}
 
 	public void setTypeName(TypeName typeName) {
-//		System.err.println("** setting TypeName in PropertyStatement to "+typeName);
+//		tripleo.elijah.util.Stupidity.println_err_2("** setting TypeName in PropertyStatement to "+typeName);
 		this.typeName = typeName;
 		this.set_fn = createSetFunction();
 		this.get_fn = createGetFunction();

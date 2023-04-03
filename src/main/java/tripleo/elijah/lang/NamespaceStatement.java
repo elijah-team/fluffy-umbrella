@@ -110,7 +110,7 @@ public class NamespaceStatement extends _CommonNC implements Documentable, Modul
 		if (anElement instanceof ClassItem)
 			items.add((ClassItem) anElement);
 		else
-			System.err.println(String.format("[NamespaceStatement#add] not a ClassItem: %s", anElement));
+			tripleo.elijah.util.Stupidity.println_err_2(String.format("[NamespaceStatement#add] not a ClassItem: %s", anElement));
 	}
 
 	public void postConstruct() {

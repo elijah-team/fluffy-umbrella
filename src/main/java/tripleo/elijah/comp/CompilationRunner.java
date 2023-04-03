@@ -38,7 +38,7 @@ public class CompilationRunner {
 		cci         = new DefaultCCI(compilation, a_cis, new IProgressSink() {
 			@Override
 			public void note(final int aCode, final ProgressSinkComponent aProgressSinkComponent, final int aType, final Object[] aParams) {
-				System.err.println(aProgressSinkComponent.printErr(aCode, aType, aParams));
+				tripleo.elijah.util.Stupidity.println_err_2(aProgressSinkComponent.printErr(aCode, aType, aParams));
 			}
 		});
 	}
@@ -119,7 +119,7 @@ public class CompilationRunner {
 		final IProgressSink ps = new IProgressSink() {
 			@Override
 			public void note(final int aCode, final ProgressSinkComponent aCci, final int aType, final Object[] aParams) {
-				System.err.println(aCci.printErr(aCode, aType, aParams));
+				tripleo.elijah.util.Stupidity.println_err_2(aCci.printErr(aCode, aType, aParams));
 			}
 		};
 
@@ -222,7 +222,7 @@ public class CompilationRunner {
 /*
 		final String prelude;
 		final String xprelude = m.genLang();
-		System.err.println("230 " + prelude);
+		tripleo.elijah.util.Stupidity.println_err_2("230 " + prelude);
 		if (xprelude == null)
 			prelude = CompilationAlways.defaultPrelude(); // TODO should be java for eljc
 		else
@@ -269,7 +269,7 @@ public class CompilationRunner {
 					final Exception e = cio.failure();
 					assert e != null;
 
-					System.err.println(("parser exception: " + e));
+					tripleo.elijah.util.Stupidity.println_err_2(("parser exception: " + e));
 					e.printStackTrace(System.err);
 					//s.close();
 					return cio;
@@ -280,7 +280,7 @@ public class CompilationRunner {
 				c.fn2ci.put(absolutePath, R);
 				return cio;
 			} catch (final ANTLRException e) {
-				System.err.println(("parser exception: " + e));
+				tripleo.elijah.util.Stupidity.println_err_2(("parser exception: " + e));
 				e.printStackTrace(System.err);
 				return Operation.failure(e);
 			}
@@ -309,7 +309,7 @@ public class CompilationRunner {
 	private void logProgress(final int number, final String text) {
 		if (number == 130) return;
 
-		System.err.println(number + " " + text);
+		tripleo.elijah.util.Stupidity.println_err_2(number + " " + text);
 	}
 
 	public void doFindCIs(final List<CompilerInput> aInputs, final String[] aArgs2, final CompilationBus aCb) {

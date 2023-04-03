@@ -14,7 +14,7 @@ public class DefaultCompilerController implements CompilerController {
 
 	@Override
 	public void printUsage() {
-		System.out.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
+		tripleo.elijah.util.Stupidity.println_out_2("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
 	}
 
 	@Override

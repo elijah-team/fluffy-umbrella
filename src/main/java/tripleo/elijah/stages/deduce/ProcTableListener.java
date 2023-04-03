@@ -178,7 +178,7 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 						if (parent instanceof ClassStatement) {
 							// TODO might be wrong in the case of generics. check.
 							typeName = null;//new OS_Type((ClassStatement) parent);
-							System.err.println("NOTE ineresting in genericA/__preinc__");
+							tripleo.elijah.util.Stupidity.println_err_2("NOTE ineresting in genericA/__preinc__");
 						}
 					}
 				}
@@ -246,7 +246,7 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 
 		if (depTracker != null) {
 			if (aGenType == null)
-				System.err.println("247 genType is null");
+				tripleo.elijah.util.Stupidity.println_err_2("247 genType is null");
 
 			if (/*aGenType == null &&*/ aFi.getFunction() instanceof ConstructorDef) {
 				final @NotNull ClassStatement c = aFi.getClassInvocation().getKlass();

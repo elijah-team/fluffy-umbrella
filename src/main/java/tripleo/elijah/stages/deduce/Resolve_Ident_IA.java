@@ -71,7 +71,7 @@ class Resolve_Ident_IA {
 
 			//final OS_Element                         el2 = dei.getResolvedElement();
 
-			System.out.println("  70 " + el2);
+			tripleo.elijah.util.Stupidity.println_out_2("  70 " + el2);
 
 			final @NotNull List<InstructionArgument> s = BaseEvaFunction._getIdentIAPathList(identIA);
 
@@ -433,7 +433,7 @@ class Resolve_Ident_IA {
 //				assert idte.getStatus() != BaseTableEntry.Status.UNCHECKED;
 			final String normal_path = generatedFunction.getIdentIAPathNormal(identIA);
 			if (idte.resolveExpectation == null) {
-				System.err.println("385 idte.resolveExpectation is null for "+idte);
+				tripleo.elijah.util.Stupidity.println_err_2("385 idte.resolveExpectation is null for "+idte);
 			} else
 				idte.resolveExpectation.satisfy(normal_path);
 		} else if (idte.getStatus() == BaseTableEntry.Status.KNOWN) {
@@ -599,7 +599,7 @@ class Resolve_Ident_IA {
 				if (ci != null) {
 					pte.setClassInvocation(ci);
 				} else
-					System.err.println("542 Null ClassInvocation");
+					tripleo.elijah.util.Stupidity.println_err_2("542 Null ClassInvocation");
 			}
 
 			pte.setFunctionInvocation(fi);

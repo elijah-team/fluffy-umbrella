@@ -34,7 +34,7 @@ public class AliasStatement implements ModuleItem, ClassItem, FunctionItem, OS_E
 				    expr.getKind() != ExpressionKind.DOT_EXP) // TODO need DOT_EXP to QIDENT
 		{
 			throw new NotImplementedException();
-//			System.out.println(String.format("[AliasStatement#setExpression] %s %s", expr, expr.getKind()));
+//			tripleo.elijah.util.Stupidity.println_out_2(String.format("[AliasStatement#setExpression] %s %s", expr, expr.getKind()));
 		}
 		this.expr = expr;
 	}

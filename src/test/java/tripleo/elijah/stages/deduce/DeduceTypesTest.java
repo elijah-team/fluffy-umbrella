@@ -112,7 +112,7 @@ public class DeduceTypesTest {
 
 		final DeduceElement3_IdentTableEntry xxx = DeduceLookupUtils.deduceExpression2(de3_ite, fc);
 		this.x = xxx.genType();
-		System.out.println(this.x);
+		tripleo.elijah.util.Stupidity.println_out_2(""+this.x);
 	}
 
 	/** TODO This test fails beacause we are comparing a BUILT_IN vs a USER OS_Type.

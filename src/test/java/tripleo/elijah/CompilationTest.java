@@ -44,7 +44,7 @@ public class CompilationTest {
 
 		c.modules
 				.stream()
-				.forEach(mod -> System.out.println(String.format("**48** %s %s", mod, mod.getFileName())));
+				.forEach(mod -> tripleo.elijah.util.Stupidity.println_out_2(String.format("**48** %s %s", mod, mod.getFileName())));
 //		Assert.assertThat(c.modules.size(), new IsEqual<Integer>(3));
 		Assert.assertTrue(c.modules.size() > 2);
 	}

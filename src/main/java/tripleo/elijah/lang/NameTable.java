@@ -35,7 +35,7 @@ public class NameTable {
 	public void add(final OS_Element element, final String name, final OS_Type dtype) {
 //		element.setType(dtype);
 		members.put(name, new TypedElement(element, dtype));
-		System.err.println("[NameTable#add] "+members);
+		tripleo.elijah.util.Stupidity.println_err_2("[NameTable#add] "+members);
 	}
 	
 }

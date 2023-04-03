@@ -49,14 +49,14 @@ public class Dependency {
 			if (generatedFunction != null)
 				deps.add(generatedFunction.getDependency());
 			else
-				System.err.println("52 false FunctionInvocation "+dependentFunction);
+				tripleo.elijah.util.Stupidity.println_err_2("52 false FunctionInvocation "+dependentFunction);
 		}
 		for (GenType dependentType : aDependentTypes) {
 			final EvaContainerNC node = (EvaContainerNC) dependentType.node;
 			if (node != null)
 				deps.add(node.getDependency());
 			else {
-				System.err.println("46 node is null " + (dependentType.resolved != null ? dependentType.resolved : dependentType.resolvedn));
+				tripleo.elijah.util.Stupidity.println_err_2("46 node is null " + (dependentType.resolved != null ? dependentType.resolved : dependentType.resolvedn));
 				final Dependency d = new Dependency(null);
 				d.resolved = dependentType.resolved != null ? dependentType.resolved.getClassOf() : dependentType.resolvedn;
 				deps.add(d);

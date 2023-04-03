@@ -25,7 +25,7 @@ import tripleo.elijah.util.NotImplementedException;
  */
 public class DeducePipeline implements PipelineMember, Consumer<Supplier<GenerateResult>> {
 	protected void logProgress(final String g) {
-		System.err.println(g);
+		tripleo.elijah.util.Stupidity.println_err_2(g);
 	}
 
 	private final DeducePipelineImpl impl;

@@ -122,7 +122,7 @@ public class CReference {
 		final FunctionInvocation fi        = aPrte.getFunctionInvocation();
 
 		if (fi == null) {
-			System.err.println("7777777777777777 fi getIdentIAPath_Proc "+aPrte.toString());
+			tripleo.elijah.util.Stupidity.println_err_2("7777777777777777 fi getIdentIAPath_Proc "+aPrte.toString());
 
 			return null;//throw new IllegalStateException();
 		}

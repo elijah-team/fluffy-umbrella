@@ -53,7 +53,7 @@ public class GenerateResult {
 
 
 		if (aLsp == null) {
-			System.err.println("*************************** buffer --> "+b.getText());
+			tripleo.elijah.util.Stupidity.println_err_2("*************************** buffer --> "+b.getText());
 			return;
 		}
 

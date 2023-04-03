@@ -31,7 +31,7 @@ public class TranslateModule {
 					} else if (item instanceof NamespaceStatement) {
 						put_namespace_statement((NamespaceStatement) item);
 					} else
-						System.out.println("8000 "+item);
+						tripleo.elijah.util.Stupidity.println_out_2("8000 "+item);
 				} catch (final IOException e) {
 					module.getCompilation().getErrSink().exception(e);
 				}
@@ -130,7 +130,7 @@ public class TranslateModule {
 				w.dec_tabs();
 				w.put_string_ln("}");
 			} else
-				System.out.println("8001 "+item);
+				tripleo.elijah.util.Stupidity.println_out_2("8001 "+item);
 		}
 	}
 
@@ -145,7 +145,7 @@ public class TranslateModule {
 
 	private void put_function_def(final FunctionDef functionDef, final TabbedOutputStream w) throws IOException {
 		for (final FunctionItem item : functionDef.getItems()) {
-			System.out.println("8003 "+item);
+			tripleo.elijah.util.Stupidity.println_out_2("8003 "+item);
 			if (item instanceof AliasStatement) {
 
 			} else if (item instanceof CaseConditional) {
@@ -164,10 +164,10 @@ public class TranslateModule {
 
 			} else if (item instanceof VariableSequence) {
 				for (final VariableStatement vs : ((VariableSequence) item).items()) {
-					System.out.println("8004 " + vs);
+					tripleo.elijah.util.Stupidity.println_out_2("8004 " + vs);
 					final OS_Type type = vs.initialValue().getType();
 					final String stype = type == null ? "Unknown" : getTypeString(type);
-					System.out.println("8004-1 " + type);
+					tripleo.elijah.util.Stupidity.println_out_2("8004-1 " + type);
 					w.put_string_ln(String.format("%s %s;", stype, vs.getName()));
 				}
 			} else if (item instanceof WithStatement) {
@@ -204,7 +204,7 @@ public class TranslateModule {
 
 	private void put_namespace_statement_internal(final NamespaceStatement namespaceStatement, final TabbedOutputStream w) {
 		for (final ClassItem item : namespaceStatement.getItems()) {
-			System.out.println("8002 "+item);
+			tripleo.elijah.util.Stupidity.println_out_2("8002 "+item);
 		}
 	}
 
@@ -214,7 +214,7 @@ public class TranslateModule {
 		final String fn3 = fn2 + ".java";
 		final Path p = Path.of("output", fn3);
 		p.getParent().toFile().mkdirs();
-		System.err.println("PATH "+p.toString());
+		tripleo.elijah.util.Stupidity.println_err_2("PATH "+p.toString());
 		TabbedOutputStream w = null;
 		try {
 			w = new TabbedOutputStream(Files.newOutputStream(p));

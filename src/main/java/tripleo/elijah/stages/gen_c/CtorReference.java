@@ -74,7 +74,7 @@ public class CtorReference {
 						assert i == sSize - 1; // Make sure we are ending with a constructor call
 						int code = ((ClassStatement) resolved_element.getParent())._a.getCode();
 						if (code == 0) {
-							System.err.println("** 31161 ClassStatement with 0 code " + resolved_element.getParent());
+							tripleo.elijah.util.Stupidity.println_err_2("** 31161 ClassStatement with 0 code " + resolved_element.getParent());
 						}
 						// README Assuming this is for named constructors
 						String text = ((ConstructorDef) resolved_element).name();
@@ -164,7 +164,7 @@ public class CtorReference {
 				code = aClsinv.getKlass()._a.getCode(); // TODO this will either always be 0 or irrelevant
 			}
 			if (code == 0) {
-				System.err.println("** 32135 ClassStatement with 0 code " + aClsinv.getKlass());
+				tripleo.elijah.util.Stupidity.println_err_2("** 32135 ClassStatement with 0 code " + aClsinv.getKlass());
 			}
 			String text2 = String.format("ZC%d%s", code, ctorName); // TODO what about named constructors
 			sb.append(" = ");

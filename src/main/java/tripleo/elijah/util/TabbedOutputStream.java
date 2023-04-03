@@ -57,7 +57,7 @@ public class TabbedOutputStream {
 
 			tos.close();
 		} catch (final IOException ex) {
-			System.out.println("error");
+			tripleo.elijah.util.Stupidity.println_out_2("error");
 		}
 	}
 

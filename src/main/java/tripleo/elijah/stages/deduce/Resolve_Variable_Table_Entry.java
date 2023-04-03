@@ -244,7 +244,7 @@ class Resolve_Variable_Table_Entry {
 			fd1.setContext((FunctionContext) fe.getContext());
 			fd1.scope(fe.getScope());
 			fd1.setSpecies(BaseFunctionDef.Species.FUNC_EXPR);
-//			System.out.println("1630 "+mod_ns.getItems()); // element 0 is ctor$0
+//			tripleo.elijah.util.Stupidity.println_out_2("1630 "+mod_ns.getItems()); // element 0 is ctor$0
 			fd1.setName(IdentExpression.forString(String.format("$%d", mod_ns.getItems().size() + 1)));
 
 			@NotNull WorkList wl = new WorkList();

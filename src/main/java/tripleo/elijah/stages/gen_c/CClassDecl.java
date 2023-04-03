@@ -51,7 +51,7 @@ public class CClassDecl {
 							final String str = ((StringExpression) str0).getText();
 							setDecl(str);
 						} else {
-							System.out.println("Illegal C.repr");
+							tripleo.elijah.util.Stupidity.println_out_2("Illegal C.repr");
 						}
 					}
 				}

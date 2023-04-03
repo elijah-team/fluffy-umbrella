@@ -68,7 +68,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 
 	public void addPotentialType(final int instructionIndex, final TypeTableEntry tte) {
 		if (!typeDeferred.isPending()) {
-			System.err.println("62 addPotentialType while typeDeferred is already resolved "+this);//throw new AssertionError();
+			tripleo.elijah.util.Stupidity.println_err_2("62 addPotentialType while typeDeferred is already resolved "+this);//throw new AssertionError();
 			return;
 		}
 		//
@@ -91,9 +91,9 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 				// Make sure you check the differences between USER and USER_CLASS types
 				// May not be any
 				//
-//				System.err.println("v.attached: " + v.attached);
-//				System.err.println("tte.attached: " + tte.attached);
-				System.out.println("72 WARNING two types at the same location.");
+//				tripleo.elijah.util.Stupidity.println_err_2("v.attached: " + v.attached);
+//				tripleo.elijah.util.Stupidity.println_err_2("tte.attached: " + tte.attached);
+				tripleo.elijah.util.Stupidity.println_out_2("72 WARNING two types at the same location.");
 				if ((tte.getAttached() != null && tte.getAttached().getType() != OS_Type.Type.USER) || v.getAttached().getType() != OS_Type.Type.USER_CLASS) {
 					// TODO prefer USER_CLASS as we are assuming it is a resolved version of the other one
 					if (tte.getAttached() == null)
@@ -132,7 +132,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		if (_resolveTypeCalled != null) { // TODO what a hack
 			if (_resolveTypeCalled.resolved != null) {
 				if (!aGenType.equals(_resolveTypeCalled)) {
-					System.err.println(String.format("** 130 Attempting to replace %s with %s in %s", _resolveTypeCalled.asString(), aGenType.asString(), this));
+					tripleo.elijah.util.Stupidity.println_err_2(String.format("** 130 Attempting to replace %s with %s in %s", _resolveTypeCalled.asString(), aGenType.asString(), this));
 //					throw new AssertionError();
 				}
 			} else {
@@ -143,7 +143,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 			return;
 		}
 		if (typeDeferred.isResolved()) {
-			System.err.println("126 typeDeferred is resolved "+this);
+			tripleo.elijah.util.Stupidity.println_err_2("126 typeDeferred is resolved "+this);
 		}
 		_resolveTypeCalled = aGenType;
 		typeDeferred.resolve(aGenType);

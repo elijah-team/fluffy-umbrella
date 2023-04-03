@@ -59,7 +59,7 @@ public class IdentExpression implements IExpression, OS_Element, Resolvable, Loc
 	@Override
 	public void setKind(final ExpressionKind aIncrement) {
 		// log and ignore
-		System.err.println("Trying to set ExpressionType of IdentExpression to "+aIncrement.toString());
+		tripleo.elijah.util.Stupidity.println_err_2("Trying to set ExpressionType of IdentExpression to "+aIncrement.toString());
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class IdentExpression implements IExpression, OS_Element, Resolvable, Loc
 //		if (iexpression instanceof IdentExpression) {
 //			text = ((IdentExpression) iexpression).text;
 //		} else {
-//			// NOTE was System.err.println
+//			// NOTE was tripleo.elijah.util.Stupidity.println_err_2
 			throw new IllegalArgumentException("Trying to set left-side of IdentExpression to " + iexpression.toString());
 //		}
 	}

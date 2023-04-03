@@ -42,7 +42,7 @@ public class SpecialFunctions {
 			return null;
 //		if (pn.equals("__eq__"))
 //			return "__req__";
-		System.out.println("reverse_name: "+pn);
+		tripleo.elijah.util.Stupidity.println_out_2("reverse_name: "+pn);
 //		assert false;
 		return null;
 	}

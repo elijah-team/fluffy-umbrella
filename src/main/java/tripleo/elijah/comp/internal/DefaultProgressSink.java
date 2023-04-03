@@ -9,7 +9,7 @@ public class DefaultProgressSink implements IProgressSink {
 //		component.note(code, type, params);
 		if (component.isPrintErr(code, type)) {
 			final String s = component.printErr(code, type, params);
-			System.err.println(s);
+			tripleo.elijah.util.Stupidity.println_err_2(s);
 		}
 	}
 }

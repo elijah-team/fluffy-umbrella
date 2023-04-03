@@ -59,8 +59,8 @@ public class TestIdentNormal {
 
 		final InstructionArgument                s = generateFunctions.simplify_expression(pce, generatedFunction, ctx2);
 		@NotNull final List<InstructionArgument> l = BaseEvaFunction._getIdentIAPathList(s);
-		System.out.println(l);
-//      System.out.println(generatedFunction.getIdentIAPathNormal());
+		tripleo.elijah.util.Stupidity.println_out_2(""+l);
+//      tripleo.elijah.util.Stupidity.println_out_2(generatedFunction.getIdentIAPathNormal());
 
 		//
 		//
@@ -83,7 +83,7 @@ public class TestIdentNormal {
 		d2.resolveIdentIA2_(ctx2, null, ss/*identIA*/, generatedFunction, new FoundElement(phase) {
 			@Override
 			public void foundElement(final OS_Element e) {
-				System.out.println(e);
+				tripleo.elijah.util.Stupidity.println_out_2(""+e);
 			}
 
 			@Override
