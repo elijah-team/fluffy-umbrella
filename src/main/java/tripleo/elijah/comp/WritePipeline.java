@@ -187,18 +187,9 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 					try {
 						final File file = new File(st.file_prefix, "buffers.txt");
 						db_stream = new PrintStream(file);
+						XXPrintStream xps = new XXPrintStream(db_stream);
 
-						final List<GenerateResultItem> generateResultItems = result.results();
-
-						for (final GenerateResultItem ab : generateResultItems) {
-							db_stream.println("---------------------------------------------------------------");
-							db_stream.println(ab.counter);
-							db_stream.println(ab.ty);
-							db_stream.println(ab.output);
-							db_stream.println(ab.node.identityString());
-							db_stream.println(ab.buffer.getText());
-							db_stream.println("---------------------------------------------------------------");
-						}
+						debug_buffers_logic(result, xps);
 					} catch (FileNotFoundException aE) {
 						throw new RuntimeException(aE);
 					} finally {
@@ -206,7 +197,56 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 							db_stream.close();
 					}
 				}
+
+
 			});
+		}
+	}
+
+	interface XPrintStream {
+		void println(String aS);
+	}
+
+	class XXPrintStream implements XPrintStream {
+
+		private final PrintStream p;
+
+		XXPrintStream(final PrintStream aP) {
+			p = aP;
+		}
+
+		@Override
+		public void println(final String aS) {
+			p.println(aS);
+		}
+	}
+
+	class SPrintStream implements XPrintStream {
+		private final StringBuilder sb = new StringBuilder();
+
+		@Override
+		public void println(final String aS) {
+			sb.append(aS);
+			sb.append('\n');
+		}
+
+		public String getString() {
+			return sb.toString();
+		}
+	}
+
+
+	private static void debug_buffers_logic(final GenerateResult result, final XPrintStream db_stream) {
+		final List<GenerateResultItem> generateResultItems = result.results();
+
+		for (final GenerateResultItem ab : generateResultItems) {
+			final String s = MessageFormat.format("{0} - {1} - {2}", ab.counter, ab.ty, ab.output);
+
+			db_stream.println("---------------------------------------------------------------");
+			db_stream.println(s);
+			db_stream.println(ab.node.identityString());
+			db_stream.println(ab.buffer.getText());
+			db_stream.println("---------------------------------------------------------------");
 		}
 	}
 
@@ -337,11 +377,9 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
 
 
-			result.results().stream()
-					.forEach(gri -> {
-						System.err.println(gri.ty);
-						System.err.println("" + gri.buffer.getText());
-					});
+			final SPrintStream sps = new SPrintStream();
+			debug_buffers_logic(result, sps);
+			System.err.println(sps.getString());
 
 
 			st.sys.generateOutputs(result);
