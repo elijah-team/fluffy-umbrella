@@ -41,7 +41,12 @@ import java.io.PrintStream;
 import java.io.Writer;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.util.*;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -324,7 +329,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 			//  "plan", effects; input(s), output(s)
 			// TODO flag?
 			try {
-				final String fn1 = new File(WritePipeline.this.st.file_prefix, "inputs.txt").toString();
+				final String fn1 = new File(st.file_prefix, "inputs.txt").toString();
 
 				DefaultBuffer buf = new DefaultBuffer("");
 //			FileBackedBuffer buf = new FileBackedBuffer(fn1);
@@ -339,10 +344,10 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 //
 //				append_hash(buf, fn);
 //			}
-				for (File file : WritePipeline.this.st.c.getIO().recordedreads) {
+				for (File file : st.c.getIO().recordedreads) {
 					final String fn = file.toString();
 
-					append_hash(buf, fn, WritePipeline.this.st.c.getErrSink());
+					append_hash(buf, fn, st.c.getErrSink());
 				}
 				String s = buf.getText();
 				Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn1, true)));
@@ -385,7 +390,6 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 			st.sys.generateOutputs(result);
 		}
 	}
-
 
 	interface WP_State_Control {
 		void exception(final Exception e);
