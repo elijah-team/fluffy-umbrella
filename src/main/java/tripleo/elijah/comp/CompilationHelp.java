@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jdeferred2.impl.DeferredObject;
 import tripleo.elijah.comp.i.RuntimeProcess;
+import tripleo.elijah.util.Stupidity;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
@@ -59,14 +60,14 @@ class RuntimeProcesses {
 		final Compilation comp = ca.getCompilation();
 
 		for (RuntimeProcess runtimeProcess : processes) {
-			System.err.println("***** RuntimeProcess [run    ] named " + runtimeProcess);
+			Stupidity.println_out_2("***** RuntimeProcess [run    ] named " + runtimeProcess);
 			runtimeProcess.run(comp);
 		}
 	}
 
 	public void prepare() throws Exception {
 		for (RuntimeProcess runtimeProcess : processes) {
-			System.err.println("***** RuntimeProcess [prepare] named " + runtimeProcess);
+			Stupidity.println_out_2("***** RuntimeProcess [prepare] named " + runtimeProcess);
 			runtimeProcess.prepare();
 		}
 	}
@@ -77,11 +78,11 @@ class RuntimeProcesses {
 
 	public void postProcess(ProcessRecord pr) {
 		for (RuntimeProcess runtimeProcess : processes) {
-			System.err.println("***** RuntimeProcess [postProcess] named " + runtimeProcess);
+			Stupidity.println_out_2("***** RuntimeProcess [postProcess] named " + runtimeProcess);
 			runtimeProcess.postProcess();
 		}
 
-		System.err.println("***** RuntimeProcess^ [postProcess/writeLogs]");
+		Stupidity.println_out_2("***** RuntimeProcess^ [postProcess/writeLogs]");
 		pr.writeLogs(ca);
 	}
 
