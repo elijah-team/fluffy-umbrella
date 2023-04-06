@@ -42,6 +42,13 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 			pa.pipelineLogic().generate(nodes, grs);
 
 			final List<GenerateResultItem> x = grs.resultList();
+
+			WritePipeline.SPrintStream xps = new WritePipeline.SPrintStream();
+
+			WritePipeline.debug_buffers_logic(x, xps);
+
+			System.err.println("789789 "+xps.getString());
+
 			int                            y = 2;
 		});
 

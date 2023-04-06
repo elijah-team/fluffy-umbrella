@@ -226,7 +226,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		}
 	}
 
-	class SPrintStream implements XPrintStream {
+	static class SPrintStream implements XPrintStream {
 		private final StringBuilder sb = new StringBuilder();
 
 		@Override
@@ -243,7 +243,10 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 
 	private static void debug_buffers_logic(final GenerateResult result, final XPrintStream db_stream) {
 		final List<GenerateResultItem> generateResultItems = result.results();
+		debug_buffers_logic(generateResultItems, db_stream);
+	}
 
+	static void debug_buffers_logic(final List<GenerateResultItem> generateResultItems, final XPrintStream db_stream) {
 		for (final GenerateResultItem ab : generateResultItems) {
 			final String s = MessageFormat.format("{0} - {1} - {2}", ab.counter, ab.ty, ab.output);
 
