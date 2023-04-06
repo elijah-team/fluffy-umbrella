@@ -44,7 +44,7 @@ class Resolve_Variable_Table_Entry {
 		//
 		LOG = deduceTypes2.LOG;
 		wm = deduceTypes2.wm;
-		errSink = deduceTypes2.errSink;
+		errSink = deduceTypes2._errSink();
 		phase = deduceTypes2.phase;
 	}
 
@@ -359,7 +359,7 @@ class Resolve_Variable_Table_Entry {
 	private void genCIForGenType(final GenType aGenType) {
 		assert aGenType.nonGenericTypeName != null ;//&& ((NormalTypeName) aGenType.nonGenericTypeName).getGenericPart().size() > 0;
 
-		aGenType.genCI(aGenType.nonGenericTypeName, deduceTypes2, deduceTypes2.errSink, deduceTypes2.phase);
+		aGenType.genCI(aGenType.nonGenericTypeName, deduceTypes2, deduceTypes2._errSink(), deduceTypes2.phase);
 		final IInvocation invocation = aGenType.ci;
 		if (invocation instanceof NamespaceInvocation) {
 			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
@@ -418,7 +418,7 @@ class Resolve_Variable_Table_Entry {
 	 * @param aGenType the GenType to modify. doesn;t care about  nonGenericTypeName
 	 */
 	private void genCIForGenType2(final GenType aGenType) {
-		aGenType.genCI(aGenType.nonGenericTypeName, deduceTypes2, deduceTypes2.errSink, deduceTypes2.phase);
+		aGenType.genCI(aGenType.nonGenericTypeName, deduceTypes2, deduceTypes2._errSink(), deduceTypes2.phase);
 		final IInvocation invocation = aGenType.ci;
 		if (invocation instanceof NamespaceInvocation) {
 			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;

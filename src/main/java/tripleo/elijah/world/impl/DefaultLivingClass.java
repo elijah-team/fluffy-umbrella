@@ -1,12 +1,12 @@
 package tripleo.elijah.world.impl;
 
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.comp.GeneratePipeline;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.stages.garish.GarishClass;
 import tripleo.elijah.stages.gen_c.GenerateC;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.world.i.LivingClass;
 
 public class DefaultLivingClass implements LivingClass, LivingNode {
@@ -42,7 +42,7 @@ public class DefaultLivingClass implements LivingClass, LivingNode {
 	}
 
 	@Override
-	public void garish(final GenerateC aGenerateC, final GenerateResult aGr, final GeneratePipeline.GenerateResultSink aResultSink) {
+	public void garish(final GenerateC aGenerateC, final GenerateResult aGr, final GenerateResultSink aResultSink) {
 		if (_garish == null) {
 			_garish = new GarishClass(this);
 		}

@@ -10,7 +10,6 @@ package tripleo.elijah.stages.gen_c;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.comp.GeneratePipeline;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_FuncExprType;
@@ -23,6 +22,7 @@ import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.GenerateFiles;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.OutputFileFactoryParams;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.stages.instructions.ConstTableIA;
 import tripleo.elijah.stages.instructions.FnCallArgs;
 import tripleo.elijah.stages.instructions.IdentIA;
@@ -78,7 +78,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	}
 
 	@Override
-	public GenerateResult generateCode(final Collection<EvaNode> lgn, final WorkManager wm, final GeneratePipeline.GenerateResultSink aResultSink) {
+	public GenerateResult generateCode(final Collection<EvaNode> lgn, final WorkManager wm, final GenerateResultSink aResultSink) {
 		GenerateResult gr = new GenerateResult();
 
 		for (final EvaNode evaNode : lgn) {
@@ -128,10 +128,10 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		private final GenerateResult  gr;
 		private final WorkList wl;
 		private final GenerateFiles generateC;
-		private boolean _isDone = false;
-		private final GeneratePipeline.GenerateResultSink resultSink;
+		private       boolean            _isDone = false;
+		private final GenerateResultSink resultSink;
 
-		public WlGenerateFunctionC(BaseEvaFunction aGf, GenerateResult aGr, WorkList aWl, GenerateC aGenerateC, final GeneratePipeline.GenerateResultSink aResultSink) {
+		public WlGenerateFunctionC(BaseEvaFunction aGf, GenerateResult aGr, WorkList aWl, GenerateC aGenerateC, final GenerateResultSink aResultSink) {
 			gf = aGf;
 			gr = aGr;
 			wl = aWl;
@@ -155,7 +155,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	}
 
 	@Override
-	public void generate_function(EvaFunction aGeneratedFunction, GenerateResult gr, WorkList wl, final GeneratePipeline.GenerateResultSink aResultSink) {
+	public void generate_function(EvaFunction aGeneratedFunction, GenerateResult gr, WorkList wl, final GenerateResultSink aResultSink) {
 		generateCodeForMethod(aGeneratedFunction, gr, wl);
 		for (IdentTableEntry identTableEntry : aGeneratedFunction.idte_list) {
 			if (identTableEntry.isResolved()) {
@@ -191,7 +191,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	}
 
 	@Override
-	public void generate_constructor(EvaConstructor aEvaConstructor, GenerateResult gr, WorkList wl, final GeneratePipeline.GenerateResultSink aResultSink) {
+	public void generate_constructor(EvaConstructor aEvaConstructor, GenerateResult gr, WorkList wl, final GenerateResultSink aResultSink) {
 		generateCodeForConstructor(aEvaConstructor, gr, wl);
 		for (IdentTableEntry identTableEntry : aEvaConstructor.idte_list) {
 			if (identTableEntry.isResolved()) {
@@ -223,7 +223,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	}
 
 	@Override
-	public void generate_class(EvaClass x, GenerateResult gr, final GeneratePipeline.@NotNull GenerateResultSink aResultSink) {
+	public void generate_class(EvaClass x, GenerateResult gr, final @NotNull GenerateResultSink aResultSink) {
 		final LivingClass lc = aResultSink.getClass(x); // TODO could also add _living property
 		lc.garish(this, gr, aResultSink);
 	}
@@ -248,7 +248,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	}
 
 	@Override
-	public void generate_namespace(final EvaNamespace x, final GenerateResult gr, final GeneratePipeline.GenerateResultSink aResultSink) {
+	public void generate_namespace(final EvaNamespace x, final GenerateResult gr, final GenerateResultSink aResultSink) {
 		if (x.generatedAlready) throw new Error();
 		// TODO do we need `self' parameters for namespace?
 		final BufferTabbedOutputStream tosHdr = new BufferTabbedOutputStream();

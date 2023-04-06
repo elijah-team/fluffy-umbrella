@@ -8,49 +8,52 @@
  */
 package tripleo.elijah.comp;
 
-import java.util.ArrayList;
+import org.jdeferred2.DoneCallback;
+import org.jetbrains.annotations.Contract;
+import tripleo.elijah.comp.i.IPipelineAccess;
+import tripleo.elijah.stages.gen_fn.EvaNode;
+import tripleo.elijah.stages.gen_generic.DoubleLatch;
+import tripleo.elijah.stages.gen_generic.GenerateResult;
+import tripleo.elijah.stages.gen_generic.GenerateResultItem;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.DefaultGenerateResultSink;
+import tripleo.elijah.util.NotImplementedException;
+
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import com.google.common.collect.ImmutableList;
-import org.jdeferred2.DoneCallback;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.stages.gen_fn.EvaClass;
-import tripleo.elijah.stages.gen_fn.EvaNode;
-import tripleo.elijah.stages.gen_generic.GenerateResult;
-import tripleo.elijah.stages.gen_generic.GenerateResultItem;
-import tripleo.elijah.util.NotImplementedException;
-import tripleo.elijah.world.i.LivingClass;
 
 /**
  * Created 8/21/21 10:16 PM
  */
 public class GeneratePipeline implements PipelineMember, Consumer<Supplier<GenerateResult>> {
-	private final Compilation    c;
+	private final Compilation c;
 
 	@Contract(pure = true)
-	public GeneratePipeline(Compilation aCompilation, @NotNull DeducePipeline aDeducePipeline) {
-		c = aCompilation;
+	public GeneratePipeline(IPipelineAccess pa) {
+		c     = pa.getCompilation();
+		latch = new GPL(pa);
 
-		aDeducePipeline.lgcp(new DoneCallback<List<EvaNode>>() {
+		final DeducePipeline deducePipeline = pa.getDeducePipeline();
+
+		deducePipeline.lgcp(new DoneCallback<List<EvaNode>>() {
 			@Override
 			public void onDone(final List<EvaNode> a_lgc) {
 				latch.set(a_lgc);
-				//lp.then((x) -> latch.run());
 			}
+		});
+
+		final GPL latch3 = new GPL(pa);
+
+		latch2 = new DoubleLatch<List<EvaNode>>(nodes -> {
+			latch.run();
 		});
 	}
 
-	//DeferredObject<Object, Void, Void> lp = new DeferredObject<>();
-
-	final private GPL latch = new GPL();
+	final private GPL latch;
 
 	@Override
 	public void run() {
-		//lp.resolve(new Object());
-		latch.run();
+		//latch.run(); //see latch2.run() above
 	}
 
 	@Override
@@ -59,8 +62,12 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 	}
 
 	private class GPL implements Runnable {
-		private List<EvaNode> result;
-		private DefaultGenerateResultSink grs = new DefaultGenerateResultSink();
+		private List<EvaNode>             result;
+		private DefaultGenerateResultSink grs;
+
+		private GPL(final IPipelineAccess pa) {
+			grs = new DefaultGenerateResultSink(GeneratePipeline.this, pa);
+		}
 
 		@Contract(mutates = "this")
 		public void set(final List<EvaNode> aResult) {
@@ -76,43 +83,7 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 		}
 	}
 
-	public interface GenerateResultSink {
-		void add(EvaNode node);
-
-		void additional(GenerateResult aGenerateResult);
-
-		LivingClass getClass(EvaClass aEvaClass);
-	}
-
-	public class DefaultGenerateResultSink implements GenerateResultSink {
-
-
-		private final List<GenerateResultItem> gris = new ArrayList<>();
-
-
-		@Override
-		public void add(EvaNode node){
-			int y=2;
-		}
-
-		@Override
-		public void additional(final GenerateResult aGenerateResult) {
-			for (GenerateResultItem result : aGenerateResult.results()) {
-				gris.add(result);
-				add(result.node);
-			}
-		}
-
-		@Override
-		public LivingClass getClass(final EvaClass aEvaClass) {
-			return c._repo.getClass(aEvaClass);
-		}
-
-		public List<GenerateResultItem> resultList() {
-			return ImmutableList.copyOf(gris);
-		}
-
-	}
+	private final DoubleLatch<List<EvaNode>> latch2;
 }
 
 //

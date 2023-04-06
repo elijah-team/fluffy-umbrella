@@ -11,7 +11,6 @@ package tripleo.elijah.stages.gen_fn;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.comp.GeneratePipeline;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.lang.AccessNotation;
@@ -24,6 +23,7 @@ import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.Dependency;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.IDependencyReferent;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.stages.post_deduce.IPostDeduce;
 
 import java.io.PrintStream;
@@ -125,7 +125,7 @@ public abstract class EvaContainerNC extends AbstractDependencyTracker implement
 		code = aCode;
 	}
 
-	public abstract void generateCode(CodeGenerator aGgc, GenerateResult aGr, final GeneratePipeline.GenerateResultSink aResultSink);
+	public abstract void generateCode(CodeGenerator aGgc, GenerateResult aGr, final GenerateResultSink aResultSink);
 
 	public abstract void analyzeNode(IPostDeduce aPostDeduce);
 

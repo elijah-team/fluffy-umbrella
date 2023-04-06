@@ -1,10 +1,10 @@
 package tripleo.elijah.stages.garish;
 
-import tripleo.elijah.comp.GeneratePipeline;
 import tripleo.elijah.stages.gen_c.CClassDecl;
 import tripleo.elijah.stages.gen_c.GenerateC;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.util.BufferTabbedOutputStream;
 import tripleo.elijah.world.i.LivingClass;
 import tripleo.elijah.world.impl.DefaultLivingClass;
@@ -18,7 +18,7 @@ public class GarishClass {
 		//_lc.setGarish(this);
 	}
 
-	public void garish(final GenerateC aGenerateC, final GenerateResult gr, final GeneratePipeline.GenerateResultSink aResultSink) {
+	public void garish(final GenerateC aGenerateC, final GenerateResult gr, final GenerateResultSink aResultSink) {
 		final DefaultLivingClass dlc = (DefaultLivingClass) _lc;
 		final EvaClass x = dlc.evaNode();
 

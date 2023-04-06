@@ -67,7 +67,7 @@ public class DeduceLocalVariable {
 					int y=2;
 				} catch (ResolveError aResolveError) {
 //					aResolveError.printStackTrace();
-					deduceTypes2.errSink.reportDiagnostic(aResolveError);
+					deduceTypes2._errSink().reportDiagnostic(aResolveError);
 				}
 			}
 		}
@@ -93,7 +93,7 @@ public class DeduceLocalVariable {
 				if (attached_list.size() == 1) {
 					final TypeTableEntry pot = attached_list.get(0);
 					vte.type.setAttached(pot.getAttached());
-					vte.type.genType.genCI(null, deduceTypes2, deduceTypes2.errSink, deduceTypes2.phase);
+					vte.type.genType.genCI(null, deduceTypes2, deduceTypes2._errSink(), deduceTypes2.phase);
 					final ClassInvocation classInvocation = (ClassInvocation) vte.type.genType.ci;
 					if (classInvocation != null) {
 						classInvocation.resolvePromise().then(new DoneCallback<EvaClass>() {
@@ -122,7 +122,7 @@ public class DeduceLocalVariable {
 						vte.resolveTypeToClass(genType.node);
 					} catch (ResolveError aResolveError) {
 //						aResolveError.printStackTrace();
-						deduceTypes2.errSink.reportDiagnostic(aResolveError);
+						deduceTypes2._errSink().reportDiagnostic(aResolveError);
 					}
 				}
 			}

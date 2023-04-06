@@ -3,11 +3,11 @@ package tripleo.elijah.stages.gen_generic;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.comp.GeneratePipeline;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_fn.EvaConstructor;
 import tripleo.elijah.stages.gen_fn.EvaFunction;
 import tripleo.elijah.stages.gen_fn.EvaNode;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.work.WorkList;
 import tripleo.elijah.work.WorkManager;
 
@@ -48,14 +48,14 @@ public interface GenerateFiles extends CodeGenerator {
 		});
 	}
 
-	GenerateResult generateCode(Collection<EvaNode> aNodeCollection, WorkManager aWorkManager, final GeneratePipeline.GenerateResultSink aResultSink);
+	GenerateResult generateCode(Collection<EvaNode> aNodeCollection, WorkManager aWorkManager, final GenerateResultSink aResultSink);
 
 	GenerateResult resultsFromNodes(List<EvaNode> aNodes, WorkManager aWm);
 
 	@Override
-	void generate_class(EvaClass aGeneratedClass, GenerateResult aGenerateResult, final GeneratePipeline.GenerateResultSink aResultSink);
+	void generate_class(EvaClass aGeneratedClass, GenerateResult aGenerateResult, final GenerateResultSink aResultSink);
 
-	void generate_function(EvaFunction aEvaFunction, GenerateResult aGenerateResult, WorkList aWorkList, GeneratePipeline.GenerateResultSink aResultSink);
+	void generate_function(EvaFunction aEvaFunction, GenerateResult aGenerateResult, WorkList aWorkList, GenerateResultSink aResultSink);
 
-	void generate_constructor(EvaConstructor aGf, GenerateResult aGr, WorkList aWl, GeneratePipeline.GenerateResultSink aResultSink);
+	void generate_constructor(EvaConstructor aGf, GenerateResult aGr, WorkList aWl, GenerateResultSink aResultSink);
 }

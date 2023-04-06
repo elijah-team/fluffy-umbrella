@@ -109,7 +109,7 @@ public class VTE_TypePromises {
 				try {
 					rtype = aDeduceTypes2.resolve_type(ty2, ctx);
 				} catch (ResolveError resolveError) {
-					aDeduceTypes2.errSink.reportError("Cant resolve " + ty2); // TODO print better diagnostic
+					aDeduceTypes2._errSink().reportError("Cant resolve " + ty2); // TODO print better diagnostic
 					return;
 				}
 				if (rtype.resolved != null && rtype.resolved.getType() == OS_Type.Type.USER_CLASS) {

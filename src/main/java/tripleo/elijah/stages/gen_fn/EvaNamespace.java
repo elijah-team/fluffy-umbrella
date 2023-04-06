@@ -9,11 +9,11 @@
 package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.comp.GeneratePipeline;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.stages.post_deduce.IPostDeduce;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
@@ -92,7 +92,7 @@ public class EvaNamespace extends EvaContainerNC implements GNCoded {
 	}
 
 	@Override
-	public void generateCode(CodeGenerator aCodeGenerator, GenerateResult aGr, final GeneratePipeline.GenerateResultSink aResultSink) {
+	public void generateCode(CodeGenerator aCodeGenerator, GenerateResult aGr, final GenerateResultSink aResultSink) {
 		aCodeGenerator.generate_namespace(this, aGr, aResultSink);
 	}
 

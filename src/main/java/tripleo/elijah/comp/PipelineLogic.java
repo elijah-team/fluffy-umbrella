@@ -26,6 +26,7 @@ import tripleo.elijah.stages.gen_generic.GenerateFiles;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.OutputFileFactory;
 import tripleo.elijah.stages.gen_generic.OutputFileFactoryParams;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkManager;
@@ -99,7 +100,7 @@ public class PipelineLogic {
 		om.onComplete();
 	}
 
-	public void generate(List<EvaNode> lgc, final GeneratePipeline.GenerateResultSink aResultSink) {
+	public void generate(List<EvaNode> lgc, final GenerateResultSink aResultSink) {
 		final WorkManager wm = new WorkManager();
 
 		for (final OS_Module mod : mods) {
@@ -284,7 +285,7 @@ public class PipelineLogic {
 		return generatePhase.getGenerateFunctions(mod);
 	}
 
-	protected GenerateResult run3(OS_Module mod, @NotNull List<EvaNode> lgc, WorkManager wm, GenerateFiles ggc, final GeneratePipeline.GenerateResultSink aResultSink) {
+	protected GenerateResult run3(OS_Module mod, @NotNull List<EvaNode> lgc, WorkManager wm, GenerateFiles ggc, final GenerateResultSink aResultSink) {
 		GenerateResult gr = new GenerateResult();
 
 		for (EvaNode evaNode : lgc) {

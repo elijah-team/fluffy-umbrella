@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jdeferred2.impl.DeferredObject;
+import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.comp.i.RuntimeProcess;
 import tripleo.elijah.util.Stupidity;
 
@@ -113,39 +114,6 @@ class RuntimeProcesses {
 
 		public void run() {	}
 	}
-
-	public void run_loser() {
-		if (false) {
-			final PipelineLogic pipelineLogic;
-			final Compilation   comp      = null;
-			final Stages        stage     = null;
-			final FakePipelines pipelines = new FakePipelines();
-
-			pipelineLogic = pr.pipelineLogic;
-
-			final DeducePipeline dpl = pr.dpl;
-			addPipeline(dpl);
-
-			if (stage == Stages.O) {
-				pr.setGenerateResult(null);
-
-				final GeneratePipeline gpl = new GeneratePipeline(comp, dpl);
-				addPipeline(gpl);
-				final WritePipeline wpl = new WritePipeline(comp, pr, null);
-				pr.consumeGenerateResult(wpl);
-				addPipeline(wpl);
-				final WriteMesonPipeline wmpl = new WriteMesonPipeline(comp, pr, null, wpl);
-				pr.consumeGenerateResult(wmpl);
-				addPipeline(wmpl);
-			} else
-				assert stage == Stages.D;
-
-			assert pipelines.size() == 4;
-			pipelines.run();
-
-			ca.writeLogs();
-		}
-	}
 }
 
 final class EmptyProcess implements RuntimeProcess {
@@ -218,7 +186,7 @@ class OStageProcess implements RuntimeProcess {
 		final Compilation        comp = ca.getCompilation();
 		
 		final DeducePipeline     dpl  = pr.dpl; //new DeducePipeline      (ca);
-		final GeneratePipeline   gpl  = new GeneratePipeline	(comp, dpl);
+		final GeneratePipeline   gpl  = new GeneratePipeline	(pr.pa);
 		final WritePipeline      wpl  = new WritePipeline		(comp, pr, ppl);
 		final WriteMesonPipeline wmpl = new WriteMesonPipeline	(comp, pr, ppl, wpl);
 
