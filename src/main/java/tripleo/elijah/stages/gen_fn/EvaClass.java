@@ -11,7 +11,9 @@ package tripleo.elijah.stages.gen_fn;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.GeneratePipeline;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_BuiltinType;
 import tripleo.elijah.lang.types.OS_GenericTypeNameType;
+import tripleo.elijah.lang.types.OS_UserClassType;
 import tripleo.elijah.stages.deduce.*;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
@@ -166,17 +168,46 @@ public class EvaClass extends EvaContainerNC implements GNCoded {
 					if (potentialTypes.size() == 2) {
 						final ClassStatement resolvedClass1 = potentialTypes.get(0).resolved.getClassOf();
 						final ClassStatement resolvedClass2 = potentialTypes.get(1).resolved.getClassOf();
-						final OS_Module prelude = resolvedClass1.getContext().module().prelude;
 
-						// TODO might not work when we split up prelude
-						//  Thats why I was testing for package name before
-						if (resolvedClass1.getContext().module() == prelude
-						&& resolvedClass2.getContext().module() == prelude) {
-							// Favor String over ConstString
-							if (resolvedClass1.name().equals("ConstString") && resolvedClass2.name().equals("String")) {
-								potentialTypes.remove(0);
-							} else if (resolvedClass2.name().equals("ConstString") && resolvedClass1.name().equals("String")) {
-								potentialTypes.remove(1);
+						final OS_Module prelude;
+
+
+						if (potentialTypes.get(1).resolved instanceof OS_BuiltinType && potentialTypes.get(0).resolved instanceof OS_UserClassType) {
+							OS_BuiltinType resolved = (OS_BuiltinType) potentialTypes.get(1).resolved;
+
+							try {
+								@NotNull final GenType rt = ResolveType.resolve_type(resolvedClass1.getContext().module(), resolved, resolvedClass1.getContext(), null, null);
+								int                    y  = 2;
+
+								potentialTypes = Helpers.List_of(rt);
+							} catch (ResolveError aE) {
+								throw new RuntimeException(aE);
+							}
+						} else if (potentialTypes.get(0).resolved instanceof OS_BuiltinType && potentialTypes.get(1).resolved instanceof OS_UserClassType) {
+							OS_BuiltinType resolved = (OS_BuiltinType) potentialTypes.get(0).resolved;
+
+							try {
+								@NotNull final GenType rt = aDeduceTypes2.resolve_type(resolved, resolvedClass2.getContext());
+								int                    y  = 2;
+
+								potentialTypes = Helpers.List_of(rt);
+							} catch (ResolveError aE) {
+								throw new RuntimeException(aE);
+							}
+						} else {
+
+							prelude = resolvedClass1.getContext().module().prelude;
+
+							// TODO might not work when we split up prelude
+							//  Thats why I was testing for package name before
+							if (resolvedClass1.getContext().module() == prelude
+									&& resolvedClass2.getContext().module() == prelude) {
+								// Favor String over ConstString
+								if (resolvedClass1.name().equals("ConstString") && resolvedClass2.name().equals("String")) {
+									potentialTypes.remove(0);
+								} else if (resolvedClass2.name().equals("ConstString") && resolvedClass1.name().equals("String")) {
+									potentialTypes.remove(1);
+								}
 							}
 						}
 					}
