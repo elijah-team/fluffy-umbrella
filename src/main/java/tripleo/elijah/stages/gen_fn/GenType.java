@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.contexts.ClassContext;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.types.OS_BuiltinType;
 import tripleo.elijah.lang.types.OS_FuncExprType;
 import tripleo.elijah.lang.types.OS_FuncType;
 import tripleo.elijah.stages.deduce.*;
@@ -317,6 +318,8 @@ public class GenType {
 			} else if (resolved instanceof OS_FuncType) {
 				final OS_FuncType funcType = (OS_FuncType) resolved;
 				int               y        =2;
+			} else if (resolved instanceof OS_BuiltinType) {
+				// passthrough
 			} else
 				throw new IllegalStateException("invalid invocation");
 		}
