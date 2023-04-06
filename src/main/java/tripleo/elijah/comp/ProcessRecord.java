@@ -26,6 +26,11 @@ public class ProcessRecord {
 		public DeducePipeline getDeducePipeline() {
 			return dpl;
 		}
+
+		@Override
+		public PipelineLogic pipelineLogic() {
+			return pipelineLogic;
+		}
 	};
 
 	public ProcessRecord(final @NotNull ICompilationAccess ca0) {
