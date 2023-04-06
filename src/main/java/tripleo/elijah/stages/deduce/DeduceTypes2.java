@@ -2207,7 +2207,7 @@ public class DeduceTypes2 {
 	}
 */
 
-	void forFunction(@NotNull FunctionInvocation gf, @NotNull ForFunction forFunction) {
+	public void forFunction(@NotNull FunctionInvocation gf, @NotNull ForFunction forFunction) {
 		phase.forFunction(this, gf, forFunction);
 	}
 
@@ -2505,7 +2505,7 @@ public class DeduceTypes2 {
 		ria2.resolveIdentIA2_(ctx, identIA, s);
 	}
 
-	OS_Type gt(@NotNull GenType aType) {
+	public OS_Type gt(@NotNull GenType aType) {
 		return aType.resolved != null ? aType.resolved : aType.typeName;
 	}
 

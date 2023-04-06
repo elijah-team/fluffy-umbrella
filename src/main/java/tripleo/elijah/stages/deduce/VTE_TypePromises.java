@@ -14,6 +14,7 @@ import org.jdeferred2.Promise;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VariableTableEntry;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.util.NotImplementedException;
@@ -103,39 +104,9 @@ public class VTE_TypePromises {
 		aVte2.typePromise().done(new DoneCallback<GenType>() {
 			@Override
 			public void onDone(@NotNull GenType result) {
-				final @Nullable OS_Type ty2 = result.typeName/*.getAttached()*/;
-				assert ty2 != null;
-				@NotNull GenType rtype = null;
-				try {
-					rtype = aDeduceTypes2.resolve_type(ty2, ctx);
-				} catch (ResolveError resolveError) {
-					aDeduceTypes2._errSink().reportError("Cant resolve " + ty2); // TODO print better diagnostic
-					return;
-				}
-				if (rtype.resolved != null && rtype.resolved.getType() == OS_Type.Type.USER_CLASS) {
-					LookupResultList lrl2 = rtype.resolved.getClassOf().getContext().lookup("__getitem__");
-					@Nullable OS_Element best2 = lrl2.chooseBest(null);
-					if (best2 != null) {
-						if (best2 instanceof FunctionDef) {
-							@Nullable FunctionDef fd = (FunctionDef) best2;
-							@Nullable ProcTableEntry pte = null;
-							final IInvocation invocation = aDeduceTypes2.getInvocation((EvaFunction) generatedFunction);
-							aDeduceTypes2.forFunction(aDeduceTypes2.newFunctionInvocation(fd, pte, invocation, aDeduceTypes2.phase), new ForFunction() {
-								@Override
-								public void typeDecided(final @NotNull GenType aType) {
-									assert fd == generatedFunction.getFD();
-									//
-									@NotNull TypeTableEntry tte1 = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, aDeduceTypes2.gt(aType), aVte2); // TODO expression?
-									aVte2.type = tte1;
-								}
-							});
-						} else {
-							throw new NotImplementedException();
-						}
-					} else {
-						throw new NotImplementedException();
-					}
-				}
+
+				((DeduceElement3_VariableTableEntry) aVte2.getDeduceElement3()).getItemFali(ctx, aDeduceTypes2, result);
+
 			}
 		});
 	}

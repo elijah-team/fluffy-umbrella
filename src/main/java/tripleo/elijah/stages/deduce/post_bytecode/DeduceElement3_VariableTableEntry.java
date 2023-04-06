@@ -26,14 +26,7 @@ import tripleo.elijah.lang.TypeName;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.nextgen.query.Operation2;
-import tripleo.elijah.stages.deduce.ClassInvocation;
-import tripleo.elijah.stages.deduce.DeduceLookupUtils;
-import tripleo.elijah.stages.deduce.DeducePhase;
-import tripleo.elijah.stages.deduce.DeduceTypes2;
-import tripleo.elijah.stages.deduce.FoundElement;
-import tripleo.elijah.stages.deduce.FunctionInvocation;
-import tripleo.elijah.stages.deduce.IInvocation;
-import tripleo.elijah.stages.deduce.ResolveError;
+import tripleo.elijah.stages.deduce.*;
 import tripleo.elijah.stages.deduce.post_bytecode.DED.DED_VTE;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.BaseTableEntry;
@@ -388,6 +381,54 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 		}
 
 		return p;
+	}
+
+	public void getItemFali(final Context aCtx, final DeduceTypes2 aDeduceTypes2, final GenType genType) {
+
+		assert generatedFunction != null;
+
+		final ErrSink errSink = aDeduceTypes2._errSink();
+
+
+		final @Nullable OS_Type ty2 = genType.typeName/*.getAttached()*/;
+		assert ty2 != null;
+
+		@NotNull GenType rtype = null;
+		try {
+			rtype = aDeduceTypes2.resolve_type(ty2, aCtx);
+		} catch (ResolveError resolveError) {
+			errSink.reportError("Cant resolve " + ty2); // TODO print better diagnostic
+			return;
+		}
+		if (rtype.resolved != null && rtype.resolved.getType() == OS_Type.Type.USER_CLASS) {
+			LookupResultList lrl2 = rtype.resolved.getClassOf().getContext().lookup("__getitem__");
+			@Nullable OS_Element best2 = lrl2.chooseBest(null);
+			if (best2 != null) {
+				if (best2 instanceof FunctionDef) {
+					@Nullable FunctionDef fd = (FunctionDef) best2;
+					__itemFali__isFunctionDef(aDeduceTypes2, fd);
+				} else {
+					throw new NotImplementedException();
+				}
+			} else {
+				throw new NotImplementedException();
+			}
+		}
+
+	}
+
+	private void __itemFali__isFunctionDef(final DeduceTypes2 aDeduceTypes2, final @NotNull FunctionDef fd) {
+		@Nullable ProcTableEntry pte = null;
+		final IInvocation invocation = aDeduceTypes2.getInvocation((EvaFunction) generatedFunction);
+		aDeduceTypes2.forFunction(aDeduceTypes2.newFunctionInvocation(fd, pte, invocation, aDeduceTypes2.phase), new ForFunction() {
+			@Override
+			public void typeDecided(final @NotNull GenType aType) {
+				assert fd == generatedFunction.getFD();
+				//
+				@NotNull TypeTableEntry tte1 = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, aDeduceTypes2.gt(aType), principal); // TODO expression?
+				principal.type = tte1;
+			}
+		});
 	}
 
 	public static class ST {
