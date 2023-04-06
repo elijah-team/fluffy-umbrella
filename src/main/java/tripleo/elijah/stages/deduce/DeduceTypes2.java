@@ -52,12 +52,12 @@ import java.util.regex.Pattern;
  * Created 9/15/20 12:51 PM
  */
 public class DeduceTypes2 {
-	private static final String PHASE = "DeduceTypes2";
-	private final @NotNull OS_Module module;
+	private static final  String      PHASE = "DeduceTypes2";
+	public final @NotNull OS_Module   module;
 	public final @NotNull DeducePhase phase;
-	final ErrSink errSink;
-	public final @NotNull ElLog LOG;
-	@NotNull WorkManager wm = new WorkManager();
+	private final         ErrSink     errSink;
+	public final @NotNull ElLog       LOG;
+	public final @NotNull WorkManager wm    = new WorkManager();
 
 	public DeduceTypes2(@NotNull OS_Module module, @NotNull DeducePhase phase) {
 		this(module, phase, ElLog.Verbosity.VERBOSE);
@@ -174,6 +174,10 @@ public class DeduceTypes2 {
 
 	public ElLog _LOG() {
 		return LOG;
+	}
+
+	public DeduceElement3_ProcTableEntry zeroGet(final ProcTableEntry aPte, final BaseEvaFunction aEvaFunction) {
+		return _zero.get(aPte, aEvaFunction);
 	}
 
 	public interface IElementProcessor {
@@ -949,10 +953,14 @@ public class DeduceTypes2 {
 		// LOOKUP FUNCTIONS
 		//
 		{
-			@NotNull DeduceTypes2.Lookup_function_on_exit lfoe = new Lookup_function_on_exit();
+			@NotNull WorkList wl = new WorkList();
+
 			for (@NotNull ProcTableEntry pte : generatedFunction.prte_list) {
-				lfoe.action(pte);
+				((DeduceElement3_ProcTableEntry) pte.getDeduceElement3(DeduceTypes2.this, generatedFunction))
+						.lfoe_action(pte, DeduceTypes2.this, wl, (j) -> wm.addJobs(j));
 			}
+
+			wm.addJobs(wl);
 			wm.drain();
 		}
 
@@ -1156,7 +1164,8 @@ public class DeduceTypes2 {
 
 	final List<FunctionInvocation> functionInvocations = new ArrayList<>(); // TODO never used!
 
-	@NotNull FunctionInvocation newFunctionInvocation(BaseFunctionDef aFunctionDef, ProcTableEntry aPte, @NotNull IInvocation aInvocation, @NotNull DeducePhase aDeducePhase) {
+	@NotNull
+	public FunctionInvocation newFunctionInvocation(BaseFunctionDef aFunctionDef, ProcTableEntry aPte, @NotNull IInvocation aInvocation, @NotNull DeducePhase aDeducePhase) {
 		@NotNull FunctionInvocation fi = new FunctionInvocation(aFunctionDef, aPte, aInvocation, aDeducePhase.generatePhase);
 		// TODO register here
 		return fi;
@@ -1421,223 +1430,6 @@ public class DeduceTypes2 {
 				tripleo.elijah.util.Stupidity.println_out_2("117 Can't be here");
 //				resolveError.printStackTrace(); // TODO print diagnostic
 			}
-		}
-	}
-
-	class Lookup_function_on_exit {
-		@NotNull WorkList wl = new WorkList();
-
-		public void action(@NotNull ProcTableEntry pte) {
-			FunctionInvocation fi = pte.getFunctionInvocation();
-			if (fi == null) {
-
-				if (pte.expression != null && pte.expression_num != null) {
-					if (pte.expression instanceof ProcedureCallExpression) {
-						ProcedureCallExpression exp = (ProcedureCallExpression) pte.expression;
-						if (exp.getLeft() instanceof final IdentExpression expLeft) {
-							String                     left = expLeft.getText();
-							final LookupResultList     lrl  = expLeft.getContext().lookup(left);
-							@Nullable final OS_Element e    = lrl.chooseBest(null);
-							if (e != null) {
-								if (e instanceof ClassStatement) {
-									ClassStatement classStatement = (ClassStatement) e;
-
-									final ClassInvocation ci = phase.registerClassInvocation(classStatement);
-									pte.setClassInvocation(ci);
-								} else if (e instanceof FunctionDef) {
-									FunctionDef functionDef = (FunctionDef) e;
-
-
-									ClassStatement classStatement = (ClassStatement) e.getParent();
-
-									final ClassInvocation ci = phase.registerClassInvocation(classStatement);
-									pte.setClassInvocation(ci);
-								} else
-									throw new NotImplementedException();
-							}
-						}
-					}
-				}
-
-				final ClassInvocation invocation = pte.getClassInvocation();
-
-
-
-
-
-
-
-				if (invocation == null) return;
-
-
-
-
-
-
-				@NotNull FunctionInvocation fi2                   = new FunctionInvocation(ConstructorDef.defaultVirtualCtor, pte, invocation, phase.generatePhase);
-
-				//cfi =
-				final WlGenerateDefaultCtor wldc = new WlGenerateDefaultCtor(getGenerateFunctions(invocation.getKlass().getContext().module()), fi2);
-				wldc.run(null);
-				BaseEvaFunction ef = wldc.getResult();
-
-
-
-				DeduceElement3_ProcTableEntry zp = _zero.get(pte, ef);
-
-
-
-
-				fi = newFunctionInvocation(ef.getFD(), pte, invocation, phase);
-
-				/*return;*/}
-
-			if (fi.getFunction() == null) {
-				if (fi.pte == null) {
-					return;
-				} else {
-//					LOG.err("592 " + fi.getClassInvocation());
-					if (fi.pte.getClassInvocation() != null)
-						fi.setClassInvocation(fi.pte.getClassInvocation());
-//					else
-//						fi.pte.setClassInvocation(fi.getClassInvocation());
-				}
-			}
-
-			@Nullable ClassInvocation ci = fi.getClassInvocation();
-			BaseFunctionDef fd3 = fi.getFunction();
-			if (ci == null) {
-				ci = fi.pte.getClassInvocation();
-			}
-			if (fd3 == ConstructorDef.defaultVirtualCtor) {
-				if (ci == null) {
-					if (/*fi.getClassInvocation() == null &&*/ fi.getNamespaceInvocation() == null) {
-						// Assume default constructor
-						ci = new ClassInvocation((ClassStatement) pte.getResolvedElement(), null);
-						ci = phase.registerClassInvocation(ci);
-						fi.setClassInvocation(ci);
-					} else
-						throw new NotImplementedException();
-				}
-				final ClassStatement klass = ci.getKlass();
-
-				Collection<ConstructorDef> cis = klass.getConstructors();
-				for (@NotNull ConstructorDef constructorDef : cis) {
-					final Iterable<FormalArgListItem> constructorDefArgs = constructorDef.getArgs();
-
-					if (!constructorDefArgs.iterator().hasNext()) { // zero-sized arg list
-						fd3 = constructorDef;
-						break;
-					}
-				}
-			}
-
-			final OS_Element parent;
-			if (fd3 != null) {
-				parent = fd3.getParent();
-				if (parent instanceof ClassStatement) {
-					if (ci != pte.getClassInvocation()) {
-						ci = new ClassInvocation((ClassStatement) parent, null);
-						{
-							final ClassInvocation classInvocation = pte.getClassInvocation();
-							if (classInvocation != null) {
-								Map<TypeName, OS_Type> gp = classInvocation.genericPart;
-								if (gp != null) {
-									int i = 0;
-									for (Map.@NotNull Entry<TypeName, OS_Type> entry : gp.entrySet()) {
-										ci.set(i, entry.getKey(), entry.getValue());
-										i++;
-									}
-								}
-							}
-						}
-					}
-					proceed(fi, ci, (ClassStatement) parent, wl);
-				} else if (parent instanceof NamespaceStatement) {
-					proceed(fi, (NamespaceStatement) parent, wl);
-				}
-			} else {
-				parent = ci.getKlass();
-				{
-					final ClassInvocation classInvocation = pte.getClassInvocation();
-					if (classInvocation != null && classInvocation.genericPart != null) {
-						Map<TypeName, OS_Type> gp = classInvocation.genericPart;
-						int i = 0;
-						for (Map.@NotNull Entry<TypeName, OS_Type> entry : gp.entrySet()) {
-							ci.set(i, entry.getKey(), entry.getValue());
-							i++;
-						}
-					}
-				}
-				proceed(fi, ci, (ClassStatement) parent, wl);
-			}
-
-//			proceed(fi, ci, parent);
-		}
-
-		void proceed(@NotNull FunctionInvocation fi, ClassInvocation ci, ClassStatement aParent, @NotNull WorkList wl) {
-			ci = phase.registerClassInvocation(ci);
-
-			ClassStatement kl = ci.getKlass(); // TODO Don't you see aParent??
-			assert kl != null;
-
-			final BaseFunctionDef fd2 = fi.getFunction();
-			int state = 0;
-
-			if (fd2 == ConstructorDef.defaultVirtualCtor) {
-				if (fi.pte.getArgs().size() == 0)
-					state = 1;
-				else
-					state = 2;
-			} else if (fd2 instanceof ConstructorDef) {
-				if (fi.getClassInvocation().getConstructorName() != null)
-					state = 3;
-				else
-					state = 2;
-			} else {
-				if (fi.getFunction() == null && fi.getClassInvocation() != null)
-					state = 3;
-				else
-					state = 4;
-			}
-
-			switch (state) {
-			case 1:
-				assert fi.pte.getArgs().size() == 0;
-				// default ctor
-				wl.addJob(new WlGenerateDefaultCtor(phase.generatePhase.getGenerateFunctions(module), fi));
-				break;
-			case 2:
-				wl.addJob(new WlGenerateCtor(phase.generatePhase.getGenerateFunctions(module), fi, fd2.getNameNode()));
-				break;
-			case 3:
-				// README this is a special case to generate constructor
-				// TODO should it be GenerateDefaultCtor? (check args size and ctor-name)
-				final String constructorName = fi.getClassInvocation().getConstructorName();
-				final @NotNull IdentExpression constructorName1 = constructorName != null ? IdentExpression.forString(constructorName) : null;
-				wl.addJob(new WlGenerateCtor(phase.generatePhase.getGenerateFunctions(module), fi, constructorName1));
-				break;
-			case 4:
-				wl.addJob(new WlGenerateFunction(phase.generatePhase.getGenerateFunctions(module), fi));
-				break;
-			default:
-				throw new NotImplementedException();
-			}
-
-			wm.addJobs(wl);
-		}
-
-		void proceed(@NotNull FunctionInvocation fi, @NotNull NamespaceStatement aParent, @NotNull WorkList wl) {
-//			ci = phase.registerClassInvocation(ci);
-
-			final @NotNull OS_Module module1 = aParent.getContext().module();
-
-			final NamespaceInvocation nsi = phase.registerNamespaceInvocation(aParent);
-
-			wl.addJob(new WlGenerateNamespace(phase.generatePhase.getGenerateFunctions(module1), nsi, phase.generatedClasses));
-			wl.addJob(new WlGenerateFunction(phase.generatePhase.getGenerateFunctions(module1), fi));
-
-			wm.addJobs(wl);
 		}
 	}
 
