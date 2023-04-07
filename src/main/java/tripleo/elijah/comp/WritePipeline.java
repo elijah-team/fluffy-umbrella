@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.stages.gen_c.CDependencyRef;
 import tripleo.elijah.stages.gen_c.OutputFileC;
 import tripleo.elijah.stages.gen_generic.*;
@@ -58,26 +59,27 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 	private final CompletedItemsHandler               cih;
 	private final WritePipelineSharedState            st;
 	private final Promise<GenerateResult, Void, Void> prom;
+	private final DoubleLatch<GenerateResult>         latch;
 	private       Supplier<GenerateResult>            grs;
 
-	public WritePipeline(final @NotNull Compilation aCompilation,
-						 final @NotNull ProcessRecord aPr,
-						 final @NotNull Promise<PipelineLogic, Void, Void> ppl) {
+	public WritePipeline(final IPipelineAccess pa) {
+	//public WritePipeline(final @NotNull Compilation aCompilation,
+	//					 ,
+	//					  ppl) {
 		st = new WritePipelineSharedState();
 
 		// given
-		st.c = aCompilation;
-		//st.setGr(aGr);
+		st.c = pa.getCompilation();
+
+		final @NotNull ProcessRecord pr = pa.getProcessRecord();
+		final @NotNull Promise<PipelineLogic, Void, Void> ppl = pa.getPipelineLogicPromise();
+
 
 		// computed
 		st.file_prefix = new File("COMP", st.c.getCompilationNumberString());
 
 		// created
-/*
-		// TODO should we be doing this? see below comment
-		st.os = new OutputStrategy();
-		st.os.per(OutputStrategy.Per.PER_CLASS); // TODO this needs to be configured per lsp
-*/
+		latch = new DoubleLatch<GenerateResult>(gr -> st.setGr(gr));
 
 		// state
 		st.mmb         = ArrayListMultimap.create();
@@ -85,25 +87,15 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 
 		// ??
 		st.sys = new ElSystem(false, st.c, this::createOutputStratgy);
-/*
-		st.sys.verbose = false; // TODO flag? ie CompilationOptions
-		st.sys.setCompilation(st.c);
-		st.sys.setOutputStrategy(st.os);
-*/
-/*
-		st.sys.generateOutputs(gr);
-*/
 
 		ppl.then((aPipelineLogic) -> {
-			st.setGr(aPipelineLogic.gr);
-
-			//NotImplementedException.raise();
+			latch.notify(aPipelineLogic.gr); // TODO doesn't seem right. Might work, but not right
 		});
 
 		cih = new CompletedItemsHandler(st);
 
 		//		pr.consumeGenerateResult(wpl.consumer());
-		prom = aPr.generateResultPromise();
+		prom = pr.generateResultPromise();
 		prom.then(gr1 -> {
 			NotImplementedException.raise();
 			;
@@ -113,9 +105,6 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 
 			gr1.subscribeCompletedItems(cih.observer());
 		});
-		//st.gr.subscribeCompletedItems(cih.observer());
-
-		//new BlackHoleChannel().write("Stupidity and Bullshit");
 	}
 
 	OutputStrategy createOutputStratgy() {
