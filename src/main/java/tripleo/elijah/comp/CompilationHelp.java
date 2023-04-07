@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jdeferred2.impl.DeferredObject;
-import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.comp.i.RuntimeProcess;
 import tripleo.elijah.util.Stupidity;
 
@@ -180,14 +179,14 @@ class OStageProcess implements RuntimeProcess {
 		Preconditions.checkNotNull(pr.pipelineLogic);
 		Preconditions.checkNotNull(pr.pipelineLogic.gr);
 
-		final DeferredObject<PipelineLogic, Void, Void> ppl = new DeferredObject<>();
+		final DeferredObject<PipelineLogic, Void, Void> ppl = (DeferredObject<PipelineLogic, Void, Void>) pr.pa.getPipelineLogicPromise();
 		ppl.resolve(pr.pipelineLogic);
 		
 		final Compilation        comp = ca.getCompilation();
 		
 		final DeducePipeline     dpl  = pr.dpl; //new DeducePipeline      (ca);
 		final GeneratePipeline   gpl  = new GeneratePipeline	(pr.pa);
-		final WritePipeline      wpl  = new WritePipeline		(comp, pr, ppl);
+		final WritePipeline      wpl  = new WritePipeline		(pr.pa);
 		final WriteMesonPipeline wmpl = new WriteMesonPipeline	(comp, pr, ppl, wpl);
 
 		List_of(dpl, gpl, wpl, wmpl)
