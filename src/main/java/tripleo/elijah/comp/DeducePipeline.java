@@ -11,6 +11,7 @@ package tripleo.elijah.comp;
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.stages.deduce.pipeline_impl.DeducePipelineImpl;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 
@@ -30,9 +31,9 @@ public class DeducePipeline implements PipelineMember, Consumer<Supplier<Generat
 
 	private final DeducePipelineImpl impl;
 
-	public DeducePipeline(final @NotNull ICompilationAccess aCa) {
+	public DeducePipeline(final @NotNull IPipelineAccess pa) {
 		logProgress("***** Hit DeducePipeline constructor");
-		impl = new DeducePipelineImpl(aCa.getCompilation());
+		impl = new DeducePipelineImpl(pa.getCompilation());
 	}
 
 	@Override
