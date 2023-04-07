@@ -31,13 +31,25 @@ public class ProcessRecord {
 		public PipelineLogic pipelineLogic() {
 			return pipelineLogic;
 		}
+
+		@Override
+		public ProcessRecord getProcessRecord() {
+			return ProcessRecord.this;
+		}
+
+		private final DeferredObject<PipelineLogic, Void, Void> ppl = new DeferredObject<>();
+
+		@Override
+		public Promise<PipelineLogic, Void, Void> getPipelineLogicPromise() {
+			return ppl;
+		}
 	};
 
 	public ProcessRecord(final @NotNull ICompilationAccess ca0) {
 		ca            = ca0;
 
 		pipelineLogic = new PipelineLogic(ca0);
-		dpl           = new DeducePipeline(ca0);
+		dpl           = new DeducePipeline(pa);
 	}
 
 	public void writeLogs(final ICompilationAccess aCa) {
