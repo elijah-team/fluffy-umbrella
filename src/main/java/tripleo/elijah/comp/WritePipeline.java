@@ -25,6 +25,7 @@ import tripleo.elijah.stages.gen_c.OutputFileC;
 import tripleo.elijah.stages.gen_generic.*;
 import tripleo.elijah.stages.generate.ElSystem;
 import tripleo.elijah.stages.generate.OutputStrategy;
+import tripleo.elijah.stages.write_stage.pipeline_impl.*;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.util.buffer.Buffer;
@@ -57,8 +58,8 @@ import java.util.function.Supplier;
  */
 public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier<GenerateResult>> {
 	private final CompletedItemsHandler               cih;
-	private final WritePipelineSharedState            st;
-	private final Promise<GenerateResult, Void, Void> prom;
+	public final  WritePipelineSharedState            st;
+	public final  Promise<GenerateResult, Void, Void> prom;
 	private final DoubleLatch<GenerateResult>         latch;
 	private       Supplier<GenerateResult>            grs;
 
@@ -71,8 +72,12 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		// given
 		st.c = pa.getCompilation();
 
+
+
 		final @NotNull ProcessRecord pr = pa.getProcessRecord();
 		final @NotNull Promise<PipelineLogic, Void, Void> ppl = pa.getPipelineLogicPromise();
+
+
 
 
 		// computed
@@ -121,15 +126,6 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 
 	@Override
 	public void run() throws Exception {
-/*
-		latch = new Guard();
-
-		final Guard[] guards = {latch, hasGr};
-
-		int which = new Alternative(guards)
-				.select();
-*/
-
 		final GenerateResult rs = grs.get();
 
 		prom.then((final GenerateResult result) -> {
@@ -145,9 +141,9 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 
 		s.add(new WPIS_GenerateOutputs(result));
 		s.add(new WPIS_MakeOutputDirectory());
-		s.add(new WPIS_WriteInputs());
-		s.add(new WPIS_WriteFiles());
-		s.add(new WPIS_WriteBuffers());
+		s.add(new WPIS_WriteInputs(this));
+		s.add(new WPIS_WriteFiles(this));
+		s.add(new WPIS_WriteBuffers(this));
 
 
 		final WP_Flow f = new WP_Flow(s);
@@ -158,19 +154,6 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		}
 	}
 
-	class WPIS_WriteBuffers implements WP_Indiviual_Step {
-		@Override
-		public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
-			// 5. write buffers
-			// TODO flag?
-			try {
-				st.file_prefix.mkdirs();
-
-				debug_buffers();
-			} catch (FileNotFoundException aE) {
-				sc.exception(aE);
-			}
-		}
 
 		private void debug_buffers() throws FileNotFoundException {
 			// TODO can/should this fail??
@@ -199,47 +182,14 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 
 			});
 		}
-	}
 
-	interface XPrintStream {
-		void println(String aS);
-	}
-
-	class XXPrintStream implements XPrintStream {
-
-		private final PrintStream p;
-
-		XXPrintStream(final PrintStream aP) {
-			p = aP;
-		}
-
-		@Override
-		public void println(final String aS) {
-			p.println(aS);
-		}
-	}
-
-	static class SPrintStream implements XPrintStream {
-		private final StringBuilder sb = new StringBuilder();
-
-		@Override
-		public void println(final String aS) {
-			sb.append(aS);
-			sb.append('\n');
-		}
-
-		public String getString() {
-			return sb.toString();
-		}
-	}
-
-
-	private static void debug_buffers_logic(final GenerateResult result, final XPrintStream db_stream) {
+	public static void debug_buffers_logic(final GenerateResult result, final XPrintStream db_stream) {
 		final List<GenerateResultItem> generateResultItems = result.results();
 		debug_buffers_logic(generateResultItems, db_stream);
 	}
 
-	static void debug_buffers_logic(final List<GenerateResultItem> generateResultItems, final XPrintStream db_stream) {
+	static void debug_buffers_logic(final List<GenerateResultItem> generateResultItems,
+									final XPrintStream db_stream) {
 		for (final GenerateResultItem ab : generateResultItems) {
 			final String s = MessageFormat.format("{0} - {1} - {2}", ab.counter, ab.ty, ab.output);
 
@@ -251,179 +201,35 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		}
 	}
 
-	class WPIS_WriteFiles implements WP_Indiviual_Step {
-		@Override
-		public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
-			// 4. write files
-			Multimap<String, Buffer> mb = ArrayListMultimap.create();
 
-			final List<GenerateResultItem> generateResultItems = st.getGr().results();
+	public void append_hash(TextBuffer outputBuffer, String aFilename, ErrSink errSink) throws IOException {
+		@Nullable final String hh = Helpers.getHashForFilename(aFilename, errSink);
+		if (hh != null) {
+			outputBuffer.append(hh);
+			outputBuffer.append(" ");
+			outputBuffer.append_ln(aFilename);
+		}
+	}
 
-			prom.then(new DoneCallback<GenerateResult>() {
+	@Override
+	public void accept(final Supplier<GenerateResult> aGenerateResultSupplier) {
+		final GenerateResult gr = aGenerateResultSupplier.get();
+		grs = aGenerateResultSupplier;
+		int y = 2;
+	}
+
+	public Consumer<Supplier<GenerateResult>> consumer() {
+		if (false) {
+			return new Consumer<Supplier<GenerateResult>>() {
 				@Override
-				public void onDone(final GenerateResult result) {
-	/*
-					for (final GenerateResultItem ab : generateResultItems) {
-						mb.put(((CDependencyRef) ab.getDependency().getRef()).getHeaderFile(), ab.buffer); // TODO see above
-					}
-
-					assert st.mmb.equals(mb);
-	*/
-
-					try {
-						final String prefix = st.file_prefix.toString();
-
-						for (final Map.Entry<String, Collection<Buffer>> entry : mb.asMap().entrySet()) {
-							final String                       key = entry.getKey();
-							final Supplier<Collection<Buffer>> e   = entry::getValue;
-
-							write_files_helper_each(prefix, key, e);
-						}
-					} catch (Exception aE) {
-						throw new RuntimeException(aE);
-					}
+				public void accept(final Supplier<GenerateResult> aGenerateResultSupplier) {
+					grs = aGenerateResultSupplier;
+					//final GenerateResult gr = aGenerateResultSupplier.get();
 				}
-
-				@Contract("_, null, _ -> fail")
-				private void write_files_helper_each(final String prefix,
-													 final String key,
-													 final @NotNull Supplier<Collection<Buffer>> e) throws Exception {
-					assert key != null;
-
-					final Path path = FileSystems.getDefault().getPath(prefix, key);
-					// final BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
-
-					path.getParent().toFile().mkdirs();
-
-					// TODO functionality
-					System.out.println("201 Writing path: " + path);
-					try (final DisposableCharSink fileCharSink = st.c.getIO().openWrite(path)) {
-						for (final Buffer buffer : e.get()) {
-							fileCharSink.accept(buffer.getText());
-						}
-					}
-				}
-			});
-
-/*
-			for (final GenerateResultItem ab : generateResultItems) {
-				mb.put(((CDependencyRef) ab.getDependency().getRef()).getHeaderFile(), ab.buffer); // TODO see above
-			}
-
-			assert st.mmb.equals(mb);
-
-			write_files_helper(mb);
-*/
-		}
-	}
-
-	class WPIS_WriteInputs implements WP_Indiviual_Step {
-		@Override
-		public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
-			// 3. write inputs
-			// TODO ... 1/ output(s) per input and 2/ exceptions ... and 3/ plan
-			//  "plan", effects; input(s), output(s)
-			// TODO flag?
-			try {
-				final String fn1 = new File(st.file_prefix, "inputs.txt").toString();
-
-				DefaultBuffer buf = new DefaultBuffer("");
-//			FileBackedBuffer buf = new FileBackedBuffer(fn1);
-//			for (OS_Module module : modules) {
-//				final String fn = module.getFileName();
-//
-//				append_hash(buf, fn);
-//			}
-//
-//			for (CompilerInstructions ci : cis) {
-//				final String fn = ci.getFilename();
-//
-//				append_hash(buf, fn);
-//			}
-				for (File file : st.c.getIO().recordedreads) {
-					final String fn = file.toString();
-
-					append_hash(buf, fn, st.c.getErrSink());
-				}
-				String s = buf.getText();
-				Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn1, true)));
-				w.write(s);
-				w.close();
-			} catch (IOException aE) {
-				throw new RuntimeException(aE);
-			}
-		}
-	}
-
-	class WPIS_MakeOutputDirectory implements WP_Indiviual_Step {
-
-		@Override
-		public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
-			// 2. make output directory
-			// TODO check first
-			boolean made = st.file_prefix.mkdirs();
-		}
-	}
-
-	class WPIS_GenerateOutputs implements WP_Indiviual_Step {
-
-		private final GenerateResult result;
-
-		WPIS_GenerateOutputs(final GenerateResult aResult) {
-			// 1. GenerateOutputs with ElSystem
-			result = aResult;
+			};
 		}
 
-		@Override
-		public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
-
-
-			final SPrintStream sps = new SPrintStream();
-			debug_buffers_logic(result, sps);
-			System.err.println(sps.getString());
-
-
-			st.sys.generateOutputs(result);
-		}
-	}
-
-	interface WP_State_Control {
-		void exception(final Exception e);
-
-		void clear();
-
-		boolean hasException();
-
-		Exception getException();
-	}
-
-	class WP_State_Control_1 implements WP_State_Control {
-		private Exception e;
-
-		@Override
-		public void exception(final Exception ee) {
-			e = ee;
-		}
-
-		@Override
-		public void clear() {
-			e = null;
-		}
-
-		@Override
-		public boolean hasException() {
-			return e != null;
-		}
-
-		// TODO DiagnosticException
-		@Override
-		public Exception getException() {
-			return e;
-		}
-	}
-
-	interface WP_Indiviual_Step {
-		void act(final WritePipelineSharedState st, final WP_State_Control sc);
+		return (x) -> { grs = x; };
 	}
 
 	class WP_Flow {
@@ -452,96 +258,20 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		}
 	}
 
-	static class HashBufferList extends DefaultBuffer {
-		public HashBufferList(final String string) {
-			super(string);
-		}
-	}
-
-
-	/*
-	 * intent: HashBuffer
-	 *  - contains 3 sub-buffers: hash, space, and filename
-	 *  - has all logic to update and present hash
-	 *    - codec: MTL sha2 here
-	 *    - encoding: reg or multihash (hint hint...)
-	 */
-	static class HashBuffer extends DefaultBuffer {
-		private final HashBufferList parent;
-
-		public HashBuffer(final String string) {
-			super(string);
-
-			parent = null;
-		}
-
-		public HashBuffer(final String aFileName, final HashBufferList aHashBufferList, final Executor aExecutor, final ErrSink errSink) {
-			super("");
-
-			String[] y = new String[1];
-			DoubleLatch<String> dl = new DoubleLatch<>(aFilename -> {
-				y[0] = aFilename;
-
-				final HashBuffer outputBuffer = this;
-
-				@Nullable final String hh;
-				try {
-					hh = Helpers.getHashForFilename(aFilename, errSink);
-				} catch (IOException aE) {
-					throw new RuntimeException(aE);
-				}
-
-				if (hh != null) {
-					outputBuffer.append(hh);
-					outputBuffer.append(" ");
-					outputBuffer.append_ln(aFilename);
-				}
-			});
-
-			dl.notify(aFileName);
-
-			parent = aHashBufferList;
-			//parent.setNext(this);
-		}
-	}
-
-	private void append_hash(TextBuffer outputBuffer, String aFilename, ErrSink errSink) throws IOException {
-		@Nullable final String hh = Helpers.getHashForFilename(aFilename, errSink);
-		if (hh != null) {
-			outputBuffer.append(hh);
-			outputBuffer.append(" ");
-			outputBuffer.append_ln(aFilename);
-		}
-	}
-
-	@Override
-	public void accept(final Supplier<GenerateResult> aGenerateResultSupplier) {
-		final GenerateResult gr = aGenerateResultSupplier.get();
-		grs = aGenerateResultSupplier;
-		int y=2;
-	}
-
-	public Consumer<Supplier<GenerateResult>> consumer() {
-		return new Consumer<Supplier<GenerateResult>>() {
-			@Override
-			public void accept(final Supplier<GenerateResult> aGenerateResultSupplier) {
-				grs = aGenerateResultSupplier;
-				//final GenerateResult gr = aGenerateResultSupplier.get();
-			}
-		};
-	}
-
 	/**
 	 * Really a record, but state is not all set at once
 	 */
-	private final static class WritePipelineSharedState {
+	public final static class WritePipelineSharedState {
 		//private @NotNull /*final*/ OutputStrategy os;
-		private @NotNull /*final*/ ElSystem                               sys;
-		private @NotNull /*final*/ Multimap<CompilerInstructions, String> lsp_outputs;
-		private /*final*/ @NotNull Compilation                            c;
+		@NotNull
+		public /*final*/   ElSystem                               sys;
+		@NotNull /*final*/ Multimap<CompilerInstructions, String> lsp_outputs;
+		/*final*/ @NotNull
+				  public Compilation c;
 		private /*final*/ @NotNull GenerateResult                         gr;
-		private /*final*/ @NotNull File                                   file_prefix;
-		private /*final*/ @NotNull Multimap<String, Buffer>               mmb;
+		/*final*/ @NotNull
+				  public   File                     file_prefix;
+		/*final*/ @NotNull Multimap<String, Buffer> mmb;
 
 		@Contract(pure = true)
 		public @NotNull GenerateResult getGr() {
