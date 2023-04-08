@@ -33,15 +33,13 @@ public class DeducePipeline implements PipelineMember, Consumer<Supplier<Generat
 
 	public DeducePipeline(final @NotNull IPipelineAccess pa) {
 		logProgress("***** Hit DeducePipeline constructor");
-		impl = new DeducePipelineImpl(pa.getCompilation());
+		impl = new DeducePipelineImpl(pa);
 	}
 
 	@Override
 	public void run() {
 		logProgress("***** Hit DeducePipeline #run");
 		impl.run();
-
-		lgcpdd(impl.lgc);
 	}
 
 	//public void setPipelineLogic(final PipelineLogic aPipelineLogic) {
