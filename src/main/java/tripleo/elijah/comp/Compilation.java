@@ -232,7 +232,7 @@ public abstract class Compilation {
 		pipelines.add(aPl);
 	}
 
-	static class USE {
+	public static class USE {
 		private final Compilation c;
 		private final ErrSink errSink;
 
@@ -406,7 +406,7 @@ public abstract class Compilation {
 		}
 	}
 
-	final private USE use = new USE(this);
+	public final USE use = new USE(this);
 
 	public void use(final @NotNull CompilerInstructions compilerInstructions, final boolean do_out) throws Exception {
 		use.use(compilerInstructions, do_out);	// NOTE Rust
