@@ -80,12 +80,6 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		// ??
 		st.sys = new ElSystem(false, st.c, this::createOutputStratgy);
 
-		/*
-		ppl.then((aPipelineLogic) -> {
-			latch.notify(aPipelineLogic.gr); // TODO doesn't seem right. Might work, but not right
-		});
-		*/
-
 		cih = new CompletedItemsHandler(st);
 
 		//		pr.consumeGenerateResult(wpl.consumer());
