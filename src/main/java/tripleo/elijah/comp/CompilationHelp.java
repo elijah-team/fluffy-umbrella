@@ -22,16 +22,6 @@ import tripleo.elijah.util.Stupidity;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
-/*
-interface RuntimeProcess {
-	void run(final Compilation aCompilation);
-
-	void postProcess();
-
-	void prepare();
-}
-*/
-
 class StageToRuntime {
 	@Contract("_, _, _ -> new")
 	@NotNull
@@ -92,26 +82,22 @@ class RuntimeProcesses {
 
 	public void run_better() {
 		// do nothing. job over
-		if (ca.getCompilation().stage == Stages.E) return;
+		switch (ca.getCompilation().stage) {
+			case E -> {
+				return;
+			}
+			default -> {
+				final RuntimeProcesses rt = this;
 
-		final RuntimeProcesses rt = this;
-
-		try {
-			rt.prepare();
-		} catch (Exception aE) {
-			throw new RuntimeException(aE);
+				try {
+					rt.prepare();
+				} catch (Exception aE) {
+					throw new RuntimeException(aE);
+				}
+				rt.run();
+				rt.postProcess(pr);
+			}
 		}
-		rt.run();
-		rt.postProcess(pr);
-	}
-
-	private void addPipeline(final PipelineMember aPipelineMember) {
-	}
-
-	private static class FakePipelines {
-		int size() { return 4; }
-
-		public void run() {	}
 	}
 }
 

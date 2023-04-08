@@ -312,7 +312,7 @@ public class CompilationRunner {
 		tripleo.elijah.util.Stupidity.println_err_2(number + " " + text);
 	}
 
-	public void doFindCIs(final List<CompilerInput> aInputs, final String[] aArgs2, final CompilationBus aCb) {
+	public void doFindCIs(final List<CompilerInput> aInputs, final String[] aArgs2, final CompilationBus cb) {
 		doFindCIs(aArgs2);
 	}
 }
