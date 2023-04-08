@@ -55,7 +55,7 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 
 		final DeducePipeline deducePipeline = pa.getDeducePipeline();
 
-		deducePipeline.lgcp(latch2::notify);
+		pa.registerNodeList(latch2::notify);
 	}
 
 	@Override

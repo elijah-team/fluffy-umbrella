@@ -1,11 +1,14 @@
 package tripleo.elijah.comp;
 
+import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.i.IPipelineAccess;
+import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -17,6 +20,8 @@ public class ProcessRecord {
 
 
 	final IPipelineAccess pa = new IPipelineAccess() {
+		final DeferredObject<List<EvaNode>, Void, Void> nlp = new DeferredObject<>();
+
 		@Override
 		public Compilation getCompilation() {
 			return ca.getCompilation();
@@ -42,6 +47,16 @@ public class ProcessRecord {
 		@Override
 		public Promise<PipelineLogic, Void, Void> getPipelineLogicPromise() {
 			return ppl;
+		}
+
+		@Override
+		public void setNodeList(final List<EvaNode> aEvaNodeList) {
+			nlp/*;)*/.resolve(aEvaNodeList);
+		}
+
+		@Override
+		public void registerNodeList(final DoneCallback<List<EvaNode>> done) {
+			nlp.then(done);
 		}
 	};
 
