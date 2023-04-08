@@ -25,6 +25,7 @@ import tripleo.elijah.stages.gen_generic.*;
 import tripleo.elijah.stages.generate.ElSystem;
 import tripleo.elijah.stages.generate.OutputStrategy;
 import tripleo.elijah.stages.write_stage.functionality.f201a.WriteOutputFiles;
+import tripleo.elijah.stages.write_stage.functionality.f301.WriteBufferText;
 import tripleo.elijah.stages.write_stage.pipeline_impl.*;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
@@ -34,7 +35,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -145,42 +145,14 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		prom.then(new DoneCallback<GenerateResult>() {
 			@Override
 			public void onDone(final GenerateResult result) {
-				PrintStream db_stream = null;
+				final File file = new File(st.file_prefix, "buffers.txt");
 
-				try {
-					final File file = new File(st.file_prefix, "buffers.txt");
-					db_stream = new PrintStream(file);
-					XXPrintStream xps = new XXPrintStream(db_stream);
-
-					debug_buffers_logic(result, xps);
-				} catch (FileNotFoundException aE) {
-					throw new RuntimeException(aE);
-				} finally {
-					if (db_stream != null)
-						db_stream.close();
-				}
+				WriteBufferText wbt = new WriteBufferText();
+				wbt.setFile(file);
+				wbt.setResult(result);
+				wbt.run();
 			}
-
-
 		});
-	}
-
-	public static void debug_buffers_logic(final GenerateResult result, final XPrintStream db_stream) {
-		final List<GenerateResultItem> generateResultItems = result.results();
-		debug_buffers_logic(generateResultItems, db_stream);
-	}
-
-	static void debug_buffers_logic(final List<GenerateResultItem> generateResultItems,
-									final XPrintStream db_stream) {
-		for (final GenerateResultItem ab : generateResultItems) {
-			final String s = MessageFormat.format("{0} - {1} - {2}", ab.counter, ab.ty, ab.output);
-
-			db_stream.println("---------------------------------------------------------------");
-			db_stream.println(s);
-			db_stream.println(ab.node.identityString());
-			db_stream.println(ab.buffer.getText());
-			db_stream.println("---------------------------------------------------------------");
-		}
 	}
 
 

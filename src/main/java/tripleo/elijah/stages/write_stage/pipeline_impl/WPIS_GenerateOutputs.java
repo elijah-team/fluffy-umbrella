@@ -1,6 +1,5 @@
 package tripleo.elijah.stages.write_stage.pipeline_impl;
 
-import tripleo.elijah.comp.WritePipeline;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 
 public class WPIS_GenerateOutputs implements WP_Indiviual_Step {
@@ -17,7 +16,7 @@ public class WPIS_GenerateOutputs implements WP_Indiviual_Step {
 
 
 		final SPrintStream sps = new SPrintStream();
-		WritePipeline.debug_buffers_logic(result, sps);
+		DebugBuffersLogic.debug_buffers_logic(result, sps);
 		System.err.println(sps.getString());
 
 

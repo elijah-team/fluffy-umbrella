@@ -45,7 +45,7 @@ public class WPIS_WriteBuffers implements WP_Indiviual_Step {
 					db_stream = new PrintStream(file);
 					XXPrintStream xps = new XXPrintStream(db_stream);
 
-					WritePipeline.debug_buffers_logic(result, xps);
+					DebugBuffersLogic.debug_buffers_logic(result, xps);
 				} catch (FileNotFoundException aE) {
 					throw new RuntimeException(aE);
 				} finally {

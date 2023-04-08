@@ -17,6 +17,7 @@ import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.elijah.stages.gen_generic.pipeline_impl.DefaultGenerateResultSink;
 
+import tripleo.elijah.stages.write_stage.pipeline_impl.DebugBuffersLogic;
 import tripleo.elijah.stages.write_stage.pipeline_impl.SPrintStream;
 import tripleo.elijah.util.NotImplementedException;
 
@@ -46,7 +47,7 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 
 			SPrintStream xps = new SPrintStream();
 
-			WritePipeline.debug_buffers_logic(x, xps);
+			DebugBuffersLogic.debug_buffers_logic(x, xps);
 
 			System.err.println("789789 "+xps.getString());
 
