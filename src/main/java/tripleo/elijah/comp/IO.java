@@ -27,8 +27,8 @@ public class IO {
 
 	// exists, delete, isType ....
 
-	final List<File> recordedreads  = new ArrayList<File>();
-	final List<File> recordedwrites = new ArrayList<File>();
+	public final List<File> recordedreads  = new ArrayList<File>();
+	final        List<File> recordedwrites = new ArrayList<File>();
 	
 	public boolean recordedRead(final File file) {
 		return recordedreads.contains(file);
