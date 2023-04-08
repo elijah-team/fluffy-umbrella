@@ -781,20 +781,26 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 
 	static String getRealTargetName(final BaseEvaFunction gf, final VariableTableEntry varTableEntry) {
 		final String vte_name = varTableEntry.getName();
-		if (varTableEntry.vtt == VariableTableType.TEMP) {
+		switch (varTableEntry.vtt) {
+		case TEMP -> {
 			if (varTableEntry.getName() == null) {
 				return "vt" + varTableEntry.tempNum;
 			} else {
 				return "vt" + varTableEntry.getName();
 			}
-		} else if (varTableEntry.vtt == VariableTableType.ARG) {
+		}
+		case ARG -> {
 			return "va" + vte_name;
-		} else if (SpecialVariables.contains(vte_name)) {
-			return SpecialVariables.get(vte_name);
-		} else if (isValue(gf, vte_name)) {
-			return "vsc->vsv";
-		} else {
-			return Emit.emit("/*879*/")+"vv" + vte_name;
+		}
+		default -> {
+			if (SpecialVariables.contains(vte_name)) {
+				return SpecialVariables.get(vte_name);
+			} else if (isValue(gf, vte_name)) {
+				return "vsc->vsv";
+			} else {
+				return Emit.emit("/*879*/")+"vv" + vte_name;
+			}
+		}
 		}
 	}
 

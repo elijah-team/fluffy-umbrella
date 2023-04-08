@@ -11,6 +11,8 @@ package tripleo.elijah.stages.gen_c;
 import tripleo.elijah.lang.ConstructorDef;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.deduce.ClassInvocation;
+import tripleo.elijah.stages.gen_c.c_ast1.C_Assignment;
+import tripleo.elijah.stages.gen_c.c_ast1.C_ProcedureCall;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.EvaContainerNC;
 import tripleo.elijah.stages.gen_fn.EvaNode;
@@ -166,14 +168,31 @@ public class CtorReference {
 			if (code == 0) {
 				tripleo.elijah.util.Stupidity.println_err_2("** 32135 ClassStatement with 0 code " + aClsinv.getKlass());
 			}
+
+
+			final String n = sb.toString();
+
+
+
+			// TODO Garish(?)Constructor.calculateCtorName(?)/Code
 			String text2 = String.format("ZC%d%s", code, ctorName); // TODO what about named constructors
 			sb.append(" = ");
 			sb.append(text2);
 			sb.append("(");
 			assert open == false;
 			open = true;
+
+			final C_ProcedureCall pc = new C_ProcedureCall();
+			pc.setTargetName(text2);
+			pc.setArgs(args);
+			final C_Assignment cas = new C_Assignment();
+			cas.setLeft(n);
+			cas.setRight(pc);
+
+			return cas.getString();
 		}
-//		return Helpers.String_join("->", sl);
+
+/*
 		if (needs_comma && args != null && args.size() > 0)
 			sb.append(", ");
 		if (open) {
@@ -183,6 +202,7 @@ public class CtorReference {
 			sb.append(")");
 		}
 		return sb.toString();
+*/
 	}
 
 	/**
