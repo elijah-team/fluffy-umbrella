@@ -137,25 +137,6 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 	}
 
 
-	private void debug_buffers() throws FileNotFoundException {
-		// TODO can/should this fail??
-
-		final List<GenerateResultItem> generateResultItems1 = st.getGr().results();
-
-		prom.then(new DoneCallback<GenerateResult>() {
-			@Override
-			public void onDone(final GenerateResult result) {
-				final File file = new File(st.file_prefix, "buffers.txt");
-
-				WriteBufferText wbt = new WriteBufferText();
-				wbt.setFile(file);
-				wbt.setResult(result);
-				wbt.run();
-			}
-		});
-	}
-
-
 	public void append_hash(TextBuffer outputBuffer, String aFilename, ErrSink errSink) throws IOException {
 		@Nullable final String hh = Helpers.getHashForFilename(aFilename, errSink);
 		if (hh != null) {

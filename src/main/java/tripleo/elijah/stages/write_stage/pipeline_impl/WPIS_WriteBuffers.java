@@ -4,6 +4,7 @@ import org.jdeferred2.DoneCallback;
 import tripleo.elijah.comp.WritePipeline;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
+import tripleo.elijah.stages.write_stage.functionality.f301.WriteBufferText;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,23 +39,13 @@ public class WPIS_WriteBuffers implements WP_Indiviual_Step {
 		writePipeline.prom.then(new DoneCallback<GenerateResult>() {
 			@Override
 			public void onDone(final GenerateResult result) {
-				PrintStream db_stream = null;
+				final File  file = new File(writePipeline.st.file_prefix, "buffers.txt");
 
-				try {
-					final File file = new File(writePipeline.st.file_prefix, "buffers.txt");
-					db_stream = new PrintStream(file);
-					XXPrintStream xps = new XXPrintStream(db_stream);
-
-					DebugBuffersLogic.debug_buffers_logic(result, xps);
-				} catch (FileNotFoundException aE) {
-					throw new RuntimeException(aE);
-				} finally {
-					if (db_stream != null)
-						db_stream.close();
-				}
+				WriteBufferText wbt  = new WriteBufferText();
+				wbt.setFile(file);
+				wbt.setResult(result);
+				wbt.run();
 			}
-
-
 		});
 	}
 }
