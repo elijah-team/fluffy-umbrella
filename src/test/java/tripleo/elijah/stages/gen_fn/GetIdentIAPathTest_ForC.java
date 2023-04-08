@@ -111,7 +111,7 @@ public class GetIdentIAPathTest_ForC {
 		IdentIA ident_ia = (IdentIA) xx;
 		String x = getIdentIAPath(ident_ia, gf);
 //		Assert.assertEquals("vvx->vmfoo", x);  // TODO real expectation, IOW output below is wrong
-		// TODO actually compiler should comlain that it can't find x
+		// FIXME actually compiler should comlain that it can't find x
 		Assert.assertEquals("->vmx->vmfoo", x);
 	}
 

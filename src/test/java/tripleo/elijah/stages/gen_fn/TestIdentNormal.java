@@ -151,8 +151,7 @@ public class TestIdentNormal {
 		final ClassHeader ch = new ClassHeader(false, List_of());
 		cs.setHeader(ch);
 
-		ClassInvocation ci = new ClassInvocation(cs, null);
-		ci = phase.registerClassInvocation(ci); // FIXME
+		ClassInvocation ci = phase.registerClassInvocation(cs);
 		ProcTableEntry pte2 = null;
 		FunctionInvocation fi = new FunctionInvocation(fd, pte2, ci, generatePhase);
 //		when(fd.returnType()).thenReturn(null);
