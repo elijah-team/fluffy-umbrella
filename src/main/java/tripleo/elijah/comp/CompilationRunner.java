@@ -3,6 +3,7 @@ package tripleo.elijah.comp;
 import antlr.ANTLRException;
 import antlr.RecognitionException;
 import antlr.TokenStreamException;
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,10 +12,12 @@ import tripleo.elijah.comp.diagnostic.TooManyEz_ActuallyNone;
 import tripleo.elijah.comp.diagnostic.TooManyEz_BeSpecific;
 import tripleo.elijah.comp.i.IProgressSink;
 import tripleo.elijah.comp.i.ProgressSinkComponent;
+import tripleo.elijah.comp.internal.CR_State;
 import tripleo.elijah.comp.internal.CompilationBus;
 import tripleo.elijah.comp.queries.QueryEzFileToModule;
 import tripleo.elijah.comp.queries.QueryEzFileToModuleParams;
 import tripleo.elijah.diagnostic.Diagnostic;
+import tripleo.elijah.lang.Precondition;
 import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
 import tripleo.elijah.util.NotImplementedException;
 
@@ -63,8 +66,11 @@ public class CompilationRunner {
 		compilation.use(ci, do_out);
 
 		// 3. do rest
-		final ICompilationAccess ca = new DefaultCompilationAccess(compilation);
-		final ProcessRecord      pr = new ProcessRecord(ca);
+		Preconditions.checkNotNull(compilation.__cr);
+		final CR_State crState = new CR_State(compilation.__cr);//new CompilationRunner(compilation, cis, new CompilationBus(compilation)));
+
+		final ICompilationAccess ca = crState.ca();
+		final ProcessRecord      pr = crState.pr;
 		final RuntimeProcesses   rt = StageToRuntime.get(compilation.stage, ca, pr);
 
 		rt.run_better();

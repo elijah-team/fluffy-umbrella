@@ -14,6 +14,7 @@ import org.junit.Test;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.Compilation.CompilationAlways;
+import tripleo.elijah.comp.internal.CR_State;
 import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.factory.comp.CompilationFactory;
@@ -48,21 +49,21 @@ public class TestGenFunction {
 	@Test
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testDemoElNormalFact1Elijah() throws Exception {
-		final StdErrSink eee = new StdErrSink();
-		final Compilation c = CompilationFactory.mkCompilation(eee, new IO());
+		final StdErrSink  eee = new StdErrSink();
+		final Compilation c   = CompilationFactory.mkCompilation(eee, new IO());
 
 
-		final String f = "test/demo-el-normal/fact1.elijah";
-		final File file = new File(f);
+		final String        f    = "test/demo-el-normal/fact1.elijah";
+		final File          file = new File(f);
 		final CompilerInput ci_f = new CompilerInput(f); // TODO flesh this out
 		//c.feedInputs // FIXME this too
 
 		final Operation<OS_Module> om = c.use.realParseElijjahFile(f, file, false);
 		assertTrue(om.mode() == Mode.SUCCESS);
 		final OS_Module m = om.success();
-		
+
 		Assert.assertTrue("Method parsed correctly", m != null);
-		
+
 		final Operation2<OS_Module> prl = c.findPrelude(CompilationAlways.defaultPrelude()); // TODO we dont know which prelude to find yet
 		assertTrue(prl.mode() == Mode.SUCCESS);
 		m.prelude = prl.success();
@@ -79,12 +80,15 @@ public class TestGenFunction {
 
 		List<FunctionMapHook> ran_hooks = new ArrayList<>();
 
+		final CR_State crState = new CR_State(((CompilationImpl) c).__cr);
 
-		final ICompilationAccess ca = new DefaultCompilationAccess(c);
-		c.pipelineLogic = new PipelineLogic(ca); // FIXME dont create this directly
-		final GeneratePhase generatePhase1 = c.pipelineLogic.generatePhase;//new GeneratePhase();
-		final GenerateFunctions gfm = generatePhase1.getGenerateFunctions(m);
-		DeducePhase dp = c.pipelineLogic.dp;//new DeducePhase(generatePhase1);
+		crState.ca();
+
+		c.pipelineLogic = crState.pr.pipelineLogic;
+
+		final GeneratePhase     generatePhase1 = c.pipelineLogic.generatePhase;//new GeneratePhase();
+		final GenerateFunctions gfm            = generatePhase1.getGenerateFunctions(m);
+		DeducePhase             dp             = c.pipelineLogic.dp;//new DeducePhase(generatePhase1);
 		gfm.generateFromEntryPoints(m.entryPoints, dp);
 
 		final DeducePhase.@NotNull GeneratedClasses lgc = dp.generatedClasses; //new ArrayList<>();
@@ -104,7 +108,7 @@ public class TestGenFunction {
 
 		WorkManager wm = new WorkManager();
 
-		c.addFunctionMapHook(new FunctionMapHook(){
+		c.addFunctionMapHook(new FunctionMapHook() {
 			@Override
 			public boolean matches(FunctionDef fd) {
 				final boolean b = fd.name().equals("main") && fd.getParent() == main_class;
@@ -130,7 +134,7 @@ public class TestGenFunction {
 			}
 		});
 
-		c.addFunctionMapHook(new FunctionMapHook(){
+		c.addFunctionMapHook(new FunctionMapHook() {
 			@Override
 			public boolean matches(FunctionDef fd) {
 				final boolean b = fd.name().equals("factorial") && fd.getParent() == main_class;
@@ -162,7 +166,7 @@ public class TestGenFunction {
 			}
 		});
 
-		c.addFunctionMapHook(new FunctionMapHook(){
+		c.addFunctionMapHook(new FunctionMapHook() {
 			@Override
 			public boolean matches(FunctionDef fd) {
 				final boolean b = fd.name().equals("main") && fd.getParent() == main_class;
@@ -190,7 +194,7 @@ public class TestGenFunction {
 			}
 		});
 
-		c.addFunctionMapHook(new FunctionMapHook(){
+		c.addFunctionMapHook(new FunctionMapHook() {
 			@Override
 			public boolean matches(FunctionDef fd) {
 				final boolean b = fd.name().equals("factorial") && fd.getParent() == main_class;

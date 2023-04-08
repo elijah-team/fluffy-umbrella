@@ -70,7 +70,7 @@ public abstract class Compilation {
 	private int                _packageCode  = 1;
 	private int                _classCode    = 101;
 	private int                _functionCode = 1001;
-	CompilationRunner __cr;
+	public CompilationRunner __cr;
 	private CompilationBus cb;
 
 	public Compilation(final ErrSink errSink, final IO io) {
