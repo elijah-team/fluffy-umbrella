@@ -18,7 +18,6 @@ import org.jdeferred2.Promise;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.stages.gen_c.CDependencyRef;
 import tripleo.elijah.stages.gen_c.OutputFileC;
@@ -29,28 +28,18 @@ import tripleo.elijah.stages.write_stage.functionality.f201a.WriteOutputFiles;
 import tripleo.elijah.stages.write_stage.pipeline_impl.*;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
-import tripleo.util.buffer.Buffer;
-import tripleo.util.buffer.DefaultBuffer;
 import tripleo.util.buffer.TextBuffer;
-import tripleo.util.io.DisposableCharSink;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.io.Writer;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -65,27 +54,24 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 	private       Supplier<GenerateResult>            grs;
 
 	public WritePipeline(final IPipelineAccess pa) {
-	//public WritePipeline(final @NotNull Compilation aCompilation,
-	//					 ,
-	//					  ppl) {
+		//public WritePipeline(final @NotNull Compilation aCompilation,
+		//					 ,
+		//					  ppl) {
 		st = new WritePipelineSharedState();
 
 		// given
 		st.c = pa.getCompilation();
 
 
-
-		final @NotNull ProcessRecord pr = pa.getProcessRecord();
+		final @NotNull ProcessRecord                      pr  = pa.getProcessRecord();
 		final @NotNull Promise<PipelineLogic, Void, Void> ppl = pa.getPipelineLogicPromise();
-
-
 
 
 		// computed
 		st.file_prefix = new File("COMP", st.c.getCompilationNumberString());
 
 		// created
-		latch = new DoubleLatch<GenerateResult>(gr -> st.setGr(gr));
+		latch = new DoubleLatch<GenerateResult>(gr -> {st.setGr(gr);__int__steps(gr, gr)/*!!*/;});
 
 		// state
 		st.mmb         = ArrayListMultimap.create();
@@ -99,7 +85,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 			latch.notify(aPipelineLogic.gr); // TODO doesn't seem right. Might work, but not right
 		});
 		*/
-		
+
 		cih = new CompletedItemsHandler(st);
 
 		//		pr.consumeGenerateResult(wpl.consumer());
@@ -130,7 +116,8 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		final GenerateResult rs = grs.get();
 
 		prom.then((final GenerateResult result) -> {
-			__int__steps(result, rs);
+			latch.notify(true);
+			//__int__steps(result, rs);
 		});
 	}
 
@@ -156,33 +143,33 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 	}
 
 
-		private void debug_buffers() throws FileNotFoundException {
-			// TODO can/should this fail??
+	private void debug_buffers() throws FileNotFoundException {
+		// TODO can/should this fail??
 
-			final List<GenerateResultItem> generateResultItems1 = st.getGr().results();
+		final List<GenerateResultItem> generateResultItems1 = st.getGr().results();
 
-			prom.then(new DoneCallback<GenerateResult>() {
-				@Override
-				public void onDone(final GenerateResult result) {
-					PrintStream db_stream = null;
+		prom.then(new DoneCallback<GenerateResult>() {
+			@Override
+			public void onDone(final GenerateResult result) {
+				PrintStream db_stream = null;
 
-					try {
-						final File file = new File(st.file_prefix, "buffers.txt");
-						db_stream = new PrintStream(file);
-						XXPrintStream xps = new XXPrintStream(db_stream);
+				try {
+					final File file = new File(st.file_prefix, "buffers.txt");
+					db_stream = new PrintStream(file);
+					XXPrintStream xps = new XXPrintStream(db_stream);
 
-						debug_buffers_logic(result, xps);
-					} catch (FileNotFoundException aE) {
-						throw new RuntimeException(aE);
-					} finally {
-						if (db_stream != null)
-							db_stream.close();
-					}
+					debug_buffers_logic(result, xps);
+				} catch (FileNotFoundException aE) {
+					throw new RuntimeException(aE);
+				} finally {
+					if (db_stream != null)
+						db_stream.close();
 				}
+			}
 
 
-			});
-		}
+		});
+	}
 
 	public static void debug_buffers_logic(final GenerateResult result, final XPrintStream db_stream) {
 		final List<GenerateResultItem> generateResultItems = result.results();
@@ -230,7 +217,9 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 			};
 		}
 
-		return (x) -> { grs = x; };
+		return (x) -> {
+			grs = x;
+		};
 	}
 
 	class WP_Flow {
@@ -336,7 +325,9 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 			});
 		}
 	}
+
 }
+
 
 //
 //
