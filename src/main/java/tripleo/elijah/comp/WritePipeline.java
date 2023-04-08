@@ -361,6 +361,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 			}
 		}
 
+
 		public void completeSequence() {
 			final @NotNull GenerateResult generateResult = sharedState.getGr();
 
