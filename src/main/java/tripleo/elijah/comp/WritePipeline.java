@@ -25,6 +25,7 @@ import tripleo.elijah.stages.gen_c.OutputFileC;
 import tripleo.elijah.stages.gen_generic.*;
 import tripleo.elijah.stages.generate.ElSystem;
 import tripleo.elijah.stages.generate.OutputStrategy;
+import tripleo.elijah.stages.write_stage.functionality.f201a.WriteOutputFiles;
 import tripleo.elijah.stages.write_stage.pipeline_impl.*;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
@@ -258,40 +259,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		}
 	}
 
-	/**
-	 * Really a record, but state is not all set at once
-	 */
-	public final static class WritePipelineSharedState {
-		//private @NotNull /*final*/ OutputStrategy os;
-		@NotNull
-		public /*final*/   ElSystem                               sys;
-		@NotNull /*final*/ Multimap<CompilerInstructions, String> lsp_outputs;
-		/*final*/ @NotNull
-				  public Compilation c;
-		private /*final*/ @NotNull GenerateResult                         gr;
-		/*final*/ @NotNull
-				  public   File                     file_prefix;
-		/*final*/ @NotNull Multimap<String, Buffer> mmb;
-
-		@Contract(pure = true)
-		public @NotNull GenerateResult getGr() {
-			return gr;
-		}
-
-		@Contract(mutates = "this")
-		public void setGr(final @NotNull GenerateResult aGr) {
-			gr = aGr;
-		}
-	}
-
-	private static class CompletedItemsHandler {
-		//private final Compilation c;
-		//private final Multimap<String, Buffer> mmb;
-		//private final Multimap<CompilerInstructions, String> lsp_outputs;
-		//private final GenerateResult gr;
-		//private final File file_prefix;
-
-		// region state
+	private /*static*/ class CompletedItemsHandler {
 		final         Multimap<Dependency, GenerateResultItem> gris = ArrayListMultimap.create();
 		// README debugging purposes
 		final         List<GenerateResultItem>                 abs  = new ArrayList<>();
@@ -301,8 +269,6 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		public CompletedItemsHandler(final WritePipelineSharedState aSharedState) {
 			sharedState = aSharedState;
 		}
-
-		// endregion state
 
 		public void addItem(final @NotNull GenerateResultItem ab) {
 			NotImplementedException.raise();
@@ -330,46 +296,6 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 			}
 		}
 
-		//@Contract(pure = true)
-		//public void completeSequence(int y) {
-		//	NotImplementedException.raise();
-		//}
-
-		private void ___completeSequence(final @NotNull Map<String, OutputFileC> outputFiles) {
-			final String prefix = sharedState.file_prefix.toString();
-
-			NotImplementedException.raise();
-
-			for (final Map.Entry<String, OutputFileC> entry : outputFiles.entrySet()) {
-				final String key = entry.getKey();
-				assert key != null;
-
-				final Path path = FileSystems.getDefault().getPath(prefix, key);
-
-				boolean made = path.getParent().toFile().mkdirs();
-
-				// TODO functionality
-				System.out.println("201a Writing path: " + path);
-				try (DisposableCharSink x = sharedState.c.getIO().openWrite(path)) {
-					x.accept(entry.getValue().getOutput());
-
-					//((FileCharSink) x).close();
-					//x.dispose(); // README close automatically because of try-with-resources
-				} catch (Exception aE) {
-					sharedState.c.getErrSink().exception(aE);
-				}
-			}
-		}
-
-
-		public void completeSequence() {
-			final @NotNull GenerateResult generateResult = sharedState.getGr();
-
-			generateResult.outputFiles((final Map<String, OutputFileC> outputFiles) -> {
-				___completeSequence(outputFiles);
-			});
-		}
-
 		@Contract(mutates = "this")
 		public Observer<GenerateResultItem> observer() {
 			if (observer == null) {
@@ -395,6 +321,19 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 			}
 
 			return observer;
+		}
+
+		private void ___completeSequence(final @NotNull Map<String, OutputFileC> outputFiles) {
+			final WriteOutputFiles wof = new WriteOutputFiles();
+			wof.writeOutputFiles(sharedState, outputFiles);
+		}
+
+		public void completeSequence() {
+			final @NotNull GenerateResult generateResult = sharedState.getGr();
+
+			generateResult.outputFiles((final Map<String, OutputFileC> outputFiles) -> {
+				___completeSequence(outputFiles);
+			});
 		}
 	}
 }

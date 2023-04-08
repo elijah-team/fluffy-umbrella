@@ -18,7 +18,7 @@ public class WPIS_WriteBuffers implements WP_Indiviual_Step {
 	}
 
 	@Override
-	public void act(final WritePipeline.WritePipelineSharedState st, final WP_State_Control sc) {
+	public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
 		// 5. write buffers
 		// TODO flag?
 		try {

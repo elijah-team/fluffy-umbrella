@@ -13,7 +13,7 @@ public class WPIS_WriteInputs implements WP_Indiviual_Step {
 	}
 
 	@Override
-	public void act(final WritePipeline.WritePipelineSharedState st, final WP_State_Control sc) {
+	public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
 		// 3. write inputs
 		// TODO ... 1/ output(s) per input and 2/ exceptions ... and 3/ plan
 		//  "plan", effects; input(s), output(s)

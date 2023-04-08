@@ -6,7 +6,6 @@ import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.WritePipeline;
-import tripleo.elijah.comp.WritePipeline.WritePipelineSharedState;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.util.buffer.Buffer;
