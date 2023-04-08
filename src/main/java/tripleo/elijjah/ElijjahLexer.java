@@ -37,6 +37,7 @@ public ElijjahLexer(Reader in) {
 public ElijjahLexer(InputBuffer ib) {
 	this(new LexerSharedInputState(ib));
 }
+@SuppressWarnings({ "removal", "unchecked" })
 public ElijjahLexer(LexerSharedInputState state) {
 	super(state);
 	caseSensitiveLiterals = true;

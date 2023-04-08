@@ -37,6 +37,7 @@ public EzLexer(Reader in) {
 public EzLexer(InputBuffer ib) {
 	this(new LexerSharedInputState(ib));
 }
+@SuppressWarnings({ "removal", "unchecked" })
 public EzLexer(LexerSharedInputState state) {
 	super(state);
 	caseSensitiveLiterals = true;
