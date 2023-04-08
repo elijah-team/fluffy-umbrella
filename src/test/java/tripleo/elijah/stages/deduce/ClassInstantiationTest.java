@@ -27,6 +27,8 @@ public class ClassInstantiationTest {
 		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
+
+		System.err.println("Errorcount is" + c.errorCount());
 	}
 
 	@Test
@@ -35,6 +37,8 @@ public class ClassInstantiationTest {
 		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
+
+		System.err.println("Errorcount is" + c.errorCount());
 	}
 
 	@Test
@@ -43,6 +47,8 @@ public class ClassInstantiationTest {
 		Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
+
+		System.err.println("Errorcount is" + c.errorCount());
 	}
 
 	@Test
