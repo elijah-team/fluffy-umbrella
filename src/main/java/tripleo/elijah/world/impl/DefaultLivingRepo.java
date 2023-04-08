@@ -137,7 +137,7 @@ public class DefaultLivingRepo implements LivingRepo {
 		for (LivingNode livingNode : repo) {
 			if (livingNode instanceof LivingClass) {
 				final LivingClass livingClass = (LivingClass) livingNode;
-				if (livingClass.evaNode().getKlass().equals(aEvaClass))
+				if (livingClass.evaNode().equals(aEvaClass))
 					return livingClass;
 			}
 		}

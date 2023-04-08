@@ -117,7 +117,7 @@ public class ResolveType {
 			{
 				final TypeOfTypeName type_of = (TypeOfTypeName) tn1;
 				final Qualident q = type_of.typeOf();
-				if (q.parts().size() == 1 && q.parts().get(0).equals("self")) {
+				if (q.parts().size() == 1 && q.parts().get(0).getText().equals("self")) {
 					assert type_of.getContext() instanceof ClassContext;
 					ggg.resolved = ((ClassContext) type_of.getContext()).getCarrier().getOS_Type();
 				}
