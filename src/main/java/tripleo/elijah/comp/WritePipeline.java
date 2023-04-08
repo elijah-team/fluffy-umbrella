@@ -88,15 +88,19 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		// ??
 		st.sys = new ElSystem(false, st.c, this::createOutputStratgy);
 
+		/*
 		ppl.then((aPipelineLogic) -> {
 			latch.notify(aPipelineLogic.gr); // TODO doesn't seem right. Might work, but not right
 		});
-
+		*/
+		
 		cih = new CompletedItemsHandler(st);
 
 		//		pr.consumeGenerateResult(wpl.consumer());
 		prom = pr.generateResultPromise();
 		prom.then(gr1 -> {
+			latch.notify(gr1); // TODO doesn't seem right. Might work, but not right
+
 			NotImplementedException.raise();
 			;
 			Objects.requireNonNull(gr1);
@@ -447,90 +451,6 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 			}
 		}
 	}
-
-//	@Override
-//	public void accept(final Supplier<GenerateResult> aGenerateResultSupplier) {
-//		grs = aGenerateResultSupplier;
-//	}
-
-	//public class AltingBarrierGadget0 implements CSProcess {
-	//	private final AltingChannelInput click;
-	//	private final AltingBarrier      group;
-	//	private final ChannelOutput      configure;
-	//
-	//	public AltingBarrierGadget0(
-	//			AltingChannelInput click, AltingBarrier group, ChannelOutput configure
-	//							   ) {
-	//		this.click     = click;
-	//		this.group     = group;
-	//		this.configure = configure;
-	//	}
-	//
-	//	@Override
-	//	public void run() {
-	//
-	//		final Alternative clickGroup =
-	//				new Alternative(new Guard[]{click, group});
-	//
-	//		final int CLICK = 0, GROUP = 1;
-	//
-	//		int n = 0;
-	//		configure.write(String.valueOf(n));
-	//
-	//		while (true) {
-	//
-	//			configure.write(Color.green);                // pretty
-	//
-	//			while (!click.pending()) {                  // individual work mode
-	//				n++;                                       // work on our own
-	//				configure.write(String.valueOf(n));      // work on our own
-	//			}
-	//			click.read();                               // must consume the click
-	//
-	//			configure.write(Color.red);                 // pretty
-	//
-	//			boolean group = true;                        // group work mode
-	//			while (group) {
-	//				switch (clickGroup.priSelect()) {         // offer to work with the group
-	//				case CLICK:
-	//					click.read();                         // must consume the click
-	//					group = false;                         // back to individual work mode
-	//					break;
-	//				case GROUP:
-	//					n--;                                   // work with the group
-	//					configure.write(String.valueOf(n));  // work with the group
-	//					break;
-	//				}
-	//			}
-	//
-	//		}
-	//
-	//	}
-	//
-	//}
-
-	/*
-	private void write_files_helper(@NotNull Multimap<String, Buffer> mb) throws IOException {
-		String prefix = st.file_prefix.toString();
-
-		for (Map.Entry<String, Collection<Buffer>> entry : mb.asMap().entrySet()) {
-			final String key = entry.getKey();
-			assert key != null;
-			Path path = FileSystems.getDefault().getPath(prefix, key);
-//			BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
-
-			path.getParent().toFile().mkdirs();
-
-			// TODO functionality
-			System.out.println("201 Writing path: " + path);
-			CharSink x = st.c.getIO().openWrite(path);
-			for (Buffer buffer : entry.getValue()) {
-				x.accept(buffer.getText());
-			}
-			((FileCharSink) x).close();
-		}
-	}
-*/
 
 	static class HashBufferList extends DefaultBuffer {
 		public HashBufferList(final String string) {
