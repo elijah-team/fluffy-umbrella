@@ -2779,6 +2779,8 @@ public class DeduceTypes2 {
 					case USER_CLASS:
 						vte_pot_size_is_1_USER_CLASS_TYPE(vte, ty);
 						break;
+					default:
+						throw new Error();
 					}
 				} else {
 					LOG.err("1696");

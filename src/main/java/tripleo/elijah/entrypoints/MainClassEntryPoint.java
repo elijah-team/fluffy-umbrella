@@ -56,6 +56,8 @@ public class MainClassEntryPoint implements EntryPoint {
 					return !aFunctionDef.getArgs().iterator().hasNext();
 				}
 				break;
+			default:
+				throw new Error();
 		}
 		return false;
 	}

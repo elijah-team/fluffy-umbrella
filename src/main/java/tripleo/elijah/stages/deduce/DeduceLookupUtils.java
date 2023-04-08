@@ -156,8 +156,11 @@ public class DeduceLookupUtils {
 		case QIDENT:
 			final IExpression expression = Helpers.qualidentToDotExpression2(((Qualident) n));
 			return deduceExpression(aDeduceTypes2, expression, context);
+		default:
+			return null;
 		}
-		return null;
+		
+		throw new Error();
 	}
 
 	/**
@@ -285,6 +288,8 @@ public class DeduceLookupUtils {
 					result = R;
 				}
 				break;
+			default:
+				throw new Error();
 			}
 			if (result == null) {
 				throw new ResolveError(ident, lrl);
@@ -377,6 +382,8 @@ public class DeduceLookupUtils {
 					result = R;
 				}
 				break;
+			default:
+				throw new Error();
 			}
 			if (result == null) {
 				throw new ResolveError(ident, lrl);
