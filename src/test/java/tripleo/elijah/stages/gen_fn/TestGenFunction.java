@@ -15,7 +15,6 @@ import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.Compilation.CompilationAlways;
 import tripleo.elijah.comp.internal.CR_State;
-import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.factory.comp.CompilationFactory;
 import tripleo.elijah.lang.ClassStatement;
@@ -24,14 +23,18 @@ import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.nextgen.query.Mode;
 import tripleo.elijah.stages.deduce.DeducePhase;
+import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FunctionMapHook;
 import tripleo.elijah.stages.gen_c.GenerateC;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.DefaultGenerateResultSink;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.stages.instructions.Instruction;
 import tripleo.elijah.stages.instructions.InstructionName;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.test_help.Boilerplate;
 import tripleo.elijah.work.WorkManager;
+import tripleo.elijah.world.i.LivingClass;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -80,7 +83,7 @@ public class TestGenFunction {
 
 		List<FunctionMapHook> ran_hooks = new ArrayList<>();
 
-		final CR_State crState = new CR_State(((CompilationImpl) c).__cr);
+		final CR_State crState = new CR_State(c.__cr);
 
 		crState.ca();
 
@@ -233,7 +236,7 @@ public class TestGenFunction {
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testGenericA() throws Exception {
 		final ErrSink     errSink = new StdErrSink();
-		final Compilation c       = new CompilationImpl(errSink, new IO());
+		final Compilation c       = CompilationFactory.mkCompilation(errSink, new IO());
 
 		final String f = "test/basic1/genericA/";
 
@@ -247,84 +250,91 @@ public class TestGenFunction {
 		boilerplate.get();
 		boilerplate.getGenerateFiles(boilerplate.defaultMod());
 
-		//final ErrSink     eee = new StdErrSink();
-		//final Compilation c   = new CompilationImpl(eee, new IO());
+		final ErrSink     eee = new StdErrSink();
+		final Compilation c   = CompilationFactory.mkCompilation(eee, new IO());
 
 		final String f = "test/basic1/backlink1.elijah";
-		//final File file = new File(f);
-		//final OS_Module m = c.realParseElijjahFile(f, file, false);
-		//Assert.assertTrue("Method parsed correctly", m != null);
-		//m.prelude = c.findPrelude("c"); // TODO we dont know which prelude to find yet
-		//
-		//c.findStdLib("c");
-		//
-		//for (final CompilerInstructions ci : c.cis) {
+		final File                 file = new File(f);
+		final Operation<OS_Module> om    = c.use.realParseElijjahFile(f, file, false);
+
+		assertTrue("Method parsed correctly", om.mode() == Mode.SUCCESS);
+
+		final OS_Module m = om.success();
+
+		m.prelude = c.findPrelude(CompilationAlways.defaultPrelude()).success(); // TODO we dont know which prelude to find yet
+
+		//c.findStdLib("c"); // FIXME/TODO this!!
+
+		//for (final CompilerInstructions ci : c.cis) { // FIXME and this!!
 		//	c.use(ci, false);
 		//}
-		//
-		//final ElLog.Verbosity verbosity1 = c.gitlabCIVerbosity();
-		//final PipelineLogic pl = new PipelineLogic(verbosity1);
-		//final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
-		//final GenerateFunctions gfm = generatePhase.getGenerateFunctions(m);
-		//final List<GeneratedNode> lgc = new ArrayList<>();
-		//gfm.generateAllTopLevelClasses(lgc);
-		//
-		//DeducePhase dp = new DeducePhase(generatePhase, pl, verbosity1);
-		//
-		//WorkManager wm = new WorkManager();
-		//
-		//List<GeneratedNode> lgf = new ArrayList<>();
-		//for (GeneratedNode generatedNode : lgc) {
-		//	if (generatedNode instanceof EvaClass)
-		//		lgf.addAll(((EvaClass) generatedNode).functionMap.values());
-		//	if (generatedNode instanceof EvaNamespace)
-		//		lgf.addAll(((EvaNamespace) generatedNode).functionMap.values());
+
+		ElLog.Verbosity verbosity1 = c.gitlabCIVerbosity(); // FIXME ??
+		final CR_State  crState    = new CR_State(c.__cr);
+		crState.ca();
+		final PipelineLogic pl = crState.pr.pipelineLogic;
+
+		final GeneratePhase generatePhase = crState.pr.pipelineLogic.generatePhase;
+		final GenerateFunctions gfm = generatePhase.getGenerateFunctions(m);
+		final List<EvaNode> lgc = new ArrayList<>();
+		gfm.generateAllTopLevelClasses(lgc);
+
+		final DeducePhase dp = new DeducePhase(generatePhase, pl, verbosity1, crState.ca());
+
+		WorkManager wm = new WorkManager();
+
+		List<EvaNode> lgf = new ArrayList<>();
+		for (EvaNode generatedNode : lgc) {
+			if (generatedNode instanceof EvaClass)
+				lgf.addAll(((EvaClass) generatedNode).functionMap.values());
+			if (generatedNode instanceof EvaNamespace)
+				lgf.addAll(((EvaNamespace) generatedNode).functionMap.values());
 			// TODO enum
-		//}
-		//
-		//for (final GeneratedNode gn : lgf) {
-		//	if (gn instanceof EvaFunction) {
-		//		EvaFunction gf = (EvaFunction) gn;
-		//		for (final Instruction instruction : gf.instructions()) {
-		//			tripleo.elijah.util.Stupidity.println_out_2("8100 " + instruction);
-		//		}
-		//	}
-		//}
+		}
 
-		//dp.deduceModule(m, lgc, c.gitlabCIVerbosity());
-		//dp.finish();
-//		new DeduceTypes2(m).deduceFunctions(lgf);
+		for (final EvaNode gn : lgf) {
+			if (gn instanceof EvaFunction) {
+				EvaFunction gf = (EvaFunction) gn;
+				for (final Instruction instruction : gf.instructions()) {
+					tripleo.elijah.util.Stupidity.println_out_2("8100 " + instruction);
+				}
+			}
+		}
+		//
+		dp.deduceModule(m, lgc, c.gitlabCIVerbosity());
+		dp.finish();
+		new DeduceTypes2(m, null).deduceFunctions(lgf);
+		//
+		for (final EvaNode gn : lgf) {
+			if (gn instanceof EvaFunction) {
+				EvaFunction gf = (EvaFunction) gn;
+				tripleo.elijah.util.Stupidity.println_out_2("----------------------------------------------------------");
+				tripleo.elijah.util.Stupidity.println_out_2(gf.name());
+				tripleo.elijah.util.Stupidity.println_out_2("----------------------------------------------------------");
+				EvaFunction.printTables(gf);
+				tripleo.elijah.util.Stupidity.println_out_2("----------------------------------------------------------");
+			}
+		}
 
-		//for (final GeneratedNode gn : lgf) {
-		//	if (gn instanceof EvaFunction) {
-		//		EvaFunction gf = (EvaFunction) gn;
-		//		tripleo.elijah.util.Stupidity.println_out_2("----------------------------------------------------------");
-		//		tripleo.elijah.util.Stupidity.println_out_2(gf.name());
-		//		tripleo.elijah.util.Stupidity.println_out_2("----------------------------------------------------------");
-		//		EvaFunction.printTables(gf);
-				//tripleo.elijah.util.Stupidity.println_out_2("----------------------------------------------------------");
-			//}
-		//}
-		//
-		//PipelineLogic pipelineLogic = new PipelineLogic(Compilation.gitlabCIVerbosity());
-		//GenerateC ggc = new GenerateC(m, eee, c.gitlabCIVerbosity(), pipelineLogic);
-		//ggc.generateCode(lgf, wm);
-		//
-		//GenerateResult gr = new GenerateResult();
-		//
-		//for (GeneratedNode generatedNode : lgc) {
-		//	if (generatedNode instanceof EvaClass) {
-		//		ggc.generate_class((EvaClass) generatedNode, gr);
-		//	} else {
-		//		tripleo.elijah.util.Stupidity.println_out_2(lgc.getClass().getName());
-		//	}
-		//}
+		final GenerateC                 ggc = new GenerateC(m, eee, c.gitlabCIVerbosity(), pl);
+		final DefaultGenerateResultSink grs = new DefaultGenerateResultSink(null, null);
+		ggc.generateCode(lgf, wm, grs);
+
+		GenerateResult gr = new GenerateResult();
+
+		for (EvaNode generatedNode : lgc) {
+			if (generatedNode instanceof EvaClass) {
+				ggc.generate_class((EvaClass) generatedNode, gr, grs);
+			} else {
+				tripleo.elijah.util.Stupidity.println_out_2(lgc.getClass().getName());
+			}
+		}
 	}
 
 	@Test
 	public void testBasic1Backlink3Elijah() throws Exception {
 		final StdErrSink eee = new StdErrSink();
-		final Compilation c = new CompilationImpl(eee, new IO());
+		final Compilation c = CompilationFactory.mkCompilation(eee, new IO());
 
 		final String ff = "test/basic1/backlink3/";
 		c.feedCmdLine(List_of(ff));
