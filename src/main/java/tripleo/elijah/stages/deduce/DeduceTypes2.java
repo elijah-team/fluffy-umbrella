@@ -313,8 +313,42 @@ public class DeduceTypes2 {
 								}
 								break;
 							default:
-								// TODO do nothing for now
 								int y3 = 2;
+
+
+
+
+								vte.typePromise().then(gt -> {
+									int y4 = 2;
+
+									if (vte.getStatus() == BaseTableEntry.Status.UNCHECKED) {
+										// NOTE curious...
+int y5=25;
+									}
+
+									else throw new Error();
+
+								});
+
+
+
+
+
+
+
+
+
+								if (vte.vtt == VariableTableType.RESULT) {
+									int y6=6;
+
+//									vte.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(vte.getResolvedElement()));
+								}
+
+
+
+
+
+
 								break;
 						}
 					} /*else
