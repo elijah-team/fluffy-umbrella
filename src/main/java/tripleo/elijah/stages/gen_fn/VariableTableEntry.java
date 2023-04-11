@@ -210,7 +210,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		return PostBC_Processor.make_VTE(this, aFd_ctx, aDeduceClient1);
 	}
 
-	public IDeduceElement3 getDeduceElement3() {
+	public DeduceElement3_VariableTableEntry getDeduceElement3() {
 		if (_de3 == null) {
 			_de3 = new DeduceElement3_VariableTableEntry(this);
 			//_de3.generatedFunction = generatedFunction;

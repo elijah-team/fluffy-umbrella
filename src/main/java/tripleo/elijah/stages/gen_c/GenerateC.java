@@ -16,6 +16,7 @@ import tripleo.elijah.lang.types.OS_FuncExprType;
 import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VariableTableEntry;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.GenerateFiles;
@@ -780,7 +781,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 
 	/*static*/ String getRealTargetName(final BaseEvaFunction gf, final @NotNull VariableTableEntry varTableEntry) {
 
-	static String getRealTargetName(final BaseEvaFunction gf, final VariableTableEntry varTableEntry) {
+		final DeduceElement3_VariableTableEntry de3_vte = varTableEntry.getDeduceElement3();
 
 		ZoneVTE zone_vte = _zone.get(varTableEntry, gf);
 

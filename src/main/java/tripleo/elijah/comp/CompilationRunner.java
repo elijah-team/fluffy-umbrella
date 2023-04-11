@@ -66,11 +66,11 @@ public class CompilationRunner {
 
 		// 3. do rest
 		Preconditions.checkNotNull(compilation.__cr);
-		final CR_State crState = new CR_State(compilation.__cr);//new CompilationRunner(compilation, cis, new CompilationBus(compilation)));
+		final CR_State           crState = new CR_State(compilation.__cr);//new CompilationRunner(compilation, cis, new CompilationBus(compilation)));
 
-		final ICompilationAccess ca = crState.ca();
-		final ProcessRecord      pr = crState.pr;
-		final RuntimeProcesses   rt = StageToRuntime.get(compilation.stage, ca, pr);
+		final ICompilationAccess ca      = crState.ca();
+		final ProcessRecord      pr      = crState.pr;
+		final RuntimeProcesses   rt      = StageToRuntime.get(compilation.stage, ca, pr);
 
 		rt.run_better();
 	}
