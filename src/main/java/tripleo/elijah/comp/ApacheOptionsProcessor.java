@@ -1,6 +1,6 @@
 package tripleo.elijah.comp;
 
-import org.apache.commons.cli.*;
+import tripleo.vendor.org.apache.commons.cli.*;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -30,11 +30,9 @@ public class ApacheOptionsProcessor implements OptionsProcessor {
 
 
 		final CommandLine cmd;
-		//try {
-			cmd = clp.parse(options, args.toArray(new String[args.size()]));
-		//} catch (ParseException aE) {
-		//	throw new RuntimeException(aE);
-		//}
+
+		//cmd = clp.parse(options, args.toArray(new String[args.size()]));
+		cmd = clp.parse(options, aInputs);
 
 		if (cmd.hasOption("s")) 		{ new CC_SetStage(cmd.getOptionValue('s')).apply(c); }
 		if (cmd.hasOption("showtree")) 	{ new CC_SetShowTree(true).apply(c); }

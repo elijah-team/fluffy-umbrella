@@ -13,6 +13,7 @@ import tripleo.elijah.stages.gen_fn.EvaNamespace;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.world.i.LivingClass;
 import tripleo.elijah.world.i.LivingFunction;
+import tripleo.elijah.world.i.LivingNode;
 import tripleo.elijah.world.i.LivingPackage;
 import tripleo.elijah.world.i.LivingRepo;
 

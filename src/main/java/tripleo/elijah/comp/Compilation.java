@@ -156,7 +156,7 @@ public abstract class Compilation {
 		final String[] args2 = op.process(this, args3, cb);
 
 		__cr = new CompilationRunner(this, _cis, cb);
-		__cr.doFindCIs(args2);
+		__cr.doFindCIs(args3, args2, cb);
 	}
 
 	private void subscribeCI(final Observer<CompilerInstructions> aCio) {

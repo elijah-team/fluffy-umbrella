@@ -8,6 +8,7 @@ import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.world.i.LivingClass;
+import tripleo.elijah.world.i.LivingNode;
 
 public class DefaultLivingClass implements LivingClass, LivingNode {
 	private final ClassStatement _element;

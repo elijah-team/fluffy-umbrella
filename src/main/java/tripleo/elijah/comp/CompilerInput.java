@@ -1,11 +1,14 @@
 package tripleo.elijah.comp;
 
+import java.io.File;
+
 import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
 
 public class CompilerInput {
 	private final String                           inp;
 	private       Ty                               ty;
 	private       Maybe<ILazyCompilerInstructions> acceptance;
+	private File dir_carrier;
 
 	public CompilerInput(final String aS) {
 		inp = aS;
@@ -24,6 +27,10 @@ public class CompilerInput {
 		return ty == Ty.SOURCE_ROOT;
 	}
 
+	public boolean isNull() {
+		return ty == Ty.NULL;
+	}
+
 	public void accept_ci(final Maybe<ILazyCompilerInstructions> aM3) {
 		acceptance = aM3;
 	}
@@ -33,4 +40,9 @@ public class CompilerInput {
 	}
 
 	enum Ty {NULL, SOURCE_ROOT}
+
+	public void setDirectory(File f) {
+		ty = Ty.SOURCE_ROOT;
+		dir_carrier = f;
+	}
 }

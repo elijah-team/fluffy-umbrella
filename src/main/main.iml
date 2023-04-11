@@ -14,6 +14,7 @@
       <sourceFolder url="file://$MODULE_DIR$/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/java-compiler-gen" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/main-mal" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apache-commons-cli" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

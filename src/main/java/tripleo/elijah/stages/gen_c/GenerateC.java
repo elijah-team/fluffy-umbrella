@@ -780,6 +780,9 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 
 
 	static String getRealTargetName(final BaseEvaFunction gf, final VariableTableEntry varTableEntry) {
+
+		varTableEntry.getDeduceElement3()
+
 		final String vte_name = varTableEntry.getName();
 		switch (varTableEntry.vtt) {
 		case TEMP -> {

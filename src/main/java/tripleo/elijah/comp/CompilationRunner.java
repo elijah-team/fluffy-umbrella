@@ -17,7 +17,6 @@ import tripleo.elijah.comp.internal.CompilationBus;
 import tripleo.elijah.comp.queries.QueryEzFileToModule;
 import tripleo.elijah.comp.queries.QueryEzFileToModuleParams;
 import tripleo.elijah.diagnostic.Diagnostic;
-import tripleo.elijah.lang.Precondition;
 import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
 import tripleo.elijah.util.NotImplementedException;
 
@@ -257,13 +256,18 @@ public class CompilationRunner {
 														   final Compilation c) {
 		final String absolutePath;
 		try {
-			absolutePath = file.getCanonicalFile().toString();
+			absolutePath = file.getCanonicalFile().toString(); // TODO 04/10 hash this and "attach" 
+			//queryDB.attach(compilerInput, new EzFileIdentity_Sha256($hash)); // ??
 		} catch (IOException aE) {
 			//throw new RuntimeException(aE);
 			return Operation.failure(aE);
 		}
 
+		// TODO 04/10
+		// Cache<CompilerInput, CompilerInstructions> fn2ci /*EzFileIdentity??*/(MAP/*??*/, resolver is try stmt)
 		if (c.fn2ci.containsKey(absolutePath)) { // don't parse twice
+			// TODO 04/10
+			// ...queryDB.attach(compilerInput, new EzFileIdentity_Sha256($hash)); // ?? fnci
 			return Operation.success(c.fn2ci.get(absolutePath));
 		}
 
@@ -318,7 +322,75 @@ public class CompilationRunner {
 		tripleo.elijah.util.Stupidity.println_err_2(number + " " + text);
 	}
 
-	public void doFindCIs(final List<CompilerInput> aInputs, final String[] aArgs2, final CompilationBus cb) {
-		doFindCIs(aArgs2);
+	public void doFindCIs(final List<CompilerInput> aInputs, final String[] args2, final CompilationBus cb) {
+		final ErrSink errSink1 = compilation.getErrSink();
+		final IO      io       = compilation.getIO();
+
+		// TODO map + "extract"
+		find_cis(aInputs, compilation, errSink1, io);
+
+		cis.almostComplete();
+	}
+
+	private void find_cis(List<CompilerInput> inputs, Compilation c, ErrSink errSink, IO io) {
+
+
+
+
+		//final IProgressSink ps = cis.ps;
+		final IProgressSink ps = new IProgressSink() {
+			@Override
+			public void note(final int aCode, final ProgressSinkComponent aCci, final int aType, final Object[] aParams) {
+				tripleo.elijah.util.Stupidity.println_err_2(aCci.printErr(aCode, aType, aParams));
+			}
+		};
+
+
+
+
+
+
+
+		CompilerInstructions ez_file;
+		for (int i = 0; i < inputs.size(); i++) {
+			
+			final CompilerInput input = inputs.get(i);
+			final String  file_name = input.getInp();
+			final File    f         = new File(file_name);
+			final boolean matches2  = Pattern.matches(".+\\.ez$", file_name);
+			if (matches2) {
+				ILazyCompilerInstructions ilci = ILazyCompilerInstructions.of(f, c);
+				cci.accept(new Maybe<>(ilci, null), ps);
+			} else {
+				//errSink.reportError("9996 Not an .ez file "+file_name);
+				if (f.isDirectory()) {
+					input.setDirectory(f);
+					
+					final List<CompilerInstructions> ezs = searchEzFiles(f, errSink, io, c);
+
+					switch (ezs.size()) {
+					case 0:
+						final Diagnostic                       d_toomany = new TooManyEz_ActuallyNone();
+						final Maybe<ILazyCompilerInstructions> m         = new Maybe<>(null, d_toomany);
+						cci.accept(m, ps);
+						break;
+					case 1:
+						ez_file = ezs.get(0);
+						cci.accept(new Maybe<>(ILazyCompilerInstructions.of(ez_file), null), ps);
+						break;
+					default:
+						//final Diagnostic d_toomany = new TooManyEz_UseFirst();
+						//add_ci(ezs.get(0));
+
+						// more than 1 (negative is not possible)
+						final Diagnostic                       d_toomany2 = new TooManyEz_BeSpecific();
+						final Maybe<ILazyCompilerInstructions> m2         = new Maybe<>(null, d_toomany2);
+						cci.accept(m2, ps);
+						break;
+					}
+				} else
+					errSink.reportError("9995 Not a directory " + f.getAbsolutePath());
+			}
+		}
 	}
 }
