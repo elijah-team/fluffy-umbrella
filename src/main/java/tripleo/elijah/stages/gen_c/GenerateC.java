@@ -14,7 +14,6 @@ import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_FuncExprType;
 import tripleo.elijah.lang2.BuiltInTypes;
-import tripleo.elijah.lang2.SpecialVariables;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.gen_fn.*;
@@ -30,7 +29,6 @@ import tripleo.elijah.stages.instructions.Instruction;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.stages.instructions.ProcIA;
-import tripleo.elijah.stages.instructions.VariableTableType;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.BufferTabbedOutputStream;
 import tripleo.elijah.util.Helpers;
@@ -42,10 +40,7 @@ import tripleo.elijah.work.WorkManager;
 import tripleo.elijah.world.i.LivingClass;
 import tripleo.util.buffer.Buffer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
@@ -532,7 +527,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		return sl3;
 	}
 
-	static class GetAssignmentValue {
+	/*static*/ class GetAssignmentValue {
 
 		public String FnCallArgs(FnCallArgs fca, BaseEvaFunction gf, ElLog LOG) {
 			final StringBuilder sb = new StringBuilder();
@@ -658,7 +653,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 					sll.add(""+ const_to_string(constTableEntry.initialValue));
 				} else if (ia instanceof IntegerIA) {
 					final VariableTableEntry variableTableEntry = gf.getVarTableEntry(((IntegerIA) ia).getIndex());
-					sll.add(Emit.emit("/*853*/")+""+getRealTargetName(gf, variableTableEntry));
+					sll.add(Emit.emit("/*853*/")+""+_zone.get(variableTableEntry, gf).getRealTargetName());
 				} else if (ia instanceof IdentIA) {
 					String path = gf.getIdentIAPathNormal((IdentIA) ia);    // return x.y.z
 					IdentTableEntry ite = gf.getIdentTableEntry(to_int(ia));
@@ -773,41 +768,27 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	//}
 
 	String getRealTargetName(final @NotNull IntegerIA target, final Generate_Code_For_Method.AOG aog) {
-		final BaseEvaFunction gf            = target.gf;
-		final VariableTableEntry    varTableEntry = gf.getVarTableEntry(target.getIndex());
-		return getRealTargetName(gf, varTableEntry);
+		final BaseEvaFunction    gf            = target.gf;
+		final VariableTableEntry varTableEntry = gf.getVarTableEntry(target.getIndex());
+
+		final ZoneVTE            zone_vte      = _zone.get(varTableEntry, gf);
+
+		return zone_vte.getRealTargetName();
 	}
 
+	private final Zone _zone = new Zone();
+
+	/*static*/ String getRealTargetName(final BaseEvaFunction gf, final @NotNull VariableTableEntry varTableEntry) {
 
 	static String getRealTargetName(final BaseEvaFunction gf, final VariableTableEntry varTableEntry) {
 
-		varTableEntry.getDeduceElement3()
+		ZoneVTE zone_vte = _zone.get(varTableEntry, gf);
 
-		final String vte_name = varTableEntry.getName();
-		switch (varTableEntry.vtt) {
-		case TEMP -> {
-			if (varTableEntry.getName() == null) {
-				return "vt" + varTableEntry.tempNum;
-			} else {
-				return "vt" + varTableEntry.getName();
-			}
-		}
-		case ARG -> {
-			return "va" + vte_name;
-		}
-		default -> {
-			if (SpecialVariables.contains(vte_name)) {
-				return SpecialVariables.get(vte_name);
-			} else if (isValue(gf, vte_name)) {
-				return "vsc->vsv";
-			} else {
-				return Emit.emit("/*879*/")+"vv" + vte_name;
-			}
-		}
-		}
+		return zone_vte.getRealTargetName();
+
 	}
 
-	private static boolean isValue(BaseEvaFunction gf, String name) {
+	static boolean isValue(BaseEvaFunction gf, String name) {
 		if (!name.equals("Value")) return false;
 		//
 		FunctionDef fd = (FunctionDef) gf.getFD();
