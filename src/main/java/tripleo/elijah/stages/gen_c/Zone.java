@@ -13,7 +13,7 @@ class Zone {
 		if (members.containsKey(aVarTableEntry))
 			return (ZoneVTE) members.get(aVarTableEntry);
 
-		final ZoneVTE r = new ZoneVTE(aVarTableEntry, aGf);
+		final ZoneVTE r = new ZoneVTE__1(aVarTableEntry, aGf);
 		members.put(aVarTableEntry, r);
 		return r;
 	}
