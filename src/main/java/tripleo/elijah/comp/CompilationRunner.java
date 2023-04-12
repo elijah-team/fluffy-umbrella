@@ -34,7 +34,7 @@ public class CompilationRunner {
 	private final CCI             cci;
 
 	@Contract(pure = true)
-	CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis, CompilationBus cb) {
+	public CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis, CompilationBus cb) {
 		compilation = aCompilation;
 		cis         = a_cis;
 		cci         = new DefaultCCI(compilation, a_cis, new IProgressSink() {

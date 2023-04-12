@@ -15,6 +15,7 @@ import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.Compilation.CompilationAlways;
 import tripleo.elijah.comp.internal.CR_State;
+import tripleo.elijah.comp.internal.CompilationBus;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.factory.comp.CompilationFactory;
 import tripleo.elijah.lang.ClassStatement;
@@ -83,6 +84,8 @@ public class TestGenFunction {
 
 		List<FunctionMapHook> ran_hooks = new ArrayList<>();
 
+
+		c.__cr = new CompilationRunner(c, null, new CompilationBus(c));
 		final CR_State crState = new CR_State(c.__cr);
 
 		crState.ca();
@@ -270,6 +273,8 @@ public class TestGenFunction {
 		//}
 
 		ElLog.Verbosity verbosity1 = c.gitlabCIVerbosity(); // FIXME ??
+
+		c.__cr = new CompilationRunner(c, null, new CompilationBus(c));
 		final CR_State  crState    = new CR_State(c.__cr);
 		crState.ca();
 		final PipelineLogic pl = crState.pr.pipelineLogic;
