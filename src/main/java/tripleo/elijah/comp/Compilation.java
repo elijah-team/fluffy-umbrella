@@ -25,6 +25,7 @@ import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
 import tripleo.elijah.comp.diagnostic.FileNotFoundDiagnostic;
+import tripleo.elijah.comp.i.CompilationFlow;
 import tripleo.elijah.comp.i.IProgressSink;
 import tripleo.elijah.comp.internal.CompilationBus;
 import tripleo.elijah.comp.queries.QuerySourceFileToModule;
@@ -104,6 +105,8 @@ public abstract class Compilation {
 	public abstract @NotNull EOT_OutputTree getOutputTree();
 
 	public abstract @NotNull FluffyComp getFluffy();
+
+	public abstract void fakeFlow(final List<CompilerInput> aInputs, final CompilationFlow aFlow);
 
 	static class MainModule {
 
