@@ -19,7 +19,7 @@ public class ProcessRecord {
 	private       DeferredObject<GenerateResult, Void, Void> _pgr;
 
 
-	final IPipelineAccess pa = new IPipelineAccess() {
+	public final IPipelineAccess pa = new IPipelineAccess() {
 		final DeferredObject<List<EvaNode>, Void, Void> nlp = new DeferredObject<>();
 
 		@Override
