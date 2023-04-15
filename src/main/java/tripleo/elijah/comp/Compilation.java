@@ -25,10 +25,9 @@ import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
 import tripleo.elijah.comp.diagnostic.FileNotFoundDiagnostic;
-import tripleo.elijah.comp.i.CompilationFlow;
-import tripleo.elijah.comp.i.IPipelineAccess;
-import tripleo.elijah.comp.i.IProgressSink;
+import tripleo.elijah.comp.i.*;
 import tripleo.elijah.comp.internal.CompilationBus;
+import tripleo.elijah.comp.internal.DefaultCompilerController;
 import tripleo.elijah.comp.queries.QuerySourceFileToModule;
 import tripleo.elijah.comp.queries.QuerySourceFileToModuleParams;
 import tripleo.elijah.diagnostic.Diagnostic;
@@ -45,6 +44,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -55,14 +55,14 @@ public abstract class Compilation {
 	public final  List<OS_Module>                   modules   = new ArrayList<OS_Module>();
 	final         ErrSink                           errSink;
 	final         Map<String, CompilerInstructions> fn2ci     = new HashMap<String, CompilerInstructions>();
-	public final  Pipeline                          pipelines = new Pipeline();
+	private final  Pipeline                          pipelines = new Pipeline();
 	private final int                               _compilationNumber;
 	private final Map<String, OS_Package>           _packages = new HashMap<String, OS_Package>();
 	public        Stages                            stage     = Stages.O; // Output
 	public        boolean                           silent    = false;
 	public LivingRepo _repo = new DefaultLivingRepo();
 	CompilerInstructions rootCI;
-	boolean              showTree = false;
+	public boolean              showTree = false;
 	private IO io;
 	//
 	//
@@ -126,6 +126,10 @@ public abstract class Compilation {
 		return _pa;
 	}
 
+	public Pipeline getPipelines() {
+		return pipelines;
+	}
+
 	static class MainModule {
 
 		public static @NotNull PicoContainer newContainer() {
@@ -156,6 +160,13 @@ public abstract class Compilation {
 		});
 */
 
+/*
+		CompilerController controller = new DefaultCompilerController();
+
+		controller.processOptions();
+		controller.runner();
+*/
+
 		if (args.size() < 1) {
 			System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
 			return;
@@ -184,9 +195,9 @@ public abstract class Compilation {
 		_cis.subscribe(aCio);
 	}
 
-	final CIS _cis = new CIS();
+	public final CIS _cis = new CIS();
 
-	class CIS implements Observer<CompilerInstructions> {
+	public class CIS implements Observer<CompilerInstructions> {
 
 		private final Subject<CompilerInstructions> compilerInstructionsSubject = ReplaySubject.<CompilerInstructions>create();
 		public IProgressSink ps;
@@ -544,6 +555,12 @@ public abstract class Compilation {
 
 	public static boolean isGitlab_ci() {
 		return System.getenv("GITLAB_CI") != null;
+	}
+
+	public void eachModule(final Consumer<OS_Module> object) {
+		for (OS_Module mod : modules) {
+			object.accept(mod);
+		}
 	}
 }
 

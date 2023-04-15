@@ -1,19 +1,22 @@
-package tripleo.elijah.comp;
+package tripleo.elijah.comp.internal;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.i.ILazyCompilerInstructions;
+import tripleo.elijah.comp.i.CCI;
 import tripleo.elijah.comp.i.IProgressSink;
 import tripleo.elijah.comp.i.ProgressSinkComponent;
 import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
 
-class DefaultCCI implements CCI {
+public class DefaultCCI implements CCI {
 	//private final @NotNull Compilation compilation;
 	private final Compilation.CIS _cis;
 	private final IProgressSink   _ps;
 
 	@Contract(pure = true)
-	DefaultCCI(final @NotNull Compilation aCompilation, final Compilation.CIS aCis, final IProgressSink aProgressSink) {
+	public DefaultCCI(final @NotNull Compilation aCompilation, final Compilation.CIS aCis, final IProgressSink aProgressSink) {
 		//compilation = aCompilation;
 		_cis = aCis;
 		_ps  = aProgressSink;

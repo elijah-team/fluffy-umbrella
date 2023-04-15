@@ -1,5 +1,10 @@
 package tripleo.elijah.comp;
 
+import tripleo.elijah.comp.i.OptionsProcessor;
+import tripleo.elijah.comp.impl.CC_SetDoOut;
+import tripleo.elijah.comp.impl.CC_SetShowTree;
+import tripleo.elijah.comp.impl.CC_SetSilent;
+import tripleo.elijah.comp.impl.CC_SetStage;
 import tripleo.vendor.org.apache.commons.cli.*;
 
 import org.jetbrains.annotations.Contract;
@@ -10,8 +15,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ApacheOptionsProcessor implements OptionsProcessor {
-	final Options           options = new Options();
-	final CommandLineParser clp     = new DefaultParser();
+	private final Options           options = new Options();
+	private final CommandLineParser clp     = new DefaultParser();
 
 	@Contract(pure = true)
 	public ApacheOptionsProcessor() {

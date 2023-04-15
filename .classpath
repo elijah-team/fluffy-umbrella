@@ -59,5 +59,14 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/xpp3_min-1.1.4c"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/xstream-1.4.11.1"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/home/olu/.m2/repository/org/jdeferred/v2/jdeferred-core/2.0.0/jdeferred-core-2.0.0.jar" sourcepath="/home/olu/.m2/repository/org/jdeferred/v2/jdeferred-core/2.0.0/jdeferred-core-2.0.0-sources.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="maven.groupId" value="org.jdeferred.v2"/>
+			<attribute name="maven.artifactId" value="jdeferred-core"/>
+			<attribute name="maven.version" value="2.0.0"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

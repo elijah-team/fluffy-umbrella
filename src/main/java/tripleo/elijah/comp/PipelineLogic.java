@@ -18,6 +18,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
+import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.entrypoints.EntryPoint;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.stages.deduce.DeducePhase;
@@ -39,8 +40,8 @@ public class PipelineLogic {
 	private final ElLog.Verbosity verbosity;
 	public final  GeneratePhase   generatePhase;
 	private final List<OS_Module> mods   = new ArrayList<OS_Module>();
-	public final  GenerateResult  gr     = new GenerateResult();
-	final         List<ElLog>     elLogs = new LinkedList<ElLog>();
+	public final GenerateResult gr     = new GenerateResult();
+	public final List<ElLog>    elLogs = new LinkedList<ElLog>();
 
 /*
 	public PipelineLogic(ElLog.Verbosity aVerbosity) {

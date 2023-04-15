@@ -59,6 +59,10 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 		pa.registerNodeList(latch2::notify);
 	}
 
+	public GeneratePipeline(final AccessBus aAccessBus) {
+		this(aAccessBus.getPipelineAccess());
+	}
+
 	@Override
 	public void run() {
 		latch2.notify(true);

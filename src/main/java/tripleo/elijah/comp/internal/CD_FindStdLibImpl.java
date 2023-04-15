@@ -3,17 +3,21 @@ package tripleo.elijah.comp.internal;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.i.CD_FindStdLib;
+import tripleo.elijah.comp.i.CompilationClosure;
 
 import java.io.File;
+import java.util.function.Consumer;
 
 import static tripleo.elijah.nextgen.query.Mode.SUCCESS;
 
 public class CD_FindStdLibImpl implements CD_FindStdLib {
 	@Override
-	public void findStdLib(final CompilationRunner aCompilationRunner, final String aPreludeName, final Compilation aC) {
+	public void findStdLib(final CompilationRunner aCompilationRunner, final String aPreludeName, final Compilation aC, Consumer<Operation<CompilerInstructions>> coci) {
 		int y=2;
 		try {
-			_____findStdLib(aPreludeName, aCompilationRunner.compilation.getCompilationClosure(), aCompilationRunner);
+			@NotNull final Operation<CompilerInstructions> oci = _____findStdLib(aPreludeName, aCompilationRunner.compilation.getCompilationClosure(), aCompilationRunner);
+			coci.accept(oci);
 		} catch (Exception aE) {
 			throw new RuntimeException(aE);
 		}

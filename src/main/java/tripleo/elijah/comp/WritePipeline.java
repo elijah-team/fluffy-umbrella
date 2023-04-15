@@ -96,6 +96,9 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 
 			gr1.subscribeCompletedItems(cih.observer());
 		});
+
+
+		pa.setWritePipeline(this);
 	}
 
 	OutputStrategy createOutputStratgy() {

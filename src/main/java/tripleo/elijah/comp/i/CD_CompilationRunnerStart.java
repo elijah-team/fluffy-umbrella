@@ -1,6 +1,7 @@
-package tripleo.elijah.comp;
+package tripleo.elijah.comp.i;
 
 import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.comp.CompilationRunner;
 import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.comp.internal.CompilationBus;
 

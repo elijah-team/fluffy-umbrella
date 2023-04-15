@@ -68,6 +68,10 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 
 	DoubleLatch<Multimap<CompilerInstructions, String>> write_makefiles_latch = new DoubleLatch<>(this::write_makefiles_action);
 
+	public WriteMesonPipeline(final AccessBus ab) {
+		this(ab.getCompilation(), ab.getPipelineAccess().getProcessRecord(), ab.getPipelineAccess().getPipelineLogicPromise(), ab.getPipelineAccess().getWitePipeline());
+	}
+
 	private void write_makefiles_action(final Multimap<CompilerInstructions, String> lsp_outputs) {
 		List<String> dep_dirs = new LinkedList<String>();
 
