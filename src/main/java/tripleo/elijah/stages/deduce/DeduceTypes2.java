@@ -30,8 +30,6 @@ import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.lang2.SpecialFunctions;
 import tripleo.elijah.lang2.SpecialVariables;
 import tripleo.elijah.nextgen.ClassDefinition;
-import tripleo.elijah.stages.deduce.calculate.logic.__Logic_ImplementConstruct;
-import tripleo.elijah.stages.deduce.calculate.rider.__Rider__Implement_construct;
 import tripleo.elijah.stages.deduce.declarations.DeferredMember;
 import tripleo.elijah.stages.deduce.declarations.DeferredMemberFunction;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_Function;
@@ -1664,46 +1662,38 @@ int y5=25;
 		}
 	}
 
-	public class Implement_construct {
-		private final __Rider__Implement_construct r;
-		private final __Logic_ImplementConstruct lic;
+	class Implement_construct {
 
-		public Implement_construct(BaseEvaFunction aGeneratedFunction, Instruction aInstruction) { // DTOP dtop
-			final BaseEvaFunction generatedFunction;
-			final Instruction     instruction;
-			final InstructionArgument expression;
+		private final BaseEvaFunction generatedFunction;
+		private final Instruction     instruction;
+		private final InstructionArgument expression;
+
+		private final @NotNull ProcTableEntry pte;
+
+		public Implement_construct(BaseEvaFunction aGeneratedFunction, Instruction aInstruction) {
 			generatedFunction = aGeneratedFunction;
 			instruction = aInstruction;
 
-			final @NotNull ProcTableEntry pte;
-
 			// README all these asserts are redundant, I know
 			assert instruction.getName() == InstructionName.CONSTRUCT;
+			assert instruction.getArg(0) instanceof ProcIA;
 
-			final InstructionArgument arg1 = instruction.getArg(0);
-			assert arg1 instanceof ProcIA; // dtop.fail(Implement_Construct__NotProcIA);
-
-			final ProcIA procIA     = (ProcIA) arg1;
-
-			final int    pte_num = procIA.getIndex();
+			final int pte_num = ((ProcIA) instruction.getArg(0)).getIndex();
 			pte = generatedFunction.getProcTableEntry(pte_num);
 
 			expression = pte.expression_num;
 
 			assert expression instanceof IntegerIA || expression instanceof IdentIA;
-			
-			r = new __Rider__Implement_construct(generatedFunction, instruction, expression, pte);
-			lic = new __Logic_ImplementConstruct(this, r, DeduceTypes2.this);
 		}
 
 		DeduceConstructStatement dcs;
 
 		public void action(final Context aContext) {
-			dcs = (DeduceConstructStatement) r.getInstruction().deduceElement;
+			dcs = (DeduceConstructStatement) instruction.deduceElement;
 
-			if (r.getExpression() instanceof IntegerIA) {
+			if (expression instanceof IntegerIA) {
 				action_IntegerIA();
-			} else if (r.getExpression() instanceof IdentIA) {
+			} else if (expression instanceof IdentIA) {
 				action_IdentIA(aContext);
 			} else {
 				throw new IllegalStateException("this.expression is of the wrong type");
@@ -1711,11 +1701,102 @@ int y5=25;
 		}
 
 		public void action_IdentIA(final Context aContext) {
-			lic.action_IdentIA(aContext);
+			@NotNull IdentTableEntry idte = ((IdentIA)expression).getEntry();
+			DeducePath deducePath = idte.buildDeducePath(generatedFunction);
+
+			final DeduceProcCall dpc = new DeduceProcCall(pte);
+			dpc.setDeduceTypes2(DeduceTypes2.this, aContext, generatedFunction, errSink);
+			final @Nullable DeduceElement target = dpc.target();
+			int y=2;
+
+			{
+				@Nullable OS_Element el3;
+				@Nullable Context ectx = generatedFunction.getFD().getContext();
+				for (int i = 0; i < deducePath.size(); i++) {
+					InstructionArgument ia2 = deducePath.getIA(i);
+
+					el3 = deducePath.getElement(i);
+
+					if (ia2 instanceof IntegerIA) {
+						@NotNull VariableTableEntry vte = ((IntegerIA) ia2).getEntry();
+						// TODO will fail if we try to construct a tmp var, but we never try to do that
+						assert vte.vtt != VariableTableType.TEMP;
+						assert el3     != null;
+						assert i       == 0;
+						ectx  = deducePath.getContext(i);
+					} else if (ia2 instanceof IdentIA) {
+						@NotNull IdentTableEntry idte2 = ((IdentIA) ia2).getEntry();
+						final String s = idte2.getIdent().toString();
+						LookupResultList lrl = ectx.lookup(s);
+						@Nullable OS_Element el2 = lrl.chooseBest(null);
+						if (el2 == null) {
+							assert el3 instanceof VariableStatement;
+							@Nullable VariableStatement vs = (VariableStatement) el3;
+							@NotNull TypeName tn = vs.typeName();
+							@NotNull OS_Type ty = new OS_UserType(tn);
+
+							GenType resolved = null;
+							if (idte2.type == null) {
+								// README Don't remember enough about the constructors to select a different one
+								@NotNull TypeTableEntry tte = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, ty);
+								try {
+									resolved = resolve_type(ty, tn.getContext());
+									LOG.err("892 resolved: "+resolved);
+									tte.setAttached(resolved);
+								} catch (ResolveError aResolveError) {
+									errSink.reportDiagnostic(aResolveError);
+								}
+
+								idte2.type = tte;
+							}
+							// s is constructor name
+							implement_construct_type(idte2, ty, s, null);
+
+							if (resolved == null) {
+								try {
+									resolved = resolve_type(ty, tn.getContext());
+								} catch (ResolveError aResolveError) {
+									errSink.reportDiagnostic(aResolveError);
+//									aResolveError.printStackTrace();
+									assert false;
+								}
+							}
+							final VariableTableEntry x = (VariableTableEntry) (deducePath.getEntry(i - 1));
+							x.resolveType(resolved);
+							resolved.genCIForGenType2(DeduceTypes2.this);
+							return;
+						} else {
+							if (i+1 == deducePath.size() && deducePath.size() > 1) {
+								assert el3 == el2;
+								if (el2 instanceof ConstructorDef) {
+									@Nullable GenType type = deducePath.getType(i);
+									if (type.nonGenericTypeName == null) {
+										type.nonGenericTypeName = Objects.requireNonNull(deducePath.getType(i - 1)).nonGenericTypeName; // HACK. not guararnteed to work!
+									}
+									@NotNull OS_Type ty = new OS_UserType(type.nonGenericTypeName);
+									implement_construct_type(idte2, ty, s, type);
+
+									final VariableTableEntry x = (VariableTableEntry) (deducePath.getEntry(i - 1));
+									if (type.ci == null && type.node == null)
+										type.genCIForGenType2(DeduceTypes2.this);
+									assert x != null;
+									x.resolveTypeToClass(type.node);
+								} else
+									throw new NotImplementedException();
+							} else {
+								ectx = deducePath.getContext(i);
+							}
+						}
+//						implement_construct_type(idte/*??*/, ty, null); // TODO how bout when there is no ctor name
+					} else {
+						throw new NotImplementedException();
+					}
+				}
+			}
 		}
 
 		public void action_IntegerIA() {
-			@NotNull VariableTableEntry vte = ((IntegerIA) r.getExpression()).getEntry();
+			@NotNull VariableTableEntry vte = ((IntegerIA) expression).getEntry();
 			final @Nullable OS_Type attached = vte.type.getAttached();
 //			assert attached != null; // TODO will fail when empty variable expression
 			if (attached != null && attached.getType() == OS_Type.Type.USER) {
@@ -1727,7 +1808,7 @@ int y5=25;
 			}
 		}
 
-		public void implement_construct_type(final @Nullable Constructable co,
+		private void implement_construct_type(final @Nullable Constructable co,
 											  final @NotNull OS_Type aTy,
 											  final @Nullable String constructorName,
 											  final @Nullable GenType aGenType) {
@@ -1740,9 +1821,9 @@ int y5=25;
 				_implement_construct_type(co, constructorName, (NormalTypeName) tyn, aGenType);
 			}
 
-			final ClassInvocation classInvocation = r.getPte().getClassInvocation();
+			final ClassInvocation classInvocation = pte.getClassInvocation();
 			if (co != null) {
-				co.setConstructable(r.getPte());
+				co.setConstructable(pte);
 				assert classInvocation != null;
 				classInvocation.resolvePromise().done(new DoneCallback<EvaClass>() {
 					@Override
@@ -1766,7 +1847,7 @@ int y5=25;
 							}
 						}
 					}
-					WlGenerateCtor gen = new WlGenerateCtor(generateFunctions, r.getPte().getFunctionInvocation(), cc.getNameNode());
+					WlGenerateCtor gen = new WlGenerateCtor(generateFunctions, pte.getFunctionInvocation(), cc.getNameNode());
 					gen.run(null);
 					final EvaConstructor gc = gen.getResult();
 					classInvocation.resolveDeferred().then(new DoneCallback<EvaClass>() {
@@ -1829,8 +1910,8 @@ int y5=25;
 			if (co != null) {
 				genTypeCI_and_ResolveTypeToClass(co, clsinv);
 			}
-			r.getPte().setClassInvocation(clsinv);
-			r.getPte().setResolvedElement(best);
+			pte.setClassInvocation(clsinv);
+			pte.setResolvedElement(best);
 			// set FunctionInvocation with pte args
 			{
 				@Nullable ConstructorDef cc = null;
@@ -1851,7 +1932,7 @@ int y5=25;
 						for (ClassItem item : best.getItems()) {
 							if (item instanceof ConstructorDef) {
 								final ConstructorDef constructorDef = (ConstructorDef) item;
-								if (constructorDef.getArgs().size() == r.getPte().getArgs().size()) {
+								if (constructorDef.getArgs().size() == pte.getArgs().size()) {
 									// TODO we now have to find a way to check arg matching of two different types
 									//  of arglists. This is complicated by the fact that constructorDef doesn't have
 									//  to specify the argument types and currently, pte args is underspecified
@@ -1864,8 +1945,8 @@ int y5=25;
 						}
 					}
 					// TODO do we still want to do this if cc is null?
-					@NotNull FunctionInvocation fi = newFunctionInvocation(cc, r.getPte(), clsinv, phase);
-					r.getPte().setFunctionInvocation(fi);
+					@NotNull FunctionInvocation fi = newFunctionInvocation(cc, pte, clsinv, phase);
+					pte.setFunctionInvocation(fi);
 				}
 			}
 		}

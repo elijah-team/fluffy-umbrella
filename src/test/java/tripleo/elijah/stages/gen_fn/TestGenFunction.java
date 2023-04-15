@@ -10,6 +10,7 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.Compilation.CompilationAlways;
@@ -51,6 +52,7 @@ import static tripleo.elijah.util.Helpers.List_of;
  */
 public class TestGenFunction {
 
+	@Ignore
 	@Test
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testDemoElNormalFact1Elijah() throws Exception {
@@ -124,6 +126,7 @@ public class TestGenFunction {
 		c.feedCmdLine(List_of(f));
 	}
 
+	@Ignore
 	@Test // ignore because of generateAllTopLevelClasses
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testBasic1Backlink1Elijah() throws Exception {

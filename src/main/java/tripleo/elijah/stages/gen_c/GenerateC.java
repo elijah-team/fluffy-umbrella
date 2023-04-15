@@ -778,9 +778,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 
 	private final Zone _zone = new Zone();
 
-	/*static*/ String getRealTargetName(final BaseEvaFunction gf, final @NotNull VariableTableEntry varTableEntry) {
-
-	static String getRealTargetName(final BaseEvaFunction gf, final VariableTableEntry varTableEntry) {
+	/*static*/ String getRealTargetName(final BaseEvaFunction gf, final VariableTableEntry varTableEntry) {
 
 		ZoneVTE zone_vte = _zone.get(varTableEntry, gf);
 

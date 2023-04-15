@@ -72,7 +72,7 @@ public abstract class Compilation {
 	private int                _classCode    = 101;
 	private int                _functionCode = 1001;
 	public CompilationRunner __cr;
-	private CompilationBus cb;
+	CompilationBus cb;
 
 	public Compilation(final ErrSink errSink, final IO io) {
 		this.errSink            = errSink;
@@ -107,6 +107,26 @@ public abstract class Compilation {
 	public abstract @NotNull FluffyComp getFluffy();
 
 	public abstract void fakeFlow(final List<CompilerInput> aInputs, final CompilationFlow aFlow);
+
+	public CompilationClosure getCompilationClosure() {
+		return new CompilationClosure() {
+
+			@Override
+			public Compilation getCompilation() {
+				return Compilation.this;
+			}
+
+			@Override
+			public ErrSink errSink() {
+				return errSink;
+			}
+
+			@Override
+			public IO io() {
+				return io;
+			}
+		};
+	}
 
 	static class MainModule {
 
@@ -212,17 +232,6 @@ public abstract class Compilation {
 		assert cis.size() > 0;
 
 		rootCI = cis.get(0);
-
-		//assert __cr == null;
-		if (__cr != null) {
-			System.err.println("200 __cr != null");
-			//throw new AssertionError();
-		}
-
-		assert _cis != null; // final; redundant
-
-		if (__cr == null)
-			__cr = new CompilationRunner(this, _cis, cb);
 
 		__cr.start(rootCI, do_out, op);
 	}
@@ -424,6 +433,11 @@ public abstract class Compilation {
 		@NotNull
 		public static String defaultPrelude() {
 			return "c";
+		}
+
+		public class Tokens {
+			public static final CompilationBus.DriverToken COMPILATION_RUNNER_START       = CompilationBus.DriverToken.makeToken("COMPILATION_RUNNER_START");
+			public static final CompilationBus.DriverToken COMPILATION_RUNNER_FIND_STDLIB = CompilationBus.DriverToken.makeToken("COMPILATION_RUNNER_FIND_STDLIB");
 		}
 	}
 

@@ -5,7 +5,7 @@
     <artifactId>elijah-v1</artifactId>
     <packaging>jar</packaging>
     <version>0.0.8-SNAPSHOT</version>
-    <name>eljc-v1</name>
+    <name>eljc-vxx-arguments</name>
     <url>http://gitlab.com/elijah-team/elijah-lang/</url>
     <properties>
 
@@ -231,6 +231,8 @@
                         <configuration>
                             <sources>
                                 <source>src/main/java-compiler-gen/</source>
+                                <source>src/main/main-mal/</source>
+                                <source>src/main/apache-commons-cli/</source>
                             </sources>
                         </configuration>
                     </execution>

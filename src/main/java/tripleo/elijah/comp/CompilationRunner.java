@@ -18,7 +18,6 @@ import tripleo.elijah.comp.queries.QueryEzFileToModule;
 import tripleo.elijah.comp.queries.QueryEzFileToModuleParams;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
-import tripleo.elijah.util.NotImplementedException;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -46,33 +45,22 @@ public class CompilationRunner {
 	}
 
 	void start(final CompilerInstructions ci, final boolean do_out, final @NotNull OptionsProcessor ignoredOp) throws Exception {
-		// 0. debugging
-		NotImplementedException.raise();
+		Operation<CompilationBus.CompilerDriven> ocrsd = compilation.cb.cd.get(Compilation.CompilationAlways.Tokens.COMPILATION_RUNNER_START);
 
-		// 1. find stdlib
-		//   -- question placement
-		//   -- ...
-		{
-			final Operation<CompilerInstructions> x = findStdLib(Compilation.CompilationAlways.defaultPrelude(), compilation);
-			if (x.mode() == FAILURE) {
-				compilation.errSink.exception(x.failure());
-				return;
-			}
-			logProgress(130, "GEN_LANG: " + x.success().genLang());
+		if (ocrsd.mode() == FAILURE) {
+			throw new Error();
 		}
 
-		// 2. process the initial
-		compilation.use(ci, do_out);
+		((CD_CompilationRunnerStart) ocrsd.success()).start(this, ci, do_out);
+	}
+	void findStdLib2(final String prelude_name, final @NotNull Compilation c) {
+		Operation<CompilationBus.CompilerDriven> ocrfsld = compilation.cb.cd.get(Compilation.CompilationAlways.Tokens.COMPILATION_RUNNER_FIND_STDLIB);
 
-		// 3. do rest
-		Preconditions.checkNotNull(compilation.__cr);
-		final CR_State crState = new CR_State(compilation.__cr);//new CompilationRunner(compilation, cis, new CompilationBus(compilation)));
+		if (ocrfsld.mode() == FAILURE) {
+			throw new Error();
+		}
 
-		final ICompilationAccess ca = crState.ca();
-		final ProcessRecord      pr = crState.pr;
-		final RuntimeProcesses   rt = StageToRuntime.get(compilation.stage, ca, pr);
-
-		rt.run_better();
+		((CD_FindStdLib) ocrfsld.success()).findStdLib(this, prelude_name, c);
 	}
 
 	/*
@@ -82,7 +70,8 @@ public class CompilationRunner {
 	 *     utilize exceptions --> only one usage
 	 *     or inline (esp use of Compilation)
 	 */
-	private @NotNull Operation<CompilerInstructions> findStdLib(final String prelude_name, final @NotNull Compilation c) {
+	@NotNull
+	public Operation<CompilerInstructions> findStdLib(final String prelude_name, final @NotNull Compilation c) {
 		final ErrSink errSink = c.getErrSink();
 		final IO      io      = c.getIO();
 
@@ -316,7 +305,7 @@ public class CompilationRunner {
 		cis.almostComplete();
 	}
 
-	private void logProgress(final int number, final String text) {
+	public void logProgress(final int number, final String text) {
 		if (number == 130) return;
 
 		tripleo.elijah.util.Stupidity.println_err_2(number + " " + text);
