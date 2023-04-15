@@ -90,18 +90,10 @@ public abstract class Compilation {
 		return io;
 	}
 
+	public boolean do_out = false;
+
 	public void setIO(final IO io) {
 		this.io = io;
-	}
-
-	protected boolean do_out = false;
-
-	public @NotNull Operation<CompilerInstructions> parseEzFile(final File aFile) {
-		try {
-			return __cr.parseEzFile1(aFile, aFile.getPath(), this.errSink, this.io, this); // FIXME
-		} catch (Exception aE) {
-			return Operation.failure(aE);
-		}
 	}
 
 	public abstract @NotNull EOT_OutputTree getOutputTree();

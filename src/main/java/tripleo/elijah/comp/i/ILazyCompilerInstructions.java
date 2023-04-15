@@ -1,8 +1,11 @@
-package tripleo.elijah.comp;
+package tripleo.elijah.comp.i;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.Operation;
+import tripleo.elijah.nextgen.query.Mode;
 
 import java.io.File;
 import java.util.Objects;
@@ -24,9 +27,16 @@ public interface ILazyCompilerInstructions {
 			@Override
 			public CompilerInstructions get() {
 				try {
-					final @NotNull Operation<CompilerInstructions> parsed = c.parseEzFile(aFile);
-					return Objects.requireNonNull(parsed).success();
+					final Operation<CompilerInstructions> oci    = c.__cr.parseEzFile1(aFile, aFile.getPath(), c.getErrSink(), c.getIO(), c);
+
+					if (oci.mode() == Mode.SUCCESS) {
+						final CompilerInstructions            parsed = oci.success();
+						return parsed;
+					} else {
+						throw new RuntimeException(oci.failure()); // TODO ugh
+					}
 				} catch (Exception aE) {
+					//return Operation.failure(aE);
 					throw new RuntimeException(aE); // TODO ugh
 				}
 			}
