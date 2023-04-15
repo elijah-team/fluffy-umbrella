@@ -35,21 +35,37 @@ All of this is a work in progress and your support would be appreciated.
 DOCUMENTATION
 --------------
 
-[wiki](https://man.sr.ht/~tripleo/el-technical/Home.md)
+[wiki -- https://man.sr.ht/~tripleo/el-technical/Home.md](https://man.sr.ht/~tripleo/el-technical/Home.md)
 
-CONTRIBUTING
-------------
-
-### CODE
+INTERACT
+---------
 
 This project uses mailing lists as main medium of communication. All mail
-archives can be found at https://sr.ht/~tripleo/el-fluffy-umbrella/lists.
+archives can be found at https://sr.ht/~tripleo/el-fluffy-umbrella/lists .
+
+### ANNOUNCEMENTS
+
+If you want to follow important announces like new releases subscribe to:
+
+    ~tripleo/el-fluffy-umbrella-announce@lists.sr.ht
 
 https://lists.sr.ht/~tripleo/el-fluffy-umbrella-announce
 
-https://lists.sr.ht/~tripleo/el-fluffy-umbrella-devel
+### DISCUSSIONS
+
+For discussions about the language subscribe to:
+
+    ~tripleo/el-fluffy-umbrella-discuss@lists.sr.ht
 
 https://lists.sr.ht/~tripleo/el-fluffy-umbrella-discuss
+
+### DEVELOPMENT
+
+For discussions about the `fluffy-umbrella` proper subscribe to:
+
+    ~tripleo/el-fluffy-umbrella-devele@lists.sr.ht
+
+https://lists.sr.ht/~tripleo/el-fluffy-umbrella-devel
 
 If you want to contribute to the source code, send plain text patch to:
 
@@ -61,28 +77,10 @@ git to prevent silly mistakes:
     $ git config sendmail.to "~tripleo/el-fluffy-umbrella-devel@lists.sr.ht"
     $ git config format.subjectPrefix "PATCH el-fluffy-umbrella"
 
-### ANNOUNCES
-
-If you want to follow important announces like new releases subscribe to:
-
-    ~tripleo/el-fluffy-umbrella-announce@lists.sr.ht
-
-### DICUSSIONS
-
-For discussions about the language subscribe to:
-
-    ~tripleo/el-fluffy-umbrella-discuss@lists.sr.ht
-
-### IRC
-
-If you want to keep in contact with the community, feel free to join our
-channel #-------------- on LiberaChat IRC.
-
-
-
 ----
 
 ## TODO
 
- - chat channel. (meh)
+ - (libera) chat channel. (meh)
  - nix/guix 
+ - learn sr.ht flow
