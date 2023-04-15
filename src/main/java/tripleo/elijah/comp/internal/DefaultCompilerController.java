@@ -1,6 +1,7 @@
-package tripleo.elijah.comp;
+package tripleo.elijah.comp.internal;
 
-import tripleo.elijah.comp.internal.CompilationBus;
+import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.i.OptionsProcessor;
 
 import java.util.List;
 import java.util.stream.Collectors;

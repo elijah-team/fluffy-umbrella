@@ -1,11 +1,13 @@
-package tripleo.elijah.comp;
+package tripleo.elijah.comp.internal;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import io.reactivex.rxjava3.functions.Consumer;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.functionality.f202.F202;
+import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.stages.deduce.FunctionMapHook;
 import tripleo.elijah.stages.gen_fn.DeferredObject2;
 import tripleo.elijah.stages.logging.ElLog;

@@ -3,10 +3,10 @@ package tripleo.elijah.comp.i;
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.DeducePipeline;
-import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.ProcessRecord;
+import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.internal.ProcessRecord;
+import tripleo.elijah.comp.notation.GN_GenerateNodesIntoSink;
+import tripleo.elijah.comp.notation.GN_Notable;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 
 import java.util.List;
@@ -25,4 +25,14 @@ public interface IPipelineAccess {
 	void setNodeList(List<EvaNode> aEvaNodeList);
 
 	void registerNodeList(DoneCallback<List<EvaNode>> done);
+
+	void _setAccessBus(AccessBus ab);
+
+	AccessBus getAccessBus();
+
+	WritePipeline getWitePipeline();
+
+	void setWritePipeline(WritePipeline aWritePipeline);
+
+	void notate(int provenance, GN_Notable aNotable);
 }

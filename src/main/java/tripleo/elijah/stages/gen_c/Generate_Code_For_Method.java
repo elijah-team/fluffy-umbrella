@@ -439,6 +439,8 @@ public class Generate_Code_For_Method {
 				reference.args(sl3);
 				final String path = reference.build();
 
+				reference.debugPath(ia2, path);
+
 				sb.append(Emit.emit("/*427*/") + path + ";");
 			}
 		}

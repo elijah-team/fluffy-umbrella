@@ -1,8 +1,11 @@
 package tripleo.elijah.comp;
 
 import org.jetbrains.annotations.Contract;
+import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.comp.i.RuntimeProcess;
+import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.comp.internal.OStageProcess;
 
 public enum Stages {
 	E("E") {

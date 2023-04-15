@@ -1,6 +1,8 @@
 package tripleo.elijah.comp.internal;
 
 import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.i.ICompilationAccess;
+import tripleo.elijah.comp.i.ICompilationBus;
 
 public class CR_State {
 	private final CompilationRunner         compilationRunner;

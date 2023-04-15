@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Feb2021.testHier" type="JUnit" factoryName="JUnit" singleton="false" nameIsGenerated="true">
-    <module name="test" />
+    <module name="elijah-v1" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="tripleo.elijah.stages.deduce.*" />

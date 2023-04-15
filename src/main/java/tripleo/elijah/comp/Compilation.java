@@ -25,8 +25,9 @@ import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
 import tripleo.elijah.comp.diagnostic.FileNotFoundDiagnostic;
-import tripleo.elijah.comp.i.IProgressSink;
+import tripleo.elijah.comp.i.*;
 import tripleo.elijah.comp.internal.CompilationBus;
+import tripleo.elijah.comp.internal.DefaultCompilerController;
 import tripleo.elijah.comp.queries.QuerySourceFileToModule;
 import tripleo.elijah.comp.queries.QuerySourceFileToModuleParams;
 import tripleo.elijah.diagnostic.Diagnostic;
@@ -43,6 +44,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -53,14 +55,14 @@ public abstract class Compilation {
 	public final  List<OS_Module>                   modules   = new ArrayList<OS_Module>();
 	final         ErrSink                           errSink;
 	final         Map<String, CompilerInstructions> fn2ci     = new HashMap<String, CompilerInstructions>();
-	final         Pipeline                          pipelines = new Pipeline();
+	private final  Pipeline                          pipelines = new Pipeline();
 	private final int                               _compilationNumber;
 	private final Map<String, OS_Package>           _packages = new HashMap<String, OS_Package>();
 	public        Stages                            stage     = Stages.O; // Output
 	public        boolean                           silent    = false;
 	public LivingRepo _repo = new DefaultLivingRepo();
 	CompilerInstructions rootCI;
-	boolean              showTree = false;
+	public boolean              showTree = false;
 	private IO io;
 	//
 	//
@@ -71,7 +73,8 @@ public abstract class Compilation {
 	private int                _classCode    = 101;
 	private int                _functionCode = 1001;
 	public CompilationRunner __cr;
-	private CompilationBus cb;
+	CompilationBus cb;
+	public IPipelineAccess _pa;
 
 	public Compilation(final ErrSink errSink, final IO io) {
 		this.errSink            = errSink;
@@ -87,23 +90,45 @@ public abstract class Compilation {
 		return io;
 	}
 
+	public boolean do_out = false;
+
 	public void setIO(final IO io) {
 		this.io = io;
-	}
-
-	protected boolean do_out = false;
-
-	public @NotNull Operation<CompilerInstructions> parseEzFile(final File aFile) {
-		try {
-			return __cr.parseEzFile1(aFile, aFile.getPath(), this.errSink, this.io, this); // FIXME
-		} catch (Exception aE) {
-			return Operation.failure(aE);
-		}
 	}
 
 	public abstract @NotNull EOT_OutputTree getOutputTree();
 
 	public abstract @NotNull FluffyComp getFluffy();
+
+	public abstract void fakeFlow(final List<CompilerInput> aInputs, final CompilationFlow aFlow);
+
+	public CompilationClosure getCompilationClosure() {
+		return new CompilationClosure() {
+
+			@Override
+			public Compilation getCompilation() {
+				return Compilation.this;
+			}
+
+			@Override
+			public ErrSink errSink() {
+				return errSink;
+			}
+
+			@Override
+			public IO io() {
+				return io;
+			}
+		};
+	}
+
+	public IPipelineAccess pa() {
+		return _pa;
+	}
+
+	public Pipeline getPipelines() {
+		return pipelines;
+	}
 
 	static class MainModule {
 
@@ -135,6 +160,13 @@ public abstract class Compilation {
 		});
 */
 
+/*
+		CompilerController controller = new DefaultCompilerController();
+
+		controller.processOptions();
+		controller.runner();
+*/
+
 		if (args.size() < 1) {
 			System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
 			return;
@@ -163,9 +195,9 @@ public abstract class Compilation {
 		_cis.subscribe(aCio);
 	}
 
-	final CIS _cis = new CIS();
+	public final CIS _cis = new CIS();
 
-	class CIS implements Observer<CompilerInstructions> {
+	public class CIS implements Observer<CompilerInstructions> {
 
 		private final Subject<CompilerInstructions> compilerInstructionsSubject = ReplaySubject.<CompilerInstructions>create();
 		public IProgressSink ps;
@@ -203,25 +235,14 @@ public abstract class Compilation {
 
 	void hasInstructions(final @NotNull List<CompilerInstructions> cis,
 						 final boolean do_out,
-						 final @NotNull OptionsProcessor op) throws Exception {
+						 final @NotNull OptionsProcessor op, final IPipelineAccess pa) throws Exception {
 		//assert cis.size() == 1;
 
 		assert cis.size() > 0;
 
 		rootCI = cis.get(0);
 
-		//assert __cr == null;
-		if (__cr != null) {
-			System.err.println("200 __cr != null");
-			//throw new AssertionError();
-		}
-
-		assert _cis != null; // final; redundant
-
-		if (__cr == null)
-			__cr = new CompilationRunner(this, _cis, cb);
-
-		__cr.start(rootCI, do_out, op);
+		__cr.start(rootCI, do_out, op, pa);
 	}
 
 	public void pushItem(CompilerInstructions aci) {
@@ -422,6 +443,11 @@ public abstract class Compilation {
 		public static String defaultPrelude() {
 			return "c";
 		}
+
+		public class Tokens {
+			public static final CompilationBus.DriverToken COMPILATION_RUNNER_START       = CompilationBus.DriverToken.makeToken("COMPILATION_RUNNER_START");
+			public static final CompilationBus.DriverToken COMPILATION_RUNNER_FIND_STDLIB = CompilationBus.DriverToken.makeToken("COMPILATION_RUNNER_FIND_STDLIB");
+		}
 	}
 
 	public ModuleBuilder moduleBuilder() {
@@ -529,6 +555,12 @@ public abstract class Compilation {
 
 	public static boolean isGitlab_ci() {
 		return System.getenv("GITLAB_CI") != null;
+	}
+
+	public void eachModule(final Consumer<OS_Module> object) {
+		for (OS_Module mod : modules) {
+			object.accept(mod);
+		}
 	}
 }
 

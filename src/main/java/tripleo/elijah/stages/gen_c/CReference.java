@@ -166,6 +166,27 @@ public class CReference {
 		getIdentIAPath(aIa, aGet, aO);
 	}
 
+	public void debugPath(final IdentIA identIA, final String aPath) {
+		@NotNull final List<InstructionArgument> pl = _getIdentIAPathList(identIA);
+
+		System.out.println("\\ 172-172-172-172-172 ---------------------------------------------");
+		for (InstructionArgument instructionArgument : pl) {
+			if (instructionArgument instanceof ProcIA) {
+				ProcIA procIA = (ProcIA) instructionArgument;
+				System.out.println(procIA.getEntry().expression);
+			} else if (instructionArgument instanceof IdentIA) {
+				IdentIA argument = (IdentIA) instructionArgument;
+				System.out.println(argument.getEntry().getIdent().getText());
+			} else if (instructionArgument instanceof IntegerIA) {
+				IntegerIA integerIA = (IntegerIA) instructionArgument;
+				System.out.println(integerIA.getEntry().getName());
+			}
+		}
+		System.out.println("- 172-172-172-172-172 ---------------------------------------------");
+		System.out.println(String.format("[%d][%s]", aPath.length(), aPath));
+		System.out.println("/ 172-172-172-172-172 ---------------------------------------------");
+	}
+
 	enum Ref {
 		//  was:
 		//	enum Ref {

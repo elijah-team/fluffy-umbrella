@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.i.IPipelineAccess;
+import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.stages.gen_c.CDependencyRef;
 import tripleo.elijah.stages.gen_c.OutputFileC;
 import tripleo.elijah.stages.gen_generic.*;
@@ -95,6 +96,9 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 
 			gr1.subscribeCompletedItems(cih.observer());
 		});
+
+
+		pa.setWritePipeline(this);
 	}
 
 	OutputStrategy createOutputStratgy() {
@@ -107,7 +111,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 
 	@Override
 	public void run() throws Exception {
-		final GenerateResult rs = grs.get();
+		//final GenerateResult rs = grs.get(); // 04/15
 
 		prom.then((final GenerateResult result) -> {
 			latch.notify(true);

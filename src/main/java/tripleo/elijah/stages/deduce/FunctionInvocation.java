@@ -138,6 +138,10 @@ public class FunctionInvocation {
 	public WlGenerateFunction generateFunction(final DeduceTypes2 aDeduceTypes2, final OS_Element aBest) {
 		throw new Error();
 	}
+
+	public BaseEvaFunction getEva() {
+		return null; // TODO 04/15
+	}
 }
 
 //

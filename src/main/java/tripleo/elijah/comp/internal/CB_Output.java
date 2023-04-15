@@ -1,6 +1,6 @@
 package tripleo.elijah.comp.internal;
 
-import tripleo.elijah.comp.ICompilationBus;
+import tripleo.elijah.comp.i.ICompilationBus;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;

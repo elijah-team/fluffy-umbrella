@@ -2,11 +2,11 @@ package tripleo.elijah.test_help;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.DefaultCompilationAccess;
-import tripleo.elijah.comp.ICompilationAccess;
+import tripleo.elijah.comp.internal.DefaultCompilationAccess;
+import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.ProcessRecord;
+import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.lang.OS_Module;

@@ -18,6 +18,7 @@ public abstract class DefaultStateful implements Stateful {
 		this.setState(aState);
 	}
 
+	@Override
 	public void setState(final State aState) {
 		_state = aState;
 	}

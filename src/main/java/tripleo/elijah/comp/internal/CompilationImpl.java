@@ -10,11 +10,9 @@ package tripleo.elijah.comp.internal;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.DefaultCompilationAccess;
-import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.comp.ICompilationAccess;
-import tripleo.elijah.comp.IO;
+import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.i.CompilationFlow;
+import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
 import tripleo.elijah.stages.deduce.fluffy.impl.FluffyCompImpl;
@@ -50,6 +48,11 @@ public class CompilationImpl extends Compilation {
 	@Override
 	public @NotNull FluffyComp getFluffy() {
 		return _fluffyComp;
+	}
+
+	@Override
+	public void fakeFlow(final List<CompilerInput> aInputs, final CompilationFlow aFlow) {
+		aFlow.run(this);
 	}
 
 	private final @NotNull FluffyCompImpl _fluffyComp;

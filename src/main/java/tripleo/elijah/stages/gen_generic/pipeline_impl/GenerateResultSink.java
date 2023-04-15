@@ -10,5 +10,5 @@ public interface GenerateResultSink {
 
 	void additional(GenerateResult aGenerateResult);
 
-	LivingClass getClass(EvaClass aEvaClass);
+	LivingClass getLivingClassForEva(EvaClass aEvaClass);
 }

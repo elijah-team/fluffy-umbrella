@@ -1,5 +1,9 @@
-package tripleo.elijah.comp;
+package tripleo.elijah.comp.i;
 
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.PipelineLogic;
+import tripleo.elijah.comp.PipelineMember;
+import tripleo.elijah.comp.Stages;
 import tripleo.elijah.stages.deduce.FunctionMapHook;
 import tripleo.elijah.stages.logging.ElLog;
 

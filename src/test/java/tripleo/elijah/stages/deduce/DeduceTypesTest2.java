@@ -12,12 +12,14 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.comp.internal.CompilationImpl;
+import tripleo.elijah.comp.internal.DefaultCompilationAccess;
+import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratePhase;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
 
