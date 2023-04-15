@@ -3,20 +3,21 @@ package tripleo.elijah.comp.internal;
 import com.google.common.base.Preconditions;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.i.IPipelineAccess;
 
 import static tripleo.elijah.nextgen.query.Mode.FAILURE;
 
 public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 	@Override
-	public void start(final CompilationRunner aCompilationRunner, final CompilerInstructions aCi, final boolean aDoOut) {
+	public void start(final CompilationRunner aCompilationRunner, final CompilerInstructions aCi, final boolean aDoOut, final IPipelineAccess pa) {
 		try {
-			_____start(aCi, aDoOut, aCompilationRunner.compilation.getCompilationClosure(), aCompilationRunner);
+			_____start(aCi, aDoOut, aCompilationRunner.compilation.getCompilationClosure(), aCompilationRunner, pa);
 		} catch (Exception aE) {
 			throw new RuntimeException(aE);
 		}
 	}
 
-	public void _____start(final CompilerInstructions ci, final boolean do_out, final CompilationClosure ccl, final CompilationRunner aCompilationRunner) throws Exception {
+	public void _____start(final CompilerInstructions ci, final boolean do_out, final CompilationClosure ccl, final CompilationRunner aCompilationRunner, final IPipelineAccess pa) throws Exception {
 		// 0. find stdlib
 		//   -- question placement
 		//   -- ...
@@ -38,7 +39,7 @@ public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 
 		final ICompilationAccess                   ca = crState.ca();
 		final ProcessRecord                        pr = crState.pr;
-		final tripleo.elijah.comp.RuntimeProcesses rt = tripleo.elijah.comp.StageToRuntime.get(ccl.getCompilation().stage, ca, pr);
+		final tripleo.elijah.comp.RuntimeProcesses rt = tripleo.elijah.comp.StageToRuntime.get(ccl.getCompilation().stage, ca, pr, pr.pa);
 
 		rt.run_better();
 	}

@@ -2,7 +2,7 @@ package tripleo.elijah.comp.internal;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.ICompilationAccess;
-import tripleo.elijah.comp.ProcessRecord;
+import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.comp.Stages;
 import tripleo.elijah.comp.i.RuntimeProcess;
 

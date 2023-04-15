@@ -1,13 +1,12 @@
 package tripleo.elijah.comp.internal;
 
-//import com.google.common.base.Preconditions;
 //import mal.stepA_mal;
 //import mal.types;
 //import tripleo.elijah.comp.AccessBus;
-//import tripleo.elijah.comp.Compilation;
-//import tripleo.elijah.comp.ICompilationAccess;
-//import tripleo.elijah.comp.Pipeline;
-//import tripleo.elijah.comp.i.RuntimeProcess;
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.ICompilationAccess;
+import tripleo.elijah.comp.Pipeline;
+import tripleo.elijah.comp.i.RuntimeProcess;
 
 //public class OStageProcess implements RuntimeProcess {
 //	private final ProcessRecord      pr;
@@ -71,15 +70,84 @@ package tripleo.elijah.comp.internal;
 //		});
 //	}
 //
-//	private static class _AddPipeline__MAL extends types.MalFunction {
+//}
+
+
+import com.google.common.base.Preconditions;
+
+import mal.types;
+
+import org.jdeferred2.impl.DeferredObject;
+import tripleo.elijah.comp.*;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static tripleo.elijah.util.Helpers.List_of;
+
+public class OStageProcess implements RuntimeProcess {
+	private final ProcessRecord      pr;
+	private final ICompilationAccess ca;
+
+	public OStageProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
+		ca = aCa;
+		pr = aPr;
+	}
+
+	@Override
+	public void run(final Compilation aCompilation) {
+		Pipeline ps = aCompilation.pipelines;
+
+		try {
+			ps.run();
+		} catch (Exception ex) {
+			Logger.getLogger(OStageProcess.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
+	@Override
+	public void postProcess() {
+	}
+
+	@Override
+	public void prepare() {
+		Preconditions.checkNotNull(pr);
+		Preconditions.checkNotNull(pr.dpl);
+
+		Preconditions.checkNotNull(pr.pipelineLogic);
+		Preconditions.checkNotNull(pr.pipelineLogic.gr);
+
+		final DeferredObject<PipelineLogic, Void, Void> ppl = (DeferredObject<PipelineLogic, Void, Void>) pr.pa.getPipelineLogicPromise();
+		ppl.resolve(pr.pipelineLogic);
+
+		final Compilation        comp = ca.getCompilation();
+
+		final DeducePipeline     dpl  = pr.dpl; //new DeducePipeline      (ca);
+		final GeneratePipeline   gpl  = new GeneratePipeline	(pr.pa);
+		final WritePipeline      wpl  = new WritePipeline		(pr.pa);
+		final WriteMesonPipeline wmpl = new WriteMesonPipeline	(comp, pr, ppl, wpl);
+
+		List_of(dpl, gpl, wpl, wmpl)
+				.forEach(ca::addPipeline);
+
+		pr.setGenerateResult(pr.pipelineLogic.gr);
+
+		// NOTE Java needs help!
+		//Helpers.<Consumer<Supplier<GenerateResult>>>List_of(wpl.consumer(), wmpl.consumer())
+		List_of(wpl.consumer(), wmpl.consumer())
+				.forEach(pr::consumeGenerateResult);
+	}
+
+
+	private static class _AddPipeline__MAL extends types.MalFunction {
 //		private final AccessBus ab;
 //
 //		public _AddPipeline__MAL(final AccessBus aAb) {
 //			ab = aAb;
 //		}
 //
-//		public types.MalVal apply(final types.MalList args) throws types.MalThrowable {
-//			final types.MalVal a0 = args.nth(0);
+		public types.MalVal apply(final types.MalList args) throws types.MalThrowable {
+			final types.MalVal a0 = args.nth(0);
 //
 //			if (a0 instanceof final types.MalSymbol pipelineSymbol) {
 //				// 0. accessors
@@ -95,8 +163,10 @@ package tripleo.elijah.comp.internal;
 //				return types.True;
 //			} else {
 //				// TODO exception? errSink??
-//				return types.False;
+				return types.False;
 //			}
-//		}
-//	}
-//}
+		}
+	}
+
+}
+

@@ -2,7 +2,7 @@ package tripleo.elijah.comp.internal;
 
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ICompilationAccess;
-import tripleo.elijah.comp.ProcessRecord;
+import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.comp.i.RuntimeProcess;
 
 public final class EmptyProcess implements RuntimeProcess {

@@ -3,16 +3,15 @@ package tripleo.elijah.comp;
 import antlr.ANTLRException;
 import antlr.RecognitionException;
 import antlr.TokenStreamException;
-import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.diagnostic.TooManyEz_ActuallyNone;
 import tripleo.elijah.comp.diagnostic.TooManyEz_BeSpecific;
+import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.comp.i.IProgressSink;
 import tripleo.elijah.comp.i.ProgressSinkComponent;
-import tripleo.elijah.comp.internal.CR_State;
 import tripleo.elijah.comp.internal.CompilationBus;
 import tripleo.elijah.comp.queries.QueryEzFileToModule;
 import tripleo.elijah.comp.queries.QueryEzFileToModuleParams;
@@ -44,14 +43,14 @@ public class CompilationRunner {
 		});
 	}
 
-	void start(final CompilerInstructions ci, final boolean do_out, final @NotNull OptionsProcessor ignoredOp) throws Exception {
+	void start(final CompilerInstructions ci, final boolean do_out, final @NotNull OptionsProcessor ignoredOp, final IPipelineAccess pa) throws Exception {
 		Operation<CompilationBus.CompilerDriven> ocrsd = compilation.cb.cd.get(Compilation.CompilationAlways.Tokens.COMPILATION_RUNNER_START);
 
 		if (ocrsd.mode() == FAILURE) {
 			throw new Error();
 		}
 
-		((CD_CompilationRunnerStart) ocrsd.success()).start(this, ci, do_out);
+		((CD_CompilationRunnerStart) ocrsd.success()).start(this, ci, do_out, pa);
 	}
 	void findStdLib2(final String prelude_name, final @NotNull Compilation c) {
 		Operation<CompilationBus.CompilerDriven> ocrfsld = compilation.cb.cd.get(Compilation.CompilationAlways.Tokens.COMPILATION_RUNNER_FIND_STDLIB);

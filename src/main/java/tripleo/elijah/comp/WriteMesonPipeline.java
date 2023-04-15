@@ -12,6 +12,7 @@ import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.stages.gen_generic.DoubleLatch;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.util.io.CharSink;
@@ -47,7 +48,7 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 	private       Supplier<GenerateResult> grs;
 
 	public WriteMesonPipeline(final Compilation aCompilation,
-			final ProcessRecord ignoredAPr, 
+			final ProcessRecord ignoredAPr,
 			final @NotNull Promise<PipelineLogic, Void, Void> ppl,
 			final WritePipeline aWritePipeline) {
 		c = aCompilation;

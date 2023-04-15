@@ -38,9 +38,9 @@ public class PipelineLogic {
 	public final  DeducePhase     dp;
 	private final ElLog.Verbosity verbosity;
 	public final  GeneratePhase   generatePhase;
-	private final List<OS_Module> mods              = new ArrayList<OS_Module>();
-	final GenerateResult  gr                = new GenerateResult();
-	final List<ElLog>     elLogs            = new LinkedList<ElLog>();
+	private final List<OS_Module> mods   = new ArrayList<OS_Module>();
+	public final  GenerateResult  gr     = new GenerateResult();
+	final         List<ElLog>     elLogs = new LinkedList<ElLog>();
 
 /*
 	public PipelineLogic(ElLog.Verbosity aVerbosity) {

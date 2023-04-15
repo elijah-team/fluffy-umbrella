@@ -1,38 +1,39 @@
-//package tripleo.elijah.comp;
-//
-//import org.jdeferred2.DoneCallback;
-//import org.jdeferred2.impl.DeferredObject;
-//import org.jetbrains.annotations.NotNull;
-//import tripleo.elijah.comp.Compilation.CompilationAlways;
+package tripleo.elijah.comp;
+
+import org.jdeferred2.DoneCallback;
+import org.jdeferred2.impl.DeferredObject;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.Compilation.CompilationAlways;
+import tripleo.elijah.comp.internal.ProcessRecord;
 //import tripleo.elijah.comp.internal.ProcessRecord;
-//import tripleo.elijah.lang.OS_Module;
-//import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
-//import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
-//import tripleo.elijah.stages.gen_fn.EvaContainerNC;
-//import tripleo.elijah.stages.gen_fn.EvaNode;
-//import tripleo.elijah.stages.gen_generic.GenerateFiles;
-//import tripleo.elijah.stages.gen_generic.GenerateResult;
-//import tripleo.elijah.stages.gen_generic.OutputFileFactory;
-//import tripleo.elijah.stages.gen_generic.OutputFileFactoryParams;
-//import tripleo.elijah.stages.logging.ElLog;
-//import tripleo.elijah.util.Stupidity;
-//import tripleo.elijah.work.WorkManager;
-//
-//import java.util.Collection;
-//import java.util.HashMap;
-//import java.util.List;
-//import java.util.Map;
-//import java.util.function.Function;
-//import java.util.stream.Collectors;
-//
-//public class AccessBus {
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
+import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
+import tripleo.elijah.stages.gen_fn.EvaContainerNC;
+import tripleo.elijah.stages.gen_fn.EvaNode;
+import tripleo.elijah.stages.gen_generic.GenerateFiles;
+import tripleo.elijah.stages.gen_generic.GenerateResult;
+import tripleo.elijah.stages.gen_generic.OutputFileFactory;
+import tripleo.elijah.stages.gen_generic.OutputFileFactoryParams;
+import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.util.Stupidity;
+import tripleo.elijah.work.WorkManager;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class AccessBus {
 //	public final  GenerateResult                                  gr                    = new GenerateResult();
 //	private final Compilation                                     _c;
 //	private final DeferredObject<PipelineLogic, Void, Void>  pipeLineLogicPromise = new DeferredObject<>();
 //	private final DeferredObject<List<EvaNode>, Void, Void>  lgcPromise           = new DeferredObject<>();
 //	private final DeferredObject<EIT_ModuleList, Void, Void> moduleListPromise    = new DeferredObject<>();
 //	final         DeferredObject<GenerateResult, Void, Void>      generateResultPromise = new DeferredObject<>();
-//	private final Map<String, ProcessRecord.PipelinePlugin>       pipelinePlugins       = new HashMap<>();
+	private final Map<String, ProcessRecord.PipelinePlugin>       pipelinePlugins       = new HashMap<>();
 //	private       PipelineLogic                                   ____pl;
 //
 //
@@ -144,26 +145,26 @@
 //	public PipelineLogic __getPL() {
 //		return ____pl; // TODO hack. remove soon
 //	}
-//
-//	public void addPipelinePlugin(final ProcessRecord.PipelinePlugin aPlugin) {
-//		pipelinePlugins.put(aPlugin.name(), aPlugin);
-//	}
-//
-//	public ProcessRecord.PipelinePlugin getPipelinePlugin(final String aPipelineName) {
-//		if (!(pipelinePlugins.containsKey(aPipelineName))) return null;
-//
-//		return pipelinePlugins.get(aPipelineName);
-//	}
-//
-//	public interface AB_ModuleListListener {
-//		void mods_slot(final EIT_ModuleList aModuleList);
-//	}
-//
-//	public interface AB_LgcListener {
-//		void lgc_slot(List<EvaNode> lgc);
-//	}
-//
-//	public interface AB_GenerateResultListener {
-//		void gr_slot(GenerateResult gr);
-//	}
-//}
+
+	public void addPipelinePlugin(final ProcessRecord.PipelinePlugin aPlugin) {
+		pipelinePlugins.put(aPlugin.name(), aPlugin);
+	}
+
+	public ProcessRecord.PipelinePlugin getPipelinePlugin(final String aPipelineName) {
+		if (!(pipelinePlugins.containsKey(aPipelineName))) return null;
+
+		return pipelinePlugins.get(aPipelineName);
+	}
+
+	public interface AB_ModuleListListener {
+		void mods_slot(final EIT_ModuleList aModuleList);
+	}
+
+	public interface AB_LgcListener {
+		void lgc_slot(List<EvaNode> lgc);
+	}
+
+	public interface AB_GenerateResultListener {
+		void gr_slot(GenerateResult gr);
+	}
+}

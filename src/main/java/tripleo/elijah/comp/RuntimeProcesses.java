@@ -2,6 +2,7 @@ package tripleo.elijah.comp;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.i.RuntimeProcess;
+import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.util.Stupidity;
 
 import java.util.ArrayList;
@@ -9,8 +10,8 @@ import java.util.List;
 
 public class RuntimeProcesses {
 	private final List<RuntimeProcess> processes = new ArrayList<>();
-	private final ICompilationAccess   ca;
-	private final ProcessRecord        pr;
+	private final ICompilationAccess ca;
+	private final ProcessRecord      pr;
 
 	public RuntimeProcesses(final @NotNull ICompilationAccess aca, final @NotNull ProcessRecord aPr) {
 		ca = aca;

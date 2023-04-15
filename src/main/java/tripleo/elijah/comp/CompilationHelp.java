@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jdeferred2.impl.DeferredObject;
 import tripleo.elijah.comp.i.RuntimeProcess;
+import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.util.Stupidity;
 
 import static tripleo.elijah.util.Helpers.List_of;
@@ -54,59 +55,7 @@ class DStageProcess implements RuntimeProcess {
 	}
 }
 
-class OStageProcess implements RuntimeProcess {
-	private final ProcessRecord pr;
-	private final ICompilationAccess ca;
 
-	OStageProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
-		ca = aCa;
-		pr = aPr;
-	}
-
-	@Override
-	public void run(final Compilation aCompilation) {
-		Pipeline ps = aCompilation.pipelines;
-		
-		try {
-			ps.run();
-		} catch (Exception ex) {
-			Logger.getLogger(OStageProcess.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
-
-	@Override
-	public void postProcess() {
-	}
-
-	@Override
-	public void prepare() {
-		Preconditions.checkNotNull(pr);
-		Preconditions.checkNotNull(pr.dpl);
-
-		Preconditions.checkNotNull(pr.pipelineLogic);
-		Preconditions.checkNotNull(pr.pipelineLogic.gr);
-
-		final DeferredObject<PipelineLogic, Void, Void> ppl = (DeferredObject<PipelineLogic, Void, Void>) pr.pa.getPipelineLogicPromise();
-		ppl.resolve(pr.pipelineLogic);
-		
-		final Compilation        comp = ca.getCompilation();
-		
-		final DeducePipeline     dpl  = pr.dpl; //new DeducePipeline      (ca);
-		final GeneratePipeline   gpl  = new GeneratePipeline	(pr.pa);
-		final WritePipeline      wpl  = new WritePipeline		(pr.pa);
-		final WriteMesonPipeline wmpl = new WriteMesonPipeline	(comp, pr, ppl, wpl);
-
-		List_of(dpl, gpl, wpl, wmpl)
-				.forEach(ca::addPipeline);
-		
-		pr.setGenerateResult(pr.pipelineLogic.gr);
-
-		// NOTE Java needs help!
-		//Helpers.<Consumer<Supplier<GenerateResult>>>List_of(wpl.consumer(), wmpl.consumer())
-		List_of(wpl.consumer(), wmpl.consumer())
-				.forEach(pr::consumeGenerateResult);
-	}
-}
 
 //
 //

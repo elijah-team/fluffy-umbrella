@@ -6,7 +6,7 @@ import org.jdeferred2.Promise;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.DeducePipeline;
 import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.ProcessRecord;
+import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 
 import java.util.List;

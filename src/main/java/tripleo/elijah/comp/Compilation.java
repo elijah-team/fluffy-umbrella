@@ -26,6 +26,7 @@ import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
 import tripleo.elijah.comp.diagnostic.FileNotFoundDiagnostic;
 import tripleo.elijah.comp.i.CompilationFlow;
+import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.comp.i.IProgressSink;
 import tripleo.elijah.comp.internal.CompilationBus;
 import tripleo.elijah.comp.queries.QuerySourceFileToModule;
@@ -54,7 +55,7 @@ public abstract class Compilation {
 	public final  List<OS_Module>                   modules   = new ArrayList<OS_Module>();
 	final         ErrSink                           errSink;
 	final         Map<String, CompilerInstructions> fn2ci     = new HashMap<String, CompilerInstructions>();
-	final         Pipeline                          pipelines = new Pipeline();
+	public final  Pipeline                          pipelines = new Pipeline();
 	private final int                               _compilationNumber;
 	private final Map<String, OS_Package>           _packages = new HashMap<String, OS_Package>();
 	public        Stages                            stage     = Stages.O; // Output
@@ -73,6 +74,7 @@ public abstract class Compilation {
 	private int                _functionCode = 1001;
 	public CompilationRunner __cr;
 	CompilationBus cb;
+	public IPipelineAccess _pa;
 
 	public Compilation(final ErrSink errSink, final IO io) {
 		this.errSink            = errSink;
@@ -126,6 +128,10 @@ public abstract class Compilation {
 				return io;
 			}
 		};
+	}
+
+	public IPipelineAccess pa() {
+		return _pa;
 	}
 
 	static class MainModule {
@@ -226,14 +232,14 @@ public abstract class Compilation {
 
 	void hasInstructions(final @NotNull List<CompilerInstructions> cis,
 						 final boolean do_out,
-						 final @NotNull OptionsProcessor op) throws Exception {
+						 final @NotNull OptionsProcessor op, final IPipelineAccess pa) throws Exception {
 		//assert cis.size() == 1;
 
 		assert cis.size() > 0;
 
 		rootCI = cis.get(0);
 
-		__cr.start(rootCI, do_out, op);
+		__cr.start(rootCI, do_out, op, pa);
 	}
 
 	public void pushItem(CompilerInstructions aci) {

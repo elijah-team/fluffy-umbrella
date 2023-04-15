@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.i.IPipelineAccess;
+import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.stages.gen_c.CDependencyRef;
 import tripleo.elijah.stages.gen_c.OutputFileC;
 import tripleo.elijah.stages.gen_generic.*;
