@@ -8,20 +8,9 @@
  */
 package tripleo.elijah.comp;
 
-import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.jdeferred2.impl.DeferredObject;
 import tripleo.elijah.comp.i.RuntimeProcess;
 import tripleo.elijah.comp.internal.ProcessRecord;
-import tripleo.elijah.util.Stupidity;
-
-import static tripleo.elijah.util.Helpers.List_of;
 
 final class EmptyProcess implements RuntimeProcess {
 	public EmptyProcess(final ICompilationAccess aCompilationAccess, final ProcessRecord aPr) { }
