@@ -16,7 +16,7 @@ public class CompilationBus implements ICompilationBus {
 		private 		final Map<DriverToken, CompilerDriven> drivens = new HashMap<>();
 		private final Map<DriverToken, CompilerDriven> defaults = new HashMap<>();
 
-		private static boolean initialized;
+		private /*static*/ boolean initialized;
 
 		public CompilerDriver(final CompilationBus aCompilationBus) {
 			cb = aCompilationBus;
