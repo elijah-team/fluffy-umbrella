@@ -8,6 +8,23 @@
  */
 package tripleo.elijah.comp;
 
+import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
+import tripleo.elijah.nextgen.model.SM_Module;
+import tripleo.elijah.nextgen.model.SM_Module__babyPrint;
+import tripleo.elijah.stages.gen_generic.GenerateResult;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
+import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.work.WorkManager;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+//import static us.bpsm.edn.parser.Parsers.defaultConfiguration;
+
 import tripleo.elijah.comp.i.IPipelineAccess;
 
 import tripleo.elijah.stages.gen_fn.EvaNode;
@@ -34,9 +51,23 @@ import org.jetbrains.annotations.Contract;
 public class GeneratePipeline implements PipelineMember, Consumer<Supplier<GenerateResult>> {
 	//private final Compilation               c;
 	private final DefaultGenerateResultSink grs;
+	private final IPipelineAccess pa;
 
 	@Contract(pure = true)
-	public GeneratePipeline(@NotNull IPipelineAccess pa) {
+	public GeneratePipeline(@NotNull IPipelineAccess pa0) {
+
+		pa=pa0;
+			final AccessBus ab = pa.getAccessBus();
+			errSink = ab.getCompilation().getErrSink();
+
+			ab.subscribePipelineLogic(aPl -> pipelineLogic = aPl);
+			ab.subscribe_lgc(aLgc -> lgc = aLgc);
+
+			__ab = ab;
+
+
+
+
 		//c     = pa.getCompilation();
 		grs   = new DefaultGenerateResultSink(this, pa);
 
@@ -49,7 +80,7 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 
 			DebugBuffersLogic.debug_buffers_logic(x, xps);
 
-			System.err.println("789789 "+xps.getString());
+			//System.err.println("789789 "+xps.getString()); //04/15
 
 			int                            y = 2;
 		});
@@ -66,6 +97,14 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 	@Override
 	public void run() {
 		latch2.notify(true);
+
+		if (pipelineLogic != null) {
+			Preconditions.checkNotNull(pipelineLogic);
+			Preconditions.checkNotNull(lgc);
+
+			/*pipelineLogic.*/
+			generate(lgc, errSink, pipelineLogic.mods, pipelineLogic.getVerbosity());
+		}
 	}
 
 	@Override
@@ -74,6 +113,56 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 	}
 
 	private final DoubleLatch<List<EvaNode>> latch2;
+
+
+	private final ErrSink       errSink;
+	private final AccessBus     __ab;
+	//	private final DeducePipeline dpl;
+	private       PipelineLogic pipelineLogic;
+	private       List<EvaNode> lgc;
+
+	protected void generate(final @NotNull List<EvaNode> _______lgc,
+							final @NotNull ErrSink aErrSink,
+							final @NotNull EIT_ModuleList mods,
+							final @NotNull ElLog.Verbosity verbosity) {
+		final WorkManager    wm   = new WorkManager();
+		final GenerateResult gr   = __ab.gr;
+		final Compilation    comp = __ab.getCompilation();
+
+		for (final @NotNull OS_Module mod : mods.getMods()) {
+			final List<EvaNode> nodes = lgc.stream()
+					.filter(aGeneratedNode -> aGeneratedNode.module() == mod)
+					.collect(Collectors.toList());
+
+			final EIT_ModuleInput moduleInput = new EIT_ModuleInput(mod, comp);
+
+			final SM_Module sm = moduleInput.computeSourceModel();
+			SM_Module__babyPrint.babyPrint(sm);
+//			simpleUsageExample();
+
+			GenerateResultSink grs = new DefaultGenerateResultSink(this, __ab.getPipelineAccess());
+
+			moduleInput.doGenerate(nodes, aErrSink, verbosity, pipelineLogic, wm,
+								   (gr2) -> {
+				gr.additional(gr2);
+				grs.additional(gr2);
+			});
+
+			System.out.println("999999 "+((DefaultGenerateResultSink) grs).resultList());
+		}
+
+		__ab.resolveGenerateResult(gr);
+	}
+
+//	public void simpleUsageExample() {
+//		Parseable pbr = Parsers.newParseable("{:x 1, :y 2}");
+//		Parser    p = Parsers.newParser(defaultConfiguration());
+//		Map<?, ?> m = (Map<?, ?>) p.nextValue(pbr);
+////		assertEquals(m.get(newKeyword("x")), 1L);
+////		assertEquals(m.get(newKeyword("y")), 2L);
+////		assertEquals(Parser.END_OF_INPUT, p.nextValue(pbr));
+//	}
+
 }
 
 //

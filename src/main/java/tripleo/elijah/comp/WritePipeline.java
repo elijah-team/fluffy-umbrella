@@ -111,7 +111,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 
 	@Override
 	public void run() throws Exception {
-		final GenerateResult rs = grs.get();
+		//final GenerateResult rs = grs.get(); // 04/15
 
 		prom.then((final GenerateResult result) -> {
 			latch.notify(true);

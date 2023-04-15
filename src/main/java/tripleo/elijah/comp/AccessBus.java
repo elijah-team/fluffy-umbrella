@@ -16,12 +16,12 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class AccessBus {
-//	public final  GenerateResult                                  gr                    = new GenerateResult();
+	public final  GenerateResult                                  gr                    = new GenerateResult();
 	private final Compilation                                     _c;
 	private final DeferredObject<PipelineLogic, Void, Void>  pipeLineLogicPromise = new DeferredObject<>();
-//	private final DeferredObject<List<EvaNode>, Void, Void>  lgcPromise           = new DeferredObject<>();
-//	private final DeferredObject<EIT_ModuleList, Void, Void> moduleListPromise    = new DeferredObject<>();
-//	final         DeferredObject<GenerateResult, Void, Void>      generateResultPromise = new DeferredObject<>();
+	private final DeferredObject<List<EvaNode>, Void, Void>  lgcPromise           = new DeferredObject<>();
+	private final DeferredObject<EIT_ModuleList, Void, Void> moduleListPromise    = new DeferredObject<>();
+	final         DeferredObject<GenerateResult, Void, Void>      generateResultPromise = new DeferredObject<>();
 	private final Map<String, ProcessRecord.PipelinePlugin>       pipelinePlugins       = new HashMap<>();
 	private final IPipelineAccess _pa;
 	private       PipelineLogic                                   ____pl;
@@ -44,22 +44,22 @@ public class AccessBus {
 		pipeLineLogicPromise.resolve(pl);
 	}
 
-//	@Deprecated
-//	public void resolveModuleList(final List<OS_Module> aModuleList) {
-//		resolveModuleList(new EIT_ModuleList(aModuleList)); // TODO
-//	}
-//
-//	public void resolveModuleList(final EIT_ModuleList aModuleList) {
-//		moduleListPromise.resolve(aModuleList);
-//	}
-//
-//	public void resolveGenerateResult(final GenerateResult aGenerateResult) {
-//		generateResultPromise.resolve(aGenerateResult);
-//	}
-//
-//	public void resolveLgc(final List<EvaNode> lgc) {
-//		lgcPromise.resolve(lgc);
-//	}
+	//@Deprecated
+	//public void resolveModuleList(final List<OS_Module> aModuleList) {
+	//	resolveModuleList(new EIT_ModuleList(aModuleList)); // TODO
+	//}
+
+	public void resolveModuleList(final EIT_ModuleList aModuleList) {
+		moduleListPromise.resolve(aModuleList);
+	}
+
+	public void resolveGenerateResult(final GenerateResult aGenerateResult) {
+		generateResultPromise.resolve(aGenerateResult);
+	}
+
+	public void resolveLgc(final List<EvaNode> lgc) {
+		lgcPromise.resolve(lgc);
+	}
 
 	public void add(final @NotNull Function<AccessBus, PipelineMember> aCr) {
 		final PipelineMember x = aCr.apply(this);
@@ -74,18 +74,18 @@ public class AccessBus {
 		resolvePipelineLogic(x);
 	}
 
-//	public void subscribe_lgc(@NotNull final AB_LgcListener aLgcListener) {
-//		lgcPromise.then(aLgcListener::lgc_slot);
-//	}
-//
-//	public void subscribe_moduleList(@NotNull final AB_ModuleListListener aModuleListListener) {
-//		moduleListPromise.then(aModuleListListener::mods_slot);
-//	}
-//
-//	public void subscribe_GenerateResult(@NotNull final AB_GenerateResultListener aGenerateResultListener) {
-//		generateResultPromise.then(aGenerateResultListener::gr_slot);
-//	}
-//
+	public void subscribe_lgc(@NotNull final AB_LgcListener aLgcListener) {
+		lgcPromise.then(aLgcListener::lgc_slot);
+	}
+
+	public void subscribe_moduleList(@NotNull final AB_ModuleListListener aModuleListListener) {
+		moduleListPromise.then(aModuleListListener::mods_slot);
+	}
+
+	public void subscribe_GenerateResult(@NotNull final AB_GenerateResultListener aGenerateResultListener) {
+		generateResultPromise.then(aGenerateResultListener::gr_slot);
+	}
+
 //	void doModule(final @NotNull List<EvaNode> lgc,
 //	              final @NotNull WorkManager wm,
 //	              final @NotNull OS_Module mod,

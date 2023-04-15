@@ -14,19 +14,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import org.checkerframework.checker.nullness.qual.Nullable;
+
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.i.ICompilationAccess;
+import tripleo.elijah.comp.i.IPipelineAccess;
+import tripleo.elijah.comp.notation.GN_GenerateNodesIntoSink;
 import tripleo.elijah.entrypoints.EntryPoint;
 import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.GenerateFiles;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
-import tripleo.elijah.stages.gen_generic.OutputFileFactory;
-import tripleo.elijah.stages.gen_generic.OutputFileFactoryParams;
 import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
@@ -39,17 +38,10 @@ public class PipelineLogic {
 	public final  DeducePhase     dp;
 	private final ElLog.Verbosity verbosity;
 	public final  GeneratePhase   generatePhase;
-	private final List<OS_Module> mods   = new ArrayList<OS_Module>();
-	public final GenerateResult gr     = new GenerateResult();
-	public final List<ElLog>    elLogs = new LinkedList<ElLog>();
-
-/*
-	public PipelineLogic(ElLog.Verbosity aVerbosity) {
-		verbosity     = aVerbosity;
-		generatePhase = new GeneratePhase(aVerbosity, this);
-		dp            = new DeducePhase(generatePhase, this, verbosity, null);
-	}
-*/
+	private final List<OS_Module> __mods_BACKING = new ArrayList<OS_Module>();
+	final         EIT_ModuleList  mods           = new EIT_ModuleList(__mods_BACKING);
+	public final  GenerateResult  gr             = new GenerateResult();
+	public final  List<ElLog>     elLogs         = new LinkedList<ElLog>();
 
 	public PipelineLogic(final @NotNull ICompilationAccess aCa) {
 		verbosity     = aCa.testSilence();
@@ -57,7 +49,11 @@ public class PipelineLogic {
 		dp            = new DeducePhase(generatePhase, this, verbosity, aCa);
 
 		aCa.setPipelineLogic(this);
+
+		pa = aCa.getCompilation().pa();
 	}
+
+	final IPipelineAccess pa;
 
 	public final Observer<OS_Module> om = new Observer<OS_Module>() {
 		@Override
@@ -93,71 +89,15 @@ public class PipelineLogic {
 	
 	public void everythingBeforeGenerate(final @NotNull List<EvaNode> lgc) {
 		assert lgc.size() == 0;
-		
-		for (final OS_Module mod : mods) {
-			om.onNext(mod);
-		}
-		
+
+		mods.stream().forEach(mod ->
+			om.onNext(mod));
+
 		om.onComplete();
 	}
 
 	public void generate(List<EvaNode> lgc, final GenerateResultSink aResultSink) {
-		final WorkManager wm = new WorkManager();
-
-		for (final OS_Module mod : mods) {
-			// README use any errSink, they should all be the same
-			final ErrSink              errSink = mod.getCompilation().getErrSink();
-
-			final LibraryStatementPart lsp     = mod.getLsp();
-
-
-
-
-
-
-			if (lsp == null) {
-				tripleo.elijah.util.Stupidity.println_err_2("7777777777777777777 mod.getFilename "+mod.getFileName());
-				continue;
-			}
-
-
-
-
-
-			final CompilerInstructions ci      = lsp.getInstructions();
-			final @Nullable String     lang2    = ci.genLang();
-
-
-
-
-
-
-
-
-
-
-
-
-			final @Nullable String     lang    = lang2==null?"c":lang2;
-
-
-
-
-
-
-
-
-
-
-
-
-			final OutputFileFactoryParams params        = new OutputFileFactoryParams(mod, errSink, verbosity, this);
-			final GenerateFiles           generateFiles = OutputFileFactory.create(lang, params);
-			//final GenerateC               generateC     = new GenerateC(mod, errSink, verbosity, this);
-			final GenerateResult          ggr           = run3(mod, lgc, wm, generateFiles, aResultSink);
-			wm.drain();
-			gr.results().addAll(ggr.results());
-		}
+		pa.notate(117, new GN_GenerateNodesIntoSink(lgc, aResultSink, mods, verbosity, gr, this));
 	}
 
 	protected void run2(OS_Module mod, @NotNull List<EntryPoint> epl) {
@@ -284,42 +224,6 @@ public class PipelineLogic {
 	@NotNull
 	private GenerateFunctions getGenerateFunctions(OS_Module mod) {
 		return generatePhase.getGenerateFunctions(mod);
-	}
-
-	protected GenerateResult run3(OS_Module mod, @NotNull List<EvaNode> lgc, WorkManager wm, GenerateFiles ggc, final GenerateResultSink aResultSink) {
-		GenerateResult gr = new GenerateResult();
-
-		for (EvaNode evaNode : lgc) {
-			if (evaNode.module() != mod) continue; // README curious
-
-			if (evaNode instanceof EvaContainerNC) {
-				final EvaContainerNC nc = (EvaContainerNC) evaNode;
-
-				nc.generateCode(ggc, gr, aResultSink);
-				if (nc instanceof EvaClass) {
-					final EvaClass evaClass = (EvaClass) nc;
-
-					final @NotNull Collection<EvaNode> gn2 = GenerateFiles.constructors_to_list_of_generated_nodes(evaClass.constructors.values());
-					GenerateResult                     gr3 = ggc.generateCode(gn2, wm, aResultSink);
-					gr.additional(gr3);
-					aResultSink.additional(gr3);
-				}
-
-				final @NotNull Collection<EvaNode> gn1 = GenerateFiles.functions_to_list_of_generated_nodes(nc.functionMap.values());
-				GenerateResult                     gr2 = ggc.generateCode(gn1, wm, aResultSink);
-				gr.additional(gr2);
-				aResultSink.additional(gr2);
-
-				final @NotNull Collection<EvaNode> gn2 = GenerateFiles.classes_to_list_of_generated_nodes(nc.classMap.values());
-				GenerateResult                     gr4 = ggc.generateCode(gn2, wm, aResultSink);
-				gr.additional(gr4);
-				aResultSink.additional(gr4);
-			} else {
-				tripleo.elijah.util.Stupidity.println_out_2("2009 " + evaNode.getClass().getName());
-			}
-		}
-
-		return gr;
 	}
 
 	public void addModule(OS_Module m) {

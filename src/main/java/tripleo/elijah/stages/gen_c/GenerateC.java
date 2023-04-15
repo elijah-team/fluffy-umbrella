@@ -42,6 +42,7 @@ import tripleo.util.buffer.Buffer;
 
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 
@@ -52,6 +53,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	private static final String PHASE = "GenerateC";
 	final ErrSink errSink;
 	private final ElLog LOG;
+	public GenerateResultSink resultSink;
 
 	public GenerateC(OS_Module aM, ErrSink aErrSink, ElLog.Verbosity verbosity, PipelineLogic pipelineLogic) {
 		errSink = aErrSink;
@@ -99,8 +101,30 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	}
 
 	@Override
-	public GenerateResult resultsFromNodes(final List<EvaNode> aNodes, final WorkManager aWm) {
-		throw new Error();
+	public GenerateResult resultsFromNodes(final List<EvaNode> aNodes, final WorkManager wm, final GenerateResultSink grs) {
+		final GenerateC ggc = this;
+
+		final GenerateResult gr2 = new GenerateResult();
+
+		for (final EvaNode generatedNode : aNodes) {
+//                      if (generatedNode.module() != mod) continue; // README curious
+
+			if (generatedNode instanceof EvaContainerNC) {
+				final EvaContainerNC nc = (EvaContainerNC) generatedNode;
+
+				nc.generateCode(ggc, gr2, grs);
+				final @NotNull Collection<EvaNode> gn1 = (nc.functionMap.values()).stream().map(x -> (EvaNode) x).collect(Collectors.toList());
+				final GenerateResult                     gr3 = ggc.generateCode(gn1, wm, grs);
+				gr2.results().addAll(gr3.results());
+				final @NotNull Collection<EvaNode> gn2 = (nc.classMap.values()).stream().map(x -> (EvaNode) x).collect(Collectors.toList());
+				final GenerateResult                     gr4 = ggc.generateCode(gn2, wm, grs);
+				gr2.results().addAll(gr4.results());
+			} else {
+				System.out.println("2009 " + generatedNode.getClass().getName());
+			}
+		}
+
+		return gr2;
 	}
 
 	@NotNull
@@ -124,7 +148,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		private final WorkList wl;
 		private final GenerateFiles generateC;
 		private       boolean            _isDone = false;
-		private final GenerateResultSink resultSink;
+		public final GenerateResultSink resultSink;
 
 		public WlGenerateFunctionC(BaseEvaFunction aGf, GenerateResult aGr, WorkList aWl, GenerateC aGenerateC, final GenerateResultSink aResultSink) {
 			gf = aGf;
@@ -150,9 +174,9 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 	}
 
 	@Override
-	public void generate_function(EvaFunction aGeneratedFunction, GenerateResult gr, WorkList wl, final GenerateResultSink aResultSink) {
-		generateCodeForMethod(aGeneratedFunction, gr, wl);
-		for (IdentTableEntry identTableEntry : aGeneratedFunction.idte_list) {
+	public void generate_function(EvaFunction aEvaFunction, GenerateResult gr, WorkList wl, final GenerateResultSink aResultSink) {
+		generateCodeForMethod(aEvaFunction, gr, wl);
+		for (IdentTableEntry identTableEntry : aEvaFunction.idte_list) {
 			if (identTableEntry.isResolved()) {
 				EvaNode x = identTableEntry.resolvedType();
 
@@ -166,7 +190,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 				}
 			}
 		}
-		for (ProcTableEntry pte : aGeneratedFunction.prte_list) {
+		for (ProcTableEntry pte : aEvaFunction.prte_list) {
 //			ClassInvocation ci = pte.getClassInvocation();
 			FunctionInvocation fi = pte.getFunctionInvocation();
 			if (fi == null) {
@@ -177,7 +201,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 					assert pte.getStatus() == BaseTableEntry.Status.UNKNOWN;
 */
 			} else {
-				BaseEvaFunction gf = fi.getGenerated();
+				BaseEvaFunction gf = fi.getEva();
 				if (gf != null) {
 					wl.addJob(new WlGenerateFunctionC(gf, gr, wl, this, aResultSink));
 				}
@@ -209,7 +233,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 				// TODO constructor
 				int y=2;
 			} else {
-				BaseEvaFunction gf = fi.getGenerated();
+				BaseEvaFunction gf = fi.getEva();
 				if (gf != null) {
 					wl.addJob(new WlGenerateFunctionC(gf, gr, wl, this, aResultSink));
 				}
@@ -219,7 +243,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 
 	@Override
 	public void generate_class(EvaClass x, GenerateResult gr, final @NotNull GenerateResultSink aResultSink) {
-		final LivingClass lc = aResultSink.getClass(x); // TODO could also add _living property
+		final LivingClass lc = aResultSink.getLivingClassForEva(x); // TODO could also add _living property
 		lc.garish(this, gr, aResultSink);
 	}
 
@@ -354,9 +378,9 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 				throw new NotImplementedException();
 		}
 
-		static String forGenNamespace(@NotNull EvaNamespace aGeneratedNamespace) {
+		static String forGenNamespace(@NotNull EvaNamespace aEvaNamespace) {
 			String z;
-			z = String.format("Z%d", aGeneratedNamespace.getCode());
+			z = String.format("Z%d", aEvaNamespace.getCode());
 			return z;
 		}
 
@@ -444,8 +468,8 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		return GetTypeName.forVTE(input);
 	}
 
-	String getTypeName(@NotNull EvaNamespace aGeneratedNamespace) {
-		return GetTypeName.forGenNamespace(aGeneratedNamespace);
+	String getTypeName(@NotNull EvaNamespace aEvaNamespace) {
+		return GetTypeName.forGenNamespace(aEvaNamespace);
 	}
 
 	String getTypeName(@NotNull EvaClass aEvaClass) {
@@ -563,7 +587,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 							String path = reference.build();
 							sb.append(Emit.emit("/*829*/") + path);
 						} else {
-							final BaseEvaFunction pte_generated = functionInvocation.getGenerated();
+							final BaseEvaFunction pte_generated = functionInvocation.getEva();
 							if (idte.resolvedType() == null && pte_generated != null)
 								idte.resolveTypeToClass(pte_generated);
 							reference.getIdentIAPath(ia2, gf, Generate_Code_For_Method.AOG.GET, null);
@@ -820,7 +844,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 				final VariableStatement vs = (VariableStatement) identTableEntry.getResolvedElement();
 				OS_Element parent = vs.getParent().getParent();
 				if (parent != gf.getFD()) {
-					// we want identTableEntry.resolved which will be a GeneratedMember
+					// we want identTableEntry.resolved which will be a EvaMember
 					// which will have a container which will be either be a function,
 					// statement (semantic block, loop, match, etc) or a EvaContainerNC
 					int     y  =2;

@@ -50,7 +50,7 @@ public interface GenerateFiles extends CodeGenerator {
 
 	GenerateResult generateCode(Collection<EvaNode> aNodeCollection, WorkManager aWorkManager, final GenerateResultSink aResultSink);
 
-	GenerateResult resultsFromNodes(List<EvaNode> aNodes, WorkManager aWm);
+	GenerateResult resultsFromNodes(List<EvaNode> aNodes, WorkManager aWm, final GenerateResultSink grs);
 
 	@Override
 	void generate_class(EvaClass aGeneratedClass, GenerateResult aGenerateResult, final GenerateResultSink aResultSink);

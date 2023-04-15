@@ -5,6 +5,8 @@ import org.jdeferred2.Promise;
 
 import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.internal.ProcessRecord;
+import tripleo.elijah.comp.notation.GN_GenerateNodesIntoSink;
+import tripleo.elijah.comp.notation.GN_Notable;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 
 import java.util.List;
@@ -31,4 +33,6 @@ public interface IPipelineAccess {
 	WritePipeline getWitePipeline();
 
 	void setWritePipeline(WritePipeline aWritePipeline);
+
+	void notate(int provenance, GN_Notable aNotable);
 }

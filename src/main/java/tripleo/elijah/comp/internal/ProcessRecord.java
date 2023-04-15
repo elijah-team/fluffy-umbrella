@@ -12,6 +12,7 @@ import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.i.IPipelineAccess;
+import tripleo.elijah.comp.notation.GN_Notable;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 
@@ -88,6 +89,12 @@ public class ProcessRecord {
 		public void setWritePipeline(final WritePipeline aWritePipeline) {
 			_wpl = aWritePipeline;
 		}
+
+		@Override
+		public void notate(final int provenance, final GN_Notable aNotable) {
+			int y=2;
+			aNotable.run();
+		}
 	};
 
 	final         stepA_mal.MalEnv2  env;
@@ -100,6 +107,7 @@ public class ProcessRecord {
 //	}
 	public ProcessRecord(final @NotNull ICompilationAccess ca0) {
 		ca            = ca0;
+		ca.getCompilation()._pa = pa;
 
 		pipelineLogic = new PipelineLogic(ca0);
 		dpl           = new DeducePipeline(pa);
@@ -111,7 +119,6 @@ public class ProcessRecord {
 
 
 
-		ca.getCompilation()._pa = pa;
 		ab                      = new AccessBus(ca.getCompilation(), pa);
 		ab.addPipelinePlugin(new GeneratePipelinePlugin());
 		ab.addPipelinePlugin(new DeducePipelinePlugin());

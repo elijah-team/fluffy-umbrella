@@ -11,6 +11,7 @@ import tripleo.elijah.lang.ModuleItem;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.model.SM_Module;
 import tripleo.elijah.nextgen.model.SM_ModuleItem;
+import tripleo.elijah.stages.gen_c.GenerateC;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_generic.GenerateFiles;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
@@ -52,7 +53,7 @@ public class EIT_ModuleInput implements EIT_Input {
         final GenerateFiles           generateFiles = OutputFileFactory.create(lang, p);
 
         // 2. query results
-        final GenerateResult gr2 = generateFiles.resultsFromNodes(nodes, wm);
+        final GenerateResult gr2 = generateFiles.resultsFromNodes(nodes, wm, ((GenerateC) generateFiles).resultSink);
 
         // 3. #drain workManager -> README part of workflow. may change later as appropriate
         wm.drain();

@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultGenerateResultSink implements GenerateResultSink {
-
 	private final GeneratePipeline         generatePipeline;
 	private final List<GenerateResultItem> gris = new ArrayList<>();
 	private final IPipelineAccess pa;
@@ -38,12 +37,11 @@ public class DefaultGenerateResultSink implements GenerateResultSink {
 	}
 
 	@Override
-	public LivingClass getClass(final EvaClass aEvaClass) {
+	public LivingClass getLivingClassForEva(final EvaClass aEvaClass) {
 		return pa.getCompilation()._repo.getClass(aEvaClass);
 	}
 
 	public List<GenerateResultItem> resultList() {
 		return ImmutableList.copyOf(gris);
 	}
-
 }
