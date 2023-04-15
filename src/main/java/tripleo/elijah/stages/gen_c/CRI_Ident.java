@@ -8,12 +8,10 @@ import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.PropertyStatement;
 import tripleo.elijah.lang.VariableStatement;
-import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_fn.EvaContainerNC;
-import tripleo.elijah.stages.gen_fn.EvaFunction;
 import tripleo.elijah.stages.gen_fn.EvaNamespace;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.instructions.IdentIA;
@@ -53,16 +51,30 @@ class CRI_Ident {
 
 		final EvaClass _cheat = aCReference._cheat;
 
+		final @Nullable GenerateC_Item repo_element = aCReference._repo().itemFor(resolved_element);
+
 		if (resolved_element != null) {
-			EvaNode resolved = null;
+			EvaNode resolved2;
+
+			assert repo_element != null;
+
 			if (resolved_element instanceof ClassStatement) {
-				resolved = _re_is_ClassStatement();
+				((GI_ClassStatement) repo_element).setITE(ite);
 			} else if (resolved_element instanceof FunctionDef) {
 				@Nullable final ProcTableEntry pte = ite.getCallablePTE();
-				resolved = _re_is_FunctionDef(pte, _cheat);
+				resolved2 = ((GI_FunctionDef) repo_element)._re_is_FunctionDef(pte, _cheat, ite);
+
+				repo_element.setEvaNode(resolved2);
 			} else if (resolved_element instanceof PropertyStatement) {
-				resolved = _re_is_PropertyStatement(addRef, aog, sSize, i, aValue, (x) -> skip[0] = true, (x) -> text[0] = x);
+				resolved2 = _re_is_PropertyStatement(addRef, aog, sSize, i, aValue, (x) -> skip[0] = true, (x) -> text[0] = x);
+
+				repo_element.setEvaNode(resolved2);
 			}
+		}
+
+		if (repo_element != null) {
+			final @Nullable EvaNode resolved = repo_element.getEvaNode();
+
 			if (!skip[0]) {
 				short state = 1;
 				if (ite.externalRef != null) {
@@ -132,46 +144,6 @@ class CRI_Ident {
 		}
 
 		return text[0];
-	}
-
-	private EvaNode _re_is_ClassStatement() {
-		EvaNode resolved = null;
-		if (ite.type != null)
-			resolved = ite.type.resolved();
-		if (resolved == null)
-			resolved = ite.resolvedType();
-		return resolved;
-	}
-
-	private EvaNode _re_is_FunctionDef(final @Nullable ProcTableEntry pte, final EvaClass a_cheat) {
-		EvaNode resolved = null;
-		if (pte != null) {
-			final FunctionInvocation fi = pte.getFunctionInvocation();
-			if (fi != null) {
-				final BaseEvaFunction gen = fi.getGenerated();
-				if (gen != null)
-					resolved = gen;
-			}
-		}
-		if (resolved == null) {
-			final EvaNode resolved1 = ite.resolvedType();
-			if (resolved1 instanceof EvaFunction)
-				resolved = resolved1;
-			else if (resolved1 instanceof EvaClass) {
-				resolved = resolved1;
-
-				// FIXME Bar#quux is not being resolves as a BGF in Hier
-
-//								FunctionInvocation fi = pte.getFunctionInvocation();
-//								fi.setClassInvocation();
-			}
-		}
-
-		if (resolved == null) {
-			resolved = a_cheat;
-		}
-
-		return resolved;
 	}
 
 	private EvaNode _re_is_PropertyStatement(final Consumer<CReference.Reference> addRef,

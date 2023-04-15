@@ -12,7 +12,6 @@ package tripleo.elijah.stages.gen_c;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.ConstructorDef;
 import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.RegularTypeName;
 import tripleo.elijah.lang.types.OS_FuncType;
 import tripleo.elijah.lang.types.OS_UserType;
@@ -28,10 +27,8 @@ import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 
@@ -43,7 +40,7 @@ public class CReference {
 	private List<String>    args;
 	private List<Reference> refs;
 
-	private final GI_Repo _repo = new GI_Repo();
+	private final GI_Repo _repo = new GI_Repo(this);
 
 
 	//
@@ -187,6 +184,10 @@ public class CReference {
 		System.out.println("/ 172-172-172-172-172 ---------------------------------------------");
 	}
 
+	public GI_Repo _repo() {
+		return _repo;
+	}
+
 	enum Ref {
 		//  was:
 		//	enum Ref {
@@ -301,28 +302,6 @@ public class CReference {
 		public abstract void buildHelper(final Reference ref, final BuildState sb);
 	}
 
-	interface GenerateC_Statement {
-		String getText();
-
-		GCR_Rule rule();
-	}
-
-	interface GCR_Rule {
-		String text();
-	}
-
-	interface GenerateC_Item {
-
-	}
-
-	class GI_ProcIA implements GenerateC_Item {
-		private final ProcIA carrier;
-
-		public GI_ProcIA(final ProcIA aProcIA) {
-			carrier = aProcIA;
-		}
-	}
-
 	/**
 	 * Call before you call build
 	 *
@@ -398,29 +377,6 @@ public class CReference {
 
 	void addRef(final String text, final Ref type, final String aValue) {
 		refs.add(new Reference(text, type, aValue));
-	}
-
-	private class GI_Module {
-		private final OS_Module carrier;
-
-		GI_Module(final OS_Module aCarrier) {
-			carrier = aCarrier;
-		}
-	}
-
-	private class GI_Repo {
-		private final Map<Object, GenerateC_Item> items = new HashMap<>();
-
-		public GenerateC_Item itemFor(final ProcIA aProcIA) {
-			final GI_ProcIA gi_proc;
-			if (items.containsKey(aProcIA)) {
-				gi_proc = (GI_ProcIA) items.get(aProcIA);
-			} else {
-				gi_proc = new GI_ProcIA(aProcIA);
-				items.put(aProcIA, gi_proc);
-			}
-			return gi_proc;
-		}
 	}
 
 	static class Reference {
