@@ -1,36 +1,60 @@
-Elijjah is a high-level language suitable for replacement Java and C++. It is meant to
-integrate into current C and Java projects. It will feature a REPL and a graphical environment as well, 
-along the lines Smalltalk/Tunes Slate.
+Elijah fluffy-umbrella
+=======================
 
-It is free software intended for use on all systems, including GNU/Linux.
+The elijah-lang compiler.
 
-Other Software Required:
-  * antlr (included)
-  * javassist (not used yet, but included)
-  * python (not yet)
-  * java-compiler (java8)
-  
-The repo is currently buildable from maven.  You can also import into Eclipse and IDEA
-and get up and running.  The tests need to run run from the root directory, which is 
-done automatically in maven but not IDEA.
+https://git.sr.ht/~tripleo/el-fluffy-umbrella
 
-Much work is needed.
+This project is licensed under LGPL, read [LICENSE.LGPL](LICENSE.LGPL)
 
-See [Language Overview](docs/language-overview.md) for more details on the language.
+For instructions on how to build and run the compiler, read the HACKING
+document.  Please don't use this project in production, it's still under
+development.
 
-All of this is a work in progress and your support would be appreciated.
+CONTRIBUTING
+------------
 
-oluoluolu+elijah (at) gmail.com
+### CODE
 
-[google group](https://groups.google.com/forum/#!forum/elijjah)
+This project uses mailing lists as main medium of communication. All mail
+archives can be found at https://sr.ht/~johnnyrichard/pipalang/lists.
 
-[Technical Wiki](https://gitlab.com/elijah-team/elijah-lang/-/wikis/home)
+https://lists.sr.ht/~tripleo/el-fluffy-umbrella-announce
+https://lists.sr.ht/~tripleo/el-fluffy-umbrella-devel
+https://lists.sr.ht/~tripleo/el-fluffy-umbrella-discuss
 
-[GitBook: The Elijjah Book](https://oluoluolu-gh.gitbook.io/elijjah-book/)
+If you want to contribute to the source code, send plain text patch to:
 
-[Elijjah by Example](https://elijjah-by-example.github.io)
+    ~tripleo/el-fluffy-umbrella-devel@lists.sr.ht
 
-[GitBook: Elijjah by Example](https://oluoluolu-gh.gitbook.io/elijjah-by-example/)
+Please use git-sendmail to send the patches.  You might want to configure your
+git to prevent silly mistakes:
+
+    $ git config sendmail.to "~tripleo/el-fluffy-umbrella-devel@lists.sr.ht"
+    $ git config format.subjectPrefix "PATCH el-fluffy-umbrella"
+
+### ANNOUNCES
+
+If you want to follow important announces like new releases subscribe to:
+
+    ~tripleo/el-fluffy-umbrella-discuss@lists.sr.ht .
+
+### DICUSSIONS
+
+For discussions about the language subscribe to:
+
+    ~tripleo/el-fluffy-umbrella-discuss@lists.sr.ht
+
+### IRC
+
+If you want to keep in contact with the community, feel free to join our
+channel #-------------- on LiberaChat IRC.
 
 
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgitlab.com%2Felijah-team%2Felijah-lang.svg?type=large)](https://app.fossa.com/projects/git%2Bgitlab.com%2Felijah-team%2Felijah-lang?ref=badge_large)
+
+----
+
+## TODO
+
+ - chat channel. (meh)
+ 
