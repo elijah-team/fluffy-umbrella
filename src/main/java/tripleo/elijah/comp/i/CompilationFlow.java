@@ -8,8 +8,6 @@ import tripleo.elijah.nextgen.query.Mode;
 
 import java.util.function.Consumer;
 
-import static org.junit.Assert.assertTrue;
-
 public interface CompilationFlow {
 	//static CompilationFlowMember findPrelude() {
 	//	return new CF_FindPrelude(aCopm);
@@ -101,7 +99,7 @@ public interface CompilationFlow {
 			// TODO we dont know which prelude to find yet
 
 			final Operation2<OS_Module> prl = cc.findPrelude(Compilation.CompilationAlways.defaultPrelude());
-			assertTrue(prl.mode() == Mode.SUCCESS);
+			assert (prl.mode() == Mode.SUCCESS);
 
 			copm.accept(prl);
 		}
