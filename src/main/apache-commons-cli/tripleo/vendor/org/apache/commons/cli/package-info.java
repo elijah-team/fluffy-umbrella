@@ -18,4 +18,4 @@
 /**
  * Apache Commons CLI provides a simple API for presenting, processing and validating a Command Line Interface.
  */
-package tripleo.vendor.org.apache.commons.cli;;
+package tripleo.vendor.org.apache.commons.cli;
