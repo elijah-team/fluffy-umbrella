@@ -597,6 +597,8 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 							sb.append(Emit.emit("/*827*/") + path);
 						}
 					} else {
+						ZonePath zone_path = _zone.getPath(ia2);
+
 						final String path = gf.getIdentIAPathNormal(ia2);
 						sb.append(Emit.emit("/*828*/")+String.format("%s is UNKNOWN", path));
 					}

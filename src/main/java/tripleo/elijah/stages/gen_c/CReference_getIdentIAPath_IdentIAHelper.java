@@ -11,7 +11,6 @@ import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.NamespaceStatement;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.PropertyStatement;
-import tripleo.elijah.lang.VariableSequence;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.EvaNode;
@@ -223,26 +222,9 @@ class CReference_getIdentIAPath_IdentIAHelper {
 
 	private void _act_VariableStatement(final CReference aCReference) {
 		final VariableStatement variableStatement = (VariableStatement) getResolved_element();
-		final String            text2             = variableStatement.getName();
 
-		// first getParent is VariableSequence
-		final VariableSequence variableSequence = (VariableSequence) getResolved_element().getParent();
-		final OS_Element       parent           = variableSequence.getParent();
-
-		if (parent == getGeneratedFunction().getFD().getParent()) {
-			// A direct member value. Doesn't handle when indirect
-//				text = Emit.emit("/*124*/")+"vsc->vm" + text2;
-			aCReference.addRef(text2, CReference.Ref.DIRECT_MEMBER, getValue());
-		} else {
-			if (parent == getGeneratedFunction().getFD()) {
-				aCReference.addRef(text2, CReference.Ref.LOCAL);
-			} else {
-//					if (parent instanceof NamespaceStatement) {
-//						int y=2;
-//					}
-				aCReference.addRef(text2, CReference.Ref.MEMBER, getValue());
-			}
-		}
+		GI_VariableStatement givs = (GI_VariableStatement) aCReference._repo().itemFor(variableStatement);
+		givs.__CReference_getIdentIAPath_IdentIAHelper(aCReference, getGeneratedFunction(), getValue());
 	}
 
 	private void _act_PropertyStatement(final CReference aCReference) {

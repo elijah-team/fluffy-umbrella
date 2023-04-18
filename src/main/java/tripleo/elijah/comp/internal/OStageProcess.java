@@ -88,7 +88,8 @@ public class OStageProcess implements RuntimeProcess {
 		public types.MalVal apply(final types.MalList args) throws types.MalThrowable {
 			final types.MalVal a0 = args.nth(0);
 
-			if (a0 instanceof final types.MalSymbol pipelineSymbol) {
+			if (a0 instanceof types.MalSymbol) {
+				final types.MalSymbol pipelineSymbol = (types.MalSymbol) a0;
 				// 0. accessors
 				final String pipelineName = pipelineSymbol.getName();
 

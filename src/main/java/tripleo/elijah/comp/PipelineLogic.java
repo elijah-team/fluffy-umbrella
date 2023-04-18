@@ -77,13 +77,7 @@ public class PipelineLogic {
 
 		@Override
 		public void onComplete() {
-			NotImplementedException.raise();
-
 			dp.finish();
-
-//			dp.generatedClasses.addAll(lgc);
-
-//			elLogs = dp.deduceLogs;
 		}
 	};
 	

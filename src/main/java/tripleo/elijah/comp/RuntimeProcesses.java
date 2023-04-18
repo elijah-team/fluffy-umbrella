@@ -54,9 +54,9 @@ public class RuntimeProcesses {
 	}
 
 	public void run_better() {
-		// do nothing. job over
 		switch (ca.getCompilation().stage) {
 		case E -> {
+			// do nothing. job over
 			return;
 		}
 		default -> {

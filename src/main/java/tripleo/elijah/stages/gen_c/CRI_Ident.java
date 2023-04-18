@@ -56,19 +56,23 @@ class CRI_Ident {
 		if (resolved_element != null) {
 			EvaNode resolved2;
 
-			assert repo_element != null;
+			//assert repo_element != null;
+			if (repo_element == null) {
+				int y=2;
+				//throw new AssertionError();
+			} else {
+				if (resolved_element instanceof ClassStatement) {
+					((GI_ClassStatement) repo_element).setITE(ite);
+				} else if (resolved_element instanceof FunctionDef) {
+					@Nullable final ProcTableEntry pte = ite.getCallablePTE();
+					resolved2 = ((GI_FunctionDef) repo_element)._re_is_FunctionDef(pte, _cheat, ite);
 
-			if (resolved_element instanceof ClassStatement) {
-				((GI_ClassStatement) repo_element).setITE(ite);
-			} else if (resolved_element instanceof FunctionDef) {
-				@Nullable final ProcTableEntry pte = ite.getCallablePTE();
-				resolved2 = ((GI_FunctionDef) repo_element)._re_is_FunctionDef(pte, _cheat, ite);
+					repo_element.setEvaNode(resolved2);
+				} else if (resolved_element instanceof PropertyStatement) {
+					resolved2 = _re_is_PropertyStatement(addRef, aog, sSize, i, aValue, (x) -> skip[0] = true, (x) -> text[0] = x);
 
-				repo_element.setEvaNode(resolved2);
-			} else if (resolved_element instanceof PropertyStatement) {
-				resolved2 = _re_is_PropertyStatement(addRef, aog, sSize, i, aValue, (x) -> skip[0] = true, (x) -> text[0] = x);
-
-				repo_element.setEvaNode(resolved2);
+					repo_element.setEvaNode(resolved2);
+				}
 			}
 		}
 

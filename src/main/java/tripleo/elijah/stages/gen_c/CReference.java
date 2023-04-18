@@ -29,6 +29,7 @@ import tripleo.elijah.util.NotImplementedException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 
@@ -40,7 +41,7 @@ public class CReference {
 	private List<String>    args;
 	private List<Reference> refs;
 
-	private final GI_Repo _repo = new GI_Repo(this);
+	private final GI_Repo _repo = new GI_Repo();
 
 
 	//
@@ -188,6 +189,10 @@ public class CReference {
 		return _repo;
 	}
 
+	public void addRef(final Reference aR) {
+		refs.add(aR);
+	}
+
 	enum Ref {
 		//  was:
 		//	enum Ref {
@@ -204,20 +209,48 @@ public class CReference {
 			}
 		},
 		MEMBER {
-			@Override
-			public void buildHelper(final Reference ref, final @NotNull BuildState sb) {
-				final String text = "->vm" + ref.text;
+			class Text implements GenerateC_Statement {
+				private String text;
+				private Supplier<Boolean> sb;
+				private Supplier<String> ss;
 
-				final StringBuilder sb1 = new StringBuilder();
-
-				sb1.append(text);
-				if (ref.value != null) {
-					sb1.append(" = ");
-					sb1.append(ref.value);
-					sb1.append(";");
+				public Text(String atext, Supplier<Boolean> asb, Supplier<String> ass) {
+					text = atext;
+					sb = asb;
+					ss = ass;
 				}
 
-				sb.appendText(sb1.toString(), false);
+				@Override
+				public String getText() {
+					final StringBuilder sb1 = new StringBuilder();
+
+					sb1.append("->vm" + text);
+
+					if (sb.get()) {
+						sb1.append(" = ");
+						sb1.append(ss.get());
+						sb1.append(";");
+					}
+					
+					return text;
+				}
+
+				@Override
+				public GCR_Rule rule() {
+					return new GCR_Rule() {
+						@Override
+						public String text() {
+							return "Ref MEMBER Text";
+						}
+					};
+				}
+			}
+			
+			@Override
+			public void buildHelper(final Reference ref, final @NotNull BuildState sb) {
+				final Text t = new Text(ref.text, () -> ref.value != null, () -> ref.value);
+				
+				sb.appendText(t.getText(), false);
 			}
 		},
 		PROPERTY_GET {
