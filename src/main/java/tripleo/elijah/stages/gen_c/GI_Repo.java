@@ -1,21 +1,13 @@
 package tripleo.elijah.stages.gen_c;
 
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.PropertyStatement;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.instructions.ProcIA;
 
 import java.util.HashMap;
 import java.util.Map;
 
 class GI_Repo {
-	private final tripleo.elijah.stages.gen_c.CReference CReference;
 	private final Map<Object, GenerateC_Item>            items = new HashMap<>();
-
-	public GI_Repo(final CReference aCReference) {
-		CReference = aCReference;
-	}
 
 	public GenerateC_Item itemFor(final ProcIA aProcIA) {
 		final GI_ProcIA gi_proc;
@@ -35,6 +27,8 @@ class GI_Repo {
 			return new GI_FunctionDef((FunctionDef) e, this);
 		} else if (e instanceof PropertyStatement) {
 			return new GI_PropertyStatement((PropertyStatement) e, this);
+		} else if (e instanceof VariableStatement) {
+			return new GI_VariableStatement((VariableStatement) e, this);
 		}
 
 		return null;
