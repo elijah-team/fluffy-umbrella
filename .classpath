@@ -54,7 +54,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/org.slf4j:slf4j-simple:1.7.25"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/picocontainer"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/range-v1-0.0.3b"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/scala-sdk-2.13.10"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/xmlpull-1.1.3.1"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/xpp3_min-1.1.4c"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/xstream-1.4.11.1"/>

@@ -9,23 +9,23 @@
     <archive path="/home/olu/local/src/ELIJAH/oct-newness/elijah-lang-working/lib/xmlpull/xmlpull/1.1.3.1/xmlpull-1.1.3.1.jar" />
   </library>
   <library name="com.google.guava:guava:29.0-jre">
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/com/google/guava/guava/29.0-jre/guava-29.0-jre.jar" />
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar" />
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar" />
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/org/checkerframework/checker-qual/2.11.1/checker-qual-2.11.1.jar" />
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/com/google/errorprone/error_prone_annotations/2.3.4/error_prone_annotations-2.3.4.jar" />
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/com/google/j2objc/j2objc-annotations/1.3/j2objc-annotations-1.3.jar" />
+    <archive path="/home/olu/.m2/repository/com/google/guava/guava/29.0-jre/guava-29.0-jre.jar" />
+    <archive path="/home/olu/.m2/repository/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar" />
+    <archive path="/home/olu/.m2/repository/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
+    <archive path="/home/olu/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar" />
+    <archive path="/home/olu/.m2/repository/org/checkerframework/checker-qual/2.11.1/checker-qual-2.11.1.jar" />
+    <archive path="/home/olu/.m2/repository/com/google/errorprone/error_prone_annotations/2.3.4/error_prone_annotations-2.3.4.jar" />
+    <archive path="/home/olu/.m2/repository/com/google/j2objc/j2objc-annotations/1.3/j2objc-annotations-1.3.jar" />
   </library>
   <library name="log4j:log4j:1.2.17">
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar" />
+    <archive path="/home/olu/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar" />
   </library>
   <library name="org.easymock:easymock:4.2">
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/org/easymock/easymock/4.2/easymock-4.2.jar" />
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/org/objenesis/objenesis/3.1/objenesis-3.1.jar" />
+    <archive path="/home/olu/.m2/repository/org/easymock/easymock/4.2/easymock-4.2.jar" />
+    <archive path="/home/olu/.m2/repository/org/objenesis/objenesis/3.1/objenesis-3.1.jar" />
   </library>
   <library name="range-v1-0.0.3b">
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/tripleo/util/range/range-v1/0.0.3b/range-v1-0.0.3b.jar" />
+    <archive path="/home/olu/.m2/repository/tripleo/util/range/range-v1/0.0.3b/range-v1-0.0.3b.jar" />
   </library>
   <library name="xpp3_min-1.1.4c">
     <archive path="/home/olu/local/src/ELIJAH/oct-newness/elijah-lang-working/lib/xpp3/xpp3_min/1.1.4c/xpp3_min-1.1.4c.jar" />
@@ -34,14 +34,14 @@
     <archive path="/home/olu/local/src/ELIJAH/oct-newness/elijah-lang-working/lib/javassist-3.1/javassist.jar" />
   </library>
   <library name="commons-codec:commons-codec:1.151">
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/commons-codec/commons-codec/1.15/commons-codec-1.15.jar" />
+    <archive path="/home/olu/.m2/repository/commons-codec/commons-codec/1.15/commons-codec-1.15.jar" />
   </library>
   <library name="commons-cli-1.4">
     <archive path="/home/olu/local/src/ELIJAH/oct-newness/elijah-lang-working/lib/commons-cli-1.4.jar" />
   </library>
   <library name="org.jdeferred.v2:jdeferred-core:2.0.0">
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/org/jdeferred/v2/jdeferred-core/2.0.0/jdeferred-core-2.0.0.jar" />
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" />
+    <archive path="/home/olu/.m2/repository/org/jdeferred/v2/jdeferred-core/2.0.0/jdeferred-core-2.0.0.jar" />
+    <archive path="/home/olu/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" />
   </library>
   <library name="annotations-16.0.2">
     <archive path="/home/olu/local/src/ELIJAH/oct-newness/elijah-lang-working/lib/annotations-16.0.2.jar" />
@@ -51,8 +51,8 @@
     <archive path="/home/olu/local/src/ELIJAH/oct-newness/elijah-lang-working/lib/reactive-streams-1.0.3.jar" />
   </library>
   <library name="org.slf4j:slf4j-simple:1.7.25">
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar" />
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" />
+    <archive path="/home/olu/.m2/repository/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar" />
+    <archive path="/home/olu/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar" />
   </library>
   <library name="antlr-2.7.7">
     <archive path="/home/olu/local/src/ELIJAH/oct-newness/elijah-lang-working/lib/antlr-2.7.7.jar" />
@@ -65,17 +65,13 @@
     <archive path="/home/olu/local/src/ELIJAH/oct-newness/elijah-lang-working/lib/junit-4.12.jar" />
   </library>
   <library name="commons-codec:commons-codec:1.15">
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/commons-codec/commons-codec/1.15/commons-codec-1.15.jar" />
+    <archive path="/home/olu/.m2/repository/commons-codec/commons-codec/1.15/commons-codec-1.15.jar" />
   </library>
   <library name="buffers-v1-0.0.3">
-    <archive path="/media/olu/loosie-safe1/@home-olu-language-things/.m2/repository/tripleo/buffers/buffers-v1/0.0.3/buffers-v1-0.0.3.jar" />
+    <archive path="/home/olu/.m2/repository/tripleo/buffers/buffers-v1/0.0.3/buffers-v1-0.0.3.jar" />
   </library>
   <library name="org.eclipse.jdt.annotation_2.2.200.v20180921-1416">
     <archive path="/home/olu/local/src/ELIJAH/oct-newness/elijah-lang-working/lib/org.eclipse.jdt.annotation_2.2.200.v20180921-1416.jar" />
-  </library>
-  <library name="scala-sdk-2.13.10">
-    <archive path="/home/olu/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.10/scala-library-2.13.10.jar" />
-    <archive path="/home/olu/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.10/scala-reflect-2.13.10.jar" />
   </library>
 </eclipse-userlibraries>
 
