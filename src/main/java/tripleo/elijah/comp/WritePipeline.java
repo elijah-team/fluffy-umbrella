@@ -259,7 +259,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 	@Override
 	public void gr_slot(final @NotNull GenerateResult gr1) {
 		Objects.requireNonNull(gr1);
-		latch.notify(gr1); // TODO doesn't seem right. Might work, but not right
+		latch.notify(gr1);
 		gr1.subscribeCompletedItems(cih.observer());
 	}
 

@@ -6,6 +6,7 @@ import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.PipelineLogic;
+import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.gen_fn.EvaClass;
@@ -30,16 +31,21 @@ public class GN_GenerateNodesIntoSink implements GN_Notable {
 	private final GenerateResult     gr;
 	private final ElLog.Verbosity    verbosity;
 	private final PipelineLogic pipelineLogic;
+	private final IPipelineAccess pa;
 
-	public GN_GenerateNodesIntoSink(final List<EvaNode> algc, final GenerateResultSink aResultSink, final EIT_ModuleList aModuleList, final ElLog.Verbosity aVerbosity, final GenerateResult agr, final PipelineLogic aPipelineLogic) {
+	public GN_GenerateNodesIntoSink(final List<EvaNode> algc, final GenerateResultSink aResultSink, final EIT_ModuleList aModuleList, final ElLog.Verbosity aVerbosity, final GenerateResult agr, final PipelineLogic aPipelineLogic, final IPipelineAccess aPa) {
 		mods       = aModuleList;
 		lgc        = algc;
 		resultSink = aResultSink;
 		gr         = agr;
 		verbosity  = aVerbosity;
 		pipelineLogic = aPipelineLogic;
+		pa = aPa;
 	}
 
+	/*
+	 * See AccessBus#doModule
+	 */
 	@Override
 	public void run() {
 		final WorkManager wm = new WorkManager();
@@ -77,6 +83,15 @@ public class GN_GenerateNodesIntoSink implements GN_Notable {
 		}
 
 		wm.drain(); // TODO here??
+
+
+
+
+
+
+
+
+		pa.getAccessBus().resolveGenerateResult(gr);
 	}
 
 	protected GenerateResult run3(OS_Module mod, @NotNull List<EvaNode> lgc, WorkManager wm, GenerateFiles ggc, final GenerateResultSink aResultSink) {
