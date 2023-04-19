@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Created 8/21/21 10:16 PM
  */
-public class GeneratePipeline implements PipelineMember, Consumer<Supplier<GenerateResult>> {
+public class GeneratePipeline implements PipelineMember, Consumer<Supplier<GenerateResult>>, AccessBus.AB_LgcListener {
 	//private final Compilation               c;
 	private final DefaultGenerateResultSink grs;
 	private final IPipelineAccess           pa;
@@ -59,19 +59,7 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 		//c     = pa.getCompilation();
 		grs = new DefaultGenerateResultSink(this, pa);
 
-		latch2 = new DoubleLatch<List<EvaNode>>(nodes -> {
-			pa.pipelineLogic().generate(nodes, grs);
-
-			final List<GenerateResultItem> x = grs.resultList();
-
-			SPrintStream xps = new SPrintStream();
-
-			DebugBuffersLogic.debug_buffers_logic(x, xps);
-
-			//System.err.println("789789 "+xps.getString()); //04/15
-
-			int y = 2;
-		});
+		latch2 = new DoubleLatch<List<EvaNode>>(this::lgc_slot);
 
 		final DeducePipeline deducePipeline = pa.getDeducePipeline();
 
@@ -140,6 +128,21 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 		}
 
 		__ab.resolveGenerateResult(gr);
+	}
+
+	@Override
+	public void lgc_slot(final List<EvaNode> nodes) {
+		pa.pipelineLogic().generate(nodes, grs);
+
+		final List<GenerateResultItem> x = grs.resultList();
+
+		SPrintStream xps = new SPrintStream();
+
+		DebugBuffersLogic.debug_buffers_logic(x, xps);
+
+		//System.err.println("789789 "+xps.getString()); //04/15
+
+		int y = 2;
 	}
 
 //	public void simpleUsageExample() {
