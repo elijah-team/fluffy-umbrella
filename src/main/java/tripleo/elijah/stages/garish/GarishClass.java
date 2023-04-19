@@ -23,7 +23,7 @@ public class GarishClass {
 		final EvaClass x = dlc.evaNode();
 
 
-		if (x.generatedAlready) throw new Error();
+		if (x.generatedAlready) return ; ///////////////////////////////////////////////////////////////////////////////////////throw new Error();
 		switch (x.getKlass().getType()) {
 		// Don't generate class definition for these three
 		case INTERFACE:

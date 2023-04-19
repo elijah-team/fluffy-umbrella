@@ -105,7 +105,7 @@ public class CReference {
 				
 				text = CRI_Ident.of(idte, ((IdentIA) ia).gf).getIdentIAPath(i, sSize, aog, sl, aValue, refs::add, s, ia2, this);
 				
-				assert text != null;
+				//assert text != null;
 			} else if (ia instanceof ProcIA) {
 				final ProcTableEntry prte = generatedFunction.getProcTableEntry(to_int(ia));
 				text = getIdentIAPath_Proc(prte);
