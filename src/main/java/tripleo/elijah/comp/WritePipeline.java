@@ -13,11 +13,12 @@ import com.google.common.collect.Multimap;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
-import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
+import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tripleo.elijah.comp.AccessBus.AB_GenerateResultListener;
 import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.stages.gen_c.CDependencyRef;
@@ -26,56 +27,48 @@ import tripleo.elijah.stages.gen_generic.*;
 import tripleo.elijah.stages.generate.ElSystem;
 import tripleo.elijah.stages.generate.OutputStrategy;
 import tripleo.elijah.stages.write_stage.functionality.f201a.WriteOutputFiles;
-import tripleo.elijah.stages.write_stage.functionality.f301.WriteBufferText;
 import tripleo.elijah.stages.write_stage.pipeline_impl.*;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.util.buffer.TextBuffer;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * Created 8/21/21 10:19 PM
  */
-public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier<GenerateResult>> {
-	private final CompletedItemsHandler               cih;
-	public final  WritePipelineSharedState            st;
-	public final  Promise<GenerateResult, Void, Void> prom;
-	private final DoubleLatch<GenerateResult>         latch;
-	private       Supplier<GenerateResult>            grs;
+public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier<GenerateResult>>, AB_GenerateResultListener {
+	private final CompletedItemsHandler cih;
+	public final WritePipelineSharedState st;
+	private final DoubleLatch<GenerateResult> latch;
+	private Supplier<GenerateResult> grs;
+	public final  DeferredObject<GenerateResult, Void, Void> prom = new DeferredObject<>();
+
 
 	public WritePipeline(final IPipelineAccess pa) {
-		//public WritePipeline(final @NotNull Compilation aCompilation,
-		//					 ,
-		//					  ppl) {
 		st = new WritePipelineSharedState();
 
 		// given
 		st.c = pa.getCompilation();
 
-
-		final @NotNull ProcessRecord                      pr  = pa.getProcessRecord();
+		final @NotNull ProcessRecord pr = pa.getProcessRecord();
 		final @NotNull Promise<PipelineLogic, Void, Void> ppl = pa.getPipelineLogicPromise();
-
 
 		// computed
 		st.file_prefix = new File("COMP", st.c.getCompilationNumberString());
 
 		// created
-		latch = new DoubleLatch<GenerateResult>(gr -> {st.setGr(gr);__int__steps(gr, gr)/*!!*/;});
+		latch = new DoubleLatch<GenerateResult>(gr -> {
+			st.setGr(gr);
+			__int__steps(gr, gr)/* !! */;
+		});
 
 		// state
-		st.mmb         = ArrayListMultimap.create();
+		st.mmb = ArrayListMultimap.create();
 		st.lsp_outputs = ArrayListMultimap.create();
 
 		// ??
@@ -83,20 +76,8 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 
 		cih = new CompletedItemsHandler(st);
 
-		//		pr.consumeGenerateResult(wpl.consumer());
-		prom = pr.generateResultPromise();
-		prom.then(gr1 -> {
-			latch.notify(gr1); // TODO doesn't seem right. Might work, but not right
-
-			NotImplementedException.raise();
-			;
-			Objects.requireNonNull(gr1);
-
-			// FIXME also setGr here ...
-
-			gr1.subscribeCompletedItems(cih.observer());
-		});
-
+		pa.getAccessBus().subscribe_GenerateResult(this::gr_slot);
+		pa.getAccessBus().subscribe_GenerateResult(prom::resolve);
 
 		pa.setWritePipeline(this);
 	}
@@ -108,19 +89,18 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		return os;
 	}
 
-
 	@Override
 	public void run() throws Exception {
-		//final GenerateResult rs = grs.get(); // 04/15
+		// final GenerateResult rs = grs.get(); // 04/15
 
-		prom.then((final GenerateResult result) -> {
+//		prom.then((final GenerateResult result) -> {
 			latch.notify(true);
-			//__int__steps(result, rs);
-		});
+//		});
 	}
 
 	private void __int__steps(final GenerateResult result, final GenerateResult rs) {
-		@NotNull final List<WP_Indiviual_Step> s = new ArrayList<>();
+		@NotNull
+		final List<WP_Indiviual_Step> s = new ArrayList<>();
 
 		// 0. prepare to change to DoubleLatch instead of/an or in addition to Promise
 		assert result == rs;
@@ -131,7 +111,6 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		s.add(new WPIS_WriteFiles(this));
 		s.add(new WPIS_WriteBuffers(this));
 
-
 		final WP_Flow f = new WP_Flow(s);
 		try {
 			f.act();
@@ -140,9 +119,9 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		}
 	}
 
-
 	public void append_hash(TextBuffer outputBuffer, String aFilename, ErrSink errSink) throws IOException {
-		@Nullable final String hh = Helpers.getHashForFilename(aFilename, errSink);
+		@Nullable
+		final String hh = Helpers.getHashForFilename(aFilename, errSink);
 		if (hh != null) {
 			outputBuffer.append(hh);
 			outputBuffer.append(" ");
@@ -163,7 +142,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 				@Override
 				public void accept(final Supplier<GenerateResult> aGenerateResultSupplier) {
 					grs = aGenerateResultSupplier;
-					//final GenerateResult gr = aGenerateResultSupplier.get();
+					// final GenerateResult gr = aGenerateResultSupplier.get();
 				}
 			};
 		}
@@ -181,7 +160,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		}
 
 		WP_Flow() {
-			//steps.addAll(s);
+			// steps.addAll(s);
 		}
 
 		void act() throws Exception {
@@ -199,12 +178,12 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		}
 	}
 
-	private /*static*/ class CompletedItemsHandler {
-		final         Multimap<Dependency, GenerateResultItem> gris = ArrayListMultimap.create();
+	private /* static */ class CompletedItemsHandler {
+		final Multimap<Dependency, GenerateResultItem> gris = ArrayListMultimap.create();
 		// README debugging purposes
-		final         List<GenerateResultItem>                 abs  = new ArrayList<>();
-		private final WritePipelineSharedState                 sharedState;
-		private       Observer<GenerateResultItem>             observer;
+		final List<GenerateResultItem> abs = new ArrayList<>();
+		private final WritePipelineSharedState sharedState;
+		private Observer<GenerateResultItem> observer;
 
 		public CompletedItemsHandler(final WritePipelineSharedState aSharedState) {
 			sharedState = aSharedState;
@@ -277,8 +256,14 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		}
 	}
 
-}
+	@Override
+	public void gr_slot(final @NotNull GenerateResult gr1) {
+		Objects.requireNonNull(gr1);
+		latch.notify(gr1); // TODO doesn't seem right. Might work, but not right
+		gr1.subscribeCompletedItems(cih.observer());
+	}
 
+}
 
 //
 //
