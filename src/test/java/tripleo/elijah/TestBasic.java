@@ -20,7 +20,6 @@ import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
