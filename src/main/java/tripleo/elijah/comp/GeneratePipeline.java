@@ -9,41 +9,31 @@
 package tripleo.elijah.comp;
 
 import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.nextgen.model.SM_Module;
 import tripleo.elijah.nextgen.model.SM_Module__babyPrint;
-import tripleo.elijah.stages.gen_generic.GenerateResult;
-import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
-import tripleo.elijah.stages.logging.ElLog;
-import tripleo.elijah.work.WorkManager;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-//import static us.bpsm.edn.parser.Parsers.defaultConfiguration;
-
-import tripleo.elijah.comp.i.IPipelineAccess;
-
 import tripleo.elijah.stages.gen_fn.EvaNode;
-
 import tripleo.elijah.stages.gen_generic.DoubleLatch;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.elijah.stages.gen_generic.pipeline_impl.DefaultGenerateResultSink;
-
+import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
+import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.stages.write_stage.pipeline_impl.DebugBuffersLogic;
 import tripleo.elijah.stages.write_stage.pipeline_impl.SPrintStream;
+import tripleo.elijah.stages.write_stage.pipeline_impl.XXPrintStream;
 import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.work.WorkManager;
 
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Contract;
+import java.util.stream.Collectors;
 
 /**
  * Created 8/21/21 10:16 PM
@@ -51,25 +41,23 @@ import org.jetbrains.annotations.Contract;
 public class GeneratePipeline implements PipelineMember, Consumer<Supplier<GenerateResult>> {
 	//private final Compilation               c;
 	private final DefaultGenerateResultSink grs;
-	private final IPipelineAccess pa;
+	private final IPipelineAccess           pa;
 
 	@Contract(pure = true)
 	public GeneratePipeline(@NotNull IPipelineAccess pa0) {
 
-		pa=pa0;
-			final AccessBus ab = pa.getAccessBus();
-			errSink = ab.getCompilation().getErrSink();
+		pa = pa0;
+		final AccessBus ab = pa.getAccessBus();
+		errSink = ab.getCompilation().getErrSink();
 
-			ab.subscribePipelineLogic(aPl -> pipelineLogic = aPl);
-			ab.subscribe_lgc(aLgc -> lgc = aLgc);
+		ab.subscribePipelineLogic(aPl -> pipelineLogic = aPl);
+		ab.subscribe_lgc(aLgc -> lgc = aLgc);
 
-			__ab = ab;
-
-
+		__ab = ab;
 
 
 		//c     = pa.getCompilation();
-		grs   = new DefaultGenerateResultSink(this, pa);
+		grs = new DefaultGenerateResultSink(this, pa);
 
 		latch2 = new DoubleLatch<List<EvaNode>>(nodes -> {
 			pa.pipelineLogic().generate(nodes, grs);
@@ -82,7 +70,7 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 
 			//System.err.println("789789 "+xps.getString()); //04/15
 
-			int                            y = 2;
+			int y = 2;
 		});
 
 		final DeducePipeline deducePipeline = pa.getDeducePipeline();
@@ -98,7 +86,7 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 	public void run() {
 		latch2.notify(true);
 
-		if (pipelineLogic != null) {
+		if (false && pipelineLogic != null) {
 			Preconditions.checkNotNull(pipelineLogic);
 			Preconditions.checkNotNull(lgc);
 
@@ -144,11 +132,11 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 
 			moduleInput.doGenerate(nodes, aErrSink, verbosity, pipelineLogic, wm,
 								   (gr2) -> {
-				gr.additional(gr2);
-				grs.additional(gr2);
-			});
+									   gr.additional(gr2);
+									   grs.additional(gr2);
+								   });
 
-			System.out.println("999999 "+((DefaultGenerateResultSink) grs).resultList());
+			System.out.println("999999 " + ((DefaultGenerateResultSink) grs).resultList());
 		}
 
 		__ab.resolveGenerateResult(gr);
