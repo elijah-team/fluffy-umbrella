@@ -1,14 +1,6 @@
 package mal;
 
-import mal.types.MalContinue;
-import mal.types.MalHashMap;
-import mal.types.MalInteger;
-import mal.types.MalList;
-import mal.types.MalString;
-import mal.types.MalSymbol;
-import mal.types.MalThrowable;
-import mal.types.MalVal;
-import mal.types.MalVector;
+import mal.types.*;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.ArrayList;
@@ -19,12 +11,12 @@ public class reader {
 	public static ArrayList<String> tokenize(final String str) {
 		final ArrayList<String> tokens  = new ArrayList<String>();
 		final Pattern           pattern = Pattern.compile("[\\s ,]*(~@|[\\[\\]{}()'`~@]|\"(?:[\\\\].|[^\\\\\"])*\"?|;.*|[^\\s \\[\\]{}()'\"`~@,;]*)");
-		final Matcher     matcher = pattern.matcher(str);
+		final Matcher           matcher = pattern.matcher(str);
 		while (matcher.find()) {
 			final String token = matcher.group(1);
 			if (token != null &&
-			  !token.equals("") &&
-			  !(token.charAt(0) == ';')) {
+					!token.equals("") &&
+					!(token.charAt(0) == ';')) {
 				tokens.add(token);
 			}
 		}
@@ -32,7 +24,7 @@ public class reader {
 	}
 
 	public static MalVal read_atom(final Reader rdr)
-	  throws ParseError {
+	throws ParseError {
 		final String  token   = rdr.next();
 		final Pattern pattern = Pattern.compile("(^-?[0-9]+$)|(^-?[0-9][0-9.]*$)|(^nil$)|(^true$)|(^false$)|^\"((?:[\\\\].|[^\\\\\"])*)\"$|^\"(.*)$|:(.*)|(^[^\"]*$)");
 		final Matcher matcher = pattern.matcher(token);
@@ -61,7 +53,7 @@ public class reader {
 	}
 
 	public static MalVal read_list(final Reader rdr, final MalList lst, final char start, final char end)
-	  throws MalContinue, ParseError {
+	throws MalContinue, ParseError {
 		String token = rdr.next();
 		if (token.charAt(0) != start) {
 			throw new ParseError("expected '" + start + "'");
@@ -80,13 +72,13 @@ public class reader {
 	}
 
 	public static MalVal read_hash_map(final Reader rdr)
-	  throws MalContinue, ParseError {
+	throws MalContinue, ParseError {
 		final MalList lst = (MalList) read_list(rdr, new MalList(), '{', '}');
 		return new MalHashMap(lst);
 	}
 
 	public static MalVal read_form(final Reader rdr)
-	  throws MalContinue, ParseError {
+	throws MalContinue, ParseError {
 		final String token = rdr.peek();
 		if (token == null) {
 			throw new MalContinue();
@@ -97,31 +89,31 @@ public class reader {
 		case '\'':
 			rdr.next();
 			return new MalList(new MalSymbol("quote"),
-			  read_form(rdr));
+							   read_form(rdr));
 		case '`':
 			rdr.next();
 			return new MalList(new MalSymbol("quasiquote"),
-			  read_form(rdr));
+							   read_form(rdr));
 		case '~':
 			if (token.equals("~")) {
 				rdr.next();
 				return new MalList(new MalSymbol("unquote"),
-				  read_form(rdr));
+								   read_form(rdr));
 			} else {
 				rdr.next();
 				return new MalList(new MalSymbol("splice-unquote"),
-				  read_form(rdr));
+								   read_form(rdr));
 			}
 		case '^':
 			rdr.next();
 			final MalVal meta = read_form(rdr);
 			return new MalList(new MalSymbol("with-meta"),
-			  read_form(rdr),
-			  meta);
+							   read_form(rdr),
+							   meta);
 		case '@':
 			rdr.next();
 			return new MalList(new MalSymbol("deref"),
-			  read_form(rdr));
+							   read_form(rdr));
 		case '(':
 			form = read_list(rdr, new MalList(), '(', ')');
 			break;
@@ -144,7 +136,7 @@ public class reader {
 	}
 
 	public static MalVal read_str(final String str)
-	  throws MalContinue, ParseError {
+	throws MalContinue, ParseError {
 		return read_form(new Reader(tokenize(str)));
 	}
 

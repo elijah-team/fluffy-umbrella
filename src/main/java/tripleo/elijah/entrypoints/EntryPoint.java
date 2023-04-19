@@ -9,11 +9,6 @@
 
 package tripleo.elijah.entrypoints;
 
-import tripleo.elijah.stages.deduce.FunctionInvocation;
-import tripleo.elijah.stages.gen_fn.GenType;
-
-import java.util.List;
-
 /**
  * Created 6/14/21 7:20 AM
  */

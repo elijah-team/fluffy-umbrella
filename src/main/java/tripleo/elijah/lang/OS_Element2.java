@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package tripleo.elijah.lang;
 

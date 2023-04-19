@@ -10,7 +10,6 @@ package tripleo.elijah.util;
 
 import antlr.CommonToken;
 import antlr.Token;
-//import com.thoughtworks.xstream.XStream;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.jetbrains.annotations.NotNull;
@@ -65,7 +64,7 @@ public class Helpers {
 		IExpression r = ts.get(0);
 //		int i=1;
 		while (ts.size() > i) {
-			final IExpression dotExpression = qualidentToDotExpression2(ts.subList(i++, ts.size()), i+1);
+			final IExpression dotExpression = qualidentToDotExpression2(ts.subList(i++, ts.size()), i + 1);
 			if (dotExpression == null) break;
 //			r.setRight(dotExpression);
 			r = new DotExpression(r, dotExpression);
@@ -80,14 +79,8 @@ public class Helpers {
 	}
 
 	@NotNull
-	public static IdentExpression string_to_ident(final String txt) {
-		final CommonToken t = new CommonToken(ElijjahTokenTypes.IDENT, txt);
-		return new IdentExpression(t);
-	}
-
-	@NotNull
 	public static String remove_single_quotes_from_string(final String s) {
-		return s.substring(1, s.length()-1);
+		return s.substring(1, s.length() - 1);
 	}
 
 	public static String String_join(String separator, Iterable<String> stringIterable) {
@@ -98,7 +91,7 @@ public class Helpers {
 				sb.append(part);
 				sb.append(separator);
 			}
-			final String ss = sb.toString();
+			final String ss        = sb.toString();
 			final String substring = separator.substring(0, ss.length() - separator.length());
 			return substring;
 		}
@@ -112,6 +105,12 @@ public class Helpers {
 			q.append(string_to_ident(xx));
 		}
 		return q;
+	}
+
+	@NotNull
+	public static IdentExpression string_to_ident(final String txt) {
+		final CommonToken t = new CommonToken(ElijjahTokenTypes.IDENT, txt);
+		return new IdentExpression(t);
 	}
 
 	public static String getHash(byte[] aBytes) throws NoSuchAlgorithmException {
@@ -147,10 +146,10 @@ public class Helpers {
 			return null;
 		}
 
-		final File file = new File(aFilename);
-		long size = file.length();
-		byte[] ba = new byte[64 * 1024];  // README Counting on reasonable sizes here
-		FileInputStream bb = null;
+		final File      file = new File(aFilename);
+		long            size = file.length();
+		byte[]          ba   = new byte[64 * 1024];  // README Counting on reasonable sizes here
+		FileInputStream bb   = null;
 		try {
 			bb = new FileInputStream(file);
 
@@ -158,11 +157,11 @@ public class Helpers {
 
 			while (n != -1) {
 				n = bb.read(ba);
-				m+=n;
+				m += n;
 				md.update(ba);
 			}
 
-			assert m == size-1;
+			assert m == size - 1;
 
 			byte[] hashBytes = md.digest();
 

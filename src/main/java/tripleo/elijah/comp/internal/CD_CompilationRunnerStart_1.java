@@ -1,9 +1,10 @@
 package tripleo.elijah.comp.internal;
 
-import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.CompilationRunner;
+import tripleo.elijah.comp.Operation;
 import tripleo.elijah.comp.i.CD_CompilationRunnerStart;
 import tripleo.elijah.comp.i.CompilationClosure;
 import tripleo.elijah.comp.i.ICompilationAccess;
@@ -34,9 +35,9 @@ public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 			Operation<CompilerInstructions>[] y = new Operation[1];
 
 			final Operation<CompilerInstructions> x = cr.findStdLib2(Compilation.CompilationAlways.defaultPrelude(),
-																					ccl.getCompilation()
-																					//,(x) -> {y[0]=x;}
-																				   );
+																	 ccl.getCompilation()
+																	 //,(x) -> {y[0]=x;}
+																	);
 			if (x.mode() == FAILURE) {
 				ccl.errSink().exception(x.failure());
 				return;

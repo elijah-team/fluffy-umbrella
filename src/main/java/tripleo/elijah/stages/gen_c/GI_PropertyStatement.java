@@ -6,7 +6,7 @@ import tripleo.elijah.stages.gen_fn.EvaNode;
 class GI_PropertyStatement implements GenerateC_Item {
 	private final PropertyStatement _e;
 	private final GI_Repo           _epo;
-	private EvaNode _evaNaode;
+	private       EvaNode           _evaNaode;
 
 	public GI_PropertyStatement(final PropertyStatement aE, final GI_Repo aGIRepo) {
 		_e   = aE;
@@ -14,12 +14,12 @@ class GI_PropertyStatement implements GenerateC_Item {
 	}
 
 	@Override
-	public void setEvaNode(final EvaNode aEvaNode) {
-		_evaNaode = aEvaNode;
+	public EvaNode getEvaNode() {
+		return _evaNaode;
 	}
 
 	@Override
-	public EvaNode getEvaNode() {
-		return _evaNaode;
+	public void setEvaNode(final EvaNode aEvaNode) {
+		_evaNaode = aEvaNode;
 	}
 }

@@ -14,7 +14,7 @@ import static tripleo.elijah.nextgen.query.Mode.SUCCESS;
 public class CD_FindStdLibImpl implements CD_FindStdLib {
 	@Override
 	public void findStdLib(final CompilationRunner aCompilationRunner, final String aPreludeName, final Compilation aC, Consumer<Operation<CompilerInstructions>> coci) {
-		int y=2;
+		int y = 2;
 		try {
 			@NotNull final Operation<CompilerInstructions> oci = _____findStdLib(aPreludeName, aCompilationRunner.compilation.getCompilationClosure(), aCompilationRunner);
 			coci.accept(oci);
@@ -23,6 +23,7 @@ public class CD_FindStdLibImpl implements CD_FindStdLib {
 		}
 
 	}
+
 	@NotNull
 	public Operation<CompilerInstructions> _____findStdLib(final String prelude_name, final @NotNull CompilationClosure c, CompilationRunner cr) {
 		final ErrSink errSink = c.errSink();

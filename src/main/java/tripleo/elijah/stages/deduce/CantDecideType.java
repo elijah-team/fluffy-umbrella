@@ -27,11 +27,11 @@ import java.util.List;
  * Created 4/13/21 5:46 AM
  */
 public class CantDecideType implements Diagnostic {
-	private final VariableTableEntry vte;
+	private final          VariableTableEntry         vte;
 	private final @NotNull Collection<TypeTableEntry> types;
 
 	public CantDecideType(VariableTableEntry aVte, @NotNull Collection<TypeTableEntry> aTypes) {
-		vte = aVte;
+		vte   = aVte;
 		types = aTypes;
 	}
 

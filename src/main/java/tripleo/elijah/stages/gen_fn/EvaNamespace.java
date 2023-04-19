@@ -22,13 +22,12 @@ import tripleo.elijah.util.NotImplementedException;
  * Created 12/22/20 5:39 PM
  */
 public class EvaNamespace extends EvaContainerNC implements GNCoded {
+	private final OS_Module          module;
+	private final NamespaceStatement namespaceStatement;
 	public EvaNamespace(NamespaceStatement aNamespaceStatement, OS_Module aModule) {
 		namespaceStatement = aNamespaceStatement;
-		module = aModule;
+		module             = aModule;
 	}
-
-	private final OS_Module module;
-	private final NamespaceStatement namespaceStatement;
 
 	public void addAccessNotation(AccessNotation an) {
 		throw new NotImplementedException();
@@ -42,7 +41,7 @@ public class EvaNamespace extends EvaContainerNC implements GNCoded {
 		fd.scope(scope3);
 		for (VarTableEntry varTableEntry : varTable) {
 			if (varTableEntry.initialValue != IExpression.UNASSIGNED) {
-				IExpression left = varTableEntry.nameToken;
+				IExpression left  = varTableEntry.nameToken;
 				IExpression right = varTableEntry.initialValue;
 
 				IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
@@ -63,23 +62,23 @@ public class EvaNamespace extends EvaContainerNC implements GNCoded {
 		return namespaceStatement.getName();
 	}
 
-	public NamespaceStatement getNamespaceStatement() {
-		return this.namespaceStatement;
+	@Override
+	public String identityString() {
+		return "" + namespaceStatement;
 	}
 
-    @Override
-    public String identityString() {
-        return ""+namespaceStatement;
-    }
-
-    @Override
-    public OS_Module module() {
-        return module;
-    }
+	@Override
+	public OS_Module module() {
+		return module;
+	}
 
 	@Override
 	public OS_Element getElement() {
 		return getNamespaceStatement();
+	}
+
+	public NamespaceStatement getNamespaceStatement() {
+		return this.namespaceStatement;
 	}
 
 	@Override

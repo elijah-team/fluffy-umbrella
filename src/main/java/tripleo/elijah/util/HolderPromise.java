@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  */
 public class HolderPromise<T> {
 	// TODO do we really even need this field?
-	private T el;
+	private T                 el;
 	private List<Consumer<T>> callbacks = new ArrayList<>();
 
 	public void set(T aHeld) {

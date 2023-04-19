@@ -20,7 +20,7 @@ import java.io.PrintStream;
  */
 public class DefaultProcessLogEntryBehavior implements ProcessLogEntryBehavior {
 	private PrintStream ps;
-	private String s1;
+	private String      s1;
 
 	@Override
 	public void processLogEntry(LogEntry entry) {

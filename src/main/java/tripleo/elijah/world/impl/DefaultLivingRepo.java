@@ -1,21 +1,12 @@
 package tripleo.elijah.world.impl;
 
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
-import tripleo.elijah.lang.BaseFunctionDef;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.OS_Package;
-import tripleo.elijah.lang.Qualident;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_fn.EvaNamespace;
-import tripleo.elijah.stages.gen_fn.EvaNamespace;
 import tripleo.elijah.util.NotImplementedException;
-import tripleo.elijah.world.i.LivingClass;
-import tripleo.elijah.world.i.LivingFunction;
-import tripleo.elijah.world.i.LivingNode;
-import tripleo.elijah.world.i.LivingPackage;
-import tripleo.elijah.world.i.LivingRepo;
+import tripleo.elijah.world.i.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,10 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 public class DefaultLivingRepo implements LivingRepo {
-	private final Map<String, OS_Package> _packages = new HashMap<String, OS_Package>();
-	private int _packageCode  = 1;
-	private int _classCode    = 101;
-	private int _functionCode = 1001;
+	private final Map<String, OS_Package> _packages     = new HashMap<String, OS_Package>();
+	List<LivingNode> repo = new ArrayList<>();
+	private       int                     _packageCode  = 1;
+	private       int                     _classCode    = 101;
+	private       int                     _functionCode = 1001;
 
 	public OS_Package makePackage(final Qualident pkg_name) {
 		final String pkg_name_s = pkg_name.toString();
@@ -44,14 +36,6 @@ public class DefaultLivingRepo implements LivingRepo {
 
 	private int nextPackageCode() {
 		return _packageCode++;
-	}
-
-	public int nextClassCode() {
-		return _classCode++;
-	}
-
-	public int nextFunctionCode() {
-		return _functionCode++;
 	}
 
 	@Override
@@ -82,7 +66,7 @@ public class DefaultLivingRepo implements LivingRepo {
 		}
 		case MAIN_FUNCTION -> {
 			if (aFunction.getFD() instanceof FunctionDef &&
-			  MainClassEntryPoint.is_main_function_with_no_args((FunctionDef) aFunction.getFD())) {
+					MainClassEntryPoint.is_main_function_with_no_args((FunctionDef) aFunction.getFD())) {
 				aFunction.setCode(1000);
 				//compilation.notifyFunction(code, aFunction);
 			} else {
@@ -98,6 +82,10 @@ public class DefaultLivingRepo implements LivingRepo {
 		aFunction._living = living;
 
 		return living;
+	}
+
+	public int nextFunctionCode() {
+		return _functionCode++;
 	}
 
 	@Override
@@ -126,7 +114,9 @@ public class DefaultLivingRepo implements LivingRepo {
 		return living;
 	}
 
-	List<LivingNode> repo = new ArrayList<>();
+	public int nextClassCode() {
+		return _classCode++;
+	}
 
 	@Override
 	public void addNamespace(final EvaNamespace aNamespace, final Add aNone) {

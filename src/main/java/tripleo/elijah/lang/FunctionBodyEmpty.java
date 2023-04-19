@@ -13,13 +13,13 @@ package tripleo.elijah.lang;
  */
 public class FunctionBodyEmpty extends FunctionBody {
 	@Override
-	public void setAbstract(boolean aAbstract) {
-
+	public boolean getAbstract() {
+		return true;
 	}
 
 	@Override
-	public boolean getAbstract() {
-		return true;
+	public void setAbstract(boolean aAbstract) {
+
 	}
 }
 

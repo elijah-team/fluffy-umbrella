@@ -25,18 +25,18 @@ import tripleo.elijah.stages.logging.ElLog;
  */
 class Found_Element_For_ITE {
 
-	private final BaseEvaFunction generatedFunction;
-	private final Context         ctx;
-	private final ElLog LOG;
-	private final ErrSink errSink;
+	private final BaseEvaFunction            generatedFunction;
+	private final Context                    ctx;
+	private final ElLog                      LOG;
+	private final ErrSink                    errSink;
 	private final DeduceTypes2.DeduceClient1 dc;
 
 	public Found_Element_For_ITE(BaseEvaFunction aGeneratedFunction, Context aCtx, ElLog aLOG, ErrSink aErrSink, DeduceTypes2.DeduceClient1 aDeduceClient1) {
 		generatedFunction = aGeneratedFunction;
-		ctx = aCtx;
-		LOG = aLOG;
-		errSink = aErrSink;
-		dc = aDeduceClient1;
+		ctx               = aCtx;
+		LOG               = aLOG;
+		errSink           = aErrSink;
+		dc                = aDeduceClient1;
 	}
 
 	public void action(@NotNull IdentTableEntry ite) {
@@ -63,60 +63,6 @@ class Found_Element_For_ITE {
 			ite.resolveExpectation.satisfy(normal_path);
 	}
 
-	public void action_AliasStatement(@NotNull IdentTableEntry ite, @NotNull AliasStatement y) {
-		LOG.err("396 AliasStatement");
-		@Nullable OS_Element x = dc._resolveAlias(y);
-		if (x == null) {
-			ite.setStatus(BaseTableEntry.Status.UNKNOWN, null);
-			errSink.reportError("399 resolveAlias returned null");
-		} else {
-			ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(x));
-			dc.found_element_for_ite(generatedFunction, ite, x, ctx);
-		}
-	}
-
-	public void action_PropertyStatement(@NotNull IdentTableEntry ite, @NotNull PropertyStatement ps) {
-		OS_Type attached;
-		switch (ps.getTypeName().kindOfType()) {
-			case GENERIC:
-				attached = new OS_UserType(ps.getTypeName());
-				break;
-			case NORMAL:
-				try {
-					attached = (dc.resolve_type(new OS_UserType(ps.getTypeName()), ctx).resolved.getClassOf()).getOS_Type();
-				} catch (ResolveError resolveError) {
-					LOG.err("378 resolveError");
-					resolveError.printStackTrace();
-					return;
-				}
-				break;
-			default:
-				throw new IllegalStateException("Unexpected value: " + ps.getTypeName().kindOfType());
-		}
-		if (ite.type == null) {
-			ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, attached);
-		} else
-			ite.type.setAttached(attached);
-		dc.genCIForGenType2(ite.type.genType);
-		int yy = 2;
-	}
-
-	public void action_FunctionDef(@NotNull IdentTableEntry ite, FunctionDef functionDef) {
-		@NotNull OS_Type attached = functionDef.getOS_Type();
-		if (ite.type == null) {
-			ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, attached);
-		} else
-			ite.type.setAttached(attached);
-	}
-
-	public void action_ClassStatement(@NotNull IdentTableEntry ite, ClassStatement classStatement) {
-		@NotNull OS_Type attached = classStatement.getOS_Type();
-		if (ite.type == null) {
-			ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, attached);
-		} else
-			ite.type.setAttached(attached);
-	}
-
 	public void action_VariableStatement(@NotNull IdentTableEntry ite, @NotNull VariableStatement vs) {
 		@NotNull TypeName typeName = vs.typeName();
 		if (ite.type == null || ite.type.getAttached() == null) {
@@ -135,8 +81,8 @@ class Found_Element_For_ITE {
 						state = (parent != ((EvaConstructor) generatedFunction).getFD().getParent());
 					}
 					if (state) {
-						final IInvocation invocation = dc.getInvocationFromBacklink(ite.getBacklink());
-						final @NotNull DeferredMember dm = dc.deferred_member(parent, invocation, vs, ite);
+						final IInvocation             invocation = dc.getInvocationFromBacklink(ite.getBacklink());
+						final @NotNull DeferredMember dm         = dc.deferred_member(parent, invocation, vs, ite);
 						dm.typePromise().
 								done(new DoneCallback<GenType>() {
 									@Override
@@ -160,8 +106,8 @@ class Found_Element_For_ITE {
 						IInvocation invocation;
 						if (ite.getBacklink() == null) {
 							if (parent instanceof ClassStatement) {
-								final ClassStatement classStatement = (ClassStatement) parent;
-								final @Nullable ClassInvocation ci = dc.registerClassInvocation(classStatement, null);
+								final ClassStatement            classStatement = (ClassStatement) parent;
+								final @Nullable ClassInvocation ci             = dc.registerClassInvocation(classStatement, null);
 								assert ci != null;
 								invocation = ci;
 							} else {
@@ -196,6 +142,60 @@ class Found_Element_For_ITE {
 				}
 //				LOG.err("394 typename is null " + vs.getName());
 			}
+		}
+	}
+
+	public void action_ClassStatement(@NotNull IdentTableEntry ite, ClassStatement classStatement) {
+		@NotNull OS_Type attached = classStatement.getOS_Type();
+		if (ite.type == null) {
+			ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, attached);
+		} else
+			ite.type.setAttached(attached);
+	}
+
+	public void action_FunctionDef(@NotNull IdentTableEntry ite, FunctionDef functionDef) {
+		@NotNull OS_Type attached = functionDef.getOS_Type();
+		if (ite.type == null) {
+			ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, attached);
+		} else
+			ite.type.setAttached(attached);
+	}
+
+	public void action_PropertyStatement(@NotNull IdentTableEntry ite, @NotNull PropertyStatement ps) {
+		OS_Type attached;
+		switch (ps.getTypeName().kindOfType()) {
+		case GENERIC:
+			attached = new OS_UserType(ps.getTypeName());
+			break;
+		case NORMAL:
+			try {
+				attached = (dc.resolve_type(new OS_UserType(ps.getTypeName()), ctx).resolved.getClassOf()).getOS_Type();
+			} catch (ResolveError resolveError) {
+				LOG.err("378 resolveError");
+				resolveError.printStackTrace();
+				return;
+			}
+			break;
+		default:
+			throw new IllegalStateException("Unexpected value: " + ps.getTypeName().kindOfType());
+		}
+		if (ite.type == null) {
+			ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, attached);
+		} else
+			ite.type.setAttached(attached);
+		dc.genCIForGenType2(ite.type.genType);
+		int yy = 2;
+	}
+
+	public void action_AliasStatement(@NotNull IdentTableEntry ite, @NotNull AliasStatement y) {
+		LOG.err("396 AliasStatement");
+		@Nullable OS_Element x = dc._resolveAlias(y);
+		if (x == null) {
+			ite.setStatus(BaseTableEntry.Status.UNKNOWN, null);
+			errSink.reportError("399 resolveAlias returned null");
+		} else {
+			ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(x));
+			dc.found_element_for_ite(generatedFunction, ite, x, ctx);
 		}
 	}
 

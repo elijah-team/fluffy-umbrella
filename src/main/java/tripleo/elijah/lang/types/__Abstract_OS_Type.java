@@ -1,12 +1,6 @@
 package tripleo.elijah.lang.types;
 
-import tripleo.elijah.lang.AliasStatement;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.LookupResultList;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_Type;
-import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.lang2.BuiltInTypes;
 
 abstract class __Abstract_OS_Type implements OS_Type {

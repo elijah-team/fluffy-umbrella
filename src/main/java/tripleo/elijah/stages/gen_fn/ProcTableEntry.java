@@ -34,26 +34,28 @@ import java.util.List;
  * Created 9/12/20 10:07 PM
  */
 public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
-	public final int index;
-	public final List<TypeTableEntry> args;
+	public final int                                             index;
+	public final List<TypeTableEntry>                            args;
 	/**
 	 * Either a hint to the programmer-- The compiler should be able to work without this.
 	 * <br/>
 	 * Or for synthetic methods
 	 */
-	public final IExpression expression;
-	public final InstructionArgument expression_num;
-	private ClassInvocation classInvocation;
-	private FunctionInvocation functionInvocation;
-	private DeferredObject<ProcTableEntry, Void, Void> completeDeferred = new DeferredObject<ProcTableEntry, Void, Void>();
-	private DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<FunctionInvocation, Void, Void>();
-	private DeduceElement3_ProcTableEntry _de3;
+	public final IExpression                                     expression;
+	public final InstructionArgument                             expression_num;
+	private final DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
+	public DeduceProcCall dpc = new DeduceProcCall(this);
+	private      ClassInvocation                                 classInvocation;
+	private      FunctionInvocation                              functionInvocation;
+	private      DeferredObject<ProcTableEntry, Void, Void>      completeDeferred      = new DeferredObject<ProcTableEntry, Void, Void>();
+	private      DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<FunctionInvocation, Void, Void>();
+	private      DeduceElement3_ProcTableEntry                   _de3;
 
 	public ProcTableEntry(final int aIndex, final IExpression aExpression, final InstructionArgument aExpressionNum, final List<TypeTableEntry> aArgs) {
-		index = aIndex;
-		expression = aExpression;
+		index          = aIndex;
+		expression     = aExpression;
 		expression_num = aExpressionNum;
-		args = aArgs;
+		args           = aArgs;
 
 		addStatusListener(new StatusListener() {
 			@Override
@@ -76,29 +78,11 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		setupResolve();
 	}
 
-	@Override @NotNull
-	public String toString() {
-		return "ProcTableEntry{" +
-				"index=" + index +
-				", expression=" + expression +
-				", expression_num=" + expression_num +
-				", args=" + args +
-				'}';
-	}
-
-	public List<TypeTableEntry> getArgs() {
-		return args;
-	}
-
-	public void setArgType(int aIndex, OS_Type aType) {
-		args.get(aIndex).setAttached(aType);
-	}
-
 	public void onSetAttached() {
 		int state = 0;
 		if (args != null) {
-			final int ac = args.size();
-			int acx = 0;
+			final int ac  = args.size();
+			int       acx = 0;
 			for (TypeTableEntry tte : args) {
 				if (tte.getAttached() != null)
 					acx++;
@@ -114,38 +98,44 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 			state = 3;
 		}
 		switch (state) {
-			case 0:
-				throw new IllegalStateException();
-			case 1:
-				tripleo.elijah.util.Stupidity.println_err_2("136 pte not finished resolving "+this);
-				break;
-			case 2:
-				tripleo.elijah.util.Stupidity.println_err_2("138 Internal compiler error");
-				break;
-			case 3:
-				if (completeDeferred.isPending())
-					completeDeferred.resolve(this);
-				break;
-			default:
-				throw new NotImplementedException();
+		case 0:
+			throw new IllegalStateException();
+		case 1:
+			tripleo.elijah.util.Stupidity.println_err_2("136 pte not finished resolving " + this);
+			break;
+		case 2:
+			tripleo.elijah.util.Stupidity.println_err_2("138 Internal compiler error");
+			break;
+		case 3:
+			if (completeDeferred.isPending())
+				completeDeferred.resolve(this);
+			break;
+		default:
+			throw new NotImplementedException();
 		}
 	}
 
-	public void setClassInvocation(ClassInvocation aClassInvocation) {
-		classInvocation = aClassInvocation;
+	@Override
+	@NotNull
+	public String toString() {
+		return "ProcTableEntry{" +
+				"index=" + index +
+				", expression=" + expression +
+				", expression_num=" + expression_num +
+				", args=" + args +
+				'}';
+	}
+
+	public void setArgType(int aIndex, OS_Type aType) {
+		args.get(aIndex).setAttached(aType);
 	}
 
 	public ClassInvocation getClassInvocation() {
 		return classInvocation;
 	}
 
-	// have no idea what this is for
-	public void setFunctionInvocation(FunctionInvocation aFunctionInvocation) {
-		if (functionInvocation != aFunctionInvocation) {
-			functionInvocation = aFunctionInvocation;
-			onFunctionInvocations.reset();
-			onFunctionInvocations.resolve(functionInvocation);
-		}
+	public void setClassInvocation(ClassInvocation aClassInvocation) {
+		classInvocation = aClassInvocation;
 	}
 
 	// have no idea what this is for
@@ -157,11 +147,18 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		return functionInvocation;
 	}
 
+	// have no idea what this is for
+	public void setFunctionInvocation(FunctionInvocation aFunctionInvocation) {
+		if (functionInvocation != aFunctionInvocation) {
+			functionInvocation = aFunctionInvocation;
+			onFunctionInvocations.reset();
+			onFunctionInvocations.resolve(functionInvocation);
+		}
+	}
+
 	private DeferredObject<ProcTableEntry, Void, Void> completeDeferred() {
 		return completeDeferred;
 	}
-
-	private final DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
 
 	public DeferredObject<GenType, Void, Void> typeDeferred() {
 		return typeDeferred;
@@ -173,7 +170,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 
 	@NotNull
 	public String getLoggingString(final @Nullable DeduceTypes2 aDeduceTypes2) {
-		final String pte_string;
+		final String          pte_string;
 		@NotNull List<String> l = new ArrayList<String>();
 
 		for (@NotNull TypeTableEntry typeTableEntry : getArgs()) {
@@ -183,7 +180,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 				l.add(attached.toString());
 			else {
 				if (aDeduceTypes2 != null)
-					aDeduceTypes2.LOG.err("267 attached == null for "+typeTableEntry);
+					aDeduceTypes2.LOG.err("267 attached == null for " + typeTableEntry);
 
 				if (typeTableEntry.expression != null)
 					l.add(String.format("<Unknown expression: %s>", typeTableEntry.expression));
@@ -200,7 +197,10 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		return pte_string;
 	}
 
-	public DeduceProcCall dpc = new DeduceProcCall(this);
+	public List<TypeTableEntry> getArgs() {
+		return args;
+	}
+
 	public DeduceProcCall deduceProcCall() {
 		return dpc;
 	}
@@ -209,18 +209,17 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		dpc.setDeduceTypes2(aDeduceTypes2, aContext, aGeneratedFunction, aErrSink);
 	}
 
+	public IDeduceElement3 getDeduceElement3() {
+		assert dpc._deduceTypes2() != null; // TODO setDeduce... called; Promise?
+
+		return getDeduceElement3(dpc._deduceTypes2(), dpc._generatedFunction());
+	}
+
 	public IDeduceElement3 getDeduceElement3(final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aGeneratedFunction) {
 		if (_de3 == null) {
 			_de3 = new DeduceElement3_ProcTableEntry(this, aDeduceTypes2, aGeneratedFunction);
 		}
 		return _de3;
-	}
-
-
-	public IDeduceElement3 getDeduceElement3() {
-		assert dpc._deduceTypes2() != null; // TODO setDeduce... called; Promise?
-
-		return getDeduceElement3(dpc._deduceTypes2(), dpc._generatedFunction());
 	}
 
 	//public PTE_Zero zero() {

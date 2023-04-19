@@ -16,18 +16,18 @@ import tripleo.elijah.diagnostic.Locatable;
 public interface TypeName extends Locatable {
 	boolean isNull();
 
-	void setContext(Context context);
-
 	Context getContext();
 
-	enum Type {
-		NORMAL, GENERIC, TYPE_OF, FUNCTION
-	}
+	void setContext(Context context);
 
 	Type kindOfType();
 
 	@Override
 	boolean equals(Object o);
+
+	enum Type {
+		NORMAL, GENERIC, TYPE_OF, FUNCTION
+	}
 
 	enum Nullability {
 		NOT_SPECIFIED, NEVER_NULL, NULLABLE

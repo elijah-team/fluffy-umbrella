@@ -4,7 +4,6 @@ import tripleo.elijah.lang.Context;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
-import tripleo.elijah.stages.instructions.FnCallArgs;
 import tripleo.elijah.stages.instructions.Instruction;
 
 public interface ITastic {

@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 
 /**
  * @author Tripleo(sb)
- *
+ * <p>
  * Created 	Dec 9, 2019 at 3:30:44 PM
  */
 public class LookupResultList {
@@ -76,7 +76,7 @@ public class LookupResultList {
 
 	private List<LookupResult> getMaxScoredResults(final List<Predicate<OS_Element>> l) {
 		final Map<LookupResult, Integer> new_results = new HashMap<LookupResult, Integer>();
-		int maxScore = 0;
+		int                              maxScore    = 0;
 
 		for (final LookupResult lookupResult : _results) {
 			int score = 0;

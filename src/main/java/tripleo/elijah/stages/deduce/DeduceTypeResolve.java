@@ -26,7 +26,7 @@ import tripleo.elijah.stages.instructions.ProcIA;
  * Created 11/18/21 12:02 PM
  */
 public class DeduceTypeResolve {
-	private final BaseTableEntry bte;
+	private final BaseTableEntry                              bte;
 	private final DeferredObject<GenType, ResolveError, Void> typeResolution = new DeferredObject<GenType, ResolveError, Void>();
 	BaseTableEntry backlink;
 
@@ -37,13 +37,13 @@ public class DeduceTypeResolve {
 				@Override
 				public void onDone(final InstructionArgument backlink0) {
 					if (backlink0 instanceof IdentIA) {
-						backlink = ((IdentIA)backlink0).getEntry();
+						backlink = ((IdentIA) backlink0).getEntry();
 						setBacklinkCallback();
 					} else if (backlink0 instanceof IntegerIA) {
-						backlink = ((IntegerIA)backlink0).getEntry();
+						backlink = ((IntegerIA) backlink0).getEntry();
 						setBacklinkCallback();
 					} else if (backlink0 instanceof ProcIA) {
-						backlink = ((ProcIA)backlink0).getEntry();
+						backlink = ((ProcIA) backlink0).getEntry();
 						setBacklinkCallback();
 					} else
 						backlink = null;
@@ -71,13 +71,8 @@ public class DeduceTypeResolve {
 						}
 
 						@Override
-						public void visitFunctionDef(final FunctionDef aFunctionDef) {
-							genType.resolved = aFunctionDef.getOS_Type();
-						}
-
-						@Override
-						public void visitVariableStatement(final VariableStatement variableStatement) {
-							new DTR_VariableStatement(DeduceTypeResolve.this, variableStatement).run(eh, genType);
+						public void visitAliasStatement(final AliasStatement aAliasStatement) {
+							tripleo.elijah.util.Stupidity.println_err_2(String.format("** AliasStatement %s points to %s", aAliasStatement.name(), aAliasStatement.getExpression()));
 						}
 
 						@Override
@@ -96,29 +91,24 @@ public class DeduceTypeResolve {
 							if (attached != null)
 								tripleo.elijah.util.Stupidity.println_err_2(
 										String.format("** FormalArgListItem %s attached is not null. Type is %s. Points to %s",
-												aFormalArgListItem.name(), aFormalArgListItem.typeName(), attached));
+													  aFormalArgListItem.name(), aFormalArgListItem.typeName(), attached));
 							else
 								tripleo.elijah.util.Stupidity.println_err_2(
 										String.format("** FormalArgListItem %s attached is null. Type is %s.",
-												aFormalArgListItem.name(), aFormalArgListItem.typeName()));
+													  aFormalArgListItem.name(), aFormalArgListItem.typeName()));
 						}
 
 						@Override
-						public void visitAliasStatement(final AliasStatement aAliasStatement) {
-							tripleo.elijah.util.Stupidity.println_err_2(String.format("** AliasStatement %s points to %s", aAliasStatement.name(), aAliasStatement.getExpression()));
-						}
-
-						@Override
-						public void visitDefFunction(final DefFunctionDef aDefFunctionDef) {
-							tripleo.elijah.util.Stupidity.println_err_2(String.format("** DefFunctionDef %s is %s", aDefFunctionDef.name(), ((StatementWrapper) aDefFunctionDef.getItems().iterator().next()).getExpr()));
+						public void visitFunctionDef(final FunctionDef aFunctionDef) {
+							genType.resolved = aFunctionDef.getOS_Type();
 						}
 
 						@Override
 						public void visitIdentExpression(final IdentExpression aIdentExpression) {
 							if (eh instanceof GenericElementHolderWithIntegerIA) {
-								final GenericElementHolderWithIntegerIA eh1 = (GenericElementHolderWithIntegerIA) eh;
-								final IntegerIA integerIA = eh1.getIntegerIA();
-								final @NotNull VariableTableEntry variableTableEntry = integerIA.getEntry();
+								final GenericElementHolderWithIntegerIA eh1                = (GenericElementHolderWithIntegerIA) eh;
+								final IntegerIA                         integerIA          = eh1.getIntegerIA();
+								final @NotNull VariableTableEntry       variableTableEntry = integerIA.getEntry();
 								assert variableTableEntry == bte;
 								variableTableEntry.typeResolvePromise().then(
 										new DoneCallback<GenType>() {
@@ -129,7 +119,15 @@ public class DeduceTypeResolve {
 										});
 							} else {
 								final DeduceLocalVariable dlv = ((VariableTableEntry) bte).dlv;
-								int y=2;
+								int                       y   = 2;
+							}
+						}
+
+						@Override
+						public void visitMC1(final MatchConditional.MC1 aMC1) {
+							if (aMC1 instanceof MatchConditional.MatchArm_TypeMatch) {
+								final MatchConditional.MatchArm_TypeMatch typeMatch = (MatchConditional.MatchArm_TypeMatch) aMC1;
+								int                                       yy        = 2;
 							}
 						}
 
@@ -140,28 +138,30 @@ public class DeduceTypeResolve {
 						}
 
 						@Override
-						public void visitConstructorDef(final ConstructorDef aConstructorDef) {
-							int y=2;
+						public void visitVariableStatement(final VariableStatement variableStatement) {
+							new DTR_VariableStatement(DeduceTypeResolve.this, variableStatement).run(eh, genType);
 						}
 
 						@Override
-						public void visitMC1(final MatchConditional.MC1 aMC1) {
-							if (aMC1 instanceof MatchConditional.MatchArm_TypeMatch) {
-								final MatchConditional.MatchArm_TypeMatch typeMatch = (MatchConditional.MatchArm_TypeMatch) aMC1;
-								int yy=2;
-							}
+						public void visitConstructorDef(final ConstructorDef aConstructorDef) {
+							int y = 2;
+						}
+
+						@Override
+						public void visitDefFunction(final DefFunctionDef aDefFunctionDef) {
+							tripleo.elijah.util.Stupidity.println_err_2(String.format("** DefFunctionDef %s is %s", aDefFunctionDef.name(), ((StatementWrapper) aDefFunctionDef.getItems().iterator().next()).getExpr()));
 						}
 
 						@Override
 						public void defaultAction(final OS_Element anElement) {
-							tripleo.elijah.util.Stupidity.println_err_2("158 "+anElement);
+							tripleo.elijah.util.Stupidity.println_err_2("158 " + anElement);
 							throw new IllegalStateException();
 						}
 
 					});
 
 					if (!typeResolution.isPending()) {
-						int y=2;
+						int y = 2;
 					} else {
 						if (!genType.isNull())
 							typeResolution.resolve(genType);
@@ -177,28 +177,16 @@ public class DeduceTypeResolve {
 			public void onChange(final IElementHolder eh, final BaseTableEntry.Status newStatus) {
 				if (newStatus != BaseTableEntry.Status.KNOWN) return;
 
-				if (backlink instanceof IdentTableEntry){
+				if (backlink instanceof IdentTableEntry) {
 					final IdentTableEntry identTableEntry = (IdentTableEntry) backlink;
 					identTableEntry.typeResolvePromise().done(new DoneCallback<GenType>() {
 						@Override
 						public void onDone(final GenType result) {
 
 
-
-
-
-
-
-
 							if (identTableEntry.type == null) {
 								identTableEntry.type = new TypeTableEntry(999, TypeTableEntry.Type.TRANSIENT, result.typeName, identTableEntry.getIdent(), null);
 							}
-
-
-
-
-
-
 
 
 							identTableEntry.type.setAttached(result);
@@ -211,7 +199,7 @@ public class DeduceTypeResolve {
 						public void onDone(final GenType result) {
 							if (eh instanceof Resolve_Ident_IA.GenericElementHolderWithDC) {
 								final Resolve_Ident_IA.GenericElementHolderWithDC eh1 = (Resolve_Ident_IA.GenericElementHolderWithDC) eh;
-								final DeduceTypes2.DeduceClient3 dc = eh1.getDC();
+								final DeduceTypes2.DeduceClient3                  dc  = eh1.getDC();
 								dc.genCIForGenType2(result);
 							}
 							// maybe set something in ci to INHERITED, but thats what DeduceProcCall is for
@@ -235,14 +223,14 @@ public class DeduceTypeResolve {
 						@Override
 						public void onDone(final GenType result) {
 //							procTableEntry.type.setAttached(result);
-							int y=2;
+							int                  y              = 2;
 							final ClassStatement classStatement = result.resolved.getClassOf();
 
 							assert bte instanceof IdentTableEntry;
 
-							final String text = ((IdentTableEntry) bte).getIdent().getText();
-							final LookupResultList lrl = classStatement.getContext().lookup(text);
-							final @Nullable OS_Element e = lrl.chooseBest(null);
+							final String               text = ((IdentTableEntry) bte).getIdent().getText();
+							final LookupResultList     lrl  = classStatement.getContext().lookup(text);
+							final @Nullable OS_Element e    = lrl.chooseBest(null);
 
 //							procTableEntry.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(classStatement));  // infinite recursion
 							final ProcTableEntry callablePTE = ((IdentTableEntry) bte).getCallablePTE();
@@ -257,6 +245,7 @@ public class DeduceTypeResolve {
 		});
 
 	}
+
 	public Promise<GenType, ResolveError, Void> typeResolution() {
 		return typeResolution.promise();
 	}

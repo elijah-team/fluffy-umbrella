@@ -16,11 +16,18 @@ import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_ConstantTableEn
  * Created 9/10/20 4:47 PM
  */
 public class ConstantTableEntry {
-	final int index;
-	private final String name;
-	public final IExpression initialValue;
-	public final TypeTableEntry type;
-	private DeduceElement3_ConstantTableEntry _de3;
+	public final  IExpression                       initialValue;
+	public final  TypeTableEntry                    type;
+	final         int                               index;
+	private final String                            name;
+	private       DeduceElement3_ConstantTableEntry _de3;
+
+	public ConstantTableEntry(final int index, final String name, final IExpression initialValue, final TypeTableEntry type) {
+		this.index        = index;
+		this.name         = name;
+		this.initialValue = initialValue;
+		this.type         = type;
+	}
 
 	@Override
 	public @NotNull String toString() {
@@ -32,16 +39,9 @@ public class ConstantTableEntry {
 				'}';
 	}
 
-	public ConstantTableEntry(final int index, final String name, final IExpression initialValue, final TypeTableEntry type) {
-		this.index = index;
-		this.name = name;
-		this.initialValue = initialValue;
-		this.type = type;
+	public String getName() {
+		return name;
 	}
-
-    public String getName() {
-        return name;
-    }
 
 	public TypeTableEntry getTypeTableEntry() {
 		return type;

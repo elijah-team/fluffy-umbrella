@@ -21,7 +21,7 @@ public class FluffyModuleImpl implements FluffyModule {
 	private final Compilation compilation;
 
 	public FluffyModuleImpl(final OS_Module aModule, final Compilation aCompilation) {
-		module = aModule;
+		module      = aModule;
 		compilation = aCompilation;
 	}
 

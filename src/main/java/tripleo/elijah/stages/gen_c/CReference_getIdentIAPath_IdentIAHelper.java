@@ -2,24 +2,10 @@ package tripleo.elijah.stages.gen_c;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.lang.AliasStatement;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.ConstructorDef;
-import tripleo.elijah.lang.DefFunctionDef;
-import tripleo.elijah.lang.FormalArgListItem;
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.NamespaceStatement;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.PropertyStatement;
-import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.nextgen.outputstatement.EG_Statement;
 import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
-import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
-import tripleo.elijah.stages.gen_fn.EvaNode;
-import tripleo.elijah.stages.gen_fn.EvaClass;
-import tripleo.elijah.stages.gen_fn.EvaContainerNC;
-import tripleo.elijah.stages.gen_fn.EvaNamespace;
-import tripleo.elijah.stages.gen_fn.IdentTableEntry;
+import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.util.NotImplementedException;
@@ -27,14 +13,14 @@ import tripleo.elijah.util.NotImplementedException;
 import java.util.List;
 
 class CReference_getIdentIAPath_IdentIAHelper {
-	private final InstructionArgument   ia_next;
-	private final List<String>          sl;
-	private final int                   i;
-	private final int                   sSize;
-	private final OS_Element      resolved_element;
-	private final BaseEvaFunction generatedFunction;
-	private final EvaNode         resolved;
-	private final String          value;
+	private final InstructionArgument ia_next;
+	private final List<String>        sl;
+	private final int                 i;
+	private final int                 sSize;
+	private final OS_Element          resolved_element;
+	private final BaseEvaFunction     generatedFunction;
+	private final EvaNode             resolved;
+	private final String              value;
 
 
 	public int code = -1;
@@ -77,12 +63,6 @@ class CReference_getIdentIAPath_IdentIAHelper {
 			throw new NotImplementedException();
 		}
 		return b;
-	}
-
-	private void _act_FormalArgListItem(final @NotNull CReference aCReference, final @NotNull FormalArgListItem fali) {
-		final int    y     = 2;
-		final String text2 = "va" + fali.getNameToken().getText();
-		aCReference.addRef(text2, CReference.Ref.LOCAL); // TODO
 	}
 
 	@Contract(pure = true)
@@ -146,9 +126,9 @@ class CReference_getIdentIAPath_IdentIAHelper {
 	}
 
 	private void _act_FunctionDef(final CReference aCReference) {
-		final OS_Element    parent        = getResolved_element().getParent();
-		int           our_code      = -1;
-		final EvaNode resolved_node = getResolved();
+		final OS_Element parent        = getResolved_element().getParent();
+		int              our_code      = -1;
+		final EvaNode    resolved_node = getResolved();
 
 		if (resolved_node != null) {
 			if (resolved_node instanceof BaseEvaFunction) {
@@ -166,7 +146,7 @@ class CReference_getIdentIAPath_IdentIAHelper {
 					// FIXME sometimes genClass is not called so above wont work,
 					//  so check if a code was set and use it here
 					final EvaNamespace generatedNamespace = (EvaNamespace) resolvedFunction.getGenClass();
-					final int                cc                 = generatedNamespace.getCode();
+					final int          cc                 = generatedNamespace.getCode();
 					if (cc > 0) {
 						this.code = cc;
 					}
@@ -231,58 +211,27 @@ class CReference_getIdentIAPath_IdentIAHelper {
 
 	private void _act_PropertyStatement(final CReference aCReference) {
 		getSl().clear();  // don't we want all the text including from sl?
-		
+
 		final GCS_Property_Get propertyGet = new GCS_Property_Get((PropertyStatement) getResolved_element());
-		final String           text2          = propertyGet.getText();
+		final String           text2       = propertyGet.getText();
 
 		aCReference.addRef(text2, CReference.Ref.PROPERTY_GET);
-		
+
 		aCReference.__cheat_ret = text2;
 	}
 
-	public static class GCS_Property_Get implements EG_Statement {
-		private final PropertyStatement p;
-
-		public GCS_Property_Get(final PropertyStatement aP) {
-			p = aP;
-		}
-
-		@Override
-		public String getText() {
-			final OS_Element parent = p.getParent();
-			final int        code;
-
-			if (parent instanceof ClassStatement) {
-				code = ((ClassStatement) parent)._a.getCode();
-			} else if (parent instanceof NamespaceStatement) {
-				code = ((NamespaceStatement) parent)._a.getCode();
-			} else {
-//				code = -1;
-				throw new IllegalStateException("PropertyStatement can't have other parent than ns or cls. " + parent.getClass().getName());
-			}
-			
-			// TODO Don't know if get or set!
-			final String text2 = String.format("ZP%dget_%s", code, p.name());
-
-			return text2;
-		}
-
-		@Override
-		public EX_Explanation getExplanation() {
-			// TODO Auto-generated method stub
-			return new EX_Explanation() {
-			};
-//			"GCS_Property_Get";
-		}
-		
-	}
-	
 	@Contract(pure = true)
 	private static void _act_AliasStatement() {
 		final int y = 2;
 		NotImplementedException.raise();
 		//			text = Emit.emit("/*167*/")+((AliasStatement)resolved_element).name();
 		//			return _getIdentIAPath_IdentIAHelper(text, sl, i, sSize, _res)
+	}
+
+	private void _act_FormalArgListItem(final @NotNull CReference aCReference, final @NotNull FormalArgListItem fali) {
+		final int    y     = 2;
+		final String text2 = "va" + fali.getNameToken().getText();
+		aCReference.addRef(text2, CReference.Ref.LOCAL); // TODO
 	}
 
 	@Contract(pure = true)
@@ -318,5 +267,42 @@ class CReference_getIdentIAPath_IdentIAHelper {
 	@Contract(pure = true)
 	public String getValue() {
 		return value;
+	}
+
+	public static class GCS_Property_Get implements EG_Statement {
+		private final PropertyStatement p;
+
+		public GCS_Property_Get(final PropertyStatement aP) {
+			p = aP;
+		}
+
+		@Override
+		public String getText() {
+			final OS_Element parent = p.getParent();
+			final int        code;
+
+			if (parent instanceof ClassStatement) {
+				code = ((ClassStatement) parent)._a.getCode();
+			} else if (parent instanceof NamespaceStatement) {
+				code = ((NamespaceStatement) parent)._a.getCode();
+			} else {
+//				code = -1;
+				throw new IllegalStateException("PropertyStatement can't have other parent than ns or cls. " + parent.getClass().getName());
+			}
+
+			// TODO Don't know if get or set!
+			final String text2 = String.format("ZP%dget_%s", code, p.name());
+
+			return text2;
+		}
+
+		@Override
+		public EX_Explanation getExplanation() {
+			// TODO Auto-generated method stub
+			return new EX_Explanation() {
+			};
+//			"GCS_Property_Get";
+		}
+
 	}
 }

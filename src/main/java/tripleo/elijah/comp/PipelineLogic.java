@@ -10,11 +10,6 @@ package tripleo.elijah.comp;
 
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.comp.i.IPipelineAccess;
@@ -24,37 +19,25 @@ import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.gen_fn.*;
-import tripleo.elijah.stages.gen_generic.GenerateFiles;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
-import tripleo.elijah.work.WorkManager;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created 12/30/20 2:14 AM
  */
 public class PipelineLogic {
 	public final  DeducePhase     dp;
-	private final ElLog.Verbosity verbosity;
 	public final  GeneratePhase   generatePhase;
-	private final List<OS_Module> __mods_BACKING = new ArrayList<OS_Module>();
-	final         EIT_ModuleList  mods           = new EIT_ModuleList(__mods_BACKING);
 	public final  GenerateResult  gr             = new GenerateResult();
 	public final  List<ElLog>     elLogs         = new LinkedList<ElLog>();
-
-	public PipelineLogic(final @NotNull ICompilationAccess aCa) {
-		verbosity     = aCa.testSilence();
-		generatePhase = new GeneratePhase(verbosity, this);
-		dp            = new DeducePhase(generatePhase, this, verbosity, aCa);
-
-		aCa.setPipelineLogic(this);
-
-		pa = aCa.getCompilation().pa();
-	}
-
 	final IPipelineAccess pa;
-
+	private final ElLog.Verbosity verbosity;
 	public final Observer<OS_Module> om = new Observer<OS_Module>() {
 		@Override
 		public void onSubscribe(Disposable d) {
@@ -80,12 +63,24 @@ public class PipelineLogic {
 			dp.finish();
 		}
 	};
-	
+	private final List<OS_Module> __mods_BACKING = new ArrayList<OS_Module>();
+	final         EIT_ModuleList  mods           = new EIT_ModuleList(__mods_BACKING);
+
+	public PipelineLogic(final @NotNull ICompilationAccess aCa) {
+		verbosity     = aCa.testSilence();
+		generatePhase = new GeneratePhase(verbosity, this);
+		dp            = new DeducePhase(generatePhase, this, verbosity, aCa);
+
+		aCa.setPipelineLogic(this);
+
+		pa = aCa.getCompilation().pa();
+	}
+
 	public void everythingBeforeGenerate(final @NotNull List<EvaNode> lgc) {
 		assert lgc.size() == 0;
 
 		mods.stream().forEach(mod ->
-			om.onNext(mod));
+									  om.onNext(mod));
 
 		om.onComplete();
 	}
@@ -133,8 +128,7 @@ public class PipelineLogic {
 					}
 					break;
 				}
-				case NAMESPACE:
-				{
+				case NAMESPACE: {
 					final EvaNamespace generatedNamespace = (EvaNamespace) evaNode;
 					if (coded.getCode() == 0)
 						coded.setCode(mod.getCompilation().nextClassCode());
@@ -179,7 +173,7 @@ public class PipelineLogic {
 */
 			if (evaNode instanceof GNCoded) {
 				final GNCoded coded = (GNCoded) evaNode;
-				final int code;
+				final int     code;
 				if (coded.getCode() == 0) {
 					switch (coded.getRole()) {
 					case FUNCTION:
@@ -220,10 +214,6 @@ public class PipelineLogic {
 		return generatePhase.getGenerateFunctions(mod);
 	}
 
-	public void addModule(OS_Module m) {
-		mods.add(m);
-	}
-
 	private void resolveCheck(DeducePhase.GeneratedClasses lgc) {
 		for (final EvaNode evaNode : lgc) {
 			if (evaNode instanceof EvaFunction) {
@@ -258,6 +248,10 @@ public class PipelineLogic {
 //				}
 			}
 		}
+	}
+
+	public void addModule(OS_Module m) {
+		mods.add(m);
 	}
 
 /*

@@ -7,8 +7,8 @@ import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.entrypoints.EntryPointList;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.stages.deduce.DeducePhase;
-import tripleo.elijah.stages.gen_fn.GenerateFunctions;
 import tripleo.elijah.stages.gen_fn.EvaNode;
+import tripleo.elijah.stages.gen_fn.GenerateFunctions;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.util.Stupidity;
@@ -119,10 +119,10 @@ public class EIT_ModuleList {
 //		private final ElLog.Verbosity                         verbosity;
 
 		private _ProcessParams(@NotNull final OS_Module aModule,
-		                       @NotNull final PipelineLogic aPipelineLogic,
-		                       @NotNull final GenerateFunctions aGenerateFunctions,
-		                       @NotNull final EntryPointList aEntryPointList,
-		                       @NotNull final DeducePhase aDeducePhase) {
+							   @NotNull final PipelineLogic aPipelineLogic,
+							   @NotNull final GenerateFunctions aGenerateFunctions,
+							   @NotNull final EntryPointList aEntryPointList,
+							   @NotNull final DeducePhase aDeducePhase) {
 			mod           = aModule;
 			pipelineLogic = aPipelineLogic;
 			gfm           = aGenerateFunctions;
@@ -136,9 +136,8 @@ public class EIT_ModuleList {
 			return mod;
 		}
 
-		@Contract(pure = true)
-		public DeducePhase.GeneratedClasses getLgc() {
-			return deducePhase.generatedClasses;
+		public void generate() {
+			epl.generate(gfm, deducePhase, getWorkManagerSupplier());
 		}
 
 		@Contract(pure = true)
@@ -146,21 +145,22 @@ public class EIT_ModuleList {
 			return () -> pipelineLogic.generatePhase.wm;
 		}
 
+		public void deduceModule() {
+			deducePhase.deduceModule(mod, getLgc(), getVerbosity());
+		}
+
+		//
+		//
+		//
+
+		@Contract(pure = true)
+		public DeducePhase.GeneratedClasses getLgc() {
+			return deducePhase.generatedClasses;
+		}
+
 		@Contract(pure = true)
 		public ElLog.@NotNull Verbosity getVerbosity() {
 			return pipelineLogic.getVerbosity();
-		}
-
-		//
-		//
-		//
-
-		public void generate() {
-			epl.generate(gfm, deducePhase, getWorkManagerSupplier());
-		}
-
-		public void deduceModule() {
-			deducePhase.deduceModule(mod, getLgc(), getVerbosity());
 		}
 
 	}

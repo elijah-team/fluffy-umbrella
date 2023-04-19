@@ -27,9 +27,9 @@ public class QuerySourceFileToModule {
 	}
 
 	public Operation<OS_Module> calculate() {
-		final String f = params.sourceFilename;
-		final InputStream s = params.inputStream;
-		final boolean do_out = params.do_out;
+		final String      f      = params.sourceFilename;
+		final InputStream s      = params.inputStream;
+		final boolean     do_out = params.do_out;
 
 		final ElijjahLexer lexer = new ElijjahLexer(s);
 		lexer.setFilename(f);

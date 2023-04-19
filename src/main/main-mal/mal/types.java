@@ -2,12 +2,7 @@ package mal;
 
 import mal.env.Env;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class types {
 	public static MalConstant Nil   = new MalConstant("nil");
@@ -18,25 +13,25 @@ public class types {
 		final Class ota = a.getClass();
 		final Class otb = b.getClass();
 		if (!((ota == otb) ||
-		  (a instanceof MalList && b instanceof MalList))) {
+				(a instanceof MalList && b instanceof MalList))) {
 			return false;
 		} else {
 			if (a instanceof MalInteger) {
 				return ((MalInteger) a).getValue() ==
-				  ((MalInteger) b).getValue();
+						((MalInteger) b).getValue();
 			} else if (a instanceof MalSymbol) {
 				return ((MalSymbol) a).getName().equals(
-				  ((MalSymbol) b).getName());
+						((MalSymbol) b).getName());
 			} else if (a instanceof MalString) {
 				return ((MalString) a).getValue().equals(
-				  ((MalString) b).getValue());
+						((MalString) b).getValue());
 			} else if (a instanceof MalList) {
 				if (((MalList) a).size() != ((MalList) b).size()) {
 					return false;
 				}
 				for (Integer i = 0; i < ((MalList) a).size(); i++) {
 					if (!_equal_Q(((MalList) a).nth(i),
-					  ((MalList) b).nth(i))) {
+								  ((MalList) b).nth(i))) {
 						return false;
 					}
 				}
@@ -46,10 +41,10 @@ public class types {
 					return false;
 				}
 				//HashMap<String,MalVal> hm = (HashMap<String,MalVal>)a.value;
-				final HashMap<String, MalVal> hm  = (HashMap<String, MalVal>) mhm.value;
+				final HashMap<String, MalVal> hm = (HashMap<String, MalVal>) mhm.value;
 				for (final String k : hm.keySet()) {
 					if (!_equal_Q(((MalVal) ((MalHashMap) a).value.get(k)),
-					  ((MalVal) ((MalHashMap) b).value.get(k)))) {
+								  ((MalVal) ((MalHashMap) b).value.get(k)))) {
 						return false;
 					}
 				}
@@ -369,7 +364,7 @@ public class types {
 		public MalHashMap assoc_BANG(final MalList lst) {
 			for (Integer i = 0; i < lst.value.size(); i += 2) {
 				value.put(((MalString) lst.nth(i)).getValue(),
-				  lst.nth(i + 1));
+						  lst.nth(i + 1));
 			}
 			return this;
 		}
@@ -382,7 +377,7 @@ public class types {
 		public MalHashMap assoc_BANG(final MalVal... mvs) {
 			for (Integer i = 0; i < mvs.length; i += 2) {
 				value.put(((MalSymbol) mvs[i]).getName(),
-				  mvs[i + 1]);
+						  mvs[i + 1]);
 			}
 			return this;
 		}
@@ -442,7 +437,7 @@ public class types {
 	}
 
 	public static abstract class MalFunction extends MalVal
-	  implements ILambda, java.lang.Cloneable {
+			implements ILambda, java.lang.Cloneable {
 		public MalVal  ast    = null;
 		public Env     env    = null;
 		public MalList params = null;

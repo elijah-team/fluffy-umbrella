@@ -20,10 +20,11 @@ public class GarishClass {
 
 	public void garish(final GenerateC aGenerateC, final GenerateResult gr, final GenerateResultSink aResultSink) {
 		final DefaultLivingClass dlc = (DefaultLivingClass) _lc;
-		final EvaClass x = dlc.evaNode();
+		final EvaClass           x   = dlc.evaNode();
 
 
-		if (x.generatedAlready) return ; ///////////////////////////////////////////////////////////////////////////////////////throw new Error();
+		if (x.generatedAlready)
+			return; ///////////////////////////////////////////////////////////////////////////////////////throw new Error();
 		switch (x.getKlass().getType()) {
 		// Don't generate class definition for these three
 		case INTERFACE:
@@ -40,7 +41,7 @@ public class GarishClass {
 			tosHdr.incr_tabs();
 			tosHdr.put_string_ln("int _tag;");
 			if (!decl.prim) {
-				for (EvaClass.VarTableEntry o : x.varTable){
+				for (EvaClass.VarTableEntry o : x.varTable) {
 					final String typeName = aGenerateC.getTypeNameGNCForVarTableEntry(o);
 					tosHdr.put_string_ln(String.format("%s vm%s;", typeName, o.nameToken));
 				}
@@ -49,7 +50,7 @@ public class GarishClass {
 			}
 
 			String class_name = aGenerateC.getTypeName(x);
-			int class_code = x.getCode();
+			int    class_code = x.getCode();
 
 			tosHdr.dec_tabs();
 			tosHdr.put_string_ln("");

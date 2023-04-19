@@ -12,7 +12,7 @@ import java.util.List;
 
 public class DeducePipelineImpl {
 	private final List<PipelineLogicRunnable> plrs = new ArrayList<>();
-	private final IPipelineAccess pa;
+	private final IPipelineAccess             pa;
 	public        List<EvaNode>               lgc  = new ArrayList<EvaNode>();
 
 	public DeducePipelineImpl(final @NotNull IPipelineAccess pa0) {
@@ -27,6 +27,10 @@ public class DeducePipelineImpl {
 		addRunnable(new PL_SaveGeneratedClasses(this));
 	}
 
+	private void addRunnable(final PipelineLogicRunnable plr) {
+		plrs.add(plr);
+	}
+
 	public void run() {
 		final Compilation c = pa.getCompilation();
 
@@ -39,10 +43,6 @@ public class DeducePipelineImpl {
 		for (final PipelineLogicRunnable plr : plrs) {
 			plr.run(aPipelineLogic);
 		}
-	}
-
-	private void addRunnable(final PipelineLogicRunnable plr) {
-		plrs.add(plr);
 	}
 
 	public void saveGeneratedClasses(final List<EvaNode> aEvaNodeList) {

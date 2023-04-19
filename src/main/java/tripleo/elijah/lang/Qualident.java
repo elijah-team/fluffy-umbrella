@@ -1,10 +1,10 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 package tripleo.elijah.lang;
 
@@ -23,11 +23,22 @@ import java.util.Objects;
  * Created Mar 27, 2019 at 2:24:09 PM
  *
  * @author Tripleo(sb)
- *
  */
-public class Qualident  implements IExpression {
+public class Qualident implements IExpression {
 
-	/** Look into creating a {@link DotExpression} from here */
+	private final List<IdentExpression> parts = new ArrayList<IdentExpression>();
+	OS_Type _type;
+
+	private static boolean equivalentTokens(final Token token1, final Token token2) {
+		return token2.getText().equals(token1.getText()) &&
+				token2.getLine() == token1.getLine() &&
+				token2.getColumn() == token1.getColumn() &&
+				token2.getType() == token1.getType();
+	}
+
+	/**
+	 * Look into creating a {@link DotExpression} from here
+	 */
 	public void append(final IdentExpression r1) {
 		if (r1.getText().contains("."))
 			throw new IllegalArgumentException("trying to create a Qualident with a dot from a user created Token");
@@ -37,12 +48,33 @@ public class Qualident  implements IExpression {
 	public void appendDot(final Token d1) {
 //		_syntax.appendDot(d1, parts.size());//parts.add(d1);
 	}
-	
-	private final List<IdentExpression> parts = new ArrayList<IdentExpression>();
 
 	@Override
-	public String toString() {
-		return asSimpleString();
+	public ExpressionKind getKind() {
+		return ExpressionKind.QIDENT;
+	}
+
+	@Override
+	public void setKind(final ExpressionKind aIncrement) {
+		throw new IllegalArgumentException(); // TODO is this right?
+	}
+
+	@Override
+	public IExpression getLeft() {
+		return this;
+	}
+
+	/**
+	 * Not sure what this should do
+	 */
+	@Override
+	public void setLeft(final IExpression iexpression) {
+		throw new IllegalArgumentException(); // TODO is this right?
+	}
+
+	@Override
+	public String repr_() {
+		return String.format("Qualident (%s)", toString());
 	}
 
 	@NotNull
@@ -64,51 +96,17 @@ public class Qualident  implements IExpression {
 //		final String substring = s.substring(0, s.length() - 1);
 //		return substring;
 	}
-	
-	@Override
-	public ExpressionKind getKind() {
-		return ExpressionKind.QIDENT;
-	}
-	
-	@Override
-	public void setKind(final ExpressionKind aIncrement) {
-		throw new IllegalArgumentException(); // TODO is this right?
-	}
-	
-	@Override
-	public IExpression getLeft() {
-		return this;
-	}
-	
-	/** Not sure what this should do */
-	@Override
-	public void setLeft(final IExpression iexpression) {
-		throw new IllegalArgumentException(); // TODO is this right?
-	}
-	
-	@Override
-	public String repr_() {
-		return String.format("Qualident (%s)", toString());
-	}
-	
+
 	@Override
 	public boolean is_simple() {
 		return true;  // TODO is this true?
 	}
 
-	OS_Type _type;
-
-	@Override
-	public void setType(final OS_Type deducedExpression) {
-		_type = deducedExpression;
-    }
-
-	@Override
-	public OS_Type getType() {
-    	return _type;
-	}
 	public List<IdentExpression> parts() {
 		return parts;
+	}	@Override
+	public void setType(final OS_Type deducedExpression) {
+		_type = deducedExpression;
 	}
 
 	@Override
@@ -117,7 +115,7 @@ public class Qualident  implements IExpression {
 		if (!(o instanceof Qualident)) return false;
 		final Qualident qualident = (Qualident) o;
 		if (qualident.parts.size() != parts.size()) return false;
-		for (int i=0; i< parts.size();i++) {
+		for (int i = 0; i < parts.size(); i++) {
 			final IdentExpression ppart = qualident.parts.get(i);
 			final IdentExpression part  = parts.get(i);
 //			if (!equivalentTokens(ppart.token(), part.token()))
@@ -128,19 +126,24 @@ public class Qualident  implements IExpression {
 		}
 //		if (Objects.equals(parts, qualident.parts))
 		return true;//Objects.equals(_type, qualident._type);
-	}
-
-	private static boolean equivalentTokens(final Token token1, final Token token2) {
-		return token2.getText().equals(token1.getText()) &&
-			token2.getLine() == token1.getLine() &&
-			token2.getColumn() == token1.getColumn() &&
-			token2.getType() == token1.getType();
+	}	@Override
+	public OS_Type getType() {
+		return _type;
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(parts, _type);
 	}
+
+	@Override
+	public String toString() {
+		return asSimpleString();
+	}
+
+
+
+
 }
 
 //

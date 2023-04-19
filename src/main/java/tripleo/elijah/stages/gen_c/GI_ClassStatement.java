@@ -5,24 +5,24 @@ import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 
 class GI_ClassStatement implements GenerateC_Item {
-	private final ClassStatement e;
-	private final GI_Repo        giRepo;
-	private EvaNode _evaNaode;
-	private IdentTableEntry _ite;
+	private final ClassStatement  e;
+	private final GI_Repo         giRepo;
+	private       EvaNode         _evaNaode;
+	private       IdentTableEntry _ite;
 
 	public GI_ClassStatement(final ClassStatement aE, final GI_Repo aGIRepo) {
-		e = aE;
+		e      = aE;
 		giRepo = aGIRepo;
-	}
-
-	@Override
-	public void setEvaNode(final EvaNode aEvaNode) {
-		_evaNaode = aEvaNode;
 	}
 
 	@Override
 	public EvaNode getEvaNode() {
 		return _evaNaode;
+	}
+
+	@Override
+	public void setEvaNode(final EvaNode aEvaNode) {
+		_evaNaode = aEvaNode;
 	}
 
 	public void setITE(final IdentTableEntry ite) {
@@ -33,7 +33,7 @@ class GI_ClassStatement implements GenerateC_Item {
 		if (resolved == null)
 			resolved = ite.resolvedType();
 
-		_ite = ite;
+		_ite      = ite;
 		_evaNaode = resolved;
 	}
 }

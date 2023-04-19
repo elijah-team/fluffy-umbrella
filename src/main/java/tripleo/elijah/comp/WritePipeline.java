@@ -42,11 +42,11 @@ import java.util.function.Supplier;
  * Created 8/21/21 10:19 PM
  */
 public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier<GenerateResult>>, AB_GenerateResultListener {
-	private final CompletedItemsHandler cih;
-	public final WritePipelineSharedState st;
-	private final DoubleLatch<GenerateResult> latch;
-	private Supplier<GenerateResult> grs;
+	public final  WritePipelineSharedState                   st;
 	public final  DeferredObject<GenerateResult, Void, Void> prom = new DeferredObject<>();
+	private final CompletedItemsHandler                      cih;
+	private final DoubleLatch<GenerateResult>                latch;
+	private       Supplier<GenerateResult>                   grs;
 
 
 	public WritePipeline(final IPipelineAccess pa) {
@@ -55,7 +55,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		// given
 		st.c = pa.getCompilation();
 
-		final @NotNull ProcessRecord pr = pa.getProcessRecord();
+		final @NotNull ProcessRecord                      pr  = pa.getProcessRecord();
 		final @NotNull Promise<PipelineLogic, Void, Void> ppl = pa.getPipelineLogicPromise();
 
 		// computed
@@ -68,7 +68,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		});
 
 		// state
-		st.mmb = ArrayListMultimap.create();
+		st.mmb         = ArrayListMultimap.create();
 		st.lsp_outputs = ArrayListMultimap.create();
 
 		// ??
@@ -82,25 +82,8 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		pa.setWritePipeline(this);
 	}
 
-	OutputStrategy createOutputStratgy() {
-		final OutputStrategy os = new OutputStrategy();
-		os.per(OutputStrategy.Per.PER_CLASS); // TODO this needs to be configured per lsp
-
-		return os;
-	}
-
-	@Override
-	public void run() throws Exception {
-		// final GenerateResult rs = grs.get(); // 04/15
-
-//		prom.then((final GenerateResult result) -> {
-			latch.notify(true);
-//		});
-	}
-
 	private void __int__steps(final GenerateResult result, final GenerateResult rs) {
-		@NotNull
-		final List<WP_Indiviual_Step> s = new ArrayList<>();
+		@NotNull final List<WP_Indiviual_Step> s = new ArrayList<>();
 
 		// 0. prepare to change to DoubleLatch instead of/an or in addition to Promise
 		assert result == rs;
@@ -119,9 +102,31 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		}
 	}
 
+	OutputStrategy createOutputStratgy() {
+		final OutputStrategy os = new OutputStrategy();
+		os.per(OutputStrategy.Per.PER_CLASS); // TODO this needs to be configured per lsp
+
+		return os;
+	}
+
+	@Override
+	public void gr_slot(final @NotNull GenerateResult gr1) {
+		Objects.requireNonNull(gr1);
+		latch.notify(gr1);
+		gr1.subscribeCompletedItems(cih.observer());
+	}
+
+	@Override
+	public void run() throws Exception {
+		// final GenerateResult rs = grs.get(); // 04/15
+
+//		prom.then((final GenerateResult result) -> {
+		latch.notify(true);
+//		});
+	}
+
 	public void append_hash(TextBuffer outputBuffer, String aFilename, ErrSink errSink) throws IOException {
-		@Nullable
-		final String hh = Helpers.getHashForFilename(aFilename, errSink);
+		@Nullable final String hh = Helpers.getHashForFilename(aFilename, errSink);
 		if (hh != null) {
 			outputBuffer.append(hh);
 			outputBuffer.append(" ");
@@ -179,40 +184,14 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 	}
 
 	private /* static */ class CompletedItemsHandler {
-		final Multimap<Dependency, GenerateResultItem> gris = ArrayListMultimap.create();
+		final         Multimap<Dependency, GenerateResultItem> gris = ArrayListMultimap.create();
 		// README debugging purposes
-		final List<GenerateResultItem> abs = new ArrayList<>();
-		private final WritePipelineSharedState sharedState;
-		private Observer<GenerateResultItem> observer;
+		final         List<GenerateResultItem>                 abs  = new ArrayList<>();
+		private final WritePipelineSharedState                 sharedState;
+		private       Observer<GenerateResultItem>             observer;
 
 		public CompletedItemsHandler(final WritePipelineSharedState aSharedState) {
 			sharedState = aSharedState;
-		}
-
-		public void addItem(final @NotNull GenerateResultItem ab) {
-			NotImplementedException.raise();
-
-			// README debugging purposes
-			abs.add(ab);
-
-			final Dependency dependency = ab.getDependency();
-
-			// README debugging purposes
-			final DependencyRef dependencyRef = dependency.getRef();
-
-			if (dependencyRef == null) {
-				gris.put(dependency, ab);
-			} else {
-				final String output = ((CDependencyRef) dependency.getRef()).getHeaderFile();
-				sharedState.mmb.put(output, ab.buffer);
-				sharedState.lsp_outputs.put(ab.lsp.getInstructions(), output);
-				for (GenerateResultItem generateResultItem : gris.get(dependency)) {
-					final String output1 = generateResultItem.output;
-					sharedState.mmb.put(output1, generateResultItem.buffer);
-					sharedState.lsp_outputs.put(generateResultItem.lsp.getInstructions(), output1);
-				}
-				gris.removeAll(dependency);
-			}
 		}
 
 		@Contract(mutates = "this")
@@ -242,9 +221,30 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 			return observer;
 		}
 
-		private void ___completeSequence(final @NotNull Map<String, OutputFileC> outputFiles) {
-			final WriteOutputFiles wof = new WriteOutputFiles();
-			wof.writeOutputFiles(sharedState, outputFiles);
+		public void addItem(final @NotNull GenerateResultItem ab) {
+			NotImplementedException.raise();
+
+			// README debugging purposes
+			abs.add(ab);
+
+			final Dependency dependency = ab.getDependency();
+
+			// README debugging purposes
+			final DependencyRef dependencyRef = dependency.getRef();
+
+			if (dependencyRef == null) {
+				gris.put(dependency, ab);
+			} else {
+				final String output = ((CDependencyRef) dependency.getRef()).getHeaderFile();
+				sharedState.mmb.put(output, ab.buffer);
+				sharedState.lsp_outputs.put(ab.lsp.getInstructions(), output);
+				for (GenerateResultItem generateResultItem : gris.get(dependency)) {
+					final String output1 = generateResultItem.output;
+					sharedState.mmb.put(output1, generateResultItem.buffer);
+					sharedState.lsp_outputs.put(generateResultItem.lsp.getInstructions(), output1);
+				}
+				gris.removeAll(dependency);
+			}
 		}
 
 		public void completeSequence() {
@@ -254,13 +254,11 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 				___completeSequence(outputFiles);
 			});
 		}
-	}
 
-	@Override
-	public void gr_slot(final @NotNull GenerateResult gr1) {
-		Objects.requireNonNull(gr1);
-		latch.notify(gr1);
-		gr1.subscribeCompletedItems(cih.observer());
+		private void ___completeSequence(final @NotNull Map<String, OutputFileC> outputFiles) {
+			final WriteOutputFiles wof = new WriteOutputFiles();
+			wof.writeOutputFiles(sharedState, outputFiles);
+		}
 	}
 
 }

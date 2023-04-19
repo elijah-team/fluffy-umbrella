@@ -10,7 +10,10 @@ package tripleo.elijah.comp.internal;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.CompilerInput;
+import tripleo.elijah.comp.ErrSink;
+import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.i.CompilationFlow;
 import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
@@ -23,6 +26,9 @@ import java.util.List;
 
 public class CompilationImpl extends Compilation {
 
+	private final @NotNull FluffyCompImpl _fluffyComp;
+	private @Nullable EOT_OutputTree _output_tree = null;
+
 	public CompilationImpl(final ErrSink aEee, final IO aIo) {
 		super(aEee, aIo);
 		_fluffyComp = new FluffyCompImpl(this);
@@ -31,8 +37,6 @@ public class CompilationImpl extends Compilation {
 	public void testMapHooks(final List<IFunctionMapHook> aMapHooks) {
 		throw new NotImplementedException();
 	}
-
-	private @Nullable EOT_OutputTree _output_tree = null;
 
 	@Override
 	public @NotNull EOT_OutputTree getOutputTree() {
@@ -54,8 +58,6 @@ public class CompilationImpl extends Compilation {
 	public void fakeFlow(final List<CompilerInput> aInputs, final CompilationFlow aFlow) {
 		aFlow.run(this);
 	}
-
-	private final @NotNull FluffyCompImpl _fluffyComp;
 
 	public ICompilationAccess _access() {
 		return new DefaultCompilationAccess(this);

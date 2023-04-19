@@ -2,7 +2,6 @@ package tripleo.elijah.stages.write_stage.pipeline_impl;
 
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.comp.WritePipeline;
 import tripleo.elijah.stages.gen_generic.DoubleLatch;
 import tripleo.elijah.util.Helpers;
 import tripleo.util.buffer.DefaultBuffer;

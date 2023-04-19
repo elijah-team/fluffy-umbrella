@@ -21,16 +21,16 @@ public class DeclAnchor {
 
 	public DeclAnchor(final OS_Element aElement, final AnchorType aAnchorType) {
 		anchorType = aAnchorType;
-		element = aElement;
+		element    = aElement;
+	}
+
+	public IInvocation getInvocation() {
+		return invocation;
 	}
 
 	public void setInvocation(final IInvocation aInvocation) {
 		assert aInvocation != null;
 		invocation = aInvocation;
-	}
-
-	public IInvocation getInvocation() {
-		return invocation;
 	}
 
 	public enum AnchorType {

@@ -52,6 +52,18 @@ class DTR_VariableStatement {
 		}
 	}
 
+	private void normalTypeName_notGeneric(final IElementHolder eh, final GenType genType, final @NotNull NormalTypeName normalTypeName) {
+		final TypeNameList genericPart = normalTypeName.getGenericPart();
+		if (eh instanceof GenericElementHolderWithType) {
+			final GenericElementHolderWithType eh1  = (GenericElementHolderWithType) eh;
+			final DeduceTypes2                 dt2  = eh1.getDeduceTypes2();
+			final OS_Type                      type = eh1.getType();
+
+			normalTypeName_notGeneric_typeProvided(genType, normalTypeName, dt2, type);
+		} else
+			normalTypeName_notGeneric_typeNotProvided(genType, normalTypeName);
+	}
+
 	private void normalTypeName_generic_butNotNull(final IElementHolder eh, final GenType genType, final NormalTypeName normalTypeName) {
 		if (eh instanceof GenericElementHolderWithType) {
 			final GenericElementHolderWithType eh1  = (GenericElementHolderWithType) eh;
@@ -78,8 +90,23 @@ class DTR_VariableStatement {
 			genType.typeName = new OS_UserType(normalTypeName);
 	}
 
-	private /*static*/ void normalTypeName_generic_butNotNull_resolveToNonGeneric(final @NotNull GenType genType, final @NotNull GenType resolved) {
-		genType.resolved = resolved.resolved;
+	private void normalTypeName_notGeneric_typeProvided(final @NotNull GenType genType, final NormalTypeName normalTypeName, final @NotNull DeduceTypes2 dt2, final @NotNull OS_Type type) {
+		genType.nonGenericTypeName = normalTypeName;
+
+		assert normalTypeName == type.getTypeName();
+
+		OS_Type typeName = new OS_UserType(normalTypeName);
+		try {
+			final @NotNull GenType resolved = dt2.resolve_type(typeName, variableStatement.getContext());
+			genType.resolved = resolved.resolved;
+		} catch (ResolveError aResolveError) {
+			aResolveError.printStackTrace();
+			assert false;
+		}
+	}
+
+	private /*static*/ void normalTypeName_notGeneric_typeNotProvided(final @NotNull GenType genType, final NormalTypeName normalTypeName) {
+		genType.nonGenericTypeName = normalTypeName;
 	}
 
 	private /*static*/ void normalTypeName_generic_butNotNull_resolveToGeneric(final GenType genType, final @NotNull GenType resolved, final @NotNull BaseTableEntry backlink) {
@@ -106,34 +133,7 @@ class DTR_VariableStatement {
 		});
 	}
 
-	private void normalTypeName_notGeneric(final IElementHolder eh, final GenType genType, final @NotNull NormalTypeName normalTypeName) {
-		final TypeNameList genericPart = normalTypeName.getGenericPart();
-		if (eh instanceof GenericElementHolderWithType) {
-			final GenericElementHolderWithType eh1  = (GenericElementHolderWithType) eh;
-			final DeduceTypes2                 dt2  = eh1.getDeduceTypes2();
-			final OS_Type                      type = eh1.getType();
-
-			normalTypeName_notGeneric_typeProvided(genType, normalTypeName, dt2, type);
-		} else
-			normalTypeName_notGeneric_typeNotProvided(genType, normalTypeName);
-	}
-
-	private /*static*/ void normalTypeName_notGeneric_typeNotProvided(final @NotNull GenType genType, final NormalTypeName normalTypeName) {
-		genType.nonGenericTypeName = normalTypeName;
-	}
-
-	private void normalTypeName_notGeneric_typeProvided(final @NotNull GenType genType, final NormalTypeName normalTypeName, final @NotNull DeduceTypes2 dt2, final @NotNull OS_Type type) {
-		genType.nonGenericTypeName = normalTypeName;
-
-		assert normalTypeName == type.getTypeName();
-
-		OS_Type typeName = new OS_UserType(normalTypeName);
-		try {
-			final @NotNull GenType resolved = dt2.resolve_type(typeName, variableStatement.getContext());
-			genType.resolved = resolved.resolved;
-		} catch (ResolveError aResolveError) {
-			aResolveError.printStackTrace();
-			assert false;
-		}
+	private /*static*/ void normalTypeName_generic_butNotNull_resolveToNonGeneric(final @NotNull GenType genType, final @NotNull GenType resolved) {
+		genType.resolved = resolved.resolved;
 	}
 }

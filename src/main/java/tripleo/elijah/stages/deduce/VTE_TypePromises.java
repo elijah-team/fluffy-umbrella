@@ -17,7 +17,6 @@ import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VariableTableEntry;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IntegerIA;
-import tripleo.elijah.util.NotImplementedException;
 
 /**
  * Created 11/27/21 12:51 PM
@@ -39,8 +38,8 @@ public class VTE_TypePromises {
 
 				@NotNull ProcTableListener.E_Is_FunctionDef e_Is_FunctionDef = aProcTableListener.new E_Is_FunctionDef(
 						pte, fd, fd.getParent()).invoke(aVariableTableEntry.type.genType.nonGenericTypeName);
-				@Nullable FunctionInvocation fi = e_Is_FunctionDef.getFi();
-				GenType genType = e_Is_FunctionDef.getGenType();
+				@Nullable FunctionInvocation fi      = e_Is_FunctionDef.getFi();
+				GenType                      genType = e_Is_FunctionDef.getGenType();
 				aProcTableListener.finish(co, depTracker, fi, genType);
 			}
 		});
@@ -61,8 +60,8 @@ public class VTE_TypePromises {
 						assert varTableEntry.varType.getClassOf() == fd.getParent();
 
 						@NotNull ProcTableListener.E_Is_FunctionDef e_Is_FunctionDef = aProcTableListener.new E_Is_FunctionDef(aProcTableEntry, fd, fd.getParent()).invoke(null/*variableTableEntry.type.genType.nonGenericTypeName*/);
-						@Nullable FunctionInvocation fi1 = e_Is_FunctionDef.getFi();
-						GenType genType1 = e_Is_FunctionDef.getGenType();
+						@Nullable FunctionInvocation                fi1              = e_Is_FunctionDef.getFi();
+						GenType                                     genType1         = e_Is_FunctionDef.getGenType();
 						aProcTableListener.finish(co, depTracker, fi1, genType1);
 
 						break;
@@ -86,8 +85,8 @@ public class VTE_TypePromises {
 				}
 
 				@NotNull ProcTableListener.E_Is_FunctionDef e_Is_FunctionDef = aProcTableListener.new E_Is_FunctionDef(pte, fd, fd.getParent()).invoke(aVariableTableEntry.type.genType.nonGenericTypeName);
-				@Nullable FunctionInvocation fi = e_Is_FunctionDef.getFi();
-				GenType genType = e_Is_FunctionDef.getGenType();
+				@Nullable FunctionInvocation                fi               = e_Is_FunctionDef.getFi();
+				GenType                                     genType          = e_Is_FunctionDef.getGenType();
 				aProcTableListener.finish(co, depTracker, fi, genType);
 			}
 		});
@@ -133,7 +132,7 @@ public class VTE_TypePromises {
 			public void onDone(@NotNull GenType result) {
 				boolean found1 = aDeduceTypes2.lookup_name_calls(result.resolved.getClassOf().getContext(), pn, pte);
 				if (found1) {
-					int y=2;
+					int y = 2;
 //					tripleo.elijah.util.Stupidity.println_out_2("3071 "+pte.getStatus());
 					IInvocation invocation = result.ci;
 //							final BaseFunctionDef fd = gf.getFD();
@@ -145,7 +144,7 @@ public class VTE_TypePromises {
 						tripleo.elijah.util.Stupidity.println_out_2("175 pte.fi is not null");
 					aIntegerIA.gf.addDependentFunction(pte.getFunctionInvocation()); // TODO is this needed (here)?
 				} else {
-					int y=3;
+					int y = 3;
 					tripleo.elijah.util.Stupidity.println_out_2("3074");
 				}
 			}
@@ -153,10 +152,10 @@ public class VTE_TypePromises {
 	}
 
 	static void found_parent(final @NotNull DeduceTypes2.PromiseExpectation<GenType> aPromiseExpectation,
-					  final BaseEvaFunction generatedFunction,
-					  final VariableTableEntry aBte,
-					  final IdentTableEntry ite,
-					  final DeduceTypes2 aDeduceTypes2) {
+							 final BaseEvaFunction generatedFunction,
+							 final VariableTableEntry aBte,
+							 final IdentTableEntry ite,
+							 final DeduceTypes2 aDeduceTypes2) {
 		aBte.typePromise().done(new DoneCallback<GenType>() {
 			@Override
 			public void onDone(@NotNull GenType result) {

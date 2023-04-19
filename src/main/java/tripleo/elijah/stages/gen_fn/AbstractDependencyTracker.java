@@ -22,15 +22,31 @@ import java.util.List;
  * Created 6/21/21 11:36 PM
  */
 public abstract class AbstractDependencyTracker implements DependencyTracker {
-	private List<FunctionInvocation> dependentFunctions = new ArrayList<FunctionInvocation>();
-	private List<GenType> dependentTypes = new ArrayList<GenType>();
+	Subject<GenType> dependentTypesSubject = ReplaySubject.create(2);/*new Publisher<GenType>() {
+		List<Subscriber<GenType>> subscribers = new ArrayList<>(2);
 
-//	@Override
+		@Override
+		public void subscribe(final Subscriber<? super GenType> aSubscriber) {
+			subscribers.add((Subscriber<GenType>) aSubscriber);
+		}
+	};*/
+	Subject<FunctionInvocation> dependentFunctionsSubject = ReplaySubject.create(2);/*new Publisher<FunctionInvocation>() {
+		List<Subscriber<FunctionInvocation>> subscribers = new ArrayList<>(2);
+
+		@Override
+		public void subscribe(final Subscriber<? super FunctionInvocation> aSubscriber) {
+			subscribers.add((Subscriber<FunctionInvocation>) aSubscriber);
+		}
+	};*/
+	private List<FunctionInvocation> dependentFunctions = new ArrayList<FunctionInvocation>();
+	private List<GenType>            dependentTypes     = new ArrayList<GenType>();
+
+	//	@Override
 	public List<GenType> dependentTypes() {
 		return dependentTypes;
 	}
 
-//	@Override
+	//	@Override
 	public List<FunctionInvocation> dependentFunctions() {
 		return dependentFunctions;
 	}
@@ -45,27 +61,9 @@ public abstract class AbstractDependencyTracker implements DependencyTracker {
 		dependentFunctionsSubject.onNext(aFunction);
 	}
 
-	Subject<GenType> dependentTypesSubject = ReplaySubject.create(2);/*new Publisher<GenType>() {
-		List<Subscriber<GenType>> subscribers = new ArrayList<>(2);
-
-		@Override
-		public void subscribe(final Subscriber<? super GenType> aSubscriber) {
-			subscribers.add((Subscriber<GenType>) aSubscriber);
-		}
-	};*/
-
 	public Subject<GenType> dependentTypesSubject() {
 		return dependentTypesSubject;
 	}
-
-	Subject<FunctionInvocation> dependentFunctionsSubject = ReplaySubject.create(2);/*new Publisher<FunctionInvocation>() {
-		List<Subscriber<FunctionInvocation>> subscribers = new ArrayList<>(2);
-
-		@Override
-		public void subscribe(final Subscriber<? super FunctionInvocation> aSubscriber) {
-			subscribers.add((Subscriber<FunctionInvocation>) aSubscriber);
-		}
-	};*/
 
 	public Subject<FunctionInvocation> dependentFunctionSubject() {
 		return dependentFunctionsSubject;

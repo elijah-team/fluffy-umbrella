@@ -11,42 +11,16 @@ import java.util.List;
 
 public class RuntimeProcesses {
 	private final List<RuntimeProcess> processes = new ArrayList<>();
-	private final ICompilationAccess ca;
-	private final ProcessRecord      pr;
+	private final ICompilationAccess   ca;
+	private final ProcessRecord        pr;
 
 	public RuntimeProcesses(final @NotNull ICompilationAccess aca, final @NotNull ProcessRecord aPr) {
 		ca = aca;
 		pr = aPr;
 	}
 
-	public void run() {
-		final Compilation comp = ca.getCompilation();
-
-		for (RuntimeProcess runtimeProcess : processes) {
-			Stupidity.println_out_2("***** RuntimeProcess [run    ] named " + runtimeProcess);
-			runtimeProcess.run(comp);
-		}
-	}
-
-	public void prepare() throws Exception {
-		for (RuntimeProcess runtimeProcess : processes) {
-			Stupidity.println_out_2("***** RuntimeProcess [prepare] named " + runtimeProcess);
-			runtimeProcess.prepare();
-		}
-	}
-
 	public void add(final RuntimeProcess aProcess) {
 		processes.add(aProcess);
-	}
-
-	public void postProcess(ProcessRecord pr) {
-		for (RuntimeProcess runtimeProcess : processes) {
-			Stupidity.println_out_2("***** RuntimeProcess [postProcess] named " + runtimeProcess);
-			runtimeProcess.postProcess();
-		}
-
-		Stupidity.println_out_2("***** RuntimeProcess^ [postProcess/writeLogs]");
-		pr.writeLogs(ca);
 	}
 
 	public int size() {
@@ -71,5 +45,31 @@ public class RuntimeProcesses {
 			rt.postProcess(pr);
 		}
 		}
+	}
+
+	public void prepare() throws Exception {
+		for (RuntimeProcess runtimeProcess : processes) {
+			Stupidity.println_out_2("***** RuntimeProcess [prepare] named " + runtimeProcess);
+			runtimeProcess.prepare();
+		}
+	}
+
+	public void run() {
+		final Compilation comp = ca.getCompilation();
+
+		for (RuntimeProcess runtimeProcess : processes) {
+			Stupidity.println_out_2("***** RuntimeProcess [run    ] named " + runtimeProcess);
+			runtimeProcess.run(comp);
+		}
+	}
+
+	public void postProcess(ProcessRecord pr) {
+		for (RuntimeProcess runtimeProcess : processes) {
+			Stupidity.println_out_2("***** RuntimeProcess [postProcess] named " + runtimeProcess);
+			runtimeProcess.postProcess();
+		}
+
+		Stupidity.println_out_2("***** RuntimeProcess^ [postProcess/writeLogs]");
+		pr.writeLogs(ca);
 	}
 }

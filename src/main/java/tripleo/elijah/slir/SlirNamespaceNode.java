@@ -19,40 +19,40 @@ import java.util.List;
  * Created 11/6/21 8:38 AM
  */
 public class SlirNamespaceNode implements SlirElement {
-	private final SlirSourceFile sourceFile;
-	private final String namespaceName;
+	private final SlirSourceFile     sourceFile;
+	private final String             namespaceName;
 	private final NamespaceStatement namespaceStatement;
-	private final List<SlirElement> used = new ArrayList<SlirElement>();
-	private final SlirSourceNode sourceNode;
-	private final SlirElement parent;
+	private final List<SlirElement>  used = new ArrayList<SlirElement>();
+	private final SlirSourceNode     sourceNode;
+	private final SlirElement        parent;
 
 	public SlirNamespaceNode(final SlirSourceFile aSourceFile,
 							 final String aNamespaceName,
 							 final NamespaceStatement aNamespaceStatement) {
-		parent = null;
-		sourceFile = aSourceFile;
-		sourceNode = null; // TODO
-		namespaceName = aNamespaceName;
+		parent             = null;
+		sourceFile         = aSourceFile;
+		sourceNode         = null; // TODO
+		namespaceName      = aNamespaceName;
 		namespaceStatement = aNamespaceStatement;
 	}
 
 	public SlirNamespaceNode(final SlirSourceNode aSourceNode,
 							 final String aNamespaceName,
 							 final NamespaceStatement aNamespaceStatement) {
-		parent = null;
-		sourceFile = aSourceNode.sourceFile();
-		sourceNode = aSourceNode;
-		namespaceName = aNamespaceName;
+		parent             = null;
+		sourceFile         = aSourceNode.sourceFile();
+		sourceNode         = aSourceNode;
+		namespaceName      = aNamespaceName;
 		namespaceStatement = aNamespaceStatement;
 	}
 
 	public SlirNamespaceNode(final SlirElement aParent,
 							 final String aNamespaceName,
 							 final NamespaceStatement aNamespaceStatement) {
-		parent = aParent;
-		sourceFile = null; // aSourceNode.sourceFile(); // TODO for now
-		sourceNode = null; //aSourceNode; // TODO for now
-		namespaceName = aNamespaceName;
+		parent             = aParent;
+		sourceFile         = null; // aSourceNode.sourceFile(); // TODO for now
+		sourceNode         = null; //aSourceNode; // TODO for now
+		namespaceName      = aNamespaceName;
 		namespaceStatement = aNamespaceStatement;
 	}
 

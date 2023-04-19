@@ -15,15 +15,16 @@ import java.util.List;
 public class DefaultGenerateResultSink implements GenerateResultSink {
 	private final GeneratePipeline         generatePipeline;
 	private final List<GenerateResultItem> gris = new ArrayList<>();
-	private final IPipelineAccess pa;
+	private final IPipelineAccess          pa;
 
 	public DefaultGenerateResultSink(final GeneratePipeline aGeneratePipeline, IPipelineAccess pa0) {
 		generatePipeline = aGeneratePipeline;
-		pa=pa0;
+		pa               = pa0;
 	}
 
-
-	@Override
+	public List<GenerateResultItem> resultList() {
+		return ImmutableList.copyOf(gris);
+	}	@Override
 	public void add(EvaNode node) {
 		int y = 2;
 	}
@@ -41,7 +42,5 @@ public class DefaultGenerateResultSink implements GenerateResultSink {
 		return pa.getCompilation()._repo.getClass(aEvaClass);
 	}
 
-	public List<GenerateResultItem> resultList() {
-		return ImmutableList.copyOf(gris);
-	}
+
 }

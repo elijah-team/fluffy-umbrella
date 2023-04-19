@@ -18,26 +18,26 @@ import java.util.List;
  * Created 9/6/20 12:06 PM
  */
 public class LibraryStatementPart {
-	private String name;
-	private String dirName;
-   	private List<Directive> dirs = null;
+	private String          name;
+	private String          dirName;
+	private List<Directive> dirs = null;
 
 	private CompilerInstructions ci;
-
-	public void setName(final Token i1) {
-		name = i1.getText();
-	}
-
-	public void setDirName(final Token dirName) {
-		this.dirName = dirName.getText();
-	}
 
 	public String getName() {
 		return name;
 	}
 
+	public void setName(final Token i1) {
+		name = i1.getText();
+	}
+
 	public String getDirName() {
 		return dirName;
+	}
+
+	public void setDirName(final Token dirName) {
+		this.dirName = dirName.getText();
 	}
 
 	public void addDirective(final Token token, final IExpression iExpression) {
@@ -57,10 +57,10 @@ public class LibraryStatementPart {
 	public class Directive {
 
 		private final IExpression expression;
-		private final String name;
+		private final String      name;
 
 		public Directive(final Token token_, final IExpression expression_) {
-			name = token_.getText();
+			name       = token_.getText();
 			expression = expression_;
 		}
 	}

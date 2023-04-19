@@ -5,7 +5,6 @@ import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.comp.internal.ProcessRecord;
-//import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
@@ -27,7 +26,7 @@ public class AccessBus {
 
 
 	public AccessBus(final Compilation aC, final IPipelineAccess aPa) {
-		_c = aC;
+		_c  = aC;
 		_pa = aPa;
 	}
 
@@ -39,18 +38,14 @@ public class AccessBus {
 		_pa.getPipelineLogicPromise().then(aPipelineLogicDoneCallback);
 	}
 
-	private void resolvePipelineLogic(final PipelineLogic pl) {
-		_pa.getPipelineLogicPromise().resolve(pl);
+	public void resolveModuleList(final EIT_ModuleList aModuleList) {
+		moduleListPromise.resolve(aModuleList);
 	}
 
 	//@Deprecated
 	//public void resolveModuleList(final List<OS_Module> aModuleList) {
 	//	resolveModuleList(new EIT_ModuleList(aModuleList)); // TODO
 	//}
-
-	public void resolveModuleList(final EIT_ModuleList aModuleList) {
-		moduleListPromise.resolve(aModuleList);
-	}
 
 	public void resolveGenerateResult(final GenerateResult aGenerateResult) {
 		generateResultPromise.resolve(aGenerateResult);
@@ -71,6 +66,10 @@ public class AccessBus {
 		____pl = x;
 
 		resolvePipelineLogic(x);
+	}
+
+	private void resolvePipelineLogic(final PipelineLogic pl) {
+		_pa.getPipelineLogicPromise().resolve(pl);
 	}
 
 	public void subscribe_lgc(@NotNull final AB_LgcListener aLgcListener) {

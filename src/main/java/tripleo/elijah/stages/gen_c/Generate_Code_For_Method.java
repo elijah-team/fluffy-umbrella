@@ -16,13 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.diagnostic.Locatable;
-import tripleo.elijah.lang.ConstructorDef;
-import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.FormalArgListItem;
-import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.NormalTypeName;
-import tripleo.elijah.lang.OS_Type;
-import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_GenericTypeNameType;
 import tripleo.elijah.lang.types.OS_UnitType;
 import tripleo.elijah.nextgen.outputstatement.EG_DottedStatement;
@@ -35,28 +29,9 @@ import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VariableTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.GCFM_Diagnostic;
 import tripleo.elijah.stages.gen_c.c_ast1.C_HeaderString;
-import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
-import tripleo.elijah.stages.gen_fn.ConstantTableEntry;
-import tripleo.elijah.stages.gen_fn.EvaClass;
-import tripleo.elijah.stages.gen_fn.EvaConstructor;
-import tripleo.elijah.stages.gen_fn.EvaContainerNC;
-import tripleo.elijah.stages.gen_fn.EvaFunction;
-import tripleo.elijah.stages.gen_fn.EvaNamespace;
-import tripleo.elijah.stages.gen_fn.EvaNode;
-import tripleo.elijah.stages.gen_fn.ProcTableEntry;
-import tripleo.elijah.stages.gen_fn.TypeTableEntry;
-import tripleo.elijah.stages.gen_fn.VariableTableEntry;
+import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
-import tripleo.elijah.stages.instructions.ConstTableIA;
-import tripleo.elijah.stages.instructions.IdentIA;
-import tripleo.elijah.stages.instructions.Instruction;
-import tripleo.elijah.stages.instructions.InstructionArgument;
-import tripleo.elijah.stages.instructions.IntegerIA;
-import tripleo.elijah.stages.instructions.Label;
-import tripleo.elijah.stages.instructions.LabelIA;
-import tripleo.elijah.stages.instructions.ProcIA;
-import tripleo.elijah.stages.instructions.SymbolIA;
-import tripleo.elijah.stages.instructions.VariableTableType;
+import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.BufferTabbedOutputStream;
 import tripleo.elijah.util.Helpers;
@@ -77,13 +52,11 @@ import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
  * Created 6/21/21 5:53 AM
  */
 public class Generate_Code_For_Method {
-	private final ElLog LOG;
-
 	final BufferTabbedOutputStream tos = new BufferTabbedOutputStream();
-
-	GenerateC gc;
-
 	final BufferTabbedOutputStream tosHdr = new BufferTabbedOutputStream();
+	private final ElLog LOG;
+	GenerateC gc;
+	boolean is_constructor = false, is_unit_type = false;
 
 	public Generate_Code_For_Method(@NotNull final GenerateC aGenerateC, final ElLog aLog) {
 		gc  = aGenerateC;
@@ -124,77 +97,75 @@ public class Generate_Code_For_Method {
 			}
 
 			switch (instruction.getName()) {
-				case E:
-					action_E(gf, aGmh);
-					break;
-				case X:
-					action_X(aGmh);
-					break;
-				case ES:
-					action_ES();
-					break;
-				case XS:
-					action_XS();
-					break;
-				case AGN:
-					action_AGN(gf, instruction);
-					break;
-				case AGNK:
-					action_AGNK(gf, instruction);
-					break;
-				case AGNT:
-					break;
-				case AGNF:
-					break;
-				case JE:
-					action_JE(gf, instruction);
-					break;
-				case JNE:
-					action_JNE(gf, instruction);
-					break;
-				case JL:
-					action_JL(gf, instruction);
-					break;
-				case JMP:
-					action_JMP(instruction);
-					break;
-				case CONSTRUCT:
-					action_CONSTRUCT(gf, instruction);
-					break;
-				case CALL:
-					action_CALL(gf, instruction);
-					break;
-				case CALLS:
-					action_CALLS(gf, instruction);
-					break;
-				case RET:
-					break;
-				case YIELD:
-					throw new NotImplementedException();
-				case TRY:
-					throw new NotImplementedException();
-				case PC:
-					break;
-				case IS_A:
-					action_IS_A(instruction, tos, gf);
-					break;
-				case DECL:
-					action_DECL(instruction, tos, gf);
-					break;
-				case CAST_TO:
-					action_CAST(instruction, tos, gf);
-					break;
-				case NOP:
-					break;
-				default:
-					throw new IllegalStateException("Unexpected value: " + instruction.getName());
+			case E:
+				action_E(gf, aGmh);
+				break;
+			case X:
+				action_X(aGmh);
+				break;
+			case ES:
+				action_ES();
+				break;
+			case XS:
+				action_XS();
+				break;
+			case AGN:
+				action_AGN(gf, instruction);
+				break;
+			case AGNK:
+				action_AGNK(gf, instruction);
+				break;
+			case AGNT:
+				break;
+			case AGNF:
+				break;
+			case JE:
+				action_JE(gf, instruction);
+				break;
+			case JNE:
+				action_JNE(gf, instruction);
+				break;
+			case JL:
+				action_JL(gf, instruction);
+				break;
+			case JMP:
+				action_JMP(instruction);
+				break;
+			case CONSTRUCT:
+				action_CONSTRUCT(gf, instruction);
+				break;
+			case CALL:
+				action_CALL(gf, instruction);
+				break;
+			case CALLS:
+				action_CALLS(gf, instruction);
+				break;
+			case RET:
+				break;
+			case YIELD:
+				throw new NotImplementedException();
+			case TRY:
+				throw new NotImplementedException();
+			case PC:
+				break;
+			case IS_A:
+				action_IS_A(instruction, tos, gf);
+				break;
+			case DECL:
+				action_DECL(instruction, tos, gf);
+				break;
+			case CAST_TO:
+				action_CAST(instruction, tos, gf);
+				break;
+			case NOP:
+				break;
+			default:
+				throw new IllegalStateException("Unexpected value: " + instruction.getName());
 			}
 		}
 		tos.dec_tabs();
 		tos.put_string_ln("}");
 	}
-
-	boolean is_constructor = false, is_unit_type = false;
 
 	private void action_E(final @NotNull BaseEvaFunction gf, final Generate_Method_Header aGmh) {
 		tos.put_string_ln("bool vsb;");
@@ -210,39 +181,29 @@ public class Generate_Code_For_Method {
 			state = 4;
 
 		switch (state) {
-			case 0:
-				tos.put_string_ln("Error_TTE_Not_Resolved " + aGmh.tte);
-				break;
-			case 1:
-				final String ty = gc.getTypeName(aGmh.tte);
-				tos.put_string_ln(String.format("%s* vsr;", ty));
-				break;
-			case 2:
-				is_constructor = true;
-				break;
-			case 3:
-				// TODO don't know what this is for now
-				// Assuming ctor
-				is_constructor = true;
-				final EvaNode genClass = gf.getGenClass();
-				final String ty2 = gc.getTypeNameForGenClass(genClass);
-				tos.put_string_ln(String.format("%s vsr;", ty2));
-				break;
-			case 4:
-				// don't print anything
-				is_unit_type = true;
-				break;
+		case 0:
+			tos.put_string_ln("Error_TTE_Not_Resolved " + aGmh.tte);
+			break;
+		case 1:
+			final String ty = gc.getTypeName(aGmh.tte);
+			tos.put_string_ln(String.format("%s* vsr;", ty));
+			break;
+		case 2:
+			is_constructor = true;
+			break;
+		case 3:
+			// TODO don't know what this is for now
+			// Assuming ctor
+			is_constructor = true;
+			final EvaNode genClass = gf.getGenClass();
+			final String ty2 = gc.getTypeNameForGenClass(genClass);
+			tos.put_string_ln(String.format("%s vsr;", ty2));
+			break;
+		case 4:
+			// don't print anything
+			is_unit_type = true;
+			break;
 		}
-		tos.put_string_ln("{");
-		tos.incr_tabs();
-	}
-
-	private void action_XS() {
-		tos.dec_tabs();
-		tos.put_string_ln("}");
-	}
-
-	private void action_ES() {
 		tos.put_string_ln("{");
 		tos.incr_tabs();
 	}
@@ -263,6 +224,16 @@ public class Generate_Code_For_Method {
 				tos.put_string_ln("return vsr;");
 			}
 		}
+	}
+
+	private void action_ES() {
+		tos.put_string_ln("{");
+		tos.incr_tabs();
+	}
+
+	private void action_XS() {
+		tos.dec_tabs();
+		tos.put_string_ln("}");
 	}
 
 	private void action_AGN(final BaseEvaFunction gf, final @NotNull Instruction aInstruction) {
@@ -495,7 +466,7 @@ public class Generate_Code_For_Method {
 		final TypeTableEntry     testing_type__ = gf.getTypeTableEntry(testing_type_.getIndex());
 
 		final EvaNode testing_type = testing_type__.resolved();
-		final int           z            = ((EvaContainerNC) testing_type).getCode();
+		final int     z            = ((EvaContainerNC) testing_type).getCode();
 
 		tos.put_string_ln(String.format("vsb = ZS%d_is_a(%s);", z, gc.getRealTargetName(gf, testing_var_, AOG.GET)));
 		tos.put_string_ln(String.format("if (!vsb) goto %s;", target_label.getName()));
@@ -510,6 +481,19 @@ public class Generate_Code_For_Method {
 			//throw new
 			// ignore
 		}
+	}
+
+	private void action_CAST(final @NotNull Instruction instruction, final @NotNull BufferTabbedOutputStream tos, final BaseEvaFunction gf) {
+		final IntegerIA      vte_num_     = (IntegerIA) instruction.getArg(0);
+		final IntegerIA      vte_type_    = (IntegerIA) instruction.getArg(1);
+		final IntegerIA      vte_targ_    = (IntegerIA) instruction.getArg(2);
+		final String         target_name  = gc.getRealTargetName(gf, vte_num_, AOG.GET);
+		final TypeTableEntry target_type_ = gf.getTypeTableEntry(vte_type_.getIndex());
+//		final String target_type = gc.getTypeName(target_type_.getAttached());
+		final String target_type   = gc.getTypeName(target_type_.genType.node);
+		final String source_target = gc.getRealTargetName(gf, vte_targ_, AOG.GET);
+
+		tos.put_string_ln(String.format("%s = (%s)%s;", target_name, target_type, source_target));
 	}
 
 	private Operation2<EG_Statement> _action_DECL(final @NotNull Instruction instruction, final BaseEvaFunction gf) {
@@ -670,7 +654,7 @@ public class Generate_Code_For_Method {
 					//
 					// VARIABLE WASN'T FULLY DEDUCED YET
 					//
-					LOG.err("8885 "+y.getClass().getName());
+					LOG.err("8885 " + y.getClass().getName());
 					return;
 				}
 			} else if (x.getType() == OS_Type.Type.BUILT_IN) {
@@ -719,28 +703,15 @@ public class Generate_Code_For_Method {
 		LOG.err("8886 y is null (No typename specified)");
 	}
 
-	private void action_CAST(final @NotNull Instruction instruction, final @NotNull BufferTabbedOutputStream tos, final BaseEvaFunction gf) {
-		final IntegerIA      vte_num_     = (IntegerIA) instruction.getArg(0);
-		final IntegerIA      vte_type_    = (IntegerIA) instruction.getArg(1);
-		final IntegerIA      vte_targ_    = (IntegerIA) instruction.getArg(2);
-		final String         target_name  = gc.getRealTargetName(gf, vte_num_, AOG.GET);
-		final TypeTableEntry target_type_ = gf.getTypeTableEntry(vte_type_.getIndex());
-//		final String target_type = gc.getTypeName(target_type_.getAttached());
-		final String target_type   = gc.getTypeName(target_type_.genType.node);
-		final String source_target = gc.getRealTargetName(gf, vte_targ_, AOG.GET);
-
-		tos.put_string_ln(String.format("%s = (%s)%s;", target_name, target_type, source_target));
-	}
-
 	void generateCodeForConstructor(final @NotNull EvaConstructor gf, final GenerateResult gr, final WorkList aWorkList) {
 		// TODO this code is only correct for classes and not meant for namespaces
 		final EvaClass x = (EvaClass) gf.getGenClass();
 		switch (x.getKlass().getType()) {
-			// Don't generate class definition for these three
-			case INTERFACE:
-			case SIGNATURE:
-			case ABSTRACT:
-				return;
+		// Don't generate class definition for these three
+		case INTERFACE:
+		case SIGNATURE:
+		case ABSTRACT:
+			return;
 		}
 		final CClassDecl decl = new CClassDecl(x);
 		decl.evaluatePrimitive();
@@ -855,7 +826,7 @@ public class Generate_Code_For_Method {
 
 		@NotNull String find_return_type(final BaseEvaFunction gf, final ElLog LOG) {
 			return discriminator(gf, LOG, gc)
-			  .find_return_type(this);
+					.find_return_type(this);
 		}
 
 		EG_Statement find_args_statement(final @NotNull BaseEvaFunction gf) {
@@ -864,15 +835,37 @@ public class Generate_Code_For_Method {
 
 			// TODO EG_Statement, rule
 			final List<String> args_list = gf.vte_list
-			  .stream()
-			  .filter(input -> input.vtt == VariableTableType.ARG)
+					.stream()
+					.filter(input -> input.vtt == VariableTableType.ARG)
 
-			  //rule=vte:args_at
-			  .map(input -> String.format("%s va%s", GenerateC.GetTypeName.forVTE(input), input.getName()))
-			  .collect(Collectors.toList());
+					//rule=vte:args_at
+					.map(input -> String.format("%s va%s", GenerateC.GetTypeName.forVTE(input), input.getName()))
+					.collect(Collectors.toList());
 			final EG_Statement args = new EG_DottedStatement(", ", args_list, new EX_Rule(rule));
 
 			return args;
+		}
+
+		@NotNull String find_header_string(final @NotNull BaseEvaFunction gf, final ElLog LOG) {
+			// NOTE getGenClass is always a class or namespace, getParent can be a function
+			final EvaContainerNC parent = (EvaContainerNC) gf.getGenClass();
+
+			final String         s2;
+			final C_HeaderString headerString;
+
+			if (parent instanceof EvaClass) {
+				final EvaClass st = (EvaClass) parent;
+
+				headerString = C_HeaderString.forClass(st, () -> gc.getTypeName(st), return_type, name, args_string, LOG);
+			} else if (parent instanceof EvaNamespace) {
+				final EvaNamespace st = (EvaNamespace) parent;
+
+				headerString = C_HeaderString.forNamespace(st, () -> gc.getTypeName(st), return_type, name, args_string, LOG);
+			} else {
+				headerString = C_HeaderString.forOther(parent, return_type, name, args_string);
+			}
+			s2 = headerString.getResult();
+			return s2;
 		}
 
 		static GCM_D discriminator(final BaseEvaFunction bgf, final ElLog aLOG, final GenerateC aGc) {
@@ -896,22 +889,22 @@ public class Generate_Code_For_Method {
 				final EvaClass st = (EvaClass) parent;
 
 				@NotNull final C_HeaderString chs = C_HeaderString.forClass(st,
-				  () -> GenerateC.GetTypeName.forGenClass(st),
-				  return_type,
-				  name,
-				  args_string,
-				  LOG);
+																			() -> GenerateC.GetTypeName.forGenClass(st),
+																			return_type,
+																			name,
+																			args_string,
+																			LOG);
 
 				result = chs.getResult();
 			} else if (parent instanceof EvaNamespace) {
 				final EvaNamespace st = (EvaNamespace) parent;
 
 				@NotNull final C_HeaderString chs = C_HeaderString.forNamespace(st,
-				  () -> GenerateC.GetTypeName.forGenNamespace(st),
-				  return_type,
-				  name,
-				  args_string,
-				  LOG);
+																				() -> GenerateC.GetTypeName.forGenNamespace(st),
+																				return_type,
+																				name,
+																				args_string,
+																				LOG);
 				result = chs.getResult();
 			} else {
 				@NotNull final C_HeaderString chs = C_HeaderString.forOther(parent, return_type, name, args_string);
@@ -934,7 +927,7 @@ public class Generate_Code_For_Method {
 				final EvaNode res = tte.resolved();
 				if (res instanceof EvaContainerNC) {
 					final EvaContainerNC nc   = (EvaContainerNC) res;
-					final int                  code = nc.getCode();
+					final int            code = nc.getCode();
 					return String.format("Z%d*", code);
 				}
 
@@ -968,7 +961,7 @@ public class Generate_Code_For_Method {
 				final EvaNode res = tte.resolved();
 				if (res instanceof EvaContainerNC) {
 					final EvaContainerNC nc   = (EvaContainerNC) res;
-					final int                  code = nc.getCode();
+					final int            code = nc.getCode();
 					return String.format("Z%d*", code);
 				}
 
@@ -1010,14 +1003,45 @@ public class Generate_Code_For_Method {
 			return returnType;
 		}
 
+		String find_args_string(final BaseEvaFunction gf) {
+			final String args;
+			if (false) {
+				args = Helpers.String_join(", ", Collections2.transform(gf.getFD().fal().falis, new Function<FormalArgListItem, String>() {
+					@org.jetbrains.annotations.Nullable
+					@Override
+					public String apply(@org.jetbrains.annotations.Nullable final FormalArgListItem input) {
+						assert input != null;
+						return String.format("%s va%s", gc.getTypeName(input.typeName()), input.name());
+					}
+				}));
+			} else {
+				final Collection<VariableTableEntry> x = Collections2.filter(gf.vte_list, new Predicate<VariableTableEntry>() {
+					@Override
+					public boolean apply(@org.jetbrains.annotations.Nullable final VariableTableEntry input) {
+						assert input != null;
+						return input.vtt == VariableTableType.ARG;
+					}
+				});
+				args = Helpers.String_join(", ", Collections2.transform(x, new Function<VariableTableEntry, String>() {
+					@org.jetbrains.annotations.Nullable
+					@Override
+					public String apply(@org.jetbrains.annotations.Nullable final VariableTableEntry input) {
+						assert input != null;
+						return String.format("%s va%s", gc.getTypeNameForVariableEntry(input), input.getName());
+					}
+				}));
+			}
+			return args;
+		}
+
 		interface GCM_D {
 			String find_return_type(Generate_Method_Header aGenerate_method_header);
 		}
 
 		static class GCM_GC implements GCM_D {
 			private final EvaConstructor gf;
-			private final ElLog                LOG;
-			private final GenerateC            gc;
+			private final ElLog          LOG;
+			private final GenerateC      gc;
 
 			public GCM_GC(final EvaConstructor aGf, final ElLog aLOG, final GenerateC aGc) {
 				gf  = aGf;
@@ -1040,7 +1064,7 @@ public class Generate_Code_For_Method {
 				final EvaNode res = tte.resolved();
 				if (res instanceof EvaContainerNC) {
 					final EvaContainerNC nc   = (EvaContainerNC) res;
-					final int                  code = nc.getCode();
+					final int            code = nc.getCode();
 					return String.format("Z%d*", code);
 				}
 
@@ -1063,8 +1087,8 @@ public class Generate_Code_For_Method {
 
 		static class GCM_GF implements GCM_D {
 			private final EvaFunction gf;
-			private final ElLog             LOG;
-			private final GenerateC         gc;
+			private final ElLog       LOG;
+			private final GenerateC   gc;
 
 			public GCM_GF(final EvaFunction aGf, final ElLog aLOG, final GenerateC aGc) {
 				gf  = aGf;
@@ -1095,7 +1119,7 @@ public class Generate_Code_For_Method {
 				final EvaNode res = tte.resolved();
 				if (res instanceof EvaContainerNC) {
 					final EvaContainerNC nc   = (EvaContainerNC) res;
-					final int                  code = nc.getCode();
+					final int            code = nc.getCode();
 					return String.format("Z%d*", code);
 				}
 
@@ -1136,59 +1160,6 @@ public class Generate_Code_For_Method {
 
 				return returnType;
 			}
-		}
-
-		String find_args_string(final BaseEvaFunction gf) {
-			final String args;
-			if (false) {
-				args = Helpers.String_join(", ", Collections2.transform(gf.getFD().fal().falis, new Function<FormalArgListItem, String>() {
-					@org.jetbrains.annotations.Nullable
-					@Override
-					public String apply(@org.jetbrains.annotations.Nullable final FormalArgListItem input) {
-						assert input != null;
-						return String.format("%s va%s", gc.getTypeName(input.typeName()), input.name());
-					}
-				}));
-			} else {
-				final Collection<VariableTableEntry> x = Collections2.filter(gf.vte_list, new Predicate<VariableTableEntry>() {
-					@Override
-					public boolean apply(@org.jetbrains.annotations.Nullable final VariableTableEntry input) {
-						assert input != null;
-						return input.vtt == VariableTableType.ARG;
-					}
-				});
-				args = Helpers.String_join(", ", Collections2.transform(x, new Function<VariableTableEntry, String>() {
-					@org.jetbrains.annotations.Nullable
-					@Override
-					public String apply(@org.jetbrains.annotations.Nullable final VariableTableEntry input) {
-						assert input != null;
-						return String.format("%s va%s", gc.getTypeNameForVariableEntry(input), input.getName());
-					}
-				}));
-			}
-			return args;
-		}
-
-		@NotNull String find_header_string(final @NotNull BaseEvaFunction gf, final ElLog LOG) {
-			// NOTE getGenClass is always a class or namespace, getParent can be a function
-			final EvaContainerNC parent = (EvaContainerNC) gf.getGenClass();
-
-			final String         s2;
-			final C_HeaderString headerString;
-
-			if (parent instanceof EvaClass) {
-				final EvaClass st = (EvaClass) parent;
-
-				headerString = C_HeaderString.forClass(st, () -> gc.getTypeName(st), return_type, name, args_string, LOG);
-			} else if (parent instanceof EvaNamespace) {
-				final EvaNamespace st = (EvaNamespace) parent;
-
-				headerString = C_HeaderString.forNamespace(st, () -> gc.getTypeName(st), return_type, name, args_string, LOG);
-			} else {
-				headerString = C_HeaderString.forOther(parent, return_type, name, args_string);
-			}
-			s2 = headerString.getResult();
-			return s2;
 		}
 	}
 

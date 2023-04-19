@@ -64,15 +64,11 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 		return DeduceElement3_Kind.GEN_FN__GC_VTE;
 	}
 
-	private static class STOP extends Exception {
-
-	}
-
 	public void resolve_var_table_entries(final DeducePhase aDeducePhase, final ClassInvocation ci) {
 		final EvaContainer.VarTableEntry varTableEntry = _principal;
 
-		final List<TypeTableEntry>             potentialTypes = varTableEntry.potentialTypes;
-		final TypeName                         typeName       = varTableEntry.typeName;
+		final List<TypeTableEntry> potentialTypes = varTableEntry.potentialTypes;
+		final TypeName             typeName       = varTableEntry.typeName;
 
 		try {
 			if (potentialTypes.size() == 0 && (varTableEntry.varType == null || typeName.isNull())) {
@@ -89,8 +85,24 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 		}
 	}
 
-	private static void noteNonsense(int code, String message) {
-		Stupidity.println_out_2(String.format("%d %s%n", code, message));
+	@Contract("_, null -> fail")
+	private void __zero_potential(final EvaContainer.VarTableEntry varTableEntry, final TypeName tn) {
+		Preconditions.checkNotNull(tn);
+		assert tn instanceof NormalTypeName;
+
+		if (tn != null) {
+			if (tn instanceof NormalTypeName) {
+				final NormalTypeName tn2 = (NormalTypeName) tn;
+
+				if (tn2.isNull()) return;
+
+				__zero_potential__1(varTableEntry, tn2);
+			} else
+				assert false;
+		} else {
+			// must be unknown
+			assert false;
+		}
 	}
 
 	private static void noteNonsenseErr(int code, String message) {
@@ -112,7 +124,7 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 			//assert attachedType == OS_Type.Type.USER_CLASS;
 			if (attachedType != OS_Type.Type.USER_CLASS) {
 				final OS_Type att = potentialType.getAttached();
-				noteNonsense(105, ""+att);
+				noteNonsense(105, "" + att);
 			}
 
 			{
@@ -153,36 +165,16 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 				sc = true;
 			} else {
 				NotImplementedException.raise();
-				noteNonsense(177, "not a USER_CLASS "+potentialType.getAttached());
+				noteNonsense(177, "not a USER_CLASS " + potentialType.getAttached());
 			}
 		}
 		if (potentialType.resolved() != null)
 			varTableEntry.resolve(potentialType.resolved());
 		else
-			noteNonsense(114, "Can't resolve "+ varTableEntry);
+			noteNonsense(114, "Can't resolve " + varTableEntry);
 
 		if (!sc)
 			throw new STOP();
-	}
-
-	@Contract("_, null -> fail")
-	private void __zero_potential(final EvaContainer.VarTableEntry varTableEntry, final TypeName tn) {
-		Preconditions.checkNotNull(tn);
-		assert tn instanceof NormalTypeName;
-
-		if (tn != null) {
-			if (tn instanceof NormalTypeName) {
-				final NormalTypeName tn2 = (NormalTypeName) tn;
-
-				if (tn2.isNull()) return;
-
-				__zero_potential__1(varTableEntry, tn2);
-			} else
-				assert false;
-		} else {
-			// must be unknown
-			assert false;
-		}
 	}
 
 	private void __zero_potential__1(final @NotNull EvaContainer.VarTableEntry varTableEntry,
@@ -192,11 +184,11 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 			throw new NotImplementedException();
 
 		// 1. st...
-		final String           typeNameName = aNormalTypeName.getName();
+		final String typeNameName = aNormalTypeName.getName();
 
 		// 2. stage 1
-		final LookupResultList lrl          = aNormalTypeName.getContext().lookup(typeNameName);
-		OS_Element             best         = lrl.chooseBest(null);
+		final LookupResultList lrl  = aNormalTypeName.getContext().lookup(typeNameName);
+		OS_Element             best = lrl.chooseBest(null);
 
 		// 3. validation
 		if (best != null) {
@@ -211,7 +203,7 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 
 			// 5. effect
 			assert best instanceof ClassStatement;
-			varTableEntry.resolve_varType (((ClassStatement) best).getOS_Type());
+			varTableEntry.resolve_varType(((ClassStatement) best).getOS_Type());
 		} else {
 			// B)
 
@@ -220,5 +212,13 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 			// TODO shouldn't this already be calculated?
 			throw new NotImplementedException();
 		}
+	}
+
+	private static void noteNonsense(int code, String message) {
+		Stupidity.println_out_2(String.format("%d %s%n", code, message));
+	}
+
+	private static class STOP extends Exception {
+
 	}
 }

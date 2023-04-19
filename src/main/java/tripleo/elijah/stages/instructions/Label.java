@@ -16,7 +16,7 @@ import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 public class Label implements InstructionArgument {
 	private final BaseEvaFunction gf;
 	String name;
-	long index;
+	long   index;
 	private int number;
 
 //	public Label(String name) {
@@ -27,41 +27,43 @@ public class Label implements InstructionArgument {
 		this.gf = gf;
 	}
 
-	/**
-	 * Corresponds to pc
-	 * @param index pc
-	 */
-	public void setIndex(final long index) {
-		this.index = index;
-	}
-
-	public long getIndex() {
-		return index;
-	}
-
-	public void setName(final String name) {
-		this.name = name;
+	@Override
+	public String toString() {
+		return String.format("<Label %s index:%d number:%d>", getName(), getIndex(), getNumber());
 	}
 
 	public String getName() {
 		return name;
 	}
 
+	public long getIndex() {
+		return index;
+	}
+
 	/**
-	 * Corresponds to the number of labels
-	 * @param number
+	 * Corresponds to pc
+	 *
+	 * @param index pc
 	 */
-	public void setNumber(final int number) {
-		this.number = number;
+	public void setIndex(final long index) {
+		this.index = index;
 	}
 
 	public int getNumber() {
 		return number;
 	}
 
-	@Override
-	public String toString() {
-		return String.format("<Label %s index:%d number:%d>", getName(), getIndex(), getNumber());
+	/**
+	 * Corresponds to the number of labels
+	 *
+	 * @param number
+	 */
+	public void setNumber(final int number) {
+		this.number = number;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
 	}
 }
 

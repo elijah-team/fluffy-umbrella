@@ -31,11 +31,11 @@ import java.util.stream.Collectors;
  * Created 11/30/21 1:32 AM
  */
 public class DeduceLocalVariable {
-	private final VariableTableEntry variableTableEntry;
-	public DeferredObject2<GenType, Void, Void> type = new DeferredObject2();
-	private DeduceTypes2 deduceTypes2;
-	private Context         context;
-	private BaseEvaFunction generatedFunction;
+	private final VariableTableEntry                   variableTableEntry;
+	public        DeferredObject2<GenType, Void, Void> type = new DeferredObject2();
+	private       DeduceTypes2                         deduceTypes2;
+	private       Context                              context;
+	private       BaseEvaFunction                      generatedFunction;
 
 	private DeduceElement3_VariableTableEntry de3;
 
@@ -43,28 +43,72 @@ public class DeduceLocalVariable {
 		variableTableEntry = aVariableTableEntry;
 	}
 
+	@Nullable
+	private static OS_Element ___pt1_work_001b(final BaseEvaFunction generatedFunction,
+											   final @NotNull DeducePath dp,
+											   final OS_Element self_class,
+											   final Object[] aO) {
+		final OS_Element e = null;
+
+		final OS_Element Self;
+		final OS_Element e_parent = e.getParent();
+
+		short          state = 0;
+		ClassStatement b     = null;
+
+		if (e_parent == self_class) {
+			state = 1;
+		} else {
+			b = class_inherits((ClassStatement) self_class, e_parent);
+			if (b != null)
+				state = 3;
+			else
+				state = 2;
+		}
+
+		switch (state) {
+		case 1:
+			final InstructionArgument self1 = generatedFunction.vte_lookup("self");
+			assert self1 instanceof IntegerIA;
+			Self = new DeduceTypes2.OS_SpecialVariable(((IntegerIA) self1).getEntry(), VariableTableType.SELF, generatedFunction);
+			break;
+		case 2:
+			Self = e_parent;
+			break;
+		case 3:
+			final InstructionArgument self2 = generatedFunction.vte_lookup("self");
+			assert self2 instanceof IntegerIA;
+			Self = new DeduceTypes2.OS_SpecialVariable(((IntegerIA) self2).getEntry(), VariableTableType.SELF, generatedFunction);
+			((DeduceTypes2.OS_SpecialVariable) Self).memberInvocation = new MemberInvocation(b, MemberInvocation.Role.INHERITED);
+			break;
+		default:
+			throw new IllegalStateException();
+		}
+		return Self;
+	}
+
 	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseEvaFunction aGeneratedFunction) {
 		deduceTypes2      = aDeduceTypes2;
 		context           = aContext;
 		generatedFunction = aGeneratedFunction;
 
-		de3               = new DeduceElement3_VariableTableEntry(variableTableEntry, aDeduceTypes2, aGeneratedFunction);
+		de3 = new DeduceElement3_VariableTableEntry(variableTableEntry, aDeduceTypes2, aGeneratedFunction);
 	}
 
 	public void resolve_var_table_entry_for_exit_function() {
 		final VariableTableEntry vte = variableTableEntry;
-		final Context ctx = context;
+		final Context            ctx = context;
 
 		if (vte.vtt == VariableTableType.TEMP) {
 			final GenType genType = vte.type.genType;
-			int pts = vte.potentialTypes().size();
+			int           pts     = vte.potentialTypes().size();
 			if (genType.typeName != null && genType.typeName == genType.resolved) {
 				try {
 					genType.resolved = deduceTypes2.resolve_type(genType.typeName, ctx/*genType.typeName.getTypeName().getContext()*/).resolved;
 					genType.genCIForGenType2(deduceTypes2);
 					vte.resolveType(genType);
 					vte.resolveTypeToClass(genType.node);
-					int y=2;
+					int y = 2;
 				} catch (ResolveError aResolveError) {
 //					aResolveError.printStackTrace();
 					deduceTypes2._errSink().reportDiagnostic(aResolveError);
@@ -76,7 +120,7 @@ public class DeduceLocalVariable {
 			return;
 		{
 			if (vte.type.getAttached() == null && vte.constructable_pte != null) {
-				ClassStatement c = vte.constructable_pte.getFunctionInvocation().getClassInvocation().getKlass();
+				ClassStatement         c        = vte.constructable_pte.getFunctionInvocation().getClassInvocation().getKlass();
 				final @NotNull OS_Type attached = c.getOS_Type();
 				// TODO this should have been set somewhere already
 				//  typeName and nonGenericTypeName are not set
@@ -113,7 +157,7 @@ public class DeduceLocalVariable {
 			}
 			{
 				final GenType genType = vte.type.genType;
-				int pts = vte.potentialTypes().size();
+				int           pts     = vte.potentialTypes().size();
 				if (genType.typeName != null && genType.typeName == genType.resolved) {
 					try {
 						genType.resolved = deduceTypes2.resolve_type(genType.typeName, ctx/*genType.typeName.getTypeName().getContext()*/).resolved;
@@ -156,21 +200,20 @@ public class DeduceLocalVariable {
 					case 1:
 						genType.genCIForGenType2(deduceTypes2); // TODO what is this doing here? huh?
 						break;
-					case 2:
-						{
-							final FuncExpr fe = (FuncExpr) vte.getCallablePTE().expression;
-							final DeduceProcCall dpc = vte.getCallablePTE().dpc;
+					case 2: {
+						final FuncExpr       fe  = (FuncExpr) vte.getCallablePTE().expression;
+						final DeduceProcCall dpc = vte.getCallablePTE().dpc;
 
-							//final DeduceFuncExpr target = (DeduceFuncExpr) dpc.target;
+						//final DeduceFuncExpr target = (DeduceFuncExpr) dpc.target;
 
-							final DeduceElement target = dpc.target;
-							NotImplementedException.raise();
+						final DeduceElement target = dpc.target;
+						NotImplementedException.raise();
 
 //							type.resolve(new GenType() {target.prototype}): // DeduceType??
-							// TODO because we can already represent a function expression,
-							//  the question is can we generatedFunction.lookupExpression(fe) and get the DeduceFuncExpr?
-						}
-						break;
+						// TODO because we can already represent a function expression,
+						//  the question is can we generatedFunction.lookupExpression(fe) and get the DeduceFuncExpr?
+					}
+					break;
 					}
 
 					if (genType.ci != null) { // TODO we may need this call...
@@ -215,10 +258,10 @@ public class DeduceLocalVariable {
 				final DeduceProcCall dpc            = procTableEntry.deduceProcCall();
 				// TODO for argument, we need a DeduceExpression (DeduceProcCall) which is bounud to self
 				//  (inherited), so we can extract the invocation
-				final InstructionArgument ia   = procTableEntry.expression_num;
-				final DeducePath          dp   = (((IdentIA) ia).getEntry()).buildDeducePath(generatedFunction);
+				final InstructionArgument ia = procTableEntry.expression_num;
+				final DeducePath          dp = (((IdentIA) ia).getEntry()).buildDeducePath(generatedFunction);
 
-				OS_Element          Self = null;
+				OS_Element Self = null;
 
 				boolean callbackFlag = false;
 
@@ -248,30 +291,6 @@ public class DeduceLocalVariable {
 		default:
 			throw new IllegalStateException("Unexpected value: " + vte.potentialTypes().size());
 		}
-	}
-
-	private void __pt_work_002(final @NotNull VariableTableEntry vte, final ProcTableEntry procTableEntry, final OS_Element Self) {
-		final @Nullable DeferredMemberFunction dm = deduceTypes2.deferred_member_function(Self, null, (BaseFunctionDef) procTableEntry.getResolvedElement(), procTableEntry.getFunctionInvocation());
-		dm.externalRef().then(new DoneCallback<BaseEvaFunction>() {
-			@Override
-			public void onDone(final BaseEvaFunction result) {
-				NotImplementedException.raise();
-			}
-		});
-		dm.typePromise().then(new DoneCallback<GenType>() {
-			@Override
-			public void onDone(final GenType result) {
-				procTableEntry.typeDeferred().resolve(result);
-			}
-		});
-		procTableEntry.typePromise().then(new DoneCallback<GenType>() {
-			@Override
-			public void onDone(final GenType result) {
-				vte.type.setAttached(result);
-				vte.resolveType(result);
-				vte.resolveTypeToClass(result.node);
-			}
-		});
 	}
 
 	@Nullable
@@ -321,8 +340,8 @@ public class DeduceLocalVariable {
 								final Object[] o) {
 		final OS_Element Self = (OS_Element) o[0];
 
-		final OS_Element                       resolvedElement1 = procTableEntry.getResolvedElement();
-		OS_Element                       resolvedElement0       = resolvedElement1;
+		final OS_Element resolvedElement1 = procTableEntry.getResolvedElement();
+		OS_Element       resolvedElement0 = resolvedElement1;
 
 		while (resolvedElement0 instanceof AliasStatement) {
 			try {
@@ -352,7 +371,7 @@ public class DeduceLocalVariable {
 			return;
 		}
 
-		final @Nullable DeferredMemberFunction dm              = deduceTypes2.deferred_member_function(Self, null, (BaseFunctionDef) resolvedElement0, procTableEntry.getFunctionInvocation());
+		final @Nullable DeferredMemberFunction dm = deduceTypes2.deferred_member_function(Self, null, (BaseFunctionDef) resolvedElement0, procTableEntry.getFunctionInvocation());
 		dm.externalRef().then(new DoneCallback<BaseEvaFunction>() {
 			@Override
 			public void onDone(final BaseEvaFunction result) {
@@ -375,48 +394,28 @@ public class DeduceLocalVariable {
 		});
 	}
 
-	@Nullable
-	private static OS_Element ___pt1_work_001b(final BaseEvaFunction generatedFunction,
-											   final @NotNull DeducePath dp,
-											   final OS_Element self_class,
-											   final Object[] aO) {
-		final OS_Element e = null;
-
-		final OS_Element Self;
-		final OS_Element e_parent = e.getParent();
-
-		short          state = 0;
-		ClassStatement b     = null;
-
-		if (e_parent == self_class) {
-			state = 1;
-		} else {
-			b = class_inherits((ClassStatement) self_class, e_parent);
-			if (b != null)
-				state = 3;
-			else
-				state = 2;
-		}
-
-		switch (state) {
-		case 1:
-			final InstructionArgument self1 = generatedFunction.vte_lookup("self");
-			assert self1 instanceof IntegerIA;
-			Self = new DeduceTypes2.OS_SpecialVariable(((IntegerIA) self1).getEntry(), VariableTableType.SELF, generatedFunction);
-			break;
-		case 2:
-			Self = e_parent;
-			break;
-		case 3:
-			final InstructionArgument self2 = generatedFunction.vte_lookup("self");
-			assert self2 instanceof IntegerIA;
-			Self = new DeduceTypes2.OS_SpecialVariable(((IntegerIA) self2).getEntry(), VariableTableType.SELF, generatedFunction);
-			((DeduceTypes2.OS_SpecialVariable) Self).memberInvocation = new MemberInvocation(b, MemberInvocation.Role.INHERITED);
-			break;
-		default:
-			throw new IllegalStateException();
-		}
-		return Self;
+	private void __pt_work_002(final @NotNull VariableTableEntry vte, final ProcTableEntry procTableEntry, final OS_Element Self) {
+		final @Nullable DeferredMemberFunction dm = deduceTypes2.deferred_member_function(Self, null, (BaseFunctionDef) procTableEntry.getResolvedElement(), procTableEntry.getFunctionInvocation());
+		dm.externalRef().then(new DoneCallback<BaseEvaFunction>() {
+			@Override
+			public void onDone(final BaseEvaFunction result) {
+				NotImplementedException.raise();
+			}
+		});
+		dm.typePromise().then(new DoneCallback<GenType>() {
+			@Override
+			public void onDone(final GenType result) {
+				procTableEntry.typeDeferred().resolve(result);
+			}
+		});
+		procTableEntry.typePromise().then(new DoneCallback<GenType>() {
+			@Override
+			public void onDone(final GenType result) {
+				vte.type.setAttached(result);
+				vte.resolveType(result);
+				vte.resolveTypeToClass(result.node);
+			}
+		});
 	}
 
 	static ClassStatement class_inherits(final ClassStatement aFirstClass, final OS_Element aInherited) {
@@ -432,14 +431,14 @@ public class DeduceLocalVariable {
 
 	static class MemberInvocation {
 		final OS_Element element;
-		final Role role;
+		final Role       role;
 
 		public MemberInvocation(final OS_Element aElement, final Role aRole) {
 			element = aElement;
-			role = aRole;
+			role    = aRole;
 		}
 
-		enum Role { DIRECT, INHERITED }
+		enum Role {DIRECT, INHERITED}
 
 	}
 }

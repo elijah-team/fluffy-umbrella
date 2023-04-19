@@ -1,13 +1,10 @@
 package tripleo.elijah.stages.deduce.fluffy.i;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimap;
 import tripleo.elijah.lang.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,9 +26,9 @@ public interface FluffyComp {
 				continue;
 
 			final Collection<ElObjectType> t = moduleItems
-			  .stream()
-			  .map((final ModuleItem input) -> DecideElObjectType.getElObjectType(input))
-			  .collect(Collectors.toList());
+					.stream()
+					.map((final ModuleItem input) -> DecideElObjectType.getElObjectType(input))
+					.collect(Collectors.toList());
 
 			final Set<ElObjectType> st = new HashSet<ElObjectType>(t);
 			if (st.size() > 1)

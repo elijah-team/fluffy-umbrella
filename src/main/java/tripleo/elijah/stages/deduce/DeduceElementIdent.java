@@ -26,21 +26,20 @@ import tripleo.elijah.util.Holder;
  */
 public class DeduceElementIdent implements IDeduceElement_old {
 	private final IdentTableEntry identTableEntry;
-	private DeduceTypes2 deduceTypes2;
-	private Context         context;
-	private BaseEvaFunction generatedFunction;
+	private final Deferred<OS_Element, Void, Void> _resolvedElementPromise = new DeferredObject<>();
+	private       DeduceTypes2    deduceTypes2;
+	private       Context         context;
+	private       BaseEvaFunction generatedFunction;
 
 	public DeduceElementIdent(final IdentTableEntry aIdentTableEntry) {
 		identTableEntry = aIdentTableEntry;
 	}
 
 	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final @NotNull BaseEvaFunction aGeneratedFunction) {
-		deduceTypes2 = aDeduceTypes2;
-		context = aContext;
+		deduceTypes2      = aDeduceTypes2;
+		context           = aContext;
 		generatedFunction = aGeneratedFunction;
 	}
-
-	private final Deferred<OS_Element, Void, Void> _resolvedElementPromise = new DeferredObject<>();
 
 	public Promise<OS_Element, Void, Void> resolvedElementPromise() {
 		return _resolvedElementPromise.promise();
@@ -56,7 +55,7 @@ public class DeduceElementIdent implements IDeduceElement_old {
 			return null;
 		}
 
-		final Holder<OS_Element> holder  = new Holder<>();
+		final Holder<OS_Element> holder = new Holder<>();
 
 		boolean rp = false;
 
@@ -86,7 +85,7 @@ public class DeduceElementIdent implements IDeduceElement_old {
 			});
 		}
 		final OS_Element R = holder.get();
-		tripleo.elijah.util.Stupidity.println_err_2("8989 "+(R!=null));
+		tripleo.elijah.util.Stupidity.println_err_2("8989 " + (R != null));
 		return R;
 	}
 }

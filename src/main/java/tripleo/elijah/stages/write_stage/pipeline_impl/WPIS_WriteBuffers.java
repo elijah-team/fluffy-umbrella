@@ -8,7 +8,6 @@ import tripleo.elijah.stages.write_stage.functionality.f301.WriteBufferText;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
 import java.util.List;
 
 public class WPIS_WriteBuffers implements WP_Indiviual_Step {
@@ -39,9 +38,9 @@ public class WPIS_WriteBuffers implements WP_Indiviual_Step {
 		writePipeline.prom.then(new DoneCallback<GenerateResult>() {
 			@Override
 			public void onDone(final GenerateResult result) {
-				final File  file = new File(writePipeline.st.file_prefix, "buffers.txt");
+				final File file = new File(writePipeline.st.file_prefix, "buffers.txt");
 
-				WriteBufferText wbt  = new WriteBufferText();
+				WriteBufferText wbt = new WriteBufferText();
 				wbt.setFile(file);
 				wbt.setResult(result);
 				wbt.run();

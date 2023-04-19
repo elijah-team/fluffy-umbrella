@@ -21,14 +21,13 @@ import java.util.Map;
  * Created 5/16/21 12:35 AM
  */
 public class GeneratePhase {
+	private final PipelineLogic   pipelineLogic;
 	public WorkManager wm = new WorkManager();
-
 	Map<OS_Module, GenerateFunctions> generateFunctions = new HashMap<OS_Module, GenerateFunctions>();
-	private ElLog.Verbosity verbosity;
-	private final PipelineLogic pipelineLogic;
+	private       ElLog.Verbosity verbosity;
 
 	public GeneratePhase(ElLog.Verbosity aVerbosity, PipelineLogic aPipelineLogic) {
-		verbosity = aVerbosity;
+		verbosity     = aVerbosity;
 		pipelineLogic = aPipelineLogic;
 	}
 

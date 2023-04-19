@@ -14,7 +14,6 @@ import tripleo.elijah.stages.gen_generic.IOutputFile;
 import tripleo.util.buffer.Buffer;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -57,7 +56,7 @@ public class OutputFileC implements IOutputFile {
 			return false;
 		};
 
-		final List<Dependency>     wnd      = notedDeps.stream()
+		final List<Dependency> wnd = notedDeps.stream()
 				.filter(dependencyPredicate)
 				.collect(Collectors.toList());
 

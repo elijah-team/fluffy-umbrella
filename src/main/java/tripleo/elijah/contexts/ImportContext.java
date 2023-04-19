@@ -17,7 +17,7 @@ import java.util.List;
  * Created 8/15/20 7:09 PM
  */
 public class ImportContext extends Context {
-	private final Context _parent;
+	private final Context         _parent;
 	private final ImportStatement carrier;
 
 	public ImportContext(final Context aParent, final ImportStatement imp) {
@@ -52,7 +52,7 @@ public class ImportContext extends Context {
 				}
 			} else {
 				// find directly imported elements
-				List<IdentExpression> x = importStatementItem.parts();
+				List<IdentExpression> x    = importStatementItem.parts();
 				final IdentExpression last = x.get(x.size() - 1);
 				if (last.getText().equals(name)) {
 					Qualident cl = new Qualident();

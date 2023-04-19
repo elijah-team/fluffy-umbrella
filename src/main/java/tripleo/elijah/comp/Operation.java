@@ -1,6 +1,5 @@
 package tripleo.elijah.comp;
 
-import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.nextgen.query.Mode;
 
 import static tripleo.elijah.nextgen.query.Mode.FAILURE;
@@ -24,10 +23,6 @@ public class Operation<T> {
 		assert succ != exc;
 	}
 
-	public Mode mode() {
-		return mode;
-	}
-
 	public static <T> Operation<T> failure(final Exception aException) {
 		final Operation<T> op = new Operation<>(null, aException, FAILURE);
 		return op;
@@ -36,6 +31,10 @@ public class Operation<T> {
 	public static <T> Operation<T> success(final T aSuccess) {
 		final Operation<T> op = new Operation<>(aSuccess, null, SUCCESS);
 		return op;
+	}
+
+	public Mode mode() {
+		return mode;
 	}
 
 	public T success() {

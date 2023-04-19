@@ -12,7 +12,6 @@ package tripleo.elijah.slir;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.ImportStatement;
 import tripleo.elijah.lang.OS_Package;
-import tripleo.elijah.lang.imports.NormalImportStatement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,7 @@ import java.util.List;
  * Created 11/6/21 8:31 AM
  */
 public class SlirSourceNode {
-	private final SlirSourceFile sourceFile;
+	private final SlirSourceFile    sourceFile;
 	private final List<SlirElement> nodes = new ArrayList<SlirElement>();
 
 	public SlirSourceNode(final SlirSourceFile aSourceFile) {

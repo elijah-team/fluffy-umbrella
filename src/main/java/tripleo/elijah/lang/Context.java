@@ -22,19 +22,22 @@ public abstract class Context {
 
 	public Context() {
 	}
-	
+
 //	public Context(OS_Container attached) {
 //		this.attached = attached;
 //	}
-	
+
 	public LookupResultList lookup(@NotNull final String name) {
 		final LookupResultList Result = new LookupResultList();
 		return lookup(name, 0, Result, new ArrayList<Context>(), false);
 	}
-	
+
 	public abstract LookupResultList lookup(String name, int level, LookupResultList Result, List<Context> alreadySearched, boolean one);
 
-	public abstract Context getParent();
+	public @NotNull Compilation compilation() {
+		OS_Module module = module();
+		return module.getCompilation();
+	}
 
 //	@Deprecated public void add(OS_Element element, String name) {
 //		add(element, new IdentExpression(Helpers.makeToken(name)));
@@ -48,7 +51,7 @@ public abstract class Context {
 //		tripleo.elijah.util.Stupidity.println_out_2(String.format("104 Context.add: %s %s %s", this, element, name));
 //		members.put(name, element);
 //	}
-	
+
 //
 //	Map<IExpression, OS_Element> members = new HashMap<IExpression, OS_Element>();
 //	private NameTable nameTable = new NameTable();
@@ -70,10 +73,7 @@ public abstract class Context {
 		return ((ModuleContext) ctx).getCarrier();
 	}
 
-	public @NotNull Compilation compilation() {
-		OS_Module module = module();
-		return module.getCompilation();
-	}
+	public abstract Context getParent();
 }
 
 //

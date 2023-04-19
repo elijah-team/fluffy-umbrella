@@ -27,24 +27,21 @@ import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.stages.post_deduce.IPostDeduce;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created 3/16/21 10:45 AM
  */
 public abstract class EvaContainerNC extends AbstractDependencyTracker implements EvaContainer, IDependencyReferent {
-	public boolean generatedAlready = false;
-	private int code = 0;
-	private final Dependency dependency = new Dependency(this);
-
+	static Diagnostic _def_VarNotFound = new VarNotFound();
+	private final Dependency dependency       = new Dependency(this);
+	public        boolean    generatedAlready = false;
 	public Map<FunctionDef, EvaFunction> functionMap = new HashMap<FunctionDef, EvaFunction>();
 	public Map<ClassStatement, EvaClass> classMap    = new HashMap<ClassStatement, EvaClass>();
 
 	public List<VarTableEntry> varTable = new ArrayList<VarTableEntry>();
+	Multimap<FunctionDef, FunctionMapDeferred> functionMapDeferreds = ArrayListMultimap.create();
+	private       int        code             = 0;
 
 	public void addVarTableEntry(AccessNotation an, VariableStatement vs) {
 		// TODO dont ignore AccessNotation
@@ -60,8 +57,51 @@ public abstract class EvaContainerNC extends AbstractDependencyTracker implement
 		return new Maybe<>(null, _def_VarNotFound);
 	}
 
+	public void addClass(ClassStatement aClassStatement, EvaClass aEvaClass) {
+		classMap.put(aClassStatement, aEvaClass);
+	}
 
-	static Diagnostic _def_VarNotFound = new VarNotFound();
+	public void addFunction(FunctionDef functionDef, EvaFunction generatedFunction) {
+		if (functionMap.containsKey(functionDef))
+			throw new IllegalStateException("Function already generated"); // TODO there can be overloads, although we don't handle that yet
+		functionMap.put(functionDef, generatedFunction);
+		{
+			final Collection<FunctionMapDeferred> deferreds = functionMapDeferreds.get(functionDef);
+			for (FunctionMapDeferred deferred : deferreds) {
+				deferred.onNotify(generatedFunction);
+			}
+		}
+	}
+
+	/**
+	 * Get a {@link EvaFunction}
+	 *
+	 * @param fd the function searching for
+	 * @return null if no such key exists
+	 */
+	public EvaFunction getFunction(FunctionDef fd) {
+		return functionMap.get(fd);
+	}
+
+	public int getCode() {
+		return code;
+	}
+
+	public void setCode(int aCode) {
+		code = aCode;
+	}
+
+	public abstract void generateCode(CodeGenerator aGgc, GenerateResult aGr, final GenerateResultSink aResultSink);
+
+	public abstract void analyzeNode(IPostDeduce aPostDeduce);
+
+	public void functionMapDeferred(final FunctionDef aFunctionDef, final FunctionMapDeferred aFunctionMapDeferred) {
+		functionMapDeferreds.put(aFunctionDef, aFunctionMapDeferred);
+	}
+
+	public Dependency getDependency() {
+		return dependency;
+	}
 
 	static class VarNotFound implements Diagnostic {
 		@Override
@@ -88,54 +128,6 @@ public abstract class EvaContainerNC extends AbstractDependencyTracker implement
 		public void report(final PrintStream stream) {
 
 		}
-	}
-
-	public void addClass(ClassStatement aClassStatement, EvaClass aEvaClass) {
-		classMap.put(aClassStatement, aEvaClass);
-	}
-
-	public void addFunction(FunctionDef functionDef, EvaFunction generatedFunction) {
-		if (functionMap.containsKey(functionDef))
-			throw new IllegalStateException("Function already generated"); // TODO there can be overloads, although we don't handle that yet
-		functionMap.put(functionDef, generatedFunction);
-		{
-			final Collection<FunctionMapDeferred> deferreds = functionMapDeferreds.get(functionDef);
-			for (FunctionMapDeferred deferred : deferreds) {
-				deferred.onNotify(generatedFunction);
-			}
-		}
-	}
-
-	/**
-	 * Get a {@link EvaFunction}
-	 *
-	 * @param fd the function searching for
-	 *
-	 * @return null if no such key exists
-	 */
-	public EvaFunction getFunction(FunctionDef fd) {
-		return functionMap.get(fd);
-	}
-
-	public int getCode() {
-		return code;
-	}
-
-	public void setCode(int aCode) {
-		code = aCode;
-	}
-
-	public abstract void generateCode(CodeGenerator aGgc, GenerateResult aGr, final GenerateResultSink aResultSink);
-
-	public abstract void analyzeNode(IPostDeduce aPostDeduce);
-
-	Multimap<FunctionDef, FunctionMapDeferred> functionMapDeferreds = ArrayListMultimap.create();
-	public void functionMapDeferred(final FunctionDef aFunctionDef, final FunctionMapDeferred aFunctionMapDeferred) {
-		functionMapDeferreds.put(aFunctionDef, aFunctionMapDeferred);
-	}
-
-	public Dependency getDependency() {
-		return dependency;
 	}
 }
 

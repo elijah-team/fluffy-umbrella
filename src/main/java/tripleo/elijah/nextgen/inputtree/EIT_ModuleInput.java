@@ -25,68 +25,68 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class EIT_ModuleInput implements EIT_Input {
-    private final OS_Module module;
-    private final Compilation c;
+	private final OS_Module   module;
+	private final Compilation c;
 
-    @Contract(pure = true)
-    public EIT_ModuleInput(final OS_Module aModule, final Compilation aC) {
-        module = aModule;
-        c      = aC;
-    }
+	@Contract(pure = true)
+	public EIT_ModuleInput(final OS_Module aModule, final Compilation aC) {
+		module = aModule;
+		c      = aC;
+	}
 
-    @Override
-    public EIT_InputType getType() {
-        return EIT_InputType.ELIJAH_SOURCE;
-    }
+	@Override
+	public EIT_InputType getType() {
+		return EIT_InputType.ELIJAH_SOURCE;
+	}
 
-    public void doGenerate(final List<EvaNode> nodes,
-                           final ErrSink aErrSink,
-                           final ElLog.Verbosity verbosity,
-                           final PipelineLogic pipelineLogic,
-                           final WorkManager wm,
-                           final @NotNull Consumer<GenerateResult> resultConsumer) {
-        // 0. get lang
-        final String lang = langOfModule();
+	public void doGenerate(final List<EvaNode> nodes,
+						   final ErrSink aErrSink,
+						   final ElLog.Verbosity verbosity,
+						   final PipelineLogic pipelineLogic,
+						   final WorkManager wm,
+						   final @NotNull Consumer<GenerateResult> resultConsumer) {
+		// 0. get lang
+		final String lang = langOfModule();
 
-        // 1. find Generator (GenerateFiles) eg. GenerateC
-        final OutputFileFactoryParams p             = new OutputFileFactoryParams(module, aErrSink, verbosity, pipelineLogic);
-        final GenerateFiles           generateFiles = OutputFileFactory.create(lang, p);
+		// 1. find Generator (GenerateFiles) eg. GenerateC
+		final OutputFileFactoryParams p             = new OutputFileFactoryParams(module, aErrSink, verbosity, pipelineLogic);
+		final GenerateFiles           generateFiles = OutputFileFactory.create(lang, p);
 
-        // 2. query results
-        final GenerateResult gr2 = generateFiles.resultsFromNodes(nodes, wm, ((GenerateC) generateFiles).resultSink);
+		// 2. query results
+		final GenerateResult gr2 = generateFiles.resultsFromNodes(nodes, wm, ((GenerateC) generateFiles).resultSink);
 
-        // 3. #drain workManager -> README part of workflow. may change later as appropriate
-        wm.drain();
+		// 3. #drain workManager -> README part of workflow. may change later as appropriate
+		wm.drain();
 
-        // 4. tail process results
-        resultConsumer.accept(gr2);
-    }
+		// 4. tail process results
+		resultConsumer.accept(gr2);
+	}
 
-    @NotNull
-    private String langOfModule() {
-        final LibraryStatementPart lsp  = module.getLsp();
-        final CompilerInstructions ci   = lsp.getInstructions();
-        final String               lang = ci.genLang() == null ? Compilation.CompilationAlways.defaultPrelude() : ci.genLang();
-        // DEFAULT(compiler-default), SPECIFIED(gen-clause: codePoint), INHERITED(cp) // CodePoint??
-        return lang;
-    }
+	@NotNull
+	private String langOfModule() {
+		final LibraryStatementPart lsp  = module.getLsp();
+		final CompilerInstructions ci   = lsp.getInstructions();
+		final String               lang = ci.genLang() == null ? Compilation.CompilationAlways.defaultPrelude() : ci.genLang();
+		// DEFAULT(compiler-default), SPECIFIED(gen-clause: codePoint), INHERITED(cp) // CodePoint??
+		return lang;
+	}
 
-    public SM_Module computeSourceModel() {
-        final SM_Module sm = new SM_Module() {
-            @Override
-            public List<SM_ModuleItem> items() {
-                final List<SM_ModuleItem> items = new ArrayList<>();
-                for (final ModuleItem item : module.getItems()) {
-                    items.add(new SM_ModuleItem() {
-                        @Override
-                        public ModuleItem _carrier() {
-                            return item;
-                        }
-                    });
-                }
-                return items;
-            }
-        };
-        return sm;
-    }
+	public SM_Module computeSourceModel() {
+		final SM_Module sm = new SM_Module() {
+			@Override
+			public List<SM_ModuleItem> items() {
+				final List<SM_ModuleItem> items = new ArrayList<>();
+				for (final ModuleItem item : module.getItems()) {
+					items.add(new SM_ModuleItem() {
+						@Override
+						public ModuleItem _carrier() {
+							return item;
+						}
+					});
+				}
+				return items;
+			}
+		};
+		return sm;
+	}
 }

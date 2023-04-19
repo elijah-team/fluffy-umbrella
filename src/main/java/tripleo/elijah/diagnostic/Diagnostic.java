@@ -19,9 +19,12 @@ import java.util.List;
  */
 public interface Diagnostic {
 	String code();
+
 	Severity severity();
+
 	@NotNull
 	Locatable primary();
+
 	@NotNull
 	List<Locatable> secondary();
 

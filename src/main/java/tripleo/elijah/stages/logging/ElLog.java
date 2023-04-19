@@ -15,19 +15,15 @@ import java.util.List;
  * Created 8/3/21 3:46 AM
  */
 public class ElLog {
-	private final String fileName;
-	private final Verbosity verbose;
-	private final String phase;
+	private final String         fileName;
+	private final Verbosity      verbose;
+	private final String         phase;
 	private final List<LogEntry> entries = new ArrayList<>();
-
-	public enum Verbosity {
-		SILENT, VERBOSE
-	}
 
 	public ElLog(String aFileName, Verbosity aVerbose, String aPhase) {
 		fileName = aFileName;
-		verbose = aVerbose;
-		phase = aPhase;
+		verbose  = aVerbose;
+		phase    = aPhase;
 	}
 
 	public void err(String aMessage) {
@@ -54,6 +50,10 @@ public class ElLog {
 
 	public String getPhase() {
 		return phase;
+	}
+
+	public enum Verbosity {
+		SILENT, VERBOSE
 	}
 }
 

@@ -10,7 +10,7 @@ import java.io.OutputStream;
 
 /**
  * @author Tripleo(sb)
- *
+ * <p>
  * Created 	Dec 9, 2019 at 3:23:57 PM
  */
 public class FileCharSink implements DisposableCharSink {
@@ -48,6 +48,12 @@ public class FileCharSink implements DisposableCharSink {
 		}
 	}
 
+	@Override
+	public void dispose() {
+		close();
+	}
+
+	@Override
 	public void close() {
 		try {
 			fos.close();
@@ -55,11 +61,6 @@ public class FileCharSink implements DisposableCharSink {
 			NotImplementedException.raise();
 			//aE.printStackTrace();
 		}
-	}
-
-	@Override
-	public void dispose() {
-		close();
 	}
 }
 

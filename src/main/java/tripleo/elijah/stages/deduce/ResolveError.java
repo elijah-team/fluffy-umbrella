@@ -28,19 +28,19 @@ import java.util.List;
  * Created 12/26/20 5:08 AM
  */
 public class ResolveError extends Exception implements Diagnostic {
-	private final @org.jetbrains.annotations.Nullable TypeName typeName;
-	private final LookupResultList lrl;
-	private final @org.jetbrains.annotations.Nullable IdentExpression ident;
+	private final @org.jetbrains.annotations.Nullable TypeName         typeName;
+	private final                                     LookupResultList lrl;
+	private final @org.jetbrains.annotations.Nullable IdentExpression  ident;
 
 	public ResolveError(TypeName typeName, LookupResultList lrl) {
 		this.typeName = typeName;
-		this.lrl = lrl;
-		this.ident = null;
+		this.lrl      = lrl;
+		this.ident    = null;
 	}
 
 	public ResolveError(IdentExpression aIdent, LookupResultList aLrl) {
-		ident = aIdent;
-		lrl = aLrl;
+		ident    = aIdent;
+		lrl      = aLrl;
 		typeName = null;
 	}
 

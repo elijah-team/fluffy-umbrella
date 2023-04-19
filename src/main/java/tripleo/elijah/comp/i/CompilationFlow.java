@@ -14,7 +14,71 @@ public interface CompilationFlow {
 	//}
 
 	static CompilationFlowMember findMainClass() {
-		return new CompilationFlowMember(){
+		return new CompilationFlowMember() {
+			@Override
+			public void doIt(final Compilation cc, final CompilationFlow flow) {
+
+			}
+		};
+	}
+
+	public static CompilationFlowMember parseElijah() {
+		return new CompilationFlowMember() {
+			@Override
+			public void doIt(final Compilation cc, final CompilationFlow flow) {
+				int y = 2;
+			}
+		};
+	}
+
+	public static CompilationFlowMember genFromEntrypoints() {
+		return new CompilationFlowMember() {
+			@Override
+			public void doIt(final Compilation cc, final CompilationFlow flow) {
+
+			}
+		};
+	}
+
+	public static CompilationFlowMember getClasses() {
+		return new CompilationFlowMember() {
+			@Override
+			public void doIt(final Compilation cc, final CompilationFlow flow) {
+
+
+			}
+		};
+	}
+
+	public static CompilationFlowMember runFunctionMapHooks() {
+		return new CompilationFlowMember() {
+			@Override
+			public void doIt(final Compilation cc, final CompilationFlow flow) {
+
+			}
+		};
+	}
+
+	public static CompilationFlowMember deduceModuleWithClasses() {
+		return new CompilationFlowMember() {
+			@Override
+			public void doIt(final Compilation cc, final CompilationFlow flow) {
+
+			}
+		};
+	}
+
+	public static CompilationFlowMember finishModule() {
+		return new CompilationFlowMember() {
+			@Override
+			public void doIt(final Compilation cc, final CompilationFlow flow) {
+
+			}
+		};
+	}
+
+	public static CompilationFlowMember returnErrorCount() {
+		return new CompilationFlowMember() {
 			@Override
 			public void doIt(final Compilation cc, final CompilationFlow flow) {
 
@@ -28,63 +92,6 @@ public interface CompilationFlow {
 
 	interface CompilationFlowMember {
 		public void doIt(Compilation cc, final CompilationFlow flow);
-	}
-	public static CompilationFlowMember parseElijah() {
-		return new CompilationFlowMember(){
-			@Override
-			public void doIt(final Compilation cc, final CompilationFlow flow) {
-				int y=2;
-			}
-		};
-	}
-	public static CompilationFlowMember genFromEntrypoints() {
-		return new CompilationFlowMember(){
-			@Override
-			public void doIt(final Compilation cc, final CompilationFlow flow) {
-
-			}
-		};
-	}
-	public static CompilationFlowMember getClasses() {
-		return new CompilationFlowMember(){
-			@Override
-			public void doIt(final Compilation cc, final CompilationFlow flow) {
-
-
-			}
-		};
-	}
-	public static CompilationFlowMember runFunctionMapHooks() {
-		return new CompilationFlowMember(){
-			@Override
-			public void doIt(final Compilation cc, final CompilationFlow flow) {
-
-			}
-		};
-	}
-	public static CompilationFlowMember deduceModuleWithClasses() {
-		return new CompilationFlowMember(){
-			@Override
-			public void doIt(final Compilation cc, final CompilationFlow flow) {
-
-			}
-		};
-	}
-	public static CompilationFlowMember finishModule() {
-		return new CompilationFlowMember(){
-			@Override
-			public void doIt(final Compilation cc, final CompilationFlow flow) {
-
-			}
-		};
-	}
-	public static CompilationFlowMember returnErrorCount() {
-		return new CompilationFlowMember(){
-			@Override
-			public void doIt(final Compilation cc, final CompilationFlow flow) {
-
-			}
-		};
 	}
 
 	class CF_FindPrelude implements CompilationFlowMember {

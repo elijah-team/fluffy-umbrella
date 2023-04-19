@@ -15,12 +15,12 @@ import java.util.List;
  * Created 8/22/21 16:22
  */
 public class ClassHeader {
-	IdentExpression nameToken;
-	boolean extends_;
+	IdentExpression        nameToken;
+	boolean                extends_;
 	List<AnnotationClause> annos = new ArrayList<>();
-	ClassTypes type;
-	ClassInheritance inh = new ClassInheritance();
-	TypeNameList genericPart;
+	ClassTypes             type;
+	ClassInheritance       inh   = new ClassInheritance();
+	TypeNameList           genericPart;
 	private boolean isConst;
 
 	public ClassHeader(boolean aExtends, List<AnnotationClause> as) {

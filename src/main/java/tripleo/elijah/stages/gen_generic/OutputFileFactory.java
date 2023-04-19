@@ -2,7 +2,6 @@ package tripleo.elijah.stages.gen_generic;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.stages.gen_c.GenerateC;
 import tripleo.elijah.util.NotImplementedException;
 

@@ -22,15 +22,15 @@ import java.util.List;
  * Created 12/11/21 9:27 PM
  */
 public class DeduceConstructStatement implements DeduceElement {
-	private final BaseEvaFunction    generatedFunction;
-	private final ConstructStatement constructStatement;
-	public boolean toEvaluateTarget;
-	public InstructionArgument target;
-	public List<InstructionArgument> args;
-	public ProcIA call;
+	private final BaseEvaFunction           generatedFunction;
+	private final ConstructStatement        constructStatement;
+	public        boolean                   toEvaluateTarget;
+	public        InstructionArgument       target;
+	public        List<InstructionArgument> args;
+	public        ProcIA                    call;
 
 	public DeduceConstructStatement(final @NotNull BaseEvaFunction aGeneratedFunction, final ConstructStatement aConstructStatement) {
-		generatedFunction = aGeneratedFunction;
+		generatedFunction  = aGeneratedFunction;
 		constructStatement = aConstructStatement;
 	}
 

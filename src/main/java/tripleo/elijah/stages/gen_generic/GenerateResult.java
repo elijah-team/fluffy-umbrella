@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.stages.gen_c.OutputFileC;
 import tripleo.elijah.stages.gen_fn.*;
-import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.util.buffer.Buffer;
 
 import java.util.ArrayList;
@@ -27,54 +26,39 @@ import java.util.function.Consumer;
  * Created 4/27/21 1:11 AM
  */
 public class GenerateResult {
-	private Map<String, OutputFileC> outputFiles;
-
-	private int bufferCounter = 0;
-
 	final List<GenerateResultItem> _res = new ArrayList<GenerateResultItem>();
+	private final Subject<GenerateResultItem> completedItems = ReplaySubject.<GenerateResultItem>create();
+	private Map<String, OutputFileC> outputFiles;
+	private int bufferCounter = 0;
 
 	public GenerateResult(/*final Map<String, OutputFileC> aOutputFiles, final int aBufferCounter*/) {
 /*
 		outputFiles   = aOutputFiles;
 		bufferCounter = aBufferCounter;
 */
-		int y=2;
+		int y = 2;
 	}
 
-	public List<GenerateResultItem> results() {
-		return _res;
-	}
-
-	public void add(Buffer b, EvaNode n, TY ty, LibraryStatementPart aLsp, @NotNull Dependency d) {
-
-
-
-
-
-
-		if (aLsp == null) {
-			tripleo.elijah.util.Stupidity.println_err_2("*************************** buffer --> "+b.getText());
-			return;
-		}
-
-
-
-
-
-
-
-
-		final GenerateResultItem item = new GenerateResultItem(ty, b, n, aLsp, d, ++bufferCounter);
-		_res.add(item);
-//		items.onNext(item);
+	public void addConstructor(EvaConstructor aEvaConstructor, Buffer aBuffer, TY aTY, LibraryStatementPart aLsp) {
+		addFunction(aEvaConstructor, aBuffer, aTY, aLsp);
 	}
 
 	public void addFunction(BaseEvaFunction aGeneratedFunction, Buffer aBuffer, TY aTY, LibraryStatementPart aLsp) {
 		add(aBuffer, aGeneratedFunction, aTY, aLsp, aGeneratedFunction.getDependency());
 	}
 
-	public void addConstructor(EvaConstructor aEvaConstructor, Buffer aBuffer, TY aTY, LibraryStatementPart aLsp) {
-		addFunction(aEvaConstructor, aBuffer, aTY, aLsp);
+	public void add(Buffer b, EvaNode n, TY ty, LibraryStatementPart aLsp, @NotNull Dependency d) {
+
+
+		if (aLsp == null) {
+			tripleo.elijah.util.Stupidity.println_err_2("*************************** buffer --> " + b.getText());
+			return;
+		}
+
+
+		final GenerateResultItem item = new GenerateResultItem(ty, b, n, aLsp, d, ++bufferCounter);
+		_res.add(item);
+//		items.onNext(item);
 	}
 
 	public void addClass(TY ty, EvaClass aClass, Buffer aBuf, LibraryStatementPart aLsp) {
@@ -91,6 +75,10 @@ public class GenerateResult {
 		signalDone();
 	}
 
+	public void signalDone() {
+		completedItems.onComplete();
+	}
+
 	public void outputFiles(final @NotNull Consumer<Map<String, OutputFileC>> cmso) {
 		cmso.accept(outputFiles);
 	}
@@ -101,13 +89,11 @@ public class GenerateResult {
 		_res.addAll(aGenerateResult.results());
 	}
 
-	public enum TY {
-		HEADER, IMPL, PRIVATE_HEADER
-	}
-
 	// region REACTIVE
 
-	private final Subject<GenerateResultItem> completedItems = ReplaySubject.<GenerateResultItem>create();
+	public List<GenerateResultItem> results() {
+		return _res;
+	}
 
 	public void subscribeCompletedItems(Observer<GenerateResultItem> aGenerateResultItemObserver) {
 		completedItems.subscribe(aGenerateResultItemObserver);
@@ -117,8 +103,8 @@ public class GenerateResult {
 		completedItems.onNext(aGenerateResultItem);
 	}
 
-	public void signalDone() {
-		completedItems.onComplete();
+	public enum TY {
+		HEADER, IMPL, PRIVATE_HEADER
 	}
 
 	// endregion

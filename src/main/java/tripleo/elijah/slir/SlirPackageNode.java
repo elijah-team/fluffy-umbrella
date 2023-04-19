@@ -17,10 +17,10 @@ import tripleo.elijah.lang.OS_Package;
  */
 public class SlirPackageNode implements SlirElement {
 	private final SlirSourceNode slirSourceNode;
-	private final OS_Package packageStatement;
+	private final OS_Package     packageStatement;
 
 	public SlirPackageNode(final SlirSourceNode aSlirSourceNode, final OS_Package aPackageStatement) {
-		slirSourceNode = aSlirSourceNode;
+		slirSourceNode   = aSlirSourceNode;
 		packageStatement = aPackageStatement;
 	}
 

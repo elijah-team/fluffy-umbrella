@@ -28,15 +28,15 @@ import java.util.*;
  * Created 10/29/20 4:26 AM
  */
 public class EvaClass extends EvaContainerNC implements GNCoded {
-	private final OS_Module module;
-	private final ClassStatement               klass;
-	public Map<ConstructorDef, EvaConstructor> constructors = new HashMap<ConstructorDef, EvaConstructor>();
-	public ClassInvocation                     ci;
-	public DefaultLivingClass _living;
-	private boolean resolve_var_table_entries_already = false;
+	private final OS_Module                           module;
+	private final ClassStatement                      klass;
+	public        Map<ConstructorDef, EvaConstructor> constructors                      = new HashMap<ConstructorDef, EvaConstructor>();
+	public        ClassInvocation                     ci;
+	public        DefaultLivingClass                  _living;
+	private       boolean                             resolve_var_table_entries_already = false;
 
 	public EvaClass(ClassStatement aClassStatement, OS_Module aModule) {
-		klass = aClassStatement;
+		klass  = aClassStatement;
 		module = aModule;
 	}
 
@@ -56,7 +56,7 @@ public class EvaClass extends EvaContainerNC implements GNCoded {
 		fd.scope(scope3);
 		for (VarTableEntry varTableEntry : varTable) {
 			if (varTableEntry.initialValue != IExpression.UNASSIGNED) {
-				IExpression left = varTableEntry.nameToken;
+				IExpression left  = varTableEntry.nameToken;
 				IExpression right = varTableEntry.initialValue;
 
 				IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
@@ -91,7 +91,7 @@ public class EvaClass extends EvaContainerNC implements GNCoded {
 		List<String> ls = new ArrayList<String>();
 		for (Map.Entry<TypeName, OS_Type> entry : aGenericPart.entrySet()) { // TODO Is this guaranteed to be in order?
 			final OS_Type value = entry.getValue(); // This can be another ClassInvocation using GenType
-			final String name = value.getClassOf().getName();
+			final String  name  = value.getClassOf().getName();
 			ls.add(name); // TODO Could be nested generics
 		}
 		return Helpers.String_join(", ", ls);
@@ -101,19 +101,15 @@ public class EvaClass extends EvaContainerNC implements GNCoded {
 		constructors.put(aConstructorDef, aGeneratedFunction);
 	}
 
-	public ClassStatement getKlass() {
-		return this.klass;
+	@Override
+	public String identityString() {
+		return "" + klass;
 	}
 
-    @Override
-    public String identityString() {
-        return ""+klass;
-    }
-
-    @Override
-    public OS_Module module() {
-        return module;
-    }
+	@Override
+	public OS_Module module() {
+		return module;
+	}
 
 	public boolean resolve_var_table_entries(DeducePhase aDeducePhase) {
 		boolean Result = false;
@@ -133,6 +129,10 @@ public class EvaClass extends EvaContainerNC implements GNCoded {
 		return getKlass();
 	}
 
+	public ClassStatement getKlass() {
+		return this.klass;
+	}
+
 	@Override
 	public void generateCode(CodeGenerator aCodeGenerator, GenerateResult aGr, final GenerateResultSink aResultSink) {
 		aCodeGenerator.generate_class(this, aGr, aResultSink);
@@ -145,7 +145,7 @@ public class EvaClass extends EvaContainerNC implements GNCoded {
 
 	@NotNull
 	public String getNumberedName() {
-		return getKlass().getName()+"_"+ getCode();
+		return getKlass().getName() + "_" + getCode();
 	}
 
 	@Override
@@ -239,7 +239,7 @@ public class EvaClass extends EvaContainerNC implements GNCoded {
 				public List<GenType> getPotentialTypes() {
 					List<GenType> potentialTypes = new ArrayList<>();
 					for (TypeTableEntry potentialType : varTableEntry.potentialTypes) {
-						int y=2;
+						int                    y = 2;
 						final @NotNull GenType genType;
 						try {
 							if (potentialType.genType.typeName == null) {

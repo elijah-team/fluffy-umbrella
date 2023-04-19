@@ -18,6 +18,10 @@ import tripleo.elijah.lang.OS_Element;
 public class OS_FuncExprType extends __Abstract_OS_Type {
 	private final FuncExpr func_expr;
 
+	public OS_FuncExprType(final FuncExpr funcExpr) {
+		this.func_expr = funcExpr;
+	}
+
 	@Override
 	public OS_Element getElement() {
 		return func_expr;
@@ -26,10 +30,6 @@ public class OS_FuncExprType extends __Abstract_OS_Type {
 	@Override
 	public Type getType() {
 		return Type.FUNC_EXPR;
-	}
-
-	public OS_FuncExprType(final FuncExpr funcExpr) {
-		this.func_expr = funcExpr;
 	}
 
 	/* (non-Javadoc)

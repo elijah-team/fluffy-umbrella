@@ -16,14 +16,14 @@ import java.util.List;
 
 /**
  * @author Tripleo
- *
+ * <p>
  * Created 	Mar 30, 2020 at 7:41:52 AM
  */
 public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element {
 
-//	private FormalArgList argList = new FormalArgList();
-	private TypeName _returnType;
-	private OS_Type _type;
+	//	private FormalArgList argList = new FormalArgList();
+	private TypeName        _returnType;
+	private OS_Type         _type;
 	private FuncExprContext _ctx;
 //	private Scope3 scope3;
 
@@ -50,6 +50,24 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 ////		return items;
 //	}
 
+	@Override
+	public List<FormalArgListItem> getArgs() {
+		return mFal.falis;
+	}
+
+	@Override
+	public OS_Element getParent() {
+//		throw new NotImplementedException();
+		return null; // getContext().getParent().carrier() except if it is an Expression; but Expression is not an Element
+	}
+
+	@Override
+	public Context getContext() {
+		return _ctx;
+	}
+
+	// region arglist
+
 	public void setContext(final FuncExprContext ctx) {
 		_ctx = ctx;
 	}
@@ -59,23 +77,16 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 		// nop
 	}
 
+	// endregion
+
 	@Override
 	public void setHeader(final FunctionHeader aFunctionHeader) {
 		throw new NotImplementedException();
 	}
 
-	// region arglist
-
-	@Override
-	public List<FormalArgListItem> getArgs() {
-		return mFal.falis;
-	}
-
 	public void setArgList(FormalArgList argList) {
 		mFal = argList;
 	}
-
-	// endregion
 
 	/****** FOR IEXPRESSION ******/
 	@Override
@@ -101,20 +112,16 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 	@Override
 	public String repr_() {
 		return null;
-	}
-
-	@Override
-	public boolean is_simple() {
-		return false;
-	}
-
-	/************* FOR THE OTHER ONE ******************/
+	}	/************* FOR THE OTHER ONE ******************/
 	@Override
 	public void setType(final OS_Type deducedExpression) {
 		_type = deducedExpression;
 	}
 
 	@Override
+	public boolean is_simple() {
+		return false;
+	}	@Override
 	public OS_Type getType() {
 		return _type;
 	}
@@ -124,25 +131,18 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 		visit.visitFuncExpr(this);
 	}
 
-	@Override
-	public OS_Element getParent() {
-//		throw new NotImplementedException();
-		return null; // getContext().getParent().carrier() except if it is an Expression; but Expression is not an Element
+	public Scope3 getScope() {
+		return scope3;
 	}
 
-	@Override
-	public Context getContext() {
-		return _ctx;
-	}
+
 
 //	@Override
 //	public void scope(Scope3 sco) {
 //		scope3 = sco;
 //	}
 
-	public Scope3 getScope() {
-		return scope3;
-	}
+
 }
 
 //

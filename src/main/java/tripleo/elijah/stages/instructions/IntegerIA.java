@@ -10,17 +10,20 @@ package tripleo.elijah.stages.instructions;
 
 import org.jdeferred2.Promise;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
-import tripleo.elijah.stages.gen_fn.Constructable;
-import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.EvaNode;
-import tripleo.elijah.stages.gen_fn.ProcTableEntry;
-import tripleo.elijah.stages.gen_fn.VariableTableEntry;
+import tripleo.elijah.stages.gen_fn.*;
 
 /**
  * Created 9/10/20 3:35 PM
  */
 public class IntegerIA implements InstructionArgument, Constructable {
+
+	public final BaseEvaFunction gf;
+	private final int index;
+
+	public IntegerIA(final int anIndex, BaseEvaFunction aGeneratedFunction) {
+		index = anIndex;
+		gf    = aGeneratedFunction;
+	}
 
 	@Override
 	public String toString() {
@@ -29,26 +32,17 @@ public class IntegerIA implements InstructionArgument, Constructable {
 				'}';
 	}
 
-	public final BaseEvaFunction gf;
-
-	private final int index;
-
-	public IntegerIA(final int anIndex, BaseEvaFunction aGeneratedFunction) {
-		index = anIndex;
-		gf = aGeneratedFunction;
-	}
-
 	public int getIndex() {
 		return index;
-	}
-
-	public @NotNull VariableTableEntry getEntry() {
-		return gf.getVarTableEntry(index);
 	}
 
 	@Override
 	public void setConstructable(ProcTableEntry aPte) {
 		getEntry().setConstructable(aPte);
+	}
+
+	public @NotNull VariableTableEntry getEntry() {
+		return gf.getVarTableEntry(index);
 	}
 
 	@Override

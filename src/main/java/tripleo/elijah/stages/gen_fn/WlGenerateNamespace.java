@@ -23,20 +23,20 @@ import tripleo.elijah.work.WorkManager;
  * Created 5/31/21 3:01 AM
  */
 public class WlGenerateNamespace implements WorkJob {
-	private final GenerateFunctions generateFunctions;
-	private final NamespaceStatement namespaceStatement;
-	private final NamespaceInvocation namespaceInvocation;
+	private final GenerateFunctions                      generateFunctions;
+	private final NamespaceStatement                     namespaceStatement;
+	private final NamespaceInvocation                    namespaceInvocation;
 	private final DeducePhase.@Nullable GeneratedClasses coll;
-	private boolean      _isDone = false;
-	private EvaNamespace result;
+	private       boolean                                _isDone = false;
+	private       EvaNamespace                           result;
 
 	public WlGenerateNamespace(@NotNull GenerateFunctions aGenerateFunctions,
 							   @NotNull NamespaceInvocation aNamespaceInvocation,
 							   @Nullable DeducePhase.GeneratedClasses aColl) {
-		generateFunctions = aGenerateFunctions;
-		namespaceStatement = aNamespaceInvocation.getNamespace();
+		generateFunctions   = aGenerateFunctions;
+		namespaceStatement  = aNamespaceInvocation.getNamespace();
 		namespaceInvocation = aNamespaceInvocation;
-		coll = aColl;
+		coll                = aColl;
 	}
 
 	@Override

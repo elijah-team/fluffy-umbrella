@@ -1,10 +1,10 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 package tripleo.elijah.lang;
 
@@ -19,11 +19,11 @@ import tripleo.elijah.lang2.ElElementVisitor;
  *
  */
 public class ConstructStatement implements FunctionItem, StatementItem, OS_Element {
-	private final OS_Element parent;
-	private final Context context;
-	private final IExpression _expr;
+	private final OS_Element     parent;
+	private final Context        context;
+	private final IExpression    _expr;
 	private final ExpressionList _args;
-	private final String constructorName;
+	private final String         constructorName;
 //	private OS_Type _type;
 
 	public ConstructStatement(@NotNull final OS_Element aParent,
@@ -31,11 +31,11 @@ public class ConstructStatement implements FunctionItem, StatementItem, OS_Eleme
 							  @NotNull final IExpression aExpr,
 							  @Nullable final String aConstructorName,
 							  @Nullable final ExpressionList aExpressionList) {
-		parent = aParent;
-		context = aContext;
-		_expr = aExpr;
+		parent          = aParent;
+		context         = aContext;
+		_expr           = aExpr;
 		constructorName = aConstructorName;
-		_args = aExpressionList;
+		_args           = aExpressionList;
 	}
 
 //	@Override
@@ -59,13 +59,13 @@ public class ConstructStatement implements FunctionItem, StatementItem, OS_Eleme
 	}
 
 	@Override
-	public OS_Element getParent() {
-		return parent;
+	public Context getContext() {
+		return context;
 	}
 
 	@Override
-	public Context getContext() {
-		return context;
+	public OS_Element getParent() {
+		return parent;
 	}
 
 	public IExpression getExpr() {

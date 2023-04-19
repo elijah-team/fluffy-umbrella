@@ -18,14 +18,15 @@ import java.util.List;
  * Created 4/26/21 4:22 AM
  */
 public class WorkManager {
-	List<WorkList> jobs = new ArrayList<WorkList>();
+	List<WorkList> jobs     = new ArrayList<WorkList>();
 	List<WorkList> doneWork = new ArrayList<WorkList>();
 
 	public void addJobs(final WorkList aList) {
 		jobs.add(aList);
 	}
 
-	@Nullable public WorkJob next() {
+	@Nullable
+	public WorkJob next() {
 		Iterator<WorkList> workListIterator = jobs.iterator();
 		while (true) {
 			if (workListIterator.hasNext()) {

@@ -16,14 +16,7 @@ import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ConstructorDef;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
-import tripleo.elijah.stages.gen_fn.GeneratePhase;
-import tripleo.elijah.stages.gen_fn.EvaFunction;
-import tripleo.elijah.stages.gen_fn.ProcTableEntry;
-import tripleo.elijah.stages.gen_fn.TypeTableEntry;
-import tripleo.elijah.stages.gen_fn.WlGenerateDefaultCtor;
-import tripleo.elijah.stages.gen_fn.WlGenerateFunction;
-import tripleo.elijah.stages.gen_fn.WlGenerateNamespace;
+import tripleo.elijah.stages.gen_fn.*;
 
 import java.util.List;
 
@@ -33,15 +26,15 @@ import static tripleo.elijah.util.Helpers.List_of;
  * Created 1/21/21 9:04 PM
  */
 public class FunctionInvocation {
-	private final BaseFunctionDef fd;
-	public final ProcTableEntry pte;
-	private ClassInvocation classInvocation;
-	private           NamespaceInvocation                         namespaceInvocation;
+	public final      ProcTableEntry                              pte;
+	private final     BaseFunctionDef                             fd;
 	private final     DeferredObject<BaseEvaFunction, Void, Void> generateDeferred = new DeferredObject<BaseEvaFunction, Void, Void>();
+	private           ClassInvocation                             classInvocation;
+	private           NamespaceInvocation                         namespaceInvocation;
 	private @Nullable BaseEvaFunction                             _generated       = null;
 
 	public FunctionInvocation(BaseFunctionDef aFunctionDef, ProcTableEntry aProcTableEntry, @NotNull IInvocation invocation, GeneratePhase phase) {
-		this.fd = aFunctionDef;
+		this.fd  = aFunctionDef;
 		this.pte = aProcTableEntry;
 		assert invocation != null;
 		invocation.setForFunctionInvocation(this);
@@ -80,10 +73,10 @@ public class FunctionInvocation {
 				if (namespaceInvocation != null) {
 //					namespaceInvocation = aPhase.registerNamespaceInvocation(namespaceInvocation.getNamespace());
 					@NotNull WlGenerateNamespace wlgn = new WlGenerateNamespace(generatePhase.getGenerateFunctions(module),
-							namespaceInvocation,
-							aPhase.generatedClasses);
+																				namespaceInvocation,
+																				aPhase.generatedClasses);
 					wlgn.run(null);
-					int y=2;
+					int y = 2;
 				}
 			}
 		}
@@ -97,16 +90,20 @@ public class FunctionInvocation {
 		return _generated;
 	}
 
+	public void setGenerated(BaseEvaFunction aGeneratedFunction) {
+		_generated = aGeneratedFunction;
+	}
+
 	public BaseFunctionDef getFunction() {
 		return fd;
 	}
 
-	public void setClassInvocation(@NotNull ClassInvocation aClassInvocation) {
-		classInvocation = aClassInvocation;
-	}
-
 	public ClassInvocation getClassInvocation() {
 		return classInvocation;
+	}
+
+	public void setClassInvocation(@NotNull ClassInvocation aClassInvocation) {
+		classInvocation = aClassInvocation;
 	}
 
 	public NamespaceInvocation getNamespaceInvocation() {
@@ -123,10 +120,6 @@ public class FunctionInvocation {
 
 	public Promise<BaseEvaFunction, Void, Void> generatePromise() {
 		return generateDeferred.promise();
-	}
-
-	public void setGenerated(BaseEvaFunction aGeneratedFunction) {
-		_generated = aGeneratedFunction;
 	}
 
 	public List<TypeTableEntry> getArgs() {

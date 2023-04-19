@@ -8,11 +8,7 @@
  */
 package tripleo.elijah.contexts;
 
-import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.LookupResultList;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_Element2;
-import tripleo.elijah.lang.OS_Package;
+import tripleo.elijah.lang.*;
 
 import java.util.List;
 
@@ -20,7 +16,7 @@ import java.util.List;
  * Created 8/15/20 6:32 PM
  */
 public class PackageContext extends Context {
-	private final Context _parent;
+	private final Context    _parent;
 	private final OS_Package carrier;
 
 	public PackageContext(final Context aParent, OS_Package os_package) {

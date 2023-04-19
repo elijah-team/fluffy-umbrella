@@ -12,6 +12,17 @@ public class OutputFileFactoryParams {
 	private final ElLog.Verbosity verbosity;
 	private final PipelineLogic   pipelineLogic;
 
+	@Contract(pure = true)
+	public OutputFileFactoryParams(final OS_Module aMod,
+								   final ErrSink aErrSink,
+								   final ElLog.Verbosity aVerbosity,
+								   final PipelineLogic aPipelineLogic) {
+		mod           = aMod;
+		errSink       = aErrSink;
+		verbosity     = aVerbosity;
+		pipelineLogic = aPipelineLogic;
+	}
+
 	public OS_Module getMod() {
 		return mod;
 	}
@@ -26,16 +37,5 @@ public class OutputFileFactoryParams {
 
 	public PipelineLogic getPipelineLogic() {
 		return pipelineLogic;
-	}
-
-	@Contract(pure = true)
-	public OutputFileFactoryParams(final OS_Module aMod,
-								   final ErrSink aErrSink,
-								   final ElLog.Verbosity aVerbosity,
-								   final PipelineLogic aPipelineLogic) {
-		mod           = aMod;
-		errSink       = aErrSink;
-		verbosity     = aVerbosity;
-		pipelineLogic = aPipelineLogic;
 	}
 }

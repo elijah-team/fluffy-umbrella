@@ -31,10 +31,10 @@ import java.util.List;
  */
 public class DeducePath {
 	private final @NotNull List<InstructionArgument> ias;
-	private final IdentTableEntry           base;
-	private final OS_Element @NotNull []              elements;  // arrays because they never need to be resized
-	private final GenType @NotNull []                 types;
-	private final MemberContext @NotNull []           contexts;
+	private final          IdentTableEntry           base;
+	private final          OS_Element @NotNull []    elements;  // arrays because they never need to be resized
+	private final          GenType @NotNull []       types;
+	private final          MemberContext @NotNull [] contexts;
 
 	@Contract(pure = true)
 	public DeducePath(IdentTableEntry aIdentTableEntry, @NotNull List<InstructionArgument> aX) {
@@ -44,8 +44,8 @@ public class DeducePath {
 		base = aIdentTableEntry;
 		ias  = aX;
 
-		elements = new OS_Element   [size];
-		types    = new GenType      [size];
+		elements = new OS_Element[size];
+		types    = new GenType[size];
 		contexts = new MemberContext[size];
 	}
 
@@ -53,14 +53,20 @@ public class DeducePath {
 		return ias.size();
 	}
 
-	public InstructionArgument getIA(int index) {
-		return ias.get(index);
+	public @Nullable Context getContext(int aIndex) {
+		if (contexts[aIndex] == null) {
+			final @Nullable MemberContext memberContext = new MemberContext(this, aIndex, getElement(aIndex));
+			contexts[aIndex] = memberContext;
+			return memberContext;
+		} else
+			return contexts[aIndex];
+
 	}
 
 	@Nullable
 	public OS_Element getElement(int aIndex) {
 		if (elements[aIndex] == null) {
-			InstructionArgument ia2 = getIA(aIndex);
+			InstructionArgument  ia2 = getIA(aIndex);
 			@Nullable OS_Element el;
 			if (ia2 instanceof IntegerIA) {
 				@NotNull VariableTableEntry vte = ((IntegerIA) ia2).getEntry();
@@ -100,6 +106,14 @@ public class DeducePath {
 		}
 	}
 
+	public InstructionArgument getIA(int index) {
+		return ias.get(index);
+	}
+
+	public void getElementPromise(int aIndex, DoneCallback<OS_Element> aOS_elementDoneCallback, FailCallback<Diagnostic> aDiagnosticFailCallback) {
+		getEntry(aIndex).elementPromise(aOS_elementDoneCallback, aDiagnosticFailCallback);
+	}
+
 	@Nullable
 	public BaseTableEntry getEntry(int aIndex) {
 		InstructionArgument ia2 = getIA(aIndex);
@@ -116,83 +130,10 @@ public class DeducePath {
 		return null;
 	}
 
-	public @Nullable Context getContext(int aIndex) {
-		if (contexts[aIndex] == null) {
-			final @Nullable MemberContext memberContext = new MemberContext(this, aIndex, getElement(aIndex));
-			contexts[aIndex] = memberContext;
-			return memberContext;
-		} else
-			return contexts[aIndex];
-
-	}
-
-	public void getElementPromise(int aIndex, DoneCallback<OS_Element> aOS_elementDoneCallback, FailCallback<Diagnostic> aDiagnosticFailCallback) {
-		getEntry(aIndex).elementPromise(aOS_elementDoneCallback, aDiagnosticFailCallback);
-	}
-
-	static class MemberContext extends Context {
-
-		private final DeducePath deducePath;
-		private final int index;
-		private final OS_Element element;
-		private final @Nullable GenType type;
-
-		public MemberContext(DeducePath aDeducePath, int aIndex, OS_Element aElement) {
-			assert aIndex >= 0;
-
-			deducePath = aDeducePath;
-			index = aIndex;
-			element = aElement;
-
-			type = deducePath.getType(aIndex);
-		}
-
-		@Override
-		public LookupResultList lookup(String name, int level, LookupResultList Result, List<Context> alreadySearched, boolean one) {
-//			if (index == 0)
-
-
-
-
-
-
-
-
-
-
-
-
-
-			if (type.resolved == null) return null;
-
-
-
-
-
-
-
-
-
-
-
-
-				return type.resolved.getElement().getContext().lookup(name, level, Result, alreadySearched, one);
-//			else
-//				return null;
-		}
-
-		@Override
-		public @Nullable Context getParent() {
-			if (index == 0)
-				return element.getContext().getParent();
-			return deducePath.getContext(index - 1);
-		}
-	}
-
 	public @Nullable GenType getType(int aIndex) {
 		if (types[aIndex] == null) {
 			InstructionArgument ia2 = getIA(aIndex);
-			@Nullable GenType gt;
+			@Nullable GenType   gt;
 			if (ia2 instanceof IntegerIA) {
 				@NotNull VariableTableEntry vte = ((IntegerIA) ia2).getEntry();
 				gt = vte.type.genType;
@@ -215,6 +156,44 @@ public class DeducePath {
 			return gt;
 		} else {
 			return types[aIndex];
+		}
+	}
+
+	static class MemberContext extends Context {
+
+		private final           DeducePath deducePath;
+		private final           int        index;
+		private final           OS_Element element;
+		private final @Nullable GenType    type;
+
+		public MemberContext(DeducePath aDeducePath, int aIndex, OS_Element aElement) {
+			assert aIndex >= 0;
+
+			deducePath = aDeducePath;
+			index      = aIndex;
+			element    = aElement;
+
+			type = deducePath.getType(aIndex);
+		}
+
+		@Override
+		public LookupResultList lookup(String name, int level, LookupResultList Result, List<Context> alreadySearched, boolean one) {
+//			if (index == 0)
+
+
+			if (type.resolved == null) return null;
+
+
+			return type.resolved.getElement().getContext().lookup(name, level, Result, alreadySearched, one);
+//			else
+//				return null;
+		}
+
+		@Override
+		public @Nullable Context getParent() {
+			if (index == 0)
+				return element.getContext().getParent();
+			return deducePath.getContext(index - 1);
 		}
 	}
 }

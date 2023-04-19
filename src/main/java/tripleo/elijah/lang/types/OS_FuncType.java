@@ -15,11 +15,7 @@ package tripleo.elijah.lang.types;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.NormalTypeName;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
@@ -30,6 +26,10 @@ import java.util.List;
 public class OS_FuncType extends __Abstract_OS_Type {
 	private final FunctionDef function_def;
 
+	public OS_FuncType(final FunctionDef functionDef) {
+		this.function_def = functionDef;
+	}
+
 	@Override
 	public OS_Element getElement() {
 		return function_def;
@@ -38,10 +38,6 @@ public class OS_FuncType extends __Abstract_OS_Type {
 	@Override
 	public Type getType() {
 		return Type.FUNCTION;
-	}
-
-	public OS_FuncType(final FunctionDef functionDef) {
-		this.function_def = functionDef;
 	}
 
 	@Override

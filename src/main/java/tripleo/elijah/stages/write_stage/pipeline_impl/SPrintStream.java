@@ -1,7 +1,5 @@
 package tripleo.elijah.stages.write_stage.pipeline_impl;
 
-import tripleo.elijah.stages.write_stage.pipeline_impl.XPrintStream;
-
 public class SPrintStream implements XPrintStream {
 	private final StringBuilder sb = new StringBuilder();
 

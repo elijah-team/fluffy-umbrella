@@ -1,10 +1,10 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 package tripleo.elijah.lang;
 
@@ -14,12 +14,21 @@ import tripleo.elijah.lang2.ElElementVisitor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Loop implements  StatementItem, FunctionItem, OS_Element {
+public class Loop implements StatementItem, FunctionItem, OS_Element {
 
 	private final OS_Element parent;
-	private Scope3 scope3;
+	private final Attached    _a = new Attached();
+	IdentExpression iterName;
+	private       Scope3     scope3;
+	/**
+	 * @category type
+	 */
+	private LoopTypes type;
+	private IExpression topart, frompart;
+	private       IExpression expr;
 
-	@Deprecated public Loop(final OS_Element aParent) {
+	@Deprecated
+	public Loop(final OS_Element aParent) {
 		// document assumption
 		if (!(aParent instanceof FunctionDef) && !(aParent instanceof Loop))
 			tripleo.elijah.util.Stupidity.println_out_2("parent is not FunctionDef or Loop");
@@ -39,31 +48,21 @@ public class Loop implements  StatementItem, FunctionItem, OS_Element {
 	}
 
 	public void expr(final IExpression aExpr) {
-		expr=aExpr;
+		expr = aExpr;
 	}
 
 	public void topart(final IExpression aExpr) {
-		topart=aExpr;
+		topart = aExpr;
 	}
 
 	public void frompart(final IExpression aExpr) {
-		frompart=aExpr;
+		frompart = aExpr;
 	}
 
 	public void iterName(final IdentExpression s) {
 //		assert type == ITER_TYPE;
-		iterName=s;
+		iterName = s;
 	}
-
-	IdentExpression iterName;
-	/**
-	 * @category type
-	 */
-	private LoopTypes type;
-
-private IExpression topart,frompart;
-private IExpression expr;
-private final Attached _a = new Attached();
 
 	public List<StatementItem> getItems() {
 		List<StatementItem> collection = new ArrayList<StatementItem>();
@@ -80,28 +79,38 @@ private final Attached _a = new Attached();
 		visit.visitLoop(this);
 	}
 
-	public String getIterName() {
-		return iterName.getText();
-	}
-	
-	public LoopTypes getType() {
-		return type;
-	}
-	
-	public IExpression getToPart() {
-		return topart;
-	}
-	
-	public IExpression getExpr() {
-		return expr;
-	}
-	
-	public IExpression getFromPart() {
-		return frompart;
+	@Override
+	public Context getContext() {
+		return _a.getContext();
 	}
 
 	public void setContext(final LoopContext ctx) {
 		_a.setContext(ctx);
+	}
+
+	@Override
+	public OS_Element getParent() {
+		return parent;
+	}
+
+	public String getIterName() {
+		return iterName.getText();
+	}
+
+	public LoopTypes getType() {
+		return type;
+	}
+
+	public IExpression getToPart() {
+		return topart;
+	}
+
+	public IExpression getExpr() {
+		return expr;
+	}
+
+	public IExpression getFromPart() {
+		return frompart;
 	}
 
 	public IdentExpression getIterNameToken() {
@@ -110,16 +119,6 @@ private final Attached _a = new Attached();
 
 	public void scope(Scope3 sco) {
 		scope3 = sco;
-	}
-
-	@Override
-	public OS_Element getParent() {
-		return parent;
-	}
-
-	@Override
-	public Context getContext() {
-		return _a.getContext();
 	}
 
 }

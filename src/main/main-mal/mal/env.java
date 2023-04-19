@@ -1,10 +1,6 @@
 package mal;
 
-import mal.types.MalException;
-import mal.types.MalList;
-import mal.types.MalSymbol;
-import mal.types.MalThrowable;
-import mal.types.MalVal;
+import mal.types.*;
 
 import java.util.HashMap;
 
@@ -23,7 +19,7 @@ public class env {
 				final String sym = ((MalSymbol) binds.nth(i)).getName();
 				if (sym.equals("&")) {
 					data.put(((MalSymbol) binds.nth(i + 1)).getName(),
-					  exprs.slice(i));
+							 exprs.slice(i));
 					break;
 				} else {
 					data.put(sym, exprs.nth(i));
@@ -45,7 +41,7 @@ public class env {
 			final Env e = find(key);
 			if (e == null) {
 				throw new MalException(
-				  "'" + key.getName() + "' not found");
+						"'" + key.getName() + "' not found");
 			} else {
 				return e.data.get(key.getName());
 			}

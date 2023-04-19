@@ -18,10 +18,10 @@ public class EG_CompoundStatement implements EG_Statement {
 	private final EX_Explanation     explanation;
 
 	public EG_CompoundStatement(final @NotNull EG_SingleStatement aBeginning,
-	                            final @NotNull EG_SingleStatement aEnding,
-	                            final @NotNull EG_Statement aMiddle,
-	                            final boolean aIndent,
-	                            final @NotNull EX_Explanation aExplanation) {
+								final @NotNull EG_SingleStatement aEnding,
+								final @NotNull EG_Statement aMiddle,
+								final boolean aIndent,
+								final @NotNull EX_Explanation aExplanation) {
 		beginning   = aBeginning;
 		ending      = aEnding;
 		middle      = aMiddle;

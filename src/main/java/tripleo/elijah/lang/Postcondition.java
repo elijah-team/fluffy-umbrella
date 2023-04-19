@@ -13,7 +13,7 @@ package tripleo.elijah.lang;
  */
 public class Postcondition {
 	private IdentExpression id;
-	private IExpression expr;
+	private IExpression     expr;
 
 	public void id(IdentExpression id) {
 		this.id = id;

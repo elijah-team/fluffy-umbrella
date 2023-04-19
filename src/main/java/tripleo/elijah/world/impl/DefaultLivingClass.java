@@ -12,8 +12,8 @@ import tripleo.elijah.world.i.LivingNode;
 
 public class DefaultLivingClass implements LivingClass, LivingNode {
 	private final ClassStatement _element;
-	private final EvaClass    _gc;
-	private  GarishClass _garish;
+	private final EvaClass       _gc;
+	private       GarishClass    _garish;
 
 	public DefaultLivingClass(final ClassStatement aElement) {
 		_element = aElement;

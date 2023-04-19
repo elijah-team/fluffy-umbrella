@@ -13,16 +13,11 @@ import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.gen_c.c_ast1.C_Assignment;
 import tripleo.elijah.stages.gen_c.c_ast1.C_ProcedureCall;
-import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
-import tripleo.elijah.stages.gen_fn.EvaContainerNC;
-import tripleo.elijah.stages.gen_fn.EvaNode;
-import tripleo.elijah.stages.gen_fn.IdentTableEntry;
-import tripleo.elijah.stages.gen_fn.VariableTableEntry;
+import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.stages.instructions.ProcIA;
-import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 
 import java.util.ArrayList;
@@ -35,14 +30,10 @@ import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
  */
 public class CtorReference {
 
-	private String ctorName = "";
-	private List<String> args;
 	List<CReference.Reference> refs = new ArrayList<CReference.Reference>();
+	private String       ctorName = "";
+	private List<String> args;
 	private EvaNode _resolved;
-
-	void addRef(String text, CReference.Ref type) {
-		refs.add(new CReference.Reference(text, type));
-	}
 
 	public void getConstructorPath(InstructionArgument ia2, BaseEvaFunction gf) {
 		final List<InstructionArgument> s = CReference._getIdentIAPathList(ia2);
@@ -63,11 +54,11 @@ public class CtorReference {
 				}
 				addRef(vte.getName(), CReference.Ref.LOCAL);
 			} else if (ia instanceof IdentIA) {
-				final IdentTableEntry idte = gf.getIdentTableEntry(to_int(ia));
-				OS_Element resolved_element = idte.getResolvedElement();
+				final IdentTableEntry idte             = gf.getIdentTableEntry(to_int(ia));
+				OS_Element            resolved_element = idte.getResolvedElement();
 				if (idte.resolvedType() != null) {
 					_resolved = idte.resolvedType();
-					ctorName = ((ConstructorDef) resolved_element).name();
+					ctorName  = ((ConstructorDef) resolved_element).name();
 				} /*else if (resolved_element != null) {
 					assert false;
 					if (resolved_element instanceof VariableStatement) {
@@ -102,9 +93,13 @@ public class CtorReference {
 		}
 	}
 
+	void addRef(String text, CReference.Ref type) {
+		refs.add(new CReference.Reference(text, type));
+	}
+
 	public String build(ClassInvocation aClsinv) {
-		StringBuilder sb = new StringBuilder();
-		boolean open = false, needs_comma = false;
+		StringBuilder sb   = new StringBuilder();
+		boolean       open = false, needs_comma = false;
 //		List<String> sl = new ArrayList<String>();
 		String text = "";
 		for (CReference.Reference ref : refs) {
@@ -118,17 +113,17 @@ public class CtorReference {
 				sb.append(text);
 				break;
 			case INLINE_MEMBER:
-				text = Emit.emit("/*2190*/")+".vm" + ref.text;
+				text = Emit.emit("/*2190*/") + ".vm" + ref.text;
 				sb.append(text);
 				break;
 			case DIRECT_MEMBER:
-				text = Emit.emit("/*1240*/")+"vsc->vm" + ref.text;
+				text = Emit.emit("/*1240*/") + "vsc->vm" + ref.text;
 				sb.append(text);
 				break;
 			case FUNCTION: {
 				final String s = sb.toString();
 				text = String.format("%s(%s", ref.text, s);
-				sb = new StringBuilder();
+				sb   = new StringBuilder();
 				open = true;
 				if (!s.equals("")) needs_comma = true;
 				sb.append(text);
@@ -137,7 +132,7 @@ public class CtorReference {
 			case CONSTRUCTOR: {
 				final String s = sb.toString();
 				text = String.format("%s(%s", ref.text, s);
-				sb = new StringBuilder();
+				sb   = new StringBuilder();
 				open = true;
 				if (!s.equals("")) needs_comma = true;
 				sb.append(text);
@@ -146,7 +141,7 @@ public class CtorReference {
 			case PROPERTY_GET: {
 				final String s = sb.toString();
 				text = String.format("%s(%s", ref.text, s);
-				sb = new StringBuilder();
+				sb   = new StringBuilder();
 				open = true;
 				if (!s.equals("")) needs_comma = true;
 				sb.append(text);
@@ -171,7 +166,6 @@ public class CtorReference {
 
 
 			final String n = sb.toString();
-
 
 
 			// TODO Garish(?)Constructor.calculateCtorName(?)/Code

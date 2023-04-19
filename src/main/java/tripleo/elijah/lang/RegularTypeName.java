@@ -1,14 +1,14 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 /*
  * Created on Aug 30, 2005 9:05:24 PM
- * 
+ *
  * $Id$
  *
  */
@@ -22,16 +22,17 @@ import java.io.File;
 public class RegularTypeName extends AbstractTypeName2 implements NormalTypeName {
 
 	private TypeNameList genericPart;
-	private Context _ctx;
-//	private OS_Type _resolved;
-	private OS_Element _resolvedElement;
+	private Context      _ctx;
+	//	private OS_Type _resolved;
+	private OS_Element   _resolvedElement;
 
 	public RegularTypeName(final Context cur) {
 		super();
 		_ctx = cur;
 	}
 
-	@Deprecated public RegularTypeName() { // TODO remove this
+	@Deprecated
+	public RegularTypeName() { // TODO remove this
 		super();
 		_ctx = null;
 	}
@@ -47,15 +48,9 @@ public class RegularTypeName extends AbstractTypeName2 implements NormalTypeName
 	}
 
 	@Override
-	public void addGenericPart(final TypeNameList tn2) {
-		genericPart = tn2;
+	public Context getContext() {
+		return _ctx;
 	}
-
-@Override
-public String getName() {
-	if (typeName == null) return null;
-	return this.typeName.asSimpleString();
-}
 
 	@Override
 	public void setContext(final Context ctx) {
@@ -63,8 +58,18 @@ public String getName() {
 	}
 
 	@Override
-	public Context getContext() {
-		return _ctx;
+	public TypeNameList getGenericPart() {
+		return genericPart;
+	}
+
+	@Override
+	public Qualident getRealName() {
+		return typeName;
+	}
+
+	@Override
+	public Type kindOfType() {
+		return Type.NORMAL;
 	}
 
 	@Override
@@ -82,12 +87,6 @@ public String getName() {
 		_resolvedElement = element;
 	}
 
-
-	@Override
-	public void setName(final Qualident aS) {
-		this.typeName=aS;
-	}
-
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -96,21 +95,49 @@ public String getName() {
 		final StringBuilder sb = new StringBuilder();
 		for (final TypeModifiers modifier : _ltm) {
 			switch (modifier) {
-				case CONST:      sb.append("const "); break;
-				case REFPAR:     sb.append("ref "); break;
-				case FUNCTION:   sb.append("fn "); break; // TODO
-				case PROCEDURE:  sb.append("proc "); break; // TODO
-				case GC:		 sb.append("gc "); break;
-				case ONCE:		 sb.append("once "); break;
-				case INPAR:		 sb.append("in "); break;
-				case LOCAL:		 sb.append("local "); break;
-				case MANUAL:	 sb.append("manual "); break;
-				case OUTPAR:	 sb.append("out "); break;
-				case POOLED:	 sb.append("pooled "); break;
-				case TAGGED:	 sb.append("tagged "); break;
-				case GENERIC:	 sb.append("generic "); break; // TODO
-				case NORMAL:	 break;
-				default: 		 throw new IllegalStateException("Cant be here!");
+			case CONST:
+				sb.append("const ");
+				break;
+			case REFPAR:
+				sb.append("ref ");
+				break;
+			case FUNCTION:
+				sb.append("fn ");
+				break; // TODO
+			case PROCEDURE:
+				sb.append("proc ");
+				break; // TODO
+			case GC:
+				sb.append("gc ");
+				break;
+			case ONCE:
+				sb.append("once ");
+				break;
+			case INPAR:
+				sb.append("in ");
+				break;
+			case LOCAL:
+				sb.append("local ");
+				break;
+			case MANUAL:
+				sb.append("manual ");
+				break;
+			case OUTPAR:
+				sb.append("out ");
+				break;
+			case POOLED:
+				sb.append("pooled ");
+				break;
+			case TAGGED:
+				sb.append("tagged ");
+				break;
+			case GENERIC:
+				sb.append("generic ");
+				break; // TODO
+			case NORMAL:
+				break;
+			default:
+				throw new IllegalStateException("Cant be here!");
 			}
 		}
 		if (typeName != null) {
@@ -124,18 +151,19 @@ public String getName() {
 	}
 
 	@Override
-	public Type kindOfType() {
-		return Type.NORMAL;
+	public String getName() {
+		if (typeName == null) return null;
+		return this.typeName.asSimpleString();
 	}
 
 	@Override
-	public TypeNameList getGenericPart() {
-		return genericPart;
+	public void setName(final Qualident aS) {
+		this.typeName = aS;
 	}
 
 	@Override
-	public Qualident getRealName() {
-		return typeName;
+	public void addGenericPart(final TypeNameList tn2) {
+		genericPart = tn2;
 	}
 
 	// region Locatable
@@ -152,14 +180,14 @@ public String getName() {
 
 	// TODO what about generic part
 	@Override
-	public int getColumnEnd() {
-		return getRealName().parts().get(getRealName().parts().size()).getColumnEnd();
+	public int getLineEnd() {
+		return getRealName().parts().get(getRealName().parts().size()).getLineEnd();
 	}
 
 	// TODO what about generic part
 	@Override
-	public int getLineEnd() {
-		return getRealName().parts().get(getRealName().parts().size()).getLineEnd();
+	public int getColumnEnd() {
+		return getRealName().parts().get(getRealName().parts().size()).getColumnEnd();
 	}
 
 	@Override

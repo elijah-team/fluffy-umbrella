@@ -8,11 +8,7 @@
  */
 package tripleo.elijah.stages.gen_c;
 
-import tripleo.elijah.lang.AnnotationPart;
-import tripleo.elijah.lang.AnnotationWalker;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.IExpression;
-import tripleo.elijah.lang.StringExpression;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.util.Helpers;
 
@@ -24,18 +20,10 @@ import java.util.ArrayList;
 public class CClassDecl {
 	private final EvaClass evaClass;
 	public        String   prim_decl;
-	public boolean prim = false;
+	public        boolean  prim = false;
 
 	public CClassDecl(EvaClass aEvaClass) {
 		this.evaClass = aEvaClass;
-	}
-
-	public void setDecl(String str) {
-		prim_decl = str;
-	}
-
-	public void setPrimitive() {
-		prim = true;
 	}
 
 	public void evaluatePrimitive() {
@@ -46,7 +34,7 @@ public class CClassDecl {
 				if (anno.annoClass().equals(Helpers.string_to_qualident("C.repr"))) {
 					if (anno.getExprs() != null) {
 						final ArrayList<IExpression> expressions = new ArrayList<IExpression>(anno.getExprs().expressions());
-						final IExpression str0 = expressions.get(0);
+						final IExpression            str0        = expressions.get(0);
 						if (str0 instanceof StringExpression) {
 							final String str = ((StringExpression) str0).getText();
 							setDecl(str);
@@ -59,6 +47,14 @@ public class CClassDecl {
 					setPrimitive();
 			}
 		});
+	}
+
+	public void setDecl(String str) {
+		prim_decl = str;
+	}
+
+	public void setPrimitive() {
+		prim = true;
 	}
 }
 

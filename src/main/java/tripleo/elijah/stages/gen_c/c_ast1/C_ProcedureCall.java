@@ -2,11 +2,10 @@ package tripleo.elijah.stages.gen_c.c_ast1;
 
 import tripleo.elijah.util.Helpers;
 
-import java.text.MessageFormat;
 import java.util.List;
 
 public class C_ProcedureCall {
-	private String targetName;
+	private String       targetName;
 	private List<String> args;
 
 	public void setTargetName(final String aS) {

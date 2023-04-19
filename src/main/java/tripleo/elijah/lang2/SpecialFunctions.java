@@ -16,22 +16,37 @@ import tripleo.elijah.lang.ExpressionKind;
 public class SpecialFunctions {
 	public static String of(final ExpressionKind kind) {
 		switch (kind) {
-		case LT_: 				return "__lt__";
-		case GT: 				return "__gt__";
-		case GE: 				return "__ge__";
-		case INCREMENT: 		return "__preinc__";
-		case AUG_MULT:			return "__imult__";
-		case ASSIGNMENT:		return "__assign__";
-		case GET_ITEM:			return "__getitem__";
-		case ADDITION:			return "__add__";
-		case SUBTRACTION:		return "__sub__";
-		case DIVIDE:			return "__div__";
-		case MODULO:			return "__mod__";
-		case MULTIPLY:			return "__mult__";
-		case NOT_EQUAL:			return "__neq__";
-		case EQUAL:				return "__eq__";
+		case LT_:
+			return "__lt__";
+		case GT:
+			return "__gt__";
+		case GE:
+			return "__ge__";
+		case INCREMENT:
+			return "__preinc__";
+		case AUG_MULT:
+			return "__imult__";
+		case ASSIGNMENT:
+			return "__assign__";
+		case GET_ITEM:
+			return "__getitem__";
+		case ADDITION:
+			return "__add__";
+		case SUBTRACTION:
+			return "__sub__";
+		case DIVIDE:
+			return "__div__";
+		case MODULO:
+			return "__mod__";
+		case MULTIPLY:
+			return "__mult__";
+		case NOT_EQUAL:
+			return "__neq__";
+		case EQUAL:
+			return "__eq__";
 		// unary
-		case NEG:				return "__negate__";
+		case NEG:
+			return "__negate__";
 		default:
 			throw new IllegalStateException("Unexpected value: " + kind);
 		}
@@ -42,7 +57,7 @@ public class SpecialFunctions {
 			return null;
 //		if (pn.equals("__eq__"))
 //			return "__req__";
-		tripleo.elijah.util.Stupidity.println_out_2("reverse_name: "+pn);
+		tripleo.elijah.util.Stupidity.println_out_2("reverse_name: " + pn);
 //		assert false;
 		return null;
 	}

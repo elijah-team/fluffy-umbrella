@@ -7,30 +7,30 @@ import tripleo.elijah.contexts.ContextInfo;
 
 /**
  * @author Tripleo
- *
+ * <p>
  * Created 	Mar 26, 2020 at 9:16:07 PM
  */
 public class LookupResult {
 
-	private final Context context;
-	private final String name;
-	private final OS_Element element;
-	private final int level;
+	private final Context     context;
+	private final String      name;
+	private final OS_Element  element;
+	private final int         level;
 	private final ContextInfo importInfo;
 
 	public LookupResult(final String name, final OS_Element element, final int level, final Context aContext, final ContextInfo aImportInfo) {
-		this.name = name;
-		this.element = element;
-		this.level = level;
-		this.context = aContext;
+		this.name       = name;
+		this.element    = element;
+		this.level      = level;
+		this.context    = aContext;
 		this.importInfo = aImportInfo;
 	}
 
 	public LookupResult(final String name, final OS_Element element, final int level, final Context aContext) {
-		this.name = name;
-		this.element = element;
-		this.level = level;
-		this.context = aContext;
+		this.name       = name;
+		this.element    = element;
+		this.level      = level;
+		this.context    = aContext;
 		this.importInfo = null;
 	}
 

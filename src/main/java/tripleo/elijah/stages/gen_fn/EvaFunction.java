@@ -44,12 +44,6 @@ public class EvaFunction extends BaseEvaFunction implements GNCoded {
 	// endregion
 
 	@Override
-	public @NotNull BaseFunctionDef getFD() {
-		if (fd != null) return fd;
-		throw new IllegalStateException("No function");
-	}
-
-	@Override
 	public VariableTableEntry getSelf() {
 		if (getFD().getParent() instanceof ClassStatement)
 			return getVarTableEntry(0);
@@ -58,18 +52,24 @@ public class EvaFunction extends BaseEvaFunction implements GNCoded {
 	}
 
 	@Override
+	public @NotNull BaseFunctionDef getFD() {
+		if (fd != null) return fd;
+		throw new IllegalStateException("No function");
+	}
+
+	@Override
 	public String identityString() {
-		return ""+fd;
+		return "" + fd;
+	}
+
+	@Override
+	public OS_Module module() {
+		return getFD().getContext().module();
 	}
 
 	@Override
 	public Role getRole() {
 		return Role.FUNCTION;
-	}
-
-	@Override
-	public OS_Module module() {
-        return getFD().getContext().module();
 	}
 }
 

@@ -1,7 +1,8 @@
 package tripleo.elijah.comp.internal;
 
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.Operation;
 import tripleo.elijah.comp.i.CD_Item;
 import tripleo.elijah.comp.i.CompilationChange;
 import tripleo.elijah.comp.i.ICompilationBus;
@@ -13,10 +14,56 @@ import java.util.Map;
 public class CompilationBus implements ICompilationBus {
 
 	public final CompilerDriver cd;
+	private final Compilation c;
+
+	public CompilationBus(final Compilation aC) {
+		c  = aC;
+		cd = new CompilerDriver(this);
+	}
+
+	@Override
+	public void option(final @NotNull CompilationChange aChange) {
+		aChange.apply(c);
+	}
+
+	@Override
+	public void inst(final @NotNull ILazyCompilerInstructions aLazyCompilerInstructions) {
+		System.out.println("** [ci] " + aLazyCompilerInstructions.get());
+	}
+
+	@Override
+	public void add(final @NotNull CB_Action action) {
+		action.execute();
+	}
+
+	@Override
+	public void add(final @NotNull CB_Process aProcess) {
+		aProcess.steps().stream()
+				.forEach(step -> {
+					step.execute();
+				});
+	}
+
+	public interface CompilerDriven extends CD_Item {
+
+	}
+
+	public interface DriverToken {
+		static DriverToken makeToken(String s) {
+			return new DriverToken() {
+				@Override
+				public String asString() {
+					return s;
+				}
+			};
+		}
+
+		String asString();
+	}
 
 	public static class CompilerDriver {
-		private final        ICompilationBus                  cb;
-		private 		final Map<DriverToken, CompilerDriven> drivens = new HashMap<>();
+		private final ICompilationBus                  cb;
+		private final Map<DriverToken, CompilerDriven> drivens  = new HashMap<>();
 		private final Map<DriverToken, CompilerDriven> defaults = new HashMap<>();
 
 		private /*static*/ boolean initialized;
@@ -47,50 +94,6 @@ public class CompilationBus implements ICompilationBus {
 
 			return o;
 		}
-	}
-	public interface CompilerDriven extends CD_Item {
-
-	}
-	public interface DriverToken {
-		static DriverToken makeToken(String s) {
-			return new DriverToken() {
-				@Override
-				public String asString() {
-					return s;
-				}
-			};
-		}
-
-		String asString();
-	}
-	private final Compilation c;
-
-	public CompilationBus(final Compilation aC) {
-		c = aC;
-		cd = new CompilerDriver(this);
-	}
-
-	@Override
-	public void option(final @NotNull CompilationChange aChange) {
-		aChange.apply(c);
-	}
-
-	@Override
-	public void inst(final @NotNull ILazyCompilerInstructions aLazyCompilerInstructions) {
-		System.out.println("** [ci] " + aLazyCompilerInstructions.get());
-	}
-
-	@Override
-	public void add(final @NotNull CB_Action action) {
-		action.execute();
-	}
-
-	@Override
-	public void add(final @NotNull CB_Process aProcess) {
-		aProcess.steps().stream()
-		        .forEach(step -> {
-			        step.execute();
-		        });
 	}
 
 

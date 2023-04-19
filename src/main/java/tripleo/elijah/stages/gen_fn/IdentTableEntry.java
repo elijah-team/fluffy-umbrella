@@ -14,11 +14,7 @@ import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.IExpression;
-import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.*;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
@@ -36,27 +32,30 @@ import java.util.Map;
  * Created 9/12/20 10:27 PM
  */
 public class IdentTableEntry extends BaseTableEntry1 implements Constructable, TableEntryIV, DeduceTypes2.ExpectationBase, IDeduceResolvable {
-    private final int index;
-    private final IdentExpression ident;
-	private final Context pc;
-	public boolean preUpdateStatusListenerAdded;
-	InstructionArgument backlink;
+	private final int             index;
+	private final IdentExpression ident;
+	private final Context         pc;
+	public        boolean         preUpdateStatusListenerAdded;
 	public @NotNull Map<Integer, TypeTableEntry> potentialTypes = new HashMap<Integer, TypeTableEntry>();
-	public  TypeTableEntry type;
-	public  EvaNode        externalRef;
-	public  boolean        fefi = false;
-	private EvaNode        resolvedType;
-	public  ProcTableEntry constructable_pte;
-	private DeduceElementIdent dei = new DeduceElementIdent(this);
-
-	public DeduceTypes2.PromiseExpectation<String> resolveExpectation;
-	private DeduceElement3_IdentTableEntry _de3;
+	public          TypeTableEntry               type;
+	public          EvaNode                      externalRef;
+	public          boolean                      fefi           = false;
+	public          ProcTableEntry               constructable_pte;
+	public  DeduceTypes2.PromiseExpectation<String> resolveExpectation;
+	protected DeferredObject<InstructionArgument, Void, Void> backlinkSet = new DeferredObject<InstructionArgument, Void, Void>();
+	InstructionArgument backlink;
+	boolean insideGetResolvedElement = false;
+	DeferredObject<ProcTableEntry, Void, Void> constructableDeferred = new DeferredObject<>();
+	private         EvaNode                      resolvedType;
+	private         DeduceElementIdent           dei            = new DeduceElementIdent(this);
+	private DeduceElement3_IdentTableEntry          _de3;
+	private DeferredObject<GenType, Void, Void> fefiDone = new DeferredObject<GenType, Void, Void>();
 
 	public IdentTableEntry(final int index, final IdentExpression ident, Context pc) {
-        this.index  = index;
-        this.ident  = ident;
-        this.pc     = pc;
-        addStatusListener(new StatusListener() {
+		this.index = index;
+		this.ident = ident;
+		this.pc    = pc;
+		addStatusListener(new StatusListener() {
 			@Override
 			public void onChange(IElementHolder eh, Status newStatus) {
 				if (newStatus == Status.KNOWN) {
@@ -64,10 +63,9 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 				}
 			}
 		});
-        setupResolve();
-    }
+		setupResolve();
+	}
 
-    boolean insideGetResolvedElement = false;
 	@Override
 	public OS_Element getResolvedElement() {
 		// short circuit
@@ -77,7 +75,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		if (insideGetResolvedElement)
 			return null;
 		insideGetResolvedElement = true;
-		resolved_element = dei.getResolvedElement();
+		resolved_element         = dei.getResolvedElement();
 		insideGetResolvedElement = false;
 		return resolved_element;
 	}
@@ -106,27 +104,6 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 				", type=" + type +
 				", resolved=" + resolvedType +
 				'}';
-	}
-
-	public IdentExpression getIdent() {
-		return ident;
-	}
-
-	@Override
-	public void resolveTypeToClass(EvaNode gn) {
-		resolvedType = gn;
-		if (type != null) // TODO maybe find a more robust solution to this, like another Promise? or just setType? or onPossiblesResolve?
-			type.resolve(gn); // TODO maybe this obviates the above?
-	}
-
-	@Override
-	public void setGenType(GenType aGenType) {
-		if (type != null) {
-			type.genType.copy(aGenType);
-		} else {
-			throw new IllegalStateException("idte-102 Attempting to set a null type");
-//			tripleo.elijah.util.Stupidity.println_err_2("idte-102 Attempting to set a null type");
-		}
 	}
 
 	public boolean isResolved() {
@@ -174,13 +151,28 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	}
 
 	@Override
+	public void resolveTypeToClass(EvaNode gn) {
+		resolvedType = gn;
+		if (type != null) // TODO maybe find a more robust solution to this, like another Promise? or just setType? or onPossiblesResolve?
+			type.resolve(gn); // TODO maybe this obviates the above?
+	}
+
+	@Override
+	public void setGenType(GenType aGenType) {
+		if (type != null) {
+			type.genType.copy(aGenType);
+		} else {
+			throw new IllegalStateException("idte-102 Attempting to set a null type");
+//			tripleo.elijah.util.Stupidity.println_err_2("idte-102 Attempting to set a null type");
+		}
+	}
+
+	// endregion constructable
+
+	@Override
 	public Promise<ProcTableEntry, Void, Void> constructablePromise() {
 		return constructableDeferred.promise();
 	}
-
-	DeferredObject<ProcTableEntry, Void, Void> constructableDeferred = new DeferredObject<>();
-
-	// endregion constructable
 
 	public DeducePath buildDeducePath(BaseEvaFunction generatedFunction) {
 		@NotNull List<InstructionArgument> x = generatedFunction._getIdentIAPathList(new IdentIA(index, generatedFunction));
@@ -196,18 +188,14 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 				"}";
 	}
 
-	private DeferredObject<GenType, Void, Void> fefiDone = new DeferredObject<GenType, Void, Void>();
-
 	public void fefiDone(final GenType aGenType) {
 		if (fefiDone.isPending())
 			fefiDone.resolve(aGenType);
 	}
-	protected DeferredObject<InstructionArgument, Void, Void> backlinkSet = new DeferredObject<InstructionArgument, Void, Void>();
 
 	public Promise<InstructionArgument, Void, Void> backlinkSet() {
 		return backlinkSet.promise();
 	}
-
 
 	public void onFefiDone(DoneCallback<GenType> aCallback) {
 		fefiDone.then(aCallback);
@@ -230,14 +218,18 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		type = aGeneratedFunction.newTypeTableEntry(aType, aOS_Type, getIdent(), this);
 	}
 
+	public IdentExpression getIdent() {
+		return ident;
+	}
+
 	public void makeType(final BaseEvaFunction aGeneratedFunction, final TypeTableEntry.Type aType, final IExpression aExpression) {
 		type = aGeneratedFunction.newTypeTableEntry(aType, null, aExpression, this);
 	}
 
 	public IDeduceElement3 getDeduceElement3(DeduceTypes2 aDeduceTypes2, BaseEvaFunction aGeneratedFunction) {
 		if (_de3 == null) {
-			_de3 = new DeduceElement3_IdentTableEntry(this);
-			_de3.deduceTypes2 = aDeduceTypes2;
+			_de3                   = new DeduceElement3_IdentTableEntry(this);
+			_de3.deduceTypes2      = aDeduceTypes2;
 			_de3.generatedFunction = aGeneratedFunction;
 		}
 		return _de3;

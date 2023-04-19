@@ -20,7 +20,8 @@ public class SymbolIA implements InstructionArgument {
 		this.text = s;
 	}
 
-	@Override @Contract(pure = true)
+	@Override
+	@Contract(pure = true)
 	public String toString() {
 		return "SymbolIA{" +
 				"text='" + text + '\'' +

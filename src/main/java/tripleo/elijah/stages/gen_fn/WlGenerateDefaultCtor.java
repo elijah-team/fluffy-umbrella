@@ -22,14 +22,14 @@ import tripleo.elijah.work.WorkManager;
  * Created 5/31/21 2:26 AM
  */
 public class WlGenerateDefaultCtor implements WorkJob {
-	private final GenerateFunctions generateFunctions;
+	private final GenerateFunctions  generateFunctions;
 	private final FunctionInvocation functionInvocation;
-	private boolean         _isDone = false;
-	private BaseEvaFunction Result;
+	private       boolean            _isDone = false;
+	private       BaseEvaFunction    Result;
 
 	@Contract(pure = true)
 	public WlGenerateDefaultCtor(@NotNull GenerateFunctions aGenerateFunctions, FunctionInvocation aFunctionInvocation) {
-		generateFunctions = aGenerateFunctions;
+		generateFunctions  = aGenerateFunctions;
 		functionInvocation = aFunctionInvocation;
 	}
 
@@ -54,7 +54,7 @@ public class WlGenerateDefaultCtor implements WorkJob {
 			cd.scope(scope3);
 			for (EvaContainer.VarTableEntry varTableEntry : genClass.varTable) {
 				if (varTableEntry.initialValue != IExpression.UNASSIGNED) {
-					IExpression left = varTableEntry.nameToken;
+					IExpression left  = varTableEntry.nameToken;
 					IExpression right = varTableEntry.initialValue;
 
 					IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);

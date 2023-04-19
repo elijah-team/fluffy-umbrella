@@ -18,21 +18,22 @@ import java.util.List;
 public class SyntacticBlockContext extends Context {
 
 	private final SyntacticBlock carrier;
-	private final Context _parent;
+	private final Context        _parent;
 
 	public SyntacticBlockContext(final SyntacticBlock carrier, final Context _parent) {
 		this.carrier = carrier;
 		this._parent = _parent;
 	}
 
-	@Override public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	@Override
+	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 
-		for (final FunctionItem item: carrier.getItems()) {
+		for (final FunctionItem item : carrier.getItems()) {
 			if (!(item instanceof ClassStatement) &&
-			    !(item instanceof NamespaceStatement) &&
-			    !(item instanceof FunctionDef) &&
-			    !(item instanceof VariableSequence)
+					!(item instanceof NamespaceStatement) &&
+					!(item instanceof FunctionDef) &&
+					!(item instanceof VariableSequence)
 			) continue;
 			if (item instanceof OS_Element2) {
 				if (((OS_Element2) item).name().equals(name)) {

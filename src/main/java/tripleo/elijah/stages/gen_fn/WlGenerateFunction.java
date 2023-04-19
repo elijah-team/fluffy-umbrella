@@ -23,15 +23,15 @@ import tripleo.elijah.work.WorkManager;
  * Created 5/16/21 12:46 AM
  */
 public class WlGenerateFunction implements WorkJob {
-	private final FunctionDef functionDef;
-	private final GenerateFunctions generateFunctions;
+	private final FunctionDef        functionDef;
+	private final GenerateFunctions  generateFunctions;
 	private final FunctionInvocation functionInvocation;
-	private boolean     _isDone = false;
-	private EvaFunction result;
+	private       boolean            _isDone = false;
+	private       EvaFunction        result;
 
 	public WlGenerateFunction(GenerateFunctions aGenerateFunctions, @NotNull FunctionInvocation aFunctionInvocation) {
-		functionDef = (FunctionDef) aFunctionInvocation.getFunction();
-		generateFunctions = aGenerateFunctions;
+		functionDef        = (FunctionDef) aFunctionInvocation.getFunction();
+		generateFunctions  = aGenerateFunctions;
 		functionInvocation = aFunctionInvocation;
 	}
 

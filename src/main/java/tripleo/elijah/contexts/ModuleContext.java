@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * @author Tripleo
- *
+ * <p>
  * Created 	Mar 26, 2020 at 6:33:31 AM
  */
 public class ModuleContext extends Context {
@@ -25,10 +25,11 @@ public class ModuleContext extends Context {
 		this.carrier = module;
 	}
 
-	@Override public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	@Override
+	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 		// TODO look all this up in a table, not by iteration
-		for (final ModuleItem item: carrier.getItems()) {
+		for (final ModuleItem item : carrier.getItems()) {
 			//
 //			List<String> items;
 //			if ((item instanceof ClassStatement)) {
@@ -49,8 +50,8 @@ public class ModuleContext extends Context {
 //			tripleo.elijah.util.Stupidity.println_err_2("101 Searching "+items.toString()+" for "+name);
 			//
 			if (!(item instanceof ClassStatement) &&
-				!(item instanceof NamespaceStatement) &&
-				!(item instanceof AliasStatement) //&&
+					!(item instanceof NamespaceStatement) &&
+					!(item instanceof AliasStatement) //&&
 //				!(item instanceof VariableSequence)
 				// TODO what about imports
 			) continue;
@@ -77,7 +78,7 @@ public class ModuleContext extends Context {
 			return Result;
 		if (carrier.prelude == null || one)
 			return Result;
-		return carrier.prelude.getContext().lookup(name, level+1, Result, alreadySearched, false);
+		return carrier.prelude.getContext().lookup(name, level + 1, Result, alreadySearched, false);
 	}
 
 	@Override

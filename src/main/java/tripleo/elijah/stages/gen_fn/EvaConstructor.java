@@ -29,9 +29,9 @@ public class EvaConstructor extends BaseEvaFunction {
 
 	public void setFunctionInvocation(FunctionInvocation fi) {
 		GenType genType = new GenType();
-		genType.ci = fi.getClassInvocation(); // TODO will fail on namespace constructors; next line too
+		genType.ci       = fi.getClassInvocation(); // TODO will fail on namespace constructors; next line too
 		genType.resolved = (((ClassInvocation) genType.ci).getKlass()).getOS_Type();
-		genType.node = this;
+		genType.node     = this;
 		typeDeferred().resolve(genType);
 	}
 
@@ -53,12 +53,6 @@ public class EvaConstructor extends BaseEvaFunction {
 	// endregion
 
 	@Override
-	public @NotNull BaseFunctionDef getFD() {
-		if (cd == null) throw new IllegalStateException("No function");
-		return cd;
-	}
-
-	@Override
 	public VariableTableEntry getSelf() {
 		if (getFD().getParent() instanceof ClassStatement)
 			return getVarTableEntry(0);
@@ -67,8 +61,14 @@ public class EvaConstructor extends BaseEvaFunction {
 	}
 
 	@Override
+	public @NotNull BaseFunctionDef getFD() {
+		if (cd == null) throw new IllegalStateException("No function");
+		return cd;
+	}
+
+	@Override
 	public String identityString() {
-		return ""+cd;
+		return "" + cd;
 	}
 
 	@Override

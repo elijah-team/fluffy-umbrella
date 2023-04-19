@@ -9,6 +9,7 @@
 package tripleo.elijah.comp;
 
 import com.google.common.collect.Multimap;
+import org.jdeferred2.Promise;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
@@ -30,11 +31,9 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.jdeferred2.Promise;
 
 import static tripleo.elijah.util.Helpers.List_of;
 import static tripleo.elijah.util.Helpers.String_join;
-import tripleo.elijah.util.NotImplementedException;
 
 /**
  * Created 9/13/21 11:58 PM
@@ -43,14 +42,21 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 //	private final File file_prefix;
 //	private final GenerateResult gr;
 
+	final Pattern pullPat = Pattern.compile("/[^/]+/(.+)");
 	private final WritePipeline            writePipeline;
 	private final Compilation              c;
+	DoubleLatch<Multimap<CompilerInstructions, String>> write_makefiles_latch = new DoubleLatch<>(this::write_makefiles_action);
 	private       Supplier<GenerateResult> grs;
+	private Consumer<Multimap<CompilerInstructions, String>> _wmc;
+
+	public WriteMesonPipeline(final AccessBus ab) {
+		this(ab.getCompilation(), ab.getPipelineAccess().getProcessRecord(), ab.getPipelineAccess().getPipelineLogicPromise(), ab.getPipelineAccess().getWitePipeline());
+	}
 
 	public WriteMesonPipeline(final Compilation aCompilation,
-			final ProcessRecord ignoredAPr,
-			final @NotNull Promise<PipelineLogic, Void, Void> ppl,
-			final WritePipeline aWritePipeline) {
+							  final ProcessRecord ignoredAPr,
+							  final @NotNull Promise<PipelineLogic, Void, Void> ppl,
+							  final WritePipeline aWritePipeline) {
 		c = aCompilation;
 //		gr = aGr;
 		writePipeline = aWritePipeline;
@@ -59,17 +65,11 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 
 		ppl.then((x) -> {
 			final GenerateResult ignoredAGr;
-			
+
 			ignoredAGr = x.gr;
 
 			grs = () -> ignoredAGr;
 		});
-	}
-
-	DoubleLatch<Multimap<CompilerInstructions, String>> write_makefiles_latch = new DoubleLatch<>(this::write_makefiles_action);
-
-	public WriteMesonPipeline(final AccessBus ab) {
-		this(ab.getCompilation(), ab.getPipelineAccess().getProcessRecord(), ab.getPipelineAccess().getPipelineLogicPromise(), ab.getPipelineAccess().getWitePipeline());
 	}
 
 	private void write_makefiles_action(final Multimap<CompilerInstructions, String> lsp_outputs) {
@@ -79,7 +79,7 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 			write_root(lsp_outputs, dep_dirs);
 
 			for (final CompilerInstructions compilerInstructions : lsp_outputs.keySet()) {
-				int y=2;
+				int y = 2;
 
 				final String sub_dir = compilerInstructions.getName();
 				final Path   dpath   = getPath(sub_dir);
@@ -96,38 +96,16 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 
 	}
 
-	private Consumer<Multimap<CompilerInstructions, String>> _wmc;
-
-	public Consumer<Multimap<CompilerInstructions, String>> write_makefiles_consumer() {
-		if (_wmc != null)
-			return _wmc;
-
-		final Consumer<Multimap<CompilerInstructions, String>> consumer = (aCompilerInstructionsStringMultimap) -> {
-			write_makefiles_latch.notify(aCompilerInstructionsStringMultimap);
-		};
-
-		_wmc = consumer;
-
-		return _wmc;
-	}
-
-	private void write_makefiles() {
-		//Multimap<CompilerInstructions, String> lsp_outputs = writePipeline.getLspOutputs(); // TODO move this
-
-		//write_makefiles_latch.notify(lsp_outputs);
-		write_makefiles_latch.notify(true);
-	}
-
 	private void write_root(@NotNull Multimap<CompilerInstructions, String> lsp_outputs, List<String> aDep_dirs) throws IOException {
 		CharSink root_file = c.getIO().openWrite(getPath("meson.build"));
 		try {
-			String project_name = c.getProjectName();
+			String project_name   = c.getProjectName();
 			String project_string = String.format("project('%s', 'c', version: '1.0.0', meson_version: '>= 0.48.0',)", project_name);
 			root_file.accept(project_string);
 			root_file.accept("\n");
 
 			for (CompilerInstructions compilerInstructions : lsp_outputs.keySet()) {
-				String name = compilerInstructions.getName();
+				String     name  = compilerInstructions.getName();
 				final Path dpath = getPath(name);
 				if (dpath.toFile().exists()) {
 					String name_subdir_string = String.format("subdir('%s')\n", name);
@@ -154,18 +132,18 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 	@NotNull
 	private Path getPath(String aName) {
 		return FileSystems.getDefault().getPath("COMP",
-				c.getCompilationNumberString(),
-				aName);
+												c.getCompilationNumberString(),
+												aName);
 	}
 
 	private void write_lsp(@NotNull Multimap<CompilerInstructions, String> lsp_outputs, CompilerInstructions compilerInstructions, String aSub_dir) throws IOException {
 		final Path path = FileSystems.getDefault().getPath("COMP",
-				c.getCompilationNumberString(),
-				aSub_dir,
-				"meson.build");
+														   c.getCompilationNumberString(),
+														   aSub_dir,
+														   "meson.build");
 		CharSink sub_file = c.getIO().openWrite(path);
 		try {
-			int yy = 2;
+			int                yy     = 2;
 			Collection<String> files_ = lsp_outputs.get(compilerInstructions);
 			Set<String> files = files_.stream()
 					.filter(x -> x.endsWith(".c"))
@@ -185,7 +163,7 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 
 	private void write_prelude() throws IOException {
 		final Path ppath1 = getPath("Prelude");
-		final Path ppath = ppath1.resolve("meson.build"); // Java is wierd
+		final Path ppath  = ppath1.resolve("meson.build"); // Java is wierd
 
 		ppath.getParent().toFile().mkdirs(); // README just in case -- but should be unnecessary at this point
 
@@ -208,7 +186,6 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 		}
 	}
 
-	final Pattern pullPat = Pattern.compile("/[^/]+/(.+)");
 	private @Nullable String pullFileName(String aFilename) {
 		//return aFilename.substring(aFilename.lastIndexOf('/')+1);
 		Matcher x = pullPat.matcher(aFilename);
@@ -220,16 +197,36 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 		return null;
 	}
 
+	public Consumer<Multimap<CompilerInstructions, String>> write_makefiles_consumer() {
+		if (_wmc != null)
+			return _wmc;
+
+		final Consumer<Multimap<CompilerInstructions, String>> consumer = (aCompilerInstructionsStringMultimap) -> {
+			write_makefiles_latch.notify(aCompilerInstructionsStringMultimap);
+		};
+
+		_wmc = consumer;
+
+		return _wmc;
+	}
+
 	@Override
 	public void run() throws Exception {
 		write_makefiles();
+	}
+
+	private void write_makefiles() {
+		//Multimap<CompilerInstructions, String> lsp_outputs = writePipeline.getLspOutputs(); // TODO move this
+
+		//write_makefiles_latch.notify(lsp_outputs);
+		write_makefiles_latch.notify(true);
 	}
 
 	@Override
 	public void accept(final @NotNull Supplier<GenerateResult> aGenerateResultSupplier) {
 		final GenerateResult gr = aGenerateResultSupplier.get();
 		grs = aGenerateResultSupplier;
-		int y=2;
+		int y = 2;
 	}
 
 	public Consumer<Supplier<GenerateResult>> consumer() {
@@ -237,7 +234,7 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 			@Override
 			public void accept(final Supplier<GenerateResult> aGenerateResultSupplier) {
 				if (grs != null) {
-					tripleo.elijah.util.Stupidity.println_err_2("234 grs not null "+grs.getClass().getName());
+					tripleo.elijah.util.Stupidity.println_err_2("234 grs not null " + grs.getClass().getName());
 					return;
 				}
 

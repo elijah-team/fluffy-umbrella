@@ -8,7 +8,6 @@ import tripleo.elijah.comp.Operation;
 import tripleo.elijah.nextgen.query.Mode;
 
 import java.io.File;
-import java.util.Objects;
 
 public interface ILazyCompilerInstructions {
 	@Contract(value = "_ -> new", pure = true)
@@ -27,10 +26,10 @@ public interface ILazyCompilerInstructions {
 			@Override
 			public CompilerInstructions get() {
 				try {
-					final Operation<CompilerInstructions> oci    = c.__cr.parseEzFile1(aFile, aFile.getPath(), c.getErrSink(), c.getIO(), c);
+					final Operation<CompilerInstructions> oci = c.__cr.parseEzFile1(aFile, aFile.getPath(), c.getErrSink(), c.getIO(), c);
 
 					if (oci.mode() == Mode.SUCCESS) {
-						final CompilerInstructions            parsed = oci.success();
+						final CompilerInstructions parsed = oci.success();
 						return parsed;
 					} else {
 						throw new RuntimeException(oci.failure()); // TODO ugh

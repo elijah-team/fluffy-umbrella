@@ -1,14 +1,14 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 /*
  * Created on Sep 1, 2005 4:55:12 PM
- * 
+ *
  * $Id$
  *
  */
@@ -26,14 +26,9 @@ import static tripleo.elijah.util.Helpers.List_of;
 public class VariableTypeName extends AbstractTypeName implements NormalTypeName {
 
 	private TypeNameList genericPart;
-	private Context _ctx;
+	private Context      _ctx;
 	//private OS_Type _resolved;
-	private OS_Element _resolvedElement;
-
-	@Override
-	public Type kindOfType() {
-		return Type.NORMAL;
-	}
+	private OS_Element   _resolvedElement;
 
 	@Override
 	public void addGenericPart(final TypeNameList tn2) {
@@ -61,13 +56,24 @@ public class VariableTypeName extends AbstractTypeName implements NormalTypeName
 	}
 
 	@Override
+	public Context getContext() {
+		return _ctx;
+	}
+
+	@Override
+	public Type kindOfType() {
+		return Type.NORMAL;
+	}
+
+	@Override
 	public void setContext(final Context ctx) {
 		_ctx = ctx;
 	}
 
-	@Override @NotNull
+	@Override
+	@NotNull
 	public Collection<TypeModifiers> getModifiers() {
-		return (tm != null ? List_of(tm)  : new ArrayList<TypeModifiers>());
+		return (tm != null ? List_of(tm) : new ArrayList<TypeModifiers>());
 	}
 
 	@Override
@@ -78,11 +84,6 @@ public class VariableTypeName extends AbstractTypeName implements NormalTypeName
 	@Override
 	public Qualident getRealName() {
 		return pr_name;
-	}
-
-	@Override
-	public Context getContext() {
-		return _ctx;
 	}
 
 	@Override

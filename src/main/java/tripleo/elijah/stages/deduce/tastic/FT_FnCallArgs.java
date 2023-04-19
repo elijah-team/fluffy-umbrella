@@ -21,11 +21,11 @@ import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 public class FT_FnCallArgs implements ITastic {
 	private final DeduceTypes2 deduceTypes2;
 	private final FnCallArgs   fca;
-	private final ElLog LOG;
+	private final ElLog        LOG;
 
 	public FT_FnCallArgs(final DeduceTypes2 aDeduceTypes2, final FnCallArgs aO) {
 		deduceTypes2 = aDeduceTypes2;
-		fca            = aO;
+		fca          = aO;
 		//
 		LOG = aDeduceTypes2.LOG;
 	}
@@ -49,18 +49,16 @@ public class FT_FnCallArgs implements ITastic {
 							   final int instructionIndex) {
 		final @NotNull ProcTableEntry pte = generatedFunction.getProcTableEntry(to_int(fca.getArg(0)));
 		for (final @NotNull TypeTableEntry tte : pte.getArgs()) {
-			LOG.info("771 "+tte);
+			LOG.info("771 " + tte);
 			final IExpression e = tte.expression;
 			if (e == null) continue;
 			switch (e.getKind()) {
-			case NUMERIC:
-			{
+			case NUMERIC: {
 				tte.setAttached(new OS_BuiltinType(BuiltInTypes.SystemInteger));
 				idte.type = tte; // TODO why not addPotentialType ? see below for example
 			}
 			break;
-			case IDENT:
-			{
+			case IDENT: {
 				final @Nullable InstructionArgument vte_ia = generatedFunction.vte_lookup(((IdentExpression) e).getText());
 				final @NotNull List<TypeTableEntry> ll     = deduceTypes2.getPotentialTypesVte((EvaFunction) generatedFunction, vte_ia);
 				if (ll.size() == 1) {
@@ -70,8 +68,7 @@ public class FT_FnCallArgs implements ITastic {
 					throw new NotImplementedException();
 			}
 			break;
-			default:
-			{
+			default: {
 				throw new NotImplementedException();
 			}
 			}
@@ -87,7 +84,7 @@ public class FT_FnCallArgs implements ITastic {
 				if (true || false) {
 					if (best instanceof ConstructorDef) {
 						// TODO Dont know how to handle this
-						int y=2;
+						int y = 2;
 					} else if (best instanceof FunctionDef || best instanceof DefFunctionDef) {
 						final OS_Element parent = best.getParent();
 						IInvocation      invocation;

@@ -34,15 +34,9 @@ import java.util.List;
 public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements ClassItem, ModuleItem, StatementItem, FunctionItem, OS_Element, OS_Element2, Documentable, OS_Container {
 
 	static final List<TypeName> emptyTypeNameList = ImmutableList.<TypeName>of();
-	private OS_Type osType;
-
 	private final OS_Element parent;
-
+	private      OS_Type        osType;
 	private ClassHeader hdr;
-
-	public void setHeader(ClassHeader aCh) {
-		hdr = aCh;
-	}
 
 	public ClassStatement(final OS_Element parentElement, final Context parentContext) {
 		parent = parentElement; // setParent
@@ -73,21 +67,27 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 		setContext(new ClassContext(parentContext, this));
 	}
 
-	@Override
-	public OS_Element getParent() {
-		return parent;
-	}
-
-	@Override // OS_Container
-	public void add(final OS_Element anElement) {
-		if (!(anElement instanceof ClassItem))
-			throw new IllegalStateException(String.format("Cant add %s to ClassStatement", anElement));
-		items.add((ClassItem) anElement);
+	public void setHeader(ClassHeader aCh) {
+		hdr = aCh;
 	}
 
 	@Override
 	public void visitGen(final ElElementVisitor visit) {
 		visit.addClass(this); // TODO visitClass
+	}
+
+	@Override // OS_Element
+	public ClassContext getContext() {
+		return (ClassContext) _a._context;
+	}
+
+	@Override
+	public OS_Element getParent() {
+		return parent;
+	}
+
+	public void setContext(final ClassContext ctx) {
+		_a.setContext(ctx);
 	}
 
 	@Override
@@ -101,21 +101,18 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 		return String.format("<Class %d %s %s>", _a.getCode(), package_name, getName());
 	}
 
+	@Override
+	public String getName() {
+		if (hdr.nameToken == null) throw new IllegalStateException("null name");
+		return hdr.nameToken.getText();
+	}
+
 	public ConstructorDef addCtor(final IdentExpression aConstructorName) {
 		return new ConstructorDef(aConstructorName, this, getContext());
 	}
 
 	public DestructorDef addDtor() {
 		return new DestructorDef(this, getContext());
-	}
-
-	@Override // OS_Element
-	public ClassContext getContext() {
-		return (ClassContext) _a._context;
-	}
-
-	public void setContext(final ClassContext ctx) {
-		_a.setContext(ctx);
 	}
 
 	public Collection<ClassItem> findFunction(final String name) {
@@ -130,13 +127,13 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 		});
 	}
 
+	public ClassTypes getType() {
+		return hdr.type;
+	}
+
 	public void setType(final ClassTypes aType) {
 //		_type = aType;
 		throw new NotImplementedException();
-	}
-
-	public ClassTypes getType() {
-		return hdr.type;
 	}
 
 	public void postConstruct() {
@@ -197,6 +194,13 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 		return propertyStatement;
 	}
 
+	@Override // OS_Container
+	public void add(final OS_Element anElement) {
+		if (!(anElement instanceof ClassItem))
+			throw new IllegalStateException(String.format("Cant add %s to ClassStatement", anElement));
+		items.add((ClassItem) anElement);
+	}
+
 	public TypeAliasStatement typeAlias() {
 		NotImplementedException.raise();
 		return null;
@@ -212,15 +216,10 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 		};
 	}
 
-	public StatementClosure statementClosure() {
-		return new AbstractStatementClosure(this);
-	}
-
 	// endregion
 
-	public void setGenericPart(TypeNameList genericPart) {
-//		this.genericPart = genericPart;
-		throw new NotImplementedException();
+	public StatementClosure statementClosure() {
+		return new AbstractStatementClosure(this);
 	}
 
 	public @NotNull List<TypeName> getGenericPart() {
@@ -228,6 +227,23 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 			return emptyTypeNameList;
 		else
 			return hdr.genericPart.p;
+	}
+
+	public void setGenericPart(TypeNameList genericPart) {
+//		this.genericPart = genericPart;
+		throw new NotImplementedException();
+	}
+
+	public Collection<ConstructorDef> getConstructors() {
+		final Collection<ClassItem>      x = Collections2.filter(items, __GetConstructorsHelper.selectForConstructors);
+		final Collection<ConstructorDef> y = Collections2.transform(x, __GetConstructorsHelper.castClassItemToConstructor);
+		return y;
+	}
+
+	public OS_Type getOS_Type() {
+		if (osType == null)
+			osType = new OS_UserClassType(this);
+		return osType;
 	}
 
 	private static final class __GetConstructorsHelper {
@@ -246,25 +262,6 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 				return (ConstructorDef) input;
 			}
 		};
-	}
-
-	public Collection<ConstructorDef> getConstructors() {
-		final Collection<ClassItem>      x = Collections2.filter(items, __GetConstructorsHelper.selectForConstructors);
-		final Collection<ConstructorDef> y = Collections2.transform(x,  __GetConstructorsHelper.castClassItemToConstructor);
-		return y;
-	}
-
-	@Override
-	public String getName() {
-		if (hdr.nameToken == null) throw new IllegalStateException("null name");
-		return hdr.nameToken.getText();
-	}
-
-
-	public OS_Type getOS_Type() {
-		if (osType == null)
-			osType = new OS_UserClassType(this);
-		return osType;
 	}
 }
 

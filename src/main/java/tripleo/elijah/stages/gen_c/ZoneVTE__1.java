@@ -16,11 +16,6 @@ class ZoneVTE__1 implements ZoneVTE {
 		_realTargetName = __getRealTargetName();
 	}
 
-	@Override
-	public String getRealTargetName() {
-		return Emit.emit("/*879*/") + _realTargetName;
-	}
-
 	@NotNull
 	private String __getRealTargetName() {
 		final String vte_name = varTableEntry.getName();
@@ -45,5 +40,10 @@ class ZoneVTE__1 implements ZoneVTE {
 			}
 		}
 		}
+	}
+
+	@Override
+	public String getRealTargetName() {
+		return Emit.emit("/*879*/") + _realTargetName;
 	}
 }

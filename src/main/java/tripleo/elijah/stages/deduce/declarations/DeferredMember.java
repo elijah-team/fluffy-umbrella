@@ -15,22 +15,22 @@ import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.deduce.IInvocation;
-import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.gen_fn.EvaNode;
+import tripleo.elijah.stages.gen_fn.GenType;
 
 /**
  * Created 6/27/21 1:41 AM
  */
 public class DeferredMember {
-	private final OS_Element parent;
-	private final IInvocation invocation;
-	private final VariableStatement variableStatement;
+	private final OS_Element                                parent;
+	private final IInvocation                               invocation;
+	private final VariableStatement                         variableStatement;
 	private final DeferredObject<GenType, Diagnostic, Void> typePromise = new DeferredObject<GenType, Diagnostic, Void>();
 	private final DeferredObject<EvaNode, Void, Void>       externalRef = new DeferredObject<EvaNode, Void, Void>();
 
 	public DeferredMember(OS_Element aParent, IInvocation aInvocation, VariableStatement aVariableStatement) {
-		parent = aParent;
-		invocation = aInvocation;
+		parent            = aParent;
+		invocation        = aInvocation;
 		variableStatement = aVariableStatement;
 	}
 

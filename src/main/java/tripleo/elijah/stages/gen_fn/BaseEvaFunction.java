@@ -24,11 +24,7 @@ import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.world.impl.DefaultLivingFunction;
 import tripleo.util.range.Range;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 
@@ -36,29 +32,61 @@ import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
  * Created 9/10/20 2:57 PM
  */
 public abstract class BaseEvaFunction extends AbstractDependencyTracker implements EvaNode, DeduceTypes2.ExpectationBase, IDependencyReferent, IEvaFunctionBase {
-	public          boolean                  deducedAlready;
-	public          FunctionInvocation       fi;
-	public          DefaultLivingFunction    _living;
-	private         int                      code = 0;
-	private final   List<Label>              labelList = new ArrayList<Label>();
-	public @NotNull List<Instruction>        instructionsList = new ArrayList<Instruction>();
-	public @NotNull List<Integer>            deferred_calls = new ArrayList<Integer>();
-	private         int                      instruction_index = 0;
-	public @NotNull List<ConstantTableEntry> cte_list = new ArrayList<ConstantTableEntry>();
-	public @NotNull List<VariableTableEntry> vte_list = new ArrayList<VariableTableEntry>();
-	public @NotNull List<ProcTableEntry> prte_list = new ArrayList<ProcTableEntry>();
-	public @NotNull List<TypeTableEntry> tte_list = new ArrayList<TypeTableEntry>();
-	public @NotNull List<IdentTableEntry> idte_list = new ArrayList<IdentTableEntry>();
-	private int label_count = 0;
-	private         int                      _nextTemp = 0;
-	private         EvaNode                  genClass;
-	private         EvaContainerNC           parent;
-	private DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
-	private final Dependency dependency = new Dependency(this);
+	private final   List<Label>                         labelList         = new ArrayList<Label>();
+	private final   Dependency                          dependency        = new Dependency(this);
+	private final DeferredObject<EvaClass, Void, Void> _gcP = new DeferredObject<>();
+	public          boolean                             deducedAlready;
+	public          FunctionInvocation                  fi;
+	public          DefaultLivingFunction               _living;
+	public @NotNull List<Instruction>                   instructionsList  = new ArrayList<Instruction>();
+	public @NotNull List<Integer>                       deferred_calls    = new ArrayList<Integer>();
+	public @NotNull List<ConstantTableEntry>            cte_list          = new ArrayList<ConstantTableEntry>();
+	public @NotNull List<VariableTableEntry>            vte_list          = new ArrayList<VariableTableEntry>();
+	public @NotNull List<ProcTableEntry>                prte_list         = new ArrayList<ProcTableEntry>();
+	public @NotNull List<TypeTableEntry>                tte_list          = new ArrayList<TypeTableEntry>();
+	public @NotNull List<IdentTableEntry>               idte_list         = new ArrayList<IdentTableEntry>();
+	Map<OS_Element, DeduceElement> elements = new HashMap<OS_Element, DeduceElement>();
+	private         int                                 code              = 0;
+	private         int                                 instruction_index = 0;
+	private         int                                 label_count       = 0;
+	private         int                                 _nextTemp         = 0;
+	private         EvaNode                             genClass;
 
 	//
 	// region Ident-IA
 	//
+	private         EvaContainerNC                      parent;
+
+
+	// endregion
+
+	//
+	// region INSTRUCTIONS
+	//
+	private         DeferredObject<GenType, Void, Void> typeDeferred      = new DeferredObject<GenType, Void, Void>();
+
+	static void printTables(EvaFunction gf) {
+		tripleo.elijah.util.Stupidity.println_out_2("VariableTable ");
+		for (VariableTableEntry variableTableEntry : gf.vte_list) {
+			tripleo.elijah.util.Stupidity.println_out_2("\t" + variableTableEntry);
+		}
+		tripleo.elijah.util.Stupidity.println_out_2("ConstantTable ");
+		for (ConstantTableEntry constantTableEntry : gf.cte_list) {
+			tripleo.elijah.util.Stupidity.println_out_2("\t" + constantTableEntry);
+		}
+		tripleo.elijah.util.Stupidity.println_out_2("ProcTable     ");
+		for (ProcTableEntry procTableEntry : gf.prte_list) {
+			tripleo.elijah.util.Stupidity.println_out_2("\t" + procTableEntry);
+		}
+		tripleo.elijah.util.Stupidity.println_out_2("TypeTable     ");
+		for (TypeTableEntry typeTableEntry : gf.tte_list) {
+			tripleo.elijah.util.Stupidity.println_out_2("\t" + typeTableEntry);
+		}
+		tripleo.elijah.util.Stupidity.println_out_2("IdentTable    ");
+		for (IdentTableEntry identTableEntry : gf.idte_list) {
+			tripleo.elijah.util.Stupidity.println_out_2("\t" + identTableEntry);
+		}
+	}
 
 	/**
 	 * Returns a string that represents the path encoded by ia2.
@@ -89,7 +117,7 @@ public abstract class BaseEvaFunction extends AbstractDependencyTracker implemen
 			} else if (ia instanceof ProcIA) {
 				final ProcTableEntry prte = getProcTableEntry(to_int(ia));
 				assert prte.expression instanceof ProcedureCallExpression;
-				text = ((ProcedureCallExpression)prte.expression).printableString();
+				text = ((ProcedureCallExpression) prte.expression).printableString();
 			} else
 				throw new NotImplementedException();
 			sl.add(text);
@@ -97,11 +125,10 @@ public abstract class BaseEvaFunction extends AbstractDependencyTracker implemen
 		return Helpers.String_join(".", sl);
 	}
 
-
 	// endregion
 
 	//
-	// region INSTRUCTIONS
+	// region LABELS
 	//
 
 	@Override
@@ -125,20 +152,20 @@ public abstract class BaseEvaFunction extends AbstractDependencyTracker implemen
 		return i.getIndex();
 	}
 
-	// endregion
-
-	//
-	// region LABELS
-	//
-
 	@Override
 	public @NotNull Label addLabel() {
 		return addLabel("__label", true);
 	}
 
+	// endregion
+
+	//
+	// region get-entries
+	//
+
 	@Override
 	public @NotNull Label addLabel(final String base_name, final boolean append_int) {
-		final Label label = new Label(this);
+		final Label  label = new Label(this);
 		final String name;
 		if (append_int) {
 			label.setNumber(label_count);
@@ -162,38 +189,37 @@ public abstract class BaseEvaFunction extends AbstractDependencyTracker implemen
 		return labelList;
 	}
 
-	// endregion
-
-	//
-	// region get-entries
-	//
-
 	@Override
-	@NotNull public VariableTableEntry getVarTableEntry(final int index) {
+	@NotNull
+	public VariableTableEntry getVarTableEntry(final int index) {
 		return vte_list.get(index);
 	}
 
 	@Override
-	@NotNull public IdentTableEntry getIdentTableEntry(final int index) {
+	@NotNull
+	public IdentTableEntry getIdentTableEntry(final int index) {
 		return idte_list.get(index);
 	}
 
+	// endregion
+
 	@Override
-	@NotNull public ConstantTableEntry getConstTableEntry(final int index) {
+	@NotNull
+	public ConstantTableEntry getConstTableEntry(final int index) {
 		return cte_list.get(index);
 	}
 
 	@Override
-	@NotNull public TypeTableEntry getTypeTableEntry(final int index) {
+	@NotNull
+	public TypeTableEntry getTypeTableEntry(final int index) {
 		return tte_list.get(index);
 	}
 
 	@Override
-	@NotNull public ProcTableEntry getProcTableEntry(final int index) {
+	@NotNull
+	public ProcTableEntry getProcTableEntry(final int index) {
 		return prte_list.get(index);
 	}
-
-	// endregion
 
 	@Override
 	public @NotNull TypeTableEntry newTypeTableEntry(final TypeTableEntry.Type type1, final OS_Type type) {
@@ -209,6 +235,8 @@ public abstract class BaseEvaFunction extends AbstractDependencyTracker implemen
 	public @NotNull TypeTableEntry newTypeTableEntry(final TypeTableEntry.Type type1, final OS_Type type, final IExpression expression) {
 		return newTypeTableEntry(type1, type, expression, null);
 	}
+
+//	Map<Range, Context> contextToRangeMap = new HashMap<Range, Context>();
 
 	@Override
 	public @NotNull TypeTableEntry newTypeTableEntry(final TypeTableEntry.Type type1, final OS_Type type, final IExpression expression, TableEntryIV aTableEntryIV) {
@@ -233,10 +261,7 @@ public abstract class BaseEvaFunction extends AbstractDependencyTracker implemen
 		return instructionsList.get(pc).getContext();
 	}
 
-//	Map<Range, Context> contextToRangeMap = new HashMap<Range, Context>();
-
 	/**
-	 *
 	 * @param text variable name from the source file
 	 * @return {@link IntegerIA} or {@link ConstTableIA} or null if not found, meaning not a local variable
 	 */
@@ -266,74 +291,35 @@ public abstract class BaseEvaFunction extends AbstractDependencyTracker implemen
 															@NotNull final GenerateFunctions generateFunctions,
 															Context context) {
 		switch (expression.getKind()) {
-		case DOT_EXP:
-		{
-			final DotExpression de = (DotExpression) expression;
+		case DOT_EXP: {
+			final DotExpression       de        = (DotExpression) expression;
 			final InstructionArgument left_part = get_assignment_path(de.getLeft(), generateFunctions, context);
 			return get_assignment_path(left_part, de.getRight(), generateFunctions, context);
 		}
 		case QIDENT:
 			throw new NotImplementedException();
-		case PROCEDURE_CALL:
-			{
-				ProcedureCallExpression pce = (ProcedureCallExpression) expression;
-				if (pce.getLeft() instanceof IdentExpression) {
-					final IdentExpression identExpression = (IdentExpression) pce.getLeft();
-					int idte_index = addIdentTableEntry(identExpression, identExpression.getContext());
-					final IdentIA identIA = new IdentIA(idte_index, this);
-					final List<TypeTableEntry> args_types = generateFunctions.get_args_types(pce.getArgs(), this, context);
-					int i = generateFunctions.addProcTableEntry(pce, identIA, args_types, this);
-					return new ProcIA(i, this);
-				}
-				return get_assignment_path(pce.getLeft(), generateFunctions, context); // TODO this looks wrong. what are we supposed to be doing here?
+		case PROCEDURE_CALL: {
+			ProcedureCallExpression pce = (ProcedureCallExpression) expression;
+			if (pce.getLeft() instanceof IdentExpression) {
+				final IdentExpression      identExpression = (IdentExpression) pce.getLeft();
+				int                        idte_index      = addIdentTableEntry(identExpression, identExpression.getContext());
+				final IdentIA              identIA         = new IdentIA(idte_index, this);
+				final List<TypeTableEntry> args_types      = generateFunctions.get_args_types(pce.getArgs(), this, context);
+				int                        i               = generateFunctions.addProcTableEntry(pce, identIA, args_types, this);
+				return new ProcIA(i, this);
 			}
+			return get_assignment_path(pce.getLeft(), generateFunctions, context); // TODO this looks wrong. what are we supposed to be doing here?
+		}
 		case GET_ITEM:
 			throw new NotImplementedException();
-		case IDENT:
-			{
-				final IdentExpression ie = (IdentExpression) expression;
-				final String text = ie.getText();
-				final InstructionArgument lookup = vte_lookup(text); // IntegerIA(variable) or ConstTableIA or null
-				if (lookup != null)
-					return lookup;
-				final int ite = addIdentTableEntry(ie, context);
-				return new IdentIA(ite, this);
-			}
-		default:
-			throw new IllegalStateException("Unexpected value: " + expression.getKind());
-		}
-	}
-
-	private @NotNull InstructionArgument get_assignment_path(@NotNull final InstructionArgument prev,
-															 @NotNull final IExpression expression,
-															 @NotNull final GenerateFunctions generateFunctions,
-															 @NotNull final Context context) {
-		switch (expression.getKind()) {
-		case DOT_EXP:
-		{
-			final DotExpression de = (DotExpression) expression;
-			final InstructionArgument left_part = get_assignment_path(de.getLeft(), generateFunctions, context);
-			if (left_part instanceof IdentIA) {
-				((IdentIA)left_part).setPrev(prev);
-//				getIdentTableEntry(to_int(left_part)).addStatusListener(new DeduceTypes2.FoundParent());
-			} else
-				throw new NotImplementedException();
-			return get_assignment_path(left_part, de.getRight(), generateFunctions, context);
-		}
-		case QIDENT:
-			throw new NotImplementedException();
-		case PROCEDURE_CALL:
-			throw new NotImplementedException();
-		case GET_ITEM:
-			throw new NotImplementedException();
-		case IDENT:
-		{
-			final IdentExpression ie = (IdentExpression) expression;
+		case IDENT: {
+			final IdentExpression     ie     = (IdentExpression) expression;
+			final String              text   = ie.getText();
+			final InstructionArgument lookup = vte_lookup(text); // IntegerIA(variable) or ConstTableIA or null
+			if (lookup != null)
+				return lookup;
 			final int ite = addIdentTableEntry(ie, context);
-			final IdentIA identIA = new IdentIA(ite, this);
-			identIA.setPrev(prev);
-//			getIdentTableEntry(ite).addStatusListener(new DeduceTypes2.FoundParent()); // inject!
-			return identIA;
+			return new IdentIA(ite, this);
 		}
 		default:
 			throw new IllegalStateException("Unexpected value: " + expression.getKind());
@@ -393,116 +379,17 @@ public abstract class BaseEvaFunction extends AbstractDependencyTracker implemen
 	@Override
 	public int getCode() {
 		return code;
-	}
-
-	@Override
-	public void setCode(int aCode) {
-		code = aCode;
-	}
-
-	@Override
+	}	@Override
 	public void setParent(EvaContainerNC aGeneratedContainerNC) {
 		parent = aGeneratedContainerNC;
 	}
 
 	@Override
+	public void setCode(int aCode) {
+		code = aCode;
+	}	@Override
 	public EvaContainerNC getParent() {
 		return parent;
-	}
-
-	@Override
-	public void setClass(@NotNull EvaNode aNode) {
-		assert aNode instanceof EvaClass || aNode instanceof EvaNamespace;
-		genClass = aNode;
-	}
-
-	@Override
-	public EvaNode getGenClass() {
-		return genClass;
-	}
-
-	@Override
-	public Promise<GenType, Void, Void> typePromise() {
-		return typeDeferred.promise();
-	}
-
-	@Override
-	public DeferredObject<GenType, Void, Void> typeDeferred() {
-		return typeDeferred;
-	}
-
-	@Override
-	public String expectationString() {
-		return toString();
-	}
-
-	@Override
-	public void resolveTypeDeferred(final GenType aType) {
-		if (typeDeferred.isPending())
-			typeDeferred.resolve(aType);
-		else {
-			final Holder<GenType> holder = new Holder<GenType>();
-			typeDeferred.then(new DoneCallback<GenType>() {
-				@Override
-				public void onDone(final GenType result) {
-					holder.set(result);
-				}
-			});
-			tripleo.elijah.util.Stupidity.println_err_2(String.format("Trying to resolve function twice 1) %s 2) %s", holder.get().asString(), aType.asString()));
-		}
-	}
-
-	Map<OS_Element, DeduceElement> elements = new HashMap<OS_Element, DeduceElement>();
-	@Override
-	public void addElement(final OS_Element aElement, final DeduceElement aDeduceElement) {
-		elements.put(aElement, aDeduceElement);
-	}
-
-	@Override
-	public String getFunctionName() {
-		// TODO change to abstract with override??
-		if (this instanceof EvaConstructor) {
-			int y = 2;
-			final IdentExpression constructorName = this.getFD().getNameNode();
-			final String constructorNameText;
-			if (constructorName == ConstructorDef.emptyConstructorName) {
-				constructorNameText = "";
-			} else {
-				constructorNameText = constructorName.getText();
-			}
-			return constructorNameText;
-		} else {
-			return getFD().getNameNode().getText();
-		}
-	}
-
-	@Override
-	public Dependency getDependency() {
-		return dependency;
-	}
-
-
-	static void printTables(EvaFunction gf) {
-		tripleo.elijah.util.Stupidity.println_out_2("VariableTable ");
-		for (VariableTableEntry variableTableEntry : gf.vte_list) {
-			tripleo.elijah.util.Stupidity.println_out_2("\t" + variableTableEntry);
-		}
-		tripleo.elijah.util.Stupidity.println_out_2("ConstantTable ");
-		for (ConstantTableEntry constantTableEntry : gf.cte_list) {
-			tripleo.elijah.util.Stupidity.println_out_2("\t" + constantTableEntry);
-		}
-		tripleo.elijah.util.Stupidity.println_out_2("ProcTable     ");
-		for (ProcTableEntry procTableEntry : gf.prte_list) {
-			tripleo.elijah.util.Stupidity.println_out_2("\t" + procTableEntry);
-		}
-		tripleo.elijah.util.Stupidity.println_out_2("TypeTable     ");
-		for (TypeTableEntry typeTableEntry : gf.tte_list) {
-			tripleo.elijah.util.Stupidity.println_out_2("\t" + typeTableEntry);
-		}
-		tripleo.elijah.util.Stupidity.println_out_2("IdentTable    ");
-		for (IdentTableEntry identTableEntry : gf.idte_list) {
-			tripleo.elijah.util.Stupidity.println_out_2("\t" + identTableEntry);
-		}
 	}
 
 	public static @NotNull List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
@@ -522,16 +409,123 @@ public abstract class BaseEvaFunction extends AbstractDependencyTracker implemen
 				throw new IllegalStateException("Invalid InstructionArgument");
 		}
 		return s;
+	}	@Override
+	public void setClass(@NotNull EvaNode aNode) {
+		assert aNode instanceof EvaClass || aNode instanceof EvaNamespace;
+		genClass = aNode;
 	}
 
-	private final DeferredObject<EvaClass, Void, Void> _gcP = new DeferredObject<>();
+	private @NotNull InstructionArgument get_assignment_path(@NotNull final InstructionArgument prev,
+															 @NotNull final IExpression expression,
+															 @NotNull final GenerateFunctions generateFunctions,
+															 @NotNull final Context context) {
+		switch (expression.getKind()) {
+		case DOT_EXP: {
+			final DotExpression       de        = (DotExpression) expression;
+			final InstructionArgument left_part = get_assignment_path(de.getLeft(), generateFunctions, context);
+			if (left_part instanceof IdentIA) {
+				((IdentIA) left_part).setPrev(prev);
+//				getIdentTableEntry(to_int(left_part)).addStatusListener(new DeduceTypes2.FoundParent());
+			} else
+				throw new NotImplementedException();
+			return get_assignment_path(left_part, de.getRight(), generateFunctions, context);
+		}
+		case QIDENT:
+			throw new NotImplementedException();
+		case PROCEDURE_CALL:
+			throw new NotImplementedException();
+		case GET_ITEM:
+			throw new NotImplementedException();
+		case IDENT: {
+			final IdentExpression ie      = (IdentExpression) expression;
+			final int             ite     = addIdentTableEntry(ie, context);
+			final IdentIA         identIA = new IdentIA(ite, this);
+			identIA.setPrev(prev);
+//			getIdentTableEntry(ite).addStatusListener(new DeduceTypes2.FoundParent()); // inject!
+			return identIA;
+		}
+		default:
+			throw new IllegalStateException("Unexpected value: " + expression.getKind());
+		}
+	}	@Override
+	public EvaNode getGenClass() {
+		return genClass;
+	}
+
+	@Override
+	public String expectationString() {
+		return toString();
+	}	@Override
+	public Promise<GenType, Void, Void> typePromise() {
+		return typeDeferred.promise();
+	}
 
 	/*
 	 * Hook in for GeneratedClass
 	 */
 	public void onGenClass(final OnGenClass aOnGenClass) {
 		_gcP.then(aOnGenClass::accept);
+	}	@Override
+	public DeferredObject<GenType, Void, Void> typeDeferred() {
+		return typeDeferred;
 	}
+
+
+
+	@Override
+	public void resolveTypeDeferred(final GenType aType) {
+		if (typeDeferred.isPending())
+			typeDeferred.resolve(aType);
+		else {
+			final Holder<GenType> holder = new Holder<GenType>();
+			typeDeferred.then(new DoneCallback<GenType>() {
+				@Override
+				public void onDone(final GenType result) {
+					holder.set(result);
+				}
+			});
+			tripleo.elijah.util.Stupidity.println_err_2(String.format("Trying to resolve function twice 1) %s 2) %s", holder.get().asString(), aType.asString()));
+		}
+	}
+
+
+
+	@Override
+	public void addElement(final OS_Element aElement, final DeduceElement aDeduceElement) {
+		elements.put(aElement, aDeduceElement);
+	}
+
+	@Override
+	public String getFunctionName() {
+		// TODO change to abstract with override??
+		if (this instanceof EvaConstructor) {
+			int                   y               = 2;
+			final IdentExpression constructorName = this.getFD().getNameNode();
+			final String          constructorNameText;
+			if (constructorName == ConstructorDef.emptyConstructorName) {
+				constructorNameText = "";
+			} else {
+				constructorNameText = constructorName.getText();
+			}
+			return constructorNameText;
+		} else {
+			return getFD().getNameNode().getText();
+		}
+	}
+
+	@Override
+	public Dependency getDependency() {
+		return dependency;
+	}
+
+
+
+
+
+
+
+
+
 }
 
 //

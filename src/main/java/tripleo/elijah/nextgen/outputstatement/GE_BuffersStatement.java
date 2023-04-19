@@ -17,9 +17,9 @@ public class GE_BuffersStatement implements EG_Statement {
 	@Override
 	public String getText() {
 		return Helpers.String_join("\n\n", entry.getValue()
-		                                        .stream()
-		                                        .map(buffer -> buffer.getText())
-		                                        .collect(Collectors.toList()));
+				.stream()
+				.map(buffer -> buffer.getText())
+				.collect(Collectors.toList()));
 	}
 
 	@Override

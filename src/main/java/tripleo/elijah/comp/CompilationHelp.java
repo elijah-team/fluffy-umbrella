@@ -14,15 +14,25 @@ import tripleo.elijah.comp.i.RuntimeProcess;
 import tripleo.elijah.comp.internal.ProcessRecord;
 
 final class EmptyProcess implements RuntimeProcess {
-	public EmptyProcess(final ICompilationAccess aCompilationAccess, final ProcessRecord aPr) { }
-	@Override public void run(final Compilation aCompilation) { }
-	@Override public void postProcess() { }
-	@Override public void prepare() { }
+	public EmptyProcess(final ICompilationAccess aCompilationAccess, final ProcessRecord aPr) {
+	}
+
+	@Override
+	public void run(final Compilation aCompilation) {
+	}
+
+	@Override
+	public void postProcess() {
+	}
+
+	@Override
+	public void prepare() {
+	}
 }
 
 class DStageProcess implements RuntimeProcess {
 	private final ICompilationAccess ca;
-	private final ProcessRecord pr;
+	private final ProcessRecord      pr;
 
 	@Contract(pure = true)
 	public DStageProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
@@ -32,7 +42,7 @@ class DStageProcess implements RuntimeProcess {
 
 	@Override
 	public void run(final Compilation aCompilation) {
-		int y=2;
+		int y = 2;
 	}
 
 	@Override
@@ -44,7 +54,6 @@ class DStageProcess implements RuntimeProcess {
 		//assert pr.stage == Stages.D; // FIXME
 	}
 }
-
 
 
 //

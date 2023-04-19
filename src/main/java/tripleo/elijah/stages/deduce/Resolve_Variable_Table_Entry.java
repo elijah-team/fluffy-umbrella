@@ -31,21 +31,21 @@ class Resolve_Variable_Table_Entry {
 	private final BaseEvaFunction generatedFunction;
 	private final Context         ctx;
 
-	private final DeduceTypes2 deduceTypes2;
-	private final @NotNull ElLog LOG;
-	private final @NotNull WorkManager wm;
-	private final @NotNull DeducePhase phase;
-	private final ErrSink errSink;
+	private final          DeduceTypes2 deduceTypes2;
+	private final @NotNull ElLog        LOG;
+	private final @NotNull WorkManager  wm;
+	private final @NotNull DeducePhase  phase;
+	private final          ErrSink      errSink;
 
 	public Resolve_Variable_Table_Entry(BaseEvaFunction aGeneratedFunction, Context aCtx, DeduceTypes2 aDeduceTypes2) {
 		generatedFunction = aGeneratedFunction;
-		ctx = aCtx;
-		deduceTypes2 = aDeduceTypes2;
+		ctx               = aCtx;
+		deduceTypes2      = aDeduceTypes2;
 		//
-		LOG = deduceTypes2.LOG;
-		wm = deduceTypes2.wm;
+		LOG     = deduceTypes2.LOG;
+		wm      = deduceTypes2.wm;
 		errSink = deduceTypes2._errSink();
-		phase = deduceTypes2.phase;
+		phase   = deduceTypes2.phase;
 	}
 
 	public void action(final @NotNull VariableTableEntry vte, final @NotNull DeduceTypes2.IVariableConnector aConnector) {
@@ -79,13 +79,13 @@ class Resolve_Variable_Table_Entry {
 		try {
 			if (aPot.tableEntry instanceof ProcTableEntry) {
 				final @NotNull ProcTableEntry pte1 = (ProcTableEntry) aPot.tableEntry;
-				@Nullable OS_Element e = DeduceLookupUtils.lookup(pte1.expression, ctx, deduceTypes2);
+				@Nullable OS_Element          e    = DeduceLookupUtils.lookup(pte1.expression, ctx, deduceTypes2);
 				assert e != null;
 				if (e instanceof FunctionDef) {
 //						final FunctionDef fd = (FunctionDef) e;
 					@NotNull IdentTableEntry ite1 = ((IdentIA) pte1.expression_num).getEntry();
-					DeducePath dp = ite1.buildDeducePath(generatedFunction);
-					@Nullable GenType t = dp.getType(dp.size() - 1);
+					DeducePath               dp   = ite1.buildDeducePath(generatedFunction);
+					@Nullable GenType        t    = dp.getType(dp.size() - 1);
 					ite1.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(e));
 					pte1.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(e));
 					pte1.typePromise().then(new DoneCallback<GenType>() {
@@ -132,24 +132,24 @@ class Resolve_Variable_Table_Entry {
 		if (iv != IExpression.UNASSIGNED) {
 			if (iv instanceof ProcedureCallExpression) {
 				final ProcedureCallExpression procedureCallExpression = (ProcedureCallExpression) iv;
-				final IExpression name_exp = procedureCallExpression.getLeft();
+				final IExpression             name_exp                = procedureCallExpression.getLeft();
 				assert name_exp instanceof IdentExpression;
 
-				final IdentExpression name2 = (IdentExpression) name_exp;
-				final LookupResultList lrl2 = ((IdentExpression) name_exp).getContext().lookup(name2.getText());
-				final @Nullable OS_Element el2 = lrl2.chooseBest(null);
+				final IdentExpression      name2 = (IdentExpression) name_exp;
+				final LookupResultList     lrl2  = ((IdentExpression) name_exp).getContext().lookup(name2.getText());
+				final @Nullable OS_Element el2   = lrl2.chooseBest(null);
 
 				if (el2 != null) {
 					if (el2 instanceof ClassStatement) {
 						final ClassStatement classStatement = (ClassStatement) el2;
-						GenType genType = new GenType(classStatement);
+						GenType              genType        = new GenType(classStatement);
 						//deferredMember.typeResolved().resolve(genType);
 						genCIForGenType2(genType);
 					}
 				}
 			} else if (iv instanceof IdentExpression) {
 				final String ident = ((IdentExpression) iv).getText();
-				int y=2;
+				int          y     = 2;
 			} else
 				assert false;
 		} else
@@ -169,20 +169,20 @@ class Resolve_Variable_Table_Entry {
 			aGt.resolved = ((ClassStatement) element).getOS_Type();
 			// TODO genCI ??
 			@Nullable ClassInvocation ci = new ClassInvocation(classStatement, null);
-			ci = phase.registerClassInvocation(ci);
+			ci     = phase.registerClassInvocation(ci);
 			aGt.ci = ci;
 //			pte.setClassInvocation(ci);
 //			fi = newFunctionInvocation(fd, pte, ci, phase);
 		} else if (element instanceof FunctionDef) {
 			// TODO this seems to be an elaborate copy of the above with no differentiation for functionDef
 			final @NotNull FunctionDef functionDef = (FunctionDef) element;
-			OS_Element parent = functionDef.getParent();
-			@Nullable IInvocation inv;
+			OS_Element                 parent      = functionDef.getParent();
+			@Nullable IInvocation      inv;
 			switch (DecideElObjectType.getElObjectType(parent)) {
 			case CLASS:
 				aGt.resolved = ((ClassStatement) parent).getOS_Type();
 				inv = phase.registerClassInvocation((ClassStatement) parent, null);
-				((ClassInvocation)inv).resolveDeferred().then(new DoneCallback<EvaClass>() {
+				((ClassInvocation) inv).resolveDeferred().then(new DoneCallback<EvaClass>() {
 					@Override
 					public void onDone(EvaClass result) {
 						result.functionMapDeferred(functionDef, new FunctionMapDeferred() {
@@ -197,7 +197,7 @@ class Resolve_Variable_Table_Entry {
 			case NAMESPACE:
 				aGt.resolvedn = (NamespaceStatement) parent;
 				inv = phase.registerNamespaceInvocation((NamespaceStatement) parent);
-				((NamespaceInvocation)inv).resolveDeferred().then(new DoneCallback<EvaNamespace>() {
+				((NamespaceInvocation) inv).resolveDeferred().then(new DoneCallback<EvaNamespace>() {
 					@Override
 					public void onDone(EvaNamespace result) {
 						result.functionMapDeferred(functionDef, new FunctionMapDeferred() {
@@ -232,7 +232,7 @@ class Resolve_Variable_Table_Entry {
 		final @NotNull FuncExpr fe = (FuncExpr) funcExprType.getElement();
 
 		// add namespace
-		@NotNull OS_Module mod1 = fe.getContext().module();
+		@NotNull OS_Module           mod1   = fe.getContext().module();
 		@Nullable NamespaceStatement mod_ns = lookup_module_namespace(mod1);
 
 		@Nullable ProcTableEntry callable_pte = null;
@@ -247,10 +247,10 @@ class Resolve_Variable_Table_Entry {
 //			tripleo.elijah.util.Stupidity.println_out_2("1630 "+mod_ns.getItems()); // element 0 is ctor$0
 			fd1.setName(IdentExpression.forString(String.format("$%d", mod_ns.getItems().size() + 1)));
 
-			@NotNull WorkList wl = new WorkList();
-			@NotNull GenerateFunctions gen = phase.generatePhase.getGenerateFunctions(mod1);
-			@NotNull NamespaceInvocation modi = new NamespaceInvocation(mod_ns);
-			final @Nullable ProcTableEntry pte = findProcTableEntry(generatedFunction, aPotentialExpression);
+			@NotNull WorkList              wl   = new WorkList();
+			@NotNull GenerateFunctions     gen  = phase.generatePhase.getGenerateFunctions(mod1);
+			@NotNull NamespaceInvocation   modi = new NamespaceInvocation(mod_ns);
+			final @Nullable ProcTableEntry pte  = findProcTableEntry(generatedFunction, aPotentialExpression);
 			assert pte != null;
 			callable_pte = pte;
 			@NotNull FunctionInvocation fi = new FunctionInvocation(fd1, pte, modi, phase.generatePhase);
@@ -260,7 +260,7 @@ class Resolve_Variable_Table_Entry {
 			wm.addJobs(wl);
 			wm.drain(); // TODO here?
 
-			aGenType.ci = modi;
+			aGenType.ci   = modi;
 			aGenType.node = wlgf.getResult();
 
 			DeduceTypes2.@NotNull PromiseExpectation<GenType> pe = deduceTypes2.promiseExpectation(/*pot.genType.node*/new DeduceTypes2.ExpectationBase() {
@@ -295,7 +295,7 @@ class Resolve_Variable_Table_Entry {
 	public @Nullable NamespaceStatement lookup_module_namespace(@NotNull OS_Module aModule) {
 		try {
 			final @NotNull IdentExpression module_ident = IdentExpression.forString("__MODULE__");
-			@Nullable OS_Element e = DeduceLookupUtils.lookup(module_ident, aModule.getContext(), deduceTypes2);
+			@Nullable OS_Element           e            = DeduceLookupUtils.lookup(module_ident, aModule.getContext(), deduceTypes2);
 			if (e != null) {
 				if (e instanceof NamespaceStatement) {
 					return (NamespaceStatement) e;
@@ -317,34 +317,34 @@ class Resolve_Variable_Table_Entry {
 	}
 
 	private void action_ARG(@NotNull VariableTableEntry vte) {
-		TypeTableEntry tte = vte.type;
-		final OS_Type attached = tte.getAttached();
+		TypeTableEntry tte      = vte.type;
+		final OS_Type  attached = tte.getAttached();
 		if (attached != null) {
 			switch (attached.getType()) {
-				case USER:
-					if (tte.genType.typeName == null)
-						tte.genType.typeName = attached;
-					try {
-						tte.genType.copy(deduceTypes2.resolve_type(attached, ctx));
-						tte.setAttached(tte.genType.resolved); // TODO probably not necessary, but let's leave it for now
-					} catch (ResolveError aResolveError) {
-						errSink.reportDiagnostic(aResolveError);
-						LOG.err("Can't resolve argument type " + attached);
-						return;
-					}
-					if (generatedFunction.fi.getClassInvocation() != null)
-						genNodeForGenType(tte.genType, generatedFunction.fi.getClassInvocation());
-					else
-						genCIForGenType(tte.genType);
-					vte.resolveType(tte.genType);
-					break;
-				case USER_CLASS:
-					if (tte.genType.resolved == null)
-						tte.genType.resolved = attached;
-					// TODO genCI and all that -- Incremental?? (.increment())
-					vte.resolveType(tte.genType);
-					genCIForGenType2(tte.genType);
-					break;
+			case USER:
+				if (tte.genType.typeName == null)
+					tte.genType.typeName = attached;
+				try {
+					tte.genType.copy(deduceTypes2.resolve_type(attached, ctx));
+					tte.setAttached(tte.genType.resolved); // TODO probably not necessary, but let's leave it for now
+				} catch (ResolveError aResolveError) {
+					errSink.reportDiagnostic(aResolveError);
+					LOG.err("Can't resolve argument type " + attached);
+					return;
+				}
+				if (generatedFunction.fi.getClassInvocation() != null)
+					genNodeForGenType(tte.genType, generatedFunction.fi.getClassInvocation());
+				else
+					genCIForGenType(tte.genType);
+				vte.resolveType(tte.genType);
+				break;
+			case USER_CLASS:
+				if (tte.genType.resolved == null)
+					tte.genType.resolved = attached;
+				// TODO genCI and all that -- Incremental?? (.increment())
+				vte.resolveType(tte.genType);
+				genCIForGenType2(tte.genType);
+				break;
 			}
 		} else {
 			int y = 2;
@@ -357,7 +357,7 @@ class Resolve_Variable_Table_Entry {
 	 * @param aGenType the GenType to modify. must be set to a nonGenericTypeName that is non-null and generic
 	 */
 	private void genCIForGenType(final GenType aGenType) {
-		assert aGenType.nonGenericTypeName != null ;//&& ((NormalTypeName) aGenType.nonGenericTypeName).getGenericPart().size() > 0;
+		assert aGenType.nonGenericTypeName != null;//&& ((NormalTypeName) aGenType.nonGenericTypeName).getGenericPart().size() > 0;
 
 		aGenType.genCI(aGenType.nonGenericTypeName, deduceTypes2, deduceTypes2._errSink(), deduceTypes2.phase);
 		final IInvocation invocation = aGenType.ci;

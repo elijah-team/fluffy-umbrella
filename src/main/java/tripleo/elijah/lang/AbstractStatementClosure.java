@@ -1,10 +1,10 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 
 package tripleo.elijah.lang;
@@ -18,7 +18,22 @@ import java.util.List;
 
 public final class AbstractStatementClosure implements StatementClosure, StatementItem {
 
+	final List<StatementItem> items = new ArrayList<StatementItem>();
+	final Scope parent_scope;
 	private OS_Element _parent;
+	private BlockStatement     bs;
+	private ConstructStatement ctex;
+//	public IExpression constructExpression() {
+//		ctex=new ConstructStatement(this.parent_scope);
+//		add(ctex);
+//		return ctex;
+//	}
+	private IfConditional      ifex;
+	private Loop                     loop;
+	private ProcedureCallExpression  pce;
+	private AbstractStatementClosure pcex;
+	private VariableSequence         vsq;
+	private YieldExpression          yiex;
 
 	public AbstractStatementClosure(final Scope aParent) {
 		// TODO doesn't set _parent
@@ -27,7 +42,7 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 
 	public AbstractStatementClosure(final ClassStatement classStatement) {
 		// TODO check final member
-		_parent = classStatement;
+		_parent      = classStatement;
 		parent_scope = new AbstractScope2(_parent) {
 
 			@Override
@@ -36,13 +51,13 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 			}
 
 			@Override
-			public StatementClosure statementClosure() {
-				return AbstractStatementClosure.this; // TODO is this right?
+			public void add(final StatementItem aItem) {
+				classStatement.add((ClassItem) aItem);
 			}
 
 			@Override
-			public void add(final StatementItem aItem) {
-				classStatement.add((ClassItem) aItem);
+			public StatementClosure statementClosure() {
+				return AbstractStatementClosure.this; // TODO is this right?
 			}
 
 		};
@@ -50,31 +65,22 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 
 	public AbstractStatementClosure(final Scope scope, final OS_Element parent1) {
 		parent_scope = scope;
-		_parent = parent1;
+		_parent      = parent1;
 	}
 
 	@Override
-	public BlockStatement blockClosure() {
-		bs=new BlockStatement(this.parent_scope);
-		add(bs);
-		return bs;
-	}
-//	public IExpression constructExpression() {
-//		ctex=new ConstructStatement(this.parent_scope);
-//		add(ctex);
-//		return ctex;
-//	}
-
-	@Override
-	public void constructExpression(final IExpression aExpr, final ExpressionList aO) {
-		add(new ConstructStatement(_parent, _parent.getContext(), aExpr, null, aO)); // TODO provide for name
+	public VariableSequence varSeq(final Context ctx) {
+		vsq = new VariableSequence(ctx);
+		vsq.setParent(parent_scope.getParent()/*this.getParent()*/); // TODO look at this
+//		vsq.setContext(ctx); //redundant
+		return (VariableSequence) add(vsq);
 	}
 
 	@Override
- 	public IfConditional ifConditional(final OS_Element aParent, final Context cur) {
-		ifex=new IfConditional(aParent, cur);
-		add(ifex);
-		return ifex;
+	public ProcedureCallExpression procedureCallExpression() {
+		pce = new ProcedureCallExpression();
+		add(new StatementWrapper(pce, getParent().getContext(), getParent()));
+		return pce;
 	}
 
 	@Override
@@ -85,22 +91,8 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 	}
 
 	@Override
-	public ProcedureCallExpression procedureCallExpression() {
-		pce=new ProcedureCallExpression();
-		add(new StatementWrapper(pce, getParent().getContext(), getParent()));
-		return pce;
-	}
-
-	@Override
-	public VariableSequence varSeq(final Context ctx) {
-		vsq=new VariableSequence(ctx);
-		vsq.setParent(parent_scope.getParent()/*this.getParent()*/); // TODO look at this
-//		vsq.setContext(ctx); //redundant
-		return (VariableSequence) add(vsq);
-	}
-
-	private OS_Element getParent() {
-		return _parent;
+	public void constructExpression(final IExpression aExpr, final ExpressionList aO) {
+		add(new ConstructStatement(_parent, _parent.getContext(), aExpr, null, aO)); // TODO provide for name
 	}
 
 	@Override
@@ -108,25 +100,25 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 		add(new YieldExpression(aExpr));
 	}
 
+	@Override
+	public IfConditional ifConditional(final OS_Element aParent, final Context cur) {
+		ifex = new IfConditional(aParent, cur);
+		add(ifex);
+		return ifex;
+	}
+
+	@Override
+	public BlockStatement blockClosure() {
+		bs = new BlockStatement(this.parent_scope);
+		add(bs);
+		return bs;
+	}
+
 	@Contract("_ -> param1")
 	private StatementItem add(final StatementItem aItem) {
 		parent_scope.add(aItem);
 		return aItem;
 	}
-	
-	private BlockStatement bs;
-	private ConstructStatement ctex;
-	private IfConditional ifex;
-	
-	private Loop loop;
-	private ProcedureCallExpression pce;
-	private AbstractStatementClosure pcex;
-	private VariableSequence vsq;
-	private YieldExpression yiex;
-
-	final List<StatementItem> items =new ArrayList<StatementItem>();
-
-	final Scope parent_scope;
 
 	@Override
 	public CaseConditional caseConditional(final Context parentContext) {
@@ -145,6 +137,10 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 	@Override
 	public void statementWrapper(final IExpression expr) {
 		parent_scope.statementWrapper(expr);
+	}
+
+	private OS_Element getParent() {
+		return _parent;
 	}
 }
 

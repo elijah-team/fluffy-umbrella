@@ -23,24 +23,23 @@ import java.util.List;
  * Created 9/12/20 10:26 PM
  */
 public class TypeTableEntry {
-	final int index;
-	@NotNull public final Type lifetime;
-	@Nullable public final TableEntryIV tableEntry;
-	@Nullable private OS_Type attached;
-	public final GenType genType = new GenType();
-	public final IExpression expression;
-	private final List<OnSetAttached> osacbs = new ArrayList<OnSetAttached>();
-
-	public interface OnSetAttached {
-		void onSetAttached(TypeTableEntry aTypeTableEntry);
-	}
+	@NotNull
+	public final  Type                lifetime;
+	@Nullable
+	public final  TableEntryIV        tableEntry;
+	public final  GenType             genType = new GenType();
+	public final  IExpression         expression;
+	final         int                 index;
+	private final List<OnSetAttached> osacbs  = new ArrayList<OnSetAttached>();
+	@Nullable
+	private       OS_Type             attached;
 
 	public TypeTableEntry(final int index,
 						  @NotNull final Type lifetime,
 						  @Nullable final OS_Type aAttached,
 						  final IExpression expression,
 						  @Nullable final TableEntryIV aTableEntryIV) {
-		this.index = index;
+		this.index    = index;
 		this.lifetime = lifetime;
 		if (aAttached == null || (aAttached.getType() == OS_Type.Type.USER && aAttached.getTypeName() == null)) {
 			attached = null;
@@ -85,12 +84,13 @@ public class TypeTableEntry {
 			break;
 		default:
 //			throw new NotImplementedException();
-			tripleo.elijah.util.Stupidity.println_err_2("73 "+aAttached);
+			tripleo.elijah.util.Stupidity.println_err_2("73 " + aAttached);
 			break;
 		}
 	}
 
-	@Override @NotNull
+	@Override
+	@NotNull
 	public String toString() {
 		return "TypeTableEntry{" +
 				"index=" + index +
@@ -147,6 +147,10 @@ public class TypeTableEntry {
 
 	public enum Type {
 		SPECIFIED, TRANSIENT
+	}
+
+	public interface OnSetAttached {
+		void onSetAttached(TypeTableEntry aTypeTableEntry);
 	}
 
 }

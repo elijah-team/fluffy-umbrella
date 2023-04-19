@@ -24,10 +24,6 @@ public class Operation2<T> {
 		assert succ != exc;
 	}
 
-	public Mode mode() {
-		return mode;
-	}
-
 	public static <T> tripleo.elijah.comp.Operation2<T> failure(final Diagnostic aException) {
 		final Operation2<T> op = new tripleo.elijah.comp.Operation2<>(null, aException, FAILURE);
 		return op;
@@ -36,6 +32,10 @@ public class Operation2<T> {
 	public static <T> tripleo.elijah.comp.Operation2<T> success(final T aSuccess) {
 		final Operation2<T> op = new tripleo.elijah.comp.Operation2<>(aSuccess, null, SUCCESS);
 		return op;
+	}
+
+	public Mode mode() {
+		return mode;
 	}
 
 	public T success() {

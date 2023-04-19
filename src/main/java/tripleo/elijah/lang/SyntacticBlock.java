@@ -25,10 +25,10 @@ import java.util.List;
  */
 public class SyntacticBlock implements OS_Element, OS_Container, FunctionItem, StatementItem {
 
-	private final List<FunctionItem> _items = new ArrayList<FunctionItem>();
-	private final OS_Element _parent;
-	private SyntacticBlockContext ctx;
-	private Scope3 scope3;
+	private final List<FunctionItem>    _items = new ArrayList<FunctionItem>();
+	private final OS_Element            _parent;
+	private       SyntacticBlockContext ctx;
+	private       Scope3                scope3;
 
 	public SyntacticBlock(final OS_Element aParent) {
 		_parent = aParent;
@@ -40,13 +40,17 @@ public class SyntacticBlock implements OS_Element, OS_Container, FunctionItem, S
 	}
 
 	@Override
+	public Context getContext() {
+		return ctx;
+	}
+
+	@Override
 	public OS_Element getParent() {
 		return _parent;
 	}
 
-	@Override
-	public Context getContext() {
-		return ctx;
+	public void setContext(final SyntacticBlockContext ctx) {
+		this.ctx = ctx;
 	}
 
 	public List<FunctionItem> getItems() {
@@ -59,20 +63,16 @@ public class SyntacticBlock implements OS_Element, OS_Container, FunctionItem, S
 		//return _items;
 	}
 
-	public void setContext(final SyntacticBlockContext ctx) {
-		this.ctx = ctx;
-	}
-
 	public void postConstruct() {
 	}
 
 	@Override
 	public List<OS_Element2> items() {
 		final Collection<OS_Element> items = Collections2.filter(scope3.items(), new Predicate<OS_Element>() {
-				@Override
-				public boolean apply(@Nullable OS_Element input) {
-					return input instanceof OS_Element2;
-				}
+			@Override
+			public boolean apply(@Nullable OS_Element input) {
+				return input instanceof OS_Element2;
+			}
 		});
 		Collection<OS_Element2> c = Collections2.transform(items, new Function<OS_Element, OS_Element2>() {
 			@Nullable

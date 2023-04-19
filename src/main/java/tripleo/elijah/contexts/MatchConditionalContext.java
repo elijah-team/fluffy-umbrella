@@ -17,13 +17,15 @@ import java.util.List;
  */
 public class MatchConditionalContext extends Context {
 	private final MatchConditional.MC1 carrier;
-	private final Context _parent;
+	private final Context              _parent;
 
 	public MatchConditionalContext(final Context parent, final MatchConditional.MC1 part) {
 		this._parent = parent;
 		this.carrier = part;
 	}
-	@Override public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+
+	@Override
+	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 
 		if (carrier instanceof MatchConditional.MatchArm_TypeMatch) {
@@ -32,7 +34,7 @@ public class MatchConditionalContext extends Context {
 				Result.add(name, level, carrier2, this);
 		}
 
-		for (final FunctionItem item: carrier.getItems()) {
+		for (final FunctionItem item : carrier.getItems()) {
 			if (!(item instanceof ClassStatement) &&
 					!(item instanceof NamespaceStatement) &&
 					!(item instanceof FunctionDef) &&
@@ -51,7 +53,8 @@ public class MatchConditionalContext extends Context {
 			}
 		}
 
-		/*if (carrier.getParent() != null)*/ {
+		/*if (carrier.getParent() != null)*/
+		{
 			final Context context = getParent();
 			if (!alreadySearched.contains(context) || !one)
 				context.lookup(name, level + 1, Result, alreadySearched, false);

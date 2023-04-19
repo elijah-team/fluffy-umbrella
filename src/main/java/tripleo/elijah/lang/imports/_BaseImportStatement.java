@@ -19,7 +19,7 @@ public abstract class _BaseImportStatement implements ImportStatement {
 	// region ClassItem
 
 	private AccessNotation access_note;
-	private El_Category category;
+	private El_Category    category;
 
 	@Override
 	public void setCategory(El_Category aCategory) {

@@ -1,15 +1,15 @@
 package tripleo.elijah.comp;
 
-import java.io.File;
-
 import tripleo.elijah.comp.i.ILazyCompilerInstructions;
 import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
+
+import java.io.File;
 
 public class CompilerInput {
 	private final String                           inp;
 	private       Ty                               ty;
 	private       Maybe<ILazyCompilerInstructions> acceptance;
-	private File                                   dir_carrier;
+	private       File                             dir_carrier;
 
 	public CompilerInput(final String aS) {
 		inp = aS;
@@ -40,10 +40,10 @@ public class CompilerInput {
 		return acceptance;
 	}
 
-	enum Ty {NULL, SOURCE_ROOT}
-
 	public void setDirectory(File f) {
-		ty = Ty.SOURCE_ROOT;
+		ty          = Ty.SOURCE_ROOT;
 		dir_carrier = f;
 	}
+
+	enum Ty {NULL, SOURCE_ROOT}
 }

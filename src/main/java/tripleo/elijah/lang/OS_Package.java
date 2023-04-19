@@ -1,10 +1,10 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 package tripleo.elijah.lang;
 
@@ -20,10 +20,10 @@ import java.util.List;
  *
  */
 public class OS_Package {
-	public final static OS_Package default_package = new OS_Package(null, 0);
-	private final List<OS_Element> elements = new ArrayList<OS_Element>();
+	public final static OS_Package       default_package = new OS_Package(null, 0);
+	private final       List<OS_Element> elements        = new ArrayList<OS_Element>();
 
-	int _code;
+	int       _code;
 	Qualident _name;
 	private PackageContext _ctx;
 
@@ -42,17 +42,21 @@ public class OS_Package {
 	// ELEMENTS
 	//
 
-	public void addElement(final OS_Element element) {
-		elements.add(element);
+	public void setContext(PackageContext cur) {
+		_ctx = cur;
 	}
 
-	public List<OS_Element> getElements() {
-		return elements;
+	public void addElement(final OS_Element element) {
+		elements.add(element);
 	}
 
 	//
 	// NAME
 	//
+
+	public List<OS_Element> getElements() {
+		return elements;
+	}
 
 	public String getName() {
 		if (_name == null) {
@@ -60,10 +64,6 @@ public class OS_Package {
 			return "";
 		}
 		return _name.toString();
-	}
-
-	public void setContext(PackageContext cur) {
-		_ctx = cur;
 	}
 }
 

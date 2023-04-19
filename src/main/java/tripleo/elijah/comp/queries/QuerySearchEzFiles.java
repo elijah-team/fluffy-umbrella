@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class QuerySearchEzFiles {
-	private final Compilation c;
-	private final ErrSink     errSink;
+	private final Compilation       c;
+	private final ErrSink           errSink;
 	private final IO                io;
 	private final CompilationRunner cr;
 
@@ -81,14 +81,14 @@ public class QuerySearchEzFiles {
 	}
 
 	public @NotNull Operation<CompilerInstructions> parseEzFile1(final @NotNull File f,
-	                                                             final String file_name,
-	                                                             final ErrSink errSink,
-	                                                             final IO io,
-	                                                             final Compilation c) {
+																 final String file_name,
+																 final ErrSink errSink,
+																 final IO io,
+																 final Compilation c) {
 		System.out.printf("   %s%n", f.getAbsolutePath());
 		if (!f.exists()) {
 			errSink.reportError(
-			  "File doesn't exist " + f.getAbsolutePath());
+					"File doesn't exist " + f.getAbsolutePath());
 			return null;
 		} else {
 			final Operation<CompilerInstructions> om = realParseEzFile(file_name/*, io.readFile(f), f*/, io, c);

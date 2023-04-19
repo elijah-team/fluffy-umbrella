@@ -48,6 +48,7 @@ public class SlirSourceFile {
 
 		/**
 		 * Where are we getting this from?
+		 *
 		 * @return
 		 */
 		public OS_Module getModule() {
@@ -77,10 +78,11 @@ public class SlirSourceFile {
 			return SourceFileType.CONFIG;
 		}
 
-		public class ElijahConfig {}
-
 		public ElijahConfig getConfig() {
 			return null; // TODO implement me
+		}
+
+		public class ElijahConfig {
 		}
 	}
 

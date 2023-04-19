@@ -18,66 +18,16 @@ import java.util.LinkedHashSet;
  *
  */
 public abstract class AbstractTypeName2 implements NormalTypeName {
-	
+
 	protected Collection<TypeModifiers> _ltm = new LinkedHashSet<TypeModifiers>();
-	protected TypeModifiers tm;
-	protected Qualident typeName;
-	
+	protected TypeModifiers             tm;
+	protected Qualident                 typeName;
+
 	@Override
 	public boolean isNull() {
 		//return tm == null && (typeName == null /*|| typeName.isNull()*/);
 		if (typeName == null) return false;
 		return _ltm.isEmpty() && typeName == null; // TODO check for correctness
-	}
-	
-	@Override
-	public boolean getConstant() {
-		return _ltm.contains(TypeModifiers.CONST);
-	}
-	
-	@Override
-	public void setConstant(final boolean aFlag) {
-		_ltm.add(TypeModifiers.CONST);
-	}
-	
-	@Override
-	public boolean getReference() {
-		return _ltm.contains(TypeModifiers.REFPAR);
-	}
-	
-	@Override
-	public void setReference(final boolean aFlag) {
-		_ltm.add(TypeModifiers.REFPAR);
-	}
-	
-	@Override
-	public boolean getOut() {
-		return _ltm.contains(TypeModifiers.OUTPAR);
-	}
-	
-	@Override
-	public void setOut(final boolean aFlag) {
-		_ltm.add(TypeModifiers.OUTPAR);
-	}
-	
-	@Override
-	public boolean getIn() {
-		return _ltm.contains(TypeModifiers.INPAR);
-	}
-	
-	@Override
-	public void setIn(final boolean aFlag) {
-		_ltm.add(TypeModifiers.INPAR);
-	}
-
-	@Override
-	public void setNullable() {
-		_ltm.add(TypeModifiers.NULLABLE);
-	}
-
-	@Override
-	public Collection<TypeModifiers> getModifiers() {
-		return _ltm;
 	}
 
 	@Override
@@ -92,6 +42,56 @@ public abstract class AbstractTypeName2 implements NormalTypeName {
 //				type == that.type &&
 				getModifiers().containsAll(that.getModifiers()) &&
 				getName().equals(that.getName());
+	}
+
+	@Override
+	public boolean getConstant() {
+		return _ltm.contains(TypeModifiers.CONST);
+	}
+
+	@Override
+	public void setConstant(final boolean aFlag) {
+		_ltm.add(TypeModifiers.CONST);
+	}
+
+	@Override
+	public boolean getReference() {
+		return _ltm.contains(TypeModifiers.REFPAR);
+	}
+
+	@Override
+	public void setReference(final boolean aFlag) {
+		_ltm.add(TypeModifiers.REFPAR);
+	}
+
+	@Override
+	public boolean getOut() {
+		return _ltm.contains(TypeModifiers.OUTPAR);
+	}
+
+	@Override
+	public void setOut(final boolean aFlag) {
+		_ltm.add(TypeModifiers.OUTPAR);
+	}
+
+	@Override
+	public boolean getIn() {
+		return _ltm.contains(TypeModifiers.INPAR);
+	}
+
+	@Override
+	public void setIn(final boolean aFlag) {
+		_ltm.add(TypeModifiers.INPAR);
+	}
+
+	@Override
+	public void setNullable() {
+		_ltm.add(TypeModifiers.NULLABLE);
+	}
+
+	@Override
+	public Collection<TypeModifiers> getModifiers() {
+		return _ltm;
 	}
 }
 

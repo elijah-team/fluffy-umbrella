@@ -30,25 +30,19 @@ import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 public class OS_Module implements OS_Element, OS_Container {
 
-	private final Stack<Qualident> packageNames_q = new Stack<Qualident>();
-	public @NotNull List<ModuleItem> items = new ArrayList<ModuleItem>();
-	public @NotNull Attached _a = new Attached();
-	public OS_Module prelude;
-
-	private Compilation parent;
-	private LibraryStatementPart lsp;
-	private String _fileName;
-	public @NotNull List<EntryPoint> entryPoints = new ArrayList<EntryPoint>();
-	private IndexingStatement indexingStatement;
+	private final   Stack<Qualident> packageNames_q = new Stack<Qualident>();
+	public @NotNull List<ModuleItem> items          = new ArrayList<ModuleItem>();
+	public @NotNull Attached         _a             = new Attached();
+	public          OS_Module        prelude;
+	public @NotNull List<EntryPoint>     entryPoints = new ArrayList<EntryPoint>();
+	private         Compilation          parent;
+	private         LibraryStatementPart lsp;
+	private         String               _fileName;
+	private         IndexingStatement    indexingStatement;
 
 	public @org.jetbrains.annotations.Nullable OS_Element findClass(final String aClassName) {
 		for (final ModuleItem item : items) {
@@ -70,10 +64,6 @@ public class OS_Module implements OS_Element, OS_Container {
 
 	public void setFileName(final String fileName) {
 		this._fileName = fileName;
-	}
-
-	public @NotNull Collection<ModuleItem> getItems() {
-		return items;
 	}
 
 	public boolean hasClass(final String className) {
@@ -100,6 +90,10 @@ public class OS_Module implements OS_Element, OS_Container {
 			a.add((OS_Element2) moduleItem);
 		}
 		return a;
+	}
+
+	public @NotNull Collection<ModuleItem> getItems() {
+		return items;
 	}
 
 	@Override
@@ -142,6 +136,12 @@ public class OS_Module implements OS_Element, OS_Container {
 	 *
 	 * @return null
 	 */
+
+	@Override
+	public Context getContext() {
+		return _a._context;
+	}
+
 	/**
 	 * @ ensures \result == null
 	 */
@@ -154,9 +154,8 @@ public class OS_Module implements OS_Element, OS_Container {
 		this.parent = parent;
 	}
 
-	@Override
-	public Context getContext() {
-		return _a._context;
+	public void setContext(final ModuleContext mctx) {
+		_a.setContext(mctx);
 	}
 
 	/**
@@ -164,7 +163,8 @@ public class OS_Module implements OS_Element, OS_Container {
 	 *
 	 * @return a new OS_Package instance or default_package
 	 */
-	@NotNull public OS_Package pullPackageName() {
+	@NotNull
+	public OS_Package pullPackageName() {
 		if (packageNames_q.empty())
 			return OS_Package.default_package;
 		// Dont know if this is correct behavior
@@ -229,9 +229,9 @@ public class OS_Module implements OS_Element, OS_Container {
 					for (ClassItem classItem : found) {
 						entryPoints.add(new MainClassEntryPoint((ClassStatement) classItem.getParent()));
 					}
-					assert entryPoints.size() == eps || entryPoints.size() == eps+1; // TODO this will fail one day
+					assert entryPoints.size() == eps || entryPoints.size() == eps + 1; // TODO this will fail one day
 
-					tripleo.elijah.util.Stupidity.println_out_2("243 " + entryPoints +" "+ _fileName);
+					tripleo.elijah.util.Stupidity.println_out_2("243 " + entryPoints + " " + _fileName);
 //					break; // allow for "extend" class
 				}
 			}
@@ -284,10 +284,6 @@ public class OS_Module implements OS_Element, OS_Container {
 				parent.getErrSink().reportWarning(s);
 			}
 		}
-	}
-
-	public void setContext(final ModuleContext mctx) {
-		_a.setContext(mctx);
 	}
 
 	@Override

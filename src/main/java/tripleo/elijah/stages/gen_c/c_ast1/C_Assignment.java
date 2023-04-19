@@ -3,7 +3,7 @@ package tripleo.elijah.stages.gen_c.c_ast1;
 import java.text.MessageFormat;
 
 public class C_Assignment {
-	private String left;
+	private String          left;
 	private C_ProcedureCall right_pc;
 
 	public void setLeft(final String aString) {

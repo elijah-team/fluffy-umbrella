@@ -4,17 +4,12 @@ import com.google.common.io.Files;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 class readline {
-	static Mode mode = Mode.JNA;
+	static Mode    mode          = Mode.JNA;
 	static String  HISTORY_FILE  = null;
 	static Boolean historyLoaded = false;
 
@@ -23,7 +18,7 @@ class readline {
 	}
 
 	public static String readline(final String prompt)
-	  throws EOFException, IOException {
+	throws EOFException, IOException {
 		if (mode == Mode.JNA) {
 			return jna_readline(prompt);
 		} else {
@@ -32,7 +27,7 @@ class readline {
 	}
 
 	public static String jna_readline(final String prompt)
-	  throws EOFException, IOException {
+	throws EOFException, IOException {
 		if (!historyLoaded) {
 			loadHistory(HISTORY_FILE);
 		}
@@ -47,7 +42,7 @@ class readline {
 
 	// Just java readline (no history, or line editing)
 	public static String java_readline(final String prompt)
-	  throws EOFException, IOException {
+	throws EOFException, IOException {
 		System.out.print(prompt);
 		final BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
 		final String         line   = buffer.readLine();
@@ -61,7 +56,7 @@ class readline {
 		final File file = new File(filename);
 		try {
 			final List<String> lines = Files.readLines(file,
-			  StandardCharsets.UTF_8);
+													   StandardCharsets.UTF_8);
 			for (final String line : lines) {
 				RLLibrary.INSTANCE.add_history(line);
 			}
@@ -89,7 +84,7 @@ class readline {
 
 		// GNU readline (GPL)
 		RLLibrary INSTANCE = (RLLibrary)
-		  Native.loadLibrary("readline", RLLibrary.class);
+				Native.loadLibrary("readline", RLLibrary.class);
 		// Libedit (BSD)
 //            RLLibrary INSTANCE = (RLLibrary)
 //                Native.loadLibrary("edit", RLLibrary.class);

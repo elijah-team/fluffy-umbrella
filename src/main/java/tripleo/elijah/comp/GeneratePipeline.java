@@ -26,7 +26,6 @@ import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.stages.write_stage.pipeline_impl.DebugBuffersLogic;
 import tripleo.elijah.stages.write_stage.pipeline_impl.SPrintStream;
-import tripleo.elijah.stages.write_stage.pipeline_impl.XXPrintStream;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkManager;
 
@@ -42,7 +41,17 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 	//private final Compilation               c;
 	private final DefaultGenerateResultSink grs;
 	private final IPipelineAccess           pa;
+	private final DoubleLatch<List<EvaNode>> latch2;
+	private final ErrSink       errSink;
+	private final AccessBus     __ab;
+	//	private final DeducePipeline dpl;
+	private       PipelineLogic pipelineLogic;
+	private       List<EvaNode> lgc;
 
+
+	public GeneratePipeline(final AccessBus aAccessBus) {
+		this(aAccessBus.getPipelineAccess());
+	}
 	@Contract(pure = true)
 	public GeneratePipeline(@NotNull IPipelineAccess pa0) {
 
@@ -66,8 +75,19 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 		pa.registerNodeList(latch2::notify);
 	}
 
-	public GeneratePipeline(final AccessBus aAccessBus) {
-		this(aAccessBus.getPipelineAccess());
+	@Override
+	public void lgc_slot(final List<EvaNode> nodes) {
+		pa.pipelineLogic().generate(nodes, grs);
+
+		final List<GenerateResultItem> x = grs.resultList();
+
+		SPrintStream xps = new SPrintStream();
+
+		DebugBuffersLogic.debug_buffers_logic(x, xps);
+
+		//System.err.println("789789 "+xps.getString()); //04/15
+
+		int y = 2;
 	}
 
 	@Override
@@ -82,20 +102,6 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 			generate(lgc, errSink, pipelineLogic.mods, pipelineLogic.getVerbosity());
 		}
 	}
-
-	@Override
-	public void accept(Supplier<GenerateResult> t) {
-		NotImplementedException.raise();
-	}
-
-	private final DoubleLatch<List<EvaNode>> latch2;
-
-
-	private final ErrSink       errSink;
-	private final AccessBus     __ab;
-	//	private final DeducePipeline dpl;
-	private       PipelineLogic pipelineLogic;
-	private       List<EvaNode> lgc;
 
 	protected void generate(final @NotNull List<EvaNode> _______lgc,
 							final @NotNull ErrSink aErrSink,
@@ -131,18 +137,8 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 	}
 
 	@Override
-	public void lgc_slot(final List<EvaNode> nodes) {
-		pa.pipelineLogic().generate(nodes, grs);
-
-		final List<GenerateResultItem> x = grs.resultList();
-
-		SPrintStream xps = new SPrintStream();
-
-		DebugBuffersLogic.debug_buffers_logic(x, xps);
-
-		//System.err.println("789789 "+xps.getString()); //04/15
-
-		int y = 2;
+	public void accept(Supplier<GenerateResult> t) {
+		NotImplementedException.raise();
 	}
 
 //	public void simpleUsageExample() {

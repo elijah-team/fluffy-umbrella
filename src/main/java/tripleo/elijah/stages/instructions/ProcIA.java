@@ -21,7 +21,7 @@ public class ProcIA implements InstructionArgument {
 
 	public ProcIA(int i, BaseEvaFunction generatedFunction) {
 		this.index = i;
-		this.gf = generatedFunction;
+		this.gf    = generatedFunction;
 	}
 
 	@Override

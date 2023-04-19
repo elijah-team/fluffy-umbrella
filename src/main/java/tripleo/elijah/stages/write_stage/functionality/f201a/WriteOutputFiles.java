@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class WriteOutputFiles {
 	public void writeOutputFiles(final @NotNull WritePipelineSharedState sharedState, final @NotNull Map<String, OutputFileC> outputFileMap) {
-		final IO      io      = sharedState.c.getIO();
+		final IO io = sharedState.c.getIO();
 
 		final ErrSink errSink = sharedState.c.getErrSink();
 		final String  prefix  = sharedState.file_prefix.toString();

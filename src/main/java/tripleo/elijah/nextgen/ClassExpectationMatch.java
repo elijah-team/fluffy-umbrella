@@ -10,8 +10,6 @@
 
 package tripleo.elijah.nextgen;
 
-import tripleo.elijah.nextgen.ClassDefinition;
-
 /**
  * Created 3/4/22 7:24 AM
  */

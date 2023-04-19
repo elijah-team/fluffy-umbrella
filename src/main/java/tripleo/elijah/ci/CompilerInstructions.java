@@ -25,11 +25,11 @@ import java.util.List;
  * Created 9/6/20 11:20 AM
  */
 public class CompilerInstructions {
-	private IndexingStatement _idx;
-	private GenerateStatement gen;
-	public List<LibraryStatementPart> lsps = new ArrayList<LibraryStatementPart>();
-	private String filename;
-	private String name;
+	public  List<LibraryStatementPart> lsps = new ArrayList<LibraryStatementPart>();
+	private IndexingStatement          _idx;
+	private GenerateStatement          gen;
+	private String                     filename;
+	private String                     name;
 
 	public IndexingStatement indexingStatement() {
 		if (_idx == null)
@@ -48,12 +48,12 @@ public class CompilerInstructions {
 		lsps.add(libraryStatementPart);
 	}
 
-	public void setFilename(final String filename) {
-		this.filename = filename;
-	}
-
 	public String getFilename() {
 		return filename;
+	}
+
+	public void setFilename(final String filename) {
+		this.filename = filename;
 	}
 
 	@Nullable
@@ -72,7 +72,7 @@ public class CompilerInstructions {
 		if (!gi.hasNext()) return null;
 		IExpression lang_raw = gi.next().getExpression();
 		assert lang_raw instanceof StringExpression;
-		return Helpers.remove_single_quotes_from_string(((StringExpression)lang_raw).getText());
+		return Helpers.remove_single_quotes_from_string(((StringExpression) lang_raw).getText());
 	}
 
 	public String getName() {

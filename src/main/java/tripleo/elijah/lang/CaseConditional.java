@@ -7,7 +7,7 @@
  *
  */
 /**
- * 
+ *
  */
 package tripleo.elijah.lang;
 
@@ -28,19 +28,19 @@ import java.util.List;
  */
 public class CaseConditional implements OS_Element, StatementItem, FunctionItem {
 
-    private final OS_Element parent;
-    private IExpression expr;
-	private SingleIdentContext _ctx = null;
-	private HashMap<IExpression, CaseScope> scopes = new LinkedHashMap<IExpression, CaseScope>();
-	private CaseScope default_case_scope = null;
-	private CaseContext __ctx = null; // TODO look into removing this
+	private final OS_Element                      parent;
+	private       IExpression                     expr;
+	private       SingleIdentContext              _ctx               = null;
+	private       HashMap<IExpression, CaseScope> scopes             = new LinkedHashMap<IExpression, CaseScope>();
+	private       CaseScope                       default_case_scope = null;
+	private       CaseContext                     __ctx              = null; // TODO look into removing this
 
 	public CaseConditional(final OS_Element parent, final Context parentContext) {
-        this.parent = parent;
-        this._ctx = new SingleIdentContext(parentContext, this);
-    }
+		this.parent = parent;
+		this._ctx   = new SingleIdentContext(parentContext, this);
+	}
 
-    public void expr(final IExpression expr) {
+	public void expr(final IExpression expr) {
 		this.expr = expr;
 	}
 
@@ -49,8 +49,9 @@ public class CaseConditional implements OS_Element, StatementItem, FunctionItem 
 		visit.visitCaseConditional(this);
 	}
 
-	public HashMap<IExpression, CaseScope> getScopes() {
-		return scopes;
+	@Override
+	public Context getContext() {
+		return _ctx;
 	}
 
 	@Override
@@ -58,9 +59,12 @@ public class CaseConditional implements OS_Element, StatementItem, FunctionItem 
 		return parent;
 	}
 
-	@Override
-	public Context getContext() {
-		return _ctx;
+	public void setContext(final CaseContext ctx) {
+		__ctx = ctx;
+	}
+
+	public HashMap<IExpression, CaseScope> getScopes() {
+		return scopes;
 	}
 
 	public void addScopeFor(final IExpression expression, final Scope3 caseScope) {
@@ -81,10 +85,6 @@ public class CaseConditional implements OS_Element, StatementItem, FunctionItem 
 		return expr;
 	}
 
-	public void setContext(final CaseContext ctx) {
-		__ctx = ctx;
-	}
-
 	public void scope(Scope3 sco, IExpression expr1) {
 		addScopeFor(expr1, new CaseScope(expr1, sco));
 	}
@@ -92,11 +92,11 @@ public class CaseConditional implements OS_Element, StatementItem, FunctionItem 
 	public class CaseScope implements OS_Container, OS_Element {
 
 		private final IExpression expr;
-		private final Scope3 cscope3;
-		private boolean _isDefault = false;
+		private final Scope3      cscope3;
+		private       boolean     _isDefault = false;
 
 		public CaseScope(final IExpression expression, Scope3 aScope3) {
-			this.expr = expression;
+			this.expr    = expression;
 			this.cscope3 = aScope3;
 		}
 
@@ -125,19 +125,19 @@ public class CaseConditional implements OS_Element, StatementItem, FunctionItem 
 		}
 
 		@Override
-		public OS_Element getParent() {
-			return CaseConditional.this;
-		}
-
-		@Override
 		public Context getContext() {
 			return getParent().getContext();
 		}
 
+		@Override
+		public OS_Element getParent() {
+			return CaseConditional.this;
+		}
+
 		public void setDefault() {
-			_isDefault = true;
+			_isDefault         = true;
 			default_case_scope = this;
-			_ctx.carrier = (IdentExpression) expr;
+			_ctx.carrier       = (IdentExpression) expr;
 		}
 	}
 }

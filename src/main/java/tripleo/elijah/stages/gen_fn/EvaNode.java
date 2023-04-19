@@ -15,8 +15,9 @@ import tripleo.elijah.lang.OS_Module;
  * Created 10/29/20 4:51 AM
  */
 public interface EvaNode {
-    String identityString();
-    OS_Module module();
+	String identityString();
+
+	OS_Module module();
 }
 
 //

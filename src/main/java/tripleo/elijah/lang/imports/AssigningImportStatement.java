@@ -11,19 +11,9 @@ import java.util.List;
  * Created 8/7/20 2:09 AM
  */
 public class AssigningImportStatement extends _BaseImportStatement {
-	final OS_Element parent;
+	final         OS_Element parent;
 	private final List<Part> _parts = new ArrayList<Part>();
-	private Context _ctx;
-
-	public static class Part { // public for ImportStatementBuilder
-		IdentExpression name;
-		Qualident value;
-
-		public Part(IdentExpression i1, Qualident q1) {
-			name = i1;
-			value = q1;
-		}
-	}
+	private       Context    _ctx;
 
 	public AssigningImportStatement(final OS_Element aParent) {
 		parent = aParent;
@@ -45,13 +35,18 @@ public class AssigningImportStatement extends _BaseImportStatement {
 	}
 
 	@Override
+	public Context getContext() {
+		return parent.getContext();
+	}
+
+	@Override
 	public OS_Element getParent() {
 		return parent;
 	}
 
 	@Override
-	public Context getContext() {
-		return parent.getContext();
+	public void setContext(final ImportContext ctx) {
+		_ctx = ctx;
 	}
 
 	@Override
@@ -63,15 +58,20 @@ public class AssigningImportStatement extends _BaseImportStatement {
 		return r;
 	}
 
-	@Override
-	public void setContext(final ImportContext ctx) {
-		_ctx = ctx;
-	}
-
 	private static Qualident identToQualident(final IdentExpression identExpression) {
 		final Qualident r = new Qualident();
 		r.append(identExpression);
 		return r;
+	}
+
+	public static class Part { // public for ImportStatementBuilder
+		IdentExpression name;
+		Qualident       value;
+
+		public Part(IdentExpression i1, Qualident q1) {
+			name  = i1;
+			value = q1;
+		}
 	}
 
 }

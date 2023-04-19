@@ -4,8 +4,8 @@ import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.instructions.ProcIA;
 
 class GI_ProcIA implements GenerateC_Item {
-	private final ProcIA carrier;
-	private EvaNode _evaNode;
+	private final ProcIA  carrier;
+	private       EvaNode _evaNode;
 
 	public GI_ProcIA(final ProcIA aProcIA) {
 		carrier = aProcIA;

@@ -30,10 +30,10 @@ public class F202 {
 
 	public F202(ErrSink aErrSink, Compilation c) {
 		errSink = aErrSink;
-		gld = new DefaultGetLogDirectoryBehavior(c);
-		gln = new DefaultGetLogNameBehavior();
-		ple = new DefaultProcessLogEntryBehavior();
-		pre = new DefaultProgressBehavior();
+		gld     = new DefaultGetLogDirectoryBehavior(c);
+		gln     = new DefaultGetLogNameBehavior();
+		ple     = new DefaultProcessLogEntryBehavior();
+		pre     = new DefaultProgressBehavior();
 	}
 
 	public void processLogs(@NotNull Collection<ElLog> aElLogs) {
@@ -42,10 +42,10 @@ public class F202 {
 
 		ElLog firstLog = aElLogs.iterator().next();
 
-		final String s2  = gln.getLogName(firstLog);
-		final File file2 = gld.getLogDirectory();
+		final String s2    = gln.getLogName(firstLog);
+		final File   file2 = gld.getLogDirectory();
 
-		final File psf   = new File(file2, s2);
+		final File   psf = new File(file2, s2);
 		final String s1  = firstLog.getFileName();
 		pre.reportProgress(psf.toString());
 

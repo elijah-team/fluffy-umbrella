@@ -20,18 +20,17 @@ public class GI_VariableStatement implements GenerateC_Item {
 	}
 
 	@Override
-	public void setEvaNode(final EvaNode aEvaNode) {
-		_evaNode = aEvaNode;
-	}
-
-	@Override
 	public EvaNode getEvaNode() {
 		return _evaNode;
 	}
 
+	@Override
+	public void setEvaNode(final EvaNode aEvaNode) {
+		_evaNode = aEvaNode;
+	}
 
-	public void __CReference_getIdentIAPath_IdentIAHelper(final @NotNull  CReference aCReference,
-														  final @NotNull  IEvaFunctionBase generatedFunction,
+	public void __CReference_getIdentIAPath_IdentIAHelper(final @NotNull CReference aCReference,
+														  final @NotNull IEvaFunctionBase generatedFunction,
 														  final @Nullable String value) {
 		final CReference.Reference r = ___CReference_getIdentIAPath_IdentIAHelper(generatedFunction, value);
 		aCReference.addRef(r);

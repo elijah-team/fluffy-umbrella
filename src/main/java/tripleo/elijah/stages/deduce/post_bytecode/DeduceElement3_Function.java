@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang.types.OS_BuiltinType;
 import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
@@ -19,12 +18,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class DeduceElement3_Function implements IDeduceElement3 {
+	// TODO what about resolved?
+	public static final @NotNull GenType unitType = new GenType();
+
+	static {
+		unitType.typeName = new OS_BuiltinType(BuiltInTypes.Unit);
+	}
+
 	private final DeduceTypes2    deduceTypes2;
 	private final BaseEvaFunction generatedFunction;
 	private       GenType         _gt = new GenType();
 
 	public DeduceElement3_Function(final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aGeneratedFunction) {
-		deduceTypes2 = aDeduceTypes2;
+		deduceTypes2      = aDeduceTypes2;
 		generatedFunction = aGeneratedFunction;
 	}
 
@@ -68,12 +74,6 @@ public class DeduceElement3_Function implements IDeduceElement3 {
 	@Override
 	public DeduceElement3_Kind kind() {
 		return DeduceElement3_Kind.FUNCTION;
-	}
-
-	// TODO what about resolved?
-	public static final @NotNull GenType unitType = new GenType();
-	static {
-		unitType.typeName = new OS_BuiltinType(BuiltInTypes.Unit);
 	}
 
 	@Nullable

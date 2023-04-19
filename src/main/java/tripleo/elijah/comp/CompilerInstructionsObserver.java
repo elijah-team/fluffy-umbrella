@@ -12,17 +12,17 @@ import java.util.List;
 
 public class CompilerInstructionsObserver implements Observer<CompilerInstructions> {
 	private final List<CompilerInstructions> l = new ArrayList<>();
-	private final Compilation      compilation;
-	private final OptionsProcessor op;
+	private final Compilation                compilation;
+	private final OptionsProcessor           op;
 
 	public CompilerInstructionsObserver(final Compilation aCompilation, final OptionsProcessor aOp) {
 		compilation = aCompilation;
-		op = aOp;
+		op          = aOp;
 	}
 
 	public CompilerInstructionsObserver(final Compilation aC, final Compilation.CIS aCis) {
 		compilation = aC;
-		op = null;
+		op          = null;
 	}
 
 	@Override

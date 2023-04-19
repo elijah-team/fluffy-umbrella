@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package tripleo.elijah.gen.nodes;
 
@@ -18,7 +18,7 @@ public class LocalAgnNode {
 
 	public void GenLocalAgn(final CompilerContext cctx, final GenBuffer gbn) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

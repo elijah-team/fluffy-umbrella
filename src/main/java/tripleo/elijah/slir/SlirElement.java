@@ -17,7 +17,9 @@ import tripleo.elijah.lang.OS_Element;
  */
 public interface SlirElement {
 	String name();
+
 	SlirPos partOfSpeech();
+
 	OS_Element element();
 }
 

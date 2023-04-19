@@ -12,8 +12,8 @@ import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.gen_fn.AbstractDependencyTracker;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
-import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.gen_fn.EvaContainerNC;
+import tripleo.elijah.stages.gen_fn.GenType;
 
 import java.util.HashSet;
 import java.util.List;
@@ -24,10 +24,10 @@ import java.util.Set;
  */
 public class Dependency {
 	public final IDependencyReferent referent;
-	public final Set<Dependency> deps = new HashSet<>();
+	public final Set<Dependency>     deps = new HashSet<>();
 
 	public DependencyRef dref;
-	public OS_Element resolved;
+	public OS_Element    resolved;
 
 	public Dependency(IDependencyReferent aReferent) {
 		referent = aReferent;
@@ -49,7 +49,7 @@ public class Dependency {
 			if (generatedFunction != null)
 				deps.add(generatedFunction.getDependency());
 			else
-				tripleo.elijah.util.Stupidity.println_err_2("52 false FunctionInvocation "+dependentFunction);
+				tripleo.elijah.util.Stupidity.println_err_2("52 false FunctionInvocation " + dependentFunction);
 		}
 		for (GenType dependentType : aDependentTypes) {
 			final EvaContainerNC node = (EvaContainerNC) dependentType.node;

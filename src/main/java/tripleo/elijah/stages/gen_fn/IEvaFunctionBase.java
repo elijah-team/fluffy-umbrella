@@ -7,12 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.DeduceElement;
 import tripleo.elijah.stages.gen_generic.Dependency;
-import tripleo.elijah.stages.instructions.IdentIA;
-import tripleo.elijah.stages.instructions.Instruction;
-import tripleo.elijah.stages.instructions.InstructionArgument;
-import tripleo.elijah.stages.instructions.InstructionName;
-import tripleo.elijah.stages.instructions.Label;
-import tripleo.elijah.stages.instructions.VariableTableType;
+import tripleo.elijah.stages.instructions.*;
 import tripleo.util.range.Range;
 
 import java.util.List;
@@ -78,9 +73,9 @@ public interface IEvaFunctionBase {
 
 	void setCode(int aCode);
 
-	void setParent(EvaContainerNC aGeneratedContainerNC);
-
 	EvaContainerNC getParent();
+
+	void setParent(EvaContainerNC aGeneratedContainerNC);
 
 	void setClass(@NotNull EvaNode aNode);
 

@@ -5,7 +5,10 @@ import com.google.common.collect.Multimap;
 import io.reactivex.rxjava3.functions.Consumer;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.PipelineLogic;
+import tripleo.elijah.comp.PipelineMember;
+import tripleo.elijah.comp.Stages;
 import tripleo.elijah.comp.functionality.f202.F202;
 import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.stages.deduce.FunctionMapHook;
@@ -78,34 +81,10 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 	}
 
 
-
-
-
-
-
-
-
-
-
-
-
 	@Override
 	public Stages getStage() {
 		return Stages.O;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	private void __writeLogs(boolean aSilent, List<ElLog> aLogs) {

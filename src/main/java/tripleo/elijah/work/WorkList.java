@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class WorkList {
 	private List<WorkJob> jobs = new ArrayList<>();
-	private boolean _done;
+	private boolean       _done;
 
 	public void addJob(final WorkJob aJob) {
 		jobs.add(aJob);

@@ -28,26 +28,26 @@ public class Helpers {
 		}
 		return expl;
 	}
-	
+
 	@NotNull
 	static ExpressionKind ExpressionOperatorToExpressionType(final ExpressionOperators middle) {
 		final ExpressionKind middle1;
 		switch (middle) {
-			case OP_MINUS:
-				middle1 = ExpressionKind.SUBTRACTION;
-				break;
-			case OP_MULT:
-				middle1 = ExpressionKind.MULTIPLY;
-				break;
-			default:
-				throw new NotImplementedException();
+		case OP_MINUS:
+			middle1 = ExpressionKind.SUBTRACTION;
+			break;
+		case OP_MULT:
+			middle1 = ExpressionKind.MULTIPLY;
+			break;
+		default:
+			throw new NotImplementedException();
 		}
 		return middle1;
 	}
-	
+
 	@NotNull
 	public static String getFunctionName(final int code, final String aStr, final ExpressionList expressionList) {
-		final StringBuilder sb=new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		sb.append("z");
 		sb.append(code);
 		sb.append(aStr);
@@ -80,7 +80,7 @@ public class Helpers {
 //		r.add(string3);
 //		return r;
 //	}
-	
+
 }
 
 //

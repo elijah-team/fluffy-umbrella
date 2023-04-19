@@ -4,17 +4,9 @@ import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.LookupResultList;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.nextgen.query.Operation2;
-import tripleo.elijah.stages.deduce.DeduceLookupUtils;
-import tripleo.elijah.stages.deduce.DeducePhase;
-import tripleo.elijah.stages.deduce.DeduceTypes2;
-import tripleo.elijah.stages.deduce.FoundElement;
-import tripleo.elijah.stages.deduce.ResolveError;
+import tripleo.elijah.stages.deduce.*;
 import tripleo.elijah.stages.deduce.post_bytecode.DED.DED_ITE;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
@@ -25,9 +17,9 @@ public class DeduceElement3_IdentTableEntry extends DefaultStateful implements I
 	public final IdentTableEntry principal;
 	public       BaseEvaFunction generatedFunction;
 	public       DeduceTypes2    deduceTypes2;
-	private      GenType               genType;
-	private      Context               fdCtx;
-	private      Context               context;
+	private      GenType         genType;
+	private      Context         fdCtx;
+	private      Context         context;
 
 	@Contract(pure = true)
 	public DeduceElement3_IdentTableEntry(final IdentTableEntry aIdentTableEntry) {
@@ -38,15 +30,6 @@ public class DeduceElement3_IdentTableEntry extends DefaultStateful implements I
 	public void resolve(final IdentIA aIdentIA, final @NotNull Context aContext, final FoundElement aFoundElement) {
 		// FoundElement is the "disease"
 		deduceTypes2.resolveIdentIA_(aContext, aIdentIA, generatedFunction, aFoundElement);
-	}
-
-	public Operation2<GenType> resolve1(final IdentTableEntry ite, final @NotNull Context aContext) {
-		// FoundElement is the "disease"
-		try {
-			return Operation2.success(deduceTypes2.resolve_type(ite.type.getAttached(), aContext));
-		} catch (final ResolveError aE) {
-			return Operation2.failure(aE);
-		}
 	}
 
 	//	@NotNull final GenType xx = // TODO xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -92,6 +75,15 @@ public class DeduceElement3_IdentTableEntry extends DefaultStateful implements I
 		return DeduceElement3_Kind.GEN_FN__ITE;
 	}
 
+	public Operation2<GenType> resolve1(final IdentTableEntry ite, final @NotNull Context aContext) {
+		// FoundElement is the "disease"
+		try {
+			return Operation2.success(deduceTypes2.resolve_type(ite.type.getAttached(), aContext));
+		} catch (final ResolveError aE) {
+			return Operation2.failure(aE);
+		}
+	}
+
 	public void _ctxts(final Context aFdCtx, final Context aContext) {
 		fdCtx   = aFdCtx;
 		context = aContext;
@@ -115,7 +107,7 @@ public class DeduceElement3_IdentTableEntry extends DefaultStateful implements I
 			public void apply(final DefaultStateful element) {
 				final DeduceElement3_IdentTableEntry ite_de             = ((DeduceElement3_IdentTableEntry) element);
 				final IdentTableEntry                ite                = ite_de.principal;
-				final BaseEvaFunction          generatedFunction1 = ite_de.generatedFunction();
+				final BaseEvaFunction                generatedFunction1 = ite_de.generatedFunction();
 				final DeduceTypes2                   dt2                = ite_de.deduceTypes2;
 				final DeducePhase                    phase1             = ite_de.deduceTypes2._phase();
 
@@ -126,11 +118,11 @@ public class DeduceElement3_IdentTableEntry extends DefaultStateful implements I
 			}
 
 			public void assign_type_to_idte(@NotNull final IdentTableEntry ite,
-			                                @NotNull final BaseEvaFunction generatedFunction,
-			                                @NotNull final Context aFunctionContext,
-			                                @NotNull final Context aContext,
-			                                @NotNull final DeduceTypes2 dt2,
-			                                @NotNull final DeducePhase phase) {
+											@NotNull final BaseEvaFunction generatedFunction,
+											@NotNull final Context aFunctionContext,
+											@NotNull final Context aContext,
+											@NotNull final DeduceTypes2 dt2,
+											@NotNull final DeducePhase phase) {
 				if (!ite.hasResolvedElement()) {
 					@NotNull final IdentIA ident_a = new IdentIA(ite.getIndex(), generatedFunction);
 					dt2.resolveIdentIA_(aContext, ident_a, generatedFunction, new FoundElement(phase) {

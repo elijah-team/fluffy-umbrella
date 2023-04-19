@@ -33,8 +33,8 @@ public class DefaultCompilerController implements CompilerController {
 
 			if (inputs == null) {
 				inputs = args.stream()
-				             .map(str -> new CompilerInput(str))
-				             .collect(Collectors.toList());
+						.map(str -> new CompilerInput(str))
+						.collect(Collectors.toList());
 			}
 
 			args2 = op.process(c, inputs, cb);

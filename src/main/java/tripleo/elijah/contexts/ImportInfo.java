@@ -17,9 +17,9 @@ import tripleo.elijah.lang.Qualident;
  */
 public class ImportInfo implements ContextInfo {
 	ImportStatement importStatement;
-	Qualident importPart;
-	int importPartIndex;
-	ImportType importType;
+	Qualident       importPart;
+	int             importPartIndex;
+	ImportType      importType;
 	// something else (I think I got it)
 
 	public ImportInfo(final ImportStatement aImportStatement,
@@ -27,9 +27,9 @@ public class ImportInfo implements ContextInfo {
 					  final int aImportPartIndex,
 					  final ImportType aImportType) {
 		importStatement = aImportStatement;
-		importPart = aImportPart;
+		importPart      = aImportPart;
 		importPartIndex = aImportPartIndex;
-		importType = aImportType;
+		importType      = aImportType;
 	}
 
 	enum ImportType {

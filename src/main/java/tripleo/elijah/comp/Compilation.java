@@ -27,11 +27,13 @@ import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
 import tripleo.elijah.comp.diagnostic.FileNotFoundDiagnostic;
 import tripleo.elijah.comp.i.*;
 import tripleo.elijah.comp.internal.CompilationBus;
-import tripleo.elijah.comp.internal.DefaultCompilerController;
 import tripleo.elijah.comp.queries.QuerySourceFileToModule;
 import tripleo.elijah.comp.queries.QuerySourceFileToModuleParams;
 import tripleo.elijah.diagnostic.Diagnostic;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.lang.OS_Package;
+import tripleo.elijah.lang.Qualident;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 import tripleo.elijah.stages.deduce.FunctionMapHook;
 import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
@@ -53,33 +55,45 @@ import static tripleo.elijah.nextgen.query.Mode.SUCCESS;
 public abstract class Compilation {
 
 	public final  List<OS_Module>                   modules   = new ArrayList<OS_Module>();
+	public final CIS _cis = new CIS();
+	public final USE use = new USE(this);
 	final         ErrSink                           errSink;
 	final         Map<String, CompilerInstructions> fn2ci     = new HashMap<String, CompilerInstructions>();
-	private final  Pipeline                          pipelines = new Pipeline();
+	private final Pipeline                          pipelines = new Pipeline();
 	private final int                               _compilationNumber;
 	private final Map<String, OS_Package>           _packages = new HashMap<String, OS_Package>();
 	public        Stages                            stage     = Stages.O; // Output
 	public        boolean                           silent    = false;
-	public LivingRepo _repo = new DefaultLivingRepo();
-	CompilerInstructions rootCI;
-	public boolean              showTree = false;
-	private IO io;
+	public        LivingRepo                        _repo     = new DefaultLivingRepo();
+	public  boolean           showTree      = false;
 	//
 	//
-	public PipelineLogic pipelineLogic;
-	//
-	//
-	private int                _packageCode  = 1;
-	private int                _classCode    = 101;
-	private int                _functionCode = 1001;
-	public CompilationRunner __cr;
-	CompilationBus cb;
+	public  PipelineLogic     pipelineLogic;
+	public  CompilationRunner __cr;
 	public IPipelineAccess _pa;
+	public boolean do_out = false;
+	CompilerInstructions rootCI;
+	CompilationBus cb;
+	private IO                io;
+	//
+	//
+	private int               _packageCode  = 1;
+	private int               _classCode    = 101;
+	private int               _functionCode = 1001;
 
 	public Compilation(final ErrSink errSink, final IO io) {
 		this.errSink            = errSink;
 		this.io                 = io;
 		this._compilationNumber = new Random().nextInt(Integer.MAX_VALUE);
+	}
+
+	public static ElLog.Verbosity gitlabCIVerbosity() {
+		final boolean gitlab_ci = isGitlab_ci();
+		return gitlab_ci ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
+	}
+
+	public static boolean isGitlab_ci() {
+		return System.getenv("GITLAB_CI") != null;
 	}
 
 	public String getProjectName() {
@@ -89,8 +103,6 @@ public abstract class Compilation {
 	public IO getIO() {
 		return io;
 	}
-
-	public boolean do_out = false;
 
 	public void setIO(final IO io) {
 		this.io = io;
@@ -128,24 +140,6 @@ public abstract class Compilation {
 
 	public Pipeline getPipelines() {
 		return pipelines;
-	}
-
-	static class MainModule {
-
-		public static @NotNull PicoContainer newContainer() {
-			final MutablePicoContainer pico = new DefaultPicoContainer();
-
-			pico.addComponent(PicoContainer   .class, pico);
-			pico.addComponent(OptionsProcessor.class, new ApacheOptionsProcessor());
-
-			//pico.addComponent(CompilerInstructionsObserver.class); // TODO not yet
-
-			//pico.addComponent(InfoWindowProvider.class);
-			//pico.addComponent(ShowInfoWindowAction.class);
-			//pico.addComponent(ShowInfoWindowButton.class);
-
-			return pico;
-		}
 	}
 
 	public void feedCmdLine(final @NotNull List<String> args) throws Exception {
@@ -195,44 +189,6 @@ public abstract class Compilation {
 		_cis.subscribe(aCio);
 	}
 
-	public final CIS _cis = new CIS();
-
-	public class CIS implements Observer<CompilerInstructions> {
-
-		private final Subject<CompilerInstructions> compilerInstructionsSubject = ReplaySubject.<CompilerInstructions>create();
-		public IProgressSink ps;
-		CompilerInstructionsObserver _cio;
-
-		@Override
-		public void onSubscribe(@NonNull final Disposable d) {
-			compilerInstructionsSubject.onSubscribe(d);
-		}
-
-		@Override
-		public void onNext(@NonNull final CompilerInstructions aCompilerInstructions) {
-			compilerInstructionsSubject.onNext(aCompilerInstructions);
-		}
-
-		@Override
-		public void onError(@NonNull final Throwable e) {
-			compilerInstructionsSubject.onError(e);
-		}
-
-		@Override
-		public void onComplete() {
-			throw new IllegalStateException();
-			//compilerInstructionsSubject.onComplete();
-		}
-
-		public void almostComplete() {
-			_cio.almostComplete();
-		}
-
-		public void subscribe(final Observer<CompilerInstructions> aCio) {
-			compilerInstructionsSubject.subscribe(aCio);
-		}
-	}
-
 	void hasInstructions(final @NotNull List<CompilerInstructions> cis,
 						 final boolean do_out,
 						 final @NotNull OptionsProcessor op, final IPipelineAccess pa) throws Exception {
@@ -253,9 +209,149 @@ public abstract class Compilation {
 		pipelines.add(aPl);
 	}
 
+	public void use(final @NotNull CompilerInstructions compilerInstructions, final boolean do_out) throws Exception {
+		use.use(compilerInstructions, do_out);    // NOTE Rust
+	}
+
+	@Deprecated
+	public int instructionCount() {
+		return 4; // TODO shim !!!cis.size();
+	}
+
+	public ModuleBuilder moduleBuilder() {
+		return new ModuleBuilder(this);
+	}
+
+	public List<ClassStatement> findClass(final String aClassName) {
+		final List<ClassStatement> l = new ArrayList<ClassStatement>();
+		for (final OS_Module module : modules) {
+			if (module.hasClass(aClassName)) {
+				l.add((ClassStatement) module.findClass(aClassName));
+			}
+		}
+		return l;
+	}
+
+	public int errorCount() {
+		return errSink.errorCount();
+	}
+
+	public Operation2<OS_Module> findPrelude(final String prelude_name) {
+		return use.findPrelude(prelude_name);
+	}
+
+	public void addModule(final OS_Module module, final String fn) {
+		modules.add(module);
+		use.addModule(module, fn);
+	}
+
+	public OS_Package getPackage(final Qualident pkg_name) {
+		return _packages.get(pkg_name.toString());
+	}
+
+	public OS_Package makePackage(final Qualident pkg_name) {
+		if (!isPackage(pkg_name.toString())) {
+			final OS_Package newPackage = new OS_Package(pkg_name, nextPackageCode());
+			_packages.put(pkg_name.toString(), newPackage);
+			return newPackage;
+		} else
+			return _packages.get(pkg_name.toString());
+	}
+
+	//
+	// region MODULE STUFF
+	//
+
+	// endregion
+
+	//
+	// region PACKAGES
+	//
+
+	public boolean isPackage(final String pkg) {
+		return _packages.containsKey(pkg);
+	}
+
+	private int nextPackageCode() {
+		return _packageCode++;
+	}
+
+	public int nextClassCode() {
+		return _classCode++;
+	}
+
+	public int nextFunctionCode() {
+		return _functionCode++;
+	}
+
+	// endregion
+
+	//
+	// region CLASS AND FUNCTION CODES
+	//
+
+	public int compilationNumber() {
+		return _compilationNumber;
+	}
+
+	public String getCompilationNumberString() {
+		return String.format("%08x", _compilationNumber);
+	}
+
+	//
+	// endregion
+	//
+
+	//
+	// region COMPILATION-SHIT
+	//
+
+	public ErrSink getErrSink() {
+		return errSink;
+	}
+
+	public void addFunctionMapHook(FunctionMapHook aFunctionMapHook) {
+		pipelineLogic.dp.addFunctionMapHook(aFunctionMapHook);
+	}
+
+	// endregion
+
+	public void eachModule(final Consumer<OS_Module> object) {
+		for (OS_Module mod : modules) {
+			object.accept(mod);
+		}
+	}
+
+	static class MainModule {
+
+		public static @NotNull PicoContainer newContainer() {
+			final MutablePicoContainer pico = new DefaultPicoContainer();
+
+			pico.addComponent(PicoContainer.class, pico);
+			pico.addComponent(OptionsProcessor.class, new ApacheOptionsProcessor());
+
+			//pico.addComponent(CompilerInstructionsObserver.class); // TODO not yet
+
+			//pico.addComponent(InfoWindowProvider.class);
+			//pico.addComponent(ShowInfoWindowAction.class);
+			//pico.addComponent(ShowInfoWindowButton.class);
+
+			return pico;
+		}
+	}
+
 	public static class USE {
+		private static final FilenameFilter accept_source_files = new FilenameFilter() {
+			@Override
+			public boolean accept(final File directory, final String file_name) {
+				final boolean matches = Pattern.matches(".+\\.elijah$", file_name)
+						|| Pattern.matches(".+\\.elijjah$", file_name);
+				return matches;
+			}
+		};
 		private final Compilation c;
-		private final ErrSink errSink;
+		private final ErrSink     errSink;
+		private final Map<String, OS_Module> fn2m = new HashMap<String, OS_Module>();
 
 		@Contract(pure = true)
 		public USE(final Compilation aCompilation) {
@@ -294,15 +390,6 @@ public abstract class Compilation {
 				}
 			}
 		}
-
-		private static final FilenameFilter accept_source_files = new FilenameFilter() {
-			@Override
-			public boolean accept(final File directory, final String file_name) {
-				final boolean matches = Pattern.matches(".+\\.elijah$", file_name)
-						|| Pattern.matches(".+\\.elijjah$", file_name);
-				return matches;
-			}
-		};
 
 		public Operation2<OS_Module> findPrelude(final String prelude_name) {
 			final File local_prelude = new File("lib_elijjah/lib-" + prelude_name + "/Prelude.elijjah");
@@ -385,8 +472,6 @@ public abstract class Compilation {
 			return new QuerySourceFileToModule(qp, c).calculate();
 		}
 
-		private final Map<String, OS_Module>            fn2m      = new HashMap<String, OS_Module>();
-
 		public Operation<OS_Module> realParseElijjahFile(final String f, final @NotNull File file, final boolean do_out) throws Exception {
 			final String absolutePath = file.getCanonicalFile().toString();
 			if (fn2m.containsKey(absolutePath)) { // don't parse twice
@@ -427,17 +512,6 @@ public abstract class Compilation {
 		}
 	}
 
-	public final USE use = new USE(this);
-
-	public void use(final @NotNull CompilerInstructions compilerInstructions, final boolean do_out) throws Exception {
-		use.use(compilerInstructions, do_out);	// NOTE Rust
-	}
-
-	@Deprecated
-	public int instructionCount() {
-		return 4; // TODO shim !!!cis.size();
-	}
-
 	public static class CompilationAlways {
 		@NotNull
 		public static String defaultPrelude() {
@@ -450,116 +524,39 @@ public abstract class Compilation {
 		}
 	}
 
-	public ModuleBuilder moduleBuilder() {
-		return new ModuleBuilder(this);
-	}
+	public class CIS implements Observer<CompilerInstructions> {
 
-	public List<ClassStatement> findClass(final String aClassName) {
-		final List<ClassStatement> l = new ArrayList<ClassStatement>();
-		for (final OS_Module module : modules) {
-			if (module.hasClass(aClassName)) {
-				l.add((ClassStatement) module.findClass(aClassName));
-			}
+		private final Subject<CompilerInstructions> compilerInstructionsSubject = ReplaySubject.<CompilerInstructions>create();
+		public        IProgressSink                 ps;
+		CompilerInstructionsObserver _cio;
+
+		@Override
+		public void onSubscribe(@NonNull final Disposable d) {
+			compilerInstructionsSubject.onSubscribe(d);
 		}
-		return l;
-	}
 
-	public int errorCount() {
-		return errSink.errorCount();
-	}
+		@Override
+		public void onNext(@NonNull final CompilerInstructions aCompilerInstructions) {
+			compilerInstructionsSubject.onNext(aCompilerInstructions);
+		}
 
-	public Operation2<OS_Module> findPrelude(final String prelude_name) {
-		return use.findPrelude(prelude_name);
-	}
+		@Override
+		public void onError(@NonNull final Throwable e) {
+			compilerInstructionsSubject.onError(e);
+		}
 
-	public void addModule(final OS_Module module, final String fn) {
-		modules.add(module);
-		use.addModule(module, fn);
-	}
+		@Override
+		public void onComplete() {
+			throw new IllegalStateException();
+			//compilerInstructionsSubject.onComplete();
+		}
 
-	//
-	// region MODULE STUFF
-	//
+		public void almostComplete() {
+			_cio.almostComplete();
+		}
 
-	// endregion
-
-	//
-	// region PACKAGES
-	//
-
-	public boolean isPackage(final String pkg) {
-		return _packages.containsKey(pkg);
-	}
-
-	public OS_Package getPackage(final Qualident pkg_name) {
-		return _packages.get(pkg_name.toString());
-	}
-
-	public OS_Package makePackage(final Qualident pkg_name) {
-		if (!isPackage(pkg_name.toString())) {
-			final OS_Package newPackage = new OS_Package(pkg_name, nextPackageCode());
-			_packages.put(pkg_name.toString(), newPackage);
-			return newPackage;
-		} else
-			return _packages.get(pkg_name.toString());
-	}
-
-	private int nextPackageCode() {
-		return _packageCode++;
-	}
-
-	// endregion
-
-	//
-	// region CLASS AND FUNCTION CODES
-	//
-
-	public int nextClassCode() {
-		return _classCode++;
-	}
-
-	public int nextFunctionCode() {
-		return _functionCode++;
-	}
-
-	//
-	// endregion
-	//
-
-	//
-	// region COMPILATION-SHIT
-	//
-
-	public int compilationNumber() {
-		return _compilationNumber;
-	}
-
-	public String getCompilationNumberString() {
-		return String.format("%08x", _compilationNumber);
-	}
-
-	// endregion
-
-	public ErrSink getErrSink() {
-		return errSink;
-	}
-
-	public void addFunctionMapHook(FunctionMapHook aFunctionMapHook) {
-		pipelineLogic.dp.addFunctionMapHook(aFunctionMapHook);
-	}
-
-	public static ElLog.Verbosity gitlabCIVerbosity() {
-		final boolean gitlab_ci = isGitlab_ci();
-		return gitlab_ci ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
-	}
-
-	public static boolean isGitlab_ci() {
-		return System.getenv("GITLAB_CI") != null;
-	}
-
-	public void eachModule(final Consumer<OS_Module> object) {
-		for (OS_Module mod : modules) {
-			object.accept(mod);
+		public void subscribe(final Observer<CompilerInstructions> aCio) {
+			compilerInstructionsSubject.subscribe(aCio);
 		}
 	}
 }

@@ -20,11 +20,11 @@ package tripleo.elijah.lang;
  */
 public class ToExpression extends BasicBinaryExpression {
 
-    public ToExpression(final IExpression fromPart, final IExpression toPart) {
-        left = fromPart;
-        right = toPart;
-        _kind = ExpressionKind.TO_EXPR;
-    }
+	public ToExpression(final IExpression fromPart, final IExpression toPart) {
+		left  = fromPart;
+		right = toPart;
+		_kind = ExpressionKind.TO_EXPR;
+	}
 }
 
 //

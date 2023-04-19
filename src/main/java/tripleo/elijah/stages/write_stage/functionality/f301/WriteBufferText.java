@@ -10,7 +10,7 @@ import java.io.PrintStream;
 
 public class WriteBufferText {
 	private GenerateResult result;
-	private File file;
+	private File           file;
 
 	public void run() {
 		PrintStream db_stream = null;

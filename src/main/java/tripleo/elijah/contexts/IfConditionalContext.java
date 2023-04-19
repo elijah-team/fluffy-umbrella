@@ -16,31 +16,31 @@ import java.util.List;
  * Created 8/21/20 3:16 AM
  */
 public class IfConditionalContext extends Context {
-	private final Context _parent;
+	private final Context       _parent;
 	private final IfConditional carrier;
-	private final Context _prev_ctx;
+	private final Context       _prev_ctx;
 
 	public IfConditionalContext(final Context cur, final IfConditional ifConditional) {
-		_parent = cur;
-		carrier = ifConditional;
+		_parent   = cur;
+		carrier   = ifConditional;
 		_prev_ctx = null; // TOP if statement
 	}
 
 	public IfConditionalContext(final Context ctx, final IfConditional ifConditional, final boolean _ignored) {
 		_prev_ctx = ctx;
-		_parent = ((IfConditionalContext)ctx)._parent;
-		carrier = ifConditional;
+		_parent   = ((IfConditionalContext) ctx)._parent;
+		carrier   = ifConditional;
 	}
 
 	@Override
 	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
-		for (final OS_Element/*StatementItem*/ item: carrier.getItems()) {
+		for (final OS_Element/*StatementItem*/ item : carrier.getItems()) {
 			if (!(item instanceof ClassStatement) &&
-			    !(item instanceof NamespaceStatement) &&
-			    !(item instanceof FunctionDef) &&
-			    !(item instanceof VariableSequence) &&
-			    !(item instanceof AliasStatement)
+					!(item instanceof NamespaceStatement) &&
+					!(item instanceof FunctionDef) &&
+					!(item instanceof VariableSequence) &&
+					!(item instanceof AliasStatement)
 			) continue;
 			if (item instanceof OS_Element2) {
 				if (((OS_Element2) item).name().equals(name)) {
@@ -48,7 +48,7 @@ public class IfConditionalContext extends Context {
 				}
 			}
 			if (item instanceof VariableSequence) {
-				tripleo.elijah.util.Stupidity.println_out_2("1102 "+item);
+				tripleo.elijah.util.Stupidity.println_out_2("1102 " + item);
 				for (final VariableStatement vs : ((VariableSequence) item).items()) {
 					if (vs.getName().equals(name))
 						Result.add(name, level, vs, this);

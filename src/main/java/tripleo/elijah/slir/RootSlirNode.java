@@ -18,7 +18,7 @@ import java.util.List;
  * Created 11/6/21 8:23 AM
  */
 public class RootSlirNode {
-	private final Compilation compilation;
+	private final Compilation          compilation;
 	private final List<SlirSourceNode> sourceNodes = new ArrayList<>();
 
 	public RootSlirNode(final Compilation aCompilation) {

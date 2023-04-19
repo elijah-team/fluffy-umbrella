@@ -3,17 +3,8 @@ package tripleo.elijah.stages.gen_c;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.PropertyStatement;
-import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.gen_fn.*;
-import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
-import tripleo.elijah.stages.gen_fn.EvaClass;
-import tripleo.elijah.stages.gen_fn.EvaContainerNC;
-import tripleo.elijah.stages.gen_fn.EvaNamespace;
-import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.util.NotImplementedException;
@@ -37,14 +28,14 @@ class CRI_Ident {
 	}
 
 	public String getIdentIAPath(int i,
-	                             final int sSize,
-	                             final Generate_Code_For_Method.AOG aog,
-	                             final List<String> sl,
-	                             final String aValue,
-	                             final Consumer<CReference.Reference> addRef,
-	                             final List<InstructionArgument> s,
-	                             final IdentIA ia2,
-	                             final CReference aCReference) {
+								 final int sSize,
+								 final Generate_Code_For_Method.AOG aog,
+								 final List<String> sl,
+								 final String aValue,
+								 final Consumer<CReference.Reference> addRef,
+								 final List<InstructionArgument> s,
+								 final IdentIA ia2,
+								 final CReference aCReference) {
 		final boolean[]  skip             = {false};
 		final OS_Element resolved_element = ite.getResolvedElement();
 		final String[]   text             = {null};
@@ -58,7 +49,7 @@ class CRI_Ident {
 
 			//assert repo_element != null;
 			if (repo_element == null) {
-				int y=2;
+				int y = 2;
 				//throw new AssertionError();
 			} else {
 				if (resolved_element instanceof ClassStatement) {
@@ -72,7 +63,7 @@ class CRI_Ident {
 					resolved2 = _re_is_PropertyStatement(addRef, aog, sSize, i, aValue, (x) -> skip[0] = true, (x) -> text[0] = x);
 
 					repo_element.setEvaNode(resolved2);
-					
+
 					skip[0] = false;
 				}
 			}
@@ -201,13 +192,13 @@ class CRI_Ident {
 	}
 
 	boolean _getIdentIAPath_IdentIAHelper(final InstructionArgument ia_next,
-	                                      final List<String> sl,
-	                                      final int i,
-	                                      final int sSize,
-	                                      final OS_Element resolved_element,
-	                                      final BaseEvaFunction generatedFunction,
-	                                      final EvaNode aResolved,
-	                                      final String aValue, final CReference aCReference) {
+										  final List<String> sl,
+										  final int i,
+										  final int sSize,
+										  final OS_Element resolved_element,
+										  final BaseEvaFunction generatedFunction,
+										  final EvaNode aResolved,
+										  final String aValue, final CReference aCReference) {
 		return new CReference_getIdentIAPath_IdentIAHelper(ia_next, sl, i, sSize, resolved_element, generatedFunction, aResolved, aValue).action(this, aCReference);
 	}
 }

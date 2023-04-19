@@ -18,32 +18,32 @@ import tripleo.elijah.util.NotImplementedException;
  *
  */
 public class MethRef {
-	private final int _code;
+	private final int     _code;
 	private final TypeRef _parent;
-	private final String _title;
-	
+	private final String  _title;
+
 	public MethRef(final String title, final TypeRef parent, final int code) {
-		_title = title;
+		_title  = title;
 		_parent = parent;
-		_code = code;
+		_code   = code;
 	}
-	
+
 	public void setArgTypes(final TypeRef... types) {
 		NotImplementedException.raise();
 	}
-	
+
 	public void setReturnType(final TypeRef return_type) {
 		NotImplementedException.raise();
 	}
-	
+
 	public int getCode() {
 		return _code;
 	}
-	
+
 	public TypeRef getParent() {
 		return _parent;
 	}
-	
+
 	public String getTitle() {
 		return _title;
 	}

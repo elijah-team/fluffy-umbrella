@@ -24,7 +24,7 @@ public class QueryEzFileToModule {
 	}
 
 	public Operation<CompilerInstructions> calculate() {
-		final String f = params.sourceFilename;
+		final String      f = params.sourceFilename;
 		final InputStream s = params.inputStream;
 
 		final EzLexer lexer = new EzLexer(s);

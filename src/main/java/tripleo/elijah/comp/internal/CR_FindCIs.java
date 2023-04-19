@@ -3,24 +3,17 @@ package tripleo.elijah.comp.internal;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.comp.i.CCI;
 import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.i.CompilationClosure;
 import tripleo.elijah.comp.CompilationRunner;
 import tripleo.elijah.comp.CompilerInput;
 import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.comp.i.ICompilationBus;
-import tripleo.elijah.comp.i.ILazyCompilerInstructions;
-//import tripleo.elijah.comp.QuerySearchEzFiles;
 import tripleo.elijah.comp.diagnostic.TooManyEz_ActuallyNone;
 import tripleo.elijah.comp.diagnostic.TooManyEz_BeSpecific;
-import tripleo.elijah.comp.i.IProgressSink;
-import tripleo.elijah.comp.i.ProgressSinkComponent;
+import tripleo.elijah.comp.i.*;
 import tripleo.elijah.comp.queries.QuerySearchEzFiles;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.nextgen.query.Mode;
 import tripleo.elijah.nextgen.query.Operation2;
-import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VariableTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.DefaultStateful;
 import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
 import tripleo.elijah.stages.deduce.post_bytecode.State;
@@ -35,7 +28,7 @@ import static tripleo.elijah.util.Helpers.List_of;
 
 public class CR_FindCIs extends DefaultStateful implements CompilationRunner.CR_Action {
 	private final List<CompilerInput> inputs;
-	private final State st;
+	private final State               st;
 	private       CompilationRunner   compilationRunner;
 	private       CCI                 cci;
 	private       ICompilationBus     cb;
@@ -43,7 +36,7 @@ public class CR_FindCIs extends DefaultStateful implements CompilationRunner.CR_
 	@Contract(pure = true)
 	public CR_FindCIs(final List<CompilerInput> aArgs2) {
 		inputs = aArgs2;
-		st        = CompilationRunner.ST.INITIAL;
+		st     = CompilationRunner.ST.INITIAL;
 	}
 
 	@Override
@@ -112,12 +105,9 @@ public class CR_FindCIs extends DefaultStateful implements CompilationRunner.CR_
 	}
 
 	protected List<CompilerInput> find_cis(final @NotNull List<CompilerInput> inputs,
-	                                       final @NotNull Compilation c,
-	                                       final @NotNull ErrSink errSink) {
+										   final @NotNull Compilation c,
+										   final @NotNull ErrSink errSink) {
 		final List<CompilerInput> x = new ArrayList<>();
-
-
-
 
 
 		//final IProgressSink ps = cis.ps;
@@ -127,11 +117,6 @@ public class CR_FindCIs extends DefaultStateful implements CompilationRunner.CR_
 				tripleo.elijah.util.Stupidity.println_err_2(aCci.printErr(aCode, aType, aParams));
 			}
 		};
-
-
-
-
-
 
 
 		CompilerInstructions ez_file;

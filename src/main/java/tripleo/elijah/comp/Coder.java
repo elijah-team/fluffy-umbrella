@@ -4,12 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
-import tripleo.elijah.stages.gen_fn.EvaClass;
-import tripleo.elijah.stages.gen_fn.EvaFunction;
-import tripleo.elijah.stages.gen_fn.EvaNamespace;
-import tripleo.elijah.stages.gen_fn.EvaNode;
-import tripleo.elijah.stages.gen_fn.IdentTableEntry;
+import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 
 import java.util.List;
@@ -48,6 +43,18 @@ public class Coder {
 		}
 	}
 
+	public void codeNodeFunction(@NotNull final BaseEvaFunction generatedFunction, final OS_Module mod) {
+//		if (generatedFunction.getCode() == 0)
+//			generatedFunction.setCode(mod.parent.nextFunctionCode());
+		codeRegistrar.registerFunction(generatedFunction);
+	}
+
+	public void codeNodeClass(@NotNull final EvaClass generatedClass, final OS_Module mod) {
+//		if (generatedClass.getCode() == 0)
+//			generatedClass.setCode(mod.parent.nextClassCode());
+		codeRegistrar.registerClass(generatedClass);
+	}
+
 	private void setClassmapNodeCodes(@NotNull final Map<ClassStatement, EvaClass> aClassMap, final OS_Module mod) {
 		aClassMap.values().forEach(generatedClass -> codeNodeClass(generatedClass, mod));
 	}
@@ -59,6 +66,12 @@ public class Coder {
 						.map(IdentTableEntry::resolvedType)
 						.collect(Collectors.toList()))
 				.forEach(resolved_nodes::addAll);
+	}
+
+	public void codeNodeNamespace(@NotNull final EvaNamespace generatedNamespace, final OS_Module mod) {
+//		if (generatedNamespace.getCode() == 0)
+//			generatedNamespace.setCode(mod.parent.nextClassCode());
+		codeRegistrar.registerNamespace(generatedNamespace);
 	}
 
 	public void codeNode(final EvaNode generatedNode, final OS_Module mod) {
@@ -74,23 +87,5 @@ public class Coder {
 			final EvaNamespace generatedNamespace = (EvaNamespace) generatedNode;
 			coder.codeNodeNamespace(generatedNamespace, mod);
 		}
-	}
-
-	public void codeNodeFunction(@NotNull final BaseEvaFunction generatedFunction, final OS_Module mod) {
-//		if (generatedFunction.getCode() == 0)
-//			generatedFunction.setCode(mod.parent.nextFunctionCode());
-		codeRegistrar.registerFunction(generatedFunction);
-	}
-
-	public void codeNodeClass(@NotNull final EvaClass generatedClass, final OS_Module mod) {
-//		if (generatedClass.getCode() == 0)
-//			generatedClass.setCode(mod.parent.nextClassCode());
-		codeRegistrar.registerClass(generatedClass);
-	}
-
-	public void codeNodeNamespace(@NotNull final EvaNamespace generatedNamespace, final OS_Module mod) {
-//		if (generatedNamespace.getCode() == 0)
-//			generatedNamespace.setCode(mod.parent.nextClassCode());
-		codeRegistrar.registerNamespace(generatedNamespace);
 	}
 }

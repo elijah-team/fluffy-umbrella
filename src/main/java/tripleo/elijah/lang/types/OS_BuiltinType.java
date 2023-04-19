@@ -6,13 +6,13 @@ import tripleo.elijah.lang2.BuiltInTypes;
 public class OS_BuiltinType extends __Abstract_OS_Type {
 	private final BuiltInTypes _bit;
 
+	public OS_BuiltinType(final BuiltInTypes aTypes) {
+		_bit = (aTypes);
+	}
+
 	@Override
 	public BuiltInTypes getBType() {
 		return _bit;
-	}
-
-	public OS_BuiltinType(final BuiltInTypes aTypes) {
-		_bit = (aTypes);
 	}
 
 	@Override

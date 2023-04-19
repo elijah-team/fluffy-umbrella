@@ -9,11 +9,7 @@
 package tripleo.elijah.entrypoints;
 
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.lang.ClassItem;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.OS_Package;
-import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.lang.*;
 
 import java.util.Collection;
 
@@ -21,14 +17,14 @@ import java.util.Collection;
  * Created 6/14/21 7:28 AM
  */
 public class MainClassEntryPoint implements EntryPoint {
-	private FunctionDef main_function;
 	private final ClassStatement klass;
+	private       FunctionDef    main_function;
 
 	public MainClassEntryPoint(ClassStatement aKlass) {
 		final Collection<ClassItem> main = aKlass.findFunction("main");
 		for (ClassItem classItem : main) {
-			FunctionDef fd = (FunctionDef) classItem;
-			boolean return_type_is_null;
+			FunctionDef    fd       = (FunctionDef) classItem;
+			boolean        return_type_is_null;
 			final TypeName typeName = fd.returnType();
 			if (typeName == null)
 				return_type_is_null = true;
@@ -50,14 +46,14 @@ public class MainClassEntryPoint implements EntryPoint {
 
 	public static boolean is_main_function_with_no_args(@NotNull FunctionDef aFunctionDef) {
 		switch (aFunctionDef.getSpecies()) {
-			case REG_FUN:
-			case DEF_FUN:
-				if (aFunctionDef.name().equals("main")) {
-					return !aFunctionDef.getArgs().iterator().hasNext();
-				}
-				break;
-			default:
-				throw new Error();
+		case REG_FUN:
+		case DEF_FUN:
+			if (aFunctionDef.name().equals("main")) {
+				return !aFunctionDef.getArgs().iterator().hasNext();
+			}
+			break;
+		default:
+			throw new Error();
 		}
 		return false;
 	}

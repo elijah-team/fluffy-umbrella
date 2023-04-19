@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 class GI_Repo {
-	private final Map<Object, GenerateC_Item>            items = new HashMap<>();
+	private final Map<Object, GenerateC_Item> items = new HashMap<>();
 
 	public GenerateC_Item itemFor(final ProcIA aProcIA) {
 		final GI_ProcIA gi_proc;

@@ -12,15 +12,15 @@ import org.jetbrains.annotations.Contract;
 
 @SuppressWarnings("unused")
 public class NotImplementedException extends RuntimeException {
-public NotImplementedException() {
-	final int y=2;
-	Stupidity.println_err_2("Should not be here 2");
-}
+	public NotImplementedException() {
+		final int y = 2;
+		Stupidity.println_err_2("Should not be here 2");
+	}
 
-@Contract(pure = true)
-public static void raise() {
-	final int y=2;
-	Stupidity.println_err_2("Should not be here");
-}
+	@Contract(pure = true)
+	public static void raise() {
+		final int y = 2;
+		Stupidity.println_err_2("Should not be here");
+	}
 }
 

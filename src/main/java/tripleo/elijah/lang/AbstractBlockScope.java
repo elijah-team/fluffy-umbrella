@@ -16,15 +16,17 @@ import antlr.Token;
 public abstract class AbstractBlockScope implements Scope {
 
 	private final AbstractStatementClosure asc;
+	private final OS_Container _element;
 
 	public AbstractBlockScope(final OS_Container _element) {
 		this._element = _element;
-		this.asc = new AbstractStatementClosure(this, getParent());
+		this.asc      = new AbstractStatementClosure(this, getParent());
 	}
 
-	private final OS_Container _element;
-
 	@Override
+	public void addDocString(final Token aS) {
+		_element.addDocString(aS);
+	}	@Override
 	public void add(final StatementItem aItem) {
 		if (aItem instanceof FunctionItem)
 			_element.add((OS_Element) aItem);
@@ -32,10 +34,7 @@ public abstract class AbstractBlockScope implements Scope {
 			tripleo.elijah.util.Stupidity.println_err_2(String.format("adding false FunctionItem %s", aItem.getClass().getName()));
 	}
 
-	@Override
-	public void addDocString(final Token aS) {
-		_element.addDocString(aS);
-	}
+
 
 	@Override
 	public BlockStatement blockStatement() {

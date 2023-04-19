@@ -30,17 +30,17 @@ public class GN_GenerateNodesIntoSink implements GN_Notable {
 	private final List<EvaNode>      lgc;
 	private final GenerateResult     gr;
 	private final ElLog.Verbosity    verbosity;
-	private final PipelineLogic pipelineLogic;
-	private final IPipelineAccess pa;
+	private final PipelineLogic      pipelineLogic;
+	private final IPipelineAccess    pa;
 
 	public GN_GenerateNodesIntoSink(final List<EvaNode> algc, final GenerateResultSink aResultSink, final EIT_ModuleList aModuleList, final ElLog.Verbosity aVerbosity, final GenerateResult agr, final PipelineLogic aPipelineLogic, final IPipelineAccess aPa) {
-		mods       = aModuleList;
-		lgc        = algc;
-		resultSink = aResultSink;
-		gr         = agr;
-		verbosity  = aVerbosity;
+		mods          = aModuleList;
+		lgc           = algc;
+		resultSink    = aResultSink;
+		gr            = agr;
+		verbosity     = aVerbosity;
 		pipelineLogic = aPipelineLogic;
-		pa = aPa;
+		pa            = aPa;
 	}
 
 	/*
@@ -83,12 +83,6 @@ public class GN_GenerateNodesIntoSink implements GN_Notable {
 		}
 
 		wm.drain(); // TODO here??
-
-
-
-
-
-
 
 
 		pa.getAccessBus().resolveGenerateResult(gr);

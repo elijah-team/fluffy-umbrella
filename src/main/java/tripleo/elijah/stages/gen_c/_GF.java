@@ -13,11 +13,7 @@ import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_ProcTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
-import tripleo.elijah.stages.instructions.IdentIA;
-import tripleo.elijah.stages.instructions.Instruction;
-import tripleo.elijah.stages.instructions.InstructionArgument;
-import tripleo.elijah.stages.instructions.InstructionFixedList;
-import tripleo.elijah.stages.instructions.IntegerIA;
+import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 

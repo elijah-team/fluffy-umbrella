@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package tripleo.elijah.lang;
 
@@ -11,13 +11,13 @@ package tripleo.elijah.lang;
 public class DotExpression extends BasicBinaryExpression {
 
 	public DotExpression(final IExpression ee, final IdentExpression identExpression) {
-		left = ee;
+		left  = ee;
 		right = identExpression;
 		_kind = ExpressionKind.DOT_EXP;
 	}
 
 	public DotExpression(final IExpression ee, final IExpression aExpression) {
-		left = ee;
+		left  = ee;
 		right = aExpression;
 		_kind = ExpressionKind.DOT_EXP;
 	}

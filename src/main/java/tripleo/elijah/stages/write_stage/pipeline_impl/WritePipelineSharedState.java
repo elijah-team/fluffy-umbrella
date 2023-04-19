@@ -15,14 +15,14 @@ import java.io.File;
  * Really a record, but state is not all set at once
  */
 public final class WritePipelineSharedState {
-	public @NotNull ElSystem                               sys;
+	public @NotNull  ElSystem                               sys;
 	@NotNull
-	public          Multimap<CompilerInstructions, String> lsp_outputs;
-	public @NotNull Compilation                            c;
+	public           Multimap<CompilerInstructions, String> lsp_outputs;
+	public @NotNull  Compilation                            c;
+	public @NotNull  File                                   file_prefix;
+	@NotNull
+	public           Multimap<String, Buffer>               mmb;
 	private @NotNull GenerateResult                         gr;
-	public @NotNull File                     file_prefix;
-	@NotNull
-	public          Multimap<String, Buffer> mmb;
 
 	@Contract(pure = true)
 	public @NotNull GenerateResult getGr() {

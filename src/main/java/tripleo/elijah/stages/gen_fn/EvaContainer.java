@@ -40,19 +40,22 @@ public interface EvaContainer extends EvaNode {
 		public        TypeName                                           typeName;
 		public        OS_Type                                            varType;
 		public        List<TypeTableEntry>                               potentialTypes                = new ArrayList<TypeTableEntry>();
+		public List<ConnectionPair> connectionPairs = new ArrayList<>();
+		UpdatePotentialTypesCB updatePotentialTypesCB;
 		private       EvaNode                                            _resolvedType;
+		private DeferredObject<OS_Type, Void, Void> _resolve_varType_Promise = new DeferredObject<>();
 
 		public VarTableEntry(final VariableStatement aVs,
 							 final @NotNull IdentExpression aNameToken,
 							 final IExpression aInitialValue,
 							 final @NotNull TypeName aTypeName,
 							 final @NotNull OS_Element aElement) {
-			vs              = aVs;
-			nameToken       = aNameToken;
-			initialValue    = aInitialValue;
-			typeName        = aTypeName;
-			varType         = new OS_UserType(typeName);
-			parent          = aElement;
+			vs           = aVs;
+			nameToken    = aNameToken;
+			initialValue = aInitialValue;
+			typeName     = aTypeName;
+			varType      = new OS_UserType(typeName);
+			parent       = aElement;
 		}
 
 		public DeduceElement3_VarTableEntry getDeduceElement3() {
@@ -80,8 +83,6 @@ public interface EvaContainer extends EvaNode {
 			connectionPairs.add(new ConnectionPair(aVte, aConstructor));
 		}
 
-		public List<ConnectionPair> connectionPairs = new ArrayList<>();
-
 		public void resolve_varType(final OS_Type aOS_type) {
 			_resolve_varType_Promise.resolve(aOS_type);
 			varType = aOS_type;
@@ -90,14 +91,6 @@ public interface EvaContainer extends EvaNode {
 		public void resolve_varType_cb(final DoneCallback<OS_Type> aCallback) {
 			_resolve_varType_Promise.then(aCallback);
 		}
-
-		private DeferredObject<OS_Type, Void, Void> _resolve_varType_Promise = new DeferredObject<>();
-
-		public interface UpdatePotentialTypesCB {
-			void call(final @NotNull EvaContainer aEvaContainer);
-		}
-
-		UpdatePotentialTypesCB updatePotentialTypesCB;
 
 		public void updatePotentialTypes(final @NotNull EvaContainer aEvaContainer) {
 //			assert aGeneratedContainer == GeneratedContainer.this;
@@ -109,13 +102,17 @@ public interface EvaContainer extends EvaNode {
 			});
 		}
 
+		public interface UpdatePotentialTypesCB {
+			void call(final @NotNull EvaContainer aEvaContainer);
+		}
+
 		public static class ConnectionPair {
 			public final VariableTableEntry vte;
 			final        EvaConstructor     constructor;
 
 			@Contract(pure = true)
 			public ConnectionPair(final VariableTableEntry aVte, final EvaConstructor aConstructor) {
-				vte = aVte;
+				vte         = aVte;
 				constructor = aConstructor;
 			}
 		}

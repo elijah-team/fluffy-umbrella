@@ -15,13 +15,13 @@ import tripleo.elijah.lang.AliasStatement;
  * Created 11/10/21 3:04 AM
  */
 public class SlirAlias {
-	private final SlirElement parent;
-	private final String aliasName;
+	private final SlirElement    parent;
+	private final String         aliasName;
 	private final AliasStatement aliasStatement;
 
 	public SlirAlias(final SlirElement aParent, final String aAliasName, final AliasStatement aAliasStatement) {
-		parent = aParent;
-		aliasName = aAliasName;
+		parent         = aParent;
+		aliasName      = aAliasName;
 		aliasStatement = aAliasStatement;
 	}
 }

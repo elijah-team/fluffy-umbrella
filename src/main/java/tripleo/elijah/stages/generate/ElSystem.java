@@ -10,10 +10,9 @@ package tripleo.elijah.stages.generate;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.stages.gen_c.CDependencyRef;
 import tripleo.elijah.stages.gen_c.OutputFileC;
 import tripleo.elijah.stages.gen_fn.*;
-import tripleo.elijah.stages.gen_fn.EvaClass;
-import tripleo.elijah.stages.gen_c.CDependencyRef;
 import tripleo.elijah.stages.gen_generic.Dependency;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
@@ -40,7 +39,7 @@ public class ElSystem {
 
 	public void generateOutputs(@NotNull GenerateResult gr) {
 		//final OutputStrategy  outputStrategy1 = this.outputStrategy;
-		final OutputStrategy  outputStrategy1 = outputStrategyCreator.get();
+		final OutputStrategy outputStrategy1 = outputStrategyCreator.get();
 		// TODO hard coded
 		final OutputStrategyC outputStrategyC = new OutputStrategyC(outputStrategy1);
 
@@ -61,7 +60,7 @@ public class ElSystem {
 					final String filename1 = getFilenameForNode((EvaNode) dependency.referent, GenerateResult.TY.HEADER, outputStrategyC);
 					dependency.setRef(new CDependencyRef(filename1));
 				} else {
-					int y=2;
+					int y = 2;
 					assert false;
 				}
 			}
@@ -72,7 +71,7 @@ public class ElSystem {
 		if (verbose) {
 			for (GenerateResultItem ab : gr.results()) {
 				if (ab.node instanceof EvaFunction) continue;
-				tripleo.elijah.util.Stupidity.println_out_2("** "+ab.node+" "+ ab.output/*((CDependencyRef)ab.getDependency().getRef()).getHeaderFile()*/);
+				tripleo.elijah.util.Stupidity.println_out_2("** " + ab.node + " " + ab.output/*((CDependencyRef)ab.getDependency().getRef()).getHeaderFile()*/);
 			}
 		}
 

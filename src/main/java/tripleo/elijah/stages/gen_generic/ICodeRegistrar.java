@@ -13,7 +13,6 @@ package tripleo.elijah.stages.gen_generic;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_fn.EvaNamespace;
-import tripleo.elijah.stages.gen_fn.EvaNamespace;
 
 /**
  * Move this to Mir or Lir layer ASAP

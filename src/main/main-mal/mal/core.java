@@ -1,29 +1,12 @@
 package mal;
 
 import com.google.common.collect.ImmutableMap;
-import mal.types.MalAtom;
-import mal.types.MalConstant;
-import mal.types.MalContinue;
-import mal.types.MalError;
-import mal.types.MalException;
-import mal.types.MalFunction;
-import mal.types.MalHashMap;
-import mal.types.MalInteger;
-import mal.types.MalList;
-import mal.types.MalString;
-import mal.types.MalSymbol;
-import mal.types.MalThrowable;
-import mal.types.MalVal;
-import mal.types.MalVector;
+import mal.types.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class core {
 	public static ImmutableMap<String, MalVal> ns;
@@ -92,11 +75,11 @@ public class core {
 	static MalFunction keyword   = new MalFunction() {
 		public MalVal apply(final MalList args) throws MalThrowable {
 			if (args.nth(0) instanceof MalString &&
-			  (((MalString) args.nth(0)).getValue().charAt(0) == '\u029e')) {
+					(((MalString) args.nth(0)).getValue().charAt(0) == '\u029e')) {
 				return args.nth(0);
 			} else {
 				return new MalString(
-				  "\u029e" + ((MalString) args.nth(0)).getValue());
+						"\u029e" + ((MalString) args.nth(0)).getValue());
 			}
 		}
 	};
@@ -193,8 +176,8 @@ public class core {
 			try {
 				// Scanner drops final newline, so add it back
 				return new MalString(
-				  new Scanner(new File(fname)).useDelimiter("\\Z").next()
-					+ "\n");
+						new Scanner(new File(fname)).useDelimiter("\\Z").next()
+								+ "\n");
 			} catch (final FileNotFoundException e) {
 				throw new MalError(e.getMessage());
 			}
@@ -369,7 +352,7 @@ public class core {
 		public MalVal apply(final MalList a) throws MalThrowable {
 			final MalVal exp = a.nth(0);
 			if (exp == Nil || (exp instanceof MalList &&
-			  ((MalList) exp).size() == 0)) {
+					((MalList) exp).size() == 0)) {
 				return True;
 			} else {
 				return False;
@@ -448,7 +431,7 @@ public class core {
 			final MalList     new_lst = new MalList();
 			for (Integer i = 0; i < src_lst.size(); i++) {
 				new_lst.value.add(
-				  f.apply(new MalList(src_lst.nth(i))));
+						f.apply(new MalList(src_lst.nth(i))));
 			}
 			return new_lst;
 		}
@@ -557,73 +540,73 @@ public class core {
 		};
 
 		ns = ImmutableMap.<String, MalVal>builder()
-		                 .put("=", equal_Q)
-		                 .put("throw", mal_throw)
-		                 .put("nil?", nil_Q)
-		                 .put("true?", true_Q)
-		                 .put("false?", false_Q)
-		                 .put("number?", number_Q)
-		                 .put("string?", string_Q)
-		                 .put("symbol", symbol)
-		                 .put("symbol?", symbol_Q)
-		                 .put("keyword", keyword)
-		                 .put("keyword?", keyword_Q)
-		                 .put("fn?", fn_Q)
-		                 .put("macro?", macro_Q)
+				.put("=", equal_Q)
+				.put("throw", mal_throw)
+				.put("nil?", nil_Q)
+				.put("true?", true_Q)
+				.put("false?", false_Q)
+				.put("number?", number_Q)
+				.put("string?", string_Q)
+				.put("symbol", symbol)
+				.put("symbol?", symbol_Q)
+				.put("keyword", keyword)
+				.put("keyword?", keyword_Q)
+				.put("fn?", fn_Q)
+				.put("macro?", macro_Q)
 
-		                 .put("pr-str", pr_str)
-		                 .put("str", str)
-		                 .put("prn", prn)
-		                 .put("println", println)
-		                 .put("readline", mal_readline)
-		                 .put("read-string", read_string)
-		                 .put("slurp", slurp)
-		                 .put("<", lt)
-		                 .put("<=", lte)
-		                 .put(">", gt)
-		                 .put(">=", gte)
-		                 .put("+", add)
-		                 .put("-", subtract)
-		                 .put("*", multiply)
-		                 .put("/", divide)
-		                 .put("time-ms", time_ms)
+				.put("pr-str", pr_str)
+				.put("str", str)
+				.put("prn", prn)
+				.put("println", println)
+				.put("readline", mal_readline)
+				.put("read-string", read_string)
+				.put("slurp", slurp)
+				.put("<", lt)
+				.put("<=", lte)
+				.put(">", gt)
+				.put(">=", gte)
+				.put("+", add)
+				.put("-", subtract)
+				.put("*", multiply)
+				.put("/", divide)
+				.put("time-ms", time_ms)
 
-		                 .put("list", new_list)
-		                 .put("list?", list_Q)
-		                 .put("vector", new_vector)
-		                 .put("vector?", vector_Q)
-		                 .put("hash-map", new_hash_map)
-		                 .put("map?", hash_map_Q)
-		                 .put("assoc", assoc)
-		                 .put("dissoc", dissoc)
-		                 .put("contains?", contains_Q)
-		                 .put("get", get)
-		                 .put("keys", keys)
-		                 .put("vals", vals)
+				.put("list", new_list)
+				.put("list?", list_Q)
+				.put("vector", new_vector)
+				.put("vector?", vector_Q)
+				.put("hash-map", new_hash_map)
+				.put("map?", hash_map_Q)
+				.put("assoc", assoc)
+				.put("dissoc", dissoc)
+				.put("contains?", contains_Q)
+				.put("get", get)
+				.put("keys", keys)
+				.put("vals", vals)
 
-		                 .put("sequential?", sequential_Q)
-		                 .put("cons", cons)
-		                 .put("concat", concat)
-		                 .put("vec", vec)
-		                 .put("nth", nth)
-		                 .put("first", first)
-		                 .put("rest", rest)
-		                 .put("empty?", empty_Q)
-		                 .put("count", count)
-		                 .put("apply", apply)
-		                 .put("map", map)
+				.put("sequential?", sequential_Q)
+				.put("cons", cons)
+				.put("concat", concat)
+				.put("vec", vec)
+				.put("nth", nth)
+				.put("first", first)
+				.put("rest", rest)
+				.put("empty?", empty_Q)
+				.put("count", count)
+				.put("apply", apply)
+				.put("map", map)
 
-		                 .put("conj", conj)
-		                 .put("seq", seq)
+				.put("conj", conj)
+				.put("seq", seq)
 
-		                 .put("with-meta", with_meta)
-		                 .put("meta", meta)
-		                 .put("atom", new_atom)
-		                 .put("atom?", atom_Q)
-		                 .put("deref", deref)
-		                 .put("reset!", reset_BANG)
-		                 .put("swap!", swap_BANG)
-		                 .build();
+				.put("with-meta", with_meta)
+				.put("meta", meta)
+				.put("atom", new_atom)
+				.put("atom?", atom_Q)
+				.put("deref", deref)
+				.put("reset!", reset_BANG)
+				.put("swap!", swap_BANG)
+				.build();
 	}
 
 	static public Boolean _list_Q(final MalVal mv) {

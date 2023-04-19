@@ -14,9 +14,9 @@ import tripleo.elijah.lang.*;
  * Created 12/22/20 10:22 PM
  */
 public class TypeAliasBuilder extends ElBuilder {
-	private OS_Element _parent;
-	private Context _context;
-	private Qualident oldElement;
+	private OS_Element      _parent;
+	private Context         _context;
+	private Qualident       oldElement;
 	private IdentExpression newAlias;
 
 	public IdentExpression getIdent() {

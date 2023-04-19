@@ -15,18 +15,18 @@ import java.util.List;
  * Created 8/23/21 2:36 AM
  */
 public class FunctionBody {
-	public Scope3 scope3;
+	public  Scope3  scope3;
 	private boolean isAbstract;
 
 	private List<Postcondition> postconditions;
-	private List<Precondition> preconditions;
-
-	public void setAbstract(boolean aAbstract) {
-		isAbstract = aAbstract;
-	}
+	private List<Precondition>  preconditions;
 
 	public boolean getAbstract() {
 		return isAbstract;
+	}
+
+	public void setAbstract(boolean aAbstract) {
+		isAbstract = aAbstract;
 	}
 
 	public void addPreCondition(Precondition aPrecondition) {

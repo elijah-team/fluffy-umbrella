@@ -26,10 +26,10 @@ import java.util.Map;
  * Created 3/5/21 3:51 AM
  */
 public class ClassInvocation implements IInvocation {
-	private final @NotNull ClassStatement cls;
-	public final @Nullable Map<TypeName, OS_Type> genericPart;
-	private final String                               constructorName;
-	private final DeferredObject<EvaClass, Void, Void> resolvePromise = new DeferredObject<EvaClass, Void, Void>();
+	public final @Nullable Map<TypeName, OS_Type>               genericPart;
+	private final @NotNull ClassStatement                       cls;
+	private final          String                               constructorName;
+	private final          DeferredObject<EvaClass, Void, Void> resolvePromise = new DeferredObject<EvaClass, Void, Void>();
 
 	public ClassInvocation(@NotNull ClassStatement aClassStatement, String aConstructorName) {
 		cls = aClassStatement;

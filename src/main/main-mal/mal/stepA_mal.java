@@ -1,15 +1,7 @@
 package mal;
 
 import mal.env.Env;
-import mal.types.MalException;
-import mal.types.MalFunction;
-import mal.types.MalHashMap;
-import mal.types.MalList;
-import mal.types.MalString;
-import mal.types.MalSymbol;
-import mal.types.MalThrowable;
-import mal.types.MalVal;
-import mal.types.MalVector;
+import mal.types.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -57,21 +49,21 @@ public class stepA_mal {
 	}
 
 	public static Boolean is_macro_call(final MalVal ast, final Env env)
-	  throws MalThrowable {
+	throws MalThrowable {
 		if (ast instanceof MalList) {
 			final MalVal a0 = ((MalList) ast).nth(0);
 			if (a0 instanceof MalSymbol &&
-			  env.find(((MalSymbol) a0)) != null) {
+					env.find(((MalSymbol) a0)) != null) {
 				final MalVal mac = env.get(((MalSymbol) a0));
 				return mac instanceof MalFunction &&
-				  ((MalFunction) mac).isMacro();
+						((MalFunction) mac).isMacro();
 			}
 		}
 		return false;
 	}
 
 	public static MalVal macroexpand(MalVal ast, final Env env)
-	  throws MalThrowable {
+	throws MalThrowable {
 		while (is_macro_call(ast, env)) {
 			final MalSymbol   a0  = (MalSymbol) ((MalList) ast).nth(0);
 			final MalFunction mac = (MalFunction) env.get(a0);
@@ -85,7 +77,7 @@ public class stepA_mal {
 			return env.get((MalSymbol) ast);
 		} else if (ast instanceof final MalList old_lst) {
 			final MalList new_lst = ast.list_Q() ? new MalList()
-			  : new MalVector();
+					: new MalVector();
 			for (final MalVal mv : (List<MalVal>) old_lst.value) {
 				new_lst.conj_BANG(EVAL(mv, env));
 			}
@@ -186,8 +178,8 @@ public class stepA_mal {
 								exc = new MalString(t.getMessage() + ": " + tstr);
 							}
 							return EVAL(((MalList) a2).nth(2),
-							  new Env(env, ((MalList) a2).slice(1, 2),
-								new MalList(exc)));
+										new Env(env, ((MalList) a2).slice(1, 2),
+												new MalList(exc)));
 						}
 					}
 					throw t;

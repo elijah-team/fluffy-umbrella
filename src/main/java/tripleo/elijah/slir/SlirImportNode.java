@@ -19,12 +19,12 @@ import java.util.List;
  * Created 11/6/21 8:34 AM
  */
 public class SlirImportNode implements SlirElement {
-	private final SlirSourceNode sourceNode;
-	private final ImportStatement importStatement;
+	private final SlirSourceNode    sourceNode;
+	private final ImportStatement   importStatement;
 	private final List<SlirElement> imported = new ArrayList<SlirElement>();
 
 	public SlirImportNode(final SlirSourceNode aSlirSourceNode, final ImportStatement aImportStatement) {
-		sourceNode = aSlirSourceNode;
+		sourceNode      = aSlirSourceNode;
 		importStatement = aImportStatement;
 	}
 
