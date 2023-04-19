@@ -36,6 +36,8 @@ import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_Function;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_ProcTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
+import tripleo.elijah.stages.deduce.tastic.FT_FnCallArgs;
+import tripleo.elijah.stages.deduce.tastic.ITastic;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.stages.logging.ElLog;
@@ -58,6 +60,22 @@ public class DeduceTypes2 {
 	private final         ErrSink     errSink;
 	public final @NotNull ElLog       LOG;
 	public final @NotNull WorkManager wm    = new WorkManager();
+
+	private Map<Object, ITastic> tasticMap = new HashMap<>();
+
+	public ITastic tasticFor(Object o) {
+		if (tasticMap.containsKey(o)) {
+			return tasticMap.get(o);
+		}
+
+		ITastic r = null;
+
+		if (o instanceof FnCallArgs) {
+			r = new FT_FnCallArgs(this, (FnCallArgs) o);
+		}
+
+		return r;
+	}
 
 	public DeduceTypes2(@NotNull OS_Module module, @NotNull DeducePhase phase) {
 		this(module, phase, ElLog.Verbosity.VERBOSE);
@@ -654,8 +672,12 @@ int y5=25;
 				final @NotNull VariableTableEntry vte2 = generatedFunction.getVarTableEntry(to_int(i2));
 				vte.addPotentialType(instruction.getIndex(), vte2.type);
 			} else if (i2 instanceof FnCallArgs) {
+
 				final @NotNull FnCallArgs fca = (FnCallArgs) i2;
-				do_assign_call(generatedFunction, aContext, vte, fca, instruction);
+
+				final @Nullable ITastic fcat = tasticFor(fca);
+
+				fcat.do_assign_call(generatedFunction, aContext, vte, instruction);
 			} else if (i2 instanceof ConstTableIA) {
 				do_assign_constant(generatedFunction, instruction, vte, (ConstTableIA) i2);
 			} else if (i2 instanceof IdentIA) {
@@ -691,7 +713,7 @@ int y5=25;
 				idte.addPotentialType(instruction.getIndex(), vte2.type);
 			} else if (i2 instanceof FnCallArgs) {
 				final @NotNull FnCallArgs fca = (FnCallArgs) i2;
-				do_assign_call(generatedFunction, aFd_ctx, idte, fca, instruction.getIndex());
+				tasticFor(i2).do_assign_call(generatedFunction, aFd_ctx, idte, instruction.getIndex());
 			} else if (i2 instanceof IdentIA) {
 				if (idte.getResolvedElement() instanceof VariableStatement) {
 					do_assign_normal_ident_deferred(generatedFunction, aFd_ctx, idte);
@@ -2144,15 +2166,6 @@ int y5=25;
 		vte.addPotentialType(instruction.getIndex(), cte.type);
 	}
 
-	private void do_assign_call(final @NotNull BaseEvaFunction generatedFunction,
-								final @NotNull Context ctx,
-								final @NotNull VariableTableEntry vte,
-								final @NotNull FnCallArgs fca,
-								final @NotNull Instruction instruction) {
-		final DoAssignCall dac = new DoAssignCall(new DeduceClient4(this), generatedFunction);
-		dac.do_assign_call(instruction, vte, fca, ctx);
-	}
-
 	@NotNull PromiseExpectations expectations = new PromiseExpectations();
 
 	class PromiseExpectations {
@@ -2255,78 +2268,6 @@ int y5=25;
 		}
 		// idte.type may be null, but we still addPotentialType here
 		idte.addPotentialType(instruction.getIndex(), cte.type);
-	}
-
-	private void do_assign_call(final @NotNull BaseEvaFunction generatedFunction,
-								final @NotNull Context ctx,
-								final @NotNull IdentTableEntry idte,
-								final @NotNull FnCallArgs fca,
-								final int instructionIndex) {
-		final @NotNull ProcTableEntry pte = generatedFunction.getProcTableEntry(to_int(fca.getArg(0)));
-		for (final @NotNull TypeTableEntry tte : pte.getArgs()) {
-			LOG.info("771 "+tte);
-			final IExpression e = tte.expression;
-			if (e == null) continue;
-			switch (e.getKind()) {
-			case NUMERIC:
-			{
-				tte.setAttached(new OS_BuiltinType(BuiltInTypes.SystemInteger));
-				idte.type = tte; // TODO why not addPotentialType ? see below for example
-			}
-			break;
-			case IDENT:
-			{
-				final @Nullable InstructionArgument vte_ia = generatedFunction.vte_lookup(((IdentExpression) e).getText());
-				final @NotNull List<TypeTableEntry> ll = getPotentialTypesVte((EvaFunction) generatedFunction, vte_ia);
-				if (ll.size() == 1) {
-					tte.setAttached(ll.get(0).getAttached());
-					idte.addPotentialType(instructionIndex, ll.get(0));
-				} else
-					throw new NotImplementedException();
-			}
-			break;
-			default:
-			{
-				throw new NotImplementedException();
-			}
-			}
-		}
-		{
-			final String s = ((IdentExpression) pte.expression).getText();
-			final LookupResultList lrl = ctx.lookup(s);
-			final @Nullable OS_Element best = lrl.chooseBest(null);
-			if (best != null) {
-				pte.setResolvedElement(best);
-
-				// TODO do we need to add a dependency for class, etc?
-				if (false) {
-					if (best instanceof ConstructorDef) {
-						// TODO Dont know how to handle this
-						int y=2;
-					} else if (best instanceof FunctionDef || best instanceof DefFunctionDef) {
-						final OS_Element parent = best.getParent();
-						IInvocation invocation;
-						if (parent instanceof NamespaceStatement) {
-							invocation = new NamespaceInvocation((NamespaceStatement) parent);
-						} else if (parent instanceof ClassStatement) {
-							invocation = new ClassInvocation((ClassStatement) parent, null);
-						} else
-							throw new NotImplementedException();
-
-						FunctionInvocation fi = newFunctionInvocation((BaseFunctionDef) best, pte, invocation, phase);
-						generatedFunction.addDependentFunction(fi);
-					} else if (best instanceof ClassStatement) {
-						GenType genType = new GenType();
-						genType.resolved = new OS_UserClassType((ClassStatement) best);
-						// ci, typeName, node
-	//					genType.
-						genType.genCI(null, DeduceTypes2.this, errSink, phase);
-						generatedFunction.addDependentType(genType);
-					}
-				}
-			} else
-				throw new NotImplementedException();
-		}
 	}
 
 	private void implement_calls(final @NotNull BaseEvaFunction gf, final @NotNull Context context, final InstructionArgument i2, final @NotNull ProcTableEntry fn1, final int pc) {
@@ -2548,7 +2489,7 @@ int y5=25;
 	}
 
 	@NotNull
-	private ArrayList<TypeTableEntry> getPotentialTypesVte(@NotNull EvaFunction generatedFunction, @NotNull InstructionArgument vte_index) {
+	public ArrayList<TypeTableEntry> getPotentialTypesVte(@NotNull EvaFunction generatedFunction, @NotNull InstructionArgument vte_index) {
 		return getPotentialTypesVte(generatedFunction.getVarTableEntry(to_int(vte_index)));
 	}
 
@@ -3045,7 +2986,7 @@ int y5=25;
 		}
 	}
 
-	class DeduceClient4 {
+	public class DeduceClient4 {
 		private final DeduceTypes2 deduceTypes2;
 
 		public DeduceClient4(final DeduceTypes2 aDeduceTypes2) {

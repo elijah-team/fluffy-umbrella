@@ -72,6 +72,8 @@ class CRI_Ident {
 					resolved2 = _re_is_PropertyStatement(addRef, aog, sSize, i, aValue, (x) -> skip[0] = true, (x) -> text[0] = x);
 
 					repo_element.setEvaNode(resolved2);
+					
+					skip[0] = false;
 				}
 			}
 		}
@@ -91,7 +93,11 @@ class CRI_Ident {
 					}
 					if (sSize >= i + 1) {
 						_getIdentIAPath_IdentIAHelper(null, sl, i, sSize, resolved_element, generatedFunction, resolved, aValue, aCReference);
-						text[0] = null;
+						String x = aCReference.__cheat_ret;
+						if (x != null)
+							text[0] = x;
+						else
+							text[0] = null;
 					} else {
 						final boolean b = _getIdentIAPath_IdentIAHelper(s.get(i + 1), sl, i, sSize, resolved_element, generatedFunction, resolved, aValue, aCReference);
 						if (b) i++;

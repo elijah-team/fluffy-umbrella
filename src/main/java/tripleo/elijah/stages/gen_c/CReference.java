@@ -49,6 +49,7 @@ public class CReference {
 	EvaClass _cheat = null;
 	//
 	//
+	public String __cheat_ret;
 
 	public String getIdentIAPath(final @NotNull IdentIA ia2, final Generate_Code_For_Method.AOG aog, final String aValue) {
 		final BaseEvaFunction     generatedFunction = ia2.gf;
@@ -101,7 +102,10 @@ public class CReference {
 				addRef(vte.getName(), Ref.LOCAL);
 			} else if (ia instanceof IdentIA) {
 				final IdentTableEntry idte = ((IdentIA) ia).getEntry();
+				
 				text = CRI_Ident.of(idte, ((IdentIA) ia).gf).getIdentIAPath(i, sSize, aog, sl, aValue, refs::add, s, ia2, this);
+				
+				assert text != null;
 			} else if (ia instanceof ProcIA) {
 				final ProcTableEntry prte = generatedFunction.getProcTableEntry(to_int(ia));
 				text = getIdentIAPath_Proc(prte);

@@ -12,6 +12,8 @@ import tripleo.elijah.lang.NamespaceStatement;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.PropertyStatement;
 import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.nextgen.outputstatement.EG_Statement;
+import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_fn.EvaClass;
@@ -228,23 +230,53 @@ class CReference_getIdentIAPath_IdentIAHelper {
 	}
 
 	private void _act_PropertyStatement(final CReference aCReference) {
-		final OS_Element parent = getResolved_element().getParent();
-		final int        code;
-		if (parent instanceof ClassStatement) {
-			code = ((ClassStatement) parent)._a.getCode();
-		} else if (parent instanceof NamespaceStatement) {
-			code = ((NamespaceStatement) parent)._a.getCode();
-		} else {
-//							code = -1;
-			throw new IllegalStateException("PropertyStatement cant have other parent than ns or cls. " + getResolved_element().getClass().getName());
-		}
 		getSl().clear();  // don't we want all the text including from sl?
-		//			if (text.equals("")) text = "vsc";
-		//			text = String.format("ZP%dget_%s(%s)", code, ((PropertyStatement) resolved_element).name(), text); // TODO Don't know if get or set!
-		final String text2 = String.format("ZP%dget_%s", code, ((PropertyStatement) getResolved_element()).name()); // TODO Don't know if get or set!
+		
+		final GCS_Property_Get propertyGet = new GCS_Property_Get((PropertyStatement) getResolved_element());
+		final String           text2          = propertyGet.getText();
+
 		aCReference.addRef(text2, CReference.Ref.PROPERTY_GET);
+		
+		aCReference.__cheat_ret = text2;
 	}
 
+	public static class GCS_Property_Get implements EG_Statement {
+		private final PropertyStatement p;
+
+		public GCS_Property_Get(final PropertyStatement aP) {
+			p = aP;
+		}
+
+		@Override
+		public String getText() {
+			final OS_Element parent = p.getParent();
+			final int        code;
+
+			if (parent instanceof ClassStatement) {
+				code = ((ClassStatement) parent)._a.getCode();
+			} else if (parent instanceof NamespaceStatement) {
+				code = ((NamespaceStatement) parent)._a.getCode();
+			} else {
+//				code = -1;
+				throw new IllegalStateException("PropertyStatement can't have other parent than ns or cls. " + parent.getClass().getName());
+			}
+			
+			// TODO Don't know if get or set!
+			final String text2 = String.format("ZP%dget_%s", code, p.name());
+
+			return text2;
+		}
+
+		@Override
+		public EX_Explanation getExplanation() {
+			// TODO Auto-generated method stub
+			return new EX_Explanation() {
+			};
+//			"GCS_Property_Get";
+		}
+		
+	}
+	
 	@Contract(pure = true)
 	private static void _act_AliasStatement() {
 		final int y = 2;

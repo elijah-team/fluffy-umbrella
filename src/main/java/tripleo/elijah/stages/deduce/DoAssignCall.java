@@ -51,10 +51,10 @@ public class DoAssignCall {
 		errSink = dc.getErrSink();
 	}
 
-	void do_assign_call(final @NotNull Instruction instruction,
-						final @NotNull VariableTableEntry vte,
-						final @NotNull FnCallArgs fca,
-						final @NotNull Context ctx) {
+	public void do_assign_call(final @NotNull Instruction instruction,
+							   final @NotNull VariableTableEntry vte,
+							   final @NotNull FnCallArgs fca,
+							   final @NotNull Context ctx) {
 		final int instructionIndex = instruction.getIndex();
 		final @NotNull ProcTableEntry pte = ((ProcIA) fca.getArg(0)).getEntry();
 		@NotNull IdentIA identIA = (IdentIA) pte.expression_num;
