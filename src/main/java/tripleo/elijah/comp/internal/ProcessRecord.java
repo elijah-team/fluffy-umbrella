@@ -120,6 +120,9 @@ public class ProcessRecord {
 
 
 		ab                      = new AccessBus(ca.getCompilation(), pa);
+
+		ab.addPipelineLogic((x) -> pipelineLogic);
+
 		ab.addPipelinePlugin(new GeneratePipelinePlugin());
 		ab.addPipelinePlugin(new DeducePipelinePlugin());
 		ab.addPipelinePlugin(new WritePipelinePlugin());
