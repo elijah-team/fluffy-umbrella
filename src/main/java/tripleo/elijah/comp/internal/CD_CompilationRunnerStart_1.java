@@ -49,7 +49,7 @@ public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 		ccl.getCompilation().use(ci, do_out);
 
 		// 2. do rest
-		final CR_State crState = new CR_State(cr);
+		final CR_State crState = cr.crState;
 
 		final ICompilationAccess ca = crState.ca();
 		final ProcessRecord      pr = crState.pr;

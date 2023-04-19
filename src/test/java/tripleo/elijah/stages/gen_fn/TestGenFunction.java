@@ -156,7 +156,7 @@ public class TestGenFunction {
 		ElLog.Verbosity verbosity1 = c.gitlabCIVerbosity(); // FIXME ??
 
 		c.__cr = new CompilationRunner(c, null, new CompilationBus(c));
-		final CR_State  crState    = new CR_State(c.__cr);
+		final CR_State  crState    = (c.__cr.crState);
 		crState.ca();
 		final PipelineLogic pl = crState.pr.pipelineLogic;
 
@@ -247,7 +247,7 @@ public class TestGenFunction {
 			@Override
 			public void doIt(final Compilation cc, final CompilationFlow flow) {
 				cc.__cr = new CompilationRunner(cc, null, new CompilationBus(cc));
-				final CR_State crState = new CR_State(cc.__cr);
+				final CR_State crState = cc.__cr.crState;
 
 				crState.ca();
 

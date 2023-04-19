@@ -40,6 +40,7 @@ public class CompilationRunner {
 	private final Compilation.CIS cis;
 	private final CCI             cci;
 	CR_FindCIs cr_find_cis;
+	public final CR_State crState = new CR_State(CompilationRunner.this);
 
 	@Contract(pure = true)
 	public CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis, CompilationBus cb) {
@@ -231,7 +232,7 @@ public class CompilationRunner {
 		/********************/
 		/********************/
 		/********************/
-		cr_find_cis.execute(new CR_State(this), new CB_Output());
+		cr_find_cis.execute(crState, new CB_Output());
 
 
 		//final IProgressSink ps = cis.ps;
@@ -431,7 +432,6 @@ public class CompilationRunner {
 	}
 
 	void __00__start(final CompilerInstructions ci, final boolean do_out) throws Exception {
-		final CR_State st1 = new CR_State(this);
 
 		cb.add(new ICompilationBus.CB_Process() {
 			@Override
@@ -450,7 +450,7 @@ public class CompilationRunner {
 
 					@Override
 					public void execute() {
-						aa.execute(st1, o);
+						aa.execute(crState, o);
 					}
 
 					@Override
@@ -470,7 +470,7 @@ public class CompilationRunner {
 
 					@Override
 					public void execute() {
-						aa.execute(st1, o);
+						aa.execute(crState, o);
 					}
 
 					@Override
@@ -490,7 +490,7 @@ public class CompilationRunner {
 
 					@Override
 					public void execute() {
-						aa.execute(st1, o);
+						aa.execute(crState, o);
 					}
 
 					@Override
@@ -621,7 +621,7 @@ public class CompilationRunner {
 
 	class _FindCI_Steps implements ICompilationBus.CB_Process {
 
-		final         CR_State            st1 = new CR_State(CompilationRunner.this);
+		final         CR_State            st1 = crState;
 		private final String[]            args2;
 		private final List<CompilerInput> inputs;
 
