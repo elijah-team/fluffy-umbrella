@@ -27,6 +27,7 @@ import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
 import tripleo.elijah.comp.diagnostic.FileNotFoundDiagnostic;
 import tripleo.elijah.comp.i.*;
 import tripleo.elijah.comp.internal.CompilationBus;
+import tripleo.elijah.comp.internal.DriverToken;
 import tripleo.elijah.comp.queries.QuerySourceFileToModule;
 import tripleo.elijah.comp.queries.QuerySourceFileToModuleParams;
 import tripleo.elijah.diagnostic.Diagnostic;
@@ -519,8 +520,8 @@ public abstract class Compilation {
 		}
 
 		public class Tokens {
-			public static final CompilationBus.DriverToken COMPILATION_RUNNER_START       = CompilationBus.DriverToken.makeToken("COMPILATION_RUNNER_START");
-			public static final CompilationBus.DriverToken COMPILATION_RUNNER_FIND_STDLIB = CompilationBus.DriverToken.makeToken("COMPILATION_RUNNER_FIND_STDLIB");
+			public static final DriverToken COMPILATION_RUNNER_START       = DriverToken.makeToken("COMPILATION_RUNNER_START");
+			public static final DriverToken COMPILATION_RUNNER_FIND_STDLIB = DriverToken.makeToken("COMPILATION_RUNNER_FIND_STDLIB");
 		}
 	}
 

@@ -2,8 +2,8 @@ package tripleo.elijah.comp.i;
 
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.CompilationRunner;
-import tripleo.elijah.comp.internal.CompilationBus;
+import tripleo.elijah.comp.internal.CompilerDriven;
 
-public interface CD_CompilationRunnerStart extends CompilationBus.CompilerDriven {
+public interface CD_CompilationRunnerStart extends CompilerDriven {
 	void start(final CompilationRunner aCompilationRunner, CompilerInstructions aCi, boolean aDoOut, final IPipelineAccess pa);
 }

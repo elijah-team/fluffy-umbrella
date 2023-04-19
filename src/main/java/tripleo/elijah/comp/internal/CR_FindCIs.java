@@ -3,10 +3,7 @@ package tripleo.elijah.comp.internal;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.CompilationRunner;
-import tripleo.elijah.comp.CompilerInput;
-import tripleo.elijah.comp.ErrSink;
+import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.diagnostic.TooManyEz_ActuallyNone;
 import tripleo.elijah.comp.diagnostic.TooManyEz_BeSpecific;
 import tripleo.elijah.comp.i.*;
@@ -26,7 +23,7 @@ import java.util.regex.Pattern;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
-public class CR_FindCIs extends DefaultStateful implements CompilationRunner.CR_Action {
+public class CR_FindCIs extends DefaultStateful implements CR_Action {
 	private final List<CompilerInput> inputs;
 	private final State               st;
 	private       CompilationRunner   compilationRunner;
