@@ -14,11 +14,16 @@ import static tripleo.elijah.nextgen.query.Mode.FAILURE;
 
 public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 	@Override
-	public void start(final CompilationRunner aCompilationRunner, final CompilerInstructions aCi, final boolean aDoOut, final IPipelineAccess pa) {
+	public void start(final CompilationRunner aCompilationRunner,
+					  final CompilerInstructions aCi,
+					  final boolean aDoOut,
+					  final IPipelineAccess pa) {
+		final CompilationClosure ccl = aCompilationRunner.compilation.getCompilationClosure();
 		try {
-			_____start(aCi, aDoOut, aCompilationRunner.compilation.getCompilationClosure(), aCompilationRunner, pa);
+
+			_____start(aCi, aDoOut, ccl, aCompilationRunner, pa);
 		} catch (Exception aE) {
-			throw new RuntimeException(aE);
+			ccl.errSink().exception(aE);
 		}
 	}
 
@@ -42,6 +47,7 @@ public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 				ccl.errSink().exception(x.failure());
 				return;
 			}
+
 			cr.logProgress(130, "GEN_LANG: " + x.success().genLang());
 		}
 
