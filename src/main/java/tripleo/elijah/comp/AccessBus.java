@@ -16,15 +16,14 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class AccessBus {
-	public final  GenerateResult                                  gr                    = new GenerateResult();
-	private final Compilation                                     _c;
-	private final DeferredObject<PipelineLogic, Void, Void>  pipeLineLogicPromise = new DeferredObject<>();
-	private final DeferredObject<List<EvaNode>, Void, Void>  lgcPromise           = new DeferredObject<>();
-	private final DeferredObject<EIT_ModuleList, Void, Void> moduleListPromise    = new DeferredObject<>();
-	final         DeferredObject<GenerateResult, Void, Void>      generateResultPromise = new DeferredObject<>();
-	private final Map<String, ProcessRecord.PipelinePlugin>       pipelinePlugins       = new HashMap<>();
-	private final IPipelineAccess _pa;
-	private       PipelineLogic                                   ____pl;
+	public final  GenerateResult                             gr                    = new GenerateResult();
+	private final Compilation                                _c;
+	private final DeferredObject<List<EvaNode>, Void, Void>  lgcPromise            = new DeferredObject<>();
+	private final DeferredObject<EIT_ModuleList, Void, Void> moduleListPromise     = new DeferredObject<>();
+	private final DeferredObject<GenerateResult, Void, Void> generateResultPromise = new DeferredObject<>();
+	private final Map<String, ProcessRecord.PipelinePlugin>  pipelinePlugins       = new HashMap<>();
+	private final IPipelineAccess                            _pa;
+	private       PipelineLogic                              ____pl;
 
 
 	public AccessBus(final Compilation aC, final IPipelineAccess aPa) {
@@ -37,11 +36,11 @@ public class AccessBus {
 	}
 
 	public void subscribePipelineLogic(final DoneCallback<PipelineLogic> aPipelineLogicDoneCallback) {
-		pipeLineLogicPromise.then(aPipelineLogicDoneCallback);
+		_pa.getPipelineLogicPromise().then(aPipelineLogicDoneCallback);
 	}
 
 	private void resolvePipelineLogic(final PipelineLogic pl) {
-		pipeLineLogicPromise.resolve(pl);
+		_pa.getPipelineLogicPromise().resolve(pl);
 	}
 
 	//@Deprecated
