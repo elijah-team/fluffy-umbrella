@@ -56,7 +56,7 @@ public class ProcessRecord {
 		private final DeferredObject<PipelineLogic, Void, Void> ppl = new DeferredObject<>();
 
 		@Override
-		public Promise<PipelineLogic, Void, Void> getPipelineLogicPromise() {
+		public DeferredObject<PipelineLogic, Void, Void> getPipelineLogicPromise() {
 			return ppl;
 		}
 

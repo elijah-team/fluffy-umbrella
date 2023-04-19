@@ -1,11 +1,9 @@
 package tripleo.elijah.comp.i;
 
 import org.jdeferred2.DoneCallback;
-import org.jdeferred2.Promise;
-
+import org.jdeferred2.impl.DeferredObject;
 import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.internal.ProcessRecord;
-import tripleo.elijah.comp.notation.GN_GenerateNodesIntoSink;
 import tripleo.elijah.comp.notation.GN_Notable;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 
@@ -20,7 +18,7 @@ public interface IPipelineAccess {
 
 	ProcessRecord getProcessRecord();
 
-	Promise<PipelineLogic, Void, Void> getPipelineLogicPromise();
+	DeferredObject/* Promise */<PipelineLogic, Void, Void> getPipelineLogicPromise();
 
 	void setNodeList(List<EvaNode> aEvaNodeList);
 
