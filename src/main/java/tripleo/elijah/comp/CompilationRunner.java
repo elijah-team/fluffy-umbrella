@@ -36,16 +36,18 @@ public class CompilationRunner {
 //	public final  Compilation                       compilation;
 //	private final Compilation.CIS                   cis;
 //	public final  CCI                               cci;
-	public final ICompilationBus cb = null; // FIXME 04/15
+	public final ICompilationBus cb;
 	private final Compilation.CIS cis;
 	private final CCI             cci;
 	CR_FindCIs cr_find_cis;
 	public final CR_State crState = new CR_State(CompilationRunner.this);
 
 	@Contract(pure = true)
-	public CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis, CompilationBus cb) {
+	public CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis, CompilationBus aCompilationBus) {
 		compilation = aCompilation;
 		cis         = a_cis;
+		cb = aCompilationBus;
+
 		cci         = new DefaultCCI(compilation, a_cis, new IProgressSink() {
 			@Override
 			public void note(final int aCode, final ProgressSinkComponent aProgressSinkComponent, final int aType, final Object[] aParams) {
