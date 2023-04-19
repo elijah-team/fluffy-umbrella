@@ -14,6 +14,8 @@ import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_FuncExprType;
 import tripleo.elijah.lang2.BuiltInTypes;
+import tripleo.elijah.nextgen.outputstatement.EG_Statement;
+import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.gen_fn.*;
@@ -708,6 +710,27 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 				}
 			}
 			return sll;
+		}
+		
+		public class GCX_ConstantString implements EG_Statement {
+
+			private final IExpression expression;
+			
+			public GCX_ConstantString(IExpression expression) {
+				this.expression = expression;
+			}
+
+			@Override
+			public String getText() {
+				return const_to_string(expression);
+			}
+
+			@Override
+			public EX_Explanation getExplanation() {
+				return new EX_Explanation() {
+				};
+			}
+			
 		}
 
 		private static String const_to_string(final IExpression expression) {
