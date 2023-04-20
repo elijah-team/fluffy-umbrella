@@ -1,7 +1,7 @@
-package mal;
+package tripleo.vendor.mal;
 
 import com.google.common.collect.ImmutableMap;
-import mal.types.*;
+import tripleo.vendor.mal.types.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,9 +12,9 @@ public class core {
 	public static ImmutableMap<String, MalVal> ns;
 
 	// Local references for convenience
-	static MalConstant Nil   = mal.types.Nil;
-	static MalConstant True  = mal.types.True;
-	static MalConstant False = mal.types.False;
+	static MalConstant Nil   = types.Nil;
+	static MalConstant True  = types.True;
+	static MalConstant False = types.False;
 
 
 	// Errors/Exceptions

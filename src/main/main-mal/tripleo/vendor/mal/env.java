@@ -1,6 +1,6 @@
-package mal;
+package tripleo.vendor.mal;
 
-import mal.types.*;
+import tripleo.vendor.mal.types.*;
 
 import java.util.HashMap;
 

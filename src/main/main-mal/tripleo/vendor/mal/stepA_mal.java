@@ -1,7 +1,9 @@
-package mal;
+package tripleo.vendor.mal;
 
-import mal.env.Env;
-import mal.types.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import tripleo.vendor.mal.env.Env;
+import tripleo.vendor.mal.types.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -16,7 +18,7 @@ public class stepA_mal {
 	}
 
 	// eval
-	public static Boolean starts_with(final MalVal ast, final String sym) {
+	public static @NotNull Boolean starts_with(final MalVal ast, final String sym) {
 		//  Liskov, forgive me
 		if (ast instanceof MalList && !(ast instanceof MalVector) && ((MalList) ast).size() == 2) {
 			final MalVal a0 = ((MalList) ast).nth(0);
@@ -25,6 +27,7 @@ public class stepA_mal {
 		return false;
 	}
 
+	@Contract("null -> null")
 	public static MalVal quasiquote(final MalVal ast) {
 		if ((ast instanceof MalSymbol || ast instanceof MalHashMap))
 			return new MalList(new MalSymbol("quote"), ast);
@@ -48,7 +51,7 @@ public class stepA_mal {
 		return res;
 	}
 
-	public static Boolean is_macro_call(final MalVal ast, final Env env)
+	public static @NotNull Boolean is_macro_call(final MalVal ast, final Env env)
 	throws MalThrowable {
 		if (ast instanceof MalList) {
 			final MalVal a0 = ((MalList) ast).nth(0);
@@ -72,6 +75,7 @@ public class stepA_mal {
 		return ast;
 	}
 
+	@Contract("null, _ -> null")
 	public static MalVal eval_ast(final MalVal ast, final Env env) throws MalThrowable {
 		if (ast instanceof MalSymbol) {
 			return env.get((MalSymbol) ast);
@@ -95,7 +99,7 @@ public class stepA_mal {
 		}
 	}
 
-	public static MalVal EVAL(MalVal orig_ast, Env env) throws MalThrowable {
+	public static MalVal EVAL(@NotNull MalVal orig_ast, Env env) throws MalThrowable {
 		MalVal  a0, a1, a2, a3, res;
 		MalList el;
 
@@ -310,7 +314,7 @@ public class stepA_mal {
 		final Env repl_env = new Env(null);
 
 		{
-			for (final String key : mal.core.ns.keySet()) {
+			for (final String key : core.ns.keySet()) {
 				repl_env.set(new MalSymbol(key), core.ns.get(key));
 			}
 			repl_env.set(new MalSymbol("eval"), new MalFunction() {

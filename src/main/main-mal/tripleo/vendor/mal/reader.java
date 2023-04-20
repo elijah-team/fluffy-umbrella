@@ -1,6 +1,6 @@
-package mal;
+package tripleo.vendor.mal;
 
-import mal.types.*;
+import tripleo.vendor.mal.types.*;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.ArrayList;
