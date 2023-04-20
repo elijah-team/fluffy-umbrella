@@ -4,7 +4,7 @@ import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.internal.CB_Output;
 import tripleo.elijah.comp.internal.CR_State;
 
-class CR_ProcessInitialAction implements CR_Action {
+public class CR_ProcessInitialAction implements CR_Action {
 	private final CompilationRunner    compilationRunner;
 	private final CompilerInstructions ci;
 	private final boolean              do_out;

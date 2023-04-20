@@ -4,7 +4,7 @@ import tripleo.elijah.comp.internal.CB_Output;
 import tripleo.elijah.comp.internal.CR_State;
 import tripleo.elijah.comp.internal.StageToRuntime;
 
-class CR_RunBetterAction implements CR_Action {
+public class CR_RunBetterAction implements CR_Action {
 	@Override
 	public void attach(final CompilationRunner cr) {
 
