@@ -585,6 +585,10 @@ public class DeducePhase {
 		return ca.getCompilation();
 	}
 
+	public DeduceTypes2 deduceModule(final OS_Module aMod) {
+		return deduceModule(aMod, this.generatedClasses, Compilation.gitlabCIVerbosity());
+	}
+
 	static class ResolvedVariables {
 		final IdentTableEntry identTableEntry;
 		final OS_Element      parent; // README tripleo.elijah.lang._CommonNC, but that's package-private
