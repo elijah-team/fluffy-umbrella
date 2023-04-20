@@ -1,8 +1,8 @@
 package tripleo.elijah.comp.internal;
 
 import com.google.common.base.Preconditions;
-import mal.stepA_mal;
-import mal.types;
+import tripleo.vendor.mal.stepA_mal;
+import tripleo.vendor.mal.types;
 import org.jdeferred2.impl.DeferredObject;
 import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.i.ICompilationAccess;
