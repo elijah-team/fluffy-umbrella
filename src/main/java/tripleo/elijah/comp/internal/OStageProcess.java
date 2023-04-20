@@ -130,7 +130,7 @@ public class OStageProcess implements RuntimeProcess {
 				final String pipelineName = pipelineSymbol.getName();
 
 				// 1. observe side effect
-				final PipelinePlugin pipelinePlugin = ab.getPipelinePlugin(pipelineName);
+				final CR_State.PipelinePlugin pipelinePlugin = ab.getPipelinePlugin(pipelineName);
 				if (pipelinePlugin == null)
 					return types.False;
 

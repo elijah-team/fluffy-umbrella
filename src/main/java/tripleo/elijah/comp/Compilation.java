@@ -135,6 +135,13 @@ public abstract class Compilation {
 	}
 
 	public IPipelineAccess pa() {
+		if (_pa == null) {
+			if (__cr.crState == null) {
+				//__cr.crState = new CR_State(__cr);
+				int y=2;
+			}
+			__cr.crState.ca();
+		}
 		return _pa;
 	}
 

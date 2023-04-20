@@ -1,11 +1,8 @@
 package tripleo.elijah.nextgen.expansion;
 
 import junit.framework.TestCase;
-import tripleo.elijah.comp.AccessBus;
+import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.Compilation.CompilationAlways;
-import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.model.SM_ClassBody;
@@ -17,6 +14,7 @@ import tripleo.elijah.stages.gen_generic.GenerateFiles;
 import tripleo.elijah.stages.gen_generic.OutputFileFactory;
 import tripleo.elijah.stages.gen_generic.OutputFileFactoryParams;
 import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.test_help.Boilerplate;
 
 import java.util.List;
 
@@ -25,11 +23,26 @@ import static tripleo.elijah.util.Helpers.List_of;
 public class SX_NodeTest extends TestCase {
 
 	public void testFullText() {
-		final StdErrSink      errSink       = new StdErrSink();
-		final IO              io            = new IO();
-		final CompilationImpl comp          = new CompilationImpl(errSink, io);
-		final AccessBus       ab            = new AccessBus(comp, comp.pa());
-		final PipelineLogic   pipelineLogic = new PipelineLogic(comp._access());
+		//final StdErrSink      errSink       = new StdErrSink();
+		//final IO              io            = new IO();
+		final CompilationImpl comp;//          = new CompilationImpl(errSink, io);
+		//final AccessBus       ab            = new AccessBus(comp, comp.pa());
+		//final PipelineLogic   pipelineLogic = new PipelineLogic(comp._access());
+
+
+		final Boilerplate b = new Boilerplate();
+		b.get();;
+		comp = (CompilationImpl) b.comp;
+
+
+		final ErrSink errSink = comp.getErrSink();
+		//final IO              io            = new IO();
+		//final AccessBus       ab            = new AccessBus(comp, comp.pa());
+		final PipelineLogic   pipelineLogic = b.pipelineLogic();
+
+
+
+
 		final OS_Module mod = comp.moduleBuilder()
 		                          .withFileName("filename.elijah")
 		                          .addToCompilation()
