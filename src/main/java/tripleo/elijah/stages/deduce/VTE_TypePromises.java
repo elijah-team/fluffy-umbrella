@@ -96,10 +96,10 @@ public class VTE_TypePromises {
 
 	// region DeduceTypes2
 
-	static void getItemFali(final @NotNull BaseEvaFunction generatedFunction,
-							final @NotNull Context ctx,
-							final @NotNull VariableTableEntry aVte2,
-							final @NotNull DeduceTypes2 aDeduceTypes2) {
+	public static void getItemFali(final @NotNull BaseEvaFunction generatedFunction,
+								   final @NotNull Context ctx,
+								   final @NotNull VariableTableEntry aVte2,
+								   final @NotNull DeduceTypes2 aDeduceTypes2) {
 		aVte2.typePromise().done(new DoneCallback<GenType>() {
 			@Override
 			public void onDone(@NotNull GenType result) {
@@ -110,7 +110,7 @@ public class VTE_TypePromises {
 		});
 	}
 
-	static Promise<GenType, Void, Void> do_assign_call_args_ident_vte_promise(final @NotNull TypeTableEntry aTte, final @NotNull VariableTableEntry aVte1) {
+	public static Promise<GenType, Void, Void> do_assign_call_args_ident_vte_promise(final @NotNull TypeTableEntry aTte, final @NotNull VariableTableEntry aVte1) {
 		final Promise<GenType, Void, Void> p = aVte1.typePromise();
 		p.done(new DoneCallback<GenType>() {
 			@Override
