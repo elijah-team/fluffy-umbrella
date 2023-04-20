@@ -98,7 +98,7 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 			Preconditions.checkNotNull(pipelineLogic);
 			Preconditions.checkNotNull(lgc);
 
-			/*pipelineLogic.*/
+			/*pipelineLogic().*/
 			generate(lgc, errSink, pipelineLogic.mods, pipelineLogic.getVerbosity());
 		}
 	}

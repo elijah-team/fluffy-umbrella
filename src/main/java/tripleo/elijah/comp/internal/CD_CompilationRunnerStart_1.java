@@ -73,7 +73,7 @@ public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 
 		final ICompilationAccess ca = crState.ca();
 		final ProcessRecord      pr = crState.pr;
-		final RuntimeProcesses   rt = StageToRuntime.get(ccl.getCompilation().stage, ca, pr, pr.pa);
+		final RuntimeProcesses   rt = StageToRuntime.get(ccl.getCompilation().stage, ca, pr, pr.pa());
 
 		rt.run_better();
 	}

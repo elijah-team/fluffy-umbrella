@@ -128,7 +128,7 @@ public class EIT_ModuleList {
 			gfm           = aGenerateFunctions;
 			epl           = aEntryPointList;
 			deducePhase   = aDeducePhase;
-//			verbosity = mod.getCompilation().pipelineLogic.getVerbosity();
+//			verbosity = mod.getCompilation().pipelineLogic().getVerbosity();
 		}
 
 		@Contract(pure = true)

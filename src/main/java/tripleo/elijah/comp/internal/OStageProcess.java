@@ -14,18 +14,18 @@ import java.util.logging.Logger;
 import static tripleo.elijah.util.Helpers.List_of;
 
 public class OStageProcess implements RuntimeProcess {
-	final         stepA_mal.MalEnv2  env;
-	private final ProcessRecord      pr;
-	private final ICompilationAccess ca;
+	final         stepA_mal.MalEnv2      env;
+	private final ProcessRecord pr;
+	private final ICompilationAccess     ca;
 
 	public OStageProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
 		ca = aCa;
 		pr = aPr;
 
-		env = pr.env;
+		env = pr.env();
 
-		Preconditions.checkNotNull(pr.ab);
-		pr.env.set(new types.MalSymbol("add-pipeline"), new _AddPipeline__MAL(pr.ab));
+		Preconditions.checkNotNull(pr.ab());
+		pr.env().set(new types.MalSymbol("add-pipeline"), new _AddPipeline__MAL(pr.ab()));
 
 	}
 
@@ -49,7 +49,7 @@ public class OStageProcess implements RuntimeProcess {
 		Preconditions.checkNotNull(pr);
 //		Preconditions.checkNotNull(pr.ab.gr);
 
-		final AccessBus ab = pr.ab;
+		final AccessBus ab = pr.ab();
 
 		env.re("(def! GeneratePipeline 'native)");
 		env.re("(add-pipeline 'DeducePipeline)"); // FIXME note moved from ...
@@ -68,25 +68,25 @@ public class OStageProcess implements RuntimeProcess {
 	//	@Override
 	public void __00__prepare() {
 		Preconditions.checkNotNull(pr);
-		Preconditions.checkNotNull(pr.dpl);
+		Preconditions.checkNotNull(pr.dpl());
 
-		Preconditions.checkNotNull(pr.pipelineLogic);
-		Preconditions.checkNotNull(pr.pipelineLogic.gr);
+		Preconditions.checkNotNull(pr.pipelineLogic());
+		Preconditions.checkNotNull(pr.pipelineLogic().gr);
 
-		final DeferredObject<PipelineLogic, Void, Void> ppl = (DeferredObject<PipelineLogic, Void, Void>) pr.pa.getPipelineLogicPromise();
-		ppl.resolve(pr.pipelineLogic);
+		final DeferredObject<PipelineLogic, Void, Void> ppl = (DeferredObject<PipelineLogic, Void, Void>) pr.pa().getPipelineLogicPromise();
+		ppl.resolve(pr.pipelineLogic());
 
 		final Compilation comp = ca.getCompilation();
 
-		final DeducePipeline     dpl  = pr.dpl; //new DeducePipeline      (ca);
-		final GeneratePipeline   gpl  = new GeneratePipeline(pr.pa);
-		final WritePipeline      wpl  = new WritePipeline(pr.pa);
+		final DeducePipeline     dpl  = pr.dpl(); //new DeducePipeline      (ca);
+		final GeneratePipeline   gpl  = new GeneratePipeline(pr.pa());
+		final WritePipeline      wpl  = new WritePipeline(pr.pa());
 		final WriteMesonPipeline wmpl = new WriteMesonPipeline(comp, pr, ppl, wpl);
 
 		List_of(dpl, gpl, wpl, wmpl)
 				.forEach(ca::addPipeline);
 
-		pr.setGenerateResult(pr.pipelineLogic.gr);
+		pr.setGenerateResult(pr.pipelineLogic().gr);
 
 		// NOTE Java needs help!
 		//Helpers.<Consumer<Supplier<GenerateResult>>>List_of(wpl.consumer(), wmpl.consumer())
@@ -96,7 +96,7 @@ public class OStageProcess implements RuntimeProcess {
 
 	//@Override
 	public void __00__run() {
-		final AccessBus ab = pr.ab;
+		final AccessBus ab = pr.ab();
 
 		ab.subscribePipelineLogic((pl) -> {
 			final Compilation comp = ca.getCompilation();
@@ -130,7 +130,7 @@ public class OStageProcess implements RuntimeProcess {
 				final String pipelineName = pipelineSymbol.getName();
 
 				// 1. observe side effect
-				final ProcessRecord.PipelinePlugin pipelinePlugin = ab.getPipelinePlugin(pipelineName);
+				final PipelinePlugin pipelinePlugin = ab.getPipelinePlugin(pipelineName);
 				if (pipelinePlugin == null)
 					return types.False;
 
