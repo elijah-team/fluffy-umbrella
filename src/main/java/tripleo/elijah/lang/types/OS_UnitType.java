@@ -30,6 +30,7 @@ public class OS_UnitType extends __Abstract_OS_Type {
 		return "<OS_UnitType>";
 	}
 
+	@Override
 	protected boolean _isEqual(final OS_Type aType) {
 		return aType.getType() == Type.UNIT_TYPE;
 }

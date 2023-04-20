@@ -46,6 +46,7 @@ public class OS_GenericTypeNameType extends __Abstract_OS_Type {
 		return MessageFormat.format("<OS_GenericTypeNameType {0}>", genericTypename);
 	}
 
+	@Override
 	protected boolean _isEqual(final OS_Type aType) {
 		return aType.getType() == Type.GENERIC_TYPENAME && genericTypename.equals(((OS_GenericTypeNameType) aType).genericTypename);
 }

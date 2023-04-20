@@ -49,6 +49,7 @@ public class OS_FuncExprType extends __Abstract_OS_Type {
 		return MessageFormat.format("<OS_FuncExprType {0}>", func_expr);
 	}
 
+	@Override
 	protected boolean _isEqual(final @NotNull OS_Type aType) {
 		return aType.getType() == Type.FUNC_EXPR && func_expr.equals(aType.getElement());
 	}

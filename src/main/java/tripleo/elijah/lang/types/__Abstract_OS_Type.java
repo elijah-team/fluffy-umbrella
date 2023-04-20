@@ -83,5 +83,16 @@ abstract class __Abstract_OS_Type implements OS_Type {
 	}
 
 	public abstract String asString();
+
+	@Override
+	public boolean isEqual(final OS_Type aType) {
+		if (aType.getType() != getType()) return false;
+
+		return _isEqual(aType);
+	}
+
+	protected abstract boolean _isEqual(final OS_Type aType);
+
+
 }
 

@@ -71,6 +71,7 @@ public class OS_FuncType extends __Abstract_OS_Type {
 	}
 
 
+	@Override
 	protected boolean _isEqual(final OS_Type aType) {
 		return aType.getType() == Type.FUNCTION && function_def.equals(aType.getElement());
 	}

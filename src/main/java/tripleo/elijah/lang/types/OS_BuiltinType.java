@@ -33,6 +33,7 @@ public class OS_BuiltinType extends __Abstract_OS_Type {
 		return MessageFormat.format("<OS_BuiltinType {0}>", _bit);
 	}
 
+	@Override
 	protected boolean _isEqual(final OS_Type aType) {
 		return aType.getType() == Type.BUILT_IN && _bit.equals(aType.getBType());
 }

@@ -9,6 +9,8 @@
 package tripleo.elijah.lang.types;
 
 
+import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang2.BuiltInTypes;
 
@@ -62,6 +64,10 @@ public class OS_AnyType extends __Abstract_OS_Type {
 	@Override
 	public Type getType() {
 		return Type.ANY;
+	}
+
+	protected boolean _isEqual(final @NotNull OS_Type aType) {
+		return aType.getType() == Type.ANY;
 	}
 }
 

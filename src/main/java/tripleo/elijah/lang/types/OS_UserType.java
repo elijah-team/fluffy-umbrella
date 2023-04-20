@@ -36,6 +36,7 @@ public class OS_UserType extends __Abstract_OS_Type {
 		return typeName;
 	}
 
+	@Override
 	protected boolean _isEqual(final OS_Type aType) {
 		return aType.getType() == Type.USER && typeName.equals(aType.getTypeName());
 	}

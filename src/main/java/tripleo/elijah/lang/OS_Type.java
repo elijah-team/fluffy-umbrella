@@ -31,6 +31,8 @@ public interface OS_Type {
 	/*@ requires type_of_type = Type.USER; */
 	TypeName getTypeName();
 
+	boolean isEqual(OS_Type aType);
+
 	enum Type {
 		BUILT_IN, USER, USER_CLASS, FUNC_EXPR, UNIT_TYPE, UNKNOWN, ANY, FUNCTION, GENERIC_TYPENAME
 	}
