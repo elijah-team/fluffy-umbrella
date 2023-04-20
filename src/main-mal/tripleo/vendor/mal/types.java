@@ -1,6 +1,6 @@
-package mal;
+package tripleo.vendor.mal;
 
-import mal.env.Env;
+import tripleo.vendor.mal.env.Env;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,14 +1,14 @@
-package mal;
+package tripleo.vendor.mal;
 
-import mal.types.MalContinue;
-import mal.types.MalHashMap;
-import mal.types.MalInteger;
-import mal.types.MalList;
-import mal.types.MalString;
-import mal.types.MalSymbol;
-import mal.types.MalThrowable;
-import mal.types.MalVal;
-import mal.types.MalVector;
+import tripleo.vendor.mal.types.MalContinue;
+import tripleo.vendor.mal.types.MalHashMap;
+import tripleo.vendor.mal.types.MalInteger;
+import tripleo.vendor.mal.types.MalList;
+import tripleo.vendor.mal.types.MalString;
+import tripleo.vendor.mal.types.MalSymbol;
+import tripleo.vendor.mal.types.MalThrowable;
+import tripleo.vendor.mal.types.MalVal;
+import tripleo.vendor.mal.types.MalVector;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.ArrayList;

@@ -1,10 +1,10 @@
-package mal;
+package tripleo.vendor.mal;
 
-import mal.types.MalException;
-import mal.types.MalList;
-import mal.types.MalSymbol;
-import mal.types.MalThrowable;
-import mal.types.MalVal;
+import tripleo.vendor.mal.types.MalException;
+import tripleo.vendor.mal.types.MalList;
+import tripleo.vendor.mal.types.MalSymbol;
+import tripleo.vendor.mal.types.MalThrowable;
+import tripleo.vendor.mal.types.MalVal;
 
 import java.util.HashMap;
 

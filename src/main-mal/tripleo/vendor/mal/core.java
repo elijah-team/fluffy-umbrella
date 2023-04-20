@@ -1,20 +1,20 @@
-package mal;
+package tripleo.vendor.mal;
 
 import com.google.common.collect.ImmutableMap;
-import mal.types.MalAtom;
-import mal.types.MalConstant;
-import mal.types.MalContinue;
-import mal.types.MalError;
-import mal.types.MalException;
-import mal.types.MalFunction;
-import mal.types.MalHashMap;
-import mal.types.MalInteger;
-import mal.types.MalList;
-import mal.types.MalString;
-import mal.types.MalSymbol;
-import mal.types.MalThrowable;
-import mal.types.MalVal;
-import mal.types.MalVector;
+import tripleo.vendor.mal.types.MalAtom;
+import tripleo.vendor.mal.types.MalConstant;
+import tripleo.vendor.mal.types.MalContinue;
+import tripleo.vendor.mal.types.MalError;
+import tripleo.vendor.mal.types.MalException;
+import tripleo.vendor.mal.types.MalFunction;
+import tripleo.vendor.mal.types.MalHashMap;
+import tripleo.vendor.mal.types.MalInteger;
+import tripleo.vendor.mal.types.MalList;
+import tripleo.vendor.mal.types.MalString;
+import tripleo.vendor.mal.types.MalSymbol;
+import tripleo.vendor.mal.types.MalThrowable;
+import tripleo.vendor.mal.types.MalVal;
+import tripleo.vendor.mal.types.MalVector;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,9 +29,9 @@ public class core {
 	public static ImmutableMap<String, MalVal> ns;
 
 	// Local references for convenience
-	static MalConstant Nil   = mal.types.Nil;
-	static MalConstant True  = mal.types.True;
-	static MalConstant False = mal.types.False;
+	static MalConstant Nil   =  tripleo.vendor.mal.types.Nil;
+	static MalConstant True  =  tripleo.vendor.mal.types.True;
+	static MalConstant False =  tripleo.vendor.mal.types.False;
 
 
 	// Errors/Exceptions
