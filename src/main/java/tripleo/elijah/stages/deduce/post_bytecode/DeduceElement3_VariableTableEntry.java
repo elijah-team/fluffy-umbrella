@@ -22,6 +22,8 @@ import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.VariableTableType;
 import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.stateful.DefaultStateful;
+import tripleo.elijah.stateful.State;
 import tripleo.elijah.util.NotImplementedException;
 
 import java.io.PrintStream;
@@ -35,8 +37,8 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 
 	private final VariableTableEntry principal;
 
-	private final State           st;
-	private       DeduceTypes2    deduceTypes2;
+	private final State        st;
+	private       DeduceTypes2 deduceTypes2;
 	private       BaseEvaFunction generatedFunction;
 	private       GenType         genType;
 

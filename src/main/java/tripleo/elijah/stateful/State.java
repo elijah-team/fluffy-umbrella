@@ -1,4 +1,4 @@
-package tripleo.elijah.stages.deduce.post_bytecode;
+package tripleo.elijah.stateful;
 
 public interface State {
 	void apply(DefaultStateful element);

@@ -11,9 +11,9 @@ import tripleo.elijah.comp.queries.QuerySearchEzFiles;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.nextgen.query.Mode;
 import tripleo.elijah.nextgen.query.Operation2;
-import tripleo.elijah.stages.deduce.post_bytecode.DefaultStateful;
+import tripleo.elijah.stateful.DefaultStateful;
 import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
-import tripleo.elijah.stages.deduce.post_bytecode.State;
+import tripleo.elijah.stateful.State;
 
 import java.io.File;
 import java.util.ArrayList;

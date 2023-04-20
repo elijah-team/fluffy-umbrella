@@ -10,6 +10,8 @@ import tripleo.elijah.stages.deduce.*;
 import tripleo.elijah.stages.deduce.post_bytecode.DED.DED_ITE;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
+import tripleo.elijah.stateful.DefaultStateful;
+import tripleo.elijah.stateful.State;
 import tripleo.elijah.util.NotImplementedException;
 
 public class DeduceElement3_IdentTableEntry extends DefaultStateful implements IDeduceElement3 {
