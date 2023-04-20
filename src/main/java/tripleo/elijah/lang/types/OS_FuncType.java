@@ -21,6 +21,7 @@ import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.gen_fn.GenType;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 public class OS_FuncType extends __Abstract_OS_Type {
@@ -45,6 +46,11 @@ public class OS_FuncType extends __Abstract_OS_Type {
 		return String.format("<OS_FuncType %s>", function_def);
 	}
 
+	@Override
+	public String asString() {
+		return MessageFormat.format("<OS_FuncType {0}>", function_def);
+	}
+
 	@NotNull
 	public ClassInvocation resolvedFunction(final @NotNull GenType genType, final TypeName aGenericTypeName, final DeduceTypes2 deduceTypes2, final ErrSink errSink, final DeducePhase phase) {
 		// TODO what to do here?
@@ -63,7 +69,14 @@ public class OS_FuncType extends __Abstract_OS_Type {
 			clsinv = (ClassInvocation) genType.ci;
 		return clsinv;
 	}
+
+
+	protected boolean _isEqual(final OS_Type aType) {
+		return aType.getType() == Type.FUNCTION && function_def.equals(aType.getElement());
+	}
 }
+
+
 
 //
 //

@@ -1,6 +1,7 @@
 package tripleo.elijah.lang.types;
 
 import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Type;
 
 
 public class OS_UnitType extends __Abstract_OS_Type {
@@ -24,4 +25,14 @@ public class OS_UnitType extends __Abstract_OS_Type {
 	public String toString() {
 		return "<UnitType>";
 	}
+	@Override
+	public String asString() {
+		return "<OS_UnitType>";
+	}
+
+	protected boolean _isEqual(final OS_Type aType) {
+		return aType.getType() == Type.UNIT_TYPE;
 }
+}
+
+

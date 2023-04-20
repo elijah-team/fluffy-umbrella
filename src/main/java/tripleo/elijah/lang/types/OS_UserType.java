@@ -2,6 +2,8 @@ package tripleo.elijah.lang.types;
 
 import tripleo.elijah.lang.*;
 
+import java.text.MessageFormat;
+
 
 public class OS_UserType extends __Abstract_OS_Type {
 	private final TypeName typeName;
@@ -34,4 +36,14 @@ public class OS_UserType extends __Abstract_OS_Type {
 		return typeName;
 	}
 
+	protected boolean _isEqual(final OS_Type aType) {
+		return aType.getType() == Type.USER && typeName.equals(aType.getTypeName());
+	}
+
+	@Override
+	public String asString() {
+		return MessageFormat.format("<OS_UserType {0}>", typeName);
 }
+
+}
+

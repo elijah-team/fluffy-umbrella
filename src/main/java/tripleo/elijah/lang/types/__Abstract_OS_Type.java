@@ -81,5 +81,7 @@ abstract class __Abstract_OS_Type implements OS_Type {
 	public TypeName getTypeName() {
 		return null;
 	}
+
+	public abstract String asString();
 }
 

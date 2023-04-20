@@ -9,6 +9,9 @@
 package tripleo.elijah.lang.types;
 
 import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Type;
+
+import java.text.MessageFormat;
 
 /**
  * Created 1/22/21 8:34 AM
@@ -28,6 +31,15 @@ public class OS_UnknownType extends __Abstract_OS_Type {
 	@Override
 	public Type getType() {
 		return Type.UNKNOWN;
+	}
+
+	@Override
+	public String asString() {
+		return ("<OS_UnknownType>");
+	}
+
+	protected boolean _isEqual(final OS_Type aType) {
+		return aType.getType() == Type.UNKNOWN;
 	}
 }
 

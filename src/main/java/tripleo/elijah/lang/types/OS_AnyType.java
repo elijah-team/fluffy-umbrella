@@ -49,6 +49,11 @@ public class OS_AnyType extends __Abstract_OS_Type {
 	}
 
 	@Override
+	public String asString() {
+		return "<OS_AnyType>";
+	}
+
+	@Override
 	public OS_Element getElement() {
 		// TODO Auto-generated method stub
 		return null;
