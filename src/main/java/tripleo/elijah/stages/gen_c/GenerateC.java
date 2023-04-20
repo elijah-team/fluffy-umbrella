@@ -14,6 +14,8 @@ import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_FuncExprType;
 import tripleo.elijah.lang2.BuiltInTypes;
+import tripleo.elijah.nextgen.model.SM_ClassDeclaration;
+import tripleo.elijah.nextgen.model.SM_Node;
 import tripleo.elijah.nextgen.outputstatement.EG_Statement;
 import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
 import tripleo.elijah.stages.deduce.ClassInvocation;
@@ -143,6 +145,16 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		}
 
 		return gr2;
+	}
+
+	@Override
+	public void forNode(final SM_Node aNode) {
+		final int y = 2;
+		if (aNode instanceof SM_ClassDeclaration) {
+			final SM_ClassDeclaration classDecl = (SM_ClassDeclaration) aNode;
+//			return classDecl;
+		}
+//		return null;
 	}
 
 	@NotNull

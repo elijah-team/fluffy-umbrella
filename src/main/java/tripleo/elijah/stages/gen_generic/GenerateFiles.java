@@ -3,6 +3,7 @@ package tripleo.elijah.stages.gen_generic;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.nextgen.model.SM_Node;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_fn.EvaConstructor;
 import tripleo.elijah.stages.gen_fn.EvaFunction;
@@ -58,4 +59,7 @@ public interface GenerateFiles extends CodeGenerator {
 	void generate_function(EvaFunction aEvaFunction, GenerateResult aGenerateResult, WorkList aWorkList, GenerateResultSink aResultSink);
 
 	void generate_constructor(EvaConstructor aGf, GenerateResult aGr, WorkList aWl, GenerateResultSink aResultSink);
+
+	void forNode(final SM_Node aNode);
+
 }

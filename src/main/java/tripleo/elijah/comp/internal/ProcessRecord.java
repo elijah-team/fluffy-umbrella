@@ -140,7 +140,7 @@ public class ProcessRecord {
 		}
 	}
 
-	private class ProcessRecord_PipelineAccess implements IPipelineAccess {
+	class ProcessRecord_PipelineAccess implements IPipelineAccess {
 		private       List<CompilerInput>                       inp;
 		private       WritePipeline                             _wpl;
 		private       AccessBus                                 _ab;

@@ -33,25 +33,31 @@ public class Out {
 
 	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings("NM_METHOD_NAMING_CONVENTION")
 	public void FinishModule() {
+/*
 		final TabbedOutputStream tos;
 		println("** FinishModule");
 		try {
+*/
 //			pc.module.print_osi(tos);
 			pc.module.finish();
 			//
+/*
 			if (do_out) {
 				tos = getTOSLog();
 				tos.put_string_ln(pc.module.getFileName());
 				Helpers.printXML(pc.module, tos);
 				tos.close();
 			}
+*/
 			//
 			//
+/*
 		} catch (final FileNotFoundException fnfe) {
 			println("&& FileNotFoundException");
 		} catch (final IOException ioe) {
 			println("&& IOException");
 		}
+*/
 	}
 
 	public static void println(final String s) {
@@ -68,7 +74,7 @@ public class Out {
 		return pc;
 	}
 
-	public OS_Module module() {
+	public @NotNull OS_Module module() {
 		return pc.module;
 	}
 }
