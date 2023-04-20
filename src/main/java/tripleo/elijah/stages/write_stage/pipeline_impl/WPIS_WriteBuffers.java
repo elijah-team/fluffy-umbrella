@@ -1,6 +1,8 @@
 package tripleo.elijah.stages.write_stage.pipeline_impl;
 
 import org.jdeferred2.DoneCallback;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.WritePipeline;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
@@ -13,12 +15,13 @@ import java.util.List;
 public class WPIS_WriteBuffers implements WP_Indiviual_Step {
 	private final WritePipeline writePipeline;
 
+	@Contract(pure = true)
 	public WPIS_WriteBuffers(final WritePipeline aWritePipeline) {
 		writePipeline = aWritePipeline;
 	}
 
 	@Override
-	public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
+	public void act(final @NotNull WritePipelineSharedState st, final WP_State_Control sc) {
 		// 5. write buffers
 		// TODO flag?
 		try {

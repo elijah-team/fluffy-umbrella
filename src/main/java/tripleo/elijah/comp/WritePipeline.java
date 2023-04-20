@@ -49,7 +49,7 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 	private       Supplier<GenerateResult>                   grs;
 
 
-	public WritePipeline(final IPipelineAccess pa) {
+	public WritePipeline(final @NotNull IPipelineAccess pa) {
 		st = new WritePipelineSharedState();
 
 		// given
