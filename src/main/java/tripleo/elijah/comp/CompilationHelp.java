@@ -9,8 +9,8 @@
 package tripleo.elijah.comp;
 
 import com.google.common.base.Preconditions;
-import mal.stepA_mal;
-import mal.types;
+import tripleo.vendor.mal.stepA_mal;
+import tripleo.vendor.mal.types;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.internal.ProcessRecord;
