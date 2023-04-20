@@ -27,6 +27,7 @@ import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
 import tripleo.elijah.comp.diagnostic.FileNotFoundDiagnostic;
 import tripleo.elijah.comp.i.*;
 import tripleo.elijah.comp.internal.CompilationBus;
+import tripleo.elijah.comp.internal.DefaultCompilerController;
 import tripleo.elijah.comp.internal.DriverToken;
 import tripleo.elijah.comp.queries.QuerySourceFileToModule;
 import tripleo.elijah.comp.queries.QuerySourceFileToModuleParams;
@@ -74,8 +75,8 @@ public abstract class Compilation {
 	public IPipelineAccess _pa;
 	public boolean do_out = false;
 	CompilerInstructions rootCI;
-	CompilationBus cb;
-	private IO                io;
+	public  CompilationBus cb;
+	private IO             io;
 	//
 	//
 	private int               _packageCode  = 1;
@@ -144,46 +145,46 @@ public abstract class Compilation {
 	}
 
 	public void feedCmdLine(final @NotNull List<String> args) throws Exception {
-		final PicoContainer pico = MainModule.newContainer();
+		final PicoContainer      pico       = MainModule.newContainer();
+		final CompilerController controller = new DefaultCompilerController();
 
-/*
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override public void run() {
-				MainWindow mainWindow = pico.getComponent(MainWindow.class);
-				mainWindow.show();
-			}
-		});
-*/
-
-/*
-		CompilerController controller = new DefaultCompilerController();
-
-		controller.processOptions();
-		controller.runner();
-*/
-
-		if (args.size() < 1) {
-			System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
+		if (args.size() == 0) {
+			controller.printUsage();
+			//System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
 			return;
 		}
 
-		final OptionsProcessor op = pico.getComponent(OptionsProcessor.class);
-
-		final CompilerInstructionsObserver cio = new CompilerInstructionsObserver(this, op);
-		_cis._cio = cio;
-
-		subscribeCI(cio);
-
-		cb = new CompilationBus(this);
-
-		final List<CompilerInput> args3 = args.stream()
-				.map(s -> new CompilerInput(s))
+		final List<CompilerInput> inputs = args.stream()
+				.map(s -> {
+					final CompilerInput input = new CompilerInput(s);
+					if (s.equals(input.getInp())) {
+						input.setSourceRoot();
+					}
+					return input;
+				})
 				.collect(Collectors.toList());
 
-		final String[] args2 = op.process(this, args3, cb);
 
-		__cr = new CompilationRunner(this, _cis, cb);
-		__cr.doFindCIs(args3, args2, cb);
+		if (false) {
+			controller._setInputs(this, inputs);
+			controller.processOptions();
+			controller.runner();
+		} else {
+			final OptionsProcessor op = pico.getComponent(OptionsProcessor.class);
+			final CompilerInstructionsObserver cio = new CompilerInstructionsObserver(this, op);
+
+			_cis._cio = cio;
+
+			subscribeCI(cio);
+
+			cb   = new CompilationBus(this);
+			__cr = new CompilationRunner(this, _cis, cb);
+
+			final String[] args2 = op.process(this, inputs, cb);
+
+			__cr.doFindCIs(inputs, args2, cb);
+		}
+
 	}
 
 	private void subscribeCI(final Observer<CompilerInstructions> aCio) {
@@ -192,14 +193,15 @@ public abstract class Compilation {
 
 	void hasInstructions(final @NotNull List<CompilerInstructions> cis,
 						 final boolean do_out,
-						 final @NotNull OptionsProcessor op, final IPipelineAccess pa) throws Exception {
+						 final @NotNull OptionsProcessor op,
+						 final IPipelineAccess pa) throws Exception {
 		//assert cis.size() == 1;
 
 		assert cis.size() > 0;
 
 		rootCI = cis.get(0);
 
-		__cr.start(rootCI, do_out, op, pa);
+		__cr.start(rootCI, do_out, pa);
 	}
 
 	public void pushItem(CompilerInstructions aci) {
@@ -528,8 +530,8 @@ public abstract class Compilation {
 	public class CIS implements Observer<CompilerInstructions> {
 
 		private final Subject<CompilerInstructions> compilerInstructionsSubject = ReplaySubject.<CompilerInstructions>create();
-		public        IProgressSink                 ps;
-		CompilerInstructionsObserver _cio;
+		public IProgressSink                ps;
+		public CompilerInstructionsObserver _cio;
 
 		@Override
 		public void onSubscribe(@NonNull final Disposable d) {

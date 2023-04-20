@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CB_Output {
-	final List<ICompilationBus.OutputString> x = new ArrayList<>();
+	private final List<ICompilationBus.OutputString> x = new ArrayList<>();
 
 	public List<ICompilationBus.OutputString> get() {
 		return x;

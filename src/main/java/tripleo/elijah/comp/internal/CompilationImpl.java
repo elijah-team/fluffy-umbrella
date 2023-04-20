@@ -56,6 +56,8 @@ public class CompilationImpl extends Compilation {
 
 	@Override
 	public void fakeFlow(final List<CompilerInput> aInputs, final CompilationFlow aFlow) {
+		_pa.setCompilerInput(aInputs);
+
 		aFlow.run(this);
 	}
 

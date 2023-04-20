@@ -67,7 +67,9 @@ public class CompilationRunner {
 		return aState;
 	}
 
-	void start(final CompilerInstructions ci, final boolean do_out, final @NotNull OptionsProcessor ignoredOp, final IPipelineAccess pa) throws Exception {
+	void start(final CompilerInstructions ci,
+			   final boolean do_out,
+			   final @NotNull IPipelineAccess pa) {
 		if (false) {
 			cb.add(new CompilationRunnerProcess(ci, do_out));
 		} else {
@@ -106,24 +108,31 @@ public class CompilationRunner {
 	 *     or inline (esp use of Compilation)
 	 */
 	@NotNull
-	public Operation<CompilerInstructions> findStdLib2(final String prelude_name, final @NotNull Compilation c) {
-		final ErrSink errSink = c.getErrSink();
-		final IO      io      = c.getIO();
+	public Operation<CompilerInstructions> findStdLib2(final String prelude_name, final @NotNull CompilationClosure ccl) {
+		final ErrSink     errSink = ccl.errSink();
+		final IO          io      = ccl.io();
+		final Compilation c       = ccl.getCompilation();
 
 		// TODO stdlib path here
 		final File local_stdlib = new File("lib_elijjah/lib-" + prelude_name + "/stdlib.ez");
+
 		if (local_stdlib.exists()) {
+			InputStream s;
+
 			try {
-				final Operation<CompilerInstructions> oci = realParseEzFile(local_stdlib.getName(), io.readFile(local_stdlib), local_stdlib, c);
-				if (oci.mode() == SUCCESS) {
-					c.pushItem(oci.success());
-					return oci;
-				}
+				s = io.readFile(local_stdlib);
 			} catch (final Exception e) {
 				return Operation.failure(e);
 			}
+
+			final Operation<CompilerInstructions> oci          = realParseEzFile(local_stdlib.getName(), s, local_stdlib, c);
+			if (oci.mode() == SUCCESS) {
+				c.pushItem(oci.success());
+			}
+
+			return oci;
 		}
-		//return false;
+
 		return Operation.failure(new Exception() {
 			public String message() {
 				return "No stdlib found";

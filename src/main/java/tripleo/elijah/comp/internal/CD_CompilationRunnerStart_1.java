@@ -2,36 +2,54 @@ package tripleo.elijah.comp.internal;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.CompilationRunner;
-import tripleo.elijah.comp.Operation;
+import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.i.CD_CompilationRunnerStart;
 import tripleo.elijah.comp.i.CompilationClosure;
 import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.comp.i.IPipelineAccess;
 
-import static tripleo.elijah.nextgen.query.Mode.FAILURE;
+import java.util.List;
+
+import static tripleo.elijah.util.Helpers.List_of;
 
 public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 	@Override
-	public void start(final CompilationRunner aCompilationRunner,
-					  final CompilerInstructions aCi,
-					  final boolean aDoOut,
-					  final IPipelineAccess pa) {
-		final CompilationClosure ccl = aCompilationRunner.compilation.getCompilationClosure();
+	public void start(final @NotNull CompilationRunner cr,
+					  final @NotNull CompilerInstructions aCompilerInstructions,
+					  final boolean do_out,
+					  final @NotNull IPipelineAccess pa) {
 		try {
-
-			_____start(aCi, aDoOut, ccl, aCompilationRunner, pa);
+			_____start(aCompilerInstructions, do_out, cr, pa);
 		} catch (Exception aE) {
+			final CompilationClosure ccl = pa.getCompilationClosure();
 			ccl.errSink().exception(aE);
 		}
 	}
 
-	public void _____start(final CompilerInstructions ci,
+	public void _____start_(final CompilerInstructions ci,
+							final boolean do_out,
+							final @NotNull CompilationRunner cr,
+							final IPipelineAccess pa) throws Exception {
+		final CB_Output out = new CB_Output();
+
+		final CR_FindCIs              f1 = new CR_FindCIs(pa.getCompilerInput());
+		final CR_ProcessInitialAction f2 = new CR_ProcessInitialAction(cr, ci, do_out);
+		final CR_AlmostComplete       f3 = new CR_AlmostComplete(cr);
+		final CR_RunBetterAction      f4 = new CR_RunBetterAction();
+
+		final @NotNull List<CR_Action> l = List_of(f1, f2, f3, f4);
+
+		for (final CR_Action each : l) {
+			each.execute(cr.crState, out);
+		}
+	}
+
+	public void _____start(final @NotNull CompilerInstructions ci,
 						   final boolean do_out,
-						   final CompilationClosure ccl,
 						   final @NotNull CompilationRunner cr,
-						   final IPipelineAccess pa) throws Exception {
+						   final @NotNull IPipelineAccess pa) throws Exception {
+		final CompilationClosure ccl = pa.getCompilationClosure();
+
 		// 0. find stdlib
 		//   -- question placement
 		//   -- ...
@@ -40,15 +58,11 @@ public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 			Operation<CompilerInstructions>[] y = new Operation[1];
 
 			final Operation<CompilerInstructions> x = cr.findStdLib2(Compilation.CompilationAlways.defaultPrelude(),
-																	 ccl.getCompilation()
-																	 //,(x) -> {y[0]=x;}
-																	);
-			if (x.mode() == FAILURE) {
-				ccl.errSink().exception(x.failure());
-				return;
+																	 ccl);
+			switch (x.mode()) {
+			case FAILURE -> ccl.errSink().exception(x.failure());
+			default -> cr.logProgress(130, "GEN_LANG: " + x.success().genLang());
 			}
-
-			cr.logProgress(130, "GEN_LANG: " + x.success().genLang());
 		}
 
 		// 1. process the initial

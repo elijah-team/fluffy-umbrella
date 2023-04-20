@@ -20,10 +20,10 @@ public class CompilerInstructionsObserver implements Observer<CompilerInstructio
 		op          = aOp;
 	}
 
-	public CompilerInstructionsObserver(final Compilation aC, final Compilation.CIS aCis) {
-		compilation = aC;
-		op          = null;
-	}
+	//public CompilerInstructionsObserver(final Compilation aC, final Compilation.CIS aCis) {
+	//	compilation = aC;
+	//	op          = null;
+	//}
 
 	@Override
 	public void onSubscribe(@NonNull final Disposable d) {

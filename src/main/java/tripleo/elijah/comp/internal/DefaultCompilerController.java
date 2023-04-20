@@ -21,8 +21,10 @@ public class DefaultCompilerController implements CompilerController {
 	@Override
 	public void processOptions() {
 		final OptionsProcessor             op  = new ApacheOptionsProcessor();
-		final CompilerInstructionsObserver cio = new CompilerInstructionsObserver(c, c._cis);
+		final CompilerInstructionsObserver cio = new CompilerInstructionsObserver(c, op/*c._cis*/);
 		cb = new CompilationBus(c);
+
+		c._cis._cio = cio;
 
 		try {
 //			if (args == null) {
@@ -47,6 +49,7 @@ public class DefaultCompilerController implements CompilerController {
 	@Override
 	public void runner() {
 		try {
+			c.cb   = new CompilationBus(c);
 			c.__cr = new CompilationRunner(c, c._cis, cb);
 
 			for (final String s : args2) {
