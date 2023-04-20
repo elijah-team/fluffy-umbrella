@@ -14,9 +14,9 @@ import tripleo.elijah.comp.internal.*;
 import tripleo.elijah.comp.queries.QueryEzFileToModule;
 import tripleo.elijah.comp.queries.QueryEzFileToModuleParams;
 import tripleo.elijah.diagnostic.Diagnostic;
-import tripleo.elijah.stages.deduce.post_bytecode.DefaultStateful;
+import tripleo.elijah.stateful.DefaultStateful;
 import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
-import tripleo.elijah.stages.deduce.post_bytecode.State;
+import tripleo.elijah.stateful.State;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -52,6 +52,12 @@ public class CompilationRunner {
 				tripleo.elijah.util.Stupidity.println_err_2(aProgressSinkComponent.printErr(aCode, aType, aParams));
 			}
 		});
+	}
+
+	public CompilationRunner(final ICompilationAccess aca) {
+		// Java is stupid
+		//Compilation comp = aca.getCompilation();
+		this(aca.getCompilation(), aca.getCompilation()._cis, new CompilationBus(aca.getCompilation()));
 	}
 
 	public static State registerState(final State aState) {
@@ -435,8 +441,7 @@ public class CompilationRunner {
 						cci.accept(m2, ps);
 						break;
 					}
-				} else
-					errSink.reportError("9995 Not a directory " + f.getAbsolutePath());
+				} else errSink.reportError("9995 Not a directory " + f.getAbsolutePath());
 			}
 		}
 	}
