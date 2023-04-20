@@ -18,7 +18,7 @@ import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.deduce.FunctionMapDeferred;
-import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
+import tripleo.elijah.util.Maybe;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.Dependency;
 import tripleo.elijah.stages.gen_generic.GenerateResult;

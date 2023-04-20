@@ -10,7 +10,7 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
-import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
+import tripleo.elijah.util.Maybe;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;

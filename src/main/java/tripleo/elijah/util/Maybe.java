@@ -1,4 +1,4 @@
-package tripleo.elijah.stages.deduce.post_bytecode;
+package tripleo.elijah.util;
 
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.diagnostic.Diagnostic;

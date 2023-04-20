@@ -1,7 +1,7 @@
 package tripleo.elijah.comp;
 
 import tripleo.elijah.comp.i.ILazyCompilerInstructions;
-import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
+import tripleo.elijah.util.Maybe;
 
 import java.io.File;
 

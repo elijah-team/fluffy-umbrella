@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VarTableEntry;
-import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
+import tripleo.elijah.util.Maybe;
 
 import java.util.ArrayList;
 import java.util.Collection;

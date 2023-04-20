@@ -8,7 +8,7 @@ import tripleo.elijah.comp.i.CCI;
 import tripleo.elijah.comp.i.ILazyCompilerInstructions;
 import tripleo.elijah.comp.i.IProgressSink;
 import tripleo.elijah.comp.i.ProgressSinkComponent;
-import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
+import tripleo.elijah.util.Maybe;
 
 public class DefaultCCI implements CCI {
 	//private final @NotNull Compilation compilation;

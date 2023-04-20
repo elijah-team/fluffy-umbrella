@@ -14,6 +14,7 @@ import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.ResolveError;
 import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
+import tripleo.elijah.util.Maybe;
 import tripleo.elijah.util.NotImplementedException;
 
 import java.util.function.Supplier;

@@ -14,8 +14,8 @@ import tripleo.elijah.comp.internal.*;
 import tripleo.elijah.comp.queries.QueryEzFileToModule;
 import tripleo.elijah.comp.queries.QueryEzFileToModuleParams;
 import tripleo.elijah.diagnostic.Diagnostic;
+import tripleo.elijah.util.Maybe;
 import tripleo.elijah.stateful.DefaultStateful;
-import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
 import tripleo.elijah.stateful.State;
 
 import java.io.*;
@@ -131,7 +131,7 @@ public class CompilationRunner {
 				return Operation.failure(e);
 			}
 
-			final Operation<CompilerInstructions> oci          = realParseEzFile(local_stdlib.getName(), s, local_stdlib, c);
+			final Operation<CompilerInstructions> oci = realParseEzFile(local_stdlib.getName(), s, local_stdlib, c);
 			if (oci.mode() == SUCCESS) {
 				c.pushItem(oci.success());
 			}

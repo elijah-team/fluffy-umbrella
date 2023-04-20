@@ -12,7 +12,7 @@ import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.nextgen.query.Mode;
 import tripleo.elijah.nextgen.query.Operation2;
 import tripleo.elijah.stateful.DefaultStateful;
-import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
+import tripleo.elijah.util.Maybe;
 import tripleo.elijah.stateful.State;
 
 import java.io.File;
