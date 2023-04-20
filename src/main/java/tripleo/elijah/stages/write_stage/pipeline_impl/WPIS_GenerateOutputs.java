@@ -15,11 +15,23 @@ public class WPIS_GenerateOutputs implements WP_Indiviual_Step {
 	public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
 
 
-		final SPrintStream sps = new SPrintStream();
+		final SPrintStream sps = (SPrintStream) getPrintStream();
 		DebugBuffersLogic.debug_buffers_logic(result, sps);
-		System.err.println(sps.getString());
+
+		if (_printing()) {
+			System.err.println(sps.getString());
+		}
 
 
 		st.sys.generateOutputs(result);
+	}
+
+	public boolean _printing() {
+		return true;
+	}
+
+	public XPrintStream getPrintStream() {
+		final SPrintStream sps = new SPrintStream();
+		return sps;
 	}
 }
