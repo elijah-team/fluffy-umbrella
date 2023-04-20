@@ -87,7 +87,7 @@ public class GetIdentIAPathTest_ForC {
 		boilerplate.get();
 		boilerplate.getGenerateFiles(boilerplate.defaultMod());
 
-		final GeneratePhase   generatePhase = boilerplate.pipelineLogic.generatePhase;
+		final GeneratePhase   generatePhase = boilerplate.pipelineLogic().generatePhase;
 
 
 /*
@@ -124,7 +124,7 @@ public class GetIdentIAPathTest_ForC {
 		boilerplate.get();
 		boilerplate.getGenerateFiles(boilerplate.defaultMod());
 
-		final GeneratePhase   generatePhase = boilerplate.pipelineLogic.generatePhase;
+		final GeneratePhase   generatePhase = boilerplate.pipelineLogic().generatePhase;
 
 		GenerateFunctions gen = generatePhase.getGenerateFunctions(mod);
 		Context ctx = mock(Context.class);
@@ -213,7 +213,7 @@ public class GetIdentIAPathTest_ForC {
 		//final Compilation     compilation   = new Compilation(new StdErrSink(), new IO());
 		//final ElLog.Verbosity verbosity1    = compilation.gitlabCIVerbosity();
 		//final PipelineLogic   pl            = boilerplate.pr.pipelineLogic;
-		final GeneratePhase   generatePhase = boilerplate.pipelineLogic.generatePhase;
+		final GeneratePhase   generatePhase = boilerplate.pipelineLogic().generatePhase;
 		GenerateFunctions     gen           = generatePhase.getGenerateFunctions(mod);
 		InstructionArgument   xx            = gen.simplify_expression(expr, gf, ctx);
 

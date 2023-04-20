@@ -94,10 +94,10 @@ public class DeduceTypesTest {
 
 
 		final ElLog.Verbosity verbosity     = Compilation.gitlabCIVerbosity();
-		final DeducePhase     dp            = boilerplate.pr.pipelineLogic.dp;
+		final DeducePhase     dp            = boilerplate.pr.pipelineLogic().dp;
 		final DeduceTypes2    d             = dp.deduceModule(mod, dp.generatedClasses, verbosity);
 
-		//final @NotNull GenerateFunctions gf = boilerplate.pr.pipelineLogic.generatePhase.getGenerateFunctions(mod);
+		//final @NotNull GenerateFunctions gf = boilerplate.pr.pipelineLogic().generatePhase.getGenerateFunctions(mod);
 
 		final BaseEvaFunction bgf = mock(BaseEvaFunction.class);
 

@@ -158,9 +158,9 @@ public class TestGenFunction {
 		c.__cr = new CompilationRunner(c, null, new CompilationBus(c));
 		final CR_State  crState    = (c.__cr.crState);
 		crState.ca();
-		final PipelineLogic pl = crState.pr.pipelineLogic;
+		final PipelineLogic pl = crState.pr.pipelineLogic();
 
-		final GeneratePhase generatePhase = crState.pr.pipelineLogic.generatePhase;
+		final GeneratePhase generatePhase = crState.pr.pipelineLogic().generatePhase;
 		final GenerateFunctions gfm = generatePhase.getGenerateFunctions(m);
 		final List<EvaNode> lgc = new ArrayList<>();
 		gfm.generateAllTopLevelClasses(lgc);
@@ -203,7 +203,7 @@ public class TestGenFunction {
 		}
 
 		final GenerateC                 ggc = new GenerateC(m, eee, c.gitlabCIVerbosity(), pl);
-		final DefaultGenerateResultSink grs = new DefaultGenerateResultSink(null, crState.pr.pa);
+		final DefaultGenerateResultSink grs = new DefaultGenerateResultSink(null, crState.pr.pa());
 		ggc.generateCode(lgf, wm, grs);
 
 		GenerateResult gr = new GenerateResult();
@@ -251,11 +251,11 @@ public class TestGenFunction {
 
 				crState.ca();
 
-				cc.pipelineLogic = crState.pr.pipelineLogic;
+				cc.pipelineLogic = crState.pr.pipelineLogic();
 
-				final GeneratePhase     generatePhase1 = cc.pipelineLogic.generatePhase;
+				final GeneratePhase     generatePhase1 = cc.pipelineLogic().generatePhase;
 				final GenerateFunctions gfm            = generatePhase1.getGenerateFunctions(st.m);
-				st.dp = cc.pipelineLogic.dp;
+				st.dp = cc.pipelineLogic().dp;
 				gfm.generateFromEntryPoints(st.m.entryPoints, st.dp);
 
 				st.lgc = st.dp.generatedClasses;

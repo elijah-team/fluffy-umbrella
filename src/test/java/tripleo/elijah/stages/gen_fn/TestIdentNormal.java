@@ -44,7 +44,7 @@ public class TestIdentNormal {
 		boilerplate.get();
 		boilerplate.getGenerateFiles(boilerplate.defaultMod());
 
-		final GeneratePhase   generatePhase = boilerplate.pipelineLogic.generatePhase;
+		final GeneratePhase   generatePhase = boilerplate.pipelineLogic().generatePhase;
 
 		final GenerateFunctions generateFunctions = new GenerateFunctions(generatePhase, boilerplate.defaultMod(), boilerplate.pipelineLogic);
 
@@ -76,7 +76,7 @@ public class TestIdentNormal {
 
 		final IdentIA identIA = new IdentIA(1, generatedFunction);
 
-		final DeducePhase  phase = boilerplate.pr.pipelineLogic.dp;
+		final DeducePhase  phase = boilerplate.pr.pipelineLogic().dp;
 		final DeduceTypes2 d2    = new DeduceTypes2(boilerplate.defaultMod(), phase);
 
 		final List<InstructionArgument> ss = BaseEvaFunction._getIdentIAPathList(identIA);
@@ -102,7 +102,7 @@ public class TestIdentNormal {
 		boilerplate.getGenerateFiles(mod);
 
 		final Context ctx2 = mock(Context.class);
-		final DeducePhase phase = boilerplate.pipelineLogic.dp;
+		final DeducePhase phase = boilerplate.pipelineLogic().dp;
 
 		//
 		//
@@ -143,8 +143,8 @@ public class TestIdentNormal {
 		fd.add(new StatementWrapper(pce2, ctx1, fd));
 		fd2.scope(new Scope3(fd2));
 
-		final GeneratePhase     generatePhase     = boilerplate.pipelineLogic.generatePhase;
-		final GenerateFunctions generateFunctions = boilerplate.pipelineLogic.generatePhase.getGenerateFunctions(mod);
+		final GeneratePhase     generatePhase     = boilerplate.pipelineLogic().generatePhase;
+		final GenerateFunctions generateFunctions = boilerplate.pipelineLogic().generatePhase.getGenerateFunctions(mod);
 
 		fd2.add(new StatementWrapper(pce, ctx2, fd2));
 

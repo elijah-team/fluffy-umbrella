@@ -8,19 +8,17 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import tripleo.elijah.comp.*;
-import tripleo.elijah.comp.i.ICompilationAccess;
-import tripleo.elijah.comp.internal.CompilationImpl;
-import tripleo.elijah.comp.internal.DefaultCompilationAccess;
-import tripleo.elijah.comp.internal.ProcessRecord;
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.internal.CR_State;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.test_help.Boilerplate;
 import tripleo.elijah.util.Helpers;
 
 import static tripleo.elijah.util.Helpers.List_of;
@@ -30,35 +28,32 @@ public class DeduceTypesTest2 {
 
 	@Test
 	public void testDeduceIdentExpression() throws ResolveError {
-/*
-		final OS_Module mod = new OS_Module();
-		mod.parent = new CompilationImpl(new StdErrSink(), new IO());
-		mod.prelude = mod.parent.findPrelude("c");
-		final ModuleContext mctx = new ModuleContext(mod);
-		mod.setContext(mctx);
-		final ClassStatement cs = new ClassStatement(mod, mctx);
-		cs.setName(Helpers.string_to_ident("Test"));
-*/
+		final Boilerplate b = new Boilerplate();
+		b.get();
+		final Compilation c = b.comp;
 
-		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
+		//b.defaultMod();
 		final OS_Module mod = c.moduleBuilder()
 				.withPrelude("c")
 				.setContext()
 				.build();
-		final ClassStatement cs = new ClassStatement(mod, mod.getContext());
-		final ClassHeader ch = new ClassHeader(false, List_of());
-		ch.setName(Helpers.string_to_ident("Test"));
-		cs.setHeader(ch);
+
+		mod.setParent(c); // !!??
+
+		final ClassStatement cs = new ClassBuilder()
+				.withModule(mod)
+				.withName("Test")
+				.build();
 
 		final FunctionDef fd = cs.funcDef();
 		fd.setName((Helpers.string_to_ident("test")));
-		Scope3 scope3 = new Scope3(fd);
-		final VariableSequence vss = scope3.varSeq();
-		final VariableStatement vs = vss.next();
+		Scope3                  scope3 = new Scope3(fd);
+		final VariableSequence  vss    = scope3.varSeq();
+		final VariableStatement vs     = vss.next();
 		vs.setName((Helpers.string_to_ident("x")));
 		final Qualident qu = new Qualident();
 		qu.append(Helpers.string_to_ident("SystemInteger"));
-		((NormalTypeName)vs.typeName()).setName(qu);
+		((NormalTypeName) vs.typeName()).setName(qu);
 		final FunctionContext fc = (FunctionContext) fd.getContext();
 		vs.typeName().setContext(fc);
 		final IdentExpression x1 = Helpers.string_to_ident("x");
@@ -71,22 +66,26 @@ public class DeduceTypesTest2 {
 		//
 		//
 		//
-		final ElLog.Verbosity verbosity1 = Compilation.gitlabCIVerbosity();
-		//final PipelineLogic pl = new PipelineLogic(verbosity1);
-		//final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 
+/*
+		// Called Boilerplate##get
 		final ICompilationAccess aca = new DefaultCompilationAccess(c);
-		final ProcessRecord      pr  = new ProcessRecord(aca);
+		assert c.__cr == null;
+		c.__cr = new CompilationRunner(aca);
+*/
 
-		DeducePhase dp = pr.pipelineLogic.dp; //new DeducePhase(generatePhase, pl, verbosity1, aca);
-		DeduceTypes2 d = dp.deduceModule(mod, dp.generatedClasses, verbosity1);
+		assert c.__cr.crState != null; // always true
 
-		final GenType x = DeduceLookupUtils.deduceExpression(d, x1, fc);
-		tripleo.elijah.util.Stupidity.println_out_2(""+x);
+		final CR_State     crState = c.__cr.crState;
+		final DeducePhase  dp      = crState.pr.pipelineLogic().dp;
+		final DeduceTypes2 d       = dp.deduceModule(mod);
+
+		final GenType      x       = DeduceLookupUtils.deduceExpression(d, x1, fc);
+		tripleo.elijah.util.Stupidity.println_out_2("-- deduceExpression >>" + x);
 //		Assert.assertEquals(new OS_BuiltInType(BuiltInTypes..SystemInteger).getBType(), x.getBType());
 //		final RegularTypeName tn = new RegularTypeName();
-		final VariableTypeName tn = new VariableTypeName();
-		final Qualident tnq = new Qualident();
+		final VariableTypeName tn  = new VariableTypeName();
+		final Qualident        tnq = new Qualident();
 		tnq.append(Helpers.string_to_ident("SystemInteger"));
 		tn.setName(tnq);
 		tn.setContext(fd.getContext());
@@ -96,9 +95,37 @@ public class DeduceTypesTest2 {
 //		Assert.assertEquals(new OS_UserType(tn).toString(), x.toString());
 	}
 
-	private boolean genTypeEquals(GenType a, GenType b) {
+	private boolean genTypeEquals(@NotNull GenType a, @NotNull GenType b) {
 		// TODO hack
-		return a.typeName.equals(b.typeName) &&
-				a.resolved.equals(b.resolved);
+		return a.typeName.isEqual(b.typeName) &&
+				a.resolved.isEqual(b.resolved);
+	}
+
+	class ClassBuilder {
+
+		private OS_Module _mod  = null;
+		private String    _name = null;
+
+		public ClassStatement build() {
+			assert _mod != null;
+			assert _name != null;
+
+			final ClassStatement cs = new ClassStatement(_mod, _mod.getContext());
+			final ClassHeader    ch = new ClassHeader(false, List_of());
+			ch.setName(Helpers.string_to_ident(_name));
+			cs.setHeader(ch);
+
+			return cs;
+		}
+
+		public ClassBuilder withModule(final OS_Module aMod) {
+			_mod = aMod;
+			return this;
+		}
+
+		public ClassBuilder withName(final String aS) {
+			_name = aS;
+			return this;
+		}
 	}
 }
