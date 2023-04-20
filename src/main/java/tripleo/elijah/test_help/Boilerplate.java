@@ -59,10 +59,6 @@ public class Boilerplate {
 		return module;
 	}
 
-	public DeducePhase getDeducePhase() {
-		return pipelineLogic.dp;
-	}
-
 	public BoilerplateModuleBuilder withModBuilder(final OS_Module aMod) {
 		return new BoilerplateModuleBuilder(aMod);
 	}
@@ -89,5 +85,9 @@ public class Boilerplate {
 
 //		d.processWachers();
 		return d;
+	}
+
+	public DeducePhase getDeducePhase() {
+		return pipelineLogic.dp;
 	}
 }

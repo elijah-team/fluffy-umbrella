@@ -12,7 +12,7 @@ package tripleo.elijah.stages.instructions;
  * Created 9/12/20 5:00 PM
  */
 public enum VariableTableType {
-	VAR, TEMP, SELF, RESULT, ARG;
+	VAR, TEMP, SELF, RESULT, ARG
 }
 
 //

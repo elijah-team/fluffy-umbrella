@@ -24,11 +24,9 @@ public class Coder {
 	}
 
 	public void codeNodes(final OS_Module mod, final List<GeneratedNode> resolved_nodes, final GeneratedNode generatedNode) {
-		if (generatedNode instanceof GeneratedFunction) {
-			final GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
+		if (generatedNode instanceof final GeneratedFunction generatedFunction) {
 			codeNodeFunction(generatedFunction, mod);
-		} else if (generatedNode instanceof GeneratedClass) {
-			final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
+		} else if (generatedNode instanceof final GeneratedClass generatedClass) {
 			//			assert generatedClass.getCode() == 0;
 			if (generatedClass.getCode() == 0)
 				codeNodeClass(generatedClass, mod);
@@ -36,8 +34,7 @@ public class Coder {
 			setClassmapNodeCodes(generatedClass.classMap, mod);
 
 			extractNodes_toResolvedNodes(generatedClass.functionMap, resolved_nodes);
-		} else if (generatedNode instanceof GeneratedNamespace) {
-			final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
+		} else if (generatedNode instanceof final GeneratedNamespace generatedNamespace) {
 
 			if (generatedNamespace.getCode() != 0)
 				codeNodeNamespace(generatedNamespace, mod);
@@ -45,34 +42,6 @@ public class Coder {
 			setClassmapNodeCodes(generatedNamespace.classMap, mod);
 
 			extractNodes_toResolvedNodes(generatedNamespace.functionMap, resolved_nodes);
-		}
-	}
-
-	private void setClassmapNodeCodes(@NotNull final Map<ClassStatement, GeneratedClass> aClassMap, final OS_Module mod) {
-		aClassMap.values().forEach(generatedClass -> codeNodeClass(generatedClass, mod));
-	}
-
-	private static void extractNodes_toResolvedNodes(@NotNull final Map<FunctionDef, GeneratedFunction> aFunctionMap, @NotNull final List<GeneratedNode> resolved_nodes) {
-		aFunctionMap.values().stream().map(generatedFunction -> (generatedFunction.idte_list)
-		              .stream()
-		              .filter(IdentTableEntry::isResolved)
-		              .map(IdentTableEntry::resolvedType)
-		              .collect(Collectors.toList()))
-		            .forEach(resolved_nodes::addAll);
-	}
-
-	public void codeNode(final GeneratedNode generatedNode, final OS_Module mod) {
-		final Coder coder = this;
-
-		if (generatedNode instanceof GeneratedFunction) {
-			final GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
-			coder.codeNodeFunction(generatedFunction, mod);
-		} else if (generatedNode instanceof GeneratedClass) {
-			final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-			coder.codeNodeClass(generatedClass, mod);
-		} else if (generatedNode instanceof GeneratedNamespace) {
-			final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
-			coder.codeNodeNamespace(generatedNamespace, mod);
 		}
 	}
 
@@ -88,9 +57,34 @@ public class Coder {
 		codeRegistrar.registerClass(generatedClass);
 	}
 
+	private void setClassmapNodeCodes(@NotNull final Map<ClassStatement, GeneratedClass> aClassMap, final OS_Module mod) {
+		aClassMap.values().forEach(generatedClass -> codeNodeClass(generatedClass, mod));
+	}
+
+	private static void extractNodes_toResolvedNodes(@NotNull final Map<FunctionDef, GeneratedFunction> aFunctionMap, @NotNull final List<GeneratedNode> resolved_nodes) {
+		aFunctionMap.values().stream().map(generatedFunction -> (generatedFunction.idte_list)
+		              .stream()
+		              .filter(IdentTableEntry::isResolved)
+		              .map(IdentTableEntry::resolvedType)
+		              .collect(Collectors.toList()))
+		            .forEach(resolved_nodes::addAll);
+	}
+
 	public void codeNodeNamespace(@NotNull final GeneratedNamespace generatedNamespace, final OS_Module mod) {
 //		if (generatedNamespace.getCode() == 0)
 //			generatedNamespace.setCode(mod.parent.nextClassCode());
 		codeRegistrar.registerNamespace(generatedNamespace);
+	}
+
+	public void codeNode(final GeneratedNode generatedNode, final OS_Module mod) {
+		final Coder coder = this;
+
+		if (generatedNode instanceof final GeneratedFunction generatedFunction) {
+			coder.codeNodeFunction(generatedFunction, mod);
+		} else if (generatedNode instanceof final GeneratedClass generatedClass) {
+			coder.codeNodeClass(generatedClass, mod);
+		} else if (generatedNode instanceof final GeneratedNamespace generatedNamespace) {
+			coder.codeNodeNamespace(generatedNamespace, mod);
+		}
 	}
 }

@@ -19,9 +19,9 @@ import java.io.Writer;
 
 public class TabbedOutputStream {
 
-	private boolean dont_close = false;
 	int tabwidth;
 	@Nullable Writer  myStream;
+	private boolean dont_close = false;
 	private   boolean do_tabs = false;
 
 	public TabbedOutputStream(final OutputStream os) {
@@ -80,6 +80,32 @@ public class TabbedOutputStream {
 		do_tabs = true;
 	}
 
+	public void incr_tabs() {
+		tabwidth++;
+	}
+
+	public void dec_tabs() {
+		tabwidth--;
+	}
+
+	public void close() throws IOException {
+		if (!is_connected())
+			throw new IllegalStateException("is_connected assertion failed; closing twice");
+
+		if (!dont_close)
+			myStream.close();
+		myStream = null;
+	}
+
+	public boolean is_connected() {
+		return myStream != null;
+	}
+
+	void doIndent() throws IOException {
+		for (int i = 0; i < tabwidth; i++)
+		     myStream.write('\t');
+	}
+
 	public void put_string_ln_no_tabs(final String s) throws IOException {
 		if (!is_connected())
 			throw new IllegalStateException("is_connected assertion failed");
@@ -99,34 +125,12 @@ public class TabbedOutputStream {
 //		do_tabs = false;
 	}
 
-	public void incr_tabs() {
-		tabwidth++;
-	}
-
-	public void close() throws IOException {
-		if (!is_connected())
-			throw new IllegalStateException("is_connected assertion failed; closing twice");
-
-		if (!dont_close)
-			myStream.close();
-		myStream = null;
-	}
-
 	public void put_newline() throws IOException {
 		doIndent();
 	}
 
-	void doIndent() throws IOException {
-		for (int i = 0; i < tabwidth; i++)
-			myStream.write('\t');
-	}
-
 	public int t() {
 		return tabwidth;
-	}
-
-	public boolean is_connected() {
-		return myStream != null;
 	}
 
 	public void quote_string(final @NotNull String s) throws IOException {
@@ -136,10 +140,6 @@ public class TabbedOutputStream {
 		myStream.write(34);
 		myStream.write(s);
 		myStream.write(34);
-	}
-
-	public void dec_tabs() {
-		tabwidth--;
 	}
 
 	public void flush() throws IOException {

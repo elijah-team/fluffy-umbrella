@@ -29,7 +29,7 @@ import java.util.List;
 public class FuncExprContext extends FunctionContext {
 
 	private final FuncExpr carrier;
-	private final Context _parent;
+	private final Context  _parent;
 
 	public FuncExprContext(final Context cur, final FuncExpr pc) {
 		super(cur, pc);
@@ -37,13 +37,14 @@ public class FuncExprContext extends FunctionContext {
 		carrier = pc;
 	}
 
-	@Override public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	@Override
+	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
-		for (final FunctionItem item: carrier.getItems()) {
+		for (final FunctionItem item : carrier.getItems()) {
 			if (!(item instanceof ClassStatement) &&
-					    !(item instanceof NamespaceStatement) &&
-					    !(item instanceof FunctionDef) &&
-					    !(item instanceof VariableSequence)
+			  !(item instanceof NamespaceStatement) &&
+			  !(item instanceof FunctionDef) &&
+			  !(item instanceof VariableSequence)
 			) continue;
 			if (item instanceof OS_Element2) {
 				if (((OS_Element2) item).name().equals(name)) {

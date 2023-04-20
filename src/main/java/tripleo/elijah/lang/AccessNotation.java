@@ -18,15 +18,9 @@ import tripleo.elijjah.ElijjahTokenTypes;
  */
 // TODO Does this need to be Element?
 public class AccessNotation implements OS_Element {
-	private Token category;
-	private Token shorthand;
+	private Token        category;
+	private Token        shorthand;
 	private TypeNameList tnl;
-
-	public void setCategory(final Token category) {
-		if (category == null) return;
-		assert category.getType() == ElijjahTokenTypes.STRING_LITERAL;
-		this.category = category;
-	}
 
 	public void setShortHand(final Token shorthand) {
 		if (shorthand == null) return;
@@ -44,17 +38,23 @@ public class AccessNotation implements OS_Element {
 	}
 
 	@Override
-	public OS_Element getParent() {
+	public Context getContext() {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public Context getContext() {
+	public OS_Element getParent() {
 		throw new NotImplementedException();
 	}
 
 	public Token getCategory() {
 		return category;
+	}
+
+	public void setCategory(final Token category) {
+		if (category == null) return;
+		assert category.getType() == ElijjahTokenTypes.STRING_LITERAL;
+		this.category = category;
 	}
 }
 

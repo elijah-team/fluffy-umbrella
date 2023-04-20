@@ -25,6 +25,9 @@ import java.util.List;
 
 public class CompilationImpl extends Compilation {
 
+	private final @NotNull FluffyCompImpl _fluffyComp;
+	private @Nullable EOT_OutputTree _output_tree = null;
+
 	public CompilationImpl(final ErrSink aEee, final IO aIo) {
 		super(aEee, aIo);
 		_fluffyComp = new FluffyCompImpl(this);
@@ -33,8 +36,6 @@ public class CompilationImpl extends Compilation {
 	public void testMapHooks(final List<IFunctionMapHook> aMapHooks) {
 		throw new NotImplementedException();
 	}
-
-	private @Nullable EOT_OutputTree _output_tree = null;
 
 	@Override
 	public @NotNull EOT_OutputTree getOutputTree() {
@@ -51,8 +52,6 @@ public class CompilationImpl extends Compilation {
 	public @NotNull FluffyComp getFluffy() {
 		return _fluffyComp;
 	}
-
-	private final @NotNull FluffyCompImpl _fluffyComp;
 
 	public ICompilationAccess _access() {
 		return new DefaultCompilationAccess(this);

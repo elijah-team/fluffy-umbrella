@@ -10,12 +10,12 @@ package tripleo.elijah.util;
 
 @SuppressWarnings("unused")
 public class NotImplementedException extends RuntimeException {
-public NotImplementedException() {
-	final int y=2;
-}
+	public NotImplementedException() {
+		final int y = 2;
+	}
 
-public static void raise() {
-	final int y=2;
-}
+	public static void raise() {
+		final int y = 2;
+	}
 }
 

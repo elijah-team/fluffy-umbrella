@@ -39,10 +39,10 @@ public class F202 {
 
 		final ElLog firstLog = aElLogs.iterator().next();
 
-		final String s2  = gln.getLogName(firstLog);
-		final File file2 = gld.getLogDirectory();
+		final String s2    = gln.getLogName(firstLog);
+		final File   file2 = gld.getLogDirectory();
 
-		final File psf   = new File(file2, s2);
+		final File   psf = new File(file2, s2);
 		final String s1  = firstLog.getFileName();
 		pre.reportProgress(psf.toString());
 

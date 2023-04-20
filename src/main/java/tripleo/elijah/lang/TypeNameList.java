@@ -11,12 +11,11 @@ package tripleo.elijah.lang;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.util.Helpers;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.jetbrains.annotations.Nullable;
 
 public class TypeNameList {
 

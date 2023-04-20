@@ -8,15 +8,19 @@
  */
 package tripleo.elijah.lang.builder;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.AliasStatement;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.Qualident;
 
 /**
  * Created 12/23/20 4:38 AM
  */
 public class AliasStatementBuilder extends ElBuilder {
-	private OS_Element _parent;
-	private Context _context;
-	private Qualident oldElement;
+	private OS_Element      _parent;
+	private Context         _context;
+	private Qualident       oldElement;
 	private IdentExpression newAlias;
 
 	public IdentExpression getIdent() {

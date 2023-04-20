@@ -21,7 +21,7 @@ public class FluffyModuleImpl implements FluffyModule {
 	private final Compilation compilation;
 
 	public FluffyModuleImpl(final OS_Module aModule, final Compilation aCompilation) {
-		module = aModule;
+		module      = aModule;
 		compilation = aCompilation;
 	}
 
@@ -53,9 +53,9 @@ public class FluffyModuleImpl implements FluffyModule {
 		final Consumer<ClassStatement> ccs = (x) -> module.entryPoints.add(new MainClassEntryPoint(x));
 
 		module.items.stream()
-				.filter(item -> item instanceof ClassStatement)
-				.filter(classStatement -> MainClassEntryPoint.isMainClass((ClassStatement) classStatement))
-				.forEach(classStatement -> faep_002((ClassStatement) classStatement, ccs));
+		            .filter(item -> item instanceof ClassStatement)
+		            .filter(classStatement -> MainClassEntryPoint.isMainClass((ClassStatement) classStatement))
+		            .forEach(classStatement -> faep_002((ClassStatement) classStatement, ccs));
 	}
 
 	/**
@@ -71,8 +71,8 @@ public class FluffyModuleImpl implements FluffyModule {
 //		final int eps = aModule.entryPoints.size();
 
 		found
-				.map(aFunctionDef -> (ClassStatement) aFunctionDef.getParent())
-				.forEach(ccs);
+		  .map(aFunctionDef -> (ClassStatement) aFunctionDef.getParent())
+		  .forEach(ccs);
 
 //		assert aModule.entryPoints.size() == eps || aModule.entryPoints.size() == eps+1; // TODO this will fail one day
 

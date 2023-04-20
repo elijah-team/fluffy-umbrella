@@ -17,21 +17,22 @@ public class OS_UnitType extends __Abstract_OS_Type {
 	}
 
 	@Override
+	public String asString() {
+		return "<OS_UnitType>";
+	}
+
+	@Override
 	public boolean isUnitType() {
 		return true;
+	}
+
+	protected boolean _isEqual(final OS_Type aType) {
+		return aType.getType() == Type.UNIT_TYPE;
 	}
 
 	@Override
 	public String toString() {
 		return "<UnitType>";
-	}
-	@Override
-	public String asString() {
-		return "<OS_UnitType>";
-	}
-
-	protected boolean _isEqual(final OS_Type aType) {
-		return aType.getType() == Type.UNIT_TYPE;
 	}
 }
 

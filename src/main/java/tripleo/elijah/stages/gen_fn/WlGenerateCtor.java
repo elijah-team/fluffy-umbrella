@@ -105,9 +105,9 @@ public class WlGenerateCtor implements WorkJob {
 			final OS_Element classStatement_ = cd.getParent();
 			assert classStatement_ instanceof ClassStatement;
 
-			final ClassStatement classStatement = (ClassStatement) classStatement_;
-			final Collection<ConstructorDef> cs = classStatement.getConstructors();
-			ConstructorDef c = null;
+			final ClassStatement             classStatement = (ClassStatement) classStatement_;
+			final Collection<ConstructorDef> cs             = classStatement.getConstructors();
+			ConstructorDef                   c              = null;
 			if (constructorName != null) {
 				for (final ConstructorDef cc : cs) {
 					if (cc.name().equals(constructorName.getText())) {
@@ -117,7 +117,7 @@ public class WlGenerateCtor implements WorkJob {
 				}
 			} else {
 				// TODO match based on arguments
-				final ProcTableEntry pte = functionInvocation.pte;
+				final ProcTableEntry       pte  = functionInvocation.pte;
 				final List<TypeTableEntry> args = pte.getArgs();
 				// isResolved -> GeneratedNode, etc or getAttached -> OS_Element
 				for (final ConstructorDef cc : cs) {
@@ -176,13 +176,13 @@ public class WlGenerateCtor implements WorkJob {
 		_isDone = true;
 	}
 
-	private boolean getPragma(final String aAuto_construct) {
-		return false;
-	}
-
 	@Override
 	public boolean isDone() {
 		return _isDone;
+	}
+
+	private boolean getPragma(final String aAuto_construct) {
+		return false;
 	}
 
 	public GeneratedConstructor getResult() {

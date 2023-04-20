@@ -9,5 +9,6 @@ package tripleo.elijah.nextgen.outputstatement;
  */
 public interface EG_Statement {
 	String getText();
+
 	EX_Explanation getExplanation();
 }

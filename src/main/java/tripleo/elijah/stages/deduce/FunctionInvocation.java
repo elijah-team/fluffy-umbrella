@@ -94,7 +94,7 @@ public class FunctionInvocation {
 					  aPhase.generatedClasses,
 					  aPhase.codeRegistrar);
 					wlgn.run(null);
-					final int y=2;
+					final int y = 2;
 				}
 			}
 		}
@@ -108,16 +108,20 @@ public class FunctionInvocation {
 		return _generated;
 	}
 
+	public void setGenerated(final BaseGeneratedFunction aGeneratedFunction) {
+		_generated = aGeneratedFunction;
+	}
+
 	public BaseFunctionDef getFunction() {
 		return fd;
 	}
 
-	public void setClassInvocation(@NotNull final ClassInvocation aClassInvocation) {
-		classInvocation = aClassInvocation;
-	}
-
 	public ClassInvocation getClassInvocation() {
 		return classInvocation;
+	}
+
+	public void setClassInvocation(@NotNull final ClassInvocation aClassInvocation) {
+		classInvocation = aClassInvocation;
 	}
 
 	public NamespaceInvocation getNamespaceInvocation() {
@@ -134,10 +138,6 @@ public class FunctionInvocation {
 
 	public Promise<BaseGeneratedFunction, Void, Void> generatePromise() {
 		return generateDeferred.promise();
-	}
-
-	public void setGenerated(final BaseGeneratedFunction aGeneratedFunction) {
-		_generated = aGeneratedFunction;
 	}
 
 	public List<TypeTableEntry> getArgs() {

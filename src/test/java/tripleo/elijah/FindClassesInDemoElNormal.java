@@ -23,7 +23,6 @@ import java.util.List;
 
 /**
  * @author Tripleo
- *
  */
 public class FindClassesInDemoElNormal {
 
@@ -58,7 +57,7 @@ public class FindClassesInDemoElNormal {
 	}
 
 }
-	
+
 //
 //
 //

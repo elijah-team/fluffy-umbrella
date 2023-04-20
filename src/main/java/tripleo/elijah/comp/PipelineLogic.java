@@ -81,14 +81,6 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 		}
 	}
 
-	@NotNull GenerateFunctions getGenerateFunctions(final OS_Module mod) {
-		return generatePhase.getGenerateFunctions(mod);
-	}
-
-	public void addModule(final OS_Module m) {
-		mods.add(m);
-	}
-
 	public static void resolveCheck(final DeducePhase.@NotNull GeneratedClasses lgc) {
 		for (final GeneratedNode generatedNode : lgc) {
 			if (generatedNode instanceof GeneratedFunction) {
@@ -125,6 +117,10 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 		}
 	}
 
+	public void addModule(final OS_Module m) {
+		mods.add(m);
+	}
+
 	public ElLog.Verbosity getVerbosity() {
 		return verbosity;
 	}
@@ -143,6 +139,10 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 
 		dp.finish(dp.generatedClasses);
 //		dp.generatedClasses.addAll(lgc);
+	}
+
+	@NotNull GenerateFunctions getGenerateFunctions(final OS_Module mod) {
+		return generatePhase.getGenerateFunctions(mod);
 	}
 
 	public GenerateResult getGR() {

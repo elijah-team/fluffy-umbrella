@@ -66,6 +66,18 @@ public class GenType {
 		}
 	}
 
+	public ClassInvocation genCI(final TypeName aGenericTypeName,
+	                             final DeduceTypes2 deduceTypes2,
+	                             final ErrSink errSink,
+	                             final DeducePhase phase) {
+		final SetGenCI        sgci = new SetGenCI();
+		final ClassInvocation ci   = sgci.call(this, aGenericTypeName, deduceTypes2, errSink, phase);
+		return ci;
+	}
+
+	public GenType() {
+	}
+
 	@Override
 	public boolean equals(final Object aO) {
 		if (this == aO) return true;
@@ -95,18 +107,6 @@ public class GenType {
 		return result;
 	}
 
-	public ClassInvocation genCI(final TypeName aGenericTypeName,
-	                             final DeduceTypes2 deduceTypes2,
-	                             final ErrSink errSink,
-	                             final DeducePhase phase) {
-		final SetGenCI        sgci = new SetGenCI();
-		final ClassInvocation ci   = sgci.call(this, aGenericTypeName, deduceTypes2, errSink, phase);
-		return ci;
-	}
-
-	public GenType() {
-	}
-
 	public String asString() {
 		final String sb = "GenType{" + "resolvedn=" + resolvedn +
 		  ", typeName=" + typeName +
@@ -121,14 +121,14 @@ public class GenType {
 
 	public void set(final @NotNull OS_Type aType) {
 		switch (aType.getType()) {
-			case USER:
-				typeName = aType;
-				break;
-			case USER_CLASS:
-				resolved = aType;
-				break;
-			default:
-				tripleo.elijah.util.Stupidity.println_err2("48 Unknown in set: " + aType);
+		case USER:
+			typeName = aType;
+			break;
+		case USER_CLASS:
+			resolved = aType;
+			break;
+		default:
+			tripleo.elijah.util.Stupidity.println_err2("48 Unknown in set: " + aType);
 		}
 	}
 
@@ -153,16 +153,14 @@ public class GenType {
 	public void genCIForGenType2(final DeduceTypes2 aDeduceTypes2) {
 		genCI(nonGenericTypeName, aDeduceTypes2, aDeduceTypes2._errSink(), aDeduceTypes2._phase());
 		final IInvocation invocation = ci;
-		if (invocation instanceof NamespaceInvocation) {
-			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
+		if (invocation instanceof final NamespaceInvocation namespaceInvocation) {
 			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
 				@Override
 				public void onDone(final GeneratedNamespace result) {
 					node = result;
 				}
 			});
-		} else if (invocation instanceof ClassInvocation) {
-			final ClassInvocation classInvocation = (ClassInvocation) invocation;
+		} else if (invocation instanceof final ClassInvocation classInvocation) {
 			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
 				@Override
 				public void onDone(final GeneratedClass result) {
@@ -170,14 +168,12 @@ public class GenType {
 				}
 			});
 		} else {
-			if (resolved instanceof OS_FuncExprType) {
-				final OS_FuncExprType funcExprType = (OS_FuncExprType) resolved;
+			if (resolved instanceof final OS_FuncExprType funcExprType) {
 
 				final Zero_FuncExprType zfet = aDeduceTypes2.getZero(funcExprType);
 
 				node = zfet.genCIForGenType2(aDeduceTypes2);
-			} else if (resolved instanceof OS_FuncType) {
-				final OS_FuncType funcType = (OS_FuncType) resolved;
+			} else if (resolved instanceof final OS_FuncType funcType) {
 				final int         y        = 2;
 			} else
 				throw new IllegalStateException("invalid invocation");
@@ -192,16 +188,14 @@ public class GenType {
 
 		final IInvocation invocation = ci;
 
-		if (invocation instanceof NamespaceInvocation) {
-			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
+		if (invocation instanceof final NamespaceInvocation namespaceInvocation) {
 			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
 				@Override
 				public void onDone(final GeneratedNamespace result) {
 					node = result;
 				}
 			});
-		} else if (invocation instanceof ClassInvocation) {
-			final ClassInvocation classInvocation = (ClassInvocation) invocation;
+		} else if (invocation instanceof final ClassInvocation classInvocation) {
 			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
 				@Override
 				public void onDone(final GeneratedClass result) {
@@ -239,19 +233,19 @@ public class GenType {
 			@Nullable final String        constructorName = null; // TODO this comes from nowhere
 
 			switch (genType.resolved.getType()) {
-				case GENERIC_TYPENAME:
-					final int y = 2; // TODO seems to not be necessary
-					assert false;
-					return null;
-				case USER_CLASS:
-					final @NotNull ClassStatement best = genType.resolved.getClassOf();
-					//
-					ClassInvocation clsinv2 = DeduceTypes2.ClassInvocationMake.withGenericPart(best, constructorName, aTyn1, deduceTypes2, errSink);
-					clsinv2 = phase.registerClassInvocation(clsinv2);
-					genType.ci = clsinv2;
-					return clsinv2;
-				default:
-					throw new IllegalStateException("Unexpected value: " + genType.resolved.getType());
+			case GENERIC_TYPENAME:
+				final int y = 2; // TODO seems to not be necessary
+				assert false;
+				return null;
+			case USER_CLASS:
+				final @NotNull ClassStatement best = genType.resolved.getClassOf();
+				//
+				ClassInvocation clsinv2 = DeduceTypes2.ClassInvocationMake.withGenericPart(best, constructorName, aTyn1, deduceTypes2, errSink);
+				clsinv2 = phase.registerClassInvocation(clsinv2);
+				genType.ci = clsinv2;
+				return clsinv2;
+			default:
+				throw new IllegalStateException("Unexpected value: " + genType.resolved.getType());
 			}
 		}
 

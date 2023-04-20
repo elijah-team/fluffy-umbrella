@@ -132,8 +132,7 @@ public class VTE_TypePromises {
 					final LookupResultList     lrl2  = rtype.resolved.getClassOf().getContext().lookup("__getitem__");
 					@Nullable final OS_Element best2 = lrl2.chooseBest(null);
 					if (best2 != null) {
-						if (best2 instanceof FunctionDef) {
-							@Nullable final FunctionDef    fd         = (FunctionDef) best2;
+						if (best2 instanceof @Nullable final FunctionDef fd) {
 							@Nullable final ProcTableEntry pte        = null;
 							final IInvocation              invocation = aDeduceTypes2.getInvocation((GeneratedFunction) generatedFunction);
 							aDeduceTypes2.forFunction(aDeduceTypes2.newFunctionInvocation(fd, pte, invocation, aDeduceTypes2.phase), new ForFunction() {
@@ -209,26 +208,26 @@ public class VTE_TypePromises {
 				final OS_Type attached1 = result.resolved != null ? result.resolved : result.typeName;
 				if (attached1 != null) {
 					switch (attached1.getType()) {
-						case USER_CLASS:
-							if (ite.type.getAttached() == null)
-								ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, attached1);
-							else {
-								aDeduceTypes2.LOG.err(String.format("3603 Trying to set %s to %s", ite.type.getAttached(), attached1));
-							}
-							break;
-						case USER:
-							try {
-								@NotNull final GenType ty3 = aDeduceTypes2.resolve_type(attached1, attached1.getTypeName().getContext());
-								// no expression or TableEntryIV below
-								@NotNull final TypeTableEntry tte4 = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null);
-								// README trying to keep genType up to date
-								tte4.setAttached(attached1);
-								tte4.setAttached(ty3);
-								ite.type = tte4; // or ty2?
-							} catch (final ResolveError aResolveError) {
-								aResolveError.printStackTrace();
-							}
-							break;
+					case USER_CLASS:
+						if (ite.type.getAttached() == null)
+							ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, attached1);
+						else {
+							aDeduceTypes2.LOG.err(String.format("3603 Trying to set %s to %s", ite.type.getAttached(), attached1));
+						}
+						break;
+					case USER:
+						try {
+							@NotNull final GenType ty3 = aDeduceTypes2.resolve_type(attached1, attached1.getTypeName().getContext());
+							// no expression or TableEntryIV below
+							@NotNull final TypeTableEntry tte4 = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null);
+							// README trying to keep genType up to date
+							tte4.setAttached(attached1);
+							tte4.setAttached(ty3);
+							ite.type = tte4; // or ty2?
+						} catch (final ResolveError aResolveError) {
+							aResolveError.printStackTrace();
+						}
+						break;
 					}
 				}
 			}

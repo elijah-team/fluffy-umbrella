@@ -10,7 +10,7 @@ package tripleo.elijah.lang2;
 
 /**
  * @author Tripleo
- *
+ * <p>
  * Created 	Mar 27, 2020 at 2:08:59 AM
  */
 public enum BuiltInTypes {
@@ -21,18 +21,18 @@ public enum BuiltInTypes {
 	SystemCharacter(9);
 
 	final int _code;
-	
+
 	BuiltInTypes(final int aCode) {
 		_code = aCode;
-	}
-	
-	public int getCode() {
-		return _code;
 	}
 
 	public static boolean isBooleanText(final String name) {
 		return name.equals("true") || name.equals("false")
-			|| name.equals("True") || name.equals("False");
+		  || name.equals("True") || name.equals("False");
+	}
+
+	public int getCode() {
+		return _code;
 	}
 }
 

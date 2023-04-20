@@ -32,6 +32,10 @@ import java.util.List;
 public class OS_FuncType extends __Abstract_OS_Type {
 	private final FunctionDef function_def;
 
+	public OS_FuncType(final FunctionDef functionDef) {
+		this.function_def = functionDef;
+	}
+
 	@Override
 	public OS_Element getElement() {
 		return function_def;
@@ -42,18 +46,14 @@ public class OS_FuncType extends __Abstract_OS_Type {
 		return Type.FUNCTION;
 	}
 
-	public OS_FuncType(final FunctionDef functionDef) {
-		this.function_def = functionDef;
+	@Override
+	public String asString() {
+		return MessageFormat.format("<OS_FuncType {0}>", function_def);
 	}
 
 	@Override
 	public String toString() {
 		return String.format("<OS_FuncType %s>", function_def);
-	}
-
-	@Override
-	public String asString() {
-		return MessageFormat.format("<OS_FuncType {0}>", function_def);
 	}
 
 	@NotNull
@@ -80,7 +80,6 @@ public class OS_FuncType extends __Abstract_OS_Type {
 		return aType.getType() == Type.FUNCTION && function_def.equals(aType.getElement());
 	}
 }
-
 
 
 //

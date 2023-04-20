@@ -18,8 +18,6 @@ import tripleo.elijah.work.WorkList;
 import tripleo.elijah.world.i.LivingRepo;
 
 public interface EntryPointProcessor {
-	void process();
-
 	static @NotNull EntryPointProcessor dispatch(final EntryPoint ep, final DeducePhase aDeducePhase, final WorkList aWl, final GenerateFunctions aGenerateFunctions) {
 		if (ep instanceof MainClassEntryPoint) {
 			return new EPP_MCEP((MainClassEntryPoint) ep, aDeducePhase, aWl, aGenerateFunctions);
@@ -30,16 +28,18 @@ public interface EntryPointProcessor {
 		throw new IllegalStateException();
 	}
 
+	void process();
+
 	class EPP_MCEP implements EntryPointProcessor {
 		private final MainClassEntryPoint mcep;
-		private final DeducePhase deducePhase;
-		private final WorkList wl;
-		private final GenerateFunctions generateFunctions;
+		private final DeducePhase         deducePhase;
+		private final WorkList            wl;
+		private final GenerateFunctions   generateFunctions;
 
 		public EPP_MCEP(final MainClassEntryPoint aEp, final DeducePhase aDeducePhase, final WorkList aWl, final GenerateFunctions aGenerateFunctions) {
-			mcep = aEp;
-			deducePhase = aDeducePhase;
-			wl = aWl;
+			mcep              = aEp;
+			deducePhase       = aDeducePhase;
+			wl                = aWl;
 			generateFunctions = aGenerateFunctions;
 		}
 
@@ -87,14 +87,14 @@ public interface EntryPointProcessor {
 	class EPP_AFEP implements EntryPointProcessor {
 
 		private final ArbitraryFunctionEntryPoint afep;
-		private final DeducePhase deducePhase;
-		private final WorkList wl;
-		private final GenerateFunctions generateFunctions;
+		private final DeducePhase                 deducePhase;
+		private final WorkList                    wl;
+		private final GenerateFunctions           generateFunctions;
 
 		public EPP_AFEP(final ArbitraryFunctionEntryPoint aEp, final DeducePhase aDeducePhase, final WorkList aWl, final GenerateFunctions aGenerateFunctions) {
-			afep = aEp;
-			deducePhase = aDeducePhase;
-			wl = aWl;
+			afep              = aEp;
+			deducePhase       = aDeducePhase;
+			wl                = aWl;
 			generateFunctions = aGenerateFunctions;
 		}
 

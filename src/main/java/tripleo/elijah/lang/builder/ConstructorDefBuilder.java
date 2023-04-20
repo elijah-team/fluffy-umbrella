@@ -8,14 +8,19 @@
  */
 package tripleo.elijah.lang.builder;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.AnnotationClause;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.ConstructorDef;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.Scope3;
 
 /**
  * Created 12/22/20 10:55 PM
  */
 public class ConstructorDefBuilder extends BaseFunctionDefBuilder {
 	private final ConstructorDefScope _scope = new ConstructorDefScope();
-    private Context _context;
+	private       Context             _context;
 
 	public ConstructorDefScope scope() {
 		return _scope;

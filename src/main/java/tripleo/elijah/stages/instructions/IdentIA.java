@@ -21,8 +21,8 @@ import tripleo.elijah.stages.gen_fn.ProcTableEntry;
  * Created 10/2/20 2:36 PM
  */
 public class IdentIA implements InstructionArgument, Constructable {
-	private final int id;
-	public final BaseGeneratedFunction gf;
+	public final  BaseGeneratedFunction gf;
+	private final int                   id;
 //	private InstructionArgument prev;
 
 /*
@@ -43,19 +43,19 @@ public class IdentIA implements InstructionArgument, Constructable {
 
 	@Override
 	public String toString() {
-		return "" + getEntry();
+		return String.valueOf(getEntry());
 //		return "IdentIA{" +
 //				"id=" + id +
 ////				", prev=" + prev +
 //				'}';
 	}
 
-	public int getIndex() {
-		return id;
-	}
-
 	public @NotNull IdentTableEntry getEntry() {
 		return gf.getIdentTableEntry(getIndex());
+	}
+
+	public int getIndex() {
+		return id;
 	}
 
 	@Override

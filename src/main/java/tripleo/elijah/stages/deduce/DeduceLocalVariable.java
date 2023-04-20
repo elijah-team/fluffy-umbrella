@@ -164,19 +164,19 @@ public class DeduceLocalVariable {
 					}
 
 					switch (state) {
-						case 1:
-							genType.genCIForGenType2(deduceTypes2); // TODO what is this doing here? huh?
-							break;
-						case 2: {
-							final FuncExpr                fe  = (FuncExpr) vte.getCallablePTE().expression;
-							final @NotNull DeduceProcCall dpc = vte.getCallablePTE().dpc;
-							final int                     y   = 2;
+					case 1:
+						genType.genCIForGenType2(deduceTypes2); // TODO what is this doing here? huh?
+						break;
+					case 2: {
+						final FuncExpr                fe  = (FuncExpr) vte.getCallablePTE().expression;
+						final @NotNull DeduceProcCall dpc = vte.getCallablePTE().dpc;
+						final int                     y   = 2;
 //							target = (DeduceFuncExpr) dpc.target;
 //							type.resolve(new GenType() {target.prototype}): // DeduceType??
-							// TODO because we can already represent a function expression,
-							//  the question is can we generatedFunction.lookupExpression(fe) and get the DeduceFuncExpr?
-						}
-						break;
+						// TODO because we can already represent a function expression,
+						//  the question is can we generatedFunction.lookupExpression(fe) and get the DeduceFuncExpr?
+					}
+					break;
 					}
 
 					if (genType.ci != null) { // TODO we may need this call...
@@ -185,8 +185,7 @@ public class DeduceLocalVariable {
 							public void onDone(final @NotNull GeneratedClass result) {
 								genType.node = result;
 								if (!vte.typePromise().isResolved()) { // HACK
-									if (genType.resolved instanceof OS_FuncType) {
-										final OS_FuncType resolved = (OS_FuncType) genType.resolved;
+									if (genType.resolved instanceof final OS_FuncType resolved) {
 										result.functionMapDeferred(((FunctionDef) resolved.getElement()), new FunctionMapDeferred() {
 											@Override
 											public void onNotify(final GeneratedFunction aGeneratedFunction) {
@@ -215,8 +214,7 @@ public class DeduceLocalVariable {
 	public void resolve_var_table_entry_potential_types_1(final @NotNull VariableTableEntry vte, final BaseGeneratedFunction generatedFunction) {
 		if (vte.potentialTypes().size() == 1) {
 			final TypeTableEntry tte1 = vte.potentialTypes().iterator().next();
-			if (tte1.tableEntry instanceof ProcTableEntry) {
-				final ProcTableEntry procTableEntry = (ProcTableEntry) tte1.tableEntry;
+			if (tte1.tableEntry instanceof final ProcTableEntry procTableEntry) {
 				final DeduceProcCall dpc            = procTableEntry.deduceProcCall();
 				// TODO for argument, we need a DeduceExpression (DeduceProcCall) which is bounud to self
 				//  (inherited), so we can extract the invocation
@@ -228,7 +226,7 @@ public class DeduceLocalVariable {
 					final OS_Element           self_class = generatedFunction.getFD().getParent();
 
 					//assert e != null;
-					
+
 					if (e == null) {
 						System.err.println("=== 397-003 ===================================");
 						System.err.println("=== 397-003 ===================================");
@@ -240,10 +238,10 @@ public class DeduceLocalVariable {
 						System.err.println("=== 397-003 ===================================");
 						System.err.println("=== 397-003 ===================================");
 						System.err.println("=== 397-003 ===================================");
-						
+
 						return;
 					}
-					
+
 					final OS_Element e_parent = e.getParent();
 
 					short          state = 0;
@@ -260,20 +258,20 @@ public class DeduceLocalVariable {
 					}
 
 					switch (state) {
-						case 1:
-							final InstructionArgument self1 = generatedFunction.vte_lookup("self");
-							assert self1 instanceof IntegerIA;
-							Self = new DeduceTypes2.OS_SpecialVariable(((IntegerIA) self1).getEntry(), VariableTableType.SELF, generatedFunction);
-							break;
-						case 2:
-							Self = e_parent;
-							break;
-						case 3:
-							final InstructionArgument self2 = generatedFunction.vte_lookup("self");
-							assert self2 instanceof IntegerIA;
-							Self = new DeduceTypes2.OS_SpecialVariable(((IntegerIA) self2).getEntry(), VariableTableType.SELF, generatedFunction);
-							((DeduceTypes2.OS_SpecialVariable) Self).memberInvocation = new MemberInvocation(b, MemberInvocation.Role.INHERITED);
-							break;
+					case 1:
+						final InstructionArgument self1 = generatedFunction.vte_lookup("self");
+						assert self1 instanceof IntegerIA;
+						Self = new DeduceTypes2.OS_SpecialVariable(((IntegerIA) self1).getEntry(), VariableTableType.SELF, generatedFunction);
+						break;
+					case 2:
+						Self = e_parent;
+						break;
+					case 3:
+						final InstructionArgument self2 = generatedFunction.vte_lookup("self");
+						assert self2 instanceof IntegerIA;
+						Self = new DeduceTypes2.OS_SpecialVariable(((IntegerIA) self2).getEntry(), VariableTableType.SELF, generatedFunction);
+						((DeduceTypes2.OS_SpecialVariable) Self).memberInvocation = new MemberInvocation(b, MemberInvocation.Role.INHERITED);
+						break;
 					default:
 						throw new IllegalStateException();
 					}

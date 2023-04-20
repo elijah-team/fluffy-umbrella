@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 
 public class RoutingServer {
 
-	private static final Logger logger = LoggerFactory.getLogger(RoutingServer.class);
-	private static final UT_Root utr = new UT_Root();
+	private static final Logger      logger = LoggerFactory.getLogger(RoutingServer.class);
+	private static final UT_Root     utr    = new UT_Root();
 	private static final HttpHandler ROUTES = new RoutingHandler()
 	  .get("/", new CompilationsListHandler(utr))
 	  .get("/start/*", new CompilationsStartHandler(utr))
@@ -44,9 +44,9 @@ public class RoutingServer {
 		public static SimpleServer simpleServer(final HttpHandler handler) {
 			final Undertow.Builder undertow = Undertow.builder()
 			                                          /*
-			                                     * This setting is needed if you want to allow '=' as a value in a cookie.
-			                                     * If you base64 encode any cookie values you probably want it on.
-			                                     */
+			                                           * This setting is needed if you want to allow '=' as a value in a cookie.
+			                                           * If you base64 encode any cookie values you probably want it on.
+			                                           */
 			                                          .setServerOption(UndertowOptions.ALLOW_EQUALS_IN_COOKIE_VALUE, true)
 			                                          // Needed to set request time in access logs
 			                                          .setServerOption(UndertowOptions.RECORD_REQUEST_START_TIME, true)

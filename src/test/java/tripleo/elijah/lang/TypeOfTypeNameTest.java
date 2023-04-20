@@ -199,14 +199,14 @@ public class TypeOfTypeNameTest {
 		//
 		// CREATE MOCK
 		//
-		final Context ctx = mock(Context.class);
+		final Context ctx  = mock(Context.class);
 		final Context ctx4 = mock(Context.class);
 
 		//
 		// CREATE VARIABLES
 		//
 		final String typeNameString1 = "AbstractFactory";
-		final String typeNameString = "SystemInteger";
+		final String typeNameString  = "SystemInteger";
 
 		final OS_Module mod = new OS_Module();
 		mod.parent = new CompilationImpl(new StdErrSink(), new IO());
@@ -217,7 +217,7 @@ public class TypeOfTypeNameTest {
 		final ClassStatement sysint = new ClassStatement(mod, mod_ctx);
 		sysint.setName(IdentExpression.forString("SystemInteger"));
 
-		final VariableSequence vs = new VariableSequence(st_af.getContext());
+		final VariableSequence  vs    = new VariableSequence(st_af.getContext());
 		final VariableStatement var_y = vs.next();
 		var_y.setName(IdentExpression.forString("y"));
 		final RegularTypeName rtn_y = new RegularTypeName(ctx);

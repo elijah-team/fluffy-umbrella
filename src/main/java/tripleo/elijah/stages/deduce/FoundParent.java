@@ -54,14 +54,11 @@ public class FoundParent implements BaseTableEntry.StatusListener {
 	@Override
 	public void onChange(final IElementHolder eh, final BaseTableEntry.Status newStatus) {
 		if (newStatus == BaseTableEntry.Status.KNOWN) {
-			if (bte instanceof VariableTableEntry) {
-				final @NotNull VariableTableEntry vte = (VariableTableEntry) bte;
+			if (bte instanceof final @NotNull VariableTableEntry vte) {
 				onChangeVTE(vte);
-			} else if (bte instanceof ProcTableEntry) {
-				final @NotNull ProcTableEntry pte = (ProcTableEntry) bte;
+			} else if (bte instanceof final @NotNull ProcTableEntry pte) {
 				onChangePTE(pte);
-			} else if (bte instanceof IdentTableEntry) {
-				final @NotNull IdentTableEntry ite = (IdentTableEntry) bte;
+			} else if (bte instanceof final @NotNull IdentTableEntry ite) {
 
 				final ErrSink errSink = deduceTypes2.errSink;
 
@@ -249,22 +246,22 @@ public class FoundParent implements BaseTableEntry.StatusListener {
 				final OS_Type attached1 = result.resolved != null ? result.resolved : result.typeName;
 				if (attached1 != null) {
 					switch (attached1.getType()) {
-						case USER_CLASS:
-							ite.type = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, attached1);
-							break;
-						case USER:
-							try {
-								@NotNull final GenType ty3 = deduceTypes2.resolve_type(attached1, attached1.getTypeName().getContext());
-								// no expression or TableEntryIV below
-								@NotNull final TypeTableEntry tte4 = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null);
-								// README trying to keep genType up to date
-								tte4.setAttached(attached1);
-								tte4.setAttached(ty3);
-								ite.type = tte4; // or ty2?
-							} catch (final ResolveError aResolveError) {
-								aResolveError.printStackTrace();
-							}
-							break;
+					case USER_CLASS:
+						ite.type = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, attached1);
+						break;
+					case USER:
+						try {
+							@NotNull final GenType ty3 = deduceTypes2.resolve_type(attached1, attached1.getTypeName().getContext());
+							// no expression or TableEntryIV below
+							@NotNull final TypeTableEntry tte4 = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null);
+							// README trying to keep genType up to date
+							tte4.setAttached(attached1);
+							tte4.setAttached(ty3);
+							ite.type = tte4; // or ty2?
+						} catch (final ResolveError aResolveError) {
+							aResolveError.printStackTrace();
+						}
+						break;
 					}
 				}
 			}

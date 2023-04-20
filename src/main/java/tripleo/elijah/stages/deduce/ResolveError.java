@@ -34,13 +34,13 @@ public class ResolveError extends Exception implements Diagnostic {
 
 	public ResolveError(final TypeName typeName, final LookupResultList lrl) {
 		this.typeName = typeName;
-		this.lrl = lrl;
-		this.ident = null;
+		this.lrl      = lrl;
+		this.ident    = null;
 	}
 
 	public ResolveError(final IdentExpression aIdent, final LookupResultList aLrl) {
-		ident = aIdent;
-		lrl = aLrl;
+		ident    = aIdent;
+		lrl      = aLrl;
 		typeName = null;
 	}
 

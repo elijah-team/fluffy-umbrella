@@ -36,7 +36,6 @@ import static tripleo.elijah.util.Helpers.List_of;
 
 /**
  * @author Tripleo(envy)
- *
  */
 public class TestBasic {
 
@@ -74,9 +73,9 @@ public class TestBasic {
 		}
 
 		// README this needs changing when running make
-		Assert.assertEquals(7, (int)errorCount.get(0)); // TODO Error count obviously should be 0
-		Assert.assertEquals(20, (int)errorCount.get(1)); // TODO Error count obviously should be 0
-		Assert.assertEquals(9, (int)errorCount.get(2)); // TODO Error count obviously should be 0
+		Assert.assertEquals(7, (int) errorCount.get(0)); // TODO Error count obviously should be 0
+		Assert.assertEquals(20, (int) errorCount.get(1)); // TODO Error count obviously should be 0
+		Assert.assertEquals(9, (int) errorCount.get(2)); // TODO Error count obviously should be 0
 	}
 
 	@Test
@@ -151,7 +150,7 @@ public class TestBasic {
 		return d;
 	}
 }
-	
+
 //
 //
 //

@@ -1,10 +1,10 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 package tripleo.elijah.comp;
 
@@ -49,13 +49,13 @@ public abstract class Compilation {
 	public final  List<ElLog>          elLogs = new LinkedList<ElLog>();
 	public final  CompilationConfig    cfg    = new CompilationConfig();
 	public final  CIS                  _cis   = new CIS();
-	private final Pipeline             pipelines;
-	private final int                  _compilationNumber;
-	private final ErrSink              errSink;
 	//
 	public final  DefaultLivingRepo    _repo  = new DefaultLivingRepo();
 	//
 	final         MOD                  mod    = new MOD(this);
+	private final Pipeline             pipelines;
+	private final int                  _compilationNumber;
+	private final ErrSink              errSink;
 	private final IO                   io;
 	private final USE                  use    = new USE(this);
 	//
@@ -72,6 +72,15 @@ public abstract class Compilation {
 		pipelines          = new Pipeline(aErrSink);
 	}
 
+	public static ElLog.Verbosity gitlabCIVerbosity() {
+		final boolean gitlab_ci = isGitlab_ci();
+		return gitlab_ci ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
+	}
+
+	public static boolean isGitlab_ci() {
+		return System.getenv("GITLAB_CI") != null;
+	}
+
 	void hasInstructions(final @NotNull List<CompilerInstructions> cis) throws Exception {
 		assert cis.size() > 0;
 
@@ -84,18 +93,33 @@ public abstract class Compilation {
 		feedCmdLine(args, new DefaultCompilerController());
 	}
 
-	public String getProjectName() {
-		return rootCI.getName();
+	public void feedCmdLine(final List<String> args, final CompilerController ctl) {
+		if (args.size() == 0) {
+			ctl.printUsage();
+			return; // ab
+		}
+
+		if (ctl instanceof DefaultCompilerController) {
+			((DefaultCompilerController) ctl)._set(this, args);
+		} else if (ctl instanceof final UT_Controller uctl) {
+			uctl._set(this, args);
+		}
+
+		ctl.processOptions();
+		ctl.runner();
 	}
 
-	public static ElLog.Verbosity gitlabCIVerbosity() {
-		final boolean gitlab_ci = isGitlab_ci();
-		return gitlab_ci ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
+	public String getProjectName() {
+		return rootCI.getName();
 	}
 
 	public OS_Module realParseElijjahFile(final String f, final @NotNull File file, final boolean do_out) throws Exception {
 		return use.realParseElijjahFile(f, file, do_out).success();
 	}
+
+	//
+	//
+	//
 
 	public Operation<CompilerInstructions> parseEzFile(final @NotNull File aFile) {
 		try {
@@ -111,10 +135,6 @@ public abstract class Compilation {
 		_cis.onNext(aci);
 	}
 
-	//
-	//
-	//
-
 	public List<ClassStatement> findClass(final String string) {
 		final List<ClassStatement> l = new ArrayList<ClassStatement>();
 		for (final OS_Module module : mod.modules) {
@@ -123,10 +143,6 @@ public abstract class Compilation {
 			}
 		}
 		return l;
-	}
-
-	public static boolean isGitlab_ci() {
-		return System.getenv("GITLAB_CI") != null;
 	}
 
 	public void use(final @NotNull CompilerInstructions compilerInstructions, final boolean do_out) throws Exception {
@@ -150,35 +166,31 @@ public abstract class Compilation {
 		}
 	}
 
-	public IO getIO() {
-		return io;
-	}
-
 //	public void setIO(final IO io) {
 //		this.io = io;
 //	}
-
-	public void addModule(final OS_Module module, final String fn) {
-		mod.addModule(module, fn);
-	}
-
-    public OS_Module fileNameToModule(final String fileName) {
-	    if (mod.fn2m.containsKey(fileName)) {
-		    return mod.fn2m.get(fileName);
-	    }
-	    return null;
-    }
-
-	//
-	// region MODULE STUFF
-	//
 
 	public ErrSink getErrSink() {
 		return errSink;
 	}
 
-	public boolean getSilence() {
-		return cfg.silent;
+	public IO getIO() {
+		return io;
+	}
+
+	//
+	// region MODULE STUFF
+	//
+
+	public void addModule(final OS_Module module, final String fn) {
+		mod.addModule(module, fn);
+	}
+
+	public OS_Module fileNameToModule(final String fileName) {
+		if (mod.fn2m.containsKey(fileName)) {
+			return mod.fn2m.get(fileName);
+		}
+		return null;
 	}
 
 	// endregion
@@ -186,6 +198,10 @@ public abstract class Compilation {
 	//
 	// region CLASS AND FUNCTION CODES
 	//
+
+	public boolean getSilence() {
+		return cfg.silent;
+	}
 
 	public Operation2<OS_Module> findPrelude(final String prelude_name) {
 		return use.findPrelude(prelude_name);
@@ -204,25 +220,25 @@ public abstract class Compilation {
 		return _repo.nextClassCode();
 	}
 
-	public int nextFunctionCode() {
-		return _repo.nextFunctionCode();
-	}
-
 	// endregion
 
 	//
 	// region PACKAGES
 	//
 
+	public int nextFunctionCode() {
+		return _repo.nextFunctionCode();
+	}
+
 	public OS_Package getPackage(final Qualident pkg_name) {
 		return _repo.getPackage(pkg_name.toString());
 	}
 
+	// endregion
+
 	public OS_Package makePackage(final Qualident pkg_name) {
 		return _repo.makePackage(pkg_name);
 	}
-
-	// endregion
 
 	public int compilationNumber() {
 		return _compilationNumber;
@@ -250,21 +266,12 @@ public abstract class Compilation {
 		return _repo.isPackage(aPackageName);
 	}
 
-	public void feedCmdLine(final List<String> args, final CompilerController ctl) {
-		if (args.size() == 0) {
-			ctl.printUsage();
-			return; // ab
-		}
+	public Pipeline getPipelines() {
+		return pipelines;
+	}
 
-		if (ctl instanceof DefaultCompilerController) {
-			((DefaultCompilerController) ctl)._set(this, args);
-		} else if (ctl instanceof UT_Controller) {
-			UT_Controller uctl = (UT_Controller) ctl;
-			uctl._set(this, args);
-		}
-
-		ctl.processOptions();
-		ctl.runner();
+	public ModuleBuilder moduleBuilder() {
+		return new ModuleBuilder(this);
 	}
 
 	static class MOD {
@@ -295,13 +302,9 @@ public abstract class Compilation {
 	//
 	static class CompilationConfig {
 		public    boolean do_out;
-		public Stages stage = Stages.O; // Output
+		public    Stages  stage  = Stages.O; // Output
 		protected boolean silent = false;
 		boolean showTree = false;
-	}
-
-	public Pipeline getPipelines() {
-		return pipelines;
 	}
 
 	static class CIS implements Observer<CompilerInstructions> {
@@ -337,10 +340,6 @@ public abstract class Compilation {
 		public void subscribe(final Observer<CompilerInstructions> aCio) {
 			compilerInstructionsSubject.subscribe(aCio);
 		}
-	}
-
-	public ModuleBuilder moduleBuilder() {
-		return new ModuleBuilder(this);
 	}
 
 	public static class CompilationAlways {

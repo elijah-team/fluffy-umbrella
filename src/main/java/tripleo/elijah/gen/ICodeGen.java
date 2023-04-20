@@ -6,9 +6,9 @@ import tripleo.elijah.lang.*;
 public interface ICodeGen {
 
 
-	void addClass(ClassStatement klass) ;
+	void addClass(ClassStatement klass);
 
-	void addModule(OS_Module module) ;
+	void addModule(OS_Module module);
 
 //	private void addModuleItem(ModuleItem element) ;
 
@@ -16,7 +16,7 @@ public interface ICodeGen {
 
 //	private void addClassItem(ClassItem element) ;
 
-	void addFunctionItem(FunctionItem element) ;
+	void addFunctionItem(FunctionItem element);
 
 	void visitAliasStatement(AliasStatement aAliasStatement);
 

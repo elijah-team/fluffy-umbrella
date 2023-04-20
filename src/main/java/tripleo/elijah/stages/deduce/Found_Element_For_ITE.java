@@ -43,18 +43,18 @@ import tripleo.elijah.stages.logging.ElLog;
  */
 class Found_Element_For_ITE {
 
-	private final BaseGeneratedFunction generatedFunction;
-	private final Context ctx;
-	private final ElLog LOG;
-	private final ErrSink errSink;
+	private final BaseGeneratedFunction      generatedFunction;
+	private final Context                    ctx;
+	private final ElLog                      LOG;
+	private final ErrSink                    errSink;
 	private final DeduceTypes2.DeduceClient1 dc;
 
 	public Found_Element_For_ITE(final BaseGeneratedFunction aGeneratedFunction, final Context aCtx, final ElLog aLOG, final ErrSink aErrSink, final DeduceTypes2.DeduceClient1 aDeduceClient1) {
 		generatedFunction = aGeneratedFunction;
-		ctx = aCtx;
-		LOG = aLOG;
-		errSink = aErrSink;
-		dc = aDeduceClient1;
+		ctx               = aCtx;
+		LOG               = aLOG;
+		errSink           = aErrSink;
+		dc                = aDeduceClient1;
 	}
 
 	public void action(@NotNull final IdentTableEntry ite) {
@@ -81,18 +81,6 @@ class Found_Element_For_ITE {
 			ite.resolveExpectation.satisfy(normal_path);
 	}
 
-	public void action_AliasStatement(@NotNull final IdentTableEntry ite, @NotNull final AliasStatement y) {
-		LOG.err("396 AliasStatement");
-		@Nullable final OS_Element x = dc._resolveAlias(y);
-		if (x == null) {
-			ite.setStatus(BaseTableEntry.Status.UNKNOWN, null);
-			errSink.reportError("399 resolveAlias returned null");
-		} else {
-			ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(x));
-			dc.found_element_for_ite(generatedFunction, ite, x, ctx);
-		}
-	}
-
 	public void action_VariableStatement(@NotNull final IdentTableEntry ite, @NotNull final VariableStatement vs) {
 		@NotNull final TypeName typeName = vs.typeName();
 		if (ite.type == null || ite.type.getAttached() == null) {
@@ -104,8 +92,7 @@ class Found_Element_For_ITE {
 				final OS_Element parent = vs.getParent().getParent();
 				if (parent instanceof NamespaceStatement || parent instanceof ClassStatement) {
 					final boolean state;
-					if (generatedFunction instanceof GeneratedFunction) {
-						final @NotNull GeneratedFunction generatedFunction1 = (GeneratedFunction) generatedFunction;
+					if (generatedFunction instanceof final @NotNull GeneratedFunction generatedFunction1) {
 						state = (parent != generatedFunction1.getFD().getParent());
 					} else {
 						state = (parent != ((GeneratedConstructor) generatedFunction).getFD().getParent());
@@ -140,8 +127,7 @@ class Found_Element_For_ITE {
 					} else {
 						final IInvocation invocation;
 						if (ite.getBacklink() == null) {
-							if (parent instanceof ClassStatement) {
-								final ClassStatement            classStatement = (ClassStatement) parent;
+							if (parent instanceof final ClassStatement classStatement) {
 								final @Nullable ClassInvocation ci             = dc.registerClassInvocation(classStatement, null);
 								assert ci != null;
 								invocation = ci;
@@ -199,20 +185,20 @@ class Found_Element_For_ITE {
 	public void action_PropertyStatement(@NotNull final IdentTableEntry ite, @NotNull final PropertyStatement ps) {
 		final OS_Type attached;
 		switch (ps.getTypeName().kindOfType()) {
-			case GENERIC:
-				attached = new OS_UserType(ps.getTypeName());
-				break;
-			case NORMAL:
-				try {
-					attached = (dc.resolve_type(new OS_UserType(ps.getTypeName()), ctx).resolved.getClassOf()).getOS_Type();
-				} catch (final ResolveError resolveError) {
-					LOG.err("378 resolveError");
-					resolveError.printStackTrace();
-					return;
-				}
-				break;
-			default:
-				throw new IllegalStateException("Unexpected value: " + ps.getTypeName().kindOfType());
+		case GENERIC:
+			attached = new OS_UserType(ps.getTypeName());
+			break;
+		case NORMAL:
+			try {
+				attached = (dc.resolve_type(new OS_UserType(ps.getTypeName()), ctx).resolved.getClassOf()).getOS_Type();
+			} catch (final ResolveError resolveError) {
+				LOG.err("378 resolveError");
+				resolveError.printStackTrace();
+				return;
+			}
+			break;
+		default:
+			throw new IllegalStateException("Unexpected value: " + ps.getTypeName().kindOfType());
 		}
 		if (ite.type == null) {
 			ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, attached);
@@ -220,6 +206,18 @@ class Found_Element_For_ITE {
 			ite.type.setAttached(attached);
 		dc.genCIForGenType2(ite.type.genType);
 		final int yy = 2;
+	}
+
+	public void action_AliasStatement(@NotNull final IdentTableEntry ite, @NotNull final AliasStatement y) {
+		LOG.err("396 AliasStatement");
+		@Nullable final OS_Element x = dc._resolveAlias(y);
+		if (x == null) {
+			ite.setStatus(BaseTableEntry.Status.UNKNOWN, null);
+			errSink.reportError("399 resolveAlias returned null");
+		} else {
+			ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(x));
+			dc.found_element_for_ite(generatedFunction, ite, x, ctx);
+		}
 	}
 
 	/**
@@ -232,16 +230,14 @@ class Found_Element_For_ITE {
 
 		dc.genCI(aGenType, aGenType.nonGenericTypeName);
 		final IInvocation invocation = aGenType.ci;
-		if (invocation instanceof NamespaceInvocation) {
-			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
+		if (invocation instanceof final NamespaceInvocation namespaceInvocation) {
 			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
 				@Override
 				public void onDone(final GeneratedNamespace result) {
 					aGenType.node = result;
 				}
 			});
-		} else if (invocation instanceof ClassInvocation) {
-			final ClassInvocation classInvocation = (ClassInvocation) invocation;
+		} else if (invocation instanceof final ClassInvocation classInvocation) {
 			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
 				@Override
 				public void onDone(final GeneratedClass result) {

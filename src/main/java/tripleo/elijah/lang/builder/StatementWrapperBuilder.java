@@ -18,7 +18,7 @@ import tripleo.elijah.lang.StatementWrapper;
  */
 public class StatementWrapperBuilder extends ElBuilder {
 	private final IExpression expr;
-	private Context _context;
+	private       Context     _context;
 
 	public StatementWrapperBuilder(final IExpression expr) {
 		this.expr = expr;

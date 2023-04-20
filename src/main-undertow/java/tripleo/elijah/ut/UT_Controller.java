@@ -13,10 +13,10 @@ import tripleo.elijah.comp.i.ProgressSinkComponent;
 import java.util.List;
 
 public class UT_Controller implements CompilerController {
+	private final UT_Root     utr;
 	List<String>    args;
 	String[]        args2;
 	ICompilationBus cb;
-	private final UT_Root     utr;
 	private       Compilation c;
 
 	public UT_Controller(final UT_Root aUtr) {

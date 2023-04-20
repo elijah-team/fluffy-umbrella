@@ -19,10 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DefaultLivingRepo implements LivingRepo {
-	private final Map<String, OS_Package> _packages = new HashMap<String, OS_Package>();
-	private int _packageCode  = 1;
-	private int _classCode    = 101;
-	private int _functionCode = 1001;
+	private final Map<String, OS_Package> _packages     = new HashMap<String, OS_Package>();
+	private       int                     _packageCode  = 1;
+	private       int                     _classCode    = 101;
+	private       int                     _functionCode = 1001;
 
 	public OS_Package makePackage(final Qualident pkg_name) {
 		final String pkg_name_s = pkg_name.toString();
@@ -40,14 +40,6 @@ public class DefaultLivingRepo implements LivingRepo {
 
 	private int nextPackageCode() {
 		return _packageCode++;
-	}
-
-	public int nextClassCode() {
-		return _classCode++;
-	}
-
-	public int nextFunctionCode() {
-		return _functionCode++;
 	}
 
 	@Override
@@ -96,6 +88,10 @@ public class DefaultLivingRepo implements LivingRepo {
 		return living;
 	}
 
+	public int nextFunctionCode() {
+		return _functionCode++;
+	}
+
 	@Override
 	public DefaultLivingClass addClass(final GeneratedClass aClass, final Add addFlag) {
 		switch (addFlag) {
@@ -118,6 +114,10 @@ public class DefaultLivingRepo implements LivingRepo {
 		aClass._living = living;
 
 		return living;
+	}
+
+	public int nextClassCode() {
+		return _classCode++;
 	}
 
 	@Override

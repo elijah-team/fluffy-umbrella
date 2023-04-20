@@ -149,8 +149,7 @@ class Implement_construct {
 		assert aTy != null;
 		if (aTy.getType() == OS_Type.Type.USER) {
 			final TypeName tyn = aTy.getTypeName();
-			if (tyn instanceof NormalTypeName) {
-				final @NotNull NormalTypeName tyn1 = (NormalTypeName) tyn;
+			if (tyn instanceof final @NotNull NormalTypeName tyn1) {
 				_implement_construct_type(co, constructorName, (NormalTypeName) tyn);
 			}
 		} else
@@ -191,8 +190,7 @@ class Implement_construct {
 		}
 		clsinv = deduceTypes2.phase.registerClassInvocation(clsinv);
 		if (co != null) {
-			if (co instanceof IdentTableEntry) {
-				final @Nullable IdentTableEntry idte3 = (IdentTableEntry) co;
+			if (co instanceof final @Nullable IdentTableEntry idte3) {
 				idte3.type.genTypeCI(clsinv);
 				clsinv.resolvePromise().then(new DoneCallback<GeneratedClass>() {
 					@Override
@@ -200,8 +198,7 @@ class Implement_construct {
 						idte3.resolveTypeToClass(result);
 					}
 				});
-			} else if (co instanceof VariableTableEntry) {
-				final @NotNull VariableTableEntry vte = (VariableTableEntry) co;
+			} else if (co instanceof final @NotNull VariableTableEntry vte) {
 				vte.type.genTypeCI(clsinv);
 				clsinv.resolvePromise().then(new DoneCallback<GeneratedClass>() {
 					@Override

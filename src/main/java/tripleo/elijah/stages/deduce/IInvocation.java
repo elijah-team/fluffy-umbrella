@@ -11,7 +11,7 @@ package tripleo.elijah.stages.deduce;
 
 /**
  * Marker interface to show intent
- *
+ * <p>
  * Created 6/8/21 2:29 AM
  */
 public interface IInvocation {

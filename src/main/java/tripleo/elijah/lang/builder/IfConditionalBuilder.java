@@ -23,34 +23,14 @@ import java.util.List;
 public class IfConditionalBuilder extends ElBuilder {
 	public Doublet base_expr = new Doublet();
 	public Doublet else_part = new Doublet();
-
+	List<Doublet> doubles = new ArrayList<Doublet>();
 	private Context _context;
-
-	public static class IfConditionalScope extends BaseScope2 {
-
-	}
 
 	public Doublet new_expr() {
 		final Doublet doublet = new Doublet();
 		doubles.add(doublet);
 		return doublet;
 	}
-
-	public static class Doublet {
-		IExpression expr;
-		List<ElBuilder> items = new ArrayList<ElBuilder>();
-		IfConditionalScope _scope = new IfConditionalScope();
-
-		public void expr(final IExpression expr) {
-			this.expr = expr;
-		}
-
-		public BaseScope scope() {
-			return _scope;
-		}
-	}
-
-	List<Doublet> doubles = new ArrayList<Doublet>();
 
 	@Override
 	protected IfConditional build() {
@@ -82,6 +62,24 @@ public class IfConditionalBuilder extends ElBuilder {
 	@Override
 	protected void setContext(final Context context) {
 		_context = context;
+	}
+
+	public static class IfConditionalScope extends BaseScope2 {
+
+	}
+
+	public static class Doublet {
+		IExpression        expr;
+		List<ElBuilder>    items  = new ArrayList<ElBuilder>();
+		IfConditionalScope _scope = new IfConditionalScope();
+
+		public void expr(final IExpression expr) {
+			this.expr = expr;
+		}
+
+		public BaseScope scope() {
+			return _scope;
+		}
 	}
 }
 

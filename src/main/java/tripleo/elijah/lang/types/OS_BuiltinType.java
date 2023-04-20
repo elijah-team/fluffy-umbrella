@@ -9,13 +9,17 @@ import java.text.MessageFormat;
 public class OS_BuiltinType extends __Abstract_OS_Type {
 	private final BuiltInTypes _bit;
 
+	public OS_BuiltinType(final BuiltInTypes aTypes) {
+		_bit = (aTypes);
+	}
+
 	@Override
 	public BuiltInTypes getBType() {
 		return _bit;
 	}
 
-	public OS_BuiltinType(final BuiltInTypes aTypes) {
-		_bit = (aTypes);
+	protected boolean _isEqual(final OS_Type aType) {
+		return aType.getType() == Type.BUILT_IN && _bit == aType.getBType();
 	}
 
 	@Override
@@ -31,10 +35,6 @@ public class OS_BuiltinType extends __Abstract_OS_Type {
 	@Override
 	public String asString() {
 		return MessageFormat.format("<OS_BuiltinType {0}>", _bit);
-	}
-
-	protected boolean _isEqual(final OS_Type aType) {
-		return aType.getType() == Type.BUILT_IN && _bit.equals(aType.getBType());
 	}
 }
 

@@ -46,7 +46,7 @@ public class types {
 					return false;
 				}
 				//HashMap<String,MalVal> hm = (HashMap<String,MalVal>)a.value;
-				final HashMap<String, MalVal> hm  = (HashMap<String, MalVal>) mhm.value;
+				final HashMap<String, MalVal> hm = (HashMap<String, MalVal>) mhm.value;
 				for (final String k : hm.keySet()) {
 					if (!_equal_Q(((MalVal) ((MalHashMap) a).value.get(k)),
 					  ((MalVal) ((MalHashMap) b).value.get(k)))) {

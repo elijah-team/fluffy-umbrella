@@ -33,6 +33,11 @@ public class OS_UserClassType extends __Abstract_OS_Type {
 		return Type.USER_CLASS;
 	}
 
+	@Override
+	public String asString() {
+		return MessageFormat.format("<OS_UserClassType {0}>", _classStatement);
+	}
+
 	@NotNull
 	public ClassInvocation resolvedUserClass(final @NotNull GenType genType, final TypeName aGenericTypeName, final DeducePhase phase, final DeduceTypes2 deduceTypes2, final ErrSink errSink) {
 		final ClassStatement   best            = _classStatement;
@@ -53,11 +58,6 @@ public class OS_UserClassType extends __Abstract_OS_Type {
 	@Override
 	public ClassStatement getClassOf() {
 		return _classStatement;
-	}
-
-	@Override
-	public String asString() {
-		return MessageFormat.format("<OS_UserClassType {0}>", _classStatement);
 	}
 
 	protected boolean _isEqual(final OS_Type aType) {

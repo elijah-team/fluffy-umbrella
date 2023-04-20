@@ -128,8 +128,7 @@ public class DeduceTypeResolve {
 
 						@Override
 						public void visitMC1(final MatchConditional.MC1 aMC1) {
-							if (aMC1 instanceof MatchConditional.MatchArm_TypeMatch) {
-								final MatchConditional.MatchArm_TypeMatch typeMatch = (MatchConditional.MatchArm_TypeMatch) aMC1;
+							if (aMC1 instanceof final MatchConditional.MatchArm_TypeMatch typeMatch) {
 								final int                                 yy        = 2;
 							}
 						}
@@ -194,8 +193,7 @@ public class DeduceTypeResolve {
 			public void onChange(final IElementHolder eh, final BaseTableEntry.Status newStatus) {
 				if (newStatus != BaseTableEntry.Status.KNOWN) return;
 
-				if (backlink instanceof IdentTableEntry) {
-					final IdentTableEntry identTableEntry = (IdentTableEntry) backlink;
+				if (backlink instanceof final IdentTableEntry identTableEntry) {
 					identTableEntry.typeResolvePromise().done(new DoneCallback<GenType>() {
 						@Override
 						public void onDone(final GenType result) {
@@ -203,13 +201,11 @@ public class DeduceTypeResolve {
 								identTableEntry.type.setAttached(result);
 						}
 					});
-				} else if (backlink instanceof VariableTableEntry) {
-					final VariableTableEntry variableTableEntry = (VariableTableEntry) backlink;
+				} else if (backlink instanceof final VariableTableEntry variableTableEntry) {
 					variableTableEntry.typeResolvePromise()
 					                  .done((aGenType__) ->
 					                    variableTableEntry_typeResolvePromise(aGenType__, eh, variableTableEntry));
-				} else if (backlink instanceof ProcTableEntry) {
-					final ProcTableEntry procTableEntry = (ProcTableEntry) backlink;
+				} else if (backlink instanceof final ProcTableEntry procTableEntry) {
 					procTableEntry.typeResolvePromise()
 					              .done((final GenType aGenType__) ->
 					                procTableEntry_typeResolvePromise(aGenType__, procTableEntry));
@@ -220,15 +216,13 @@ public class DeduceTypeResolve {
 	}
 
 	private static void variableTableEntry_typeResolvePromise(final GenType result, final IElementHolder eh, final VariableTableEntry variableTableEntry) {
-		if (eh instanceof Resolve_Ident_IA.GenericElementHolderWithDC) {
-			final Resolve_Ident_IA.GenericElementHolderWithDC eh1 = (Resolve_Ident_IA.GenericElementHolderWithDC) eh;
+		if (eh instanceof final Resolve_Ident_IA.GenericElementHolderWithDC eh1) {
 			final DeduceTypes2.DeduceClient3                  dc  = eh1.getDC();
 			dc.genCIForGenType2(result);
 		}
 		// maybe set something in ci to INHERITED, but thats what DeduceProcCall is for
 		if (eh.getElement() instanceof FunctionDef) {
-			if (result.node instanceof GeneratedClass) {
-				final GeneratedClass generatedClass = (GeneratedClass) result.node;
+			if (result.node instanceof final GeneratedClass generatedClass) {
 				generatedClass.functionMapDeferred((FunctionDef) eh.getElement(), new FunctionMapDeferred() {
 					@Override
 					public void onNotify(final GeneratedFunction aGeneratedFunction) {

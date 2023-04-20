@@ -65,7 +65,7 @@ public class Helpers {
 		IExpression r = ts.get(0);
 //		int i=1;
 		while (ts.size() > i) {
-			final IExpression dotExpression = qualidentToDotExpression2(ts.subList(i++, ts.size()), i+1);
+			final IExpression dotExpression = qualidentToDotExpression2(ts.subList(i++, ts.size()), i + 1);
 			if (dotExpression == null) break;
 //			r.setRight(dotExpression);
 			r = new DotExpression(r, dotExpression);
@@ -77,12 +77,6 @@ public class Helpers {
 		final CommonToken t = new CommonToken();
 		t.setText(aText);
 		return t;
-	}
-
-	@NotNull
-	public static IdentExpression string_to_ident(final String txt) {
-		final CommonToken t = new CommonToken(ElijjahTokenTypes.IDENT, txt);
-		return new IdentExpression(t);
 	}
 
 	@NotNull
@@ -115,21 +109,10 @@ public class Helpers {
 		return q;
 	}
 
-	public static String getHash(final byte[] aBytes) throws NoSuchAlgorithmException {
-		final MessageDigest md = MessageDigest.getInstance("SHA-256");
-
-//		String input;
-//		md.update(input.getBytes(StandardCharsets.UTF_8));
-		md.update(aBytes);
-
-		final byte[] hashBytes = md.digest();
-
-		final StringBuilder sb = new StringBuilder();
-		for (final byte b : hashBytes) {
-			sb.append(String.format("%02x", b));
-		}
-
-		return sb.toString();
+	@NotNull
+	public static IdentExpression string_to_ident(final String txt) {
+		final CommonToken t = new CommonToken(ElijjahTokenTypes.IDENT, txt);
+		return new IdentExpression(t);
 	}
 
 	public static String getHashForFilename(final String aFilename, final ErrSink aErrSink) throws IOException {
@@ -159,6 +142,23 @@ public class Helpers {
 				bb.close();
 		}
 		return null;
+	}
+
+	public static String getHash(final byte[] aBytes) throws NoSuchAlgorithmException {
+		final MessageDigest md = MessageDigest.getInstance("SHA-256");
+
+//		String input;
+//		md.update(input.getBytes(StandardCharsets.UTF_8));
+		md.update(aBytes);
+
+		final byte[] hashBytes = md.digest();
+
+		final StringBuilder sb = new StringBuilder();
+		for (final byte b : hashBytes) {
+			sb.append(String.format("%02x", b));
+		}
+
+		return sb.toString();
 	}
 }
 

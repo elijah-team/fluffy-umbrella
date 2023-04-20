@@ -20,14 +20,6 @@ import java.util.List;
  * Created 6/21/21 11:36 PM
  */
 public abstract class AbstractDependencyTracker implements DependencyTracker {
-	private final List<FunctionInvocation> dependentFunctions = new ArrayList<FunctionInvocation>();
-	private final List<GenType>            dependentTypes     = new ArrayList<GenType>();
-
-	@Override
-	public List<GenType> dependentTypes() {
-		return dependentTypes;
-	}
-
 	final Subject<GenType>            dependentTypesSubject     = ReplaySubject.create(2);/*new Publisher<GenType>() {
 		List<Subscriber<GenType>> subscribers = new ArrayList<>(2);
 
@@ -44,6 +36,13 @@ public abstract class AbstractDependencyTracker implements DependencyTracker {
 			subscribers.add((Subscriber<FunctionInvocation>) aSubscriber);
 		}
 	};*/
+	private final List<FunctionInvocation> dependentFunctions = new ArrayList<FunctionInvocation>();
+	private final List<GenType>            dependentTypes     = new ArrayList<GenType>();
+
+	@Override
+	public List<GenType> dependentTypes() {
+		return dependentTypes;
+	}
 
 	@Override
 	public List<FunctionInvocation> dependentFunctions() {

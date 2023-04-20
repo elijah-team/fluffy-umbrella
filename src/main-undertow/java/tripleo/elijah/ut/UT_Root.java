@@ -15,9 +15,8 @@ import java.util.stream.Stream;
 import static tripleo.elijah.util.Helpers.List_of;
 
 class UT_Root {
-	List<Path> paths = List_of();
-
 	private final Map<String, ICompilationBus.CB_Action> dcs = new HashMap<>();
+	List<Path> paths = List_of();
 
 	public UT_Root() {
 		final Path path = Paths.get("test");

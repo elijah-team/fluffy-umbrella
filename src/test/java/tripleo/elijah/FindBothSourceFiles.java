@@ -23,7 +23,6 @@ import static tripleo.elijah.util.Helpers.List_of;
 
 /**
  * @author Tripleo(sb)
- *
  */
 public class FindBothSourceFiles {
 
@@ -97,7 +96,7 @@ public class FindBothSourceFiles {
 */
 
 }
-	
+
 //
 //
 //

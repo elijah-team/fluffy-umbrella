@@ -55,13 +55,11 @@ import java.util.stream.Collectors;
  * Created 8/21/21 10:19 PM
  */
 public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResultListener {
-	private final Compilation c;
-	private GenerateResult gr;
-
 	final OutputStrategy os;
-	final ElSystem sys;
-
+	final ElSystem       sys;
+	private final Compilation    c;
 	private final File file_prefix;
+	private       GenerateResult gr;
 
 	public WritePipeline(@NotNull final AccessBus ab) {
 		c = ab.getCompilation();
@@ -71,7 +69,7 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 		os = new OutputStrategy();
 		os.per(OutputStrategy.Per.PER_CLASS); // TODO this needs to be configured per lsp
 
-		sys = new ElSystem();
+		sys         = new ElSystem();
 		sys.verbose = false; // TODO flag? ie CompilationOptions
 		sys.setCompilation(c);
 		sys.setOutputStrategy(os);
@@ -114,6 +112,13 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 		final File fn1 = choose_dir_name();
 
 		__rest(mb, fn1, leof);
+	}
+
+	public void write_buffers() throws FileNotFoundException {
+		file_prefix.mkdirs();
+
+		final PrintStream db_stream = new PrintStream(new File(file_prefix, "buffers.txt"));
+		PipelineLogic.debug_buffers(gr, db_stream);
 	}
 
 	private @NotNull File choose_dir_name() {
@@ -180,8 +185,8 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 
 		final List<File> recordedreads = c.getIO().recordedreads;
 		final List<String> recordedread_filenames = recordedreads.stream()
-				.map(file -> file.toString())
-				.collect(Collectors.toList());
+		                                                         .map(file -> file.toString())
+		                                                         .collect(Collectors.toList());
 
 		for (final @NotNull File file : recordedreads) {
 			final String fn = file.toString();
@@ -189,8 +194,8 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 			append_hash(buf, fn, c.getErrSink());
 		}
 
-		final File fn1 = new File(file_prefix, "inputs.txt");
-		final String s = buf.getText();
+		final File   fn1 = new File(file_prefix, "inputs.txt");
+		final String s   = buf.getText();
 		try (final Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn1, true)))) {
 			w.write(s);
 		}
@@ -203,13 +208,6 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 			aBuf.append(" ");
 			aBuf.append_ln(aFilename);
 		}
-	}
-
-	public void write_buffers() throws FileNotFoundException {
-		file_prefix.mkdirs();
-
-		final PrintStream db_stream = new PrintStream(new File(file_prefix, "buffers.txt"));
-		PipelineLogic.debug_buffers(gr, db_stream);
 	}
 
 	@Override

@@ -9,7 +9,13 @@
 package tripleo.elijah.lang.builder;
 
 import antlr.Token;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.AnnotationClause;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.Documentable;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.NamespaceStatement;
+import tripleo.elijah.lang.NamespaceTypes;
+import tripleo.elijah.lang.OS_Element;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +25,13 @@ import java.util.List;
  */
 public class NamespaceStatementBuilder extends ElBuilder implements Documentable {
 	private final List<AnnotationClause> annotations = new ArrayList<AnnotationClause>();
-    private NamespaceTypes _type;
-	private OS_Element _parent;
-	private Context _parent_context;
-    private IdentExpression _name;
-    private final NamespaceScope _scope = new NamespaceScope();
-    private Context _context;
+	private final NamespaceScope         _scope      = new NamespaceScope();
+	private final List<Token> _docstrings = new ArrayList<Token>();
+	private       NamespaceTypes         _type;
+	private       OS_Element             _parent;
+	private       Context                _parent_context;
+	private       IdentExpression        _name;
+	private       Context                _context;
 
 	public void setType(final NamespaceTypes namespaceTypes) {
 		_type = namespaceTypes;
@@ -64,23 +71,21 @@ public class NamespaceStatementBuilder extends ElBuilder implements Documentable
 		annotations.add(a);
 	}
 
-	public void setName(final IdentExpression identExpression) {
-		_name = identExpression;
-	}
-
 //	public void setParent(OS_Element o) {
 //		_parent = o;
 //	}
 
-	public void setParentContext(final Context o) {
-		_parent_context = o;
+	public void setName(final IdentExpression identExpression) {
+		_name = identExpression;
 	}
 
 //	public ClassScope getScope() {
 //		return _scope;
 //	}
 
-	private final List<Token> _docstrings = new ArrayList<Token>();
+	public void setParentContext(final Context o) {
+		_parent_context = o;
+	}
 
 	@Override
 	public void addDocString(final Token s1) {

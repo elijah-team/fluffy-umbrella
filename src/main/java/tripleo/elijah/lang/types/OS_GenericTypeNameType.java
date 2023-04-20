@@ -37,13 +37,13 @@ public class OS_GenericTypeNameType extends __Abstract_OS_Type {
 		return Type.GENERIC_TYPENAME;
 	}
 
-	public TypeName getRealTypeName() {
-		return genericTypename.getTypeName();
-	}
-
 	@Override
 	public String asString() {
 		return MessageFormat.format("<OS_GenericTypeNameType {0}>", genericTypename);
+	}
+
+	public TypeName getRealTypeName() {
+		return genericTypename.getTypeName();
 	}
 
 	protected boolean _isEqual(final OS_Type aType) {

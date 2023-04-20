@@ -45,15 +45,6 @@ public class DeduceElement3_IdentTableEntry extends DefaultStateful implements I
 		deduceTypes2.resolveIdentIA_(aContext, aIdentIA, generatedFunction, aFoundElement);
 	}
 
-	public Operation2<GenType> resolve1(final IdentTableEntry ite, final @NotNull Context aContext) {
-		// FoundElement is the "disease"
-		try {
-			return Operation2.success(deduceTypes2.resolve_type(ite.type.getAttached(), aContext));
-		} catch (final ResolveError aE) {
-			return Operation2.failure(aE);
-		}
-	}
-
 	//	@NotNull final GenType xx = // TODO xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 	@Override
 	public void resolve(final Context aContext, final DeduceTypes2 aDeduceTypes2) {
@@ -95,6 +86,15 @@ public class DeduceElement3_IdentTableEntry extends DefaultStateful implements I
 	@Override
 	public DeduceElement3_Kind kind() {
 		return DeduceElement3_Kind.GEN_FN__ITE;
+	}
+
+	public Operation2<GenType> resolve1(final IdentTableEntry ite, final @NotNull Context aContext) {
+		// FoundElement is the "disease"
+		try {
+			return Operation2.success(deduceTypes2.resolve_type(ite.type.getAttached(), aContext));
+		} catch (final ResolveError aE) {
+			return Operation2.failure(aE);
+		}
 	}
 
 	public void _ctxts(final Context aFdCtx, final Context aContext) {
@@ -163,11 +163,9 @@ public class DeduceElement3_IdentTableEntry extends DefaultStateful implements I
 									// TODO All this for nothing
 									//  the ite points to a function, not a function call,
 									//  so there is no point in resolving it
-									if (ite.type.tableEntry instanceof ProcTableEntry) {
-										final @NotNull ProcTableEntry pte = (ProcTableEntry) ite.type.tableEntry;
+									if (ite.type.tableEntry instanceof final @NotNull ProcTableEntry pte) {
 
-									} else if (ite.type.tableEntry instanceof IdentTableEntry) {
-										final @NotNull IdentTableEntry identTableEntry = (IdentTableEntry) ite.type.tableEntry;
+									} else if (ite.type.tableEntry instanceof final @NotNull IdentTableEntry identTableEntry) {
 										if (identTableEntry.getCallablePTE() != null) {
 											@Nullable final ProcTableEntry cpte = identTableEntry.getCallablePTE();
 											cpte.typePromise().then(new DoneCallback<GenType>() {

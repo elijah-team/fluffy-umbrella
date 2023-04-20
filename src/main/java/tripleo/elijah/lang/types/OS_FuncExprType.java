@@ -21,6 +21,10 @@ import java.text.MessageFormat;
 public class OS_FuncExprType extends __Abstract_OS_Type {
 	private final FuncExpr func_expr;
 
+	public OS_FuncExprType(final FuncExpr funcExpr) {
+		this.func_expr = funcExpr;
+	}
+
 	@Override
 	public OS_Element getElement() {
 		return func_expr;
@@ -31,8 +35,9 @@ public class OS_FuncExprType extends __Abstract_OS_Type {
 		return Type.FUNC_EXPR;
 	}
 
-	public OS_FuncExprType(final FuncExpr funcExpr) {
-		this.func_expr = funcExpr;
+	@Override
+	public String asString() {
+		return MessageFormat.format("<OS_FuncExprType {0}>", func_expr);
 	}
 
 	/* (non-Javadoc)
@@ -43,16 +48,10 @@ public class OS_FuncExprType extends __Abstract_OS_Type {
 		return String.format("<OS_FuncExprType %s>", func_expr);
 	}
 
-	@Override
-	public String asString() {
-		return MessageFormat.format("<OS_FuncExprType {0}>", func_expr);
-	}
-
 	protected boolean _isEqual(final OS_Type aType) {
 		return aType.getType() == Type.FUNC_EXPR && func_expr.equals(aType.getElement());
 	}
 }
-
 
 
 //

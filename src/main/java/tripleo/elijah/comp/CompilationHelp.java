@@ -81,11 +81,11 @@ final class EmptyProcess implements RuntimeProcess {
 	}
 
 	@Override
-	public void postProcess() {
+	public void run() {
 	}
 
 	@Override
-	public void run() {
+	public void postProcess() {
 	}
 
 	@Override
@@ -119,9 +119,9 @@ class DStageProcess implements RuntimeProcess {
 }
 
 class OStageProcess implements RuntimeProcess {
+	final         stepA_mal.MalEnv2  env;
 	private final ProcessRecord      pr;
 	private final ICompilationAccess ca;
-	final         stepA_mal.MalEnv2  env;
 
 	OStageProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
 		ca = aCa;

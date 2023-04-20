@@ -16,7 +16,7 @@ public class UnaryExpression extends AbstractExpression {
 
 	public UnaryExpression(final ExpressionKind aKind, final IExpression aExpression) {
 		_kind = aKind;
-		left = aExpression;
+		left  = aExpression;
 	}
 
 	@Override
@@ -25,13 +25,13 @@ public class UnaryExpression extends AbstractExpression {
 	}
 
 	@Override
-	public void setType(final OS_Type deducedExpression) {
-
+	public OS_Type getType() {
+		return null;
 	}
 
 	@Override
-	public OS_Type getType() {
-		return null;
+	public void setType(final OS_Type deducedExpression) {
+
 	}
 
 

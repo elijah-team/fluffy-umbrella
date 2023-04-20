@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package tripleo.elijah.gen.nodes;
 
@@ -20,7 +20,7 @@ public class SimpleFnCall {
 
 	public void GenFnCall(final CompilerContext cctx, final GenBuffer gbn) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

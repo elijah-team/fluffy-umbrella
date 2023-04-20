@@ -16,7 +16,6 @@ import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.FunctionItem;
 import tripleo.elijah.lang.LookupResultList;
 import tripleo.elijah.lang.NamespaceStatement;
-import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Element2;
 import tripleo.elijah.lang.VariableSequence;
 import tripleo.elijah.lang.VariableStatement;
@@ -25,26 +24,27 @@ import java.util.List;
 
 /**
  * @author Tripleo
- *
+ * <p>
  * Created 	Mar 26, 2020 at 6:13:58 AM
  */
 public class FunctionContext extends Context {
 
 	private final BaseFunctionDef carrier;
-	private final Context _parent;
+	private final Context         _parent;
 
 	public FunctionContext(final Context aParent, final BaseFunctionDef fd) {
 		_parent = aParent;
 		carrier = fd;
 	}
 
-	@Override public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	@Override
+	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
-		for (final FunctionItem item: carrier.getItems()) {
+		for (final FunctionItem item : carrier.getItems()) {
 			if (!(item instanceof ClassStatement) &&
-				!(item instanceof NamespaceStatement) &&
-				!(item instanceof FunctionDef) &&
-				!(item instanceof VariableSequence)
+			  !(item instanceof NamespaceStatement) &&
+			  !(item instanceof FunctionDef) &&
+			  !(item instanceof VariableSequence)
 			) continue;
 			if (item instanceof OS_Element2) {
 				if (((OS_Element2) item).name().equals(name)) {

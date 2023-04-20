@@ -28,6 +28,11 @@ public class OS_UserType extends __Abstract_OS_Type {
 	}
 
 	@Override
+	public String asString() {
+		return MessageFormat.format("<OS_UserType {0}>", typeName);
+	}
+
+	@Override
 	public OS_Type resolve(final Context ctx) {
 		assert ctx != null;
 
@@ -43,11 +48,6 @@ public class OS_UserType extends __Abstract_OS_Type {
 
 	protected boolean _isEqual(final OS_Type aType) {
 		return aType.getType() == Type.USER && typeName.equals(aType.getTypeName());
-	}
-
-	@Override
-	public String asString() {
-		return MessageFormat.format("<OS_UserType {0}>", typeName);
 	}
 
 }

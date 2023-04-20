@@ -12,7 +12,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
@@ -26,13 +25,18 @@ import java.util.List;
  * Created 9/10/20 3:36 PM
  */
 public class FnCallArgs implements InstructionArgument {
-	public final Instruction expression_to_call;
+	public final           Instruction           expression_to_call;
 	private final @NotNull BaseGeneratedFunction gf;
-	private TypeTableEntry _type; // the return type of the function call
+	private                TypeTableEntry        _type; // the return type of the function call
+
+	public FnCallArgs(final Instruction expression_to_call, final @NotNull BaseGeneratedFunction generatedFunction) {
+		this.expression_to_call = expression_to_call;
+		this.gf                 = generatedFunction;
+	}
 
 	@Override
 	public String toString() {
-		final int index = DeduceTypes2.to_int(expression_to_call.args.get(0));
+		final int                       index                = DeduceTypes2.to_int(expression_to_call.args.get(0));
 		final List<InstructionArgument> instructionArguments = getInstructionArguments();
 /*
         final List<String> collect = instructionArguments
@@ -49,22 +53,9 @@ public class FnCallArgs implements InstructionArgument {
 		});
 		final ProcTableEntry procTableEntry = gf.prte_list.get(index);
 		return String.format("(call %d [%s(%s)] %s)",
-				index, procTableEntry.expression, procTableEntry.args,
-				Helpers.String_join(" ", collect2));
+		  index, procTableEntry.expression, procTableEntry.args,
+		  Helpers.String_join(" ", collect2));
 
-	}
-
-	public FnCallArgs(final Instruction expression_to_call, final @NotNull BaseGeneratedFunction generatedFunction) {
-		this.expression_to_call = expression_to_call;
-		this.gf = generatedFunction;
-	}
-
-	public InstructionArgument getArg(final int i) {
-		return expression_to_call.getArg(i);
-	}
-
-	public Instruction getExpression() {
-		return expression_to_call;
 	}
 
 	@NotNull
@@ -75,6 +66,14 @@ public class FnCallArgs implements InstructionArgument {
 
 	private List<InstructionArgument> getArgs() {
 		return expression_to_call.args;
+	}
+
+	public InstructionArgument getArg(final int i) {
+		return expression_to_call.getArg(i);
+	}
+
+	public Instruction getExpression() {
+		return expression_to_call;
 	}
 
 	public void setType(final TypeTableEntry tte2) {

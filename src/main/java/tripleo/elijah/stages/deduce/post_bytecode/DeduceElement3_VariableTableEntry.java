@@ -76,6 +76,16 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
 	}
 
+	@NotNull
+	private static ArrayList<TypeTableEntry> getPotentialTypesVte(@NotNull final GeneratedFunction generatedFunction, @NotNull final InstructionArgument vte_index) {
+		return getPotentialTypesVte(generatedFunction.getVarTableEntry(to_int(vte_index)));
+	}
+
+	@NotNull
+	static ArrayList<TypeTableEntry> getPotentialTypesVte(@NotNull final VariableTableEntry vte) {
+		return new ArrayList<TypeTableEntry>(vte.potentialTypes());
+	}
+
 	@Override
 	public void resolve(final IdentIA aIdentIA, final Context aContext, final FoundElement aFoundElement) {
 		throw new UnsupportedOperationException("Should not be reached");
@@ -172,16 +182,6 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 		generatedFunction = aGeneratedFunction;
 	}
 
-	@NotNull
-	private static ArrayList<TypeTableEntry> getPotentialTypesVte(@NotNull final GeneratedFunction generatedFunction, @NotNull final InstructionArgument vte_index) {
-		return getPotentialTypesVte(generatedFunction.getVarTableEntry(to_int(vte_index)));
-	}
-
-	@NotNull
-	static ArrayList<TypeTableEntry> getPotentialTypesVte(@NotNull final VariableTableEntry vte) {
-		return new ArrayList<TypeTableEntry>(vte.potentialTypes());
-	}
-
 	public void potentialTypesRunnableDo(final @Nullable InstructionArgument vte_ia, final @NotNull ElLog aLOG, final @NotNull VariableTableEntry aVte1, final ErrSink errSink, final Context ctx, final String aE_text, final @NotNull VariableTableEntry aVte) {
 		final @NotNull List<TypeTableEntry> ll = getPotentialTypesVte((GeneratedFunction) generatedFunction, vte_ia);
 		doLogic(ll, aVte1.typePromise(), aLOG, aVte1, errSink, ctx, aE_text, aVte);
@@ -222,7 +222,7 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 			final LookupResultList lrl = ctx.lookup(e_text);
 			@Nullable final OS_Element best = lrl.chooseBest(null);
 			if (best instanceof @NotNull final FormalArgListItem fali) {
-				final @NotNull OS_Type           osType = new OS_UserType(fali.typeName());
+				final @NotNull OS_Type osType = new OS_UserType(fali.typeName());
 				if (!osType.equals(vte.type.getAttached())) {
 					@NotNull final TypeTableEntry tte1 = generatedFunction.newTypeTableEntry(
 					  TypeTableEntry.Type.SPECIFIED, osType, fali.getNameToken(), vte1);

@@ -22,6 +22,13 @@ public class ConstantTableEntry {
 	private final String                            name;
 	private       DeduceElement3_ConstantTableEntry _de3;
 
+	public ConstantTableEntry(final int index, final String name, final IExpression initialValue, final TypeTableEntry type) {
+		this.index        = index;
+		this.name         = name;
+		this.initialValue = initialValue;
+		this.type         = type;
+	}
+
 	@Override
 	public @NotNull String toString() {
 		return "ConstantTableEntry{" +
@@ -32,16 +39,9 @@ public class ConstantTableEntry {
 		  '}';
 	}
 
-	public ConstantTableEntry(final int index, final String name, final IExpression initialValue, final TypeTableEntry type) {
-		this.index = index;
-		this.name = name;
-		this.initialValue = initialValue;
-		this.type = type;
+	public String getName() {
+		return name;
 	}
-
-    public String getName() {
-	    return name;
-    }
 
 	public TypeTableEntry getTypeTableEntry() {
 		return type;

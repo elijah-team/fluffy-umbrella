@@ -136,9 +136,8 @@ public class EIT_ModuleList {
 			return mod;
 		}
 
-		@Contract(pure = true)
-		public DeducePhase.GeneratedClasses getLgc() {
-			return deducePhase.generatedClasses;
+		public void generate() {
+			epl.generate(gfm, deducePhase, getWorkManagerSupplier());
 		}
 
 		@Contract(pure = true)
@@ -146,21 +145,22 @@ public class EIT_ModuleList {
 			return () -> pipelineLogic.generatePhase.wm;
 		}
 
+		public void deduceModule() {
+			deducePhase.deduceModule(mod, getLgc(), getVerbosity());
+		}
+
+		//
+		//
+		//
+
+		@Contract(pure = true)
+		public DeducePhase.GeneratedClasses getLgc() {
+			return deducePhase.generatedClasses;
+		}
+
 		@Contract(pure = true)
 		public ElLog.@NotNull Verbosity getVerbosity() {
 			return pipelineLogic.getVerbosity();
-		}
-
-		//
-		//
-		//
-
-		public void generate() {
-			epl.generate(gfm, deducePhase, getWorkManagerSupplier());
-		}
-
-		public void deduceModule() {
-			deducePhase.deduceModule(mod, getLgc(), getVerbosity());
 		}
 
 	}

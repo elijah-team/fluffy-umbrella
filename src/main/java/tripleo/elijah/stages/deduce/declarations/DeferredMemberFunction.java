@@ -83,8 +83,7 @@ public class DeferredMemberFunction {
 
 	public IInvocation getInvocation() {
 		if (invocation == null) {
-			if (parent instanceof DeduceTypes2.OS_SpecialVariable) {
-				final DeduceTypes2.OS_SpecialVariable specialVariable = (DeduceTypes2.OS_SpecialVariable) parent;
+			if (parent instanceof final DeduceTypes2.OS_SpecialVariable specialVariable) {
 				invocation = specialVariable.getInvocation(deduceTypes2);
 			}
 		}

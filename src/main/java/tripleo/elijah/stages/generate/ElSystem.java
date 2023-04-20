@@ -25,10 +25,10 @@ import java.util.Map;
  * Created 1/8/21 11:02 PM
  */
 public class ElSystem {
-	private OutputStrategy outputStrategy;
-	private Compilation compilation;
 	private final Map<GeneratedFunction, String> gfm_map = new HashMap<GeneratedFunction, String>();
-	public boolean verbose = true;
+	public        boolean                        verbose = true;
+	private       OutputStrategy                 outputStrategy;
+	private       Compilation                    compilation;
 
 	public void generateOutputs(@NotNull final GenerateResult gr) {
 		final @NotNull OutputStrategyC outputStrategyC = new OutputStrategyC(this.outputStrategy);
@@ -49,29 +49,25 @@ public class ElSystem {
 
 	String generateOutputs_Internal(final GeneratedNode node, final GenerateResult.TY ty, final OutputStrategyC outputStrategyC) {
 		final String s;
-		String ss;
-		if (node instanceof GeneratedNamespace) {
-			final GeneratedNamespace generatedNamespace = (GeneratedNamespace) node;
+		String       ss;
+		if (node instanceof final GeneratedNamespace generatedNamespace) {
 			s = outputStrategyC.nameForNamespace(generatedNamespace, ty);
 //			tripleo.elijah.util.Stupidity.println2("41 "+generatedNamespace+" "+s);
 			for (final GeneratedFunction gf : generatedNamespace.functionMap.values()) {
 				ss = generateOutputs_Internal(gf, ty, outputStrategyC);
 				gfm_map.put(gf, ss);
 			}
-		} else if (node instanceof GeneratedClass) {
-			final GeneratedClass generatedClass = (GeneratedClass) node;
+		} else if (node instanceof final GeneratedClass generatedClass) {
 			s = outputStrategyC.nameForClass(generatedClass, ty);
 //			tripleo.elijah.util.Stupidity.println2("48 "+generatedClass+" "+s);
 			for (final GeneratedFunction gf : generatedClass.functionMap.values()) {
 				ss = generateOutputs_Internal(gf, ty, outputStrategyC);
 				gfm_map.put(gf, ss);
 			}
-		} else if (node instanceof GeneratedFunction) {
-			final GeneratedFunction generatedFunction = (GeneratedFunction) node;
+		} else if (node instanceof final GeneratedFunction generatedFunction) {
 			s = outputStrategyC.nameForFunction(generatedFunction, ty);
 //			tripleo.elijah.util.Stupidity.println2("55 "+generatedFunction+" "+s);
-		} else if (node instanceof GeneratedConstructor) {
-			final GeneratedConstructor generatedConstructor = (GeneratedConstructor) node;
+		} else if (node instanceof final GeneratedConstructor generatedConstructor) {
 			s = outputStrategyC.nameForConstructor(generatedConstructor, ty);
 //			tripleo.elijah.util.Stupidity.println2("55 "+generatedConstructor+" "+s);
 		} else

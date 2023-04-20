@@ -32,21 +32,21 @@ public class DeduceLookupUtils {
 	                                                final @NotNull Context ctx,
 	                                                final @NotNull DeduceTypes2 deduceTypes2) throws ResolveError {
 		switch (left.getKind()) {
-			case QIDENT:
-				final IExpression de = Helpers.qualidentToDotExpression2((Qualident) left);
-				return lookupExpression(de, ctx, deduceTypes2)/*lookup_dot_expression(ctx, de)*/;
-			case DOT_EXP:
-				return lookup_dot_expression(ctx, (DotExpression) left, deduceTypes2);
-			case IDENT: {
-				final @NotNull IdentExpression ident = (IdentExpression) left;
-				final LookupResultList         lrl   = ctx.lookup(ident.getText());
-				if (lrl.results().size() == 0) {
-					throw new ResolveError(ident, lrl);
-				}
-				return lrl;
+		case QIDENT:
+			final IExpression de = Helpers.qualidentToDotExpression2((Qualident) left);
+			return lookupExpression(de, ctx, deduceTypes2)/*lookup_dot_expression(ctx, de)*/;
+		case DOT_EXP:
+			return lookup_dot_expression(ctx, (DotExpression) left, deduceTypes2);
+		case IDENT: {
+			final @NotNull IdentExpression ident = (IdentExpression) left;
+			final LookupResultList         lrl   = ctx.lookup(ident.getText());
+			if (lrl.results().size() == 0) {
+				throw new ResolveError(ident, lrl);
 			}
-			default:
-				throw new IllegalArgumentException();
+			return lrl;
+		}
+		default:
+			throw new IllegalArgumentException();
 		}
 
 	}
@@ -104,9 +104,9 @@ public class DeduceLookupUtils {
 	}
 
 	private static LookupResultList lookup_dot_expression(Context ctx, final @NotNull DotExpression de, @NotNull final DeduceTypes2 deduceTypes2) throws ResolveError {
-		final @NotNull Stack<IExpression> s = dot_expression_to_stack(de);
-		@Nullable GenType t = null;
-		IExpression ss = s.peek();
+		final @NotNull Stack<IExpression> s  = dot_expression_to_stack(de);
+		@Nullable GenType                 t  = null;
+		IExpression                       ss = s.peek();
 		while (/*!*/s.size() > 1/*isEmpty()*/) {
 			ss = s.peek();
 			if (t != null) {
@@ -136,14 +136,14 @@ public class DeduceLookupUtils {
 	}
 
 	/**
-	 * @see {@link tripleo.elijah.stages.deduce.DotExpressionToStackTest}
 	 * @param de The {@link DotExpression} to turn into a {@link Stack}
 	 * @return a "flat" {@link Stack<IExpression>} of expressions
+	 * @see {@link tripleo.elijah.stages.deduce.DotExpressionToStackTest}
 	 */
 	@NotNull
 	static Stack<IExpression> dot_expression_to_stack(final @NotNull DotExpression de) {
 		final @NotNull Stack<IExpression> right_stack = new Stack<IExpression>();
-		IExpression right = de.getRight();
+		IExpression                       right       = de.getRight();
 		right_stack.push(de.getLeft());
 		while (right instanceof DotExpression) {
 			right_stack.push(right.getLeft());
@@ -187,15 +187,13 @@ public class DeduceLookupUtils {
 					final int y = 2;
 					if (best instanceof ClassStatement) {
 						result.resolved = ((ClassStatement) best).getOS_Type();
-					} else if (best instanceof FunctionDef) {
-						final @Nullable FunctionDef fd = (FunctionDef) best;
+					} else if (best instanceof final @Nullable FunctionDef fd) {
 						if (fd.returnType() != null && !fd.returnType().isNull()) {
 							result.resolved = new OS_UserType(fd.returnType());
 						} else {
 							result.resolved = new OS_UnknownType(fd);// TODO still must register somewhere
 						}
-					} else if (best instanceof FuncExpr) {
-						final @NotNull FuncExpr funcExpr = (FuncExpr) best;
+					} else if (best instanceof final @NotNull FuncExpr funcExpr) {
 						if (funcExpr.returnType() != null && !funcExpr.returnType().isNull()) {
 							result.resolved = new OS_UserType(funcExpr.returnType());
 						} else {
@@ -247,16 +245,16 @@ public class DeduceLookupUtils {
 		case PROCEDURE_CALL:
 			final LookupResultList lrl2 = lookupExpression(expression.getLeft(), ctx, deduceTypes2);
 			@Nullable final OS_Element best2 = lrl2.chooseBest(null);
-				return best2;
-			case DOT_EXP:
-				final LookupResultList lrl3 = lookupExpression(expression, ctx, deduceTypes2);
-				@Nullable final OS_Element best3 = lrl3.chooseBest(null);
-				return best3;
+			return best2;
+		case DOT_EXP:
+			final LookupResultList lrl3 = lookupExpression(expression, ctx, deduceTypes2);
+			@Nullable final OS_Element best3 = lrl3.chooseBest(null);
+			return best3;
 //		default:
 //			tripleo.elijah.util.Stupidity.println_err2("1242 "+expression);
 //			throw new NotImplementedException();
-			default:
-				throw new IllegalStateException("1242 Unexpected value: " + expression.getKind());
+		default:
+			throw new IllegalStateException("1242 Unexpected value: " + expression.getKind());
 		}
 	}
 
@@ -325,15 +323,13 @@ public class DeduceLookupUtils {
 				final int y = 2;
 				if (best instanceof ClassStatement) {
 					result.resolved = ((ClassStatement) best).getOS_Type();
-				} else if (best instanceof FunctionDef) {
-					final @Nullable FunctionDef fd = (FunctionDef) best;
+				} else if (best instanceof final @Nullable FunctionDef fd) {
 					if (fd.returnType() != null && !fd.returnType().isNull()) {
 						result.resolved = new OS_UserType(fd.returnType());
 					} else {
 						result.resolved = new OS_UnknownType(fd);// TODO still must register somewhere
 					}
-				} else if (best instanceof FuncExpr) {
-					final @NotNull FuncExpr funcExpr = (FuncExpr) best;
+				} else if (best instanceof final @NotNull FuncExpr funcExpr) {
 					if (funcExpr.returnType() != null && !funcExpr.returnType().isNull()) {
 						result.resolved = new OS_UserType(funcExpr.returnType());
 					} else {

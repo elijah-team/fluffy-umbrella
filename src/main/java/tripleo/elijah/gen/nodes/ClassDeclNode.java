@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package tripleo.elijah.gen.nodes;
 
@@ -23,12 +23,12 @@ public class ClassDeclNode {
 
 	public void GenClassDecl(final CompilerContext cctx, final GenBuffer gbn) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void CloseClassDecl(final CompilerContext cctx, final GenBuffer gbn) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public @NonNull IdentExpression type() {

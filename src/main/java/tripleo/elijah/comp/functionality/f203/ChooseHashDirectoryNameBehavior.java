@@ -31,8 +31,8 @@ public class ChooseHashDirectoryNameBehavior implements ChooseDirectoryNameBehav
 	private @NotNull File choose_dir_name() {
 		final List<File> recordedreads = c.getIO().recordedreads;
 		final List<String> recordedread_filenames = recordedreads.stream()
-				.map(File::toString)
-				.collect(Collectors.toList());
+		                                                         .map(File::toString)
+		                                                         .collect(Collectors.toList());
 
 //		for (final File file : recordedreads) {
 //			final String fn = file.toString();
@@ -58,9 +58,9 @@ public class ChooseHashDirectoryNameBehavior implements ChooseDirectoryNameBehav
 //				.forEachOrdered(x -> sortedMap.put(x.getKey(), x.getValue()));
 
 		recordedread_filenames
-				.stream()
-				.sorted().map(digestUtils::digestAsHex)
-				.forEach(sha256 -> sb1.append(sha256));
+		  .stream()
+		  .sorted().map(digestUtils::digestAsHex)
+		  .forEach(sha256 -> sb1.append(sha256));
 
 //		final byte[] c_name0 = digestUtils.digest(sb1.toString());
 //		final String c_name = Base36.toBase36(c_name0);
@@ -72,7 +72,7 @@ public class ChooseHashDirectoryNameBehavior implements ChooseDirectoryNameBehav
 		final String date = formatter.format(localDateTime); //15-02-2022 12:43
 
 		final File fn00 = new File("COMP", c_name);
-		final File fn0 = new File(fn00, date);
+		final File fn0  = new File(fn00, date);
 		fn0.mkdirs();
 
 		final String fn1 = new File(fn0, "inputs.txt").toString();

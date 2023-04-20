@@ -1,6 +1,6 @@
 // $ANTLR 2.7.7 (20060906): "ez.g" -> "EzParser.java"$
 
-  package tripleo.elijjah;
+package tripleo.elijjah;
 
 import antlr.NoViableAltException;
 import antlr.ParserSharedInputState;
@@ -19,114 +19,256 @@ import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_BuiltinType;
 import tripleo.elijah.lang2.BuiltInTypes;
 
-public class EzParser extends antlr.LLkParser       implements EzTokenTypes
- {
+public class EzParser extends antlr.LLkParser implements EzTokenTypes {
 
-	 public CompilerInstructions ci = new CompilerInstructionsImpl();
-	 IExpression expr;
-	 Context     cur = null;
+	public static final String[] _tokenNames = {
+	  "<0>",
+	  "EOF",
+	  "<2>",
+	  "NULL_TREE_LOOKAHEAD",
+	  "\"program\"",
+	  "\"library\"",
+	  "\"shared\"",
+	  "IDENT",
+	  "\"end\"",
+	  "\"lib\"",
+	  "\"libraries\"",
+	  "TOK_COLON",
+	  "STRING_LITERAL",
+	  "LBRACK",
+	  "RBRACK",
+	  "\"generate\"",
+	  "\"indexing\"",
+	  "CHAR_LITERAL",
+	  "NUM_INT",
+	  "NUM_FLOAT",
+	  "DOT",
+	  "SEMI",
+	  "COMMA",
+	  "LPAREN",
+	  "RPAREN",
+	  "BECOMES",
+	  "PLUS_ASSIGN",
+	  "MINUS_ASSIGN",
+	  "STAR_ASSIGN",
+	  "DIV_ASSIGN",
+	  "MOD_ASSIGN",
+	  "SR_ASSIGN",
+	  "BSR_ASSIGN",
+	  "SL_ASSIGN",
+	  "BAND_ASSIGN",
+	  "BXOR_ASSIGN",
+	  "BOR_ASSIGN",
+	  "LOR",
+	  "LAND",
+	  "BOR",
+	  "BXOR",
+	  "BAND",
+	  "NOT_EQUAL",
+	  "EQUAL",
+	  "LT_",
+	  "GT",
+	  "LE",
+	  "GE",
+	  "SL",
+	  "SR",
+	  "BSR",
+	  "PLUS",
+	  "MINUS",
+	  "STAR",
+	  "DIV",
+	  "MOD",
+	  "INC",
+	  "DEC",
+	  "BNOT",
+	  "LNOT",
+	  "\"true\"",
+	  "\"false\"",
+	  "\"this\"",
+	  "\"null\"",
+	  "QUESTION",
+	  "LCURLY",
+	  "RCURLY",
+	  "TOK_ARROW",
+	  "ANNOT",
+	  "WS",
+	  "SL_COMMENT",
+	  "ML_COMMENT",
+	  "ESC",
+	  "HEX_DIGIT",
+	  "VOCAB",
+	  "EXPONENT",
+	  "FLOAT_SUFFIX"
+	};
+	public static final BitSet _tokenSet_0 = new BitSet(mk_tokenSet_0());
+	public static final BitSet _tokenSet_1 = new BitSet(mk_tokenSet_1());
+	public static final BitSet _tokenSet_2 = new BitSet(mk_tokenSet_2());
+	public static final BitSet _tokenSet_3 = new BitSet(mk_tokenSet_3());
+	public static final BitSet _tokenSet_4 = new BitSet(mk_tokenSet_4());
+	public static final BitSet _tokenSet_5 = new BitSet(mk_tokenSet_5());
+	public static final BitSet _tokenSet_6 = new BitSet(mk_tokenSet_6());
+	public static final BitSet _tokenSet_7 = new BitSet(mk_tokenSet_7());
+	public static final BitSet _tokenSet_8 = new BitSet(mk_tokenSet_8());
+	public static final BitSet _tokenSet_9 = new BitSet(mk_tokenSet_9());
+	public static final BitSet _tokenSet_10 = new BitSet(mk_tokenSet_10());
+	public static final BitSet _tokenSet_11 = new BitSet(mk_tokenSet_11());
+	public CompilerInstructions ci = new CompilerInstructionsImpl();
+	IExpression expr;
+	Context     cur = null;
 
-protected EzParser(final TokenBuffer tokenBuf, final int k) {
-  super(tokenBuf,k);
-  tokenNames = _tokenNames;
-}
+	public EzParser(final TokenBuffer tokenBuf) {
+		this(tokenBuf, 2);
+	}
 
-public EzParser(final TokenBuffer tokenBuf) {
-  this(tokenBuf,2);
-}
+	protected EzParser(final TokenBuffer tokenBuf, final int k) {
+		super(tokenBuf, k);
+		tokenNames = _tokenNames;
+	}
 
-protected EzParser(final TokenStream lexer, final int k) {
-  super(lexer,k);
-  tokenNames = _tokenNames;
-}
+	public EzParser(final TokenStream lexer) {
+		this(lexer, 2);
+	}
 
-public EzParser(final TokenStream lexer) {
-  this(lexer,2);
-}
+	protected EzParser(final TokenStream lexer, final int k) {
+		super(lexer, k);
+		tokenNames = _tokenNames;
+	}
 
-public EzParser(final ParserSharedInputState state) {
-  super(state,2);
-  tokenNames = _tokenNames;
-}
+	public EzParser(final ParserSharedInputState state) {
+		super(state, 2);
+		tokenNames = _tokenNames;
+	}
+
+	private static final long[] mk_tokenSet_0() {
+		final long[] data = {2L, 0L};
+		return data;
+	}
+
+	private static final long[] mk_tokenSet_1() {
+		final long[] data = {112L, 0L};
+		return data;
+	}
+
+	private static final long[] mk_tokenSet_2() {
+		final long[] data = {32768L, 0L};
+		return data;
+	}
+
+	private static final long[] mk_tokenSet_3() {
+		final long[] data = {256L, 0L};
+		return data;
+	}
+
+	private static final long[] mk_tokenSet_4() {
+		final long[] data = {36992L, 0L};
+		return data;
+	}
+
+	private static final long[] mk_tokenSet_5() {
+		final long[] data = {288230376148591088L, 0L};
+		return data;
+	}
+
+	private static final long[] mk_tokenSet_6() {
+		final long[] data = {16793840L, 0L};
+		return data;
+	}
+
+	private static final long[] mk_tokenSet_7() {
+		final long[] data = {4194306L, 0L};
+		return data;
+	}
+
+	private static final long[] mk_tokenSet_8() {
+		final long[] data = {288230376148591090L, 0L};
+		return data;
+	}
+
+	private static final long[] mk_tokenSet_9() {
+		final long[] data = {-65302194587553664L, 0L};
+		return data;
+	}
+
+	private static final long[] mk_tokenSet_10() {
+		final long[] data = {-2164238L, 0L};
+		return data;
+	}
+
+	private static final long[] mk_tokenSet_11() {
+		final long[] data = {-65302194570776448L, 0L};
+		return data;
+	}
 
 	public final void program() throws RecognitionException, TokenStreamException {
-		
-		Token  i1 = null;
-		GenerateStatement gen=null;
-		
+
+		Token             i1  = null;
+		GenerateStatement gen = null;
+
 		try {      // for error handling
 			{
-			switch ( LA(1)) {
-			case LITERAL_indexing:
-			{
-				indexingStatement(ci.indexingStatement());
-				break;
-			}
-			case LITERAL_program:
-			case LITERAL_library:
-			case LITERAL_shared:
-			{
-				break;
-			}
-			default:
-			{
-				throw new NoViableAltException(LT(1), getFilename());
-			}
-			}
+				switch (LA(1)) {
+				case LITERAL_indexing: {
+					indexingStatement(ci.indexingStatement());
+					break;
+				}
+				case LITERAL_program:
+				case LITERAL_library:
+				case LITERAL_shared: {
+					break;
+				}
+				default: {
+					throw new NoViableAltException(LT(1), getFilename());
+				}
+				}
 			}
 			{
-			switch ( LA(1)) {
-			case LITERAL_program:
-			{
-				match(LITERAL_program);
-				break;
-			}
-			case LITERAL_library:
-			{
-				match(LITERAL_library);
-				break;
-			}
-			case LITERAL_shared:
-			{
-				match(LITERAL_shared);
-				break;
-			}
-			default:
-			{
-				throw new NoViableAltException(LT(1), getFilename());
-			}
-			}
+				switch (LA(1)) {
+				case LITERAL_program: {
+					match(LITERAL_program);
+					break;
+				}
+				case LITERAL_library: {
+					match(LITERAL_library);
+					break;
+				}
+				case LITERAL_shared: {
+					match(LITERAL_shared);
+					break;
+				}
+				default: {
+					throw new NoViableAltException(LT(1), getFilename());
+				}
+				}
 			}
 			i1 = LT(1);
 			match(IDENT);
-			if ( inputState.guessing==0 ) {
+			if (inputState.guessing == 0) {
 				ci.setName(i1);
 			}
 			library_statement();
-			gen=generate_statement();
-			if ( inputState.guessing==0 ) {
+			gen = generate_statement();
+			if (inputState.guessing == 0) {
 				ci.add(gen);
 			}
 			match(LITERAL_end);
 			match(Token.EOF_TYPE);
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_0);
+				recover(ex, _tokenSet_0);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 	}
-	
+
 	public final void indexingStatement(
-            final IndexingStatement idx
+	  final IndexingStatement idx
 	) throws RecognitionException, TokenStreamException {
-		
-		Token  i1 = null;
-		ExpressionList el=null;
-		
+
+		Token          i1 = null;
+		ExpressionList el = null;
+
 		try {      // for error handling
 			match(LITERAL_indexing);
 			{
@@ -148,39 +290,35 @@ public EzParser(final ParserSharedInputState state) {
 
 				} while (true);
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_1);
+				recover(ex, _tokenSet_1);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 	}
-	
+
 	public final void library_statement() throws RecognitionException, TokenStreamException {
 
 		LibraryStatementPartImpl lsp = null;
-		
+
 		try {      // for error handling
 			{
-			switch ( LA(1)) {
-			case LITERAL_lib:
-			{
-				match(LITERAL_lib);
-				break;
-			}
-			case LITERAL_libraries:
-			{
-				match(LITERAL_libraries);
-				break;
-			}
-			default:
-			{
-				throw new NoViableAltException(LT(1), getFilename());
-			}
-			}
+				switch (LA(1)) {
+				case LITERAL_lib: {
+					match(LITERAL_lib);
+					break;
+				}
+				case LITERAL_libraries: {
+					match(LITERAL_libraries);
+					break;
+				}
+				default: {
+					throw new NoViableAltException(LT(1), getFilename());
+				}
+				}
 			}
 			{
 				do {
@@ -195,106 +333,98 @@ public EzParser(final ParserSharedInputState state) {
 
 				} while (true);
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_2);
+				recover(ex, _tokenSet_2);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 	}
-	
-	 public final LibraryStatementPartImpl library_statement_part() throws RecognitionException, TokenStreamException {
-		 final LibraryStatementPartImpl lsp;
 
-		 Token i1      = null;
-		 Token dirname = null;
-		 Token i2      = null;
-		 lsp = new LibraryStatementPartImpl();
+	public final LibraryStatementPartImpl library_statement_part() throws RecognitionException, TokenStreamException {
+		final LibraryStatementPartImpl lsp;
 
-		 try {      // for error handling
-			 {
-				 switch (LA(1)) {
-				 case IDENT:
+		Token i1      = null;
+		Token dirname = null;
+		Token i2      = null;
+		lsp = new LibraryStatementPartImpl();
+
+		try {      // for error handling
 			{
-				i1 = LT(1);
-				match(IDENT);
-				match(TOK_COLON);
-				if ( inputState.guessing==0 ) {
-					lsp.setName(i1);
+				switch (LA(1)) {
+				case IDENT: {
+					i1 = LT(1);
+					match(IDENT);
+					match(TOK_COLON);
+					if (inputState.guessing == 0) {
+						lsp.setName(i1);
+					}
+					break;
 				}
-				break;
-			}
-			case STRING_LITERAL:
-			{
-				break;
-			}
-			default:
-			{
-				throw new NoViableAltException(LT(1), getFilename());
-			}
-			}
+				case STRING_LITERAL: {
+					break;
+				}
+				default: {
+					throw new NoViableAltException(LT(1), getFilename());
+				}
+				}
 			}
 			dirname = LT(1);
 			match(STRING_LITERAL);
-			if ( inputState.guessing==0 ) {
+			if (inputState.guessing == 0) {
 				lsp.setDirName(dirname);
 			}
 			{
-			switch ( LA(1)) {
-			case LBRACK:
-			{
-				match(LBRACK);
-				{
-					do {
-						if ((LA(1) == IDENT)) {
-							i2 = LT(1);
-							match(IDENT);
-							match(TOK_COLON);
-							expr = expression();
-						} else {
-							break;
-						}
+				switch (LA(1)) {
+				case LBRACK: {
+					match(LBRACK);
+					{
+						do {
+							if ((LA(1) == IDENT)) {
+								i2 = LT(1);
+								match(IDENT);
+								match(TOK_COLON);
+								expr = expression();
+							} else {
+								break;
+							}
 
-					} while (true);
+						} while (true);
+					}
+					if (inputState.guessing == 0) {
+						lsp.addDirective(i2, expr);
+					}
+					match(RBRACK);
+					break;
 				}
-				if ( inputState.guessing==0 ) {
-					lsp.addDirective(i2, expr);
+				case IDENT:
+				case STRING_LITERAL:
+				case LITERAL_generate: {
+					break;
 				}
-				match(RBRACK);
-				break;
+				default: {
+					throw new NoViableAltException(LT(1), getFilename());
+				}
+				}
 			}
-			case IDENT:
-			case STRING_LITERAL:
-			case LITERAL_generate:
-			{
-				break;
-			}
-			default:
-			{
-				throw new NoViableAltException(LT(1), getFilename());
-			}
-			}
-			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_4);
+				recover(ex, _tokenSet_4);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return lsp;
 	}
 
-	public final GenerateStatement  generate_statement() throws RecognitionException, TokenStreamException {
+	public final GenerateStatement generate_statement() throws RecognitionException, TokenStreamException {
 		final GenerateStatement gen;
 
-		Token  i1 = null;
-		gen=new GenerateStatement();
+		Token i1 = null;
+		gen = new GenerateStatement();
 
 		try {      // for error handling
 			match(LITERAL_generate);
@@ -314,8 +444,7 @@ public EzParser(final ParserSharedInputState state) {
 
 				} while (true);
 			}
-		}
-		catch (final RecognitionException ex) {
+		} catch (final RecognitionException ex) {
 			if (inputState.guessing == 0) {
 				reportError(ex);
 				recover(ex, _tokenSet_3);
@@ -325,34 +454,33 @@ public EzParser(final ParserSharedInputState state) {
 		}
 		return gen;
 	}
-	
-	public final IExpression  expression() throws RecognitionException, TokenStreamException {
+
+	public final IExpression expression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		ee=null;
-		
+
+		ee = null;
+
 		try {      // for error handling
-			ee=assignmentExpression();
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+			ee = assignmentExpression();
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final ExpressionList  expressionList2() throws RecognitionException, TokenStreamException {
+
+	public final ExpressionList expressionList2() throws RecognitionException, TokenStreamException {
 		final ExpressionList el;
-		
+
 		el = new ExpressionList();
-		
+
 		try {      // for error handling
-			expr=expression();
-			if ( inputState.guessing==0 ) {
+			expr = expression();
+			if (inputState.guessing == 0) {
 				el.next(expr);
 			}
 			{
@@ -369,91 +497,380 @@ public EzParser(final ParserSharedInputState state) {
 
 				} while (true);
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_6);
+				recover(ex, _tokenSet_6);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return el;
 	}
-	
-	public final IExpression  constantValue() throws RecognitionException, TokenStreamException {
+
+	public final IExpression constantValue() throws RecognitionException, TokenStreamException {
 		IExpression e;
-		
-		Token  s = null;
-		Token  c = null;
-		Token  n = null;
-		Token  f = null;
-		e=null;
-		
+
+		Token s = null;
+		Token c = null;
+		Token n = null;
+		Token f = null;
+		e = null;
+
 		try {      // for error handling
-			switch ( LA(1)) {
-			case STRING_LITERAL:
-			{
+			switch (LA(1)) {
+			case STRING_LITERAL: {
 				s = LT(1);
 				match(STRING_LITERAL);
-				if ( inputState.guessing==0 ) {
-					e=new StringExpression(s);
+				if (inputState.guessing == 0) {
+					e = new StringExpression(s);
 				}
 				break;
 			}
-			case CHAR_LITERAL:
-			{
+			case CHAR_LITERAL: {
 				c = LT(1);
 				match(CHAR_LITERAL);
-				if ( inputState.guessing==0 ) {
-					e=new CharLitExpression(c);
+				if (inputState.guessing == 0) {
+					e = new CharLitExpression(c);
 				}
 				break;
 			}
-			case NUM_INT:
-			{
+			case NUM_INT: {
 				n = LT(1);
 				match(NUM_INT);
-				if ( inputState.guessing==0 ) {
-					e=new NumericExpression(n);
+				if (inputState.guessing == 0) {
+					e = new NumericExpression(n);
 				}
 				break;
 			}
-			case NUM_FLOAT:
-			{
+			case NUM_FLOAT: {
 				f = LT(1);
 				match(NUM_FLOAT);
-				if ( inputState.guessing==0 ) {
-					e=new FloatExpression(f);
+				if (inputState.guessing == 0) {
+					e = new FloatExpression(f);
 				}
 				break;
 			}
-			default:
-			{
+			default: {
 				throw new NoViableAltException(LT(1), getFilename());
 			}
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return e;
 	}
-	
-	public final Qualident  qualident() throws RecognitionException, TokenStreamException {
-		final Qualident q;
-		
-		Token  d1 = null;
-		q=new Qualident();IdentExpression r1=null, r2=null;
-		
+
+	public final void docstrings(
+	  final Documentable sc
+	) throws RecognitionException, TokenStreamException {
+
+		Token s1 = null;
+
 		try {      // for error handling
-			r1=ident();
-			if ( inputState.guessing==0 ) {
+			{
+				switch (LA(1)) {
+				case STRING_LITERAL: {
+					{
+						int _cnt28 = 0;
+						do {
+							if ((LA(1) == STRING_LITERAL)) {
+								s1 = LT(1);
+								match(STRING_LITERAL);
+								if (inputState.guessing == 0) {
+									if (sc != null) sc.addDocString(s1);
+								}
+							} else {
+								if (_cnt28 >= 1) {
+									break;
+								} else {
+									throw new NoViableAltException(LT(1), getFilename());
+								}
+							}
+
+							_cnt28++;
+						} while (true);
+					}
+					break;
+				}
+				case EOF: {
+					break;
+				}
+				default: {
+					throw new NoViableAltException(LT(1), getFilename());
+				}
+				}
+			}
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
+				reportError(ex);
+				recover(ex, _tokenSet_0);
+			} else {
+				throw ex;
+			}
+		}
+	}
+
+	public final void opt_semi() throws RecognitionException, TokenStreamException {
+
+
+		try {      // for error handling
+			{
+				switch (LA(1)) {
+				case SEMI: {
+					match(SEMI);
+					break;
+				}
+				case EOF: {
+					break;
+				}
+				default: {
+					throw new NoViableAltException(LT(1), getFilename());
+				}
+				}
+			}
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
+				reportError(ex);
+				recover(ex, _tokenSet_0);
+			} else {
+				throw ex;
+			}
+		}
+	}
+
+	public final void identList(
+	  final IdentList ail
+	) throws RecognitionException, TokenStreamException {
+
+		IdentExpression s = null;
+
+		try {      // for error handling
+			s = ident();
+			if (inputState.guessing == 0) {
+				ail.push(s);
+			}
+			{
+				do {
+					if ((LA(1) == COMMA)) {
+						match(COMMA);
+						s = ident();
+						if (inputState.guessing == 0) {
+							ail.push(s);
+						}
+					} else {
+						break;
+					}
+
+				} while (true);
+			}
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
+				reportError(ex);
+				recover(ex, _tokenSet_0);
+			} else {
+				throw ex;
+			}
+		}
+	}
+
+	public final IdentExpression ident() throws RecognitionException, TokenStreamException {
+		IdentExpression id;
+
+		Token r1 = null;
+		id = null;
+
+		try {      // for error handling
+			r1 = LT(1);
+			match(IDENT);
+			if (inputState.guessing == 0) {
+				id = new IdentExpression(r1, cur);
+			}
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
+				reportError(ex);
+				recover(ex, _tokenSet_8);
+			} else {
+				throw ex;
+			}
+		}
+		return id;
+	}
+
+	public final IExpression assignmentExpression() throws RecognitionException, TokenStreamException {
+		IExpression ee;
+
+		ee = null;
+		final IExpression e  = null;
+		final IExpression e2;
+		ExpressionKind    ek = null;
+
+		try {      // for error handling
+			ee = conditionalExpression();
+			{
+				if (((LA(1) >= BECOMES && LA(1) <= BOR_ASSIGN)) && (_tokenSet_9.member(LA(2)))) {
+					{
+						switch (LA(1)) {
+						case BECOMES: {
+							match(BECOMES);
+							if (inputState.guessing == 0) {
+								ek = (ExpressionKind.ASSIGNMENT);
+							}
+							break;
+						}
+						case PLUS_ASSIGN: {
+							match(PLUS_ASSIGN);
+							if (inputState.guessing == 0) {
+								ek = (ExpressionKind.AUG_PLUS);
+							}
+							break;
+						}
+						case MINUS_ASSIGN: {
+							match(MINUS_ASSIGN);
+							if (inputState.guessing == 0) {
+								ek = (ExpressionKind.AUG_MINUS);
+							}
+							break;
+						}
+						case STAR_ASSIGN: {
+							match(STAR_ASSIGN);
+							if (inputState.guessing == 0) {
+								ek = (ExpressionKind.AUG_MULT);
+							}
+							break;
+						}
+						case DIV_ASSIGN: {
+							match(DIV_ASSIGN);
+							if (inputState.guessing == 0) {
+								ek = (ExpressionKind.AUG_DIV);
+							}
+							break;
+						}
+						case MOD_ASSIGN: {
+							match(MOD_ASSIGN);
+							if (inputState.guessing == 0) {
+								ek = (ExpressionKind.AUG_MOD);
+							}
+							break;
+						}
+						case SR_ASSIGN: {
+							match(SR_ASSIGN);
+							if (inputState.guessing == 0) {
+								ek = (ExpressionKind.AUG_SR);
+							}
+							break;
+						}
+						case BSR_ASSIGN: {
+							match(BSR_ASSIGN);
+							if (inputState.guessing == 0) {
+								ek = (ExpressionKind.AUG_BSR);
+							}
+							break;
+						}
+						case SL_ASSIGN: {
+							match(SL_ASSIGN);
+							if (inputState.guessing == 0) {
+								ek = (ExpressionKind.AUG_SL);
+							}
+							break;
+						}
+						case BAND_ASSIGN: {
+							match(BAND_ASSIGN);
+							if (inputState.guessing == 0) {
+								ek = (ExpressionKind.AUG_BAND);
+							}
+							break;
+						}
+						case BXOR_ASSIGN: {
+							match(BXOR_ASSIGN);
+							if (inputState.guessing == 0) {
+								ek = (ExpressionKind.AUG_BXOR);
+							}
+							break;
+						}
+						case BOR_ASSIGN: {
+							match(BOR_ASSIGN);
+							if (inputState.guessing == 0) {
+								ek = (ExpressionKind.AUG_BOR);
+							}
+							break;
+						}
+						default: {
+							throw new NoViableAltException(LT(1), getFilename());
+						}
+						}
+					}
+					e2 = assignmentExpression();
+					if (inputState.guessing == 0) {
+						ee = ExpressionBuilder.build(ee, ek, e2);
+					}
+				} else if ((_tokenSet_5.member(LA(1))) && (_tokenSet_10.member(LA(2)))) {
+				} else {
+					throw new NoViableAltException(LT(1), getFilename());
+				}
+
+			}
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
+				reportError(ex);
+				recover(ex, _tokenSet_5);
+			} else {
+				throw ex;
+			}
+		}
+		return ee;
+	}
+
+	public final void qualidentList(
+	  final QualidentList qal
+	) throws RecognitionException, TokenStreamException {
+
+		Qualident qid;
+
+		try {      // for error handling
+			qid = qualident();
+			if (inputState.guessing == 0) {
+				qal.add(qid);
+			}
+			{
+				do {
+					if ((LA(1) == COMMA)) {
+						match(COMMA);
+						qid = qualident();
+						if (inputState.guessing == 0) {
+							qal.add(qid);
+						}
+					} else {
+						break;
+					}
+
+				} while (true);
+			}
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
+				reportError(ex);
+				recover(ex, _tokenSet_0);
+			} else {
+				throw ex;
+			}
+		}
+	}
+
+	public final Qualident qualident() throws RecognitionException, TokenStreamException {
+		final Qualident q;
+
+		Token d1 = null;
+		q = new Qualident();
+		IdentExpression r1 = null, r2 = null;
+
+		try {      // for error handling
+			r1 = ident();
+			if (inputState.guessing == 0) {
 				q.append(r1);
 			}
 			{
@@ -472,462 +889,134 @@ public EzParser(final ParserSharedInputState state) {
 
 				} while (true);
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_7);
+				recover(ex, _tokenSet_7);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return q;
 	}
-	
-	public final IdentExpression  ident() throws RecognitionException, TokenStreamException {
-		IdentExpression id;
-		
-		Token  r1 = null;
-		id=null;
-		
-		try {      // for error handling
-			r1 = LT(1);
-			match(IDENT);
-			if ( inputState.guessing==0 ) {
-				id=new IdentExpression(r1, cur);
-			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
-				reportError(ex);
-				recover(ex,_tokenSet_8);
-			} else {
-			  throw ex;
-			}
-		}
-		return id;
-	}
-	
-	public final void docstrings(
-            final Documentable sc
-	) throws RecognitionException, TokenStreamException {
-		
-		Token  s1 = null;
-		
-		try {      // for error handling
-			{
-			switch ( LA(1)) {
-			case STRING_LITERAL:
-			{
-				{
-				int _cnt28=0;
-					do {
-						if ((LA(1) == STRING_LITERAL)) {
-							s1 = LT(1);
-							match(STRING_LITERAL);
-							if (inputState.guessing == 0) {
-								if (sc != null) sc.addDocString(s1);
-							}
-						} else {
-							if (_cnt28 >= 1) {
-								break;
-							} else {
-								throw new NoViableAltException(LT(1), getFilename());
-							}
-						}
 
-						_cnt28++;
-					} while (true);
-				}
-				break;
-			}
-			case EOF:
-			{
-				break;
-			}
-			default:
-			{
-				throw new NoViableAltException(LT(1), getFilename());
-			}
-			}
-			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
-				reportError(ex);
-				recover(ex,_tokenSet_0);
-			} else {
-			  throw ex;
-			}
-		}
-	}
-	
-	public final void opt_semi() throws RecognitionException, TokenStreamException {
-		
-		
-		try {      // for error handling
-			{
-			switch ( LA(1)) {
-			case SEMI:
-			{
-				match(SEMI);
-				break;
-			}
-			case EOF:
-			{
-				break;
-			}
-			default:
-			{
-				throw new NoViableAltException(LT(1), getFilename());
-			}
-			}
-			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
-				reportError(ex);
-				recover(ex,_tokenSet_0);
-			} else {
-			  throw ex;
-			}
-		}
-	}
-	
-	public final void identList(
-            final IdentList ail
-	) throws RecognitionException, TokenStreamException {
-		
-		IdentExpression s=null;
-		
-		try {      // for error handling
-			s=ident();
-			if ( inputState.guessing==0 ) {
-				ail.push(s);
-			}
-			{
-				do {
-					if ((LA(1) == COMMA)) {
-						match(COMMA);
-						s = ident();
-						if (inputState.guessing == 0) {
-							ail.push(s);
-						}
-					} else {
-						break;
-					}
-
-				} while (true);
-			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
-				reportError(ex);
-				recover(ex,_tokenSet_0);
-			} else {
-			  throw ex;
-			}
-		}
-	}
-	
-	public final IExpression  assignmentExpression() throws RecognitionException, TokenStreamException {
+	public final IExpression variableReference() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		ee=null;
-        final IExpression e=null;
-        final IExpression e2;ExpressionKind ek=null;
-		
+
+		Token                   lp = null;
+		ProcedureCallExpression pcx;
+		ExpressionList          el = null;
+		ee = null;
+		IdentExpression r1 = null, r2 = null;
+
 		try {      // for error handling
-			ee=conditionalExpression();
+			r1 = ident();
+			if (inputState.guessing == 0) {
+				ee = r1;
+			}
 			{
-			if (((LA(1) >= BECOMES && LA(1) <= BOR_ASSIGN)) && (_tokenSet_9.member(LA(2)))) {
-				{
-				switch ( LA(1)) {
-				case BECOMES:
-				{
-					match(BECOMES);
-					if ( inputState.guessing==0 ) {
-						ek= (ExpressionKind.ASSIGNMENT);
+				switch (LA(1)) {
+				case DOT: {
+					match(DOT);
+					r2 = ident();
+					if (inputState.guessing == 0) {
+						ee = new DotExpression(ee, r2);
 					}
 					break;
 				}
-				case PLUS_ASSIGN:
-				{
-					match(PLUS_ASSIGN);
-					if ( inputState.guessing==0 ) {
-						ek= (ExpressionKind.AUG_PLUS);
+				case LBRACK: {
+					match(LBRACK);
+					expr = expression();
+					match(RBRACK);
+					if (inputState.guessing == 0) {
+						ee = new GetItemExpression(ee, expr);
 					}
 					break;
 				}
-				case MINUS_ASSIGN:
-				{
-					match(MINUS_ASSIGN);
-					if ( inputState.guessing==0 ) {
-						ek= (ExpressionKind.AUG_MINUS);
+				case LPAREN: {
+					lp = LT(1);
+					match(LPAREN);
+					{
+						switch (LA(1)) {
+						case IDENT:
+						case STRING_LITERAL:
+						case LBRACK:
+						case CHAR_LITERAL:
+						case NUM_INT:
+						case NUM_FLOAT:
+						case LPAREN:
+						case PLUS:
+						case MINUS:
+						case INC:
+						case DEC:
+						case BNOT:
+						case LNOT:
+						case LITERAL_true:
+						case LITERAL_false:
+						case LITERAL_this:
+						case LITERAL_null: {
+							el = expressionList2();
+							break;
+						}
+						case RPAREN: {
+							break;
+						}
+						default: {
+							throw new NoViableAltException(LT(1), getFilename());
+						}
+						}
 					}
+					if (inputState.guessing == 0) {
+						final ProcedureCallExpression pce = new ProcedureCallExpression();
+						pce.identifier(ee);
+						pce.setArgs(el);
+						ee = pce;
+					}
+					match(RPAREN);
 					break;
 				}
-				case STAR_ASSIGN:
-				{
-					match(STAR_ASSIGN);
-					if ( inputState.guessing==0 ) {
-						ek= (ExpressionKind.AUG_MULT);
-					}
-					break;
-				}
-				case DIV_ASSIGN:
-				{
-					match(DIV_ASSIGN);
-					if ( inputState.guessing==0 ) {
-						ek= (ExpressionKind.AUG_DIV);
-					}
-					break;
-				}
-				case MOD_ASSIGN:
-				{
-					match(MOD_ASSIGN);
-					if ( inputState.guessing==0 ) {
-						ek= (ExpressionKind.AUG_MOD);
-					}
-					break;
-				}
-				case SR_ASSIGN:
-				{
-					match(SR_ASSIGN);
-					if ( inputState.guessing==0 ) {
-						ek= (ExpressionKind.AUG_SR);
-					}
-					break;
-				}
-				case BSR_ASSIGN:
-				{
-					match(BSR_ASSIGN);
-					if ( inputState.guessing==0 ) {
-						ek= (ExpressionKind.AUG_BSR);
-					}
-					break;
-				}
-				case SL_ASSIGN:
-				{
-					match(SL_ASSIGN);
-					if ( inputState.guessing==0 ) {
-						ek= (ExpressionKind.AUG_SL);
-					}
-					break;
-				}
-				case BAND_ASSIGN:
-				{
-					match(BAND_ASSIGN);
-					if ( inputState.guessing==0 ) {
-						ek= (ExpressionKind.AUG_BAND);
-					}
-					break;
-				}
-				case BXOR_ASSIGN:
-				{
-					match(BXOR_ASSIGN);
-					if ( inputState.guessing==0 ) {
-						ek= (ExpressionKind.AUG_BXOR);
-					}
-					break;
-				}
-				case BOR_ASSIGN:
-				{
-					match(BOR_ASSIGN);
-					if ( inputState.guessing==0 ) {
-						ek= (ExpressionKind.AUG_BOR);
-					}
-					break;
-				}
-				default:
-				{
+				default: {
 					throw new NoViableAltException(LT(1), getFilename());
 				}
 				}
-				}
-				e2=assignmentExpression();
-				if ( inputState.guessing==0 ) {
-					ee = ExpressionBuilder.build(ee, ek, e2);
-				}
 			}
-			else if ((_tokenSet_5.member(LA(1))) && (_tokenSet_10.member(LA(2)))) {
-			}
-			else {
-				throw new NoViableAltException(LT(1), getFilename());
-			}
-			
-			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_0);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final void qualidentList(
-            final QualidentList qal
-	) throws RecognitionException, TokenStreamException {
-		
-		Qualident qid;
-		
-		try {      // for error handling
-			qid=qualident();
-			if ( inputState.guessing==0 ) {
-				qal.add(qid);
-			}
-			{
-				do {
-					if ((LA(1) == COMMA)) {
-						match(COMMA);
-						qid = qualident();
-						if (inputState.guessing == 0) {
-							qal.add(qid);
-						}
-					} else {
-						break;
-					}
 
-				} while (true);
-			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
-				reportError(ex);
-				recover(ex,_tokenSet_0);
-			} else {
-			  throw ex;
-			}
-		}
-	}
-	
-	public final IExpression  variableReference() throws RecognitionException, TokenStreamException {
+	public final IExpression conditionalExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		Token  lp = null;
-		ProcedureCallExpression pcx;ExpressionList el=null;ee=null;IdentExpression r1=null, r2=null;
-		
+
+		ee = null;
+
 		try {      // for error handling
-			r1=ident();
-			if ( inputState.guessing==0 ) {
-				ee=r1;
-			}
-			{
-			switch ( LA(1)) {
-			case DOT:
-			{
-				match(DOT);
-				r2=ident();
-				if ( inputState.guessing==0 ) {
-					ee=new DotExpression(ee, r2);
-				}
-				break;
-			}
-			case LBRACK:
-			{
-				match(LBRACK);
-				expr=expression();
-				match(RBRACK);
-				if ( inputState.guessing==0 ) {
-					ee=new GetItemExpression(ee, expr);
-				}
-				break;
-			}
-			case LPAREN:
-			{
-				lp = LT(1);
-				match(LPAREN);
-				{
-				switch ( LA(1)) {
-				case IDENT:
-				case STRING_LITERAL:
-				case LBRACK:
-				case CHAR_LITERAL:
-				case NUM_INT:
-				case NUM_FLOAT:
-				case LPAREN:
-				case PLUS:
-				case MINUS:
-				case INC:
-				case DEC:
-				case BNOT:
-				case LNOT:
-				case LITERAL_true:
-				case LITERAL_false:
-				case LITERAL_this:
-				case LITERAL_null:
-				{
-					el=expressionList2();
-					break;
-				}
-				case RPAREN:
-				{
-					break;
-				}
-				default:
-				{
-					throw new NoViableAltException(LT(1), getFilename());
-				}
-				}
-				}
-				if ( inputState.guessing==0 ) {
-					final ProcedureCallExpression pce=new ProcedureCallExpression();
-					pce.identifier(ee);
-					pce.setArgs(el);
-					ee=pce;
-				}
-				match(RPAREN);
-				break;
-			}
-			default:
-			{
-				throw new NoViableAltException(LT(1), getFilename());
-			}
-			}
-			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+			ee = logicalOrExpression();
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_0);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final IExpression  conditionalExpression() throws RecognitionException, TokenStreamException {
+
+	public final IExpression logicalOrExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		ee=null;
-		
+
+		ee = null;
+		IExpression e3 = null;
+
 		try {      // for error handling
-			ee=logicalOrExpression();
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
-				reportError(ex);
-				recover(ex,_tokenSet_5);
-			} else {
-			  throw ex;
-			}
-		}
-		return ee;
-	}
-	
-	public final IExpression  logicalOrExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
-		
-		ee=null;
-				IExpression e3=null;
-		
-		try {      // for error handling
-			ee=logicalAndExpression();
+			ee = logicalAndExpression();
 			{
 				do {
 					if ((LA(1) == LOR) && (_tokenSet_9.member(LA(2)))) {
@@ -942,25 +1031,25 @@ public EzParser(final ParserSharedInputState state) {
 
 				} while (true);
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final IExpression  logicalAndExpression() throws RecognitionException, TokenStreamException {
+
+	public final IExpression logicalAndExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		ee=null;IExpression e3=null;
-		
+
+		ee = null;
+		IExpression e3 = null;
+
 		try {      // for error handling
-			ee=inclusiveOrExpression();
+			ee = inclusiveOrExpression();
 			{
 				do {
 					if ((LA(1) == LAND) && (_tokenSet_9.member(LA(2)))) {
@@ -975,25 +1064,25 @@ public EzParser(final ParserSharedInputState state) {
 
 				} while (true);
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final IExpression  inclusiveOrExpression() throws RecognitionException, TokenStreamException {
+
+	public final IExpression inclusiveOrExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		ee=null;IExpression e3=null;
-		
+
+		ee = null;
+		IExpression e3 = null;
+
 		try {      // for error handling
-			ee=exclusiveOrExpression();
+			ee = exclusiveOrExpression();
 			{
 				do {
 					if ((LA(1) == BOR) && (_tokenSet_9.member(LA(2)))) {
@@ -1008,26 +1097,25 @@ public EzParser(final ParserSharedInputState state) {
 
 				} while (true);
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final IExpression  exclusiveOrExpression() throws RecognitionException, TokenStreamException {
+
+	public final IExpression exclusiveOrExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		ee=null;
-				IExpression e3=null;
-		
+
+		ee = null;
+		IExpression e3 = null;
+
 		try {      // for error handling
-			ee=andExpression();
+			ee = andExpression();
 			{
 				do {
 					if ((LA(1) == BXOR) && (_tokenSet_9.member(LA(2)))) {
@@ -1042,26 +1130,25 @@ public EzParser(final ParserSharedInputState state) {
 
 				} while (true);
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final IExpression  andExpression() throws RecognitionException, TokenStreamException {
+
+	public final IExpression andExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		ee=null;
-				IExpression e3=null;
-		
+
+		ee = null;
+		IExpression e3 = null;
+
 		try {      // for error handling
-			ee=equalityExpression();
+			ee = equalityExpression();
 			{
 				do {
 					if ((LA(1) == BAND) && (_tokenSet_9.member(LA(2)))) {
@@ -1076,27 +1163,26 @@ public EzParser(final ParserSharedInputState state) {
 
 				} while (true);
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final IExpression  equalityExpression() throws RecognitionException, TokenStreamException {
+
+	public final IExpression equalityExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		ee=null;
-				ExpressionKind e2=null;
-				IExpression e3=null;
-		
+
+		ee = null;
+		ExpressionKind e2 = null;
+		IExpression    e3 = null;
+
 		try {      // for error handling
-			ee=relationalExpression();
+			ee = relationalExpression();
 			{
 				do {
 					if ((LA(1) == NOT_EQUAL || LA(1) == EQUAL) && (_tokenSet_9.member(LA(2)))) {
@@ -1131,99 +1217,98 @@ public EzParser(final ParserSharedInputState state) {
 
 				} while (true);
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final IExpression  relationalExpression() throws RecognitionException, TokenStreamException {
-		IExpression ee;
-		
-		ee=null;
-				ExpressionKind e2=null; // should never be null (below)
-				IExpression e3=null;
-				final TypeName tn=null;
-		
-		try {      // for error handling
-			ee=shiftExpression();
-			{
-			{
-				do {
-					if (((LA(1) >= LT_ && LA(1) <= GE)) && (_tokenSet_9.member(LA(2)))) {
-						{
-							switch (LA(1)) {
-							case LT_: {
-								match(LT_);
-								if (inputState.guessing == 0) {
-									e2 = ExpressionKind.LT_;
-								}
-								break;
-							}
-							case GT: {
-								match(GT);
-								if (inputState.guessing == 0) {
-									e2 = ExpressionKind.GT;
-								}
-								break;
-							}
-							case LE: {
-								match(LE);
-								if (inputState.guessing == 0) {
-									e2 = ExpressionKind.LE;
-								}
-								break;
-							}
-							case GE: {
-								match(GE);
-								if (inputState.guessing == 0) {
-									e2 = ExpressionKind.GE;
-								}
-								break;
-							}
-							default: {
-								throw new NoViableAltException(LT(1), getFilename());
-							}
-							}
-						}
-						e3 = shiftExpression();
-						if (inputState.guessing == 0) {
-							ee = ExpressionBuilder.build(ee, e2, e3);
-							ee.setType(new OS_BuiltinType(BuiltInTypes.Boolean));
-						}
-					} else {
-						break;
-					}
 
-				} while (true);
+	public final IExpression relationalExpression() throws RecognitionException, TokenStreamException {
+		IExpression ee;
+
+		ee = null;
+		ExpressionKind e2 = null; // should never be null (below)
+		IExpression    e3 = null;
+		final TypeName tn = null;
+
+		try {      // for error handling
+			ee = shiftExpression();
+			{
+				{
+					do {
+						if (((LA(1) >= LT_ && LA(1) <= GE)) && (_tokenSet_9.member(LA(2)))) {
+							{
+								switch (LA(1)) {
+								case LT_: {
+									match(LT_);
+									if (inputState.guessing == 0) {
+										e2 = ExpressionKind.LT_;
+									}
+									break;
+								}
+								case GT: {
+									match(GT);
+									if (inputState.guessing == 0) {
+										e2 = ExpressionKind.GT;
+									}
+									break;
+								}
+								case LE: {
+									match(LE);
+									if (inputState.guessing == 0) {
+										e2 = ExpressionKind.LE;
+									}
+									break;
+								}
+								case GE: {
+									match(GE);
+									if (inputState.guessing == 0) {
+										e2 = ExpressionKind.GE;
+									}
+									break;
+								}
+								default: {
+									throw new NoViableAltException(LT(1), getFilename());
+								}
+								}
+							}
+							e3 = shiftExpression();
+							if (inputState.guessing == 0) {
+								ee = ExpressionBuilder.build(ee, e2, e3);
+								ee.setType(new OS_BuiltinType(BuiltInTypes.Boolean));
+							}
+						} else {
+							break;
+						}
+
+					} while (true);
+				}
 			}
-			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final IExpression  shiftExpression() throws RecognitionException, TokenStreamException {
+
+	public final IExpression shiftExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		ee=null;ExpressionKind e2=null;
-				IExpression e3=null;
-		
+
+		ee = null;
+		ExpressionKind e2 = null;
+		IExpression    e3 = null;
+
 		try {      // for error handling
-			ee=additiveExpression();
+			ee = additiveExpression();
 			{
 				do {
 					if (((LA(1) >= SL && LA(1) <= BSR)) && (_tokenSet_9.member(LA(2)))) {
@@ -1265,26 +1350,26 @@ public EzParser(final ParserSharedInputState state) {
 
 				} while (true);
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final IExpression  additiveExpression() throws RecognitionException, TokenStreamException {
+
+	public final IExpression additiveExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		ee=null;ExpressionKind e2=null;
-				IExpression e3=null;
-		
+
+		ee = null;
+		ExpressionKind e2 = null;
+		IExpression    e3 = null;
+
 		try {      // for error handling
-			ee=multiplicativeExpression();
+			ee = multiplicativeExpression();
 			{
 				do {
 					if ((LA(1) == PLUS || LA(1) == MINUS) && (_tokenSet_9.member(LA(2)))) {
@@ -1319,26 +1404,26 @@ public EzParser(final ParserSharedInputState state) {
 
 				} while (true);
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final IExpression  multiplicativeExpression() throws RecognitionException, TokenStreamException {
+
+	public final IExpression multiplicativeExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		ee=null;
-				IExpression e3=null;ExpressionKind e2=null;
-		
+
+		ee = null;
+		IExpression    e3 = null;
+		ExpressionKind e2 = null;
+
 		try {      // for error handling
-			ee=unaryExpression();
+			ee = unaryExpression();
 			{
 				do {
 					if (((LA(1) >= STAR && LA(1) <= MOD)) && (_tokenSet_9.member(LA(2)))) {
@@ -1380,58 +1465,53 @@ public EzParser(final ParserSharedInputState state) {
 
 				} while (true);
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final IExpression  unaryExpression() throws RecognitionException, TokenStreamException {
+
+	public final IExpression unaryExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		ee=null;
-				final IExpression e3=null;
-		
+
+		ee = null;
+		final IExpression e3 = null;
+
 		try {      // for error handling
-			switch ( LA(1)) {
-			case INC:
-			{
+			switch (LA(1)) {
+			case INC: {
 				match(INC);
-				ee=unaryExpression();
-				if ( inputState.guessing==0 ) {
+				ee = unaryExpression();
+				if (inputState.guessing == 0) {
 					ee.setKind(ExpressionKind.INCREMENT);
 				}
 				break;
 			}
-			case DEC:
-			{
+			case DEC: {
 				match(DEC);
-				ee=unaryExpression();
-				if ( inputState.guessing==0 ) {
+				ee = unaryExpression();
+				if (inputState.guessing == 0) {
 					ee.setKind(ExpressionKind.DECREMENT);
 				}
 				break;
 			}
-			case MINUS:
-			{
+			case MINUS: {
 				match(MINUS);
-				ee=unaryExpression();
-				if ( inputState.guessing==0 ) {
+				ee = unaryExpression();
+				if (inputState.guessing == 0) {
 					ee.setKind(ExpressionKind.NEG);
 				}
 				break;
 			}
-			case PLUS:
-			{
+			case PLUS: {
 				match(PLUS);
-				ee=unaryExpression();
-				if ( inputState.guessing==0 ) {
+				ee = unaryExpression();
+				if (inputState.guessing == 0) {
 					ee.setKind(ExpressionKind.POS);
 				}
 				break;
@@ -1448,50 +1528,45 @@ public EzParser(final ParserSharedInputState state) {
 			case LITERAL_true:
 			case LITERAL_false:
 			case LITERAL_this:
-			case LITERAL_null:
-			{
-				ee=unaryExpressionNotPlusMinus();
+			case LITERAL_null: {
+				ee = unaryExpressionNotPlusMinus();
 				break;
 			}
-			default:
-			{
+			default: {
 				throw new NoViableAltException(LT(1), getFilename());
 			}
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final IExpression  unaryExpressionNotPlusMinus() throws RecognitionException, TokenStreamException {
+
+	public final IExpression unaryExpressionNotPlusMinus() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		ee=null;
-				final IExpression e3=null;
-		
+
+		ee = null;
+		final IExpression e3 = null;
+
 		try {      // for error handling
-			switch ( LA(1)) {
-			case BNOT:
-			{
+			switch (LA(1)) {
+			case BNOT: {
 				match(BNOT);
-				ee=unaryExpression();
-				if ( inputState.guessing==0 ) {
+				ee = unaryExpression();
+				if (inputState.guessing == 0) {
 					ee.setKind(ExpressionKind.BNOT);
 				}
 				break;
 			}
-			case LNOT:
-			{
+			case LNOT: {
 				match(LNOT);
-				ee=unaryExpression();
-				if ( inputState.guessing==0 ) {
+				ee = unaryExpression();
+				if (inputState.guessing == 0) {
 					ee.setKind(ExpressionKind.LNOT);
 				}
 				break;
@@ -1506,43 +1581,41 @@ public EzParser(final ParserSharedInputState state) {
 			case LITERAL_true:
 			case LITERAL_false:
 			case LITERAL_this:
-			case LITERAL_null:
-			{
-				ee=postfixExpression();
+			case LITERAL_null: {
+				ee = postfixExpression();
 				break;
 			}
-			default:
-			{
+			default: {
 				throw new NoViableAltException(LT(1), getFilename());
 			}
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final IExpression  postfixExpression() throws RecognitionException, TokenStreamException {
+
+	public final IExpression postfixExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		Token  lb = null;
-		Token  rb = null;
-		Token  lp = null;
-		Token  in = null;
-		Token  de = null;
-		ee=null;
-        final TypeCastExpression tc=null;
-        final TypeName tn=null;
-				final IExpression e3=null;ExpressionList el=null;
-		
+
+		Token lb = null;
+		Token rb = null;
+		Token lp = null;
+		Token in = null;
+		Token de = null;
+		ee = null;
+		final TypeCastExpression tc = null;
+		final TypeName           tn = null;
+		final IExpression        e3 = null;
+		ExpressionList           el = null;
+
 		try {      // for error handling
-			ee=primaryExpression();
+			ee = primaryExpression();
 			{
 				do {
 					if ((LA(1) == DOT) && (LA(2) == IDENT)) {
@@ -1620,340 +1693,182 @@ public EzParser(final ParserSharedInputState state) {
 				} while (true);
 			}
 			{
-			if ((LA(1)==INC) && (_tokenSet_5.member(LA(2)))) {
-				in = LT(1);
-				match(INC);
-				if ( inputState.guessing==0 ) {
-					ee.setKind(ExpressionKind.POST_INCREMENT);
+				if ((LA(1) == INC) && (_tokenSet_5.member(LA(2)))) {
+					in = LT(1);
+					match(INC);
+					if (inputState.guessing == 0) {
+						ee.setKind(ExpressionKind.POST_INCREMENT);
+					}
+				} else if ((LA(1) == DEC) && (_tokenSet_5.member(LA(2)))) {
+					de = LT(1);
+					match(DEC);
+					if (inputState.guessing == 0) {
+						ee.setKind(ExpressionKind.POST_DECREMENT);
+					}
+				} else if ((_tokenSet_5.member(LA(1))) && (_tokenSet_10.member(LA(2)))) {
+				} else {
+					throw new NoViableAltException(LT(1), getFilename());
 				}
+
 			}
-			else if ((LA(1)==DEC) && (_tokenSet_5.member(LA(2)))) {
-				de = LT(1);
-				match(DEC);
-				if ( inputState.guessing==0 ) {
-					ee.setKind(ExpressionKind.POST_DECREMENT);
-				}
-			}
-			else if ((_tokenSet_5.member(LA(1))) && (_tokenSet_10.member(LA(2)))) {
-			}
-			else {
-				throw new NoViableAltException(LT(1), getFilename());
-			}
-			
-			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final IExpression  primaryExpression() throws RecognitionException, TokenStreamException {
+
+	public final IExpression primaryExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		ee=null;
-        final FuncExpr ppc=null;IdentExpression e=null;ExpressionList el=null;
-		
+
+		ee = null;
+		final FuncExpr  ppc = null;
+		IdentExpression e   = null;
+		ExpressionList  el  = null;
+
 		try {      // for error handling
-			switch ( LA(1)) {
-			case IDENT:
-			{
-				e=ident();
-				if ( inputState.guessing==0 ) {
-					ee=e;
+			switch (LA(1)) {
+			case IDENT: {
+				e = ident();
+				if (inputState.guessing == 0) {
+					ee = e;
 				}
 				break;
 			}
 			case STRING_LITERAL:
 			case CHAR_LITERAL:
 			case NUM_INT:
-			case NUM_FLOAT:
-			{
-				ee=constantValue();
+			case NUM_FLOAT: {
+				ee = constantValue();
 				break;
 			}
-			case LITERAL_true:
-			{
+			case LITERAL_true: {
 				match(LITERAL_true);
 				break;
 			}
-			case LITERAL_false:
-			{
+			case LITERAL_false: {
 				match(LITERAL_false);
 				break;
 			}
-			case LITERAL_this:
-			{
+			case LITERAL_this: {
 				match(LITERAL_this);
 				break;
 			}
-			case LITERAL_null:
-			{
+			case LITERAL_null: {
 				match(LITERAL_null);
 				break;
 			}
-			case LPAREN:
-			{
+			case LPAREN: {
 				match(LPAREN);
-				ee=assignmentExpression();
+				ee = assignmentExpression();
 				match(RPAREN);
-				if ( inputState.guessing==0 ) {
-					ee=new SubExpression(ee);
+				if (inputState.guessing == 0) {
+					ee = new SubExpression(ee);
 				}
 				break;
 			}
-			case LBRACK:
-			{
+			case LBRACK: {
 				match(LBRACK);
-				if ( inputState.guessing==0 ) {
-					ee=new ListExpression();
+				if (inputState.guessing == 0) {
+					ee = new ListExpression();
 				}
-				el=expressionList2();
-				if ( inputState.guessing==0 ) {
-					((ListExpression)ee).setContents(el);
+				el = expressionList2();
+				if (inputState.guessing == 0) {
+					((ListExpression) ee).setContents(el);
 				}
 				match(RBRACK);
 				break;
 			}
-			default:
-			{
+			default: {
 				throw new NoViableAltException(LT(1), getFilename());
 			}
 			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	public final IExpression  dot_expression_or_procedure_call(
-            final IExpression e1
+
+	public final IExpression dot_expression_or_procedure_call(
+	  final IExpression e1
 	) throws RecognitionException, TokenStreamException {
 		IExpression ee;
-		
-		Token  lp2 = null;
-		ee=null;ExpressionList el=null;IdentExpression e=null;
-		
+
+		Token lp2 = null;
+		ee = null;
+		ExpressionList  el = null;
+		IdentExpression e  = null;
+
 		try {      // for error handling
-			e=ident();
-			if ( inputState.guessing==0 ) {
-				ee=new DotExpression(e1, e);
+			e = ident();
+			if (inputState.guessing == 0) {
+				ee = new DotExpression(e1, e);
 			}
 			{
-			if ((LA(1)==LPAREN) && (_tokenSet_11.member(LA(2)))) {
-				lp2 = LT(1);
-				match(LPAREN);
-				{
-				switch ( LA(1)) {
-				case IDENT:
-				case STRING_LITERAL:
-				case LBRACK:
-				case CHAR_LITERAL:
-				case NUM_INT:
-				case NUM_FLOAT:
-				case LPAREN:
-				case PLUS:
-				case MINUS:
-				case INC:
-				case DEC:
-				case BNOT:
-				case LNOT:
-				case LITERAL_true:
-				case LITERAL_false:
-				case LITERAL_this:
-				case LITERAL_null:
-				{
-					el=expressionList2();
-					break;
-				}
-				case RPAREN:
-				{
-					break;
-				}
-				default:
-				{
+				if ((LA(1) == LPAREN) && (_tokenSet_11.member(LA(2)))) {
+					lp2 = LT(1);
+					match(LPAREN);
+					{
+						switch (LA(1)) {
+						case IDENT:
+						case STRING_LITERAL:
+						case LBRACK:
+						case CHAR_LITERAL:
+						case NUM_INT:
+						case NUM_FLOAT:
+						case LPAREN:
+						case PLUS:
+						case MINUS:
+						case INC:
+						case DEC:
+						case BNOT:
+						case LNOT:
+						case LITERAL_true:
+						case LITERAL_false:
+						case LITERAL_this:
+						case LITERAL_null: {
+							el = expressionList2();
+							break;
+						}
+						case RPAREN: {
+							break;
+						}
+						default: {
+							throw new NoViableAltException(LT(1), getFilename());
+						}
+						}
+					}
+					if (inputState.guessing == 0) {
+						final ProcedureCallExpression pce = new ProcedureCallExpression();
+						pce.identifier(ee);
+						pce.setArgs(el);
+						ee = pce;
+					}
+					match(RPAREN);
+				} else if ((_tokenSet_5.member(LA(1))) && (_tokenSet_10.member(LA(2)))) {
+				} else {
 					throw new NoViableAltException(LT(1), getFilename());
 				}
-				}
-				}
-				if ( inputState.guessing==0 ) {
-					final ProcedureCallExpression pce=new ProcedureCallExpression();
-					pce.identifier(ee);
-					pce.setArgs(el);
-					ee=pce;
-				}
-				match(RPAREN);
+
 			}
-			else if ((_tokenSet_5.member(LA(1))) && (_tokenSet_10.member(LA(2)))) {
-			}
-			else {
-				throw new NoViableAltException(LT(1), getFilename());
-			}
-			
-			}
-		}
-		catch (final RecognitionException ex) {
-			if (inputState.guessing==0) {
+		} catch (final RecognitionException ex) {
+			if (inputState.guessing == 0) {
 				reportError(ex);
-				recover(ex,_tokenSet_5);
+				recover(ex, _tokenSet_5);
 			} else {
-			  throw ex;
+				throw ex;
 			}
 		}
 		return ee;
 	}
-	
-	
-	public static final String[] _tokenNames = {
-		"<0>",
-		"EOF",
-		"<2>",
-		"NULL_TREE_LOOKAHEAD",
-		"\"program\"",
-		"\"library\"",
-		"\"shared\"",
-		"IDENT",
-		"\"end\"",
-		"\"lib\"",
-		"\"libraries\"",
-		"TOK_COLON",
-		"STRING_LITERAL",
-		"LBRACK",
-		"RBRACK",
-		"\"generate\"",
-		"\"indexing\"",
-		"CHAR_LITERAL",
-		"NUM_INT",
-		"NUM_FLOAT",
-		"DOT",
-		"SEMI",
-		"COMMA",
-		"LPAREN",
-		"RPAREN",
-		"BECOMES",
-		"PLUS_ASSIGN",
-		"MINUS_ASSIGN",
-		"STAR_ASSIGN",
-		"DIV_ASSIGN",
-		"MOD_ASSIGN",
-		"SR_ASSIGN",
-		"BSR_ASSIGN",
-		"SL_ASSIGN",
-		"BAND_ASSIGN",
-		"BXOR_ASSIGN",
-		"BOR_ASSIGN",
-		"LOR",
-		"LAND",
-		"BOR",
-		"BXOR",
-		"BAND",
-		"NOT_EQUAL",
-		"EQUAL",
-		"LT_",
-		"GT",
-		"LE",
-		"GE",
-		"SL",
-		"SR",
-		"BSR",
-		"PLUS",
-		"MINUS",
-		"STAR",
-		"DIV",
-		"MOD",
-		"INC",
-		"DEC",
-		"BNOT",
-		"LNOT",
-		"\"true\"",
-		"\"false\"",
-		"\"this\"",
-		"\"null\"",
-		"QUESTION",
-		"LCURLY",
-		"RCURLY",
-		"TOK_ARROW",
-		"ANNOT",
-		"WS",
-		"SL_COMMENT",
-		"ML_COMMENT",
-		"ESC",
-		"HEX_DIGIT",
-		"VOCAB",
-		"EXPONENT",
-		"FLOAT_SUFFIX"
-	};
-	
-	private static final long[] mk_tokenSet_0() {
-		final long[] data = { 2L, 0L};
-		return data;
-	}
-	public static final BitSet _tokenSet_0 = new BitSet(mk_tokenSet_0());
-	private static final long[] mk_tokenSet_1() {
-		final long[] data = { 112L, 0L};
-		return data;
-	}
-	public static final BitSet _tokenSet_1 = new BitSet(mk_tokenSet_1());
-	private static final long[] mk_tokenSet_2() {
-		final long[] data = { 32768L, 0L};
-		return data;
-	}
-	public static final BitSet _tokenSet_2 = new BitSet(mk_tokenSet_2());
-	private static final long[] mk_tokenSet_3() {
-		final long[] data = { 256L, 0L};
-		return data;
-	}
-	public static final BitSet _tokenSet_3 = new BitSet(mk_tokenSet_3());
-	private static final long[] mk_tokenSet_4() {
-		final long[] data = { 36992L, 0L};
-		return data;
-	}
-	public static final BitSet _tokenSet_4 = new BitSet(mk_tokenSet_4());
-	private static final long[] mk_tokenSet_5() {
-		final long[] data = { 288230376148591088L, 0L};
-		return data;
-	}
-	public static final BitSet _tokenSet_5 = new BitSet(mk_tokenSet_5());
-	private static final long[] mk_tokenSet_6() {
-		final long[] data = { 16793840L, 0L};
-		return data;
-	}
-	public static final BitSet _tokenSet_6 = new BitSet(mk_tokenSet_6());
-	private static final long[] mk_tokenSet_7() {
-		final long[] data = { 4194306L, 0L};
-		return data;
-	}
-	public static final BitSet _tokenSet_7 = new BitSet(mk_tokenSet_7());
-	private static final long[] mk_tokenSet_8() {
-		final long[] data = { 288230376148591090L, 0L};
-		return data;
-	}
-	public static final BitSet _tokenSet_8 = new BitSet(mk_tokenSet_8());
-	private static final long[] mk_tokenSet_9() {
-		final long[] data = { -65302194587553664L, 0L};
-		return data;
-	}
-	public static final BitSet _tokenSet_9 = new BitSet(mk_tokenSet_9());
-	private static final long[] mk_tokenSet_10() {
-		final long[] data = { -2164238L, 0L};
-		return data;
-	}
-	public static final BitSet _tokenSet_10 = new BitSet(mk_tokenSet_10());
-	private static final long[] mk_tokenSet_11() {
-		final long[] data = { -65302194570776448L, 0L};
-		return data;
-	}
-	public static final BitSet _tokenSet_11 = new BitSet(mk_tokenSet_11());
-	
-	}
+
+}

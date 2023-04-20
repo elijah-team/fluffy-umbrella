@@ -1,14 +1,13 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 /**
  * Created Mar 27, 2019 at 2:20:38 PM
- *
  */
 package tripleo.elijah.lang;
 
@@ -22,6 +21,7 @@ import tripleo.elijah.util.Helpers;
 public class CharLitExpression implements IExpression {
 
 	private final Token char_lit_raw;
+	OS_Type _type;
 
 	public CharLitExpression(final Token c) {
 		char_lit_raw = c;
@@ -75,16 +75,14 @@ public class CharLitExpression implements IExpression {
 		return true;
 	}
 
-	OS_Type _type;
+	@Override
+	public OS_Type getType() {
+		return _type;
+	}
 
 	@Override
 	public void setType(final OS_Type deducedExpression) {
 		_type = deducedExpression;
-    }
-
-	@Override
-	public OS_Type getType() {
-    	return _type;
 	}
 
 	@Override

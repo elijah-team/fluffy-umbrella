@@ -1,10 +1,10 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 package tripleo.elijah.lang;
 
@@ -15,6 +15,7 @@ public class VariableReference extends AbstractExpression implements OS_Expressi
 
 	String main;
 //	List<VR_Parts> parts = new ArrayList<VR_Parts>();
+	OS_Type _type;
 
 	/**
 	 * Called from ElijahParser.variableReference.  Will `setMain' later
@@ -26,14 +27,14 @@ public class VariableReference extends AbstractExpression implements OS_Expressi
 		setKind(ExpressionKind.VARREF);
 	}
 
-	@Override
-	public String repr_() {
-		return String.format("VariableReference (%s)", main);
-	}
-
 	public void setMain(final String s) {
 		main = s;
 		tripleo.elijah.util.Stupidity.println2(repr_());
+	}
+
+	@Override
+	public String repr_() {
+		return String.format("VariableReference (%s)", main);
 	}
 
 	public void setMain(final Token t) {
@@ -54,16 +55,14 @@ public class VariableReference extends AbstractExpression implements OS_Expressi
 		return false;   //parts.size() == 0; // TODO ; || type==VARREF_SIMPLE??
 	}
 
-	OS_Type _type;
+	@Override
+	public OS_Type getType() {
+		return _type;
+	}
 
 	@Override
 	public void setType(final OS_Type deducedExpression) {
 		_type = deducedExpression;
-    }
-
-	@Override
-	public OS_Type getType() {
-    	return _type;
 	}
 
 	@Override

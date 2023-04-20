@@ -12,9 +12,9 @@ import java.util.List;
 public class UT_CompilationBus implements ICompilationBus {
 	private final Compilation   c;
 	private final UT_Controller utc;
+	private final List<CB_Process> p = new ArrayList<>();
 	List<CB_Action> actions = new ArrayList<>();
 	private       CB_Process       last;
-	private final List<CB_Process> p = new ArrayList<>();
 
 
 	public UT_CompilationBus(final Compilation aC, final UT_Controller aUTController) {

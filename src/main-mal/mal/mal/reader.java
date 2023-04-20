@@ -19,7 +19,7 @@ public class reader {
 	public static ArrayList<String> tokenize(final String str) {
 		final ArrayList<String> tokens  = new ArrayList<String>();
 		final Pattern           pattern = Pattern.compile("[\\s ,]*(~@|[\\[\\]{}()'`~@]|\"(?:[\\\\].|[^\\\\\"])*\"?|;.*|[^\\s \\[\\]{}()'\"`~@,;]*)");
-		final Matcher     matcher = pattern.matcher(str);
+		final Matcher           matcher = pattern.matcher(str);
 		while (matcher.find()) {
 			final String token = matcher.group(1);
 			if (token != null &&

@@ -12,8 +12,8 @@ package tripleo.elijah.stages.generate;
  * Created 1/8/21 10:31 PM
  */
 public class OutputStrategy {
-	protected By _by = By.BY_EZ;
-	protected Per _per = Per.PER_MODULE;
+	protected By   _by   = By.BY_EZ;
+	protected Per  _per  = Per.PER_MODULE;
 	protected Name _name = Name.NAME_Z_TYPE;
 
 	public void by(final By aBy) {

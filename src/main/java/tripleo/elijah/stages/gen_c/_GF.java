@@ -29,8 +29,7 @@ public class _GF {
 	@Contract("null, _ -> fail")
 	public static @NotNull EG_Statement forDeduceElement3(final IDeduceElement3 deduceElement3, final GenerateC gc) {
 		//return deduceElement3.();
-		if (deduceElement3 instanceof DeduceElement3_ProcTableEntry) {
-			final DeduceElement3_ProcTableEntry de_pte = (DeduceElement3_ProcTableEntry) deduceElement3;
+		if (deduceElement3 instanceof final DeduceElement3_ProcTableEntry de_pte) {
 			return forDeduceElement3_ProcTableEntry(de_pte, gc);
 		}
 

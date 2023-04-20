@@ -17,43 +17,43 @@ import tripleo.elijah.gen.Node;
  *
  */
 public class Attached {
-	int _code;
+	int     _code;
 	Context _context;
-	Node _node;
-	
+	Node    _node;
+
 	public Attached(final Context aContext) {
 		_context = aContext;
 	}
 
 	public Attached() {
-		
+
 		// TODO Auto-generated constructor stub
 	}
 
 	public int getCode() {
 		return _code;
 	}
-	
+
 	public void setCode(final int aCode) {
 		_code = aCode;
 	}
-	
+
 	public Context getContext() {
 		return _context;
 	}
-	
+
 	public void setContext(final Context aContext) {
 		_context = aContext;
 	}
-	
+
 	public Node getNode() {
 		return _node;
 	}
-	
+
 	public void setNode(final Node aNode) {
 		_node = aNode;
 	}
-	
+
 }
 
 //

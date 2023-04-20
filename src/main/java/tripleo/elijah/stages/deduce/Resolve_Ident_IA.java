@@ -58,7 +58,8 @@ class Resolve_Ident_IA {
 	private final @NotNull DeducePhase                phase;
 
 	private final @NotNull ElLog LOG;
-
+	@Nullable OS_Element el;
+	Context ectx;
 	@Contract(pure = true)
 	public Resolve_Ident_IA(final @NotNull DeduceTypes2.DeduceClient3 aDeduceClient3,
 	                        final @NotNull Context aContext,
@@ -76,9 +77,6 @@ class Resolve_Ident_IA {
 		//
 		LOG = dc.getLOG();
 	}
-
-	@Nullable OS_Element el;
-	Context ectx;
 
 	public void action() throws ResolveError {
 		final @NotNull List<InstructionArgument> s = BaseGeneratedFunction._getIdentIAPathList(identIA);
@@ -289,42 +287,42 @@ class Resolve_Ident_IA {
 
 	private void action_001(@NotNull final OS_Type aAttached) {
 		switch (aAttached.getType()) {
-			case USER_CLASS: {
-				final ClassStatement x = aAttached.getClassOf();
-				ectx = x.getContext();
-				break;
-			}
-			case FUNCTION: {
-				final int yy = 2;
-				LOG.err("1005");
-				@NotNull final FunctionDef x = (FunctionDef) aAttached.getElement();
-				ectx = x.getContext();
-				break;
-			}
-			case USER:
-				if (el instanceof MatchConditional.MatchArm_TypeMatch) {
-					// for example from match conditional
-					final TypeName tn = ((MatchConditional.MatchArm_TypeMatch) el).getTypeName();
-					try {
-						final @NotNull GenType ty = dc.resolve_type(new OS_UserType(tn), tn.getContext());
-						ectx = ty.resolved.getElement().getContext();
-					} catch (final ResolveError resolveError) {
-						resolveError.printStackTrace();
-						LOG.err("1182 Can't resolve " + tn);
-						throw new IllegalStateException("ResolveError.");
-					}
+		case USER_CLASS: {
+			final ClassStatement x = aAttached.getClassOf();
+			ectx = x.getContext();
+			break;
+		}
+		case FUNCTION: {
+			final int yy = 2;
+			LOG.err("1005");
+			@NotNull final FunctionDef x = (FunctionDef) aAttached.getElement();
+			ectx = x.getContext();
+			break;
+		}
+		case USER:
+			if (el instanceof MatchConditional.MatchArm_TypeMatch) {
+				// for example from match conditional
+				final TypeName tn = ((MatchConditional.MatchArm_TypeMatch) el).getTypeName();
+				try {
+					final @NotNull GenType ty = dc.resolve_type(new OS_UserType(tn), tn.getContext());
+					ectx = ty.resolved.getElement().getContext();
+				} catch (final ResolveError resolveError) {
+					resolveError.printStackTrace();
+					LOG.err("1182 Can't resolve " + tn);
+					throw new IllegalStateException("ResolveError.");
+				}
 //						ectx = el.getContext();
-				} else
-					ectx = aAttached.getTypeName().getContext(); // TODO is this right?
-				break;
-			case FUNC_EXPR: {
-				@NotNull final FuncExpr x = (FuncExpr) aAttached.getElement();
-				ectx = x.getContext();
-				break;
-			}
-			default:
-				LOG.err("1010 " + aAttached.getType());
-				throw new IllegalStateException("Don't know what you're doing here.");
+			} else
+				ectx = aAttached.getTypeName().getContext(); // TODO is this right?
+			break;
+		case FUNC_EXPR: {
+			@NotNull final FuncExpr x = (FuncExpr) aAttached.getElement();
+			ectx = x.getContext();
+			break;
+		}
+		default:
+			LOG.err("1010 " + aAttached.getType());
+			throw new IllegalStateException("Don't know what you're doing here.");
 		}
 	}
 
@@ -337,8 +335,8 @@ class Resolve_Ident_IA {
 		if (tte.expression instanceof ProcedureCallExpression) {
 			if (tte.tableEntry != null) {
 				if (tte.tableEntry instanceof @NotNull final ProcTableEntry pte) {
-					@NotNull final IdentIA         x   = (IdentIA) pte.expression_num;
-					@NotNull final IdentTableEntry y   = x.getEntry();
+					@NotNull final IdentIA         x = (IdentIA) pte.expression_num;
+					@NotNull final IdentTableEntry y = x.getEntry();
 					if (y.getResolvedElement() == null) {
 						action_002_no_resolved_element(pte, y);
 					} else {
@@ -389,7 +387,7 @@ class Resolve_Ident_IA {
 			final DeduceElement3_ProcTableEntry pte_de3 = (DeduceElement3_ProcTableEntry) backlink.getDeduceElement3(this.dc._dt2(), this.generatedFunction);
 			pte_de3._action_002_no_resolved_element(_backlink, backlink, dc, ite, errSink, phase);
 		} else if (_backlink instanceof final @NotNull IntegerIA backlink_) {
-			@NotNull final VariableTableEntry backlink  = backlink_.getEntry();
+			@NotNull final VariableTableEntry backlink = backlink_.getEntry();
 
 			final DeduceElement3_VariableTableEntry vte_de3 = (DeduceElement3_VariableTableEntry) backlink.getDeduceElement3();
 			vte_de3._action_002_no_resolved_element(errSink, pte, ite, dc, phase);
@@ -420,7 +418,7 @@ class Resolve_Ident_IA {
 				ci = phase.registerClassInvocation(ci);
 				fi = new FunctionInvocation(null, pte, ci, phase.generatePhase);
 			} else if (resolvedElement instanceof final FunctionDef functionDef) {
-				final IInvocation invocation  = dc.getInvocation((GeneratedFunction) generatedFunction);
+				final IInvocation invocation = dc.getInvocation((GeneratedFunction) generatedFunction);
 				fi = new FunctionInvocation(functionDef, pte, invocation, phase.generatePhase);
 				if (functionDef.getParent() instanceof ClassStatement) {
 					final ClassStatement classStatement = (ClassStatement) fi.getFunction().getParent();
@@ -482,6 +480,10 @@ class Resolve_Ident_IA {
 			generatedFunction.addDependentFunction(fi);
 	}
 
+
+	enum RIA_STATE {
+		CONTINUE, RETURN, NEXT
+	}
 
 	static class GenericElementHolderWithDC implements IElementHolder {
 		private final OS_Element                 element;
@@ -611,20 +613,20 @@ class Resolve_Ident_IA {
 			@Nullable IInvocation      invocation  = null;
 
 			switch (DecideElObjectType.getElObjectType(parent)) {
-				case UNKNOWN:
-					break;
-				case CLASS:
-					genType = new GenType((ClassStatement) parent);
-					@Nullable final ClassInvocation ci = new ClassInvocation((ClassStatement) parent, null);
-					invocation = phase.registerClassInvocation(ci);
-					break;
-				case NAMESPACE:
-					genType = new GenType((NamespaceStatement) parent);
-					invocation = phase.registerNamespaceInvocation((NamespaceStatement) parent);
-					break;
-				default:
-					// do nothing
-					break;
+			case UNKNOWN:
+				break;
+			case CLASS:
+				genType = new GenType((ClassStatement) parent);
+				@Nullable final ClassInvocation ci = new ClassInvocation((ClassStatement) parent, null);
+				invocation = phase.registerClassInvocation(ci);
+				break;
+			case NAMESPACE:
+				genType = new GenType((NamespaceStatement) parent);
+				invocation = phase.registerNamespaceInvocation((NamespaceStatement) parent);
+				break;
+			default:
+				// do nothing
+				break;
 			}
 
 			if (genType != null) {
@@ -670,10 +672,6 @@ class Resolve_Ident_IA {
 			el   = aEl;
 			ectx = aEctx;
 		}
-	}
-
-	enum RIA_STATE {
-		CONTINUE, RETURN, NEXT
 	}
 }
 

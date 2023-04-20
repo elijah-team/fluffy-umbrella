@@ -45,16 +45,13 @@ import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
  * Created 1/9/21 7:12 AM
  */
 public class CReference {
-	private String          rtext = null;
-	private List<String>    args;
-	private List<Reference> refs;
-
 	private final GI_Repo _repo = new GI_Repo();
-
-
 	//
 	//
 	GeneratedClass _cheat = null;
+	private String          rtext = null;
+	private List<String>    args;
+	private List<Reference> refs;
 	//
 	//
 
@@ -123,6 +120,31 @@ public class CReference {
 		return rtext;
 	}
 
+	@NotNull
+	static List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
+		final List<InstructionArgument> s = new LinkedList<InstructionArgument>();
+		while (oo != null) {
+			if (oo instanceof IntegerIA) {
+				s.add(0, oo);
+				oo = null;
+			} else if (oo instanceof IdentIA) {
+				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
+				s.add(0, oo);
+				oo = ite1.getBacklink();
+			} else if (oo instanceof ProcIA) {
+//				final ProcTableEntry prte = ((ProcIA)oo).getEntry();
+				s.add(0, oo);
+				oo = null;
+			} else
+				throw new IllegalStateException("Invalid InstructionArgument");
+		}
+		return s;
+	}
+
+	void addRef(final String text, final Ref type) {
+		refs.add(new Reference(text, type));
+	}
+
 	public String getIdentIAPath_Proc(final @NotNull ProcTableEntry aPrte) {
 		final String[]              text      = new String[1];
 		final BaseGeneratedFunction generated = aPrte.getFunctionInvocation().getGenerated();
@@ -157,6 +179,58 @@ public class CReference {
 		}
 
 		return text[0];
+	}
+
+	/**
+	 * Call before you call build
+	 *
+	 * @param sl3
+	 */
+	public void args(final List<String> sl3) {
+		args = sl3;
+	}
+
+	@NotNull
+	public String build() {
+		final BuildState st = new BuildState();
+
+		for (final Reference ref : refs) {
+			switch (ref.type) {
+			case LITERAL:
+			case DIRECT_MEMBER:
+			case INLINE_MEMBER:
+			case MEMBER:
+			case LOCAL:
+			case FUNCTION:
+			case PROPERTY_GET:
+			case PROPERTY_SET:
+			case CONSTRUCTOR:
+				ref.buildHelper(st);
+				break;
+			default:
+				throw new IllegalStateException("Unexpected value: " + ref.type);
+			}
+//			sl.add(text);
+		}
+//		return Helpers.String_join("->", sl);
+
+		final StringBuilder sb = st.sb;
+
+		if (st.needs_comma && args != null && args.size() > 0)
+			sb.append(", ");
+
+		if (st.open) {
+			if (args != null) {
+				sb.append(Helpers.String_join(", ", args));
+			}
+			sb.append(")");
+		}
+
+		return sb.toString();
+	}
+
+	void addRef(final String text, final Ref type, final String aValue) {
+		refs.add(new Reference(text, type, aValue));
 	}
 
 	enum Ref {
@@ -287,114 +361,6 @@ public class CReference {
 
 	}
 
-	class GI_ProcIA implements GenerateC_Item {
-		private final ProcIA carrier;
-
-		public GI_ProcIA(final ProcIA aProcIA) {
-			carrier = aProcIA;
-		}
-	}
-
-	/**
-	 * Call before you call build
-	 *
-	 * @param sl3
-	 */
-	public void args(final List<String> sl3) {
-		args = sl3;
-	}
-
-	@NotNull
-	public String build() {
-		final BuildState st = new BuildState();
-
-		for (final Reference ref : refs) {
-			switch (ref.type) {
-				case LITERAL:
-				case DIRECT_MEMBER:
-				case INLINE_MEMBER:
-				case MEMBER:
-				case LOCAL:
-				case FUNCTION:
-				case PROPERTY_GET:
-				case PROPERTY_SET:
-				case CONSTRUCTOR:
-					ref.buildHelper(st);
-					break;
-				default:
-					throw new IllegalStateException("Unexpected value: " + ref.type);
-			}
-//			sl.add(text);
-		}
-//		return Helpers.String_join("->", sl);
-
-		final StringBuilder sb = st.sb;
-
-		if (st.needs_comma && args != null && args.size() > 0)
-			sb.append(", ");
-
-		if (st.open) {
-			if (args != null) {
-				sb.append(Helpers.String_join(", ", args));
-			}
-			sb.append(")");
-		}
-
-		return sb.toString();
-	}
-
-	@NotNull
-	static List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
-		final List<InstructionArgument> s = new LinkedList<InstructionArgument>();
-		while (oo != null) {
-			if (oo instanceof IntegerIA) {
-				s.add(0, oo);
-				oo = null;
-			} else if (oo instanceof IdentIA) {
-				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
-				s.add(0, oo);
-				oo = ite1.getBacklink();
-			} else if (oo instanceof ProcIA) {
-//				final ProcTableEntry prte = ((ProcIA)oo).getEntry();
-				s.add(0, oo);
-				oo = null;
-			} else
-				throw new IllegalStateException("Invalid InstructionArgument");
-		}
-		return s;
-	}
-
-	void addRef(final String text, final Ref type) {
-		refs.add(new Reference(text, type));
-	}
-
-	void addRef(final String text, final Ref type, final String aValue) {
-		refs.add(new Reference(text, type, aValue));
-	}
-
-	private class GI_Module {
-		private final OS_Module carrier;
-
-		GI_Module(final OS_Module aCarrier) {
-			carrier = aCarrier;
-		}
-	}
-
-	private class GI_Repo {
-		private final Map<Object, GenerateC_Item> items = new HashMap<>();
-
-		public GenerateC_Item itemFor(final ProcIA aProcIA) {
-			final GI_ProcIA gi_proc;
-			if (items.containsKey(aProcIA)) {
-				gi_proc = (GI_ProcIA) items.get(aProcIA);
-			} else {
-				gi_proc = new GI_ProcIA(aProcIA);
-				items.put(aProcIA, gi_proc);
-			}
-			return gi_proc;
-		}
-	}
-
 	static class Reference {
 		final String text;
 		final Ref    type;
@@ -433,6 +399,37 @@ public class CReference {
 			return sb.toString();
 		}
 		//ABOVE 3a
+	}
+
+	class GI_ProcIA implements GenerateC_Item {
+		private final ProcIA carrier;
+
+		public GI_ProcIA(final ProcIA aProcIA) {
+			carrier = aProcIA;
+		}
+	}
+
+	private class GI_Module {
+		private final OS_Module carrier;
+
+		GI_Module(final OS_Module aCarrier) {
+			carrier = aCarrier;
+		}
+	}
+
+	private class GI_Repo {
+		private final Map<Object, GenerateC_Item> items = new HashMap<>();
+
+		public GenerateC_Item itemFor(final ProcIA aProcIA) {
+			final GI_ProcIA gi_proc;
+			if (items.containsKey(aProcIA)) {
+				gi_proc = (GI_ProcIA) items.get(aProcIA);
+			} else {
+				gi_proc = new GI_ProcIA(aProcIA);
+				items.put(aProcIA, gi_proc);
+			}
+			return gi_proc;
+		}
 	}
 }
 

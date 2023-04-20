@@ -12,7 +12,6 @@ import tripleo.elijah.lang.NumericExpression;
 
 /**
  * @author Tripleo(sb)
- *
  */
 public class ReturnAgnSimpleIntNode {
 
@@ -20,9 +19,9 @@ public class ReturnAgnSimpleIntNode {
 
 	public ReturnAgnSimpleIntNode(final NumericExpression integer) {
 		// TODO Auto-generated constructor stub
-		this.integer=integer;
+		this.integer = integer;
 	}
-	
+
 	public int getValue() {
 		return integer.getValue();
 	}

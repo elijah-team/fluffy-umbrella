@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 class readline {
-	static Mode mode = Mode.JNA;
+	static Mode    mode          = Mode.JNA;
 	static String  HISTORY_FILE  = null;
 	static Boolean historyLoaded = false;
 

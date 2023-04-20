@@ -48,92 +48,13 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	public final  InstructionArgument                             expression_num;
 	public final  DeduceProcCall                                  dpc                   = new DeduceProcCall(this);
 	private final DeferredObject<ProcTableEntry, Void, Void>      completeDeferred      = new DeferredObject<ProcTableEntry, Void, Void>();
-	private       ClassInvocation                                 classInvocation;
 	private final DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<FunctionInvocation, Void, Void>();
+	private final DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
+	private       ClassInvocation                                 classInvocation;
 	private       FunctionInvocation                              functionInvocation;
 	private       DeduceElement3_ProcTableEntry                   _de3;
-
 	private PTE_Zero _zero;
 
-	public List<TypeTableEntry> getArgs() {
-		return args;
-	}
-
-	public void setArgType(final int aIndex, final OS_Type aType) {
-		args.get(aIndex).setAttached(aType);
-	}
-
-	public void onSetAttached() {
-		int state = 0;
-		if (args != null) {
-			final int ac = args.size();
-			int acx = 0;
-			for (final TypeTableEntry tte : args) {
-				if (tte.getAttached() != null)
-					acx++;
-			}
-			if (acx < ac) {
-				state = 1;
-			} else if (acx > ac) {
-				state = 2;
-			} else if (acx == ac) {
-				state = 3;
-			}
-		} else {
-			state = 3;
-		}
-		switch (state) {
-			case 0:
-				throw new IllegalStateException();
-			case 1:
-				tripleo.elijah.util.Stupidity.println_err2("136 pte not finished resolving " + this);
-				break;
-			case 2:
-				tripleo.elijah.util.Stupidity.println_err2("138 Internal compiler error");
-				break;
-		case 3:
-			if (completeDeferred.isPending())
-				completeDeferred.resolve(this);
-			break;
-		default:
-			throw new NotImplementedException();
-		}
-	}
-
-	/**
-	 * Completes when all args have an attached typeEntry
-	 */
-//	@Contract(pure = true)
-//	private DeferredObject<ProcTableEntry, Void, Void> completeDeferred() {
-//		return completeDeferred;
-//	}
-
-	/**
-	 * Call {@code cb} when all args have an attached typeEntry
-	 */
-	@Contract(pure = true)
-	private void onComplete(final DoneCallback<ProcTableEntry> cb) {
-		completeDeferred.then(cb);
-	}
-
-	public void setClassInvocation(final ClassInvocation aClassInvocation) {
-		classInvocation = aClassInvocation;
-	}
-
-	public ClassInvocation getClassInvocation() {
-		return classInvocation;
-	}
-
-	@Override
-	@NotNull
-	public String toString() {
-		return "ProcTableEntry{" +
-		  "index=" + index +
-		  ", expression=" + expression +
-		  ", expression_num=" + expression_num +
-		  ", args=" + args +
-		  '}';
-	}
 	public ProcTableEntry(final int aIndex, final IExpression aExpression, final InstructionArgument aExpressionNum, final List<TypeTableEntry> aArgs) {
 		index          = aIndex;
 		expression     = aExpression;
@@ -161,12 +82,86 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		setupResolve();
 	}
 
+	public void onSetAttached() {
+		int state = 0;
+		if (args != null) {
+			final int ac  = args.size();
+			int       acx = 0;
+			for (final TypeTableEntry tte : args) {
+				if (tte.getAttached() != null)
+					acx++;
+			}
+			if (acx < ac) {
+				state = 1;
+			} else if (acx > ac) {
+				state = 2;
+			} else if (acx == ac) {
+				state = 3;
+			}
+		} else {
+			state = 3;
+		}
+		switch (state) {
+		case 0:
+			throw new IllegalStateException();
+		case 1:
+			tripleo.elijah.util.Stupidity.println_err2("136 pte not finished resolving " + this);
+			break;
+		case 2:
+			tripleo.elijah.util.Stupidity.println_err2("138 Internal compiler error");
+			break;
+		case 3:
+			if (completeDeferred.isPending())
+				completeDeferred.resolve(this);
+			break;
+		default:
+			throw new NotImplementedException();
+		}
+	}
+
+	/**
+	 * Completes when all args have an attached typeEntry
+	 */
+//	@Contract(pure = true)
+//	private DeferredObject<ProcTableEntry, Void, Void> completeDeferred() {
+//		return completeDeferred;
+//	}
+
+	public void setArgType(final int aIndex, final OS_Type aType) {
+		args.get(aIndex).setAttached(aType);
+	}
+
+	/**
+	 * Call {@code cb} when all args have an attached typeEntry
+	 */
+	@Contract(pure = true)
+	private void onComplete(final DoneCallback<ProcTableEntry> cb) {
+		completeDeferred.then(cb);
+	}
+
+	public ClassInvocation getClassInvocation() {
+		return classInvocation;
+	}
+
+	public void setClassInvocation(final ClassInvocation aClassInvocation) {
+		classInvocation = aClassInvocation;
+	}
+
+	@Override
+	@NotNull
+	public String toString() {
+		return "ProcTableEntry{" +
+		  "index=" + index +
+		  ", expression=" + expression +
+		  ", expression_num=" + expression_num +
+		  ", args=" + args +
+		  '}';
+	}
+
 	// have no idea what this is for
 	public void onFunctionInvocation(final DoneCallback<FunctionInvocation> callback) {
 		onFunctionInvocations.then(callback);
 	}
-
-	private final DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
 
 	public DeferredObject<GenType, Void, Void> typeDeferred() {
 		return typeDeferred;
@@ -224,8 +219,18 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		return pte_string;
 	}
 
+	public List<TypeTableEntry> getArgs() {
+		return args;
+	}
+
 	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseGeneratedFunction aGeneratedFunction, final ErrSink aErrSink) {
 		dpc.setDeduceTypes2(aDeduceTypes2, aContext, aGeneratedFunction, aErrSink);
+	}
+
+	public IDeduceElement3 getDeduceElement3() {
+		assert dpc._deduceTypes2() != null; // TODO setDeduce... called; Promise?
+
+		return getDeduceElement3(dpc._deduceTypes2(), dpc._generatedFunction());
 	}
 
 	public IDeduceElement3 getDeduceElement3(final DeduceTypes2 aDeduceTypes2, final BaseGeneratedFunction aGeneratedFunction) {
@@ -234,12 +239,6 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 //			_de3.
 		}
 		return _de3;
-	}
-
-	public IDeduceElement3 getDeduceElement3() {
-		assert dpc._deduceTypes2() != null; // TODO setDeduce... called; Promise?
-
-		return getDeduceElement3(dpc._deduceTypes2(), dpc._generatedFunction());
 	}
 
 	public PTE_Zero zero() {

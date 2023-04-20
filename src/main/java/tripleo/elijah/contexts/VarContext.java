@@ -8,7 +8,11 @@
  */
 package tripleo.elijah.contexts;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.VariableSequence;
+import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.util.Helpers;
 
 import java.util.List;
@@ -19,14 +23,15 @@ import java.util.List;
 public class VarContext extends Context {
 
 	private final VariableSequence carrier;
-	private final Context _parent;
+	private final Context          _parent;
 
 	public VarContext(final VariableSequence carrier, final Context _parent) {
 		this.carrier = carrier;
 		this._parent = _parent;
 	}
 
-	@Override public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	@Override
+	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 
 		for (final VariableStatement vs : carrier.items()) {

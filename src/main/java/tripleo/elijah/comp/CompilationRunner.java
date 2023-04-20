@@ -218,19 +218,6 @@ public class CompilationRunner {
 		});
 	}
 
-
-	private @NotNull List<CompilerInstructions> searchEzFiles(final @NotNull File directory, final ErrSink errSink, final IO io, final Compilation c) {
-		final QuerySearchEzFiles                     q    = new QuerySearchEzFiles(c, errSink, io, this);
-		final Operation2<List<CompilerInstructions>> olci = q.process(directory);
-
-		if (olci.mode() == Mode.SUCCESS) {
-			return olci.success();
-		}
-
-		errSink.reportDiagnostic(olci.failure());
-		return List_of();
-	}
-
 	public Operation<CompilerInstructions> realParseEzFile(final String f,
 	                                                       final InputStream s,
 	                                                       final @NotNull File file,
@@ -285,6 +272,18 @@ public class CompilationRunner {
 	private Operation<CompilerInstructions> parseEzFile_(final String f, final InputStream s) throws RecognitionException, TokenStreamException {
 		final QueryEzFileToModuleParams qp = new QueryEzFileToModuleParams(f, s);
 		return new QueryEzFileToModule(qp).calculate();
+	}
+
+	private @NotNull List<CompilerInstructions> searchEzFiles(final @NotNull File directory, final ErrSink errSink, final IO io, final Compilation c) {
+		final QuerySearchEzFiles                     q    = new QuerySearchEzFiles(c, errSink, io, this);
+		final Operation2<List<CompilerInstructions>> olci = q.process(directory);
+
+		if (olci.mode() == Mode.SUCCESS) {
+			return olci.success();
+		}
+
+		errSink.reportDiagnostic(olci.failure());
+		return List_of();
 	}
 
 	interface CR_Process {

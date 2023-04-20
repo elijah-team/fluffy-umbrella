@@ -5,7 +5,6 @@ import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.CompilationChange;
 import tripleo.elijah.comp.ICompilationBus;
 import tripleo.elijah.comp.ILazyCompilerInstructions;
-import tripleo.elijah.util.NotImplementedException;
 
 public class CompilationBus implements ICompilationBus {
 	private final Compilation c;
@@ -33,7 +32,9 @@ public class CompilationBus implements ICompilationBus {
 //		throw new NotImplementedException();
 
 		aProcess.steps().stream()
-		  .forEach(action -> {action.execute();});
+		        .forEach(action -> {
+			        action.execute();
+		        });
 	}
 
 }

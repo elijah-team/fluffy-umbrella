@@ -16,20 +16,20 @@ import tripleo.elijah.stages.gen_fn.ProcTableEntry;
  * Created 1/12/21 4:22 AM
  */
 public class ProcIA implements InstructionArgument {
-	private final int index;
+	private final int                   index;
 	private final BaseGeneratedFunction gf;
 
 	public ProcIA(final int i, final BaseGeneratedFunction generatedFunction) {
 		this.index = i;
-		this.gf = generatedFunction;
+		this.gf    = generatedFunction;
 	}
 
 	@Override
 	public String toString() {
 		return "ProcIA{" +
-				"index=" + index + ", " +
-				"func=" + gf.getProcTableEntry(index) +
-				'}';
+		  "index=" + index + ", " +
+		  "func=" + gf.getProcTableEntry(index) +
+		  '}';
 	}
 
 	public int getIndex() {

@@ -53,9 +53,8 @@ public class OS_AnyType extends __Abstract_OS_Type {
 		return null;
 	}
 
-	@Override
-	public String asString() {
-		return "<OS_AnyType>";
+	protected boolean _isEqual(final @NotNull OS_Type aType) {
+		return aType.getType() == Type.ANY;
 	}
 
 	@Override
@@ -69,7 +68,10 @@ public class OS_AnyType extends __Abstract_OS_Type {
 		return Type.ANY;
 	}
 
-	protected boolean _isEqual(final @NotNull OS_Type aType) {return aType.getType() == Type.ANY;}
+	@Override
+	public String asString() {
+		return "<OS_AnyType>";
+	}
 }
 
 //

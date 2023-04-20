@@ -41,7 +41,7 @@ public class GeneratedFunction extends BaseGeneratedFunction implements GNCoded 
 		String pte_string = null; //// = fd.getArgs().toString(); // TODO wanted PTE.getLoggingString
 
 
-		ClassInvocation classInvocation = null; //// = fi.getClassInvocation();
+		ClassInvocation     classInvocation     = null; //// = fi.getClassInvocation();
 		NamespaceInvocation namespaceInvocation = null; //// = fi.getNamespaceInvocation();
 
 		Promise<GeneratedClass, Void, Void>     crp;
@@ -53,54 +53,54 @@ public class GeneratedFunction extends BaseGeneratedFunction implements GNCoded 
 		short state = 0;
 		while (state != 5) {
 			switch (state) {
-				case 0:
-					classInvocation = fi.getClassInvocation();
-					namespaceInvocation = fi.getNamespaceInvocation();
-					pte_string = fd.getArgs().toString(); // TODO wanted PTE.getLoggingString
+			case 0:
+				classInvocation = fi.getClassInvocation();
+				namespaceInvocation = fi.getNamespaceInvocation();
+				pte_string = fd.getArgs().toString(); // TODO wanted PTE.getLoggingString
 
-					state = 1;
+				state = 1;
+				break;
+			case 1:
+				if (classInvocation != null) {
+					state = 2;
 					break;
-				case 1:
-					if (classInvocation != null) {
-						state = 2;
-						break;
-					} else if (namespaceInvocation != null) {
-						state = 3;
-						break;
-					} else {
-						state = 4;
-					}
+				} else if (namespaceInvocation != null) {
+					state = 3;
 					break;
-				case 2:
-					crp = classInvocation.resolvePromise();
-					if (crp.isResolved()) {
-						final GeneratedClass[] parent = new GeneratedClass[1];
-						crp.then(gc -> parent[0] = gc);
-						R = String.format("<GeneratedFunction %d %s %s %s>", getCode(), parent[0], fd.name(), pte_string);
-						state = 5;
-					} else {
-						state = 4;
-					}
-					break;
-				case 3:
-					nsrp = namespaceInvocation.resolveDeferred();
-					if (nsrp.isResolved()) {
-						final GeneratedNamespace[] parent = new GeneratedNamespace[1];
-						nsrp.then(gc -> parent[0] = gc);
-						R = String.format("<GeneratedFunction %d %s %s %s>", getCode(), parent[0], fd.name(), pte_string);
-						state = 5;
-					} else {
-						state = 4;
-					}
-					break;
-				case 4:
-					R = String.format("<GeneratedFunction %s %s %s>", fd.getParent(), fd.name(), pte_string);
+				} else {
+					state = 4;
+				}
+				break;
+			case 2:
+				crp = classInvocation.resolvePromise();
+				if (crp.isResolved()) {
+					final GeneratedClass[] parent = new GeneratedClass[1];
+					crp.then(gc -> parent[0] = gc);
+					R     = String.format("<GeneratedFunction %d %s %s %s>", getCode(), parent[0], fd.name(), pte_string);
 					state = 5;
-					break;
-				case 5:
-					break;
-				default:
-					throw new IllegalStateException("Invalid state in #toString");
+				} else {
+					state = 4;
+				}
+				break;
+			case 3:
+				nsrp = namespaceInvocation.resolveDeferred();
+				if (nsrp.isResolved()) {
+					final GeneratedNamespace[] parent = new GeneratedNamespace[1];
+					nsrp.then(gc -> parent[0] = gc);
+					R     = String.format("<GeneratedFunction %d %s %s %s>", getCode(), parent[0], fd.name(), pte_string);
+					state = 5;
+				} else {
+					state = 4;
+				}
+				break;
+			case 4:
+				R = String.format("<GeneratedFunction %s %s %s>", fd.getParent(), fd.name(), pte_string);
+				state = 5;
+				break;
+			case 5:
+				break;
+			default:
+				throw new IllegalStateException("Invalid state in #toString");
 			}
 		}
 
@@ -117,6 +117,11 @@ public class GeneratedFunction extends BaseGeneratedFunction implements GNCoded 
 	// endregion
 
 	@Override
+	public String identityString() {
+		return String.valueOf(fd);
+	}
+
+	@Override
 	public @NotNull BaseFunctionDef getFD() {
 		if (fd != null) return fd;
 		throw new IllegalStateException("No function");
@@ -128,11 +133,6 @@ public class GeneratedFunction extends BaseGeneratedFunction implements GNCoded 
 			return getVarTableEntry(0);
 		else
 			return null;
-	}
-
-	@Override
-	public String identityString() {
-		return "" + fd;
 	}
 
 	@Override

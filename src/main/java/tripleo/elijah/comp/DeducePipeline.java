@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
  * Created 8/21/21 10:10 PM
  */
 public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListListener {
-	private final AccessBus __ab;
-	private PipelineLogic pipelineLogic;
-	private List<OS_Module> ms;
+	private final AccessBus       __ab;
+	private       PipelineLogic   pipelineLogic;
+	private       List<OS_Module> ms;
 
 	public DeducePipeline(final @NotNull AccessBus ab) {
 		__ab = ab;
@@ -66,8 +66,8 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 		final ArrayList<GeneratedNode> lgc3 = new ArrayList<>();
 
 		// TODO how to do this with streams
-		for (DeducePhase.GeneratedClasses generatedClasses : lgc2) {
-			for (GeneratedNode generatedClass : generatedClasses) {
+		for (final DeducePhase.GeneratedClasses generatedClasses : lgc2) {
+			for (final GeneratedNode generatedClass : generatedClasses) {
 				lgc3.add(generatedClass);
 			}
 		}
@@ -75,15 +75,15 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 		__ab.resolveLgc(lgc3);
 	}
 
+	public void resolveMods() {
+//		__ab.resolveModuleList(ms);
+	}
+
 	@Override
 	public void mods_slot(final @NotNull EIT_ModuleList aModuleList) {
 		final List<OS_Module> mods = aModuleList.getMods();
 
 		ms = mods;
-	}
-
-	public void resolveMods() {
-//		__ab.resolveModuleList(ms);
 	}
 
 	static class PL_Run2 {

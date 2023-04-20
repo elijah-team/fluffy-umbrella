@@ -47,11 +47,21 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	@Nullable             GenType                                    _resolveTypeCalled    = null;
 
 	private GeneratedNode _resolvedType;
+	private DeduceElement3_VariableTableEntry _de3;
+	private VTE_Zero _zero;
+
+	public VariableTableEntry(final int aIndex, final VariableTableType aVtt, final String aName, final TypeTableEntry aTTE, final OS_Element el) {
+		this.index = aIndex;
+		this.name  = aName;
+		this.vtt   = aVtt;
+		this.type  = aTTE;
+		this.setResolvedElement(el);
+		setupResolve();
+	}
 
 	public String getName() {
 		return name;
 	}
-	private DeduceElement3_VariableTableEntry _de3;
 
 	public @NotNull Collection<TypeTableEntry> potentialTypes() {
 		return potentialTypes.values();
@@ -60,6 +70,10 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	public int getIndex() {
 		return index;
 	}
+
+//	public DeferredObject<GenType, Void, Void> typeDeferred() {
+//		return typeDeferred;
+//	}
 
 	@Override
 	public @NotNull String toString() {
@@ -76,10 +90,6 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	public Promise<GenType, Void, Void> typePromise() {
 		return typeDeferred.promise();
 	}
-
-//	public DeferredObject<GenType, Void, Void> typeDeferred() {
-//		return typeDeferred;
-//	}
 
 	public boolean typeDeferred_isPending() {
 		return typeDeferred.isPending();
@@ -123,19 +133,31 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 			}
 		}
 	}
-	private VTE_Zero                          _zero;
-
-	public VariableTableEntry(final int aIndex, final VariableTableType aVtt, final String aName, final TypeTableEntry aTTE, final OS_Element el) {
-		this.index = aIndex;
-		this.name  = aName;
-		this.vtt   = aVtt;
-		this.type  = aTTE;
-		this.setResolvedElement(el);
-		setupResolve();
-	}
 
 	public GeneratedNode resolvedType() {
 		return _resolvedType;
+	}
+
+	@Override
+	public void setConstructable(final ProcTableEntry aPte) {
+		if (constructable_pte != aPte) {
+			constructable_pte = aPte;
+			constructableDeferred.resolve(constructable_pte);
+		}
+	}
+
+	// region constructable
+
+	@Override
+//	public void setConstructable(final ProcTableEntry aPte) {
+//		constructable_pte = aPte;
+//	}
+
+//	@Override
+	public void resolveTypeToClass(final GeneratedNode aNode) {
+		_resolvedType = aNode;
+		genType.node  = aNode;
+		type.resolve(aNode); // TODO maybe this obviates above
 	}
 
 	@Override
@@ -143,8 +165,6 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		genType.copy(aGenType);
 		resolveType(aGenType);
 	}
-
-	// region constructable
 
 	public void resolveType(final @NotNull GenType aGenType) {
 		if (_resolveTypeCalled != null) { // TODO what a hack
@@ -165,26 +185,6 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		}
 		_resolveTypeCalled = aGenType;
 		typeDeferred.resolve(aGenType);
-	}
-
-	@Override
-	public void setConstructable(final ProcTableEntry aPte) {
-		if (constructable_pte != aPte) {
-			constructable_pte = aPte;
-			constructableDeferred.resolve(constructable_pte);
-		}
-	}
-
-	@Override
-//	public void setConstructable(final ProcTableEntry aPte) {
-//		constructable_pte = aPte;
-//	}
-
-//	@Override
-	public void resolveTypeToClass(final GeneratedNode aNode) {
-		_resolvedType = aNode;
-		genType.node  = aNode;
-		type.resolve(aNode); // TODO maybe this obviates above
 	}
 
 	@Override

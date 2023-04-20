@@ -22,25 +22,25 @@ import java.util.stream.Collectors;
 import static tripleo.elijah.util.Helpers.List_of;
 
 public class EOT_OutputFile {
-    //    private final OS_Module module;
-    private final Compilation c;
+	//    private final OS_Module module;
+	private final Compilation c;
 
-    private final List<EIT_Input> _inputs = new ArrayList<>();
-    private final String _filename;
-    private final EOT_OutputType _type;
-    private final EG_Statement _sequence; // TODO List<?> ??
+	private final List<EIT_Input> _inputs = new ArrayList<>();
+	private final String          _filename;
+	private final EOT_OutputType  _type;
+	private final EG_Statement    _sequence; // TODO List<?> ??
 
-    public EOT_OutputFile(final Compilation c,
-                          final @NotNull List<EIT_Input> inputs,
-                          final String filename,
-                          final EOT_OutputType type,
-                          final EG_Statement sequence) {
-	    this.c    = c;
-	    _filename = filename;
-	    _type     = type;
-	    _sequence = sequence;
-	    _inputs.addAll(inputs);
-    }
+	public EOT_OutputFile(final Compilation c,
+	                      final @NotNull List<EIT_Input> inputs,
+	                      final String filename,
+	                      final EOT_OutputType type,
+	                      final EG_Statement sequence) {
+		this.c    = c;
+		_filename = filename;
+		_type     = type;
+		_sequence = sequence;
+		_inputs.addAll(inputs);
+	}
 
 	public static EOT_OutputFile grToOutputFile(final Compilation aC, final GenerateResultItem ab) {
 		final List<EIT_Input> inputs = List_of(new EIT_ModuleInput(ab.node.module(), aC));
@@ -89,19 +89,19 @@ public class EOT_OutputFile {
 
 	public String getFilename() {
 		return _filename;
-    }
+	}
 
-    public EOT_OutputType getType() {
-        return _type;
-    }
+	public EOT_OutputType getType() {
+		return _type;
+	}
 
-    public EG_Statement getStatementSequence() {
-        return _sequence;
-    }
+	public EG_Statement getStatementSequence() {
+		return _sequence;
+	}
 
-    public List<EIT_Input> getInputs() {
-        return _inputs;
-    }
+	public List<EIT_Input> getInputs() {
+		return _inputs;
+	}
 
-    // rules/constraints whatever
+	// rules/constraints whatever
 }

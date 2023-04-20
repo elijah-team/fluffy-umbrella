@@ -64,10 +64,10 @@ public class LibraryStatementPartImpl implements LibraryStatementPart {
 	public class Directive {
 
 		private final IExpression expression;
-		private final String name;
+		private final String      name;
 
 		public Directive(final Token token_, final IExpression expression_) {
-			name = token_.getText();
+			name       = token_.getText();
 			expression = expression_;
 		}
 	}

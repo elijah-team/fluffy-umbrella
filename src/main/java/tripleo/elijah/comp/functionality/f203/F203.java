@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 
 public class F203 {
 	final         ChooseDirectoryNameBehavior cdn;
-	private final ErrSink                     errSink;
 	final         LocalDateTime               localDateTime = LocalDateTime.now();
+	private final ErrSink                     errSink;
 
 	@Contract(pure = true)
 	public F203(final ErrSink aErrSink, final Compilation c) {
