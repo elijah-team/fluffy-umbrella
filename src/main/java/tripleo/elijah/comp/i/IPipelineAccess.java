@@ -33,4 +33,10 @@ public interface IPipelineAccess {
 	void setWritePipeline(WritePipeline aWritePipeline);
 
 	void notate(int provenance, GN_Notable aNotable);
+
+	List<CompilerInput> getCompilerInput();
+
+	void setCompilerInput(List<CompilerInput> aInputs);
+
+	CompilationClosure getCompilationClosure();
 }
