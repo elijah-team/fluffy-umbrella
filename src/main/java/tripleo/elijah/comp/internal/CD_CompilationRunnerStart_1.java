@@ -29,7 +29,7 @@ public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 	public void _____start_(final CompilerInstructions ci,
 							final boolean do_out,
 							final @NotNull CompilationRunner cr,
-							final IPipelineAccess pa) throws Exception {
+							final @NotNull IPipelineAccess pa) throws Exception {
 		final CB_Output out = new CB_Output();
 
 		final CR_FindCIs              f1 = new CR_FindCIs(pa.getCompilerInput());
@@ -53,27 +53,28 @@ public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 		// 0. find stdlib
 		//   -- question placement
 		//   -- ...
-		{
+		final String                          preludeName = Compilation.CompilationAlways.defaultPrelude();
+		final Operation<CompilerInstructions> x           = cr.findStdLib2(preludeName, ccl);
 
-			Operation<CompilerInstructions>[] y = new Operation[1];
-
-			final Operation<CompilerInstructions> x = cr.findStdLib2(Compilation.CompilationAlways.defaultPrelude(),
-																	 ccl);
-			switch (x.mode()) {
-			case FAILURE -> ccl.errSink().exception(x.failure());
-			default -> cr.logProgress(130, "GEN_LANG: " + x.success().genLang());
-			}
+		switch (x.mode()) {
+		case FAILURE -> ccl.errSink().exception(x.failure());
+		default -> cr.logProgress(130, "GEN_LANG: " + x.success().genLang());
 		}
 
 		// 1. process the initial
 		ccl.getCompilation().use(ci, do_out);
 
 		// 2. do rest
-		final CR_State crState = cr.crState;
+		final CR_State           crState = cr.crState;
 
-		final ICompilationAccess ca = crState.ca();
-		final ProcessRecord      pr = crState.pr;
-		final RuntimeProcesses   rt = StageToRuntime.get(ccl.getCompilation().stage, ca, pr, pr.pa());
+		final ICompilationAccess ca      = crState.ca();
+		final ProcessRecord      pr      = crState.pr;
+
+
+		assert pa == pr.pa();
+
+
+		final RuntimeProcesses   rt = StageToRuntime.get(ccl.getCompilation().stage, ca, pr, pa);
 
 		rt.run_better();
 	}
