@@ -111,6 +111,9 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 		final GenerateResult gr   = __ab.gr;
 		final Compilation    comp = __ab.getCompilation();
 
+
+		assert _______lgc.equals(lgc);
+
 		for (final @NotNull OS_Module mod : mods.getMods()) {
 			final List<EvaNode> nodes = lgc.stream()
 					.filter(aGeneratedNode -> aGeneratedNode.module() == mod)
@@ -122,7 +125,7 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 			SM_Module__babyPrint.babyPrint(sm);
 //			simpleUsageExample();
 
-			GenerateResultSink grs = new DefaultGenerateResultSink(this, __ab.getPipelineAccess());
+			//GenerateResultSink grs = new DefaultGenerateResultSink(this, __ab.getPipelineAccess());
 
 			moduleInput.doGenerate(nodes, aErrSink, verbosity, pipelineLogic, wm,
 								   (gr2) -> {
