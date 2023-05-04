@@ -9,6 +9,7 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import com.google.common.base.Preconditions;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -53,18 +54,18 @@ import java.util.regex.Pattern;
  * Created 9/15/20 12:51 PM
  */
 public class DeduceTypes2 {
-	private static final  String      PHASE = "DeduceTypes2";
-	public final @NotNull OS_Module   module;
-	public final @NotNull DeducePhase phase;
-	public final @NotNull ElLog       LOG;
-	public final @NotNull WorkManager wm    = new WorkManager();
-	final List<FunctionInvocation> functionInvocations = new ArrayList<>(); // TODO never used!
-	private final         ErrSink     errSink;
-	private final List<IDeduceResolvable> _pendingResolves = new ArrayList<>();
-	private final Zero _zero = new Zero();
-	@NotNull List<Runnable> onRunnables = new ArrayList<Runnable>();
-	@NotNull PromiseExpectations expectations = new PromiseExpectations();
-	private Map<Object, ITastic> tasticMap = new HashMap<>();
+	private static final  String                   PHASE               = "DeduceTypes2";
+	public final @NotNull OS_Module                module;
+	public final @NotNull DeducePhase              phase;
+	public final @NotNull ElLog                    LOG;
+	public final @NotNull WorkManager              wm                  = new WorkManager();
+	final                 List<FunctionInvocation> functionInvocations = new ArrayList<>(); // TODO never used!
+	private final         ErrSink                  errSink;
+	private final         List<IDeduceResolvable>  _pendingResolves    = new ArrayList<>();
+	private final         Zero                     _zero               = new Zero();
+	@NotNull              List<Runnable>           onRunnables         = new ArrayList<Runnable>();
+	@NotNull              PromiseExpectations      expectations        = new PromiseExpectations();
+	private               Map<Object, ITastic>     tasticMap           = new HashMap<>();
 
 	public DeduceTypes2(@NotNull OS_Module module, @NotNull DeducePhase phase) {
 		this(module, phase, ElLog.Verbosity.VERBOSE);
@@ -2092,68 +2093,92 @@ public class DeduceTypes2 {
 						@NotNull IdentTableEntry idte2 = ((IdentIA) ia2).getEntry();
 						final String             s     = idte2.getIdent().toString();
 						LookupResultList         lrl   = ectx.lookup(s);
-						@Nullable OS_Element     el2   = lrl.chooseBest(null);
-						if (el2 == null) {
-							assert el3 instanceof VariableStatement;
-							@Nullable VariableStatement vs = (VariableStatement) el3;
-							@NotNull TypeName           tn = vs.typeName();
-							@NotNull OS_Type            ty = new OS_UserType(tn);
 
-							GenType resolved = null;
-							if (idte2.type == null) {
-								// README Don't remember enough about the constructors to select a different one
-								@NotNull TypeTableEntry tte = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, ty);
-								try {
-									resolved = resolve_type(ty, tn.getContext());
-									LOG.err("892 resolved: " + resolved);
-									tte.setAttached(resolved);
-								} catch (ResolveError aResolveError) {
-									errSink.reportDiagnostic(aResolveError);
-								}
 
-								idte2.type = tte;
+						if (lrl == null && ectx instanceof DeducePath.MemberContext) {
+
+							int yyy = 2;
+
+							@NotNull TypeTableEntry tte = tte = idte2.type;
+							try {
+								Preconditions.checkState(tte.genType.typeName.getType() == OS_Type.Type.USER);
+
+								final TypeName   tn = tte.genType.typeName.getTypeName();
+								@NotNull OS_Type ty = new OS_UserType(tn);
+
+								@NotNull final GenType resolved = resolve_type(ty, ectx);
+								LOG.err("892 resolved: " + resolved);
+								tte.setAttached(resolved);
+							} catch (ResolveError aResolveError) {
+								errSink.reportDiagnostic(aResolveError);
 							}
-							// s is constructor name
-							implement_construct_type(idte2, ty, s, null);
 
-							if (resolved == null) {
-								try {
-									resolved = resolve_type(ty, tn.getContext());
-								} catch (ResolveError aResolveError) {
-									errSink.reportDiagnostic(aResolveError);
-//									aResolveError.printStackTrace();
-									assert false;
-								}
-							}
-							final VariableTableEntry x = (VariableTableEntry) (deducePath.getEntry(i - 1));
-							x.resolveType(resolved);
-							resolved.genCIForGenType2(DeduceTypes2.this);
-							return;
+
 						} else {
-							if (i + 1 == deducePath.size() && deducePath.size() > 1) {
-								assert el3 == el2;
-								if (el2 instanceof ConstructorDef) {
-									@Nullable GenType type = deducePath.getType(i);
-									if (type.nonGenericTypeName == null) {
-										type.nonGenericTypeName = Objects.requireNonNull(deducePath.getType(i - 1)).nonGenericTypeName; // HACK. not guararnteed to work!
-									}
-									@NotNull OS_Type ty = new OS_UserType(type.nonGenericTypeName);
-									implement_construct_type(idte2, ty, s, type);
 
-									final VariableTableEntry x = (VariableTableEntry) (deducePath.getEntry(i - 1));
-									if (type.ci == null && type.node == null)
-										type.genCIForGenType2(DeduceTypes2.this);
-									assert x != null;
-									x.resolveTypeToClass(type.node);
-								} else
-									throw new NotImplementedException();
+							@Nullable OS_Element el2 = lrl.chooseBest(null);
+							if (el2 == null) {
+								assert el3 instanceof VariableStatement;
+								@Nullable VariableStatement vs = (VariableStatement) el3;
+								@NotNull TypeName           tn = vs.typeName();
+								@NotNull OS_Type            ty = new OS_UserType(tn);
+
+								GenType resolved = null;
+								if (idte2.type == null) {
+									// README Don't remember enough about the constructors to select a different one
+									@NotNull TypeTableEntry tte = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, ty);
+									try {
+										resolved = resolve_type(ty, tn.getContext());
+										LOG.err("892 resolved: " + resolved);
+										tte.setAttached(resolved);
+									} catch (ResolveError aResolveError) {
+										errSink.reportDiagnostic(aResolveError);
+									}
+
+									idte2.type = tte;
+								}
+								// s is constructor name
+								implement_construct_type(idte2, ty, s, null);
+
+								if (resolved == null) {
+									try {
+										resolved = resolve_type(ty, tn.getContext());
+									} catch (ResolveError aResolveError) {
+										errSink.reportDiagnostic(aResolveError);
+//									aResolveError.printStackTrace();
+										assert false;
+									}
+								}
+								final VariableTableEntry x = (VariableTableEntry) (deducePath.getEntry(i - 1));
+								x.resolveType(resolved);
+								resolved.genCIForGenType2(DeduceTypes2.this);
+								return;
 							} else {
-								ectx = deducePath.getContext(i);
+								if (i + 1 == deducePath.size() && deducePath.size() > 1) {
+									assert el3 == el2;
+									if (el2 instanceof ConstructorDef) {
+										@Nullable GenType type = deducePath.getType(i);
+										if (type.nonGenericTypeName == null) {
+											type.nonGenericTypeName = Objects.requireNonNull(deducePath.getType(i - 1)).nonGenericTypeName; // HACK. not guararnteed to work!
+										}
+										@NotNull OS_Type ty = new OS_UserType(type.nonGenericTypeName);
+										implement_construct_type(idte2, ty, s, type);
+
+										final VariableTableEntry x = (VariableTableEntry) (deducePath.getEntry(i - 1));
+										if (type.ci == null && type.node == null)
+											type.genCIForGenType2(DeduceTypes2.this);
+										assert x != null;
+										x.resolveTypeToClass(type.node);
+									} else
+										throw new NotImplementedException();
+								} else {
+									ectx = deducePath.getContext(i);
+								}
 							}
-						}
 //						implement_construct_type(idte/*??*/, ty, null); // TODO how bout when there is no ctor name
-					} else {
-						throw new NotImplementedException();
+//						} else{
+//							throw new NotImplementedException();
+						}
 					}
 				}
 			}
