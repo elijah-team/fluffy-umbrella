@@ -21,6 +21,7 @@ import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.ProcessedNode;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
 
@@ -85,7 +86,7 @@ public class PipelineLogic {
 		om.onComplete();
 	}
 
-	public void generate(List<EvaNode> lgc, final GenerateResultSink aResultSink) {
+	public void generate(List<ProcessedNode> lgc, final GenerateResultSink aResultSink) {
 		pa.notate(117, new GN_GenerateNodesIntoSink(lgc, aResultSink, mods, verbosity, gr, this, pa));
 	}
 

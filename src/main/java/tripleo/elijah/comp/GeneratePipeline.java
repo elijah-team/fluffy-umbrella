@@ -22,13 +22,15 @@ import tripleo.elijah.stages.gen_generic.DoubleLatch;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.elijah.stages.gen_generic.pipeline_impl.DefaultGenerateResultSink;
-import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.ProcessedNode;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.ProcessedNode1;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.stages.write_stage.pipeline_impl.DebugBuffersLogic;
 import tripleo.elijah.stages.write_stage.pipeline_impl.SPrintStream;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -75,8 +77,13 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 		pa.registerNodeList(latch2::notify);
 	}
 
+
+
 	@Override
-	public void lgc_slot(final List<EvaNode> nodes) {
+	public void lgc_slot(final List<EvaNode> aLgc) {
+
+		final List<ProcessedNode> nodes = processLgc(aLgc);
+
 		pa.pipelineLogic().generate(nodes, grs);
 
 		final List<GenerateResultItem> x = grs.resultList();
@@ -88,6 +95,16 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 		//System.err.println("789789 "+xps.getString()); //04/15
 
 		int y = 2;
+	}
+
+	private @NotNull List<ProcessedNode> processLgc(final @NotNull List<EvaNode> aLgc) {
+		final List<ProcessedNode> l = new ArrayList<>();
+
+		for (EvaNode evaNode : aLgc) {
+			l.add(new ProcessedNode1(evaNode));
+		}
+
+		return l;
 	}
 
 	@Override

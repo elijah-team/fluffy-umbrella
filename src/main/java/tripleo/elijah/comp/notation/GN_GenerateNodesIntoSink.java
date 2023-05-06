@@ -1,7 +1,6 @@
 package tripleo.elijah.comp.notation;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.ErrSink;
@@ -9,34 +8,33 @@ import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
-import tripleo.elijah.stages.gen_fn.EvaClass;
-import tripleo.elijah.stages.gen_fn.EvaContainerNC;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_generic.GenerateFiles;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.OutputFileFactory;
 import tripleo.elijah.stages.gen_generic.OutputFileFactoryParams;
 import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.ProcessedNode;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.ProcessedNode1;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.work.WorkManager;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class GN_GenerateNodesIntoSink implements GN_Notable {
 	private final GenerateResultSink resultSink;
-	private final EIT_ModuleList     mods;
-	private final List<EvaNode>      lgc;
-	private final GenerateResult     gr;
+	private final EIT_ModuleList      mods;
+	private final List<ProcessedNode> processedNodes;
+	private final GenerateResult      gr;
 	private final ElLog.Verbosity    verbosity;
 	private final PipelineLogic      pipelineLogic;
 	private final IPipelineAccess    pa;
 
-	public GN_GenerateNodesIntoSink(final List<EvaNode> algc, final GenerateResultSink aResultSink, final EIT_ModuleList aModuleList, final ElLog.Verbosity aVerbosity, final GenerateResult agr, final PipelineLogic aPipelineLogic, final IPipelineAccess aPa) {
-		mods          = aModuleList;
-		lgc           = algc;
-		resultSink    = aResultSink;
+	public GN_GenerateNodesIntoSink(final List<ProcessedNode> algc, final GenerateResultSink aResultSink, final EIT_ModuleList aModuleList, final ElLog.Verbosity aVerbosity, final GenerateResult agr, final PipelineLogic aPipelineLogic, final IPipelineAccess aPa) {
+		mods           = aModuleList;
+		processedNodes = algc;
+		resultSink     = aResultSink;
 		gr            = agr;
 		verbosity     = aVerbosity;
 		pipelineLogic = aPipelineLogic;
@@ -73,7 +71,7 @@ public class GN_GenerateNodesIntoSink implements GN_Notable {
 			final OutputFileFactoryParams params        = new OutputFileFactoryParams(mod, errSink, verbosity, pipelineLogic);
 			final GenerateFiles           generateFiles = OutputFileFactory.create(lang, params);
 			//final GenerateC               generateC     = new GenerateC(mod, errSink, verbosity, this);
-			final GenerateResult ggr = run3(mod, lgc, wm, generateFiles, resultSink);
+			final GenerateResult ggr = run3(mod, processedNodes, wm, generateFiles, resultSink);
 			wm.drain();
 			gr.results().addAll(ggr.results());
 
@@ -88,34 +86,21 @@ public class GN_GenerateNodesIntoSink implements GN_Notable {
 		pa.getAccessBus().resolveGenerateResult(gr);
 	}
 
-	protected GenerateResult run3(OS_Module mod, @NotNull List<EvaNode> lgc, WorkManager wm, GenerateFiles ggc, final GenerateResultSink aResultSink) {
+	protected GenerateResult run3(OS_Module mod, List<ProcessedNode> lgc, WorkManager wm, GenerateFiles ggc, final GenerateResultSink aResultSink) {
 		GenerateResult gr = new GenerateResult();
 
-		for (EvaNode evaNode : lgc) {
-			if (evaNode.module() != mod) continue; // README curious
+		for (ProcessedNode processedNode : processedNodes) {
+			final EvaNode evaNode = ((ProcessedNode1) processedNode).getEvaNode();
 
-			if (evaNode instanceof EvaContainerNC) {
-				final EvaContainerNC nc = (EvaContainerNC) evaNode;
+			if (! (processedNode.matchModule(mod))) continue; // README curious
 
-				nc.generateCode(ggc, gr, aResultSink);
-				if (nc instanceof EvaClass) {
-					final EvaClass evaClass = (EvaClass) nc;
+			if (processedNode.isContainerNode()) {
+				processedNode.processContainer(ggc, gr, aResultSink);
 
-					final @NotNull Collection<EvaNode> gn2 = GenerateFiles.constructors_to_list_of_generated_nodes(evaClass.constructors.values());
-					GenerateResult                     gr3 = ggc.generateCode(gn2, wm, aResultSink);
-					gr.additional(gr3);
-					aResultSink.additional(gr3);
-				}
+				processedNode.processConstructors(ggc, gr, aResultSink, wm);
+				processedNode.processFunctions(ggc, gr, aResultSink, wm);
+				processedNode.processClassMap(ggc, gr, aResultSink, wm);
 
-				final @NotNull Collection<EvaNode> gn1 = GenerateFiles.functions_to_list_of_generated_nodes(nc.functionMap.values());
-				GenerateResult                     gr2 = ggc.generateCode(gn1, wm, aResultSink);
-				gr.additional(gr2);
-				aResultSink.additional(gr2);
-
-				final @NotNull Collection<EvaNode> gn2 = GenerateFiles.classes_to_list_of_generated_nodes(nc.classMap.values());
-				GenerateResult                     gr4 = ggc.generateCode(gn2, wm, aResultSink);
-				gr.additional(gr4);
-				aResultSink.additional(gr4);
 			} else {
 				tripleo.elijah.util.Stupidity.println_out_2("2009 " + evaNode.getClass().getName());
 			}
