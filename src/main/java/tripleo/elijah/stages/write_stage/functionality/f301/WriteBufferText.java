@@ -1,62 +1,37 @@
 package tripleo.elijah.stages.write_stage.functionality.f301;
 
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.write_stage.pipeline_impl.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
 
 public class WriteBufferText {
+	private final WritePipelineSharedState st;
+	private final WP_State_Control sc;
 	private GenerateResult result;
-	private File           file;
 
-	public void run() {
-
-		final PrintStream[] db_stream = {null};
-
-		final WPIS_GenerateOutputs wgo = new WPIS_GenerateOutputs(result) {
-			@Contract(pure = true)
-			@Override
-			public boolean _printing() {
-				return false;
-			}
-
-			@Override
-			public XPrintStream getPrintStream() {
-				try {
-					db_stream[0] = new PrintStream(file);
-				} catch (FileNotFoundException aE) {
-					//throw new RuntimeException(aE);
-					return null;
-				}
-				XXPrintStream xps = new XXPrintStream(db_stream[0]);
-				return xps;
-			}
-
-		};
-
-		try {
-			final XPrintStream xps = wgo.getPrintStream();
-
-			if (xps != null) {
-				DebugBuffersLogic.debug_buffers_logic(result, xps);
-			}
-		//} catch (FileNotFoundException aE) {
-		//	throw new RuntimeException(aE);
-		} finally {
-			if (db_stream[0] != null)
-				db_stream[0].close();
-		}
+	@Contract(pure = true)
+	public WriteBufferText(final WritePipelineSharedState aSt, final WP_State_Control aSc) {
+		st = aSt;
+		sc = aSc;
 	}
 
-	public void setFile(final File aFile) {
-		file = aFile;
+	public void run() {
+		final WPIS_GenerateOutputs wgo = new WPIS_GenerateOutputs(result, new NonPrintingBehavior());
+
+		wgo.act(st, sc);
 	}
 
 	public void setResult(final GenerateResult aResult) {
 		result = aResult;
+	}
+
+	private static class NonPrintingBehavior implements WPIS_GenerateOutputs.WPIS_GenerateOutputs_Behavior_PrintDBLString {
+		@Override
+		public void print(final String sps) {
+			// NOTE This was puprosely created to NOT print
+			//System.err.println(sps);
+		}
 	}
 }
