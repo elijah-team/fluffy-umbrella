@@ -90,7 +90,9 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 
 		SPrintStream xps = new SPrintStream();
 
-		DebugBuffersLogic.debug_buffers_logic(x, xps);
+		for (final GenerateResultItem ab : x) {
+			DebugBuffersLogic.__debug_buffers_logic_each(xps, ab);
+		}
 
 		//System.err.println("789789 "+xps.getString()); //04/15
 
