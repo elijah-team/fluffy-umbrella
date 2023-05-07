@@ -18,7 +18,7 @@ public class Stupidity {
 	}
 
 	public static void println_err_2(final Object aS) {
-		//tripleo.elijah.util.Stupidity.println_err_2(""+aS);
+		System.err.println(""+aS);
 	}
 
 	public static void println_out_2(final Object aS) {
