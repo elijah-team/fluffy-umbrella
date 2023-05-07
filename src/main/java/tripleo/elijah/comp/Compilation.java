@@ -257,16 +257,11 @@ public abstract class Compilation {
 	}
 
 	public OS_Package getPackage(final Qualident pkg_name) {
-		return _packages.get(pkg_name.toString());
+		return _repo.getPackage(pkg_name.toString());
 	}
 
 	public OS_Package makePackage(final Qualident pkg_name) {
-		if (!isPackage(pkg_name.toString())) {
-			final OS_Package newPackage = new OS_Package(pkg_name, nextPackageCode());
-			_packages.put(pkg_name.toString(), newPackage);
-			return newPackage;
-		} else
-			return _packages.get(pkg_name.toString());
+		return _repo.makePackage(pkg_name);
 	}
 
 	public static class CompilationConfig {

@@ -3,6 +3,7 @@ package tripleo.elijah.world.i;
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Package;
+import tripleo.elijah.lang.Qualident;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_fn.EvaNamespace;
@@ -27,6 +28,8 @@ public interface LivingRepo {
 	void addNamespace(EvaNamespace aNamespace, Add aNone);
 
 	LivingClass getClass(EvaClass aEvaClass);
+
+	OS_Package makePackage(Qualident aPkgName);
 
 	enum Add {NONE, MAIN_FUNCTION, MAIN_CLASS}
 }

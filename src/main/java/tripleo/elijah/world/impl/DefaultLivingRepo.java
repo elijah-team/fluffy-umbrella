@@ -20,6 +20,7 @@ public class DefaultLivingRepo implements LivingRepo {
 	private       int                     _classCode    = 101;
 	private       int                     _functionCode = 1001;
 
+	@Override
 	public OS_Package makePackage(final Qualident pkg_name) {
 		final String pkg_name_s = pkg_name.toString();
 		if (!isPackage(pkg_name_s)) {
