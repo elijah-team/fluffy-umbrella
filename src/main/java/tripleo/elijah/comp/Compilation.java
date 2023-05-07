@@ -55,25 +55,26 @@ import static tripleo.elijah.nextgen.query.Mode.SUCCESS;
 public abstract class Compilation {
 
 	public final  List<OS_Module>                   modules   = new ArrayList<OS_Module>();
-	public final CIS _cis = new CIS();
-	public final USE use = new USE(this);
+	public final  CIS                               _cis      = new CIS();
+	public final  USE                               use       = new USE(this);
 	final         ErrSink                           errSink;
 	final         Map<String, CompilerInstructions> fn2ci     = new HashMap<String, CompilerInstructions>();
 	private final Pipeline                          pipelines = new Pipeline();
 	private final int                               _compilationNumber;
 	private final Map<String, OS_Package>           _packages = new HashMap<String, OS_Package>();
-	public        Stages                            stage     = Stages.O; // Output
-	public        boolean                           silent    = false;
+	//public        Stages                            stage     = Stages.O; // Output
+	//public        boolean                           silent    = false;
+	//public boolean do_out = false;
+	//public        boolean                           showTree  = false;
+	//
+	//
 	public        LivingRepo                        _repo     = new DefaultLivingRepo();
-	public  boolean           showTree      = false;
-	//
-	//
-	public  PipelineLogic     pipelineLogic;
-	public  CompilationRunner __cr;
-	public IPipelineAccess _pa;
-	public boolean do_out = false;
-	CompilerInstructions rootCI;
+	public        PipelineLogic                     pipelineLogic;
+	public        CompilationRunner                 __cr;
+	public        IPipelineAccess                   _pa;
 	public  CompilationBus cb;
+	public CompilationConfig cfg = new CompilationConfig();
+	CompilerInstructions rootCI;
 	private IO             io;
 	//
 	//
@@ -264,6 +265,13 @@ public abstract class Compilation {
 			return newPackage;
 		} else
 			return _packages.get(pkg_name.toString());
+	}
+
+	public static class CompilationConfig {
+		public boolean do_out;
+		public Stages  stage    = Stages.O; // Output
+		public boolean silent   = false;
+		public boolean showTree = false;
 	}
 
 	//

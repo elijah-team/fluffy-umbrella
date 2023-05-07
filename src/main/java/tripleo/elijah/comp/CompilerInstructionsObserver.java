@@ -48,7 +48,7 @@ public class CompilerInstructionsObserver implements Observer<CompilerInstructio
 
 	public void almostComplete() {
 		try {
-			compilation.hasInstructions(l, compilation.do_out, op, compilation.pa());
+			compilation.hasInstructions(l, compilation.cfg.do_out, op, compilation.pa());
 		} catch (Exception aE) {
 			NotImplementedException.raise();
 			throw new RuntimeException(aE);

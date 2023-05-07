@@ -28,7 +28,7 @@ public class RuntimeProcesses {
 	}
 
 	public void run_better() {
-		switch (ca.getCompilation().stage) {
+		switch (ca.getCompilation().cfg.stage) {
 		case E -> {
 			// do nothing. job over
 			return;

@@ -12,6 +12,6 @@ public class CC_SetSilent implements CompilationChange {
 
 	@Override
 	public void apply(final Compilation c) {
-		c.silent = flag;
+		c.cfg.silent = flag;
 	}
 }

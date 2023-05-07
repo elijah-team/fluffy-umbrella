@@ -74,7 +74,7 @@ public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 		assert pa == pr.pa();
 
 
-		final RuntimeProcesses   rt = StageToRuntime.get(ccl.getCompilation().stage, ca, pr, pa);
+		final RuntimeProcesses   rt = StageToRuntime.get(ccl.getCompilation().cfg.stage, ca, pr, pa);
 
 		rt.run_better();
 	}

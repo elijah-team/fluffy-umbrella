@@ -83,7 +83,7 @@ public class CR_State {
 		public void writeLogs(final ICompilationAccess aCa) {
 			final ICompilationAccess ca = aCa;
 
-			ca.getCompilation().stage.writeLogs(ca);
+			ca.getCompilation().cfg.stage.writeLogs(ca);
 		}
 
 		/* (non-Javadoc)

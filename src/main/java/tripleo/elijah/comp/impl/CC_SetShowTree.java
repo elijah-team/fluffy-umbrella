@@ -12,6 +12,6 @@ public class CC_SetShowTree implements CompilationChange {
 
 	@Override
 	public void apply(final Compilation c) {
-		c.showTree = flag;
+		c.cfg.showTree = flag;
 	}
 }
