@@ -65,7 +65,7 @@ public class ElSystem {
 				}
 			}
 
-			gr.completeItem(ab);
+			gr.completeItem(ab); // CIH::addItem
 		}
 
 		if (verbose) {

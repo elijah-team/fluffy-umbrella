@@ -38,7 +38,7 @@ public class DefaultCCI implements CCI {
 		try {
 			t       = _cis.ps;
 			_cis.ps = aPs;
-			_cis.onNext(ci);
+			_cis.onNext(ci); //CIO::l.add(aCompilerInstructions);
 		} finally {
 			_cis.ps = t;
 		}
