@@ -4,10 +4,8 @@ package tripleo.elijjah;
 
 import antlr.*;
 import antlr.collections.impl.BitSet;
-import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.ci.GenerateStatement;
-import tripleo.elijah.ci.IndexingStatement;
-import tripleo.elijah.ci.LibraryStatementPart;
+import tripleo.elijah.ci.*;
+import tripleo.elijah.ci.CiIndexingStatement;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_BuiltinType;
 import tripleo.elijah.lang2.BuiltInTypes;
@@ -105,7 +103,7 @@ public class EzParser extends antlr.LLkParser implements EzTokenTypes {
 	public static final BitSet _tokenSet_9 = new BitSet(mk_tokenSet_9());
 	public static final BitSet _tokenSet_10 = new BitSet(mk_tokenSet_10());
 	public static final BitSet _tokenSet_11 = new BitSet(mk_tokenSet_11());
-	public CompilerInstructions ci = new CompilerInstructions();
+	public CompilerInstructions ci = new CompilerInstructionsImpl();
 	IExpression expr;
 	Context     cur = null;
 
@@ -256,7 +254,7 @@ public class EzParser extends antlr.LLkParser implements EzTokenTypes {
 	}
 
 	public final void indexingStatement(
-			IndexingStatement idx
+			CiIndexingStatement idx
 									   ) throws RecognitionException, TokenStreamException {
 
 		Token          i1 = null;
@@ -342,7 +340,7 @@ public class EzParser extends antlr.LLkParser implements EzTokenTypes {
 		GenerateStatement gen;
 
 		Token i1 = null;
-		gen = new GenerateStatement();
+		gen = new GenerateStatementImpl();
 
 		try {      // for error handling
 			match(LITERAL_generate);
@@ -380,7 +378,7 @@ public class EzParser extends antlr.LLkParser implements EzTokenTypes {
 		Token i1      = null;
 		Token dirname = null;
 		Token i2      = null;
-		lsp = new LibraryStatementPart();
+		lsp = new LibraryStatementPartImpl();
 
 		try {      // for error handling
 			{

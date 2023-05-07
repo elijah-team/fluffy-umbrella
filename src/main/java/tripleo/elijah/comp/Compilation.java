@@ -22,7 +22,9 @@ import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.PicoContainer;
 import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.ci.CompilerInstructionsImpl;
 import tripleo.elijah.ci.LibraryStatementPart;
+import tripleo.elijah.ci.LibraryStatementPartImpl;
 import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
 import tripleo.elijah.comp.diagnostic.FileNotFoundDiagnostic;
 import tripleo.elijah.comp.i.*;
@@ -218,7 +220,7 @@ public abstract class Compilation {
 		pipelines.add(aPl);
 	}
 
-	public void use(final @NotNull CompilerInstructions compilerInstructions, final boolean do_out) throws Exception {
+	public void use(final @NotNull CompilerInstructionsImpl compilerInstructions, final boolean do_out) throws Exception {
 		use.use(compilerInstructions, do_out);    // NOTE Rust
 	}
 
@@ -381,7 +383,7 @@ public abstract class Compilation {
 			errSink = c.getErrSink();
 		}
 
-		public void use(final @NotNull CompilerInstructions compilerInstructions, final boolean do_out) throws Exception {
+		public void use(final @NotNull CompilerInstructionsImpl compilerInstructions, final boolean do_out) throws Exception {
 			final File instruction_dir = new File(compilerInstructions.getFilename()).getParentFile();
 			for (final LibraryStatementPart lsp : compilerInstructions.lsps) {
 				final String dir_name = Helpers.remove_single_quotes_from_string(lsp.getDirName());
@@ -392,7 +394,7 @@ public abstract class Compilation {
 					dir = new File(instruction_dir, dir_name);
 				use_internal(dir, do_out, lsp);
 			}
-			final LibraryStatementPart lsp = new LibraryStatementPart();
+			final LibraryStatementPart lsp = new LibraryStatementPartImpl();
 			lsp.setName(Helpers.makeToken("default")); // TODO: make sure this doesn't conflict
 			lsp.setDirName(Helpers.makeToken(String.format("\"%s\"", instruction_dir)));
 			lsp.setInstructions(compilerInstructions);

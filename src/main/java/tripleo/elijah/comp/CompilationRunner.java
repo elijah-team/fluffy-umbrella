@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.ci.CompilerInstructionsImpl;
 import tripleo.elijah.comp.diagnostic.TooManyEz_ActuallyNone;
 import tripleo.elijah.comp.diagnostic.TooManyEz_BeSpecific;
 import tripleo.elijah.comp.i.*;
@@ -77,7 +78,7 @@ public class CompilationRunner {
 			   final boolean do_out,
 			   final @NotNull IPipelineAccess pa) {
 		if (false) {
-			cb.add(new CompilationRunnerProcess(ci, do_out));
+			cb.add(new CompilationRunnerProcess((CompilerInstructionsImpl) ci, do_out));
 		} else {
 			final Operation<CompilerDriven> ocrsd = compilation.cb.cd.get(Compilation.CompilationAlways.Tokens.COMPILATION_RUNNER_START);
 
@@ -525,10 +526,10 @@ public class CompilationRunner {
 	}
 
 	private class CompilationRunnerProcess implements ICompilationBus.CB_Process {
-		private final CompilerInstructions ci;
-		private final boolean              do_out;
+		private final CompilerInstructionsImpl ci;
+		private final boolean                  do_out;
 
-		public CompilationRunnerProcess(final CompilerInstructions aCi, final boolean aDo_out) {
+		public CompilationRunnerProcess(final CompilerInstructionsImpl aCi, final boolean aDo_out) {
 			ci     = aCi;
 			do_out = aDo_out;
 		}

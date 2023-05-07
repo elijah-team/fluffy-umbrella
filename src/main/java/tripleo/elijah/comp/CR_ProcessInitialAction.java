@@ -2,18 +2,18 @@ package tripleo.elijah.comp;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.ci.CompilerInstructionsImpl;
 import tripleo.elijah.comp.internal.CB_Output;
 import tripleo.elijah.comp.internal.CR_State;
 
 public class CR_ProcessInitialAction implements CR_Action {
-	private final CompilationRunner    compilationRunner;
-	private final CompilerInstructions ci;
-	private final boolean              do_out;
+	private final CompilationRunner        compilationRunner;
+	private final CompilerInstructionsImpl ci;
+	private final boolean                  do_out;
 
 	@Contract(pure = true)
 	public CR_ProcessInitialAction(final @NotNull CompilationRunner aCompilationRunner,
-								   final @NotNull CompilerInstructions aCi,
+								   final @NotNull CompilerInstructionsImpl aCi,
 								   final boolean aDo_out) {
 		compilationRunner = aCompilationRunner;
 		ci                = aCi;

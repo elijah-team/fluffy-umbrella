@@ -2,6 +2,7 @@ package tripleo.elijah.comp.internal;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.ci.CompilerInstructionsImpl;
 import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.i.CD_CompilationRunnerStart;
 import tripleo.elijah.comp.i.CompilationClosure;
@@ -19,14 +20,14 @@ public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 					  final boolean do_out,
 					  final @NotNull IPipelineAccess pa) {
 		try {
-			_____start(aCompilerInstructions, do_out, cr, pa);
+			_____start((CompilerInstructionsImpl) aCompilerInstructions, do_out, cr, pa);
 		} catch (Exception aE) {
 			final CompilationClosure ccl = pa.getCompilationClosure();
 			ccl.errSink().exception(aE);
 		}
 	}
 
-	public void _____start_(final CompilerInstructions ci,
+	public void _____start_(final CompilerInstructionsImpl ci,
 							final boolean do_out,
 							final @NotNull CompilationRunner cr,
 							final @NotNull IPipelineAccess pa) throws Exception {
@@ -44,7 +45,7 @@ public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 		}
 	}
 
-	public void _____start(final @NotNull CompilerInstructions ci,
+	public void _____start(final @NotNull CompilerInstructionsImpl ci,
 						   final boolean do_out,
 						   final @NotNull CompilationRunner cr,
 						   final @NotNull IPipelineAccess pa) throws Exception {

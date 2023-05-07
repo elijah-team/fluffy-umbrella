@@ -6,24 +6,15 @@
  *The contents of this library are released under the LGPL licence v3,
  *the GNU Lesser General Public License text was downloaded from
  *http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
+ *
  */
 package tripleo.elijah.ci;
 
 import antlr.Token;
-import tripleo.elijah.lang.IExpression;
+import tripleo.elijah.lang.ExpressionList;
 
-public interface LibraryStatementPart {
-	String getName();
-
+public interface CiIndexingStatement {
 	void setName(Token i1);
 
-	String getDirName();
-
-	void setDirName(Token dirName);
-
-	void addDirective(Token token, IExpression iExpression);
-
-	CompilerInstructions getInstructions();
-
-	void setInstructions(CompilerInstructions instructions);
+	void setExprs(ExpressionList el);
 }
