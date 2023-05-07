@@ -44,5 +44,6 @@
     <orderEntry type="library" name="tripleo.buffers.v1" level="project" />
     <orderEntry type="library" name="github.spotbugs.annotations" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.google.guava:guava:29.0-jre" level="project" />
+    <orderEntry type="library" name="google.guava" level="project" />
   </component>
 </module>

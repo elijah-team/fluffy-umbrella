@@ -58,5 +58,6 @@
     <orderEntry type="library" name="tripleo.util.range.v1" level="project" />
     <orderEntry type="library" name="tripleo.buffers.v1" level="project" />
     <orderEntry type="library" name="github.spotbugs.annotations" level="project" />
+    <orderEntry type="library" name="google.guava" level="project" />
   </component>
 </module>
