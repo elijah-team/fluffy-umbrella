@@ -26,6 +26,7 @@ class CReference_getIdentIAPath_IdentIAHelper {
 	public int code = -1;
 
 
+	@Contract(pure = true)
 	CReference_getIdentIAPath_IdentIAHelper(final InstructionArgument ia_next, final List<String> sl, final int i, final int sSize, final OS_Element resolved_element, final BaseEvaFunction generatedFunction, final EvaNode aResolved, final String aValue) {
 		this.ia_next           = ia_next;
 		this.sl                = sl;

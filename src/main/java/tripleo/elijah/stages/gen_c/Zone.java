@@ -33,4 +33,7 @@ class Zone {
 		members.put(aIdentIA, r);
 		return r;
 	}
+
+	//public GI_Item get(final EvaNode aGeneratedNode) {
+	//}
 }

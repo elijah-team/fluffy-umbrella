@@ -482,10 +482,10 @@ public class TestGenFunction {
 	}
 
 	static class TGF_State {
-		public DeducePhase       dp;
-		public Iterable<EvaNode> lgc;
-		protected OS_Element     main_class;
-		public OS_Module m;
+		public    DeducePhase       dp;
+		public    Iterable<EvaNode> lgc;
+		public    OS_Module         m;
+		protected OS_Element        main_class;
 
 
 		List<FunctionMapHook> ran_hooks = new ArrayList<>();

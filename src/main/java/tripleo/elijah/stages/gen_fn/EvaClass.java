@@ -134,12 +134,12 @@ public class EvaClass extends EvaContainerNC implements GNCoded {
 	}
 
 	@Override
-	public void generateCode(CodeGenerator aCodeGenerator, GenerateResult aGr, final GenerateResultSink aResultSink) {
+	public void generateCode(@NotNull CodeGenerator aCodeGenerator, GenerateResult aGr, final GenerateResultSink aResultSink) {
 		aCodeGenerator.generate_class(this, aGr, aResultSink);
 	}
 
 	@Override
-	public void analyzeNode(IPostDeduce aPostDeduce) {
+	public void analyzeNode(@NotNull IPostDeduce aPostDeduce) {
 		aPostDeduce.analyze_class(this);
 	}
 

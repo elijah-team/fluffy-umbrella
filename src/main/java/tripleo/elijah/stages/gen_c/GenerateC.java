@@ -74,7 +74,9 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		LOG = new ElLog(mod.getFileName(), verbosity, PHASE);
 
 		pipelineLogic.addLog(LOG);
-	}	@Override
+	}
+
+	@Override
 	public GenerateResult generateCode(final Collection<EvaNode> lgn, final WorkManager wm, final GenerateResultSink aResultSink) {
 		GenerateResult gr = new GenerateResult();
 
@@ -120,10 +122,10 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		default:
 			throw new IllegalStateException("Unexpected value: " + fd.getSpecies());
 		}
-	}	@Override
-	public GenerateResult resultsFromNodes(final List<EvaNode> aNodes, final WorkManager wm, final GenerateResultSink grs) {
-		final GenerateC ggc = this;
+	}
 
+	@Override
+	public GenerateResult resultsFromNodes(final @NotNull List<EvaNode> aNodes, final WorkManager wm, final GenerateResultSink grs) {
 		final GenerateResult gr2 = new GenerateResult();
 
 		for (final EvaNode generatedNode : aNodes) {
