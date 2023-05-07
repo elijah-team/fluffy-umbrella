@@ -20,6 +20,6 @@ public class EOT_OutputTree {
 	}
 
 	public void _putSeq(final String aKey, final Path aPath, final EG_Statement aStatement) {
-		System.err.printf("[_putSeq] %s %s %s%n", aKey, aPath, aStatement);
+		System.err.printf("[_putSeq] %s %s %s%n", aKey, aPath, aStatement.getText());
 	}
 }

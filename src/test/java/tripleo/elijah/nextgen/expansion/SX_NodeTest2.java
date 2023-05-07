@@ -2,9 +2,11 @@ package tripleo.elijah.nextgen.expansion;
 
 import junit.framework.TestCase;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.CompilerInput;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
+import tripleo.elijah.comp.internal.DefaultCompilerController;
 import tripleo.elijah.nextgen.model.SM_ClassBody;
 import tripleo.elijah.nextgen.model.SM_ClassDeclaration;
 import tripleo.elijah.nextgen.model.SM_ClassInheritance;
@@ -35,7 +37,11 @@ public class SX_NodeTest2 extends TestCase {
 
 		final String f = "test/basic2/while100/";
 
-		comp.feedCmdLine(List_of(f));
+
+		@NotNull final List<CompilerInput> inps = List_of(new CompilerInput(f));
+		comp.feedInputs(inps, new DefaultCompilerController());
+
+		//comp.feedCmdLine(List_of(f));
 
 		final @NotNull EOT_OutputTree rt = comp.getOutputTree();
 
@@ -78,6 +84,27 @@ public class SX_NodeTest2 extends TestCase {
 
 //		fgen.forNode(node);
 
+		final EG_SequenceStatement enc1 = getTestStatement();
+
+//		final int yy = 2;
+		System.out.println(enc1.getText());
+//		System.out.println();
+//		System.out.println(y);
+		System.out.println();
+
+		final List<EOT_OutputFile> l   = rt.list;
+		final int                  yyy = 2;
+		final List<EOT_OutputFile> wmainl = l.stream()
+		                                     .filter(eof -> eof.getFilename().equals("/while100/Main.c"))
+		                                     .collect(Collectors.toList());
+		assert wmainl.size() == 1;
+		final EOT_OutputFile wmain = wmainl.get(0);
+		final EG_Statement   seqs  = wmain.getStatementSequence();
+		System.out.println(seqs.getText());
+	}
+
+	@NotNull
+	private static EG_SequenceStatement getTestStatement() {
 		// (syn include local "main.h" :rule c-interface-default)
 		final EG_SyntheticStatement emh = new EG_SyntheticStatement(new EG_Naming("include", "local"), "main.h", new EX_Rule("c-interface-default"));
 		// (syn include system (?) :Prelude :rule c-interface-prelude-default)
@@ -145,20 +172,6 @@ public class SX_NodeTest2 extends TestCase {
 		final String y = Helpers.String_join("\n", List_of(emh, eph, lb1, enc1).stream()
 		                                                                       .map((EG_Statement x) -> x.getText())
 		                                                                       .collect(Collectors.toList()));
-//		final int yy = 2;
-		System.out.println(enc1.getText());
-//		System.out.println();
-//		System.out.println(y);
-		System.out.println();
-
-		final List<EOT_OutputFile> l   = rt.list;
-		final int                  yyy = 2;
-		final List<EOT_OutputFile> wmainl = l.stream()
-		                                     .filter(eof -> eof.getFilename().equals("/while100/Main.c"))
-		                                     .collect(Collectors.toList());
-		assert wmainl.size() == 1;
-		final EOT_OutputFile wmain = wmainl.get(0);
-		final EG_Statement   seqs  = wmain.getStatementSequence();
-		System.out.println(seqs.getText());
+		return enc1;
 	}
 }

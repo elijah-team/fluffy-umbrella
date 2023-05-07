@@ -49,7 +49,12 @@ public class DefaultCompilerController implements CompilerController {
 	@Override
 	public void runner() {
 		try {
-			c.cb   = new CompilationBus(c);
+			c.subscribeCI(c._cis._cio);
+
+			if (c.cb == null) {
+				c.cb = new CompilationBus(c);
+			}
+
 			c.__cr = new CompilationRunner(c, c._cis, cb);
 
 			for (final String s : args2) {

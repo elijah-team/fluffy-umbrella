@@ -131,18 +131,20 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 		for (final EvaNode generatedNode : aNodes) {
 //                      if (generatedNode.module() != mod) continue; // README curious
 
+			//GI_Item x = GI_Repo.get(generatedNode);
+
 			if (generatedNode instanceof EvaContainerNC) {
 				final EvaContainerNC nc = (EvaContainerNC) generatedNode;
 
-				nc.generateCode(ggc, gr2, grs);
+				nc.generateCode(this, gr2, grs);
 				final @NotNull Collection<EvaNode> gn1 = (nc.functionMap.values()).stream().map(x -> (EvaNode) x).collect(Collectors.toList());
-				final GenerateResult               gr3 = ggc.generateCode(gn1, wm, grs);
-				gr2.results().addAll(gr3.results());
+				final GenerateResult               gr3 = this.generateCode(gn1, wm, grs);
+				grs.additional(gr3);
 				final @NotNull Collection<EvaNode> gn2 = (nc.classMap.values()).stream().map(x -> (EvaNode) x).collect(Collectors.toList());
-				final GenerateResult               gr4 = ggc.generateCode(gn2, wm, grs);
-				gr2.results().addAll(gr4.results());
+				final GenerateResult               gr4 = this.generateCode(gn2, wm, grs);
+				grs.additional(gr4);
 			} else {
-				System.out.println("2009 " + generatedNode.getClass().getName());
+				LOG.info("2009 " + generatedNode.getClass().getName());
 			}
 		}
 
