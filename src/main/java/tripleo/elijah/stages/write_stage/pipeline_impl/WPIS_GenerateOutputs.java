@@ -1,29 +1,32 @@
 package tripleo.elijah.stages.write_stage.pipeline_impl;
 
+import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 
 public class WPIS_GenerateOutputs implements WP_Indiviual_Step {
-
-	private final GenerateResult                               result;
 	private final WPIS_GenerateOutputs_Behavior_PrintDBLString printDBLString;
 
-
-	public WPIS_GenerateOutputs(final GenerateResult aResult) {
+	@Contract(pure = true)
+	public WPIS_GenerateOutputs() {
 		// 1. GenerateOutputs with ElSystem
-		result         = aResult;
 		printDBLString = new Default_WPIS_GenerateOutputs_Behavior_PrintDBLString();
 	}
 
-	public WPIS_GenerateOutputs(final GenerateResult aResult,
-								final @NotNull WPIS_GenerateOutputs.WPIS_GenerateOutputs_Behavior_PrintDBLString aPrintDBLString) {
+	@Contract(pure = true)
+	public WPIS_GenerateOutputs(final @NotNull WPIS_GenerateOutputs.WPIS_GenerateOutputs_Behavior_PrintDBLString aPrintDBLString) {
 		// 1. GenerateOutputs with ElSystem
-		result         = aResult;
 		printDBLString = aPrintDBLString;
 	}
 
 	@Override
-	public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
+	public void act(final @NotNull WritePipelineSharedState st, final WP_State_Control sc) {
+		Preconditions.checkState(st.getGr() != null);
+		Preconditions.checkState(st.sys != null);
+
+		GenerateResult result = st.getGr();
+
 		final SPrintStream sps = new SPrintStream();
 
 		DebugBuffersLogic.debug_buffers_logic(result, sps);
@@ -34,8 +37,7 @@ public class WPIS_GenerateOutputs implements WP_Indiviual_Step {
 	}
 
 	@FunctionalInterface
-	public
-	interface WPIS_GenerateOutputs_Behavior_PrintDBLString {
+	public interface WPIS_GenerateOutputs_Behavior_PrintDBLString {
 		void print(String sps);
 	}
 

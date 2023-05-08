@@ -45,6 +45,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static tripleo.elijah.util.Helpers.List_of;
+
 /**
  * Created 8/21/21 10:19 PM
  */
@@ -71,7 +73,30 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		// created
 		latch = new DoubleLatch<GenerateResult>(gr -> {
 			st.setGr(gr);
-			__int__steps(gr, gr)/* !! */;
+
+			// prepare to change to DoubleLatch instead of/an or in addition to Promise
+			assert gr == gr;
+
+			final WP_Indiviual_Step wpis_go = new WPIS_GenerateOutputs();
+			final WP_Indiviual_Step wpis_mk = new WPIS_MakeOutputDirectory();
+			final WP_Indiviual_Step wpis_wi = new WPIS_WriteInputs(this);
+			final WP_Indiviual_Step wpis_wf = new WPIS_WriteFiles(this);
+			final WP_Indiviual_Step wpis_wb = new WPIS_WriteBuffers(this);
+
+			Operation<Boolean> op;
+
+			// TODO: Do something with op, like set in {@code pa} to proceed to next pipeline
+			try {
+				final WP_Flow f = new WP_Flow(List_of(wpis_go, wpis_mk, wpis_wi, wpis_wf, wpis_wb));
+				// TODO WP_FlowMember?
+				// TODO each IndividualStep may return an op?
+				//  - with type or Boolean?
+				//  - are we modeing effects here?
+				f.act();
+				op = Operation.success(true);
+			} catch (Exception aE) {
+				op = Operation.failure(aE);
+			}
 		});
 
 		// state
@@ -87,26 +112,6 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		pa.getAccessBus().subscribe_GenerateResult(prom::resolve);
 
 		pa.setWritePipeline(this);
-	}
-
-	private void __int__steps(final GenerateResult result, final GenerateResult rs) {
-		@NotNull final List<WP_Indiviual_Step> s = new ArrayList<>();
-
-		// 0. prepare to change to DoubleLatch instead of/an or in addition to Promise
-		assert result == rs;
-
-		s.add(new WPIS_GenerateOutputs(result));
-		s.add(new WPIS_MakeOutputDirectory());
-		s.add(new WPIS_WriteInputs(this));
-		s.add(new WPIS_WriteFiles(this));
-		s.add(new WPIS_WriteBuffers(this));
-
-		final WP_Flow f = new WP_Flow(s);
-		try {
-			f.act();
-		} catch (Exception aE) {
-			throw new RuntimeException(aE);
-		}
 	}
 
 	OutputStrategy createOutputStratgy() {
@@ -171,14 +176,10 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 			steps.addAll(s);
 		}
 
-		WP_Flow() {
-			// steps.addAll(s);
-		}
-
 		void act() throws Exception {
 			final WP_State_Control_1 sc = new WP_State_Control_1();
 
-			for (WP_Indiviual_Step step : steps) {
+			for (final WP_Indiviual_Step step : steps) {
 				sc.clear();
 
 				step.act(st, sc);
