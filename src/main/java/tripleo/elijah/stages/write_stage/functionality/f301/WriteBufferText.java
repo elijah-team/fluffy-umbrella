@@ -4,8 +4,6 @@ import org.jetbrains.annotations.Contract;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.write_stage.pipeline_impl.*;
 
-import java.io.File;
-
 public class WriteBufferText {
 	private final WritePipelineSharedState st;
 	private final WP_State_Control sc;
@@ -18,7 +16,7 @@ public class WriteBufferText {
 	}
 
 	public void run() {
-		final WPIS_GenerateOutputs wgo = new WPIS_GenerateOutputs(result, new NonPrintingBehavior());
+		final WPIS_GenerateOutputs wgo = new WPIS_GenerateOutputs(new NonPrintingBehavior());
 
 		wgo.act(st, sc);
 	}
