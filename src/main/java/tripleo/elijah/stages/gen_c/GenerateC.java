@@ -73,15 +73,17 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 
 		final OS_Module       mod           = aParams.getMod();
 		final ElLog.Verbosity verbosity     = aParams.getVerbosity();
-		final PipelineLogic   pipelineLogic = aParams.getPipelineLogic();
 
 		LOG = new ElLog(mod.getFileName(), verbosity, PHASE);
 
 		ce = aParams.getCompilationEnclosure();
-		ce.getPipelineLogic().addLog(LOG);
+		ce.getAccessBusPromise()
+						.then(ab -> {
+							ab.subscribePipelineLogic(pl -> pl.addLog(LOG));
+						});
 	}
 
-	static boolean isValue(BaseEvaFunction gf, String name) {
+	static boolean isValue(BaseEvaFunction gf, @NotNull String name) {
 		if (!name.equals("Value")) return false;
 		//
 		FunctionDef fd = (FunctionDef) gf.getFD();
