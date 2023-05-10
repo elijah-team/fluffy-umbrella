@@ -6,7 +6,7 @@ import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.comp.PipelineLogic;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.lang.ModuleItem;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.model.SM_Module;
@@ -42,14 +42,14 @@ public class EIT_ModuleInput implements EIT_Input {
 	public void doGenerate(final List<EvaNode> nodes,
 						   final ErrSink aErrSink,
 						   final ElLog.Verbosity verbosity,
-						   final PipelineLogic pipelineLogic,
 						   final WorkManager wm,
-						   final @NotNull Consumer<GenerateResult> resultConsumer) {
+						   final @NotNull Consumer<GenerateResult> resultConsumer,
+						   final CompilationEnclosure ce) {
 		// 0. get lang
 		final String lang = langOfModule();
 
 		// 1. find Generator (GenerateFiles) eg. GenerateC
-		final OutputFileFactoryParams p             = new OutputFileFactoryParams(module, aErrSink, verbosity, pipelineLogic);
+		final OutputFileFactoryParams p             = new OutputFileFactoryParams(module, aErrSink, verbosity, ce);
 		final GenerateFiles           generateFiles = OutputFileFactory.create(lang, p);
 
 		// 2. query results

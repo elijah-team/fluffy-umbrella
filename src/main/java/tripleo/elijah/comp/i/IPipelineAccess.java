@@ -39,4 +39,6 @@ public interface IPipelineAccess {
 	void setCompilerInput(List<CompilerInput> aInputs);
 
 	CompilationClosure getCompilationClosure();
+
+	CompilationEnclosure getCompilationEnclosure();
 }

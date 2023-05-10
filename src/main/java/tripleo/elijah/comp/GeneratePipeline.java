@@ -11,6 +11,7 @@ package tripleo.elijah.comp;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
@@ -40,40 +41,40 @@ import java.util.stream.Collectors;
  * Created 8/21/21 10:16 PM
  */
 public class GeneratePipeline implements PipelineMember, Consumer<Supplier<GenerateResult>>, AccessBus.AB_LgcListener {
-	//private final Compilation               c;
-	private final DefaultGenerateResultSink grs;
-	private final IPipelineAccess           pa;
+	private final DefaultGenerateResultSink  grs;
+	private final IPipelineAccess            pa;
 	private final DoubleLatch<List<EvaNode>> latch2;
-	private final ErrSink       errSink;
-	private final AccessBus     __ab;
-	//	private final DeducePipeline dpl;
-	private       PipelineLogic pipelineLogic;
-	private       List<EvaNode> lgc;
+	private final ErrSink                    errSink;
+	private final CompilationEnclosure       ce;
+	private       PipelineLogic              pipelineLogic;
+	private       List<EvaNode>              lgc;
 
 
-	public GeneratePipeline(final AccessBus aAccessBus) {
-		this(aAccessBus.getPipelineAccess());
-	}
+	//public GeneratePipeline(final @NotNull AccessBus aAccessBus) {
+	//	this(aAccessBus.getPipelineAccess());
+	//}
 	@Contract(pure = true)
 	public GeneratePipeline(@NotNull IPipelineAccess pa0) {
-
 		pa = pa0;
-		final AccessBus ab = pa.getAccessBus();
-		errSink = ab.getCompilation().getErrSink();
 
+		//
+
+		ce = pa0.getCompilationEnclosure();
+
+		//
+
+		final AccessBus ab = pa.getAccessBus();
 		ab.subscribePipelineLogic(aPl -> pipelineLogic = aPl);
 		ab.subscribe_lgc(aLgc -> lgc = aLgc);
+		errSink = ab.getCompilation().getErrSink();
 
-		__ab = ab;
-
-
-		//c     = pa.getCompilation();
-		grs = new DefaultGenerateResultSink(this, pa);
+		//
 
 		latch2 = new DoubleLatch<List<EvaNode>>(this::lgc_slot);
 
-		final DeducePipeline deducePipeline = pa.getDeducePipeline();
+		//
 
+		grs = new DefaultGenerateResultSink(this, pa);
 		pa.registerNodeList(latch2::notify);
 	}
 
@@ -127,8 +128,9 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 							final @NotNull EIT_ModuleList mods,
 							final @NotNull ElLog.Verbosity verbosity) {
 		final WorkManager    wm   = new WorkManager();
-		final GenerateResult gr   = __ab.gr;
-		final Compilation    comp = __ab.getCompilation();
+
+		final GenerateResult gr   = pa.getAccessBus().gr;
+		final Compilation    comp = pa.getCompilation();
 
 
 		assert _______lgc.equals(lgc);
@@ -146,16 +148,16 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 
 			//GenerateResultSink grs = new DefaultGenerateResultSink(this, __ab.getPipelineAccess());
 
-			moduleInput.doGenerate(nodes, aErrSink, verbosity, pipelineLogic, wm,
+			moduleInput.doGenerate(nodes, aErrSink, verbosity, wm,
 								   (gr2) -> {
 									   gr.additional(gr2);
 									   grs.additional(gr2);
-								   });
+								   }, ce);
 
 			System.out.println("999999 " + ((DefaultGenerateResultSink) grs).resultList());
 		}
 
-		__ab.resolveGenerateResult(gr);
+		pa.getAccessBus().resolveGenerateResult(gr);
 	}
 
 	@Override

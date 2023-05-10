@@ -13,7 +13,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.comp.PipelineLogic;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
@@ -33,21 +33,27 @@ import java.util.stream.Collectors;
 
 public class GN_GenerateNodesIntoSink implements GN_Notable {
 	private final GenerateResultSink resultSink;
-	private final EIT_ModuleList      mods;
-	private final List<ProcessedNode> processedNodes;
-	private final GenerateResult      gr;
-	private final ElLog.Verbosity    verbosity;
-	private final PipelineLogic      pipelineLogic;
-	private final IPipelineAccess    pa;
+	private final EIT_ModuleList       mods;
+	private final List<ProcessedNode>  processedNodes;
+	private final GenerateResult       gr;
+	private final ElLog.Verbosity      verbosity;
+	private final IPipelineAccess      pa;
+	private final CompilationEnclosure ce;
 
-	public GN_GenerateNodesIntoSink(final List<ProcessedNode> algc, final GenerateResultSink aResultSink, final EIT_ModuleList aModuleList, final ElLog.Verbosity aVerbosity, final GenerateResult agr, final PipelineLogic aPipelineLogic, final IPipelineAccess aPa) {
+	public GN_GenerateNodesIntoSink(final List<ProcessedNode> algc,
+									final GenerateResultSink aResultSink,
+									final EIT_ModuleList aModuleList,
+									final ElLog.Verbosity aVerbosity,
+									final GenerateResult agr,
+									final IPipelineAccess aPa,
+									final CompilationEnclosure aCe) {
 		mods           = aModuleList;
 		processedNodes = algc;
 		resultSink     = aResultSink;
-		gr            = agr;
-		verbosity     = aVerbosity;
-		pipelineLogic = aPipelineLogic;
-		pa            = aPa;
+		gr             = agr;
+		verbosity      = aVerbosity;
+		pa             = aPa;
+		ce             = aCe;
 	}
 
 	/*
@@ -77,7 +83,7 @@ public class GN_GenerateNodesIntoSink implements GN_Notable {
 			final @Nullable String lang = lang2 == null ? "c" : lang2;
 
 
-			final OutputFileFactoryParams params        = new OutputFileFactoryParams(mod, errSink, verbosity, pipelineLogic);
+			final OutputFileFactoryParams params        = new OutputFileFactoryParams(mod, errSink, verbosity, ce);
 			final GenerateFiles           generateFiles = OutputFileFactory.create(lang, params);
 			//final GenerateC               generateC     = new GenerateC(mod, errSink, verbosity, this);
 			final GenerateResult ggr = run3(mod, processedNodes, wm, generateFiles, resultSink);

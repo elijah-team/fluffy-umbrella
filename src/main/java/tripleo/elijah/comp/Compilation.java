@@ -83,6 +83,7 @@ public abstract class Compilation {
 	private int               _packageCode  = 1;
 	private int               _classCode    = 101;
 	private int               _functionCode = 1001;
+	private CompilationEnclosure compilationEnclosure = new CompilationEnclosure();
 
 	public Compilation(final ErrSink errSink, final IO io) {
 		this.errSink            = errSink;
@@ -138,13 +139,12 @@ public abstract class Compilation {
 	}
 
 	public IPipelineAccess pa() {
+		//assert _pa != null;
+
 		if (_pa == null) {
-			if (__cr.crState == null) {
-				//__cr.crState = new CR_State(__cr);
-				int y=2;
-			}
 			__cr.crState.ca();
 		}
+
 		return _pa;
 	}
 
@@ -262,6 +262,14 @@ public abstract class Compilation {
 
 	public OS_Package makePackage(final Qualident pkg_name) {
 		return _repo.makePackage(pkg_name);
+	}
+
+	public CompilationEnclosure getCompilationEnclosure() {
+		return compilationEnclosure;
+	}
+
+	public void setCompilationEnclosure(final CompilationEnclosure aCompilationEnclosure) {
+		compilationEnclosure = aCompilationEnclosure;
 	}
 
 	public static class CompilationConfig {

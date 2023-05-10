@@ -87,7 +87,7 @@ public class PipelineLogic {
 	}
 
 	public void generate(List<ProcessedNode> lgc, final GenerateResultSink aResultSink) {
-		pa.notate(117, new GN_GenerateNodesIntoSink(lgc, aResultSink, mods, verbosity, gr, this, pa));
+		pa.notate(117, new GN_GenerateNodesIntoSink(lgc, aResultSink, mods, verbosity, gr, pa, pa.getCompilationEnclosure()));
 	}
 
 	protected void run2(OS_Module mod, @NotNull List<EntryPoint> epl) {

@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.i.CompilationClosure;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.comp.i.ICompilationBus;
 import tripleo.elijah.comp.i.IPipelineAccess;
@@ -184,7 +185,7 @@ public class CR_State {
 
 		@Override
 		public PipelineMember instance(final @NotNull AccessBus ab0) {
-			return new GeneratePipeline(ab0);
+			return new GeneratePipeline(ab0.getPipelineAccess());
 		}
 	}
 
@@ -306,6 +307,11 @@ public class CR_State {
 		@Override
 		public CompilationClosure getCompilationClosure() {
 			return getCompilation().getCompilationClosure();
+		}
+
+		@Override
+		public CompilationEnclosure getCompilationEnclosure() {
+			return getCompilation().getCompilationEnclosure();
 		}
 	}
 }

@@ -72,7 +72,7 @@ public class _GF {
 			public StringBuilder itsAGirl(final InstructionArgument expression_num) {
 				final IdentIA identIA = (IdentIA) expression_num;
 
-				final CReference reference = new CReference();
+				final CReference reference = new CReference(gc.repo(), gc.ce);
 				reference.getIdentIAPath(identIA, GET, null);
 				final List<String> sl3 = gc.getArgumentStrings(() -> new InstructionFixedList(instruction));
 				reference.args(sl3);
@@ -88,8 +88,16 @@ public class _GF {
 		});
 
 		beginning   = new EG_SingleStatement("", new EX_Explanation() {
-		});
+			@Override
+			public String message() {
+				return "forDeduceElement3_ProcTableEntry >> beginning";
+			}
+					});
 		ending      = new EG_SingleStatement("", new EX_Explanation() {
+			@Override
+			public String message() {
+				return "forDeduceElement3_ProcTableEntry >> ending";
+			}
 		});
 		explanation = new EX_ProcTableEntryExplanation(de_pte);
 		middle      = new EG_SingleStatement(sb.toString(), explanation);

@@ -403,7 +403,7 @@ public class Generate_Code_For_Method {
 				sb.append(Helpers.String_join(", ", sl3));
 				sb.append(");");
 			} else {
-				final CReference reference = new CReference();
+				final CReference reference = new CReference(gc.repo(), gc.ce);
 				final IdentIA    ia2       = (IdentIA) pte.expression_num;
 				reference.getIdentIAPath(ia2, AOG.GET, null);
 				final List<String> sl3 = gc.getArgumentStrings(gf, aInstruction);
@@ -440,7 +440,7 @@ public class Generate_Code_For_Method {
 				sb.append(Emit.emit("/*460*/") + xxx);
 			} else {
 				final IdentIA ia2 = (IdentIA) pte.expression_num;
-				reference = new CReference();
+				reference = new CReference(gc.repo(), gc.ce);
 				reference.getIdentIAPath(ia2, AOG.GET, null);
 				final List<String> sl3 = gc.getArgumentStrings(gf, aInstruction);
 				reference.args(sl3);
