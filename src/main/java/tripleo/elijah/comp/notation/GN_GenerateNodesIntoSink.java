@@ -102,7 +102,7 @@ public class GN_GenerateNodesIntoSink implements GN_Notable {
 	}
 
 	protected GenerateResult run3(OS_Module mod, List<ProcessedNode> lgc, WorkManager wm, GenerateFiles ggc, final GenerateResultSink aResultSink) {
-		GenerateResult gr = new GenerateResult();
+		GenerateResult gr1 = new GenerateResult();
 
 		for (ProcessedNode processedNode : processedNodes) {
 			final EvaNode evaNode = ((ProcessedNode1) processedNode).getEvaNode();
@@ -110,17 +110,17 @@ public class GN_GenerateNodesIntoSink implements GN_Notable {
 			if (! (processedNode.matchModule(mod))) continue; // README curious
 
 			if (processedNode.isContainerNode()) {
-				processedNode.processContainer(ggc, gr, aResultSink);
+				processedNode.processContainer(ggc, gr1, aResultSink);
 
-				processedNode.processConstructors(ggc, gr, aResultSink, wm);
-				processedNode.processFunctions(ggc, gr, aResultSink, wm);
-				processedNode.processClassMap(ggc, gr, aResultSink, wm);
+				processedNode.processConstructors(ggc, gr1, aResultSink, wm);
+				processedNode.processFunctions(ggc, gr1, aResultSink, wm);
+				processedNode.processClassMap(ggc, gr1, aResultSink, wm);
 
 			} else {
 				tripleo.elijah.util.Stupidity.println_out_2("2009 " + evaNode.getClass().getName());
 			}
 		}
 
-		return gr;
+		return gr1;
 	}
 }
