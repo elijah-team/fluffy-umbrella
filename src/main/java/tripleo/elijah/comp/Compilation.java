@@ -72,9 +72,9 @@ public abstract class Compilation {
 	//
 	public        LivingRepo                        _repo     = new DefaultLivingRepo();
 	public        PipelineLogic                     pipelineLogic;
-	public        CompilationRunner                 __cr;
-	public        IPipelineAccess                   _pa;
-	public  CompilationBus cb;
+	public  CompilationRunner __cr;
+	private IPipelineAccess   _pa;
+	public  CompilationBus    cb;
 	public CompilationConfig cfg = new CompilationConfig();
 	CompilerInstructions rootCI;
 	private IO             io;
@@ -83,7 +83,8 @@ public abstract class Compilation {
 	private int               _packageCode  = 1;
 	private int               _classCode    = 101;
 	private int               _functionCode = 1001;
-	private CompilationEnclosure compilationEnclosure = new CompilationEnclosure();
+	private CompilationEnclosure compilationEnclosure = new CompilationEnclosure(this);
+	public DefaultCompilationAccess _ca;
 
 	public Compilation(final ErrSink errSink, final IO io) {
 		this.errSink            = errSink;
@@ -186,13 +187,15 @@ public abstract class Compilation {
 			subscribeCI(cio);
 
 			cb   = new CompilationBus(this);
-			__cr = new CompilationRunner(this, _cis, cb);
+
+			this._ca                = new DefaultCompilationAccess(this);
+
+			__cr = new CompilationRunner(/* this, _cis, cb,*/ _ca);
 
 			final String[] args2 = op.process(this, inputs, cb);
 
 			__cr.doFindCIs(inputs, args2, cb);
 		}
-
 	}
 
 	public void subscribeCI(final Observer<CompilerInstructions> aCio) {
@@ -270,6 +273,16 @@ public abstract class Compilation {
 
 	public void setCompilationEnclosure(final CompilationEnclosure aCompilationEnclosure) {
 		compilationEnclosure = aCompilationEnclosure;
+	}
+
+	public IPipelineAccess get_pa() {
+		return _pa;
+	}
+
+	public void set_pa(IPipelineAccess a_pa) {
+		_pa = a_pa;
+
+		compilationEnclosure.pipelineAccessPromise.resolve(_pa);
 	}
 
 	public static class CompilationConfig {

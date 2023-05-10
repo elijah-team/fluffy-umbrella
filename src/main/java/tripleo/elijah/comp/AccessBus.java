@@ -9,6 +9,7 @@ import tripleo.elijah.comp.internal.CR_State.PipelinePlugin;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
+import tripleo.vendor.mal.stepA_mal;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,12 +24,17 @@ public class AccessBus {
 	private final DeferredObject<GenerateResult, Void, Void> generateResultPromise = new DeferredObject<>();
 	private final Map<String, CR_State.PipelinePlugin>       pipelinePlugins       = new HashMap<>();
 	private final IPipelineAccess                            _pa;
-	//private       PipelineLogic                              ____pl;
+	private final stepA_mal.MalEnv2 env;
 
+	public stepA_mal.MalEnv2 env() {
+		return env;
+	}
 
 	public AccessBus(final Compilation aC, final IPipelineAccess aPa) {
 		_c  = aC;
 		_pa = aPa;
+
+		env = new stepA_mal.MalEnv2(null); // TODO what does null mean?
 	}
 
 	public @NotNull Compilation getCompilation() {

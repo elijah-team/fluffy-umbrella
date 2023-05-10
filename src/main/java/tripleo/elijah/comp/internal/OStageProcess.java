@@ -1,6 +1,7 @@
 package tripleo.elijah.comp.internal;
 
 import com.google.common.base.Preconditions;
+import org.jetbrains.annotations.NotNull;
 import tripleo.vendor.mal.stepA_mal;
 import tripleo.vendor.mal.types;
 import org.jdeferred2.impl.DeferredObject;
@@ -14,23 +15,28 @@ import java.util.logging.Logger;
 import static tripleo.elijah.util.Helpers.List_of;
 
 public class OStageProcess implements RuntimeProcess {
-	final         stepA_mal.MalEnv2      env;
-	private final ProcessRecord pr;
-	private final ICompilationAccess     ca;
+	private       stepA_mal.MalEnv2  env;
+	//private final ProcessRecord pr;
+	private final ICompilationAccess ca;
+	private       AccessBus          ab;
 
-	public OStageProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
+	public OStageProcess(final ICompilationAccess aCa, final @NotNull ProcessRecord aPr) {
 		ca = aCa;
-		pr = aPr;
 
-		env = pr.env();
+		ca.getCompilation().getCompilationEnclosure().getAccessBusPromise()
+				.then(iab-> {
+					ab = aPr.ab();
 
-		Preconditions.checkNotNull(pr.ab());
-		pr.env().set(new types.MalSymbol("add-pipeline"), new _AddPipeline__MAL(pr.ab()));
+					env = ab.env();
+
+					Preconditions.checkNotNull(ab);
+					env.set(new types.MalSymbol("add-pipeline"), new _AddPipeline__MAL(ab));
+				});
 
 	}
 
 	@Override
-	public void run(final Compilation aCompilation) {
+	public void run(final @NotNull Compilation aCompilation) {
 		Pipeline ps = aCompilation.getPipelines();
 
 		try {
@@ -46,11 +52,6 @@ public class OStageProcess implements RuntimeProcess {
 
 	@Override
 	public void prepare() throws Exception {
-		Preconditions.checkNotNull(pr);
-//		Preconditions.checkNotNull(pr.ab.gr);
-
-		final AccessBus ab = pr.ab();
-
 		env.re("(def! GeneratePipeline 'native)");
 		env.re("(add-pipeline 'DeducePipeline)"); // FIXME note moved from ...
 
@@ -62,54 +63,6 @@ public class OStageProcess implements RuntimeProcess {
 			final Compilation comp = ca.getCompilation();
 
 			comp.eachModule(pl::addModule);
-		});
-	}
-
-	//	@Override
-	public void __00__prepare() {
-		Preconditions.checkNotNull(pr);
-		Preconditions.checkNotNull(pr.dpl());
-
-		Preconditions.checkNotNull(pr.pipelineLogic());
-		Preconditions.checkNotNull(pr.pipelineLogic().gr);
-
-		final DeferredObject<PipelineLogic, Void, Void> ppl = (DeferredObject<PipelineLogic, Void, Void>) pr.pa().getPipelineLogicPromise();
-		ppl.resolve(pr.pipelineLogic());
-
-		final Compilation comp = ca.getCompilation();
-
-		final DeducePipeline     dpl  = pr.dpl(); //new DeducePipeline      (ca);
-		final GeneratePipeline   gpl  = new GeneratePipeline(pr.pa());
-		final WritePipeline      wpl  = new WritePipeline(pr.pa());
-		final WriteMesonPipeline wmpl = new WriteMesonPipeline(comp, pr, ppl, wpl);
-
-		List_of(dpl, gpl, wpl, wmpl)
-				.forEach(ca::addPipeline);
-
-		pr.setGenerateResult(pr.pipelineLogic().gr);
-
-		// NOTE Java needs help!
-		//Helpers.<Consumer<Supplier<GenerateResult>>>List_of(wpl.consumer(), wmpl.consumer())
-		List_of(wpl.consumer(), wmpl.consumer())
-				.forEach(pr::consumeGenerateResult);
-	}
-
-	//@Override
-	public void __00__run() {
-		final AccessBus ab = pr.ab();
-
-		ab.subscribePipelineLogic((pl) -> {
-			final Compilation comp = ca.getCompilation();
-			final Pipeline    ps   = comp.getPipelines();
-
-			try {
-				ps.run();
-
-				ca.writeLogs();
-			} catch (final Exception ex) {
-//				Logger.getLogger(OStageProcess.class.getName()).log(Level.SEVERE, "Error during Piplines#run from OStageProcess", ex);
-				comp.getErrSink().exception(ex);
-			}
 		});
 	}
 

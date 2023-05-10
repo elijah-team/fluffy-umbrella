@@ -74,9 +74,6 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		latch = new DoubleLatch<GenerateResult>(gr -> {
 			st.setGr(gr);
 
-			// prepare to change to DoubleLatch instead of/an or in addition to Promise
-			assert gr == gr;
-
 			final WP_Indiviual_Step wpis_go = new WPIS_GenerateOutputs();
 			final WP_Indiviual_Step wpis_mk = new WPIS_MakeOutputDirectory();
 			final WP_Indiviual_Step wpis_wi = new WPIS_WriteInputs(this);

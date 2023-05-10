@@ -13,6 +13,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.comp.i.IPipelineAccess;
+import tripleo.elijah.comp.internal.DefaultCompilationAccess;
 import tripleo.elijah.comp.notation.GN_GenerateNodesIntoSink;
 import tripleo.elijah.entrypoints.EntryPoint;
 import tripleo.elijah.lang.OS_Module;
@@ -67,14 +68,16 @@ public class PipelineLogic {
 	private final List<OS_Module> __mods_BACKING = new ArrayList<OS_Module>();
 	final         EIT_ModuleList  mods           = new EIT_ModuleList(__mods_BACKING);
 
-	public PipelineLogic(final @NotNull ICompilationAccess aCa) {
-		verbosity     = aCa.testSilence();
+	public PipelineLogic(final @NotNull IPipelineAccess aPa) {
+		final DefaultCompilationAccess ca = aPa.getCompilationClosure().getCompilation()._ca;
+
+		verbosity     = ca.testSilence();
 		generatePhase = new GeneratePhase(verbosity, this);
-		dp            = new DeducePhase(generatePhase, this, verbosity, aCa);
+		dp            = new DeducePhase(generatePhase, this, verbosity, ca);
 
-		aCa.setPipelineLogic(this);
+		ca.setPipelineLogic(this);
 
-		pa = aCa.getCompilation().pa();
+		pa = aPa;
 	}
 
 	public void everythingBeforeGenerate(final @NotNull List<EvaNode> lgc) {

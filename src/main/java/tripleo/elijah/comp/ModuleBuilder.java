@@ -1,5 +1,8 @@
 package tripleo.elijah.comp;
 
+import tripleo.elijah.comp.i.CompilationFlow;
+import tripleo.elijah.comp.impl.DefaultCompilationFlow;
+import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.contexts.ModuleContext;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.query.Mode;
@@ -31,11 +34,21 @@ public class ModuleBuilder {
 	}
 
 	public ModuleBuilder withPrelude(String aPrelude) {
-		final Operation2<OS_Module> p = mod.getCompilation().findPrelude(aPrelude);
+		final Operation2<OS_Module>[] p = new Operation2[]{null};
 
-		assert p.mode() == Mode.SUCCESS;
+		if (false) {
+			final CompilationFlow.CF_FindPrelude cffp = new CompilationFlow.CF_FindPrelude((pp) -> p[0] = pp);
+			final DefaultCompilationFlow         flow = new DefaultCompilationFlow();
+			flow.add(cffp);
 
-		mod.prelude = p.success();
+			flow.run((CompilationImpl) mod.getCompilation());
+		} else {
+			p[0] = mod.getCompilation().findPrelude(aPrelude);
+		}
+
+		assert p[0].mode() == Mode.SUCCESS;
+
+		mod.prelude = p[0].success();
 
 		return this;
 	}
