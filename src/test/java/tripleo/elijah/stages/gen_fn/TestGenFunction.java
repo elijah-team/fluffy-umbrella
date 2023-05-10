@@ -8,13 +8,13 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.Compilation.CompilationAlways;
 import tripleo.elijah.comp.i.CompilationFlow;
+import tripleo.elijah.comp.impl.DefaultCompilationFlow;
 import tripleo.elijah.comp.internal.CR_State;
 import tripleo.elijah.comp.internal.CompilationBus;
 import tripleo.elijah.comp.internal.CompilationImpl;
@@ -67,21 +67,7 @@ public class TestGenFunction {
 
 		final TGF_State st = new TGF_State();
 
-		final CompilationFlow flow = new CompilationFlow() {
-			private final List<CompilationFlowMember> flows = new ArrayList<>();
-
-			@Override
-			public void add(final CompilationFlowMember aFlowMember) {
-				flows.add(aFlowMember);
-			}
-
-			@Override
-			public void run(final CompilationImpl aCompilation) {
-				for (CompilationFlowMember flow : flows) {
-					flow.doIt(aCompilation, this);
-				}
-			}
-		};
+		final CompilationFlow flow = new DefaultCompilationFlow();
 
 		flow.add(new CompilationFlow.CompilationFlowMember(){
 			@Override
