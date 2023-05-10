@@ -1,10 +1,12 @@
 package tripleo.elijah.stages.instructions;
 
+import org.jetbrains.annotations.Contract;
 import tripleo.elijah.util.IFixedList;
 
 public class InstructionFixedList implements IFixedList<InstructionArgument> {
 	private final Instruction instruction;
 
+	@Contract(pure = true)
 	public InstructionFixedList(final Instruction aInstruction) {
 		instruction = aInstruction;
 	}
