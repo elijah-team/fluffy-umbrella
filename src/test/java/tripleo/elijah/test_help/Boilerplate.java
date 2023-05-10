@@ -49,7 +49,7 @@ public class Boilerplate {
 												 new OutputFileFactoryParams(mod,
 																			 comp.getErrSink(),
 																			 aca.testSilence(),
-																			 pipelineLogic));
+																			 comp.getCompilationEnclosure()));
 	}
 
 	public OS_Module defaultMod() {
