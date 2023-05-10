@@ -188,7 +188,7 @@ public class TestGenFunction {
 			}
 		}
 
-		final GenerateC                 ggc = new GenerateC(m, eee, c.gitlabCIVerbosity(), pl);
+		final GenerateC                 ggc = new GenerateC(m, eee, c.gitlabCIVerbosity(), boilerplate.comp.getCompilationEnclosure());
 		final DefaultGenerateResultSink grs = new DefaultGenerateResultSink(null, crState.pr.pa());
 		ggc.generateCode(lgf, wm, grs);
 

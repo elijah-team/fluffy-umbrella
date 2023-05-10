@@ -13,14 +13,21 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import tripleo.elijah.comp.IO;
+import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.i.CompilationEnclosure;
+import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.gen_c.CReference;
 import tripleo.elijah.stages.gen_c.Emit;
+import tripleo.elijah.stages.gen_c.GenerateC;
 import tripleo.elijah.stages.gen_c.Generate_Code_For_Method;
+import tripleo.elijah.stages.gen_generic.OutputFileFactoryParams;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.stages.instructions.VariableTableType;
+import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.test_help.Boilerplate;
 import tripleo.elijah.util.Helpers;
 
@@ -32,6 +39,9 @@ public class GetIdentIAPathTest_ForC {
 
 	EvaFunction gf;
 	OS_Module   mod;
+	private GenerateC generateC;
+	private CompilationImpl compilation;
+	private StdErrSink errSink;
 
 	@Before
 	public void setUp() throws Exception {
@@ -40,6 +50,13 @@ public class GetIdentIAPathTest_ForC {
 		gf = new EvaFunction(fd);
 
 		Emit.emitting = false;
+
+		errSink     = new StdErrSink();
+		compilation = new CompilationImpl(errSink, new IO());
+		
+		final CompilationEnclosure ce = compilation.getCompilationEnclosure();
+				
+		generateC   = new GenerateC(new OutputFileFactoryParams(mod, errSink, ElLog.Verbosity.VERBOSE, ce));
 	}
 
 	@Test
@@ -59,8 +76,8 @@ public class GetIdentIAPathTest_ForC {
 		IdentTableEntry ite = gf.getIdentTableEntry(ite_index);
 		ite.setResolvedElement(foo_vs);
 		ite.setBacklink(new IntegerIA(int_index, gf));
-		IdentIA ident_ia = new IdentIA(ite_index, gf);
-		String x = getIdentIAPath(ident_ia, gf);
+		IdentIA               ident_ia    = new IdentIA(ite_index, gf);
+		String                x           = getIdentIAPath(ident_ia, gf, generateC, compilation.getCompilationEnclosure());
 		Assert.assertEquals("vvx->vmfoo", x);
 	}
 
@@ -109,7 +126,7 @@ public class GetIdentIAPathTest_ForC {
 		foo_ite.setResolvedElement(foo_vs);
 		//
 		IdentIA ident_ia = (IdentIA) xx;
-		String x = getIdentIAPath(ident_ia, gf);
+		String x = getIdentIAPath(ident_ia, gf, generateC, compilation.getCompilationEnclosure());
 //		Assert.assertEquals("vvx->vmfoo", x);  // TODO real expectation, IOW output below is wrong
 		// FIXME actually compiler should comlain that it can't find x
 		Assert.assertEquals("->vmx->vmfoo", x);
@@ -150,7 +167,7 @@ public class GetIdentIAPathTest_ForC {
 		@NotNull IdentTableEntry ite = ((IdentIA) xx).getEntry();
 		ite.setResolvedElement(foo_vs);
 
-		String x = getIdentIAPath(ident_ia, gf);
+		String x = getIdentIAPath(ident_ia, gf, generateC, compilation.getCompilationEnclosure());
 //		Assert.assertEquals("vvx->vmfoo", x); // TODO real expectation
 		Assert.assertEquals("vvx->vmfoo", x);
 	}
@@ -228,16 +245,16 @@ public class GetIdentIAPathTest_ForC {
 		// This assumes we want a function call
 		// but what if we want a function pointer or a curry or function reference?
 		// IOW, a ProcedureCall is not specified
-		String x = getIdentIAPath(ident_ia, gf);
+		String x = getIdentIAPath(ident_ia, gf, generateC, compilation.getCompilationEnclosure());
 
 		//verify(mod, ctx, mockContext);
 
 		Assert.assertEquals("Z-1foo(vvx)", x);
 	}
 
-	String getIdentIAPath(final IdentIA ia2, EvaFunction generatedFunction) {
-		final CReference reference = new CReference();
-		reference.getIdentIAPath(ia2, generatedFunction, Generate_Code_For_Method.AOG.GET, null);
+	String getIdentIAPath(final IdentIA ia2, EvaFunction generatedFunction, GenerateC gc, CompilationEnclosure ce) {
+		final CReference reference = new CReference(gc.repo(), ce);
+		reference.getIdentIAPath(ia2, Generate_Code_For_Method.AOG.GET, null);
 		return reference.build();
 	}
 

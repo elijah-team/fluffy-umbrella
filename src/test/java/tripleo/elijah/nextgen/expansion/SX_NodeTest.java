@@ -47,7 +47,7 @@ public class SX_NodeTest extends TestCase {
 		                          .withFileName("filename.elijah")
 		                          .addToCompilation()
 		                          .build();
-		final OutputFileFactoryParams p    = new OutputFileFactoryParams(mod, errSink, ElLog.Verbosity.SILENT, pipelineLogic);
+		final OutputFileFactoryParams p    = new OutputFileFactoryParams(mod, errSink, ElLog.Verbosity.SILENT, comp.getCompilationEnclosure());
 		final GenerateFiles           fgen = OutputFileFactory.create(CompilationAlways.defaultPrelude(), p);
 
 		final SM_ClassDeclaration node = new SM_ClassDeclaration() {
