@@ -1,7 +1,5 @@
 package tripleo.elijah.comp.internal;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import io.reactivex.rxjava3.functions.Consumer;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +7,7 @@ import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.PipelineMember;
 import tripleo.elijah.comp.Stages;
-import tripleo.elijah.comp.functionality.f202.F202;
+import tripleo.elijah.comp.notation.GN_WriteLogs;
 import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.stages.deduce.IFunctionMapHook;
 import tripleo.elijah.stages.gen_fn.DeferredObject2;
@@ -58,10 +56,7 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 	@Override
 	@NotNull
 	public ElLog.Verbosity testSilence() {
-		//final boolean isSilent = compilation.silent; // TODO No such thing. silent is a local var
-		final boolean isSilent = false; // TODO fix this
-
-		return isSilent ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
+		return compilation.cfg.silent ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
 	}
 
 	@Override
@@ -71,9 +66,7 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 
 	@Override
 	public void writeLogs() {
-		final boolean silent = testSilence() == ElLog.Verbosity.SILENT;
-
-		__writeLogs(silent, compilation.pipelineLogic().elLogs);
+		compilation.pa().notate(92, new GN_WriteLogs(this, compilation.pipelineLogic().elLogs));
 	}
 
 	@Override
@@ -85,19 +78,5 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 	@Override
 	public Stages getStage() {
 		return Stages.O;
-	}
-
-
-	private void __writeLogs(boolean aSilent, List<ElLog> aLogs) {
-		Multimap<String, ElLog> logMap = ArrayListMultimap.create();
-		if (true || aSilent) {
-			for (ElLog deduceLog : aLogs) {
-				logMap.put(deduceLog.getFileName(), deduceLog);
-			}
-			for (Map.Entry<String, Collection<ElLog>> stringCollectionEntry : logMap.asMap().entrySet()) {
-				final F202 f202 = new F202(compilation.getErrSink(), compilation);
-				f202.processLogs(stringCollectionEntry.getValue());
-			}
-		}
 	}
 }
