@@ -31,6 +31,8 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Supplier;
 
+import static tripleo.elijah.util.Helpers.List_of;
+
 public class WPIS_WriteFiles implements WP_Indiviual_Step {
 	private final WritePipeline writePipeline;
 
@@ -243,6 +245,9 @@ public class WPIS_WriteFiles implements WP_Indiviual_Step {
 
 			final @NotNull EOT_OutputTree cot = c.getOutputTree();
 			cot._putSeq(key, path, seq);
+
+			final EOT_OutputFile off = new EOT_OutputFile(c, List_of(), path.toString(), EOT_OutputType.SOURCES, seq);
+			cot.add(off);
 		}
 	}
 
