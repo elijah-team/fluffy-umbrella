@@ -17,10 +17,9 @@ import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.i.CompilationFlow;
 import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
+import tripleo.elijah.stages.deduce.IFunctionMapHook;
 import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
 import tripleo.elijah.stages.deduce.fluffy.impl.FluffyCompImpl;
-import tripleo.elijah.testing.comp.IFunctionMapHook;
-import tripleo.elijah.util.NotImplementedException;
 
 import java.util.List;
 

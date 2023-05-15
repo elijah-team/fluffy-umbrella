@@ -11,7 +11,7 @@ import tripleo.elijah.comp.PipelineMember;
 import tripleo.elijah.comp.Stages;
 import tripleo.elijah.comp.functionality.f202.F202;
 import tripleo.elijah.comp.i.ICompilationAccess;
-import tripleo.elijah.stages.deduce.FunctionMapHook;
+import tripleo.elijah.stages.deduce.IFunctionMapHook;
 import tripleo.elijah.stages.gen_fn.DeferredObject2;
 import tripleo.elijah.stages.logging.ElLog;
 
@@ -76,7 +76,7 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 	}
 
 	@Override
-	public List<FunctionMapHook> functionMapHooks() {
+	public List<IFunctionMapHook> functionMapHooks() {
 		return compilation.pipelineLogic().dp.functionMapHooks;
 	}
 

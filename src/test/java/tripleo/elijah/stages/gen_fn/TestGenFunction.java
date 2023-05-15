@@ -28,7 +28,7 @@ import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.nextgen.query.Mode;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
-import tripleo.elijah.stages.deduce.FunctionMapHook;
+import tripleo.elijah.stages.deduce.IFunctionMapHook;
 import tripleo.elijah.stages.gen_c.GenerateC;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.pipeline_impl.DefaultGenerateResultSink;

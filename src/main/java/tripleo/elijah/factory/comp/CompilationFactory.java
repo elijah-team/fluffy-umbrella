@@ -6,7 +6,7 @@ import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
-import tripleo.elijah.testing.comp.IFunctionMapHook;
+import tripleo.elijah.stages.deduce.IFunctionMapHook;
 
 import java.util.List;
 

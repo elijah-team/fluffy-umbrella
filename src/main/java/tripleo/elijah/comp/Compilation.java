@@ -37,7 +37,7 @@ import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
 import tripleo.elijah.lang.Qualident;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
-import tripleo.elijah.stages.deduce.FunctionMapHook;
+import tripleo.elijah.stages.deduce.IFunctionMapHook;
 import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
@@ -345,7 +345,7 @@ public abstract class Compilation {
 	}
 
 	// TODO remove this 04/20
-	public void addFunctionMapHook(FunctionMapHook aFunctionMapHook) {
+	public void addFunctionMapHook(IFunctionMapHook aFunctionMapHook) {
 		pipelineLogic().dp.addFunctionMapHook(aFunctionMapHook);
 	}
 
