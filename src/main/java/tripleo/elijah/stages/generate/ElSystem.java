@@ -71,7 +71,9 @@ public class ElSystem {
 		if (verbose) {
 			for (GenerateResultItem ab : gr.results()) {
 				if (ab.node instanceof EvaFunction) continue;
-				tripleo.elijah.util.Stupidity.println_out_2("** " + ab.node + " " + ab.output/*((CDependencyRef)ab.getDependency().getRef()).getHeaderFile()*/);
+				//tripleo.elijah.util.Stupidity.println_out_2
+				System.out.println
+						("** " + ab.node + " " + ab.output/*((CDependencyRef)ab.getDependency().getRef()).getHeaderFile()*/);
 			}
 		}
 
