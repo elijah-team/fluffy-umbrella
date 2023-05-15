@@ -83,8 +83,7 @@ public class PipelineLogic {
 	public void everythingBeforeGenerate(final @NotNull List<EvaNode> lgc) {
 		assert lgc.size() == 0;
 
-		mods.stream().forEach(mod ->
-									  om.onNext(mod));
+		mods.stream().forEach(om::onNext);
 
 		om.onComplete();
 	}
