@@ -21,24 +21,14 @@ public class DefaultCompilerController implements CompilerController {
 	@Override
 	public void processOptions() {
 		final OptionsProcessor             op  = new ApacheOptionsProcessor();
-		final CompilerInstructionsObserver cio = new CompilerInstructionsObserver(c, op/*c._cis*/);
-		cb = new CompilationBus(c);
+		final CompilerInstructionsObserver cio = new CompilerInstructionsObserver(c, op);
+		cb = new CompilationBus(c.getCompilationEnclosure());
+
+		c.getCompilationEnclosure().setCompilationBus(cb);
 
 		c._cis._cio = cio;
 
 		try {
-//			if (args == null) {
-//				args = inputs.stream()
-//				             .map(ci -> ci.getInp())
-//				             .collect(Collectors.toList());
-//			}
-
-			if (inputs == null) {
-				inputs = args.stream()
-						.map(str -> new CompilerInput(str))
-						.collect(Collectors.toList());
-			}
-
 			args2 = op.process(c, inputs, cb);
 		} catch (final Exception e) {
 			c.getErrSink().exception(e);
@@ -55,10 +45,11 @@ public class DefaultCompilerController implements CompilerController {
 				c.cb = new CompilationBus(c);
 			}
 
-			c.__cr = new CompilationRunner(/* c, c._cis, cb, */ c._ca);
+			assert c.getCompilationEnclosure().getCompilationAccess() == null;
+			final DefaultCompilationAccess ca = new DefaultCompilationAccess(c);
+			c.getCompilationEnclosure().setCompilationAccess(ca);
 
-			for (final String s : args2) {
-				for (final CompilerInput input : inputs) {
+			c.__cr = new CompilationRunner(c.getCompilationEnclosure().getCompilationAccess());
 
 					if (s.equals(input.getInp())) {
 						input.setSourceRoot();
@@ -79,8 +70,7 @@ public class DefaultCompilerController implements CompilerController {
 		inputs = aInputs;
 	}
 
-	public void _set(final Compilation aCompilation, final List<String> aArgs) {
-		c    = aCompilation;
-		args = aArgs;
+	public void _setInputs(final List<CompilerInput> aInputs) {
+		inputs = aInputs;
 	}
 }

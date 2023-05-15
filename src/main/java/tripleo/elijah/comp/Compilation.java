@@ -174,28 +174,9 @@ public abstract class Compilation {
 				.collect(Collectors.toList());
 
 
-		if (false) {
-			controller._setInputs(this, inputs);
-			controller.processOptions();
-			controller.runner();
-		} else {
-			final OptionsProcessor op = pico.getComponent(OptionsProcessor.class);
-			final CompilerInstructionsObserver cio = new CompilerInstructionsObserver(this, op);
-
-			_cis._cio = cio;
-
-			subscribeCI(cio);
-
-			cb   = new CompilationBus(this);
-
-			this._ca                = new DefaultCompilationAccess(this);
-
-			__cr = new CompilationRunner(/* this, _cis, cb,*/ _ca);
-
-			final String[] args2 = op.process(this, inputs, cb);
-
-			__cr.doFindCIs(inputs, args2, cb);
-		}
+		controller._setInputs(this, inputs);
+		controller.processOptions();
+		controller.runner();
 	}
 
 	public void subscribeCI(final Observer<CompilerInstructions> aCio) {

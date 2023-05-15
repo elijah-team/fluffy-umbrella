@@ -3,6 +3,7 @@ package tripleo.elijah.comp.internal;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.i.CompilationChange;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.i.ICompilationBus;
 import tripleo.elijah.comp.i.ILazyCompilerInstructions;
 
@@ -10,9 +11,11 @@ public class CompilationBus implements ICompilationBus {
 	public final  CompilerDriver cd;
 	private final Compilation    c;
 
-	public CompilationBus(final Compilation aC) {
-		c  = aC;
+	public CompilationBus(final CompilationEnclosure ace) {
+		c  = ace.getCompilationAccess().getCompilation();
 		cd = new CompilerDriver(this);
+
+		ace.setCompilerDriver(cd);
 	}
 
 	@Override

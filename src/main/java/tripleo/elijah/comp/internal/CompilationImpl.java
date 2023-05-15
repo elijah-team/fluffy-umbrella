@@ -34,7 +34,7 @@ public class CompilationImpl extends Compilation {
 	}
 
 	public void testMapHooks(final List<IFunctionMapHook> aMapHooks) {
-		throw new NotImplementedException();
+		//pipelineLogic.dp.
 	}
 
 	@Override
@@ -55,9 +55,12 @@ public class CompilationImpl extends Compilation {
 
 	@Override
 	public void fakeFlow(final List<CompilerInput> aInputs, final CompilationFlow aFlow) {
-		get_pa().setCompilerInput(aInputs);
+		getCompilationEnclosure().getPipelineAccessPromise()
+						.then(pa -> {
+							get_pa().setCompilerInput(aInputs);
 
-		aFlow.run(this);
+							aFlow.run(this);
+						});
 	}
 
 	public ICompilationAccess _access() {

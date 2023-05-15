@@ -15,9 +15,7 @@ import tripleo.elijah.stages.deduce.IFunctionMapHook;
 import tripleo.elijah.stages.gen_fn.DeferredObject2;
 import tripleo.elijah.stages.logging.ElLog;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 public class DefaultCompilationAccess implements ICompilationAccess {
 	protected final Compilation                                compilation;
@@ -42,6 +40,9 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 
 	@Override
 	public void setPipelineLogic(final PipelineLogic pl) {
+		assert compilation.getCompilationEnclosure().getPipelineLogic() == null;
+		compilation.getCompilationEnclosure().setPipelineLogic(pl);
+
 		compilation.pipelineLogic = pl;
 
 //		pipelineLogicDeferred.resolve(pl);
