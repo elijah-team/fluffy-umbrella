@@ -69,7 +69,7 @@ public class PipelineLogic {
 	final         EIT_ModuleList  mods           = new EIT_ModuleList(__mods_BACKING);
 
 	public PipelineLogic(final @NotNull IPipelineAccess aPa) {
-		final DefaultCompilationAccess ca = aPa.getCompilationClosure().getCompilation()._ca;
+		final DefaultCompilationAccess ca = (DefaultCompilationAccess) aPa.getCompilationClosure().getCompilation().getCompilationEnclosure().getCompilationAccess();
 
 		verbosity     = ca.testSilence();
 		generatePhase = new GeneratePhase(verbosity, this);
