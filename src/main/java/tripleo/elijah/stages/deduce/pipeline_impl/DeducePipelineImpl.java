@@ -3,6 +3,7 @@ package tripleo.elijah.stages.deduce.pipeline_impl;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.PipelineLogic;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.stages.gen_fn.EvaNode;
@@ -32,16 +33,14 @@ public class DeducePipelineImpl {
 	}
 
 	public void run() {
-		final Compilation c = pa.getCompilation();
+		final Compilation          c                    = pa.getCompilation();
+		final CompilationEnclosure compilationEnclosure = c.getCompilationEnclosure();
+		final PipelineLogic        pipelineLogic        = compilationEnclosure.getPipelineLogic();
 
-		assert c.pipelineLogic != null;
+		assert pipelineLogic != null;
 
-		setPipelineLogic(c.pipelineLogic);
-	}
-
-	public void setPipelineLogic(final PipelineLogic aPipelineLogic) {
 		for (final PipelineLogicRunnable plr : plrs) {
-			plr.run(aPipelineLogic);
+			plr.run(pipelineLogic);
 		}
 	}
 
