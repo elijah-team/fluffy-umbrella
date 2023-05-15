@@ -299,13 +299,7 @@ class CReference_getIdentIAPath_IdentIAHelper {
 
 		@Override
 		public EX_Explanation getExplanation() {
-			// TODO Auto-generated method stub
-			return new EX_Explanation() {
-				@Override
-				public String message() {
-					return "GCS_Property_Get";
-				}
-			};
+			return EX_Explanation.withMessage("GCS_Property_Get");
 		}
 
 	}

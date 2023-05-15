@@ -87,18 +87,8 @@ public class _GF {
 			}
 		});
 
-		beginning   = new EG_SingleStatement("", new EX_Explanation() {
-			@Override
-			public String message() {
-				return "forDeduceElement3_ProcTableEntry >> beginning";
-			}
-					});
-		ending      = new EG_SingleStatement("", new EX_Explanation() {
-			@Override
-			public String message() {
-				return "forDeduceElement3_ProcTableEntry >> ending";
-			}
-		});
+		beginning   = new EG_SingleStatement("", EX_Explanation.withMessage("forDeduceElement3_ProcTableEntry >> beginning"));
+		ending      = new EG_SingleStatement("", EX_Explanation.withMessage("forDeduceElement3_ProcTableEntry >> ending"));
 		explanation = new EX_ProcTableEntryExplanation(de_pte);
 		middle      = new EG_SingleStatement(sb.toString(), explanation);
 

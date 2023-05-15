@@ -42,12 +42,7 @@ public class GCX_ConstantString implements EG_Statement {
 
 	@Override
 	public EX_Explanation getExplanation() {
-		return new EX_Explanation() {
-			@Override
-			public String message() {
-				return "GCX_ConstantString >> GetAssignmentValue.const_to_string";
-			}
-		};
+		return EX_Explanation.withMessage("GCX_ConstantString >> GetAssignmentValue.const_to_string");
 	}
 
 }

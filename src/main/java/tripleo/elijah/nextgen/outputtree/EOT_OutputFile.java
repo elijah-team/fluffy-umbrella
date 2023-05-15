@@ -37,36 +37,13 @@ public class EOT_OutputFile {
 		_inputs.addAll(inputs);
 	}
 
-	public static EOT_OutputFile grToOutputFile(final Compilation aC, final GenerateResultItem ab) {
+	public static EOT_OutputFile grToOutputFile(final Compilation aC, final @NotNull GenerateResultItem ab) {
 		final List<EIT_Input> inputs = List_of(new EIT_ModuleInput(ab.node.module(), aC));
 
-		final EG_SingleStatement beginning = new EG_SingleStatement("", new EX_Explanation() {
-			@Override
-			public String message() {
-				return "grToOutputFile >> beginning";
-			}
-		});
-		final EG_SingleStatement middle = new EG_SingleStatement(ab.buffer.getText(), new EX_Explanation() {
-			@Override
-			public String message() {
-				return "grToOutputFile >> middle";
-			}
-		});
-		final EG_SingleStatement ending = new EG_SingleStatement("", new EX_Explanation() {
-			@Override
-			public String message() {
-				return "grToOutputFile >> ending";
-			}
-		});
-		final EX_Explanation explanation = new EX_Explanation() {
-			public String getText() {
-				return "generate-result-item";
-			}
-			@Override
-			public String message() {
-				return "grToOutputFile >> statement -- " + getText();
-			}
-		};
+		final EG_SingleStatement beginning = new EG_SingleStatement("", EX_Explanation.withMessage("grToOutputFile >> beginning"));
+		final EG_SingleStatement middle = new EG_SingleStatement(ab.buffer.getText(), EX_Explanation.withMessage("grToOutputFile >> middle"));
+		final EG_SingleStatement ending = new EG_SingleStatement("", EX_Explanation.withMessage("grToOutputFile >> ending"));
+		final EX_Explanation explanation = EX_Explanation.withMessage("grToOutputFile >> statement -- " + "generate-result-item");
 
 		final EG_CompoundStatement seq = new EG_CompoundStatement(beginning, ending, middle, false, explanation);
 
@@ -82,12 +59,9 @@ public class EOT_OutputFile {
 
 		final List<EG_Statement> statementStream = aBuffers.stream()
 				.map(buffer ->
-							 new EG_SingleStatement(buffer.getText(), new EX_Explanation() {
-								@Override
-								public String message() {
-									return "bufferSetToOutputFile >> singleStatement";
-								}
-								 							 })
+							 new EG_SingleStatement(
+									 buffer.getText(),
+									 EX_Explanation.withMessage("bufferSetToOutputFile >> singleStatement"))
 					).collect(Collectors.toList());
 		final EG_SequenceStatement seq = new EG_SequenceStatement(new EG_Naming("yyy"), statementStream);
 
