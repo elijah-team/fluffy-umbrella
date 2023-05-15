@@ -8,6 +8,9 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import org.jdeferred2.impl.DeferredObject;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -15,16 +18,11 @@ import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.Compilation.CompilationAlways;
 import tripleo.elijah.comp.i.CompilationFlow;
 import tripleo.elijah.comp.impl.DefaultCompilationFlow;
-import tripleo.elijah.comp.internal.CR_State;
-import tripleo.elijah.comp.internal.CompilationBus;
 import tripleo.elijah.comp.internal.CompilationImpl;
-import tripleo.elijah.entrypoints.MainClassEntryPoint;
+import tripleo.elijah.comp.internal.DefaultCompilationAccess;
+import tripleo.elijah.comp.internal.DefaultCompilerController;
 import tripleo.elijah.factory.comp.CompilationFactory;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.nextgen.query.Mode;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
@@ -52,39 +50,49 @@ import static tripleo.elijah.util.Helpers.List_of;
  */
 public class TestGenFunction {
 
-	@Ignore
+	public static CompilationFlow.CompilationFlowMember parseElijah() {
+		return new CompilationFlow.CompilationFlowMember() {
+			@Override
+			public void doIt(final Compilation cc, final CompilationFlow flow) {
+				int y = 2;
+			}
+		};
+	}
+
 	@Test
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
 	public void testDemoElNormalFact1Elijah() throws Exception {
-		final StdErrSink  eee = new StdErrSink();
-		final Compilation c   = CompilationFactory.mkCompilation(eee, new IO());
+		//final StdErrSink  eee = new StdErrSink();
+		//final Compilation c   = CompilationFactory.mkCompilation(eee, new IO());
 
 
 		final String        f    = "test/demo-el-normal/fact1.elijah";
-		final File          file = new File(f);
-		final CompilerInput ci_f = new CompilerInput(f); // TODO flesh this out
-		//c.feedInputs // FIXME this too
 
+		final File          file = new File(f);
+
+		final CompilerInput ci_f = new CompilerInput(f); // TODO flesh this out
 		final TGF_State st = new TGF_State();
+		st.inputs = List_of(ci_f);
 
 		final CompilationFlow flow = new DefaultCompilationFlow();
 
-		flow.add(new CompilationFlow.CompilationFlowMember(){
+		flow.add(new CompilationFlow.CompilationFlowMember() {
 			@Override
 			public void doIt(final Compilation cc, final CompilationFlow flow) {
-				final Operation<OS_Module> om;
-				try {
-					// TODO model as query?
-					om = cc.use.realParseElijjahFile(f, file, false);
-				} catch (Exception aE) {
-					throw new RuntimeException(aE);
-				}
-				assertTrue(om.mode() == Mode.SUCCESS);
-				st.m = om.success();
-				st.main_class = om.success();
+//				final Operation<OS_Module> om;
+//				try {
+//					// TODO model as query?
+//					om = cc.use.realParseElijjahFile(f, file, false);
+//				} catch (Exception aE) {
+//					throw new RuntimeException(aE);
+//				}
+//				assertTrue(om.mode() == Mode.SUCCESS);
+//				st.m          = om.success();
 			}
 		});
-		flow.add(findPrelude(x -> {st.m.prelude = x.success();}));
+		flow.add(findPrelude(x -> {
+			st.m.prelude = x.success();
+		}));
 		//flow.add(CompilationFlow.parseElijah());
 		flow.add(findMainClass(st));
 		flow.add(genFromEntrypoints(st));
@@ -93,12 +101,53 @@ public class TestGenFunction {
 		flow.add(deduceModuleWithClasses(st));
 		flow.add(finishModule(st));
 		flow.add(returnErrorCount(st));
-		c.fakeFlow(List_of(ci_f), flow);
 
-		flow.run((CompilationImpl) c);
+		//st.c.fakeFlow(List_of(ci_f), flow);
+
+		//st.p.then(ccc->flow.run((CompilationImpl) ccc));
+		
+		CompilationImpl cc = CompilationFactory.mkCompilation(new StdErrSink(), new IO());
+		flow.run(cc);
+
 
 		Assert.assertEquals("Not all hooks ran", 4, st.ran_hooks.size());
+		Compilation c=null;
 		Assert.assertEquals(16, c.errorCount());
+	}
+
+	@Contract(value = "_ -> new", pure = true)
+	static CompilationFlow.@NotNull CompilationFlowMember findPrelude(final Consumer<Operation2<OS_Module>> aCopm) {
+		return new CompilationFlow.CF_FindPrelude(aCopm);
+	}
+
+	@Contract(value = "_ -> new", pure = true)
+	static CompilationFlow.@NotNull CompilationFlowMember findMainClass(final TGF_State st) {
+		return new CF_FindPrelude(st);
+	}
+
+	public static CompilationFlow.CompilationFlowMember genFromEntrypoints(final TGF_State aSt) {
+		return new CF_GenFromEntrypoints();
+	}
+
+	public static CompilationFlow.CompilationFlowMember runFunctionMapHooks(final TGF_State st) {
+		return new CF_RunFunctionMapHooks(st);
+	}
+
+	public static CompilationFlow.CompilationFlowMember getClasses(final TGF_State st) {
+		return new CF_GetClasses(st);
+	}
+
+	public static CompilationFlow.CompilationFlowMember deduceModuleWithClasses(final TGF_State st) {
+		return new CF_DeduceModuleWithClasses(st);
+	}
+
+	public static CompilationFlow.CompilationFlowMember finishModule(final TGF_State aSt) {
+		return new CF_FinishModule();
+	}
+
+	@Contract(value = "_ -> new", pure = true)
+	public static CompilationFlow.@NotNull CompilationFlowMember returnErrorCount(final TGF_State aSt) {
+		return new CF_ReturnErrorCount();
 	}
 
 	@Test
@@ -112,6 +161,15 @@ public class TestGenFunction {
 		c.feedCmdLine(List_of(f));
 	}
 
+	@Test
+	public void testBasic1Backlink3Elijah() throws Exception {
+		final StdErrSink  eee = new StdErrSink();
+		final Compilation c   = CompilationFactory.mkCompilation(eee, new IO());
+
+		final String ff = "test/basic1/backlink3/";
+		c.feedCmdLine(List_of(ff));
+	}
+
 	@Ignore
 	@Test // ignore because of generateAllTopLevelClasses
 	@SuppressWarnings("JUnit3StyleTestMethodInJUnit4Class")
@@ -121,11 +179,11 @@ public class TestGenFunction {
 		boilerplate.getGenerateFiles(boilerplate.defaultMod());
 
 		final ErrSink     eee = new StdErrSink();
-		final Compilation c   = CompilationFactory.mkCompilation(eee, new IO());
+		final Compilation c   = boilerplate.comp;//CompilationFactory.mkCompilation(eee, new IO());
 
-		final String f = "test/basic1/backlink1.elijah";
+		final String               f    = "test/basic1/backlink1.elijah";
 		final File                 file = new File(f);
-		final Operation<OS_Module> om    = c.use.realParseElijjahFile(f, file, false);
+		final Operation<OS_Module> om   = c.use.realParseElijjahFile(f, file, false);
 
 		assertTrue("Method parsed correctly", om.mode() == Mode.SUCCESS);
 
@@ -133,29 +191,23 @@ public class TestGenFunction {
 
 		m.prelude = c.findPrelude(CompilationAlways.defaultPrelude()).success(); // TODO we dont know which prelude to find yet
 
-		//c.findStdLib("c"); // FIXME/TODO this!!
-
-		//for (final CompilerInstructions ci : c.cis) { // FIXME and this!!
-		//	c.use(ci, false);
-		//}
-
 		ElLog.Verbosity verbosity1 = c.gitlabCIVerbosity(); // FIXME ??
 
-		c.__cr = new CompilationRunner(/* c, null, new CompilationBus(c), */ c._ca);
-		final CR_State  crState    = (c.__cr.crState);
-		crState.ca();
-		final PipelineLogic pl = crState.pr.pipelineLogic();
+		DefaultCompilationAccess ca = new DefaultCompilationAccess(c);
+		
+		c.getCompilationEnclosure().setCompilationAccess(ca);
+		final PipelineLogic pl = c.getCompilationEnclosure().getPipelineLogic();
 
-		final GeneratePhase generatePhase = crState.pr.pipelineLogic().generatePhase;
-		final GenerateFunctions gfm = generatePhase.getGenerateFunctions(m);
-		final List<EvaNode> lgc = new ArrayList<>();
+		final GeneratePhase     generatePhase = pl.generatePhase;
+		final GenerateFunctions gfm           = generatePhase.getGenerateFunctions(m);
+		final List<EvaNode>     lgc           = new ArrayList<>();
 		gfm.generateAllTopLevelClasses(lgc);
 
-		final DeducePhase dp = new DeducePhase(generatePhase, pl, verbosity1, crState.ca());
+		final DeducePhase dp = new DeducePhase(generatePhase, pl, verbosity1, c.getCompilationEnclosure().getCompilationAccess());
 
-		WorkManager wm = new WorkManager();
+		final WorkManager wm = new WorkManager();
 
-		List<EvaNode> lgf = new ArrayList<>();
+		final List<EvaNode> lgf = new ArrayList<>();
 		for (EvaNode generatedNode : lgc) {
 			if (generatedNode instanceof EvaClass)
 				lgf.addAll(((EvaClass) generatedNode).functionMap.values());
@@ -164,6 +216,7 @@ public class TestGenFunction {
 			// TODO enum
 		}
 
+		//here
 		for (final EvaNode gn : lgf) {
 			if (gn instanceof EvaFunction) {
 				EvaFunction gf = (EvaFunction) gn;
@@ -177,6 +230,8 @@ public class TestGenFunction {
 		dp.finish();
 		new DeduceTypes2(m, dp).deduceFunctions(lgf);
 		//
+
+		//here
 		for (final EvaNode gn : lgf) {
 			if (gn instanceof EvaFunction) {
 				EvaFunction gf = (EvaFunction) gn;
@@ -188,8 +243,10 @@ public class TestGenFunction {
 			}
 		}
 
+		c.getCompilationEnclosure().setPipelineLogic(pl);
+
 		final GenerateC                 ggc = new GenerateC(m, eee, c.gitlabCIVerbosity(), boilerplate.comp.getCompilationEnclosure());
-		final DefaultGenerateResultSink grs = new DefaultGenerateResultSink(null, crState.pr.pa());
+		final DefaultGenerateResultSink grs = new DefaultGenerateResultSink(null, c.get_pa());
 		ggc.generateCode(lgf, wm, grs);
 
 		GenerateResult gr = new GenerateResult();
@@ -203,56 +260,75 @@ public class TestGenFunction {
 		}
 	}
 
-	@Test
-	public void testBasic1Backlink3Elijah() throws Exception {
-		final StdErrSink eee = new StdErrSink();
-		final Compilation c = CompilationFactory.mkCompilation(eee, new IO());
+	static class TGF_State {
+		public    DeducePhase       dp;
+		public    Iterable<EvaNode> lgc;
+		public    OS_Module         m;
+		public List<CompilerInput> inputs;
+		public CompilationImpl c;
+		protected ClassStatement        main_class;
 
-		final String ff = "test/basic1/backlink3/";
-		c.feedCmdLine(List_of(ff));
+		final DeferredObject<Compilation, Void, Void> p = new DeferredObject<>();
+
+		List<IFunctionMapHook> ran_hooks = new ArrayList<>();
 	}
 
-	public static CompilationFlow.CompilationFlowMember parseElijah() {
-		return new CompilationFlow.CompilationFlowMember(){
-			@Override
-			public void doIt(final Compilation cc, final CompilationFlow flow) {
-				int y=2;
-			}
-		};
+	private static class CF_FindPrelude implements CompilationFlow.CompilationFlowMember {
+		private final TGF_State st;
+
+		public CF_FindPrelude(final TGF_State aSt) {
+			st = aSt;
+		}
+
+		@Override
+		public void doIt(final Compilation cc, final CompilationFlow flow) {
+//			st.main_class = (ClassStatement) st.m.findClass("Main");
+//			assert st.main_class != null;
+//			st.m.entryPoints = List_of(new MainClassEntryPoint((ClassStatement) st.main_class));
+		}
 	}
-	public static CompilationFlow.CompilationFlowMember genFromEntrypoints(final TGF_State aSt) {
-		return new CompilationFlow.CompilationFlowMember(){
-			@Override
-			public void doIt(final Compilation cc, final CompilationFlow flow) {
 
-			}
-		};
+	private static class CF_GenFromEntrypoints implements CompilationFlow.CompilationFlowMember {
+		@Override
+		public void doIt(final Compilation cc, final CompilationFlow flow) {
+
+		}
 	}
-	public static CompilationFlow.CompilationFlowMember getClasses(final TGF_State st) {
-		return new CompilationFlow.CompilationFlowMember(){
-			@Override
-			public void doIt(final Compilation cc, final CompilationFlow flow) {
-				cc.__cr = new CompilationRunner(/* cc, null, new CompilationBus(cc), */ cc._ca);
-				final CR_State crState = cc.__cr.crState;
 
-				crState.ca();
+	private static class CF_GetClasses implements CompilationFlow.CompilationFlowMember {
+		private final TGF_State st;
 
-				cc.pipelineLogic = crState.pr.pipelineLogic();
+		public CF_GetClasses(final TGF_State aSt) {
+			st = aSt;
+		}
 
-				final GeneratePhase     generatePhase1 = cc.pipelineLogic().generatePhase;
-				final GenerateFunctions gfm            = generatePhase1.getGenerateFunctions(st.m);
-				st.dp = cc.pipelineLogic().dp;
-				gfm.generateFromEntryPoints(st.m.entryPoints, st.dp);
-
-				st.lgc = st.dp.generatedClasses;
-			}
-		};
+		@Override
+		public void doIt(final Compilation cc, final CompilationFlow flow) {
+			DefaultCompilerController dcc = new DefaultCompilerController() {
+				@Override
+				public void hook(final CompilationRunner cr) {
+					st.c = (CompilationImpl) cr.compilation;
+					st.p.resolve(cr.compilation);
+				}
+			};
+			dcc._setInputs(cc, st.inputs);
+			dcc.processOptions();
+			dcc.runner();
+		}
 	}
-	public static CompilationFlow.CompilationFlowMember runFunctionMapHooks(final TGF_State st) {
-		return new CompilationFlow.CompilationFlowMember(){
-			@Override
-			public void doIt(final Compilation cc, final CompilationFlow flow) {
-				cc.addFunctionMapHook(new FunctionMapHook() {
+
+	private static class CF_RunFunctionMapHooks implements CompilationFlow.CompilationFlowMember {
+		private final TGF_State st;
+
+		public CF_RunFunctionMapHooks(final TGF_State aSt) {
+			st = aSt;
+		}
+
+		@Override
+		public void doIt(final Compilation _cc, final CompilationFlow flow) {
+
+			st.p.then(cc -> {
+				cc.addFunctionMapHook(new IFunctionMapHook() {
 					@Override
 					public boolean matches(FunctionDef fd) {
 						final boolean b = fd.name().equals("main") && fd.getParent() == st.main_class;
@@ -278,7 +354,7 @@ public class TestGenFunction {
 					}
 				});
 
-				cc.addFunctionMapHook(new FunctionMapHook() {
+				cc.addFunctionMapHook(new IFunctionMapHook() {
 					@Override
 					public boolean matches(FunctionDef fd) {
 						final boolean b = fd.name().equals("factorial") && fd.getParent() == st.main_class;
@@ -310,7 +386,7 @@ public class TestGenFunction {
 					}
 				});
 
-				cc.addFunctionMapHook(new FunctionMapHook() {
+				cc.addFunctionMapHook(new IFunctionMapHook() {
 					@Override
 					public boolean matches(FunctionDef fd) {
 						final boolean b = fd.name().equals("main") && fd.getParent() == st.main_class;
@@ -338,7 +414,7 @@ public class TestGenFunction {
 					}
 				});
 
-				cc.addFunctionMapHook(new FunctionMapHook() {
+				cc.addFunctionMapHook(new IFunctionMapHook() {
 					@Override
 					public boolean matches(FunctionDef fd) {
 						final boolean b = fd.name().equals("factorial") && fd.getParent() == st.main_class;
@@ -365,116 +441,39 @@ public class TestGenFunction {
 						st.ran_hooks.add(this);
 					}
 				});
-			}
-		};
-	}
-	public static CompilationFlow.CompilationFlowMember deduceModuleWithClasses(final TGF_State st) {
-		return new CompilationFlow.CompilationFlowMember(){
-			@Override
-			public void doIt(final Compilation cc, final CompilationFlow flow) {
-				st.dp.deduceModule(st.m, st.lgc, cc.gitlabCIVerbosity());
-				st.dp.finish();
-			}
-		};
-	}
-	public static CompilationFlow.CompilationFlowMember finishModule(final TGF_State aSt) {
-		return new CompilationFlow.CompilationFlowMember(){
-			@Override
-			public void doIt(final Compilation cc, final CompilationFlow flow) {
 
-			}
-		};
-	}
-	public static CompilationFlow.CompilationFlowMember returnErrorCount(final TGF_State aSt) {
-		return new CompilationFlow.CompilationFlowMember(){
-			@Override
-			public void doIt(final Compilation cc, final CompilationFlow flow) {
+				//((CompilationImpl)cc).testMapHooks(cc.pipelineLogic.dp.functionMapHooks);
 
-			}
-		};
+			});
+		}
 	}
 
-	static class CF_FindPrelude implements CompilationFlow.CompilationFlowMember {
-		private final Consumer<Operation2<OS_Module>> copm;
+	private static class CF_DeduceModuleWithClasses implements CompilationFlow.CompilationFlowMember {
+		private final TGF_State st;
 
-		public CF_FindPrelude(final Consumer<Operation2<OS_Module>> aCopm) {
-			copm = aCopm;
+		public CF_DeduceModuleWithClasses(final TGF_State aSt) {
+			st = aSt;
 		}
 
 		@Override
 		public void doIt(final Compilation cc, final CompilationFlow flow) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-			//Assert.assertTrue("Method parsed correctly", m[0] != null);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-			// TODO we dont know which prelude to find yet
-
-			final Operation2<OS_Module> prl = cc.findPrelude(Compilation.CompilationAlways.defaultPrelude());
-			assertTrue(prl.mode() == Mode.SUCCESS);
-
-			copm.accept(prl);
+			st.dp.deduceModule(st.m, st.lgc, cc.gitlabCIVerbosity());
+			st.dp.finish();
 		}
 	}
 
-	static CompilationFlow.CompilationFlowMember findMainClass(final TGF_State st) {
-		return new CompilationFlow.CompilationFlowMember(){
-			@Override
-			public void doIt(final Compilation cc, final CompilationFlow flow) {
-				final ClassStatement main_class = (ClassStatement) st.m.findClass("Main");
-				assert main_class != null;
-				st.m.entryPoints = List_of(new MainClassEntryPoint(main_class));
-			}
-		};
+	private static class CF_FinishModule implements CompilationFlow.CompilationFlowMember {
+		@Override
+		public void doIt(final Compilation cc, final CompilationFlow flow) {
+
+		}
 	}
 
-	static CompilationFlow.CompilationFlowMember findPrelude(final Consumer<Operation2<OS_Module>> aCopm) {
-		return new CF_FindPrelude(aCopm);
-	}
+	private static class CF_ReturnErrorCount implements CompilationFlow.CompilationFlowMember {
+		@Override
+		public void doIt(final Compilation cc, final CompilationFlow flow) {
 
-	static class TGF_State {
-		public    DeducePhase       dp;
-		public    Iterable<EvaNode> lgc;
-		public    OS_Module         m;
-		protected OS_Element        main_class;
-
-
-		List<FunctionMapHook> ran_hooks = new ArrayList<>();
+		}
 	}
 }
 

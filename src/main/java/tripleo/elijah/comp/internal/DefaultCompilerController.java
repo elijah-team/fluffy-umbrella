@@ -51,17 +51,17 @@ public class DefaultCompilerController implements CompilerController {
 
 			c.__cr = new CompilationRunner(c.getCompilationEnclosure().getCompilationAccess());
 
-					if (s.equals(input.getInp())) {
-						input.setSourceRoot();
-					}
-				}
-			}
+			hook(c.__cr);
 
 			c.__cr.doFindCIs(inputs, args2, cb);
 		} catch (final Exception e) {
 			c.getErrSink().exception(e);
 			throw new RuntimeException(e);
 		}
+	}
+
+	public void hook(final CompilationRunner aCr) {
+
 	}
 
 	@Override
