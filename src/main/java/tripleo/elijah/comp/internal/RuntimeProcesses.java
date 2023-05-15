@@ -30,18 +30,18 @@ public class RuntimeProcesses {
 		if (ca.getStage() == Stages.E) return;
 
 		// rt.prepare();
-		tripleo.elijah.util.Stupidity.println_err_2("***** RuntimeProcess [prepare] named " + process);
+		//tripleo.elijah.util.Stupidity.println_err_2("***** RuntimeProcess [prepare] named " + process);
 		process.prepare();
 
 		// rt.run();
-		tripleo.elijah.util.Stupidity.println_err_2("***** RuntimeProcess [run    ] named " + process);
+		//tripleo.elijah.util.Stupidity.println_err_2("***** RuntimeProcess [run    ] named " + process);
 		process.run(ca.getCompilation());
 
 		// rt.postProcess(pr);
-		tripleo.elijah.util.Stupidity.println_err_2("***** RuntimeProcess [postProcess] named " + process);
+		//tripleo.elijah.util.Stupidity.println_err_2("***** RuntimeProcess [postProcess] named " + process);
 		process.postProcess();
 
-		tripleo.elijah.util.Stupidity.println_err_2("***** RuntimeProcess^ [postProcess/writeLogs]");
+		//tripleo.elijah.util.Stupidity.println_err_2("***** RuntimeProcess^ [postProcess/writeLogs]");
 		pr.writeLogs();
 	}
 }

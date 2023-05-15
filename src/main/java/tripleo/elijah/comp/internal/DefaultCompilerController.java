@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DefaultCompilerController implements CompilerController {
-	List<String>   args;
-	String[]       args2;
-	CompilationBus cb;
-	private Compilation         c;
-	private List<CompilerInput> inputs;
+	List<String>        args;
+	String[]            args2;
+	CompilationBus      cb;
+	List<CompilerInput> inputs;
+	private Compilation c;
 
 	@Override
 	public void printUsage() {
@@ -41,9 +41,8 @@ public class DefaultCompilerController implements CompilerController {
 		try {
 			c.subscribeCI(c._cis._cio);
 
-			if (c.cb == null) {
-				c.cb = new CompilationBus(c);
-			}
+//			assert c.cb == null;
+//			c.cb = new CompilationBus(c);
 
 			assert c.getCompilationEnclosure().getCompilationAccess() == null;
 			final DefaultCompilationAccess ca = new DefaultCompilationAccess(c);

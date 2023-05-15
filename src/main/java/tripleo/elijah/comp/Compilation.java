@@ -581,16 +581,16 @@ public abstract class Compilation {
 		}
 	}
 
-	public void feedInputs(final List<CompilerInput> args, final CompilerController ctl) {
-		if (args.size() == 0) {
+	public void feedInputs(final @NotNull List<CompilerInput> inputs, final CompilerController ctl) {
+		if (inputs.size() == 0) {
 			ctl.printUsage();
-			return; // ab
+			return;
 		}
 
 		if (ctl instanceof DefaultCompilerController) {
-			ctl._setInputs(this, args);
+			ctl._setInputs(this, inputs);
 		//} else if (ctl instanceof UT_Controller uctl) {
-		//	uctl._setInputs(this, args);
+		//	uctl._setInputs(this, inputs);
 		}
 
 		ctl.processOptions();
