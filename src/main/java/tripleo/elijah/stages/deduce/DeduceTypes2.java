@@ -2099,7 +2099,7 @@ public class DeduceTypes2 {
 
 							int yyy = 2;
 
-							@NotNull TypeTableEntry tte = tte = idte2.type;
+							@NotNull TypeTableEntry tte = idte2.type;
 							try {
 								Preconditions.checkState(tte.genType.typeName.getType() == OS_Type.Type.USER);
 

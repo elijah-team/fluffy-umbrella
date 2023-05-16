@@ -142,6 +142,7 @@ class Resolve_Variable_Table_Entry {
 						vte.genType.copy(gt);
 					}
 				} else {
+					int yy=2;
 				}
 				int y = 2;
 			} else if (aPot.tableEntry == null) {

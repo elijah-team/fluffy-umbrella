@@ -1,6 +1,8 @@
 package tripleo.elijah.stages.gen_generic.pipeline_impl;
 
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.GeneratePipeline;
 import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.stages.gen_fn.EvaClass;
