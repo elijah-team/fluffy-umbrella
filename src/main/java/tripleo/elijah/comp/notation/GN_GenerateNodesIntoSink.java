@@ -89,7 +89,7 @@ public class GN_GenerateNodesIntoSink implements GN_Notable {
 			final GenerateResult          ggr           = run3(mod, processedNodes, wm, generateFiles, resultSink);
 
 			wm.drain();
-			gr.results().addAll(ggr.results());
+			gr.additional(ggr);
 
 
 			//final EIT_ModuleInput emi = new EIT_ModuleInput(mod, mod.getCompilation());
