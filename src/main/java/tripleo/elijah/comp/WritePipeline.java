@@ -40,7 +40,6 @@ import tripleo.elijah.util.NotImplementedException;
 import tripleo.util.buffer.TextBuffer;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -120,24 +119,29 @@ public class WritePipeline implements PipelineMember, Consumer<Supplier<Generate
 
 	@Override
 	public void run() throws Exception {
-		// final GenerateResult rs = grs.get(); // 04/15
-
-//		prom.then((final GenerateResult result) -> {
 		latch.notify(true);
-//		});
 	}
 
-	public void append_hash(TextBuffer outputBuffer, String aFilename, ErrSink errSink) throws IOException {
-		@Nullable final String hh = Helpers.getHashForFilename(aFilename, errSink);
-		if (hh != null) {
+	public Operation<String> append_hash(TextBuffer outputBuffer, String aFilename) {
+		final @NotNull Operation<String> hh2 = Helpers.getHashForFilename(aFilename);
+
+		if (hh2.mode() == Mode.SUCCESS) {
+			final String hh = hh2.success();
+
+			assert hh != null;
+
+			// TODO EG_Statement here
+
 			outputBuffer.append(hh);
 			outputBuffer.append(" ");
 			outputBuffer.append_ln(aFilename);
 		}
+
+		return hh2;
 	}
 
 	@Override
-	public void accept(final Supplier<GenerateResult> aGenerateResultSupplier) {
+	public void accept(final @NotNull Supplier<GenerateResult> aGenerateResultSupplier) {
 		final GenerateResult gr = aGenerateResultSupplier.get();
 		grs = aGenerateResultSupplier;
 		int y = 2;
@@ -284,16 +288,11 @@ public class WritePipeline implements PipelineMember, Consumer<Supplier<Generate
 			final @NotNull GenerateResult generateResult = sharedState.getGr();
 
 			generateResult.outputFiles((final Map<String, OutputFileC> outputFiles) -> {
-				___completeSequence(outputFiles);
+				final WriteOutputFiles wof = new WriteOutputFiles();
+				wof.writeOutputFiles(sharedState, outputFiles);
 			});
 		}
-
-		private void ___completeSequence(final @NotNull Map<String, OutputFileC> outputFiles) {
-			final WriteOutputFiles wof = new WriteOutputFiles();
-			wof.writeOutputFiles(sharedState, outputFiles);
-		}
 	}
-
 }
 
 //

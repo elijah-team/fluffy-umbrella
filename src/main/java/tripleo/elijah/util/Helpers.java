@@ -15,6 +15,7 @@ import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
+import tripleo.elijah.comp.Operation;
 import tripleo.elijah.lang.DotExpression;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.IdentExpression;
@@ -130,9 +131,18 @@ public class Helpers {
 		return sb.toString();
 	}
 
-	public static String getHashForFilename(final String aFilename, final ErrSink aErrSink) throws IOException {
-		String hdigest = new DigestUtils(MessageDigestAlgorithms.SHA_256).digestAsHex(new File(aFilename));
-		return hdigest;
+	public static @NotNull Operation<String> getHashForFilename(final String aFilename) {
+		try {
+			final String hdigest = new DigestUtils(MessageDigestAlgorithms.SHA_256).digestAsHex(new File(aFilename));
+
+			if (hdigest != null) {
+				return Operation.success(hdigest);
+			} else {
+				return Operation.failure(new Exception("apache digest returns null"));
+			}
+		} catch (IOException aE) {
+			return Operation.failure(aE);
+		}
 	}
 
 	// TODO this method is just ugly
