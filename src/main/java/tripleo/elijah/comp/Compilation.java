@@ -64,12 +64,7 @@ public abstract class Compilation {
 	private final Pipeline                          pipelines = new Pipeline();
 	private final int                               _compilationNumber;
 	private final Map<String, OS_Package>           _packages = new HashMap<String, OS_Package>();
-	//public        Stages                            stage     = Stages.O; // Output
-	//public        boolean                           silent    = false;
-	//public boolean do_out = false;
-	//public        boolean                           showTree  = false;
-	//
-	//
+
 	public        LivingRepo                        _repo     = new DefaultLivingRepo();
 	public  CompilationRunner __cr;
 	private IPipelineAccess   _pa;
@@ -152,7 +147,6 @@ public abstract class Compilation {
 	}
 
 	public void feedCmdLine(final @NotNull List<String> args) throws Exception {
-		final PicoContainer      pico       = MainModule.newContainer();
 		final CompilerController controller = new DefaultCompilerController();
 
 		if (args.size() == 0) {
@@ -333,24 +327,6 @@ public abstract class Compilation {
 	public void eachModule(final Consumer<OS_Module> object) {
 		for (OS_Module mod : modules) {
 			object.accept(mod);
-		}
-	}
-
-	static class MainModule {
-
-		public static @NotNull PicoContainer newContainer() {
-			final MutablePicoContainer pico = new DefaultPicoContainer();
-
-			pico.addComponent(PicoContainer.class, pico);
-			pico.addComponent(OptionsProcessor.class, new ApacheOptionsProcessor());
-
-			//pico.addComponent(CompilerInstructionsObserver.class); // TODO not yet
-
-			//pico.addComponent(InfoWindowProvider.class);
-			//pico.addComponent(ShowInfoWindowAction.class);
-			//pico.addComponent(ShowInfoWindowButton.class);
-
-			return pico;
 		}
 	}
 

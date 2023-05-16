@@ -23,7 +23,6 @@
     <orderEntry type="library" name="commons-cli-1.4" level="project" />
     <orderEntry type="library" name="antlr-2.7.7" level="project" />
     <orderEntry type="library" name="io.reactivex.rxjava3:rxjava:3.1.0" level="project" />
-    <orderEntry type="library" name="picocontainer" level="project" />
     <orderEntry type="library" name="apache.commons.lang3" level="project" />
     <orderEntry type="library" name="net.java.dev.jna" level="project" />
     <orderEntry type="library" name="mockito.core" level="project" />
