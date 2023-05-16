@@ -66,12 +66,12 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 
 	@Override
 	public void writeLogs() {
-		compilation.pa().notate(92, new GN_WriteLogs(this, compilation.pipelineLogic().elLogs));
+		compilation.pa().notate(92, new GN_WriteLogs(this, compilation.getCompilationEnclosure().getPipelineLogic().elLogs));
 	}
 
 	@Override
 	public List<IFunctionMapHook> functionMapHooks() {
-		return compilation.pipelineLogic().dp.functionMapHooks;
+		return compilation.getCompilationEnclosure().getPipelineLogic().dp.functionMapHooks;
 	}
 
 

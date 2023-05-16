@@ -326,8 +326,8 @@ public abstract class Compilation {
 	}
 
 	// TODO remove this 04/20
-	public void addFunctionMapHook(IFunctionMapHook aFunctionMapHook) {
-		pipelineLogic().dp.addFunctionMapHook(aFunctionMapHook);
+	public void addFunctionMapHook(final IFunctionMapHook aFunctionMapHook) {
+		getCompilationEnclosure().getPipelineLogic().dp.addFunctionMapHook(aFunctionMapHook);
 	}
 
 	// endregion
@@ -336,11 +336,6 @@ public abstract class Compilation {
 		for (OS_Module mod : modules) {
 			object.accept(mod);
 		}
-	}
-
-	@Deprecated
-	public PipelineLogic pipelineLogic() {
-		return pipelineLogic;
 	}
 
 	static class MainModule {

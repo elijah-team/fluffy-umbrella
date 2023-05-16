@@ -14,15 +14,15 @@ import tripleo.elijah.comp.internal.CompilerDriver;
 
 public class CompilationEnclosure {
 
-	private IPipelineAccess pa;
-	private       PipelineLogic pipelineLogic;
-	private       AccessBus     ab;
-	private final Compilation                                 compilation;
-	public final  DeferredObject<IPipelineAccess, Void, Void> pipelineAccessPromise = new DeferredObject<>();
-	private final DeferredObject<AccessBus, Void, Void>       accessBusPromise      = new DeferredObject<>();
-	private @NotNull ICompilationAccess ca;
-	private CompilationBus              compilationBus;
-	private CompilerDriver compilerDriver;
+	public final     DeferredObject<IPipelineAccess, Void, Void> pipelineAccessPromise = new DeferredObject<>();
+	private final    Compilation                                 compilation;
+	private final    DeferredObject<AccessBus, Void, Void>       accessBusPromise      = new DeferredObject<>();
+	private          IPipelineAccess                             pa;
+	private          PipelineLogic                               pipelineLogic;
+	private          AccessBus                                   ab;
+	private @NotNull ICompilationAccess                          ca;
+	private          CompilationBus                              compilationBus;
+	private          CompilerDriver                              compilerDriver;
 
 	public CompilationEnclosure(final Compilation aCompilation) {
 		compilation = aCompilation;
@@ -69,11 +69,11 @@ public class CompilationEnclosure {
 	}
 
 	public void setCompilationAccess(@NotNull ICompilationAccess aca) {
-		this.ca = aca;
+		ca = aca;
 	}
 
 	public ICompilationAccess getCompilationAccess() {
-		return this.ca;
+		return ca;
 	}
 
 	public CompilationBus getCompilationBus() {
@@ -90,5 +90,9 @@ public class CompilationEnclosure {
 
 	public CompilerDriver getCompilerDriver() {
 		return compilerDriver;
+	}
+
+	public IPipelineAccess getPipelineAccess() {
+		return pa;
 	}
 }

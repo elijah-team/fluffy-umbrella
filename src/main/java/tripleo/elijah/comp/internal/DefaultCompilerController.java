@@ -1,10 +1,10 @@
 package tripleo.elijah.comp.internal;
 
 import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.i.OptionsProcessor;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DefaultCompilerController implements CompilerController {
 	List<String>        args;
@@ -20,11 +20,18 @@ public class DefaultCompilerController implements CompilerController {
 
 	@Override
 	public void processOptions() {
-		final OptionsProcessor             op  = new ApacheOptionsProcessor();
-		final CompilerInstructionsObserver cio = new CompilerInstructionsObserver(c, op);
-		cb = new CompilationBus(c.getCompilationEnclosure());
+		final OptionsProcessor             op                   = new ApacheOptionsProcessor();
+		final CompilerInstructionsObserver cio                  = new CompilerInstructionsObserver(c, op);
 
-		c.getCompilationEnclosure().setCompilationBus(cb);
+		final DefaultCompilationAccess     ca                   = new DefaultCompilationAccess(c);
+
+		final CompilationEnclosure         compilationEnclosure = c.getCompilationEnclosure();
+
+		compilationEnclosure.setCompilationAccess(ca);
+
+		cb = new CompilationBus(compilationEnclosure);
+
+		compilationEnclosure.setCompilationBus(cb);
 
 		c._cis._cio = cio;
 
@@ -41,12 +48,9 @@ public class DefaultCompilerController implements CompilerController {
 		try {
 			c.subscribeCI(c._cis._cio);
 
-//			assert c.cb == null;
-//			c.cb = new CompilationBus(c);
-
-			assert c.getCompilationEnclosure().getCompilationAccess() == null;
-			final DefaultCompilationAccess ca = new DefaultCompilationAccess(c);
-			c.getCompilationEnclosure().setCompilationAccess(ca);
+			assert c.getCompilationEnclosure().getCompilationAccess() != null;
+			//final DefaultCompilationAccess ca = new DefaultCompilationAccess(c);
+			//c.getCompilationEnclosure().setCompilationAccess(ca);
 
 			c.__cr = new CompilationRunner(c.getCompilationEnclosure().getCompilationAccess());
 
