@@ -72,7 +72,7 @@ public class EIT_ModuleList {
 
 		//assert lgc.size() == epl.size(); //hmm
 
-		final Coder coder = new Coder(null/*plp.deducePhase.codeRegistrar*/);
+		final Coder coder = new Coder(plp.pipelineLogic.generatePhase.codeRegistrar);
 
 		for (final EvaNode evaNode : lgc) {
 			coder.codeNodes(mod, resolved_nodes, evaNode);
