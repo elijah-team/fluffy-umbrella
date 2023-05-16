@@ -2,6 +2,7 @@ package tripleo.elijah.stages.write_stage.pipeline_impl;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.Operation;
 import tripleo.elijah.comp.WritePipeline;
 import tripleo.elijah.nextgen.outputstatement.EG_Naming;
 import tripleo.elijah.nextgen.outputstatement.EG_SequenceStatement;
@@ -10,9 +11,12 @@ import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputFile;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputType;
+import tripleo.elijah.nextgen.query.Mode;
 import tripleo.util.buffer.DefaultBuffer;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
@@ -34,11 +38,18 @@ public class WPIS_WriteInputs implements WP_Indiviual_Step {
 			final String        fn1 = new File(st.file_prefix, "inputs.txt").toString();
 			final DefaultBuffer buf = new DefaultBuffer("");
 
-			for (File file : st.c.getIO().recordedreads) {
+			for (final File file : st.c.getIO().recordedreads) {
 				final String fn = file.toString();
 
-				writePipeline.append_hash(buf, fn, st.c.getErrSink());
+				final Operation<String> op = writePipeline.append_hash(buf, fn);
+
+				ops.put(fn, op);
+
+				if (op.mode() == Mode.FAILURE) {
+					break;
+				}
 			}
+
 			String s = buf.getText();
 			Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn1, true)));
 			w.write(s);
