@@ -7,7 +7,6 @@ import tripleo.elijah.stages.gen_generic.DoubleLatch;
 import tripleo.elijah.util.Helpers;
 import tripleo.util.buffer.DefaultBuffer;
 
-import java.io.IOException;
 import java.util.concurrent.Executor;
 
 /*
@@ -24,16 +23,22 @@ public class HashBuffer extends DefaultBuffer {
 		super(string);
 
 		parent = null;
+
+		dl.notify(string);
 	}
 
-	public HashBuffer(final String aFileName, final HashBufferList aHashBufferList, final Executor aExecutor, final ErrSink errSink) {
+
+	public HashBuffer(final String aFileName, final HashBufferList aHashBufferList, final Executor aExecutor) {
 		super("");
 
-		String[] y = new String[1];
-		DoubleLatch<String> dl = new DoubleLatch<>(aFilename -> {
-			y[0] = aFilename;
+		parent = aHashBufferList;
+		//parent.setNext(this);
 
-			final HashBuffer outputBuffer = this;
+		dl.notify(aFileName);
+	}
+
+	final DoubleLatch<String> dl = new DoubleLatch<>(aFilename -> {
+		final HashBuffer outputBuffer = this;
 
 		final @NotNull String hh;
 		final @NotNull Operation<String> hh2 = Helpers.getHashForFilename(aFilename);
