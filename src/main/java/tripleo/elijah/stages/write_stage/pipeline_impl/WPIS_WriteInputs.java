@@ -21,7 +21,8 @@ import java.util.Map;
 import static tripleo.elijah.util.Helpers.List_of;
 
 public class WPIS_WriteInputs implements WP_Indiviual_Step {
-	private final WritePipeline writePipeline;
+	private final WritePipeline                  writePipeline;
+	private final Map<String, Operation<String>> ops = new HashMap<>();
 
 	@Contract(pure = true)
 	public WPIS_WriteInputs(final WritePipeline aWritePipeline) {
