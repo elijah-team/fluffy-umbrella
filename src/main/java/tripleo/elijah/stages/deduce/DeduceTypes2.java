@@ -32,10 +32,7 @@ import tripleo.elijah.lang2.SpecialVariables;
 import tripleo.elijah.nextgen.ClassDefinition;
 import tripleo.elijah.stages.deduce.declarations.DeferredMember;
 import tripleo.elijah.stages.deduce.declarations.DeferredMemberFunction;
-import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_Function;
-import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
-import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_ProcTableEntry;
-import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
+import tripleo.elijah.stages.deduce.post_bytecode.*;
 import tripleo.elijah.stages.deduce.tastic.FT_FnCallArgs;
 import tripleo.elijah.stages.deduce.tastic.ITastic;
 import tripleo.elijah.stages.gen_fn.*;
@@ -1445,6 +1442,10 @@ public class DeduceTypes2 {
 		});
 	}
 
+	public DeduceElement3_VariableTableEntry zeroGet(final VariableTableEntry aVte, final BaseEvaFunction aGeneratedFunction) {
+		return _zero.get(aVte, aGeneratedFunction);
+	}
+
 	public interface IElementProcessor {
 		void elementIsNull();
 
@@ -2382,7 +2383,17 @@ public class DeduceTypes2 {
 			}
 
 			final DeduceElement3_ProcTableEntry de3 = new DeduceElement3_ProcTableEntry(pte, DeduceTypes2.this, aGeneratedFunction);
-			l.put(aGeneratedFunction, de3);
+			l.put(pte, de3);
+			return de3;
+		}
+
+		public DeduceElement3_VariableTableEntry get(final VariableTableEntry vte, final BaseEvaFunction aGeneratedFunction) {
+			if (l.containsKey(vte)) {
+				return (DeduceElement3_VariableTableEntry) l.get(vte);
+			}
+
+			final DeduceElement3_VariableTableEntry de3 = new DeduceElement3_VariableTableEntry(vte, DeduceTypes2.this, aGeneratedFunction);
+			l.put(vte, de3);
 			return de3;
 		}
 

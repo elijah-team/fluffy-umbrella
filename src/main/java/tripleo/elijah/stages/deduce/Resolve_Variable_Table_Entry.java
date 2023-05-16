@@ -15,8 +15,8 @@ import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_FuncExprType;
+import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VariableTableEntry;
 import tripleo.elijah.stages.gen_fn.*;
-import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkList;
@@ -109,42 +109,11 @@ class Resolve_Variable_Table_Entry {
 				//
 
 				if (e != null) {
-					if (e instanceof FunctionDef) {
-	//						final FunctionDef fd = (FunctionDef) e;
-						@NotNull IdentTableEntry ite1 = ((IdentIA) pte1.expression_num).getEntry();
-						DeducePath               dp   = ite1.buildDeducePath(generatedFunction);
-						@Nullable GenType        t    = dp.getType(dp.size() - 1);
-						ite1.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(e));
-						pte1.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(e));
-						pte1.typePromise().then(new DoneCallback<GenType>() {
-							@Override
-							public void onDone(@NotNull GenType result) {
-								if (t == null) {
-									ite1.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, result.resolved);
-									ite1.setGenType(result);
-								} else {
-	//								assert false; // we don't expect this, but note there is no problem if it happens
-									t.copy(result);
-								}
-							}
-						});
-						int y = 2;
-					} else {
-						vte.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(e));
-						pte1.setStatus(BaseTableEntry.Status.KNOWN, new ConstructableElementHolder(e, vte));
-	//					vte.setCallablePTE(pte1);
-
-						GenType gt = aPot.genType;
-						setup_GenType(e, gt);
-	//					if (gt.node == null)
-	//						gt.node = vte.genType.node;
-
-						vte.genType.copy(gt);
-					}
+					final DeduceElement3_VariableTableEntry de3_vte = deduceTypes2.zeroGet(vte, generatedFunction);
+					de3_vte.__action_vp1o(vte, aPot, pte1, e);
 				} else {
-					int yy=2;
+					int y=2;
 				}
-				int y = 2;
 			} else if (aPot.tableEntry == null) {
 				final OS_Element el = vte.getResolvedElement();
 				if (el instanceof VariableStatement) {
@@ -185,73 +154,6 @@ class Resolve_Variable_Table_Entry {
 				assert false;
 		} else
 			assert false;
-	}
-
-	private void setup_GenType(OS_Element element, @NotNull GenType aGt) {
-		if (element instanceof NamespaceStatement) {
-			final @NotNull NamespaceStatement namespaceStatement = (NamespaceStatement) element;
-			aGt.resolvedn = (NamespaceStatement) element;
-			final NamespaceInvocation nsi = phase.registerNamespaceInvocation(namespaceStatement);
-//			pte.setNamespaceInvocation(nsi);
-			aGt.ci = nsi;
-//			fi = newFunctionInvocation(fd, pte, nsi, phase);
-		} else if (element instanceof ClassStatement) {
-			final @NotNull ClassStatement classStatement = (ClassStatement) element;
-			aGt.resolved = ((ClassStatement) element).getOS_Type();
-			// TODO genCI ??
-			@Nullable ClassInvocation ci = new ClassInvocation(classStatement, null);
-			ci     = phase.registerClassInvocation(ci);
-			aGt.ci = ci;
-//			pte.setClassInvocation(ci);
-//			fi = newFunctionInvocation(fd, pte, ci, phase);
-		} else if (element instanceof FunctionDef) {
-			// TODO this seems to be an elaborate copy of the above with no differentiation for functionDef
-			final @NotNull FunctionDef functionDef = (FunctionDef) element;
-			OS_Element                 parent      = functionDef.getParent();
-			@Nullable IInvocation      inv;
-			switch (DecideElObjectType.getElObjectType(parent)) {
-			case CLASS:
-				aGt.resolved = ((ClassStatement) parent).getOS_Type();
-				inv = phase.registerClassInvocation((ClassStatement) parent, null);
-				((ClassInvocation) inv).resolveDeferred().then(new DoneCallback<EvaClass>() {
-					@Override
-					public void onDone(EvaClass result) {
-						result.functionMapDeferred(functionDef, new FunctionMapDeferred() {
-							@Override
-							public void onNotify(final EvaFunction aGeneratedFunction) {
-								aGt.node = aGeneratedFunction;
-							}
-						});
-					}
-				});
-				break;
-			case NAMESPACE:
-				aGt.resolvedn = (NamespaceStatement) parent;
-				inv = phase.registerNamespaceInvocation((NamespaceStatement) parent);
-				((NamespaceInvocation) inv).resolveDeferred().then(new DoneCallback<EvaNamespace>() {
-					@Override
-					public void onDone(EvaNamespace result) {
-						result.functionMapDeferred(functionDef, new FunctionMapDeferred() {
-							@Override
-							public void onNotify(final EvaFunction aGeneratedFunction) {
-								aGt.node = aGeneratedFunction;
-							}
-						});
-					}
-				});
-				break;
-			default:
-				throw new NotImplementedException();
-			}
-			aGt.ci = inv;
-		} else if (element instanceof AliasStatement) {
-			@Nullable OS_Element el = element;
-			while (el instanceof AliasStatement) {
-				el = DeduceLookupUtils._resolveAlias((AliasStatement) el, deduceTypes2);
-			}
-			setup_GenType(el, aGt);
-		} else // TODO will fail on FunctionDef's
-			throw new IllegalStateException("Unknown parent");
 	}
 
 	private void action_VAR_potsize_1_and_FuncExprType(@NotNull VariableTableEntry vte,
