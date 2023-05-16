@@ -40,12 +40,7 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 	public void setPipelineLogic(final PipelineLogic pl) {
 		assert compilation.getCompilationEnclosure().getPipelineLogic() == null;
 		compilation.getCompilationEnclosure().setPipelineLogic(pl);
-
-		compilation.pipelineLogic = pl;
-
-//		pipelineLogicDeferred.resolve(pl);
-
-//		compilation.pr.setGenerateResult(pl.gr);
+		pipelineLogicDeferred.resolve(pl);
 	}
 
 	@Override
