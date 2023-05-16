@@ -26,20 +26,17 @@ import java.util.function.Supplier;
  */
 public class ElSystem {
 	private final Supplier<OutputStrategy> outputStrategyCreator;
-	//private       OutputStrategy                 outputStrategy;
 	private final Map<EvaFunction, String> gfm_map = new HashMap<EvaFunction, String>();
-	public        boolean                  verbose;
-	//private       Compilation                    compilation;
+	private final boolean                  verbose;
 
-	public ElSystem(final boolean aB, final Compilation aC, final Supplier<OutputStrategy> aCreateOutputStratgy) {
+	public ElSystem(final boolean aB, final Compilation ignoredAC, final Supplier<OutputStrategy> aCreateOutputStratgy) {
 		verbose = aB;
-		//compilation = aC;
 		outputStrategyCreator = aCreateOutputStratgy;
 	}
 
 	public void generateOutputs(@NotNull GenerateResult gr) {
-		//final OutputStrategy  outputStrategy1 = this.outputStrategy;
 		final OutputStrategy outputStrategy1 = outputStrategyCreator.get();
+
 		// TODO hard coded
 		final OutputStrategyC outputStrategyC = new OutputStrategyC(outputStrategy1);
 

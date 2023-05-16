@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CompilationFactory {
 
-	public static CompilationImpl mkCompilation2(final List<IFunctionMapHook> aMapHooks) {
+	public static @NotNull CompilationImpl mkCompilation2(final List<IFunctionMapHook> aMapHooks) {
 		final StdErrSink errSink = new StdErrSink();
 		final IO         io      = new IO();
 

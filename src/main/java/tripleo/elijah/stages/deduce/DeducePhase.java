@@ -154,7 +154,7 @@ public class DeducePhase {
 		return i == 0;
 	}
 
-	public void addFunctionMapHook(IFunctionMapHook aFunctionMapHook) {
+	public void addFunctionMapHook(final IFunctionMapHook aFunctionMapHook) {
 		functionMapHooks.add(aFunctionMapHook);
 	}
 
@@ -199,7 +199,7 @@ public class DeducePhase {
 			if (evaNode instanceof BaseEvaFunction) {
 				bef = (BaseEvaFunction) evaNode;
 			} else continue;
-			for (IFunctionMapHook hook : functionMapHooks) {
+			for (final IFunctionMapHook hook : functionMapHooks) {
 				if (hook.matches((FunctionDef) bef.getFD())) {
 					hook.apply(List_of((EvaFunction) bef));
 				}
@@ -529,8 +529,8 @@ public class DeducePhase {
 	}
 
 	public void handleFunctionMapHooks() {
-		for (Map.@NotNull Entry<FunctionDef, Collection<EvaFunction>> entry : functionMap.asMap().entrySet()) {
-			for (@NotNull IFunctionMapHook functionMapHook : ca.functionMapHooks()) {
+		for (final Map.@NotNull Entry<FunctionDef, Collection<EvaFunction>> entry : functionMap.asMap().entrySet()) {
+			for (final IFunctionMapHook functionMapHook : ca.functionMapHooks()) {
 				if (functionMapHook.matches(entry.getKey())) {
 					functionMapHook.apply(entry.getValue());
 				}

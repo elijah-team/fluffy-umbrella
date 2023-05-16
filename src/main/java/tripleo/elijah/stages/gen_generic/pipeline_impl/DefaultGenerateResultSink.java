@@ -17,21 +17,25 @@ public class DefaultGenerateResultSink implements GenerateResultSink {
 	private final List<GenerateResultItem> gris = new ArrayList<>();
 	private final IPipelineAccess          pa;
 
-	public DefaultGenerateResultSink(final GeneratePipeline aGeneratePipeline, IPipelineAccess pa0) {
+	@Contract(pure = true)
+	public DefaultGenerateResultSink(final @NotNull GeneratePipeline aGeneratePipeline,
+									 final @NotNull IPipelineAccess pa0) {
 		generatePipeline = aGeneratePipeline;
 		pa               = pa0;
 	}
 
 	public List<GenerateResultItem> resultList() {
 		return ImmutableList.copyOf(gris);
-	}	@Override
+	}
+
+	@Override
 	public void add(EvaNode node) {
 		int y = 2;
 	}
 
 	@Override
-	public void additional(final GenerateResult aGenerateResult) {
-		for (GenerateResultItem result : aGenerateResult.results()) {
+	public void additional(final @NotNull GenerateResult aGenerateResult) {
+		for (final GenerateResultItem result : aGenerateResult.results()) {
 			gris.add(result);
 			add(result.node);
 		}
@@ -41,6 +45,4 @@ public class DefaultGenerateResultSink implements GenerateResultSink {
 	public LivingClass getLivingClassForEva(final EvaClass aEvaClass) {
 		return pa.getCompilation()._repo.getClass(aEvaClass);
 	}
-
-
 }

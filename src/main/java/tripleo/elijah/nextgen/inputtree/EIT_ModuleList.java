@@ -96,10 +96,6 @@ public class EIT_ModuleList {
 //			}
 	}
 
-//	public void _set_PL(final PipelineLogic aPipelineLogic) {
-//		__pl = aPipelineLogic;
-//	}
-
 	public Stream<OS_Module> stream() {
 		return mods.stream();
 	}
@@ -115,9 +111,8 @@ public class EIT_ModuleList {
 		@NotNull
 		private final EntryPointList    epl;
 		private final DeducePhase       deducePhase;
-//		@NotNull
-//		private final ElLog.Verbosity                         verbosity;
 
+		@Contract(pure = true)
 		private _ProcessParams(@NotNull final OS_Module aModule,
 							   @NotNull final PipelineLogic aPipelineLogic,
 							   @NotNull final GenerateFunctions aGenerateFunctions,
@@ -128,7 +123,6 @@ public class EIT_ModuleList {
 			gfm           = aGenerateFunctions;
 			epl           = aEntryPointList;
 			deducePhase   = aDeducePhase;
-//			verbosity = mod.getCompilation().pipelineLogic().getVerbosity();
 		}
 
 		@Contract(pure = true)
@@ -148,10 +142,6 @@ public class EIT_ModuleList {
 		public void deduceModule() {
 			deducePhase.deduceModule(mod, getLgc(), getVerbosity());
 		}
-
-		//
-		//
-		//
 
 		@Contract(pure = true)
 		public DeducePhase.GeneratedClasses getLgc() {

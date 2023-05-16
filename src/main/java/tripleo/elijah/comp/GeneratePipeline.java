@@ -78,18 +78,14 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 		pa.registerNodeList(latch2::notify);
 	}
 
-
-
 	@Override
 	public void lgc_slot(final List<EvaNode> aLgc) {
-
 		final List<ProcessedNode> nodes = processLgc(aLgc);
 
 		pa.pipelineLogic().generate(nodes, grs);
 
-		final List<GenerateResultItem> x = grs.resultList();
-
-		SPrintStream xps = new SPrintStream();
+		final List<GenerateResultItem> x   = grs.resultList();
+		final SPrintStream             xps = new SPrintStream();
 
 		for (final GenerateResultItem ab : x) {
 			DebugBuffersLogic.__debug_buffers_logic_each(xps, ab);
@@ -115,23 +111,21 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 		latch2.notify(true);
 
 		if (false && pipelineLogic != null) {
-			Preconditions.checkNotNull(pipelineLogic);
 			Preconditions.checkNotNull(lgc);
 
-			/*pipelineLogic().*/
-			generate(lgc, errSink, pipelineLogic.mods, pipelineLogic.getVerbosity());
+			generate(lgc, pipelineLogic.mods);
 		}
 	}
 
 	protected void generate(final @NotNull List<EvaNode> _______lgc,
-							final @NotNull ErrSink aErrSink,
-							final @NotNull EIT_ModuleList mods,
-							final @NotNull ElLog.Verbosity verbosity) {
+							final @NotNull EIT_ModuleList mods) {
+		final @NotNull ElLog.Verbosity verbosity = ce.getPipelineLogic().getVerbosity();
+		final @NotNull ErrSink aErrSink = ce.getCompilationAccess().getCompilation().getErrSink();
+
 		final WorkManager    wm   = new WorkManager();
 
 		final GenerateResult gr   = pa.getAccessBus().gr;
 		final Compilation    comp = pa.getCompilation();
-
 
 		assert _______lgc.equals(lgc);
 
@@ -154,7 +148,7 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 									   grs.additional(gr2);
 								   }, ce);
 
-			System.out.println("999999 " + ((DefaultGenerateResultSink) grs).resultList());
+			System.out.println("999999 " + grs.resultList());
 		}
 
 		pa.getAccessBus().resolveGenerateResult(gr);

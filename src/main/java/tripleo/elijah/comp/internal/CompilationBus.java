@@ -11,7 +11,7 @@ public class CompilationBus implements ICompilationBus {
 	public final  CompilerDriver cd;
 	private final Compilation    c;
 
-	public CompilationBus(final CompilationEnclosure ace) {
+	public CompilationBus(final @NotNull CompilationEnclosure ace) {
 		c  = ace.getCompilationAccess().getCompilation();
 		cd = new CompilerDriver(this);
 

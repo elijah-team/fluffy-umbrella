@@ -71,7 +71,6 @@ public abstract class Compilation {
 	//
 	//
 	public        LivingRepo                        _repo     = new DefaultLivingRepo();
-	public        PipelineLogic                     pipelineLogic;
 	public  CompilationRunner __cr;
 	private IPipelineAccess   _pa;
 	public  CompilationBus    cb;
@@ -84,7 +83,6 @@ public abstract class Compilation {
 	private int               _classCode    = 101;
 	private int               _functionCode = 1001;
 	private CompilationEnclosure compilationEnclosure = new CompilationEnclosure(this);
-	public DefaultCompilationAccess _ca;
 
 	public Compilation(final ErrSink errSink, final IO io) {
 		this.errSink            = errSink;

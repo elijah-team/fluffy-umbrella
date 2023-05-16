@@ -10,6 +10,7 @@
 package tripleo.elijah.comp.notation;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.ErrSink;
@@ -85,8 +86,8 @@ public class GN_GenerateNodesIntoSink implements GN_Notable {
 
 			final OutputFileFactoryParams params        = new OutputFileFactoryParams(mod, errSink, verbosity, ce);
 			final GenerateFiles           generateFiles = OutputFileFactory.create(lang, params);
-			//final GenerateC               generateC     = new GenerateC(mod, errSink, verbosity, this);
-			final GenerateResult ggr = run3(mod, processedNodes, wm, generateFiles, resultSink);
+			final GenerateResult          ggr           = run3(mod, processedNodes, wm, generateFiles, resultSink);
+
 			wm.drain();
 			gr.results().addAll(ggr.results());
 
@@ -101,7 +102,11 @@ public class GN_GenerateNodesIntoSink implements GN_Notable {
 		pa.getAccessBus().resolveGenerateResult(gr);
 	}
 
-	protected GenerateResult run3(OS_Module mod, List<ProcessedNode> lgc, WorkManager wm, GenerateFiles ggc, final GenerateResultSink aResultSink) {
+	protected GenerateResult run3(final @NotNull OS_Module mod,
+								  final @NotNull List<ProcessedNode> lgc,
+								  final @NotNull WorkManager wm,
+								  final @NotNull GenerateFiles ggc,
+								  final @NotNull GenerateResultSink aResultSink) {
 		GenerateResult gr1 = new GenerateResult();
 
 		for (ProcessedNode processedNode : processedNodes) {

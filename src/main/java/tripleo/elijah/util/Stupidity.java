@@ -21,6 +21,7 @@ public class Stupidity {
 		System.err.println(""+aS);
 	}
 
+	@Contract(pure = true)
 	public static void println_out_2(final Object aS) {
 		//System.out.println(""+aS);
 	}
