@@ -13,19 +13,19 @@ import com.google.common.collect.Multimap;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
-import org.jdeferred2.Promise;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.AccessBus.AB_GenerateResultListener;
 import tripleo.elijah.comp.i.IPipelineAccess;
-import tripleo.elijah.comp.internal.ProcessRecord;
+import tripleo.elijah.nextgen.query.Mode;
 import tripleo.elijah.stages.gen_c.CDependencyRef;
 import tripleo.elijah.stages.gen_c.OutputFileC;
 import tripleo.elijah.stages.gen_generic.*;
 import tripleo.elijah.stages.generate.ElSystem;
 import tripleo.elijah.stages.generate.OutputStrategy;
+import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.stages.write_stage.functionality.f201a.WriteOutputFiles;
 import tripleo.elijah.stages.write_stage.pipeline_impl.WPIS_GenerateOutputs;
 import tripleo.elijah.stages.write_stage.pipeline_impl.WPIS_MakeOutputDirectory;
@@ -60,6 +60,8 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 
 	public WritePipeline(final @NotNull IPipelineAccess pa) {
 		st = new WritePipelineSharedState();
+
+		st.pa = pa;
 
 		// given
 		st.c = pa.getCompilation();
@@ -188,15 +190,22 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 		}
 	}
 
-	private /* static */ class CompletedItemsHandler {
-		final         Multimap<Dependency, GenerateResultItem> gris = ArrayListMultimap.create();
+	private static class CompletedItemsHandler {
+		private final Multimap<Dependency, GenerateResultItem> gris = ArrayListMultimap.create();
 		// README debugging purposes
-		final         List<GenerateResultItem>                 abs  = new ArrayList<>();
-		private final WritePipelineSharedState                 sharedState;
-		private       Observer<GenerateResultItem>             observer;
+		private final List<GenerateResultItem>                 abs  = new ArrayList<>();
+		private final ElLog                                    LOG;
+		private final WritePipelineSharedState     sharedState;
+		private       Observer<GenerateResultItem> observer;
 
 		public CompletedItemsHandler(final WritePipelineSharedState aSharedState) {
 			sharedState = aSharedState;
+
+			final ElLog.Verbosity verbosity = sharedState.c.cfg.silent ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
+
+			LOG = new ElLog("(WRITE-PIPELINE)", verbosity, "(write-pipeline)");
+
+			sharedState.pa.addLog(LOG);
 		}
 
 		@Contract(mutates = "this")
@@ -232,15 +241,26 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 			// README debugging purposes
 			abs.add(ab);
 
+			LOG.info("-----------=-----------=-----------=-----------=-----------=-----------");
+			LOG.info("GenerateResultItem >> "+ab.jsonString());
+			LOG.info("abs.size >> "+abs.size());
+
 			final Dependency dependency = ab.getDependency();
+
+			LOG.info("ab.getDependency >> "+dependency.jsonString());
 
 			// README debugging purposes
 			final DependencyRef dependencyRef = dependency.getRef();
 
+			LOG.info("dependencyRef >> "+(dependencyRef != null ? dependencyRef.jsonString() : "null"));
+
 			if (dependencyRef == null) {
 				gris.put(dependency, ab);
 			} else {
-				final String output = ((CDependencyRef) dependency.getRef()).getHeaderFile();
+				final String output = ((CDependencyRef) dependencyRef).getHeaderFile();
+
+				LOG.info("CDependencyRef.getHeaderFile >> "+output);
+
 				sharedState.mmb.put(output, ab.buffer);
 				sharedState.lsp_outputs.put(ab.lsp.getInstructions(), output);
 				for (GenerateResultItem generateResultItem : gris.get(dependency)) {
@@ -250,6 +270,8 @@ public class WritePipeline implements PipelineMember, @NotNull Consumer<Supplier
 				}
 				gris.removeAll(dependency);
 			}
+
+			LOG.info("-----------=-----------=-----------=-----------=-----------=-----------");
 		}
 
 		public void completeSequence() {
