@@ -69,9 +69,9 @@ public class Dependency {
 	}
 
 	public String jsonString() {
-		final StringBuilder sb = new StringBuilder("<Dependency> {");
+		final StringBuilder sb = new StringBuilder("{\".class\": \"Dependency\", ");
 		sb.append("referent: "+referent+", ");
-		sb.append("dref: "+dref.jsonString()+", ");
+		sb.append("dref: " + (dref != null ? dref.jsonString() + ", " : "null, "));
 		sb.append("deps: "+deps+", ");
 		sb.append("resolved: "+resolved/*+", "*/);
 		sb.append("}");
