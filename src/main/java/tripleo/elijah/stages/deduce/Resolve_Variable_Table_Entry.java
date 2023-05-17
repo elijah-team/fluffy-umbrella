@@ -136,13 +136,14 @@ class Resolve_Variable_Table_Entry {
 				assert name_exp instanceof IdentExpression;
 
 				final IdentExpression      name2 = (IdentExpression) name_exp;
-				final LookupResultList     lrl2  = ((IdentExpression) name_exp).getContext().lookup(name2.getText());
+				final LookupResultList     lrl2  = name2.getContext().lookup(name2.getText());
 				final @Nullable OS_Element el2   = lrl2.chooseBest(null);
 
 				if (el2 != null) {
 					if (el2 instanceof ClassStatement) {
 						final ClassStatement classStatement = (ClassStatement) el2;
-						GenType              genType        = new GenType(classStatement);
+						final GenType        genType        = new GenType(classStatement);
+
 						//deferredMember.typeResolved().resolve(genType);
 						genCIForGenType2(genType);
 					}

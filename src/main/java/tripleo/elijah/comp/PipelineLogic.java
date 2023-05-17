@@ -261,12 +261,6 @@ public class PipelineLogic {
 		mods.add(m);
 	}
 
-/*
-	public ElLog.Verbosity getVerbosity() {
-		return verbosity; // ? ElLog.Verbosity.VERBOSE : ElLog.Verbosity.SILENT;
-	}
-*/
-
 	public void addLog(ElLog aLog) {
 		elLogs.add(aLog);
 	}
