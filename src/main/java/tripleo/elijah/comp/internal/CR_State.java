@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class CR_State {
-	private final CompilationRunner         compilationRunner;
+	//private final CompilationRunner         compilationRunner;
 	public        ICompilationBus.CB_Action cur;
 	public        ProcessRecord             pr;
 	public        RuntimeProcesses          rt;
@@ -39,7 +39,7 @@ public class CR_State {
 
 	@Contract(pure = true)
 	public CR_State(final CompilationRunner aCompilationRunner, ICompilationAccess aCa) {
-		compilationRunner       = aCompilationRunner;
+		//compilationRunner       = aCompilationRunner;
 		ca                      = aCa;
 		ca.getCompilation().set_pa(new ProcessRecord_PipelineAccess());
 		pr                      = new ProcessRecordImpl(ca);
@@ -58,7 +58,7 @@ public class CR_State {
 
 	private class ProcessRecordImpl implements ProcessRecord {
 		private final PipelineLogic                              pipelineLogic;
-		private final DeducePipeline                             dpl;
+		//private final DeducePipeline                             dpl;
 		private final ICompilationAccess                         ca;
 		private       AccessBus                                  ab;
 		private final IPipelineAccess                            pa;
@@ -130,7 +130,7 @@ public class CR_State {
 		@Contract(pure = true)
 		@Override
 		public DeducePipeline dpl() {
-			return dpl;
+			return null;//dpl;
 		}
 
 		@Contract(pure = true)
@@ -161,11 +161,9 @@ public class CR_State {
 		public void set_pgr(DeferredObject<GenerateResult, Void, Void> a_pgr) {
 			_pgr = a_pgr;
 		}
-
 	}
 
 	public static class GeneratePipelinePlugin implements PipelinePlugin {
-
 		@Override
 		public String name() {
 			return "GeneratePipeline";
@@ -178,7 +176,6 @@ public class CR_State {
 	}
 
 	public static class DeducePipelinePlugin implements PipelinePlugin {
-
 		@Override
 		public String name() {
 			return "DeducePipeline";
@@ -228,7 +225,8 @@ public class CR_State {
 
 		@Override
 		public DeducePipeline getDeducePipeline() {
-			return getProcessRecord().dpl();
+		//	return getProcessRecord().dpl();
+			throw new Error("237 dpl");
 		}
 
 		@Override
@@ -277,8 +275,7 @@ public class CR_State {
 		}
 
 		@Override
-		public void notate(final int provenance, final GN_Notable aNotable) {
-			int y = 2;
+		public void notate(final int provenance, final @NotNull GN_Notable aNotable) {
 			aNotable.run();
 		}
 
