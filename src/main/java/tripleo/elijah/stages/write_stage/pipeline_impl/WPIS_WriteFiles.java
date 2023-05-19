@@ -1,19 +1,15 @@
 package tripleo.elijah.stages.write_stage.pipeline_impl;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import org.jdeferred2.DoneCallback;
+import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.Operation;
 import tripleo.elijah.comp.WritePipeline;
 import tripleo.elijah.comp.functionality.f203.F203;
 import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.nextgen.outputstatement.EG_CompoundStatement;
-import tripleo.elijah.nextgen.outputstatement.EG_SingleStatement;
-import tripleo.elijah.nextgen.outputstatement.EG_Statement;
-import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
-import tripleo.elijah.nextgen.outputstatement.GE_BuffersStatement;
+import tripleo.elijah.nextgen.outputstatement.*;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputFile;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputType;
@@ -22,7 +18,6 @@ import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.util.buffer.Buffer;
 import tripleo.util.io.CharSink;
-import tripleo.util.io.DisposableCharSink;
 import tripleo.util.io.FileCharSink;
 
 import java.io.File;
@@ -30,7 +25,6 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.function.Supplier;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
@@ -52,76 +46,43 @@ public class WPIS_WriteFiles implements WP_Indiviual_Step {
 								   final @NotNull WP_State_Control 			sc) {
 		final List<EOT_OutputFile> leof = new ArrayList<>();
 
-				final Map<String, OS_Module> modmap = new HashMap<String, OS_Module>();
-				for (final GenerateResultItem ab : st.getGr().results()) {
-					modmap.put(ab.output, ab.node.module());
-				}
+		final Map<String, OS_Module> modmap = new HashMap<String, OS_Module>();
+		for (final GenerateResultItem ab : st.getGr().results()) {
+			modmap.put(ab.output, ab.node.module());
+		}
 
-				int yyyyyyyy=2;
+		int yyyyyyyy=2;
 
-				for (final String s : st.mmb.keySet()) {
-					final Collection<Buffer> vs = mb.get(s);
+		for (final String s : st.mmb.keySet()) {
+			final Collection<Buffer> vs = st.mmb.get(s);
 
-					final EOT_OutputFile eof = EOT_OutputFile.bufferSetToOutputFile(s, vs, st.c, modmap.get(s));
-					leof.add(eof);
-				}
+			final EOT_OutputFile eof = EOT_OutputFile.bufferSetToOutputFile(s, vs, st.c, modmap.get(s));
+			leof.add(eof);
+		}
 
-				writePipeline.st.c.getOutputTree().set(leof);
+		st.c.getOutputTree().set(leof);
 
-				final File fn1 = choose_dir_name(st.c);
+		final File fn1 = choose_dir_name(st.c);
 
-				try {
-					__rest(mb, fn1, leof, st.c);
-				} catch (IOException aE) {
-					throw new RuntimeException(aE);
-				}
+		try {
+			__rest(st.mmb, fn1, leof, st.c);
+		} catch (IOException aE) {
+			op = Operation.failure(aE);
+			sc.exception(aE);
+			return;
+		}
 
-/////////////////
-/////////////////
-/////////////////
-/////////////////
-/////////////////
-/////////////////
-/////////////////
-/////////////////
-/////////////////
-/////////////////
-/////////////////
+		if (false) {
+			leof.stream()
+					.forEach(outputFile -> {
+						System.out.println(outputFile.getFilename());
+						final EG_Statement   seqs  = outputFile.getStatementSequence();
+						System.out.println(seqs.getText());
+					});
+		}
 
-				leof.stream()
-						.forEach(outputFile -> {
-							System.out.println(outputFile.getFilename());
-							final EG_Statement   seqs  = outputFile.getStatementSequence();
-							System.out.println(seqs.getText());
-						});
-
-				int yyyy=2;
-			}
-
-			public void xxxxx__onDone(final GenerateResult result) {
-
-				for (final GenerateResultItem ab : generateResultItems) {
-					mb.put(((CDependencyRef) ab.getDependency().getRef()).getHeaderFile(), ab.buffer); // TODO see above
-				}
-
-				assert result.results().equals(generateResultItems);
-				assert st.mmb.equals(mb);
-
-
-				try {
-					final String prefix = st.file_prefix.toString();
-
-					for (final Map.Entry<String, Collection<Buffer>> entry : /*st.mmb*/mb.asMap().entrySet()) {
-						final String                       key = entry.getKey();
-						final Supplier<Collection<Buffer>> e   = entry::getValue;
-
-						write_files_helper_each(prefix, key, e);
-					}
-				} catch (Exception aE) {
-					throw new RuntimeException(aE);
-				}
-
-			}
+		op = Operation.success(true);
+	}
 
 	@Override
 	public void act(final @NotNull WritePipelineSharedState st, final WP_State_Control sc) {
@@ -144,9 +105,9 @@ public class WPIS_WriteFiles implements WP_Indiviual_Step {
 	}
 
 	private void __rest(final @NotNull Multimap<String, Buffer> mb,
-						final @NotNull File aFile_prefix,
-						final List<EOT_OutputFile> leof,
-						final @NotNull Compilation c) throws IOException {
+						final @NotNull File 					aFile_prefix,
+						final List<EOT_OutputFile> 				leof,
+						final @NotNull Compilation 				c) throws IOException {
 		aFile_prefix.mkdirs();
 		final String prefix = aFile_prefix.toString();
 
@@ -199,9 +160,6 @@ public class WPIS_WriteFiles implements WP_Indiviual_Step {
 
 			final EG_CompoundStatement seq = new EG_CompoundStatement(beginning, ending, middle, false, explanation);
 
-//			for (final @NotNull Buffer buffer : entry.getValue()) {
-//				x.accept(buffer.getText());
-//			}
 			x.accept(seq.getText());
 			((FileCharSink) x).close();
 
@@ -212,5 +170,4 @@ public class WPIS_WriteFiles implements WP_Indiviual_Step {
 			cot.add(off);
 		}
 	}
-
 }
