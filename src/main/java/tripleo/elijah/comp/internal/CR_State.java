@@ -68,15 +68,22 @@ public class CR_State {
 		public ProcessRecordImpl(final @NotNull ICompilationAccess ca0) {
 			ca                      = ca0;
 
-			ca.getCompilation().getCompilationEnclosure().getAccessBusPromise()
-					.then(iab->ab=iab);
+			//ca.getCompilation().getCompilationEnclosure().getAccessBusPromise()
+			//		.then(iab->ab=iab);
+			ca.getCompilation().getCompilationEnclosure().getAccessBusPromise().then((final @NotNull AccessBus iab) -> {
+				ab  = iab;
+				env = ab.env();
+			});
 
 			pa = ca.getCompilation().get_pa();
 
 			pipelineLogic = new PipelineLogic(pa);
-			dpl           = new DeducePipeline(pa);
+			//dpl           = new DeducePipeline(pa);
 
-			ca.getCompilation().getCompilationEnclosure().getAccessBusPromise().then(iab->{ab=iab;env=ab.env();});
+			//ca.getCompilation().getCompilationEnclosure().getAccessBusPromise().then((final @NotNull AccessBus iab) -> {
+			//	ab  = iab;
+			//	env = ab.env();
+			//});
 		}
 
 		@Override
