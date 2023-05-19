@@ -21,13 +21,15 @@ public final class DebugBuffersLogic {
 	}
 
 	public static void __debug_buffers_logic_each(final @NotNull XPrintStream db_stream, final @NotNull GenerateResultItem ab) {
-		final String s = MessageFormat.format("{0} - {1} - {2}", ab.counter, ab.ty, ab.output);
+		if (false) {
+			final String s = MessageFormat.format("{0} - {1} - {2}", ab.counter, ab.ty, ab.output);
 
-		db_stream.println("---------------------------------------------------------------");
-		db_stream.println(s);
-		db_stream.println(ab.node.identityString());
-		db_stream.println(ab.buffer.getText());
-		db_stream.println("---------------------------------------------------------------");
+			db_stream.println("---------------------------------------------------------------");
+			db_stream.println(s);
+			db_stream.println(ab.node.identityString());
+			db_stream.println(ab.buffer.getText());
+			db_stream.println("---------------------------------------------------------------");
+		}
 	}
 
 }
