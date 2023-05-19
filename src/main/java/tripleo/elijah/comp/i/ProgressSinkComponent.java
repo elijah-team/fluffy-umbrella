@@ -9,7 +9,7 @@ public enum ProgressSinkComponent {
 
 		@Override
 		public String printErr(final int aCode, final int aType, final Object[] aParams) {
-			return "*** " + aParams[0]; // ci.getName
+			return "*** CCI ->> " + aParams[0]; // ci.getName
 		}
 	};
 
