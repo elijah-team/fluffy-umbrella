@@ -2069,6 +2069,8 @@ public class DeduceTypes2 {
 			final @Nullable DeduceElement target = dpc.target();
 			int                           y      = 2;
 
+			DeclAnchor xxv = target.declAnchor();
+
 			{
 				@Nullable OS_Element el3;
 				@Nullable Context    ectx = generatedFunction.getFD().getContext();
@@ -2202,7 +2204,7 @@ public class DeduceTypes2 {
 			TypeName tyn = aTy.getTypeName();
 			if (tyn instanceof NormalTypeName) {
 				final @NotNull NormalTypeName tyn1 = (NormalTypeName) tyn;
-				_implement_construct_type(co, constructorName, (NormalTypeName) tyn, aGenType);
+				_implement_construct_type(co, constructorName, tyn1, aGenType);
 			}
 
 			final ClassInvocation classInvocation = pte.getClassInvocation();
