@@ -27,14 +27,7 @@ import tripleo.elijah.stages.generate.ElSystem;
 import tripleo.elijah.stages.generate.OutputStrategy;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.stages.write_stage.functionality.f201a.WriteOutputFiles;
-import tripleo.elijah.stages.write_stage.pipeline_impl.WPIS_GenerateOutputs;
-import tripleo.elijah.stages.write_stage.pipeline_impl.WPIS_MakeOutputDirectory;
-import tripleo.elijah.stages.write_stage.pipeline_impl.WPIS_WriteBuffers;
-import tripleo.elijah.stages.write_stage.pipeline_impl.WPIS_WriteFiles;
-import tripleo.elijah.stages.write_stage.pipeline_impl.WPIS_WriteInputs;
-import tripleo.elijah.stages.write_stage.pipeline_impl.WP_Indiviual_Step;
-import tripleo.elijah.stages.write_stage.pipeline_impl.WP_State_Control_1;
-import tripleo.elijah.stages.write_stage.pipeline_impl.WritePipelineSharedState;
+import tripleo.elijah.stages.write_stage.pipeline_impl.*;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.util.buffer.TextBuffer;
@@ -78,9 +71,10 @@ public class WritePipeline implements PipelineMember, Consumer<Supplier<Generate
 			final WP_Indiviual_Step wpis_wi = new WPIS_WriteInputs(this);
 			final WP_Indiviual_Step wpis_wf = new WPIS_WriteFiles(this);
 			final WP_Indiviual_Step wpis_wb = new WPIS_WriteBuffers(this);
+			final WP_Indiviual_Step wpis_ot = new WPIS_WriteOutputTree(this);
 
 			// TODO: Do something with op, like set in {@code pa} to proceed to next pipeline
-			final WP_Flow f = new WP_Flow(List_of(wpis_go, wpis_mk, wpis_wi, wpis_wf, wpis_wb));
+			final WP_Flow f = new WP_Flow(List_of(wpis_go, wpis_mk, wpis_wi, wpis_wf, wpis_wb, wpis_ot));
 			// TODO WP_FlowMember?
 			// TODO each IndividualStep may return an op?
 			//  - with type or Boolean?
@@ -205,8 +199,8 @@ public class WritePipeline implements PipelineMember, Consumer<Supplier<Generate
 		// README debugging purposes
 		private final List<GenerateResultItem>                 abs  = new ArrayList<>();
 		private final ElLog                                    LOG;
-		private final WritePipelineSharedState     sharedState;
-		private       Observer<GenerateResultItem> observer;
+		private final WritePipelineSharedState                 sharedState;
+		private       Observer<GenerateResultItem>             observer;
 
 		public CompletedItemsHandler(final WritePipelineSharedState aSharedState) {
 			sharedState = aSharedState;
