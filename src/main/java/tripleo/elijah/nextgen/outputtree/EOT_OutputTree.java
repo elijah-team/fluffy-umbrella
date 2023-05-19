@@ -22,11 +22,11 @@ public class EOT_OutputTree {
 	}
 
 	public void _putSeq(final String aKey, final Path aPath, final @NotNull EG_Statement aStatement) {
-		System.err.printf("[_putSeq] %s %s %s%n", aKey, aPath, aStatement.getText());
+		//05/18 System.err.printf("[_putSeq] %s %s %s%n", aKey, aPath, aStatement.getText());
 	}
 
 	public void add(final @NotNull EOT_OutputFile aOff) {
-		System.err.printf("[add] %s %s%n", aOff.getFilename(), aOff.getStatementSequence().getText());
+		//05/18 System.err.printf("[add] %s %s%n", aOff.getFilename(), aOff.getStatementSequence().getText());
 
 		list.add(aOff);
 	}
