@@ -10,8 +10,8 @@ package tripleo.elijah.comp;
 
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.comp.internal.DefaultCompilationAccess;
 import tripleo.elijah.comp.notation.GN_GenerateNodesIntoSink;
@@ -104,6 +104,8 @@ public class PipelineLogic {
 
 		DeducePhase.@NotNull GeneratedClasses lgc            = dp.generatedClasses;
 		List<EvaNode>                         resolved_nodes = new ArrayList<EvaNode>();
+
+		assert lgc.copy().size() >0;
 
 		for (final EvaNode evaNode : lgc) {
 			if (evaNode instanceof GNCoded) {
