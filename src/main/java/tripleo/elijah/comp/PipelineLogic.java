@@ -42,6 +42,7 @@ public class PipelineLogic {
 	final IPipelineAccess pa;
 	private final ElLog.Verbosity verbosity;
 	public final Observer<OS_Module> om = new Observer<OS_Module>() {
+		@Contract(value = "_ -> fail", pure = true)
 		@Override
 		public void onSubscribe(Disposable d) {
 			throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
@@ -56,6 +57,7 @@ public class PipelineLogic {
 			run2(mod, mod.entryPoints);
 		}
 
+		@Contract(value = "_ -> fail", pure = true)
 		@Override
 		public void onError(Throwable e) {
 			throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody

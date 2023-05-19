@@ -37,7 +37,8 @@ import static tripleo.elijah.util.Helpers.List_of;
 public class WPIS_WriteFiles implements WP_Indiviual_Step {
 	private final WritePipeline writePipeline;
 
-	public WPIS_WriteFiles(final WritePipeline aWritePipeline) {
+	@Contract(pure = true)
+	public WPIS_WriteFiles(final @NotNull WritePipeline aWritePipeline) {
 		writePipeline = aWritePipeline;
 	}
 

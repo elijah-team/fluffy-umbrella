@@ -728,3 +728,7 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 		}
 	}
 }
+
+//
+// vim:set shiftwidth=4 softtabstop=0 noexpandtab:
+//

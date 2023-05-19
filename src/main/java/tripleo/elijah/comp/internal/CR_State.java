@@ -309,3 +309,6 @@ public class CR_State {
 	}
 }
 
+//
+// vim:set shiftwidth=4 softtabstop=0 noexpandtab:
+//
