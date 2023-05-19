@@ -75,7 +75,7 @@ public class CR_State {
 				env = ab.env();
 			});
 
-			pa = ca.getCompilation().get_pa();
+			pa            = ca.getCompilation().get_pa();
 
 			pipelineLogic = new PipelineLogic(pa);
 			//dpl           = new DeducePipeline(pa);
