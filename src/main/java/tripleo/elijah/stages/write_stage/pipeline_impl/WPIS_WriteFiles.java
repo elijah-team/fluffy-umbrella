@@ -40,27 +40,15 @@ public class WPIS_WriteFiles implements WP_Indiviual_Step {
 	@Contract(pure = true)
 	public WPIS_WriteFiles(final @NotNull WritePipeline aWritePipeline) {
 		writePipeline = aWritePipeline;
+		dl = new DoubleLatch<Triple<GenerateResult, @NotNull WritePipelineSharedState, @NotNull WP_State_Control>>((t -> {
+			hasGenerateResult(t.getLeft(), t.getMiddle(), t.getRight());
+		}));
 	}
 
-	@Override
-	public void act(final WritePipelineSharedState st, final WP_State_Control sc) {
-		// 4. write files
-		Multimap<String, Buffer> mb = ArrayListMultimap.create();
-
-		final List<GenerateResultItem> generateResultItems = st.getGr().results();
-
-		writePipeline.prom.then(new DoneCallback<GenerateResult>() {
-			@Override
-			public void onDone(final GenerateResult result) {
-				for (final GenerateResultItem ab : generateResultItems) {
-					mb.put(((CDependencyRef) ab.getDependency().getRef()).getHeaderFile(), ab.buffer); // TODO see above
-				}
-
-				//assert st.mmb.equals(mb);
-
-				write_files_helper(mb);
-
-				final List<EOT_OutputFile> leof = new ArrayList<>();
+	private void hasGenerateResult(final @NotNull GenerateResult 			result,
+								   final @NotNull WritePipelineSharedState 	st,
+								   final @NotNull WP_State_Control 			sc) {
+		final List<EOT_OutputFile> leof = new ArrayList<>();
 
 				final Map<String, OS_Module> modmap = new HashMap<String, OS_Module>();
 				for (final GenerateResultItem ab : st.getGr().results()) {
@@ -133,31 +121,17 @@ public class WPIS_WriteFiles implements WP_Indiviual_Step {
 
 			}
 
-			@Contract("_, null, _ -> fail")
-			private void write_files_helper_each(final String prefix,
-												 final String key,
-												 final @NotNull Supplier<Collection<Buffer>> e) throws Exception {
-				assert key != null;
+	@Override
+	public void act(final @NotNull WritePipelineSharedState st, final WP_State_Control sc) {
+		// 4. write files
 
-				final Path path = FileSystems.getDefault().getPath(prefix, key);
-				// final BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
+		//final List<GenerateResultItem> generateResultItems = st.getGr().results();
 
-				path.getParent().toFile().mkdirs();
-
-				// TODO functionality
-				System.out.println("201 Writing path: " + path);
-				try (final DisposableCharSink fileCharSink = st.c.getIO().openWrite(path)) {
-					for (final Buffer buffer : e.get()) {
-						fileCharSink.accept(buffer.getText());
-					}
-				}
-			}
+		writePipeline.prom.then((final GenerateResult result) -> {
+			dl.notifyData(Triple.of(result, st, sc));
 		});
 
-	}
-
-	private void write_files_helper(final Multimap<String, Buffer> aMb) {
-
+		dl.notifyLatch(true);
 	}
 
 	private @NotNull File choose_dir_name(final @NotNull Compilation c) {

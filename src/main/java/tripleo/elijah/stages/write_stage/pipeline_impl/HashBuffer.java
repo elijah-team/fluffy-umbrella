@@ -24,7 +24,7 @@ public class HashBuffer extends DefaultBuffer {
 
 		parent = null;
 
-		dl.notify(string);
+		dl.notifyData(string);
 	}
 
 
@@ -34,7 +34,7 @@ public class HashBuffer extends DefaultBuffer {
 		parent = aHashBufferList;
 		//parent.setNext(this);
 
-		dl.notify(aFileName);
+		dl.notifyData(aFileName);
 	}
 
 	final DoubleLatch<String> dl = new DoubleLatch<>(aFilename -> {

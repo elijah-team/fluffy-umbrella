@@ -202,7 +202,7 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 			return _wmc;
 
 		final Consumer<Multimap<CompilerInstructions, String>> consumer = (aCompilerInstructionsStringMultimap) -> {
-			write_makefiles_latch.notify(aCompilerInstructionsStringMultimap);
+			write_makefiles_latch.notifyData(aCompilerInstructionsStringMultimap);
 		};
 
 		_wmc = consumer;
@@ -219,7 +219,7 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 		//Multimap<CompilerInstructions, String> lsp_outputs = writePipeline.getLspOutputs(); // TODO move this
 
 		//write_makefiles_latch.notify(lsp_outputs);
-		write_makefiles_latch.notify(true);
+		write_makefiles_latch.notifyLatch(true);
 	}
 
 	@Override

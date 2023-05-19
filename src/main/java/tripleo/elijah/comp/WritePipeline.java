@@ -113,13 +113,13 @@ public class WritePipeline implements PipelineMember, Consumer<Supplier<Generate
 	@Override
 	public void gr_slot(final @NotNull GenerateResult gr1) {
 		Objects.requireNonNull(gr1);
-		latch.notify(gr1);
+		latch.notifyData(gr1);
 		gr1.subscribeCompletedItems(cih.observer());
 	}
 
 	@Override
 	public void run() throws Exception {
-		latch.notify(true);
+		latch.notifyLatch(true);
 	}
 
 	public Operation<String> append_hash(TextBuffer outputBuffer, String aFilename) {
