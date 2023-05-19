@@ -17,7 +17,7 @@ import tripleo.elijah.nextgen.outputstatement.GE_BuffersStatement;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputFile;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputType;
-import tripleo.elijah.stages.gen_c.CDependencyRef;
+import tripleo.elijah.stages.gen_generic.DoubleLatch;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.util.buffer.Buffer;
@@ -35,7 +35,9 @@ import java.util.function.Supplier;
 import static tripleo.elijah.util.Helpers.List_of;
 
 public class WPIS_WriteFiles implements WP_Indiviual_Step {
-	private final WritePipeline writePipeline;
+	private final WritePipeline      writePipeline;
+	private final DoubleLatch<Triple<GenerateResult, @NotNull WritePipelineSharedState, @NotNull WP_State_Control>> dl;
+	private       Operation<Boolean> op;
 
 	@Contract(pure = true)
 	public WPIS_WriteFiles(final @NotNull WritePipeline aWritePipeline) {
