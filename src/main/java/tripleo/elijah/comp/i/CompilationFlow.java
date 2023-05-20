@@ -1,10 +1,10 @@
 package tripleo.elijah.comp.i;
 
 import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.Operation2;
 import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.query.Mode;
+import tripleo.elijah.nextgen.query.Operation2;
 
 import java.util.function.Consumer;
 

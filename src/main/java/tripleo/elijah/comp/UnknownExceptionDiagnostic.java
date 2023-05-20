@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.nextgen.query.Operation2;
 
 import java.io.PrintStream;
 import java.util.List;

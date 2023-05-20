@@ -24,6 +24,7 @@ import tripleo.elijah.comp.internal.DefaultCompilerController;
 import tripleo.elijah.factory.comp.CompilationFactory;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.nextgen.query.Mode;
+import tripleo.elijah.nextgen.query.Operation2;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.IFunctionMapHook;

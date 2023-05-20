@@ -6,7 +6,6 @@ import tripleo.elijah.ci.CompilerInstructionsImpl;
 import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.i.CD_CompilationRunnerStart;
 import tripleo.elijah.comp.i.CompilationClosure;
-import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.comp.i.IPipelineAccess;
 
 import java.util.List;
@@ -27,7 +26,7 @@ public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 		}
 	}
 
-	public void _____start_(final CompilerInstructionsImpl ci,
+	public void _____start(final CompilerInstructionsImpl ci,
 							final boolean do_out,
 							final @NotNull CompilationRunner cr,
 							final @NotNull IPipelineAccess pa) throws Exception {
@@ -43,40 +42,5 @@ public class CD_CompilationRunnerStart_1 implements CD_CompilationRunnerStart {
 		for (final CR_Action each : l) {
 			each.execute(cr.crState, out);
 		}
-	}
-
-	public void _____start(final @NotNull CompilerInstructionsImpl ci,
-						   final boolean do_out,
-						   final @NotNull CompilationRunner cr,
-						   final @NotNull IPipelineAccess pa) throws Exception {
-		final CompilationClosure ccl = pa.getCompilationClosure();
-
-		// 0. find stdlib
-		//   -- question placement
-		//   -- ...
-		final String                          preludeName = Compilation.CompilationAlways.defaultPrelude();
-		final Operation<CompilerInstructions> x           = cr.findStdLib2(preludeName, ccl);
-
-		switch (x.mode()) {
-		case FAILURE -> ccl.errSink().exception(x.failure());
-		default -> cr.logProgress(130, "GEN_LANG: " + x.success().genLang());
-		}
-
-		// 1. process the initial
-		ccl.getCompilation().use(ci, do_out);
-
-		// 2. do rest
-		final CR_State           crState = cr.crState;
-
-		final ICompilationAccess ca      = crState.ca();
-		final ProcessRecord      pr      = crState.pr;
-
-
-		assert pa == pr.pa();
-
-
-		final RuntimeProcesses   rt = StageToRuntime.get(ccl.getCompilation().cfg.stage, ca, pr, pa);
-
-		rt.run_better();
 	}
 }
