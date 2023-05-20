@@ -539,7 +539,7 @@ public class CompilationRunner {
 			// 2. process the initial
 			final ICompilationBus.CB_Action b = new ICompilationBus.CB_Action() {
 				final CB_Output o = new CB_Output();
-				private final CR_ProcessInitialAction aa = new CR_ProcessInitialAction(CompilationRunner.this, ci, do_out);
+				private final CR_ProcessInitialAction aa = new CR_ProcessInitialAction(ci, do_out);
 
 				@Override
 				public String name() {

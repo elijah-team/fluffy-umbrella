@@ -7,22 +7,20 @@ import tripleo.elijah.comp.internal.CB_Output;
 import tripleo.elijah.comp.internal.CR_State;
 
 public class CR_ProcessInitialAction implements CR_Action {
-	private final CompilationRunner        compilationRunner;
+	private       CompilationRunner        compilationRunner;
 	private final CompilerInstructionsImpl ci;
 	private final boolean                  do_out;
 
 	@Contract(pure = true)
-	public CR_ProcessInitialAction(final @NotNull CompilationRunner aCompilationRunner,
-								   final @NotNull CompilerInstructionsImpl aCi,
+	public CR_ProcessInitialAction(final @NotNull CompilerInstructionsImpl aCi,
 								   final boolean aDo_out) {
-		compilationRunner = aCompilationRunner;
 		ci                = aCi;
 		do_out            = aDo_out;
 	}
 
 	@Override
 	public void attach(final @NotNull CompilationRunner cr) {
-
+		compilationRunner = cr;
 	}
 
 	@Override
