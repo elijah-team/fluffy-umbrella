@@ -278,7 +278,9 @@ public class WritePipeline implements PipelineMember, Consumer<Supplier<Generate
 
 			generateResult.outputFiles((final Map<String, OutputFileC> outputFiles) -> {
 				final WriteOutputFiles wof = new WriteOutputFiles();
-				wof.writeOutputFiles(sharedState, outputFiles);
+				if (false) {
+					wof.writeOutputFiles(sharedState, outputFiles);
+				}
 			});
 		}
 	}

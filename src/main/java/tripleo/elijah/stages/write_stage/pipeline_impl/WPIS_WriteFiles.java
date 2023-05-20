@@ -148,10 +148,13 @@ public class WPIS_WriteFiles implements WP_Indiviual_Step {
 //			BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
 
 			path.getParent().toFile().mkdirs();
+			final CharSink x;
 
-			// TODO functionality
-			System.out.println("201 Writing path: " + path);
-			final CharSink x = c.getIO().openWrite(path);
+			if (false) {
+				// TODO functionality
+				System.out.println("201 Writing path: " + path);
+				x = c.getIO().openWrite(path);
+			}
 
 			final EG_SingleStatement beginning = new EG_SingleStatement("", EX_Explanation.withMessage("write output file >> beginning"));
 			final EG_Statement middle = new GE_BuffersStatement(entry);
@@ -160,14 +163,18 @@ public class WPIS_WriteFiles implements WP_Indiviual_Step {
 
 			final EG_CompoundStatement seq = new EG_CompoundStatement(beginning, ending, middle, false, explanation);
 
-			x.accept(seq.getText());
-			((FileCharSink) x).close();
+			if (false) {
+				x.accept(seq.getText());
+				((FileCharSink) x).close();
+			}
 
 			final @NotNull EOT_OutputTree cot = c.getOutputTree();
 			cot._putSeq(key, path, seq);
 
-			final EOT_OutputFile off = new EOT_OutputFile(c, List_of(), path.toString(), EOT_OutputType.SOURCES, seq);
-			cot.add(off);
+			if (false) {
+				final EOT_OutputFile off = new EOT_OutputFile(c, List_of(), path.toString(), EOT_OutputType.SOURCES, seq);
+				cot.add(off);
+			}
 		}
 	}
 }
