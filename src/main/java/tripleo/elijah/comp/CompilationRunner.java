@@ -31,34 +31,28 @@ import static tripleo.elijah.util.Helpers.List_of;
 public class CompilationRunner {
 	private static final List<State>     registeredStates = new ArrayList<>();
 	public final         Compilation     compilation;
-	//	final         Map<String, CompilerInstructions> fn2ci = new HashMap<String, CompilerInstructions>();
-//	public final  Compilation                       compilation;
-//	private final Compilation.CIS                   cis;
-//	public final  CCI                               cci;
 	public final         ICompilationBus cb;
 	final                Compilation.CIS cis;
 	private final        CCI             cci;
 	CR_FindCIs cr_find_cis;
-	public final CR_State crState = new CR_State(CompilationRunner.this);
+	public final CR_State crState;
 
-	@Contract(pure = true)
-	public CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis, CompilationBus aCompilationBus) {
-		compilation = aCompilation;
-		cis         = a_cis;
-		cb          = aCompilationBus;
+	public CompilationRunner(final @NotNull ICompilationAccess aca) {
+		compilation = aca.getCompilation();
 
-		cci = new DefaultCCI(compilation, a_cis, new IProgressSink() {
+		aca.getCompilation()._ca = (DefaultCompilationAccess) aca;
+
+		cis         = aca.getCompilation()._cis;
+		cb          = aca.getCompilation().cb;
+
+		cci = new DefaultCCI(compilation, cis, new IProgressSink() {
 			@Override
 			public void note(final int aCode, final ProgressSinkComponent aProgressSinkComponent, final int aType, final Object[] aParams) {
 				tripleo.elijah.util.Stupidity.println_err_2(aProgressSinkComponent.printErr(aCode, aType, aParams));
 			}
 		});
-	}
 
-	public CompilationRunner(final ICompilationAccess aca) {
-		// Java is stupid
-		//Compilation comp = aca.getCompilation();
-		this(aca.getCompilation(), aca.getCompilation()._cis, new CompilationBus(aca.getCompilation()));
+		crState = new CR_State(this, aca);
 	}
 
 	public static State registerState(final State aState) {

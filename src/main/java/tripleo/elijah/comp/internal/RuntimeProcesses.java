@@ -1,5 +1,6 @@
 package tripleo.elijah.comp.internal;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Stages;
 import tripleo.elijah.comp.i.ICompilationAccess;
@@ -10,6 +11,7 @@ public class RuntimeProcesses {
 	private final ProcessRecord      pr;
 	private       RuntimeProcess     process;
 
+	@Contract(pure = true)
 	public RuntimeProcesses(final @NotNull ICompilationAccess aca, final @NotNull ProcessRecord aPr) {
 		ca = aca;
 		pr = aPr;
@@ -40,7 +42,7 @@ public class RuntimeProcesses {
 		process.postProcess();
 
 		tripleo.elijah.util.Stupidity.println_err_2("***** RuntimeProcess^ [postProcess/writeLogs]");
-		pr.writeLogs(ca);
+		pr.writeLogs();
 	}
 }
 

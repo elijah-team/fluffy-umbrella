@@ -5,6 +5,7 @@ import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.comp.internal.CR_State;
 import tripleo.elijah.comp.internal.CompilationImpl;
+import tripleo.elijah.comp.internal.DefaultCompilationAccess;
 import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.stages.deduce.DeducePhase;
@@ -23,9 +24,10 @@ public class Boilerplate {
 
 	public void get() {
 		comp          = new CompilationImpl(new StdErrSink(), new IO());
-		aca           = ((CompilationImpl) comp)._access(); //new DefaultCompilationAccess(comp);
-		cr            = new CompilationRunner(aca);
-		comp.__cr     = cr;
+		final ICompilationAccess aca1 = ((CompilationImpl) comp)._access();
+		aca       = aca1 != null ? aca1 : new DefaultCompilationAccess(comp);
+		cr        = new CompilationRunner(aca);
+		comp.__cr = cr;
 
 
 		final CR_State crState = comp.__cr.crState;
@@ -49,7 +51,7 @@ public class Boilerplate {
 												 new OutputFileFactoryParams(mod,
 																			 comp.getErrSink(),
 																			 aca.testSilence(),
-																			 pipelineLogic));
+																			 comp.getCompilationEnclosure()));
 	}
 
 	public OS_Module defaultMod() {

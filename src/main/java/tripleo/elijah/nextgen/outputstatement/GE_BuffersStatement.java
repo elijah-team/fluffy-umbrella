@@ -38,5 +38,10 @@ public class GE_BuffersStatement implements EG_Statement {
 		public String getText() {
 			return message;
 		}
+
+		@Override
+		public String message() {
+			return "GE_BuffersExplanation";
+		}
 	}
 }

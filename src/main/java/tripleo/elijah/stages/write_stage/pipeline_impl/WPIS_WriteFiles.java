@@ -213,12 +213,24 @@ public class WPIS_WriteFiles implements WP_Indiviual_Step {
 			final CharSink x = c.getIO().openWrite(path);
 
 			final EG_SingleStatement beginning = new EG_SingleStatement("", new EX_Explanation() {
+				@Override
+				public String message() {
+					return "write output file >> beginning";
+				}
 			});
 			final EG_Statement middle = new GE_BuffersStatement(entry);
 			final EG_SingleStatement ending = new EG_SingleStatement("", new EX_Explanation() {
+				@Override
+				public String message() {
+					return "write output file >> ending";
+				}
 			});
 			final EX_Explanation explanation = new EX_Explanation() {
 				final String message = "write output file";
+				@Override
+				public String message() {
+					return message;
+				}
 			};
 
 			final EG_CompoundStatement seq = new EG_CompoundStatement(beginning, ending, middle, false, explanation);

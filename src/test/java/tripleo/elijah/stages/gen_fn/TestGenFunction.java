@@ -8,13 +8,13 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.Compilation.CompilationAlways;
 import tripleo.elijah.comp.i.CompilationFlow;
+import tripleo.elijah.comp.impl.DefaultCompilationFlow;
 import tripleo.elijah.comp.internal.CR_State;
 import tripleo.elijah.comp.internal.CompilationBus;
 import tripleo.elijah.comp.internal.CompilationImpl;
@@ -67,21 +67,7 @@ public class TestGenFunction {
 
 		final TGF_State st = new TGF_State();
 
-		final CompilationFlow flow = new CompilationFlow() {
-			private final List<CompilationFlowMember> flows = new ArrayList<>();
-
-			@Override
-			public void add(final CompilationFlowMember aFlowMember) {
-				flows.add(aFlowMember);
-			}
-
-			@Override
-			public void run(final CompilationImpl aCompilation) {
-				for (CompilationFlowMember flow : flows) {
-					flow.doIt(aCompilation, this);
-				}
-			}
-		};
+		final CompilationFlow flow = new DefaultCompilationFlow();
 
 		flow.add(new CompilationFlow.CompilationFlowMember(){
 			@Override
@@ -155,7 +141,7 @@ public class TestGenFunction {
 
 		ElLog.Verbosity verbosity1 = c.gitlabCIVerbosity(); // FIXME ??
 
-		c.__cr = new CompilationRunner(c, null, new CompilationBus(c));
+		c.__cr = new CompilationRunner(/* c, null, new CompilationBus(c), */ c._ca);
 		final CR_State  crState    = (c.__cr.crState);
 		crState.ca();
 		final PipelineLogic pl = crState.pr.pipelineLogic();
@@ -202,7 +188,7 @@ public class TestGenFunction {
 			}
 		}
 
-		final GenerateC                 ggc = new GenerateC(m, eee, c.gitlabCIVerbosity(), pl);
+		final GenerateC                 ggc = new GenerateC(m, eee, c.gitlabCIVerbosity(), boilerplate.comp.getCompilationEnclosure());
 		final DefaultGenerateResultSink grs = new DefaultGenerateResultSink(null, crState.pr.pa());
 		ggc.generateCode(lgf, wm, grs);
 
@@ -246,7 +232,7 @@ public class TestGenFunction {
 		return new CompilationFlow.CompilationFlowMember(){
 			@Override
 			public void doIt(final Compilation cc, final CompilationFlow flow) {
-				cc.__cr = new CompilationRunner(cc, null, new CompilationBus(cc));
+				cc.__cr = new CompilationRunner(/* cc, null, new CompilationBus(cc), */ cc._ca);
 				final CR_State crState = cc.__cr.crState;
 
 				crState.ca();

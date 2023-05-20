@@ -55,7 +55,7 @@ public class DefaultCompilerController implements CompilerController {
 				c.cb = new CompilationBus(c);
 			}
 
-			c.__cr = new CompilationRunner(c, c._cis, cb);
+			c.__cr = new CompilationRunner(/* c, c._cis, cb, */ c._ca);
 
 			for (final String s : args2) {
 				for (final CompilerInput input : inputs) {

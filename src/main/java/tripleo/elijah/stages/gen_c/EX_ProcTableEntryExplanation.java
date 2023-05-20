@@ -10,4 +10,9 @@ public class EX_ProcTableEntryExplanation implements EX_Explanation {
 	public EX_ProcTableEntryExplanation(final @NotNull DeduceElement3_ProcTableEntry aPte) {
 		pte = aPte;
 	}
+
+	@Override
+	public String message() {
+		return "EX_ProcTableEntryExplanation";
+	}
 }

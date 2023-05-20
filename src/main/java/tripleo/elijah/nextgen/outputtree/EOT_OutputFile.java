@@ -41,14 +41,30 @@ public class EOT_OutputFile {
 		final List<EIT_Input> inputs = List_of(new EIT_ModuleInput(ab.node.module(), aC));
 
 		final EG_SingleStatement beginning = new EG_SingleStatement("", new EX_Explanation() {
+			@Override
+			public String message() {
+				return "grToOutputFile >> beginning";
+			}
 		});
 		final EG_SingleStatement middle = new EG_SingleStatement(ab.buffer.getText(), new EX_Explanation() {
+			@Override
+			public String message() {
+				return "grToOutputFile >> middle";
+			}
 		});
 		final EG_SingleStatement ending = new EG_SingleStatement("", new EX_Explanation() {
+			@Override
+			public String message() {
+				return "grToOutputFile >> ending";
+			}
 		});
 		final EX_Explanation explanation = new EX_Explanation() {
 			public String getText() {
 				return "generate-result-item";
+			}
+			@Override
+			public String message() {
+				return "grToOutputFile >> statement -- " + getText();
 			}
 		};
 
@@ -67,7 +83,11 @@ public class EOT_OutputFile {
 		final List<EG_Statement> statementStream = aBuffers.stream()
 				.map(buffer ->
 							 new EG_SingleStatement(buffer.getText(), new EX_Explanation() {
-							 })
+								@Override
+								public String message() {
+									return "bufferSetToOutputFile >> singleStatement";
+								}
+								 							 })
 					).collect(Collectors.toList());
 		final EG_SequenceStatement seq = new EG_SequenceStatement(new EG_Naming("yyy"), statementStream);
 

@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.i.CompilationClosure;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.comp.i.ICompilationBus;
 import tripleo.elijah.comp.i.IPipelineAccess;
@@ -35,16 +36,15 @@ public class CR_State {
 	public        RuntimeProcesses          rt;
 	ICompilationAccess ca;
 
-	public CR_State(final CompilationRunner aCompilationRunner) {
-		compilationRunner = aCompilationRunner;
+	@Contract(pure = true)
+	public CR_State(final CompilationRunner aCompilationRunner, ICompilationAccess aCa) {
+		compilationRunner       = aCompilationRunner;
+		ca                      = aCa;
+		ca.getCompilation().set_pa(new ProcessRecord_PipelineAccess());
+		pr                      = new ProcessRecordImpl(ca);
 	}
 
 	public ICompilationAccess ca() {
-		if (ca == null) {
-			ca = new DefaultCompilationAccess(compilationRunner.compilation);
-			pr = new ProcessRecordImpl(ca);
-		}
-
 		return ca;
 	}
 
@@ -59,39 +59,27 @@ public class CR_State {
 		private final PipelineLogic                              pipelineLogic;
 		private final DeducePipeline                             dpl;
 		private final ICompilationAccess                         ca;
-		private final AccessBus                                  ab;
-		private final IPipelineAccess                            pa = new ProcessRecord_PipelineAccess();
-		private final stepA_mal.MalEnv2                          env;
+		private       AccessBus                                  ab;
+		private final IPipelineAccess                            pa;
+		private       stepA_mal.MalEnv2                          env;
 		private       DeferredObject<GenerateResult, Void, Void> _pgr;
 
 		public ProcessRecordImpl(final @NotNull ICompilationAccess ca0) {
 			ca                      = ca0;
-			ca.getCompilation()._pa = pa;
 
-			pipelineLogic = new PipelineLogic(ca0);
+			ca.getCompilation().getCompilationEnclosure().getAccessBusPromise()
+					.then(iab->ab=iab);
+
+			pa = ca.getCompilation().get_pa();
+
+			pipelineLogic = new PipelineLogic(pa);
 			dpl           = new DeducePipeline(pa);
 
-			ab = new AccessBus(ca.getCompilation(), pa);
-			ab.addPipelinePlugin(new GeneratePipelinePlugin());
-			ab.addPipelinePlugin(new DeducePipelinePlugin());
-			ab.addPipelinePlugin(new WritePipelinePlugin());
-			ab.addPipelinePlugin(new WriteMesonPipelinePlugin());
-
-//		ab.addPipelineLogic(PipelineLogic::new);
-////		ab.add(DeducePipeline::new);
-
-			pa._setAccessBus(ab);
-
-			env = new stepA_mal.MalEnv2(null); // TODO what does null mean?
+			ca.getCompilation().getCompilationEnclosure().getAccessBusPromise().then(iab->{ab=iab;env=ab.env();});
 		}
 
-		/* (non-Javadoc)
-		 * @see tripleo.elijah.comp.internal.ProcessRecord#writeLogs(tripleo.elijah.comp.i.ICompilationAccess)
-		 */
 		@Override
-		public void writeLogs(final ICompilationAccess aCa) {
-			final ICompilationAccess ca = aCa;
-
+		public void writeLogs() {
 			ca.getCompilation().cfg.stage.writeLogs(ca);
 		}
 
@@ -175,7 +163,7 @@ public class CR_State {
 
 	}
 
-	class GeneratePipelinePlugin implements PipelinePlugin {
+	public static class GeneratePipelinePlugin implements PipelinePlugin {
 
 		@Override
 		public String name() {
@@ -184,11 +172,11 @@ public class CR_State {
 
 		@Override
 		public PipelineMember instance(final @NotNull AccessBus ab0) {
-			return new GeneratePipeline(ab0);
+			return new GeneratePipeline(ab0.getPipelineAccess());
 		}
 	}
 
-	class DeducePipelinePlugin implements PipelinePlugin {
+	public static class DeducePipelinePlugin implements PipelinePlugin {
 
 		@Override
 		public String name() {
@@ -201,7 +189,7 @@ public class CR_State {
 		}
 	}
 
-	class WritePipelinePlugin implements PipelinePlugin {
+	public static class WritePipelinePlugin implements PipelinePlugin {
 		@Override
 		public String name() {
 			return "WritePipeline";
@@ -213,7 +201,7 @@ public class CR_State {
 		}
 	}
 
-	class WriteMesonPipelinePlugin implements PipelinePlugin {
+	public static class WriteMesonPipelinePlugin implements PipelinePlugin {
 		@Override
 		public String name() {
 			return "WriteMesonPipeline";
@@ -306,6 +294,11 @@ public class CR_State {
 		@Override
 		public CompilationClosure getCompilationClosure() {
 			return getCompilation().getCompilationClosure();
+		}
+
+		@Override
+		public CompilationEnclosure getCompilationEnclosure() {
+			return getCompilation().getCompilationEnclosure();
 		}
 	}
 }

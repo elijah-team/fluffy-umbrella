@@ -80,38 +80,68 @@ class Resolve_Variable_Table_Entry {
 			if (aPot.tableEntry instanceof ProcTableEntry) {
 				final @NotNull ProcTableEntry pte1 = (ProcTableEntry) aPot.tableEntry;
 				@Nullable OS_Element          e    = DeduceLookupUtils.lookup(pte1.expression, ctx, deduceTypes2);
-				assert e != null;
-				if (e instanceof FunctionDef) {
-//						final FunctionDef fd = (FunctionDef) e;
-					@NotNull IdentTableEntry ite1 = ((IdentIA) pte1.expression_num).getEntry();
-					DeducePath               dp   = ite1.buildDeducePath(generatedFunction);
-					@Nullable GenType        t    = dp.getType(dp.size() - 1);
-					ite1.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(e));
-					pte1.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(e));
-					pte1.typePromise().then(new DoneCallback<GenType>() {
-						@Override
-						public void onDone(@NotNull GenType result) {
-							if (t == null) {
-								ite1.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, result.resolved);
-								ite1.setGenType(result);
-							} else {
-//								assert false; // we don't expect this, but note there is no problem if it happens
-								t.copy(result);
+
+
+				// 05/10
+				//
+				//
+				//
+				//
+				//
+				//
+				//
+				//
+				//
+				//
+				//
+				// assert e != null;
+				//
+				//
+				//
+				//
+				//
+				//
+				//
+				//
+				//
+				//
+				//
+				//
+
+				if (e != null) {
+					if (e instanceof FunctionDef) {
+	//						final FunctionDef fd = (FunctionDef) e;
+						@NotNull IdentTableEntry ite1 = ((IdentIA) pte1.expression_num).getEntry();
+						DeducePath               dp   = ite1.buildDeducePath(generatedFunction);
+						@Nullable GenType        t    = dp.getType(dp.size() - 1);
+						ite1.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(e));
+						pte1.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(e));
+						pte1.typePromise().then(new DoneCallback<GenType>() {
+							@Override
+							public void onDone(@NotNull GenType result) {
+								if (t == null) {
+									ite1.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, result.resolved);
+									ite1.setGenType(result);
+								} else {
+	//								assert false; // we don't expect this, but note there is no problem if it happens
+									t.copy(result);
+								}
 							}
-						}
-					});
-					int y = 2;
+						});
+						int y = 2;
+					} else {
+						vte.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(e));
+						pte1.setStatus(BaseTableEntry.Status.KNOWN, new ConstructableElementHolder(e, vte));
+	//					vte.setCallablePTE(pte1);
+
+						GenType gt = aPot.genType;
+						setup_GenType(e, gt);
+	//					if (gt.node == null)
+	//						gt.node = vte.genType.node;
+
+						vte.genType.copy(gt);
+					}
 				} else {
-					vte.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(e));
-					pte1.setStatus(BaseTableEntry.Status.KNOWN, new ConstructableElementHolder(e, vte));
-//					vte.setCallablePTE(pte1);
-
-					GenType gt = aPot.genType;
-					setup_GenType(e, gt);
-//					if (gt.node == null)
-//						gt.node = vte.genType.node;
-
-					vte.genType.copy(gt);
 				}
 				int y = 2;
 			} else if (aPot.tableEntry == null) {

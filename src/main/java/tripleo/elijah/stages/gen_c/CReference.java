@@ -9,12 +9,19 @@
  */
 package tripleo.elijah.stages.gen_c;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.jdeferred2.DoneCallback;
+import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.i.CompilationEnclosure;
+import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.ConstructorDef;
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.lang.RegularTypeName;
 import tripleo.elijah.lang.types.OS_FuncType;
 import tripleo.elijah.lang.types.OS_UserType;
+import tripleo.elijah.nextgen.outputstatement.EG_Statement;
+import tripleo.elijah.nextgen.query.Operation2;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
@@ -29,6 +36,7 @@ import tripleo.elijah.util.NotImplementedException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
@@ -37,16 +45,21 @@ import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
  * Created 1/9/21 7:12 AM
  */
 public class CReference {
-	private final GI_Repo _repo = new GI_Repo();
+	private final GI_Repo _repo/* = new GI_Repo()*/;
 	//
 	//
-	public String __cheat_ret;
+	public        String  __cheat_ret;
 	//
 	//
 	EvaClass _cheat = null;
-	private String          rtext = null;
-	private List<String>    args;
-	private List<Reference> refs;
+	private String                       rtext = null;
+	private ArrayList<CR_ReferenceItem1> items;
+	private List<String>                 args;
+	private List<Reference>              refs;
+
+	public CReference(final GI_Repo aRepo, final CompilationEnclosure aCe) {
+		_repo = aRepo;
+	}
 
 	public void getIdentIAPath(final IdentIA aIa, final BaseEvaFunction aGf, final Generate_Code_For_Method.AOG aGet, final String aO) {
 		getIdentIAPath(aIa, aGet, aO);
@@ -58,13 +71,46 @@ public class CReference {
 		refs = new ArrayList<Reference>(s.size());
 
 		//
+		//
+		//
+		//
+		//
+		//
+		items = new ArrayList<CR_ReferenceItem1>(s.size());
+		//
+		//
+		//
+		//
+		//
+		//
+		//
+
+		//
 		// TODO NOT LOOKING UP THINGS, IE PROPERTIES, MEMBERS
 		//
 		String             text = "";
 		final List<String> sl   = new ArrayList<String>();
 		for (int i = 0, sSize = s.size(); i < sSize; i++) {
+
+			//
+			//
+			//
+			//
+			final CR_ReferenceItem1 item = new CR_ReferenceItem1();
+			//
+			//
+			//
+			//
+
+
 			final InstructionArgument ia = s.get(i);
+
+			item.setInstructionArgument(ia);
+
 			if (ia instanceof IntegerIA) {
+
+				item.setType(InstructionArgument.t.VARIABLE);
+
 				// should only be the first element if at all
 				assert i == 0;
 				final VariableTableEntry vte = generatedFunction.getVarTableEntry(to_int(ia));
@@ -101,20 +147,50 @@ public class CReference {
 
 				text = "vv" + vte.getName();
 				addRef(vte.getName(), Ref.LOCAL);
+
+				item.setReference(new Reference(vte.getName(), Ref.LOCAL));
 			} else if (ia instanceof IdentIA) {
+				item.setType(InstructionArgument.t.IDENT);
+
+
 				final IdentTableEntry idte = ((IdentIA) ia).getEntry();
 
-				text = CRI_Ident.of(idte, ((IdentIA) ia).gf).getIdentIAPath(i, sSize, aog, sl, aValue, refs::add, s, ia2, this);
+				text = CRI_Ident.of(idte, ((IdentIA) ia).gf).getIdentIAPath(i, sSize, aog, sl, aValue, e -> {
+					refs.add(e);
+					item.setReference(e);
+				}, s, ia2, this);
+
 
 				//assert text != null;
 			} else if (ia instanceof ProcIA) {
+				item.setType(InstructionArgument.t.PROC);
+
 				final ProcTableEntry prte = generatedFunction.getProcTableEntry(to_int(ia));
-				text = getIdentIAPath_Proc(prte);
+				text = getIdentIAPath_Proc(prte, p -> {
+					String e = p.getLeft();
+					addRef(e, p.getRight());
+					item.setReference(new Reference(e, p.getRight()));
+				});
 			} else {
 				throw new NotImplementedException();
 			}
 			if (text != null)
 				sl.add(text);
+
+
+			//
+			//
+			//
+			//
+			//
+			//
+			items.add(item);
+			//
+			//
+			//
+			//
+			//
+			//
 		}
 		rtext = Helpers.String_join(".", sl);
 		return rtext;
@@ -145,7 +221,7 @@ public class CReference {
 		refs.add(new Reference(text, type));
 	}
 
-	public String getIdentIAPath_Proc(final @NotNull ProcTableEntry aPrte) {
+	public String getIdentIAPath_Proc(final @NotNull ProcTableEntry aPrte, final Consumer<Pair<String, Ref>> addRef) {
 		final String[]           text = new String[1];
 		final FunctionInvocation fi   = aPrte.getFunctionInvocation();
 
@@ -173,7 +249,7 @@ public class CReference {
 					constructorNameText = constructorName.getText();
 				}
 				text[0] = String.format("ZC%d%s", genClass.getCode(), constructorNameText);
-				addRef(text[0], Ref.CONSTRUCTOR);
+				addRef.accept(Pair.of(text[0], Ref.CONSTRUCTOR));
 			});
 			final EvaContainerNC genClass = (EvaContainerNC) generated.getGenClass();
 			if (genClass == null) {
@@ -183,7 +259,7 @@ public class CReference {
 		} else {
 			generated.onGenClass(genClass -> {
 				text[0] = String.format("Z%d%s", genClass.getCode(), generated.getFD().getNameNode().getText());
-				addRef(text[0], Ref.FUNCTION);
+				addRef.accept(Pair.of(text[0], Ref.FUNCTION));
 			});
 		}
 
@@ -269,6 +345,11 @@ public class CReference {
 
 	void addRef(final String text, final Ref type, final String aValue) {
 		refs.add(new Reference(text, type, aValue));
+	}
+
+	enum Connector {
+		DOT, POINTER, DBL_COLON,
+		INVALID, UNKNOWN
 	}
 
 	enum Ref {
@@ -413,6 +494,109 @@ public class CReference {
 		public abstract void buildHelper(final Reference ref, final BuildState sb);
 	}
 
+	static class CR_ReferenceItem1 implements CR_ReferenceItem {
+		private String                   arg;
+		private Reference                reference;
+		private GenerateC_Item           generateCItem;
+		private InstructionArgument      instructionArgument;
+		private Eventual<GenerateC_Item> previous;
+
+		private String text;
+
+		private Connector connector;
+
+		private Operation2<EG_Statement> statement;
+		private InstructionArgument.t    type;
+
+		@Override
+		public String getArg() {
+			return arg;
+		}
+
+		@Override
+		public void setArg(String aArg) {
+			arg = aArg;
+		}
+
+		@Override
+		public GenerateC_Item getGenerateCItem() {
+			return generateCItem;
+		}
+
+		@Override
+		public void setGenerateCItem(GenerateC_Item aGenerateCItem) {
+			generateCItem = aGenerateCItem;
+		}
+
+		@Override
+		public InstructionArgument getInstructionArgument() {
+			return instructionArgument;
+		}
+
+		@Override
+		public void setInstructionArgument(InstructionArgument aInstructionArgument) {
+			instructionArgument = aInstructionArgument;
+		}
+
+		@Override
+		public Eventual<GenerateC_Item> getPrevious() {
+			return previous;
+		}
+
+		@Override
+		public void setPrevious(Eventual<GenerateC_Item> aPrevious) {
+			previous = aPrevious;
+		}
+
+		@Override
+		public String getText() {
+			return text;
+		}
+
+		@Override
+		public void setText(String aText) {
+			text = aText;
+		}
+
+		@Override
+		public Connector getConnector() {
+			return connector;
+		}
+
+		@Override
+		public void setConnector(Connector aConnector) {
+			connector = aConnector;
+		}
+
+		@Override
+		public Operation2<EG_Statement> getStatement() {
+			return statement;
+		}
+
+		@Override
+		public void setStatement(Operation2<EG_Statement> aStatement) {
+			statement = aStatement;
+		}
+
+		@Override
+		public Reference getReference() {
+			return reference;
+		}
+
+		@Override
+		public void setReference(Reference aReference) {
+			reference = aReference;
+		}
+
+		public InstructionArgument.t getType() {
+			return type;
+		}
+
+		public void setType(final InstructionArgument.t aType) {
+			type = aType;
+		}
+	}
+
 	static class Reference {
 		final String text;
 		final Ref    type;
@@ -451,6 +635,18 @@ public class CReference {
 			return sb.toString();
 		}
 		//ABOVE 3a
+	}
+
+	class Eventual<P> {
+		private final DeferredObject<P, Diagnostic, Void> prom = new DeferredObject<>();
+
+		void resolve(final P p) {
+			prom.resolve(p);
+		}
+
+		void then(final DoneCallback<? super P> cb) {
+			prom.then(cb);
+		}
 	}
 }
 
