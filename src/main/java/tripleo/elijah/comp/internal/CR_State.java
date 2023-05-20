@@ -10,25 +10,16 @@
 package tripleo.elijah.comp.internal;
 
 import org.jdeferred2.DoneCallback;
-import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.*;
-import tripleo.elijah.comp.i.CompilationClosure;
-import tripleo.elijah.comp.i.CompilationEnclosure;
-import tripleo.elijah.comp.i.ICompilationAccess;
-import tripleo.elijah.comp.i.ICompilationBus;
-import tripleo.elijah.comp.i.IPipelineAccess;
+import tripleo.elijah.comp.i.*;
 import tripleo.elijah.comp.notation.GN_Notable;
 import tripleo.elijah.stages.gen_fn.EvaNode;
-import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.logging.ElLog;
-import tripleo.vendor.mal.stepA_mal;
 
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class CR_State {
 	//private final CompilationRunner         compilationRunner;
@@ -38,7 +29,7 @@ public class CR_State {
 	ICompilationAccess ca;
 
 	@Contract(pure = true)
-	public CR_State(final CompilationRunner aCompilationRunner, ICompilationAccess aCa) {
+	public CR_State(final CompilationRunner ignoredACompilationRunner, ICompilationAccess aCa) {
 		//compilationRunner       = aCompilationRunner;
 		ca                      = aCa;
 		ca.getCompilation().set_pa(new ProcessRecord_PipelineAccess());
@@ -56,14 +47,12 @@ public class CR_State {
 		PipelineMember instance(final @NotNull AccessBus ab0);
 	}
 
-	private class ProcessRecordImpl implements ProcessRecord {
+	private static class ProcessRecordImpl implements ProcessRecord {
 		private final PipelineLogic                              pipelineLogic;
 		//private final DeducePipeline                             dpl;
 		private final ICompilationAccess                         ca;
 		private       AccessBus                                  ab;
 		private final IPipelineAccess                            pa;
-		private       stepA_mal.MalEnv2                          env;
-		private       DeferredObject<GenerateResult, Void, Void> _pgr;
 
 		public ProcessRecordImpl(final @NotNull ICompilationAccess ca0) {
 			ca                      = ca0;
@@ -72,7 +61,6 @@ public class CR_State {
 			//		.then(iab->ab=iab);
 			ca.getCompilation().getCompilationEnclosure().getAccessBusPromise().then((final @NotNull AccessBus iab) -> {
 				ab  = iab;
-				env = ab.env();
 			});
 
 			pa            = ca.getCompilation().get_pa();
@@ -91,37 +79,6 @@ public class CR_State {
 			ca.getCompilation().cfg.stage.writeLogs(ca);
 		}
 
-		/* (non-Javadoc)
-		 * @see tripleo.elijah.comp.internal.ProcessRecord#generateResultPromise()
-		 */
-		@Override
-		public Promise<GenerateResult, Void, Void> generateResultPromise() {
-			if (_pgr == null) {
-				_pgr = new DeferredObject<>();
-			}
-			return _pgr;
-		}
-
-		/* (non-Javadoc)
-		 * @see tripleo.elijah.comp.internal.ProcessRecord#setGenerateResult(tripleo.elijah.stages.gen_generic.GenerateResult)
-		 */
-		@Override
-		public void setGenerateResult(final GenerateResult gr) {
-			_pgr.resolve(gr);
-		}
-
-		/* (non-Javadoc)
-		 * @see tripleo.elijah.comp.internal.ProcessRecord#consumeGenerateResult(java.util.function.Consumer)
-		 */
-		@Override
-		public void consumeGenerateResult(final @NotNull Consumer<Supplier<GenerateResult>> csgr) {
-			csgr.accept(() -> {
-				final GenerateResult[] xx = new GenerateResult[1];
-				generateResultPromise().then((x) -> xx[0] = x);
-				return xx[0];
-			});
-		}
-
 		@Contract(pure = true)
 		@Override
 		public PipelineLogic pipelineLogic() {
@@ -136,12 +93,6 @@ public class CR_State {
 
 		@Contract(pure = true)
 		@Override
-		public DeducePipeline dpl() {
-			return null;//dpl;
-		}
-
-		@Contract(pure = true)
-		@Override
 		public ICompilationAccess ca() {
 			return ca;
 		}
@@ -150,23 +101,6 @@ public class CR_State {
 		@Override
 		public AccessBus ab() {
 			return ab;
-		}
-
-		@Contract(pure = true)
-		@Override
-		public DeferredObject<GenerateResult, Void, Void> _pgr() {
-			return _pgr;
-		}
-
-		@Contract(pure = true)
-		@Override
-		public stepA_mal.MalEnv2 env() {
-			return env;
-		}
-
-		@Contract(mutates = "this")
-		public void set_pgr(DeferredObject<GenerateResult, Void, Void> a_pgr) {
-			_pgr = a_pgr;
 		}
 	}
 
