@@ -18,10 +18,6 @@ import java.text.MessageFormat;
 import java.util.List;
 
 public class WPIS_WriteOutputTree implements WP_Indiviual_Step {
-	@Contract(pure = true)
-	public WPIS_WriteOutputTree(final WritePipeline aWritePipeline) {
-	}
-
 	@Override
 	public void act(final @NotNull WritePipelineSharedState st, final WP_State_Control sc) {
 		final EOT_OutputTree       ot = st.c.getOutputTree();

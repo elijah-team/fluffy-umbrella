@@ -66,7 +66,7 @@ public class WritePipeline implements PipelineMember, Consumer<Supplier<Generate
 			final WP_Indiviual_Step wpis_wi = new WPIS_WriteInputs(this);
 			final WP_Indiviual_Step wpis_wf = new WPIS_WriteFiles(this);
 			final WP_Indiviual_Step wpis_wb = new WPIS_WriteBuffers(this);
-			final WP_Indiviual_Step wpis_ot = new WPIS_WriteOutputTree(this);
+			final WP_Indiviual_Step wpis_ot = new WPIS_WriteOutputTree();
 
 			// TODO: Do something with op, like set in {@code pa} to proceed to next pipeline
 			final WP_Flow f = new WP_Flow(List_of(wpis_go, wpis_mk, wpis_wi, wpis_wf, wpis_wb, wpis_ot));
