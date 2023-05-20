@@ -1023,11 +1023,10 @@ public class DeduceTypes2 {
 
 		final DeduceElement3_IdentTableEntry x = ((DeduceElement3_IdentTableEntry) ite.getDeduceElement3(this, generatedFunction));
 		x.assign_type_to_idte(aFunctionContext, aContext);
-
 	}
 
 	void resolve_function_return_type(@NotNull BaseEvaFunction generatedFunction) {
-		final DeduceElement3_Function f = _zero.get(generatedFunction);
+		final DeduceElement3_Function f = _zero.get(DeduceTypes2.this, generatedFunction);
 
 		final GenType gt = f.resolve_function_return_type_int(errSink);
 		if (gt != null)
@@ -2095,24 +2094,20 @@ public class DeduceTypes2 {
 
 
 						if (lrl == null && ectx instanceof DeducePath.MemberContext) {
+							final DeduceElement3_IdentTableEntry de3_idte      = _zero.getIdent(idte2, generatedFunction, DeduceTypes2.this);
+							final DeduceElement3_Type            de3_idte_type = de3_idte.type();
 
-							int yyy = 2;
+							final OS_Type  ty = de3_idte_type.genType().typeName;
 
-							@NotNull TypeTableEntry tte = idte2.type;
-							try {
-								Preconditions.checkState(tte.genType.typeName.getType() == OS_Type.Type.USER);
+							Preconditions.checkState(ty.getType() == OS_Type.Type.USER);
 
-								final TypeName   tn = tte.genType.typeName.getTypeName();
-								@NotNull OS_Type ty = new OS_UserType(tn);
+							final Operation2<GenType> resolved = de3_idte_type.resolved(ectx);
 
-								@NotNull final GenType resolved = resolve_type(ty, ectx);
-								LOG.err("892 resolved: " + resolved);
-								tte.setAttached(resolved);
-							} catch (ResolveError aResolveError) {
-								errSink.reportDiagnostic(aResolveError);
+							if (resolved.mode() == Mode.FAILURE) {
+								errSink.reportDiagnostic(resolved.failure());
+							} else {
+								LOG.err("892 resolved: " + resolved.success());
 							}
-
-
 						} else {
 
 							@Nullable OS_Element el2 = lrl.chooseBest(null);
@@ -2353,7 +2348,7 @@ public class DeduceTypes2 {
 	class Zero {
 		final Map<Object, IDeduceElement3> l = new HashMap<>();
 
-		public DeduceElement3_Function get(final BaseEvaFunction aGeneratedFunction) {
+		public DeduceElement3_Function get(final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aGeneratedFunction) {
 			if (l.containsKey(aGeneratedFunction)) {
 				return (DeduceElement3_Function) l.get(aGeneratedFunction);
 			}
@@ -2383,9 +2378,16 @@ public class DeduceTypes2 {
 			return de3;
 		}
 
-		//public IDeduceElement3 get(final Object o) {
-		//	return null;
-		//}
+		public DeduceElement3_IdentTableEntry getIdent(final IdentTableEntry vte, final BaseEvaFunction aGeneratedFunction, final DeduceTypes2 aDeduceTypes2) {
+			if (l.containsKey(vte)) {
+				return (DeduceElement3_IdentTableEntry) l.get(vte);
+			}
+
+			final DeduceElement3_IdentTableEntry de3 = new DeduceElement3_IdentTableEntry(vte);
+			de3.setDeduceTypes(aDeduceTypes2, aGeneratedFunction);
+			l.put(vte, de3);
+			return de3;
+		}
 	}
 
 	class PromiseExpectations {
