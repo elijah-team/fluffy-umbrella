@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.gen_c;
 
+import org.jetbrains.annotations.Contract;
 import tripleo.elijah.stages.gen_generic.DependencyRef;
 
 /**
@@ -16,12 +17,20 @@ import tripleo.elijah.stages.gen_generic.DependencyRef;
 public class CDependencyRef implements DependencyRef {
 	private final String headerFile;
 
+	@Contract(pure = true)
 	public CDependencyRef(String aHeaderFile) {
 		headerFile = aHeaderFile;
 	}
 
 	public String getHeaderFile() {
 		return headerFile;
+	}
+
+	@Override
+	public String jsonString() {
+		final StringBuilder sb = new StringBuilder();
+		sb.append("{type: \"CDependencyRef\", headerFile: "+headerFile+"}");
+		return sb.toString();
 	}
 }
 

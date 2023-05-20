@@ -11,6 +11,7 @@ package tripleo.elijah.stages.gen_fn;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.work.WorkManager;
 
@@ -21,6 +22,9 @@ import java.util.Map;
  * Created 5/16/21 12:35 AM
  */
 public class GeneratePhase {
+	public ICodeRegistrar codeRegistrar = null;
+
+
 	private final PipelineLogic   pipelineLogic;
 	public WorkManager wm = new WorkManager();
 	Map<OS_Module, GenerateFunctions> generateFunctions = new HashMap<OS_Module, GenerateFunctions>();

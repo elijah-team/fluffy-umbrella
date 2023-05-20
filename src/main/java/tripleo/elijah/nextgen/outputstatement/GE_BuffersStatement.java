@@ -1,5 +1,6 @@
 package tripleo.elijah.nextgen.outputstatement;
 
+import org.jetbrains.annotations.Contract;
 import tripleo.elijah.util.Helpers;
 import tripleo.util.buffer.Buffer;
 
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 public class GE_BuffersStatement implements EG_Statement {
 	private final Map.Entry<String, Collection<Buffer>> entry;
 
+	@Contract(pure = true)
 	public GE_BuffersStatement(final Map.Entry<String, Collection<Buffer>> aEntry) {
 		entry = aEntry;
 	}
@@ -18,6 +20,7 @@ public class GE_BuffersStatement implements EG_Statement {
 	public String getText() {
 		return Helpers.String_join("\n\n", entry.getValue()
 				.stream()
+				//.filter(entry)
 				.map(buffer -> buffer.getText())
 				.collect(Collectors.toList()));
 	}

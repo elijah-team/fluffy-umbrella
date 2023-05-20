@@ -3,7 +3,6 @@ package tripleo.elijah.comp;
 import antlr.ANTLRException;
 import antlr.RecognitionException;
 import antlr.TokenStreamException;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
@@ -39,8 +38,8 @@ public class CompilationRunner {
 
 	public CompilationRunner(final @NotNull ICompilationAccess aca) {
 		compilation = aca.getCompilation();
-
-		aca.getCompilation()._ca = (DefaultCompilationAccess) aca;
+		
+		aca.getCompilation().getCompilationEnclosure().setCompilationAccess(aca);
 
 		cis         = aca.getCompilation()._cis;
 		cb          = aca.getCompilation().cb;
@@ -74,7 +73,7 @@ public class CompilationRunner {
 		if (false) {
 			cb.add(new CompilationRunnerProcess((CompilerInstructionsImpl) ci, do_out));
 		} else {
-			final Operation<CompilerDriven> ocrsd = compilation.cb.cd.get(Compilation.CompilationAlways.Tokens.COMPILATION_RUNNER_START);
+			final Operation<CompilerDriven> ocrsd = pa.getCompilationEnclosure().getCompilationBus().cd.get(Compilation.CompilationAlways.Tokens.COMPILATION_RUNNER_START);
 
 			switch (ocrsd.mode()) {
 			case SUCCESS -> {

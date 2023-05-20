@@ -65,6 +65,8 @@ public interface EntryPointProcessor {
 				}
 			};
 
+			deducePhase.generatePhase.codeRegistrar = codeRegistrar;
+
 
 //			final ICodeRegistrar           cr = deducePhase.codeRegistrar;
 			final ICodeRegistrar cr = codeRegistrar;

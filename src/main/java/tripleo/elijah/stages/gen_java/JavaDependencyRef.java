@@ -18,6 +18,10 @@ public class JavaDependencyRef implements DependencyRef {
 	private String className;
 	private String fieldName; // for static fields
 
+	@Override
+	public String jsonString() {
+		return "";
+	}
 }
 
 //

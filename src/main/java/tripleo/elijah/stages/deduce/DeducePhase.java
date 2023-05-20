@@ -57,9 +57,9 @@ public class DeducePhase {
 //	private final Compilation _compilation;
 	private final List<State> registeredStates = new ArrayList<>();
 	private final ExecutorService classGenerator = Executors.newCachedThreadPool();
-	private final Multimap<FunctionDef, EvaFunction> functionMap = ArrayListMultimap.create();
+	private final Multimap<FunctionDef, EvaFunction> functionMap        = ArrayListMultimap.create();
 	@NotNull
-	public List<FunctionMapHook> functionMapHooks = new ArrayList<FunctionMapHook>();
+	public List<IFunctionMapHook>                    functionMapHooks   = new ArrayList<IFunctionMapHook>();
 	@NotNull Multimap<OS_Element, ResolvedVariables> resolved_variables = ArrayListMultimap.create();
 	@NotNull Multimap<ClassStatement, OnClass> onclasses = ArrayListMultimap.create();
 	//	Multimap<EvaClass, ClassInvocation> generatedClasses1 = ArrayListMultimap.create();
@@ -154,7 +154,7 @@ public class DeducePhase {
 		return i == 0;
 	}
 
-	public void addFunctionMapHook(FunctionMapHook aFunctionMapHook) {
+	public void addFunctionMapHook(final IFunctionMapHook aFunctionMapHook) {
 		functionMapHooks.add(aFunctionMapHook);
 	}
 
@@ -190,6 +190,19 @@ public class DeducePhase {
 
 				evaClass.fixupUserClasses(deduceTypes2, evaClass.getKlass().getContext());
 				deduceTypes2.deduceOneClass(evaClass);
+			}
+		}
+
+		for (EvaNode evaNode : lgf) {
+			final BaseEvaFunction  bef;
+
+			if (evaNode instanceof BaseEvaFunction) {
+				bef = (BaseEvaFunction) evaNode;
+			} else continue;
+			for (final IFunctionMapHook hook : functionMapHooks) {
+				if (hook.matches((FunctionDef) bef.getFD())) {
+					hook.apply(List_of((EvaFunction) bef));
+				}
 			}
 		}
 
@@ -516,8 +529,8 @@ public class DeducePhase {
 	}
 
 	public void handleFunctionMapHooks() {
-		for (Map.@NotNull Entry<FunctionDef, Collection<EvaFunction>> entry : functionMap.asMap().entrySet()) {
-			for (@NotNull FunctionMapHook functionMapHook : ca.functionMapHooks()) {
+		for (final Map.@NotNull Entry<FunctionDef, Collection<EvaFunction>> entry : functionMap.asMap().entrySet()) {
+			for (final IFunctionMapHook functionMapHook : ca.functionMapHooks()) {
 				if (functionMapHook.matches(entry.getKey())) {
 					functionMapHook.apply(entry.getValue());
 				}

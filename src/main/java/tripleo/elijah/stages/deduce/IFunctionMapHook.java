@@ -16,7 +16,7 @@ import java.util.Collection;
 /**
  * Created 6/8/21 1:31 AM
  */
-public interface FunctionMapHook {
+public interface IFunctionMapHook {
 	boolean matches(FunctionDef aFunctionDef);
 
 	void apply(Collection<EvaFunction> aGeneratedFunctions);

@@ -118,10 +118,8 @@ public class DeduceProcCall {
 	}
 
 	private class DeclTarget implements DeduceElement {
-		private @NotNull
-		final OS_Element element;
-		private @NotNull
-		final DeclAnchor anchor;
+		private @NotNull final OS_Element element;
+		private @NotNull final DeclAnchor anchor;
 
 		public DeclTarget(final @NotNull OS_Element aBest,
 						  final @NotNull OS_Element aDeclAnchor,
@@ -150,11 +148,13 @@ public class DeduceProcCall {
 			anchor.setInvocation(invocation);
 		}
 
+		@Contract(pure = true)
 		@Override
 		public OS_Element element() {
 			return element;
 		}
 
+		@Contract(pure = true)
 		@Override
 		public DeclAnchor declAnchor() {
 			return anchor;

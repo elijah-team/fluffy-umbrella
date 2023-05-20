@@ -21,6 +21,7 @@ import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
+import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.stages.gen_generic.pipeline_impl.ProcessedNode;
 import tripleo.elijah.stages.logging.ElLog;
@@ -69,7 +70,7 @@ public class PipelineLogic {
 	final         EIT_ModuleList  mods           = new EIT_ModuleList(__mods_BACKING);
 
 	public PipelineLogic(final @NotNull IPipelineAccess aPa) {
-		final DefaultCompilationAccess ca = aPa.getCompilationClosure().getCompilation()._ca;
+		final DefaultCompilationAccess ca = (DefaultCompilationAccess) aPa.getCompilationClosure().getCompilation().getCompilationEnclosure().getCompilationAccess();
 
 		verbosity     = ca.testSilence();
 		generatePhase = new GeneratePhase(verbosity, this);
@@ -83,8 +84,7 @@ public class PipelineLogic {
 	public void everythingBeforeGenerate(final @NotNull List<EvaNode> lgc) {
 		assert lgc.size() == 0;
 
-		mods.stream().forEach(mod ->
-									  om.onNext(mod));
+		mods.stream().forEach(om::onNext);
 
 		om.onComplete();
 	}
@@ -107,11 +107,14 @@ public class PipelineLogic {
 			if (evaNode instanceof GNCoded) {
 				final GNCoded coded = (GNCoded) evaNode;
 
+				final ICodeRegistrar cr = generatePhase.codeRegistrar;
+
 				switch (coded.getRole()) {
 				case FUNCTION: {
 //					EvaFunction generatedFunction = (EvaFunction) generatedNode;
 					if (coded.getCode() == 0)
 						coded.setCode(mod.getCompilation().nextFunctionCode());
+					cr.registerFunction((BaseEvaFunction) evaNode);
 					break;
 				}
 				case CLASS: {
@@ -257,12 +260,6 @@ public class PipelineLogic {
 	public void addModule(OS_Module m) {
 		mods.add(m);
 	}
-
-/*
-	public ElLog.Verbosity getVerbosity() {
-		return verbosity; // ? ElLog.Verbosity.VERBOSE : ElLog.Verbosity.SILENT;
-	}
-*/
 
 	public void addLog(ElLog aLog) {
 		elLogs.add(aLog);

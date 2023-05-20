@@ -16,6 +16,7 @@ import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
 import tripleo.elijah.nextgen.outputstatement.GE_BuffersStatement;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputFile;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
+import tripleo.elijah.nextgen.outputtree.EOT_OutputType;
 import tripleo.elijah.stages.gen_c.CDependencyRef;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
@@ -30,6 +31,8 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Supplier;
+
+import static tripleo.elijah.util.Helpers.List_of;
 
 public class WPIS_WriteFiles implements WP_Indiviual_Step {
 	private final WritePipeline writePipeline;
@@ -212,26 +215,10 @@ public class WPIS_WriteFiles implements WP_Indiviual_Step {
 			System.out.println("201 Writing path: " + path);
 			final CharSink x = c.getIO().openWrite(path);
 
-			final EG_SingleStatement beginning = new EG_SingleStatement("", new EX_Explanation() {
-				@Override
-				public String message() {
-					return "write output file >> beginning";
-				}
-			});
+			final EG_SingleStatement beginning = new EG_SingleStatement("", EX_Explanation.withMessage("write output file >> beginning"));
 			final EG_Statement middle = new GE_BuffersStatement(entry);
-			final EG_SingleStatement ending = new EG_SingleStatement("", new EX_Explanation() {
-				@Override
-				public String message() {
-					return "write output file >> ending";
-				}
-			});
-			final EX_Explanation explanation = new EX_Explanation() {
-				final String message = "write output file";
-				@Override
-				public String message() {
-					return message;
-				}
-			};
+			final EG_SingleStatement ending = new EG_SingleStatement("", EX_Explanation.withMessage("write output file >> ending"));
+			final EX_Explanation explanation = EX_Explanation.withMessage("write output file");
 
 			final EG_CompoundStatement seq = new EG_CompoundStatement(beginning, ending, middle, false, explanation);
 
@@ -243,6 +230,9 @@ public class WPIS_WriteFiles implements WP_Indiviual_Step {
 
 			final @NotNull EOT_OutputTree cot = c.getOutputTree();
 			cot._putSeq(key, path, seq);
+
+			final EOT_OutputFile off = new EOT_OutputFile(c, List_of(), path.toString(), EOT_OutputType.SOURCES, seq);
+			cot.add(off);
 		}
 	}
 

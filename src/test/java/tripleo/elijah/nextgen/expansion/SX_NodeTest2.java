@@ -92,7 +92,9 @@ public class SX_NodeTest2 extends TestCase {
 //		System.out.println(y);
 		System.out.println();
 
-		final List<EOT_OutputFile> l   = rt.list;
+		final List<EOT_OutputFile> l   = rt.getList();
+		assert l != null;
+
 		final int                  yyy = 2;
 		final List<EOT_OutputFile> wmainl = l.stream()
 		                                     .filter(eof -> eof.getFilename().equals("/while100/Main.c"))

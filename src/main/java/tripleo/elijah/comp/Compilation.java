@@ -18,9 +18,6 @@ import io.reactivex.rxjava3.subjects.ReplaySubject;
 import io.reactivex.rxjava3.subjects.Subject;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.picocontainer.DefaultPicoContainer;
-import org.picocontainer.MutablePicoContainer;
-import org.picocontainer.PicoContainer;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.CompilerInstructionsImpl;
 import tripleo.elijah.ci.LibraryStatementPart;
@@ -28,7 +25,9 @@ import tripleo.elijah.ci.LibraryStatementPartImpl;
 import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
 import tripleo.elijah.comp.diagnostic.FileNotFoundDiagnostic;
 import tripleo.elijah.comp.i.*;
-import tripleo.elijah.comp.internal.*;
+import tripleo.elijah.comp.internal.CompilationBus;
+import tripleo.elijah.comp.internal.DefaultCompilerController;
+import tripleo.elijah.comp.internal.DriverToken;
 import tripleo.elijah.comp.queries.QuerySourceFileToModule;
 import tripleo.elijah.comp.queries.QuerySourceFileToModuleParams;
 import tripleo.elijah.diagnostic.Diagnostic;
@@ -37,7 +36,7 @@ import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
 import tripleo.elijah.lang.Qualident;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
-import tripleo.elijah.stages.deduce.FunctionMapHook;
+import tripleo.elijah.stages.deduce.IFunctionMapHook;
 import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
@@ -64,14 +63,8 @@ public abstract class Compilation {
 	private final Pipeline                          pipelines = new Pipeline();
 	private final int                               _compilationNumber;
 	private final Map<String, OS_Package>           _packages = new HashMap<String, OS_Package>();
-	//public        Stages                            stage     = Stages.O; // Output
-	//public        boolean                           silent    = false;
-	//public boolean do_out = false;
-	//public        boolean                           showTree  = false;
-	//
-	//
+
 	public        LivingRepo                        _repo     = new DefaultLivingRepo();
-	public        PipelineLogic                     pipelineLogic;
 	public  CompilationRunner __cr;
 	private IPipelineAccess   _pa;
 	public  CompilationBus    cb;
@@ -84,7 +77,6 @@ public abstract class Compilation {
 	private int               _classCode    = 101;
 	private int               _functionCode = 1001;
 	private CompilationEnclosure compilationEnclosure = new CompilationEnclosure(this);
-	public DefaultCompilationAccess _ca;
 
 	public Compilation(final ErrSink errSink, final IO io) {
 		this.errSink            = errSink;
@@ -154,7 +146,6 @@ public abstract class Compilation {
 	}
 
 	public void feedCmdLine(final @NotNull List<String> args) throws Exception {
-		final PicoContainer      pico       = MainModule.newContainer();
 		final CompilerController controller = new DefaultCompilerController();
 
 		if (args.size() == 0) {
@@ -174,28 +165,9 @@ public abstract class Compilation {
 				.collect(Collectors.toList());
 
 
-		if (false) {
-			controller._setInputs(this, inputs);
-			controller.processOptions();
-			controller.runner();
-		} else {
-			final OptionsProcessor op = pico.getComponent(OptionsProcessor.class);
-			final CompilerInstructionsObserver cio = new CompilerInstructionsObserver(this, op);
-
-			_cis._cio = cio;
-
-			subscribeCI(cio);
-
-			cb   = new CompilationBus(this);
-
-			this._ca                = new DefaultCompilationAccess(this);
-
-			__cr = new CompilationRunner(/* this, _cis, cb,*/ _ca);
-
-			final String[] args2 = op.process(this, inputs, cb);
-
-			__cr.doFindCIs(inputs, args2, cb);
-		}
+		controller._setInputs(this, inputs);
+		controller.processOptions();
+		controller.runner();
 	}
 
 	public void subscribeCI(final Observer<CompilerInstructions> aCio) {
@@ -345,8 +317,8 @@ public abstract class Compilation {
 	}
 
 	// TODO remove this 04/20
-	public void addFunctionMapHook(FunctionMapHook aFunctionMapHook) {
-		pipelineLogic().dp.addFunctionMapHook(aFunctionMapHook);
+	public void addFunctionMapHook(final IFunctionMapHook aFunctionMapHook) {
+		getCompilationEnclosure().getPipelineLogic().dp.addFunctionMapHook(aFunctionMapHook);
 	}
 
 	// endregion
@@ -354,29 +326,6 @@ public abstract class Compilation {
 	public void eachModule(final Consumer<OS_Module> object) {
 		for (OS_Module mod : modules) {
 			object.accept(mod);
-		}
-	}
-
-	@Deprecated
-	public PipelineLogic pipelineLogic() {
-		return pipelineLogic;
-	}
-
-	static class MainModule {
-
-		public static @NotNull PicoContainer newContainer() {
-			final MutablePicoContainer pico = new DefaultPicoContainer();
-
-			pico.addComponent(PicoContainer.class, pico);
-			pico.addComponent(OptionsProcessor.class, new ApacheOptionsProcessor());
-
-			//pico.addComponent(CompilerInstructionsObserver.class); // TODO not yet
-
-			//pico.addComponent(InfoWindowProvider.class);
-			//pico.addComponent(ShowInfoWindowAction.class);
-			//pico.addComponent(ShowInfoWindowButton.class);
-
-			return pico;
 		}
 	}
 
@@ -600,16 +549,16 @@ public abstract class Compilation {
 		}
 	}
 
-	public void feedInputs(final List<CompilerInput> args, final CompilerController ctl) {
-		if (args.size() == 0) {
+	public void feedInputs(final @NotNull List<CompilerInput> inputs, final CompilerController ctl) {
+		if (inputs.size() == 0) {
 			ctl.printUsage();
-			return; // ab
+			return;
 		}
 
 		if (ctl instanceof DefaultCompilerController) {
-			ctl._setInputs(this, args);
+			ctl._setInputs(this, inputs);
 		//} else if (ctl instanceof UT_Controller uctl) {
-		//	uctl._setInputs(this, args);
+		//	uctl._setInputs(this, inputs);
 		}
 
 		ctl.processOptions();

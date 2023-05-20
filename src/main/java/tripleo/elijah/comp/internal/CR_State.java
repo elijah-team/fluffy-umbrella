@@ -23,6 +23,7 @@ import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.comp.notation.GN_Notable;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
+import tripleo.elijah.stages.logging.ElLog;
 import tripleo.vendor.mal.stepA_mal;
 
 import java.util.List;
@@ -299,6 +300,11 @@ public class CR_State {
 		@Override
 		public CompilationEnclosure getCompilationEnclosure() {
 			return getCompilation().getCompilationEnclosure();
+		}
+
+		@Override
+		public void addLog(final ElLog aLOG) {
+			getCompilationEnclosure().getPipelineLogic().addLog(aLOG);
 		}
 	}
 }

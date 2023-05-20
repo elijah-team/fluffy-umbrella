@@ -17,10 +17,9 @@ import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.i.CompilationFlow;
 import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
+import tripleo.elijah.stages.deduce.IFunctionMapHook;
 import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
 import tripleo.elijah.stages.deduce.fluffy.impl.FluffyCompImpl;
-import tripleo.elijah.testing.comp.IFunctionMapHook;
-import tripleo.elijah.util.NotImplementedException;
 
 import java.util.List;
 
@@ -35,7 +34,7 @@ public class CompilationImpl extends Compilation {
 	}
 
 	public void testMapHooks(final List<IFunctionMapHook> aMapHooks) {
-		throw new NotImplementedException();
+		//pipelineLogic.dp.
 	}
 
 	@Override
@@ -56,9 +55,12 @@ public class CompilationImpl extends Compilation {
 
 	@Override
 	public void fakeFlow(final List<CompilerInput> aInputs, final CompilationFlow aFlow) {
-		get_pa().setCompilerInput(aInputs);
+		getCompilationEnclosure().getPipelineAccessPromise()
+						.then(pa -> {
+							get_pa().setCompilerInput(aInputs);
 
-		aFlow.run(this);
+							aFlow.run(this);
+						});
 	}
 
 	public ICompilationAccess _access() {

@@ -4,22 +4,34 @@
  */
 package tripleo.elijah.nextgen.outputtree;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.nextgen.outputstatement.EG_Statement;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author olu
  */
 public class EOT_OutputTree {
-	public List<EOT_OutputFile> list;
+	private List<EOT_OutputFile> list = new ArrayList<>();
 
 	public void set(final List<EOT_OutputFile> aLeof) {
-		list = aLeof;
+		list.addAll(aLeof);
 	}
 
-	public void _putSeq(final String aKey, final Path aPath, final EG_Statement aStatement) {
+	public void _putSeq(final String aKey, final Path aPath, final @NotNull EG_Statement aStatement) {
 		System.err.printf("[_putSeq] %s %s %s%n", aKey, aPath, aStatement.getText());
+	}
+
+	public void add(final @NotNull EOT_OutputFile aOff) {
+		System.err.printf("[add] %s %s%n", aOff.getFilename(), aOff.getStatementSequence().getText());
+
+		list.add(aOff);
+	}
+
+	public List<EOT_OutputFile> getList() {
+		return list;
 	}
 }

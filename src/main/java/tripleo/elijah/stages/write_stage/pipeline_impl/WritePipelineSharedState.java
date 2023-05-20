@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.generate.ElSystem;
 import tripleo.util.buffer.Buffer;
@@ -15,12 +16,13 @@ import java.io.File;
  * Really a record, but state is not all set at once
  */
 public final class WritePipelineSharedState {
-	public  ElSystem                               sys;
-	public  Multimap<CompilerInstructions, String> lsp_outputs;
+	public  IPipelineAccess                        pa;
 	public  Compilation                            c;
+	public  ElSystem                               sys;
+	private GenerateResult                         gr;
+	public  Multimap<CompilerInstructions, String> lsp_outputs;
 	public  File                                   file_prefix;
 	public  Multimap<String, Buffer>               mmb;
-	private GenerateResult                         gr;
 
 	@Contract(pure = true)
 	public GenerateResult getGr() {

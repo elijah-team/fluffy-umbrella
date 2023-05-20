@@ -8,16 +8,15 @@
  */
 package tripleo.elijah;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.ParserClosure;
-import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.TabbedOutputStream;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -41,14 +40,14 @@ public class Out {
 //			pc.module.print_osi(tos);
 			pc.module.finish();
 			//
-/*
 			if (do_out) {
+/*
 				tos = getTOSLog();
 				tos.put_string_ln(pc.module.getFileName());
 				Helpers.printXML(pc.module, tos);
 				tos.close();
-			}
 */
+			}
 			//
 			//
 /*
@@ -60,6 +59,7 @@ public class Out {
 */
 	}
 
+	@Contract(pure = true)
 	public static void println(final String s) {
 		tripleo.elijah.util.Stupidity.println_out_2(s);
 	}

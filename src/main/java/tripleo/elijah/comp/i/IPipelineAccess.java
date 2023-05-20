@@ -6,6 +6,7 @@ import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.comp.notation.GN_Notable;
 import tripleo.elijah.stages.gen_fn.EvaNode;
+import tripleo.elijah.stages.logging.ElLog;
 
 import java.util.List;
 
@@ -41,4 +42,6 @@ public interface IPipelineAccess {
 	CompilationClosure getCompilationClosure();
 
 	CompilationEnclosure getCompilationEnclosure();
+
+	void addLog(ElLog aLOG);
 }

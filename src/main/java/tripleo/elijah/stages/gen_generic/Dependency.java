@@ -67,6 +67,16 @@ public class Dependency {
 	public Set<Dependency> getNotedDeps() {
 		return deps;
 	}
+
+	public String jsonString() {
+		final StringBuilder sb = new StringBuilder("{\".class\": \"Dependency\", ");
+		sb.append("referent: "+referent+", ");
+		sb.append("dref: " + (dref != null ? dref.jsonString() + ", " : "null, "));
+		sb.append("deps: "+deps+", ");
+		sb.append("resolved: "+resolved/*+", "*/);
+		sb.append("}");
+		return sb.toString();
+	}
 }
 
 //

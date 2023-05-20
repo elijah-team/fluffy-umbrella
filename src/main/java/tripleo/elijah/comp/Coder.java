@@ -1,5 +1,6 @@
 package tripleo.elijah.comp;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 public class Coder {
 	private final ICodeRegistrar codeRegistrar;
 
+	@Contract(pure = true)
 	public Coder(final ICodeRegistrar aCodeRegistrar) {
 		codeRegistrar = aCodeRegistrar;
 	}

@@ -103,12 +103,10 @@ public interface CompilationFlow {
 
 		@Override
 		public void doIt(final Compilation cc, final CompilationFlow flow) {
-			// TODO we dont know which prelude to find yet
-
-			final Operation2<OS_Module> prl = cc.findPrelude(Compilation.CompilationAlways.defaultPrelude());
-			assert (prl.mode() == Mode.SUCCESS);
-
-			copm.accept(prl);
+//			final Operation2<OS_Module> prl = cc.findPrelude(Compilation.CompilationAlways.defaultPrelude());
+//			assert (prl.mode() == Mode.SUCCESS);
+//
+//			copm.accept(prl);
 		}
 	}
 }
