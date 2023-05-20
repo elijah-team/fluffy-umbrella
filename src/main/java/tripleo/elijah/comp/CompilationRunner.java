@@ -85,21 +85,6 @@ public class CompilationRunner {
 		}
 	}
 
-	public Operation<CompilerInstructions> findStdLib(final String prelude_name, final @NotNull Compilation c) {
-		Operation<CompilerDriven> ocrfsld = compilation.cb.cd.get(Compilation.CompilationAlways.Tokens.COMPILATION_RUNNER_FIND_STDLIB);
-
-		if (ocrfsld.mode() == FAILURE) {
-			throw new Error();
-		}
-
-		Operation<CompilerInstructions>[] y = new Operation[1];
-
-		final CD_FindStdLib findStdLib = (CD_FindStdLib) ocrfsld.success();
-		findStdLib.findStdLib(this, prelude_name, c, (x) -> y[0] = x);
-
-		return y[0];
-	}
-
 	/*
 	 * Design question:
 	 *   - why push and return?

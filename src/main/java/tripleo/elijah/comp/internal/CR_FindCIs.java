@@ -79,7 +79,7 @@ public class CR_FindCIs extends DefaultStateful implements CR_Action {
 	}
 
 	@Override
-	public void execute(final @NotNull CR_State st, final CB_Output aO) {
+	public Operation<Boolean> execute(final @NotNull CR_State st, final CB_Output aO) {
 		final Compilation c = st.ca().getCompilation();
 
 		final IProgressSink ps = new IProgressSink() {
@@ -94,6 +94,8 @@ public class CR_FindCIs extends DefaultStateful implements CR_Action {
 		for (final CompilerInput compilerInput : x) {
 			cci.accept(compilerInput.acceptance_ci(), ps);
 		}
+
+		return Operation.success(true);
 	}
 
 	@Override

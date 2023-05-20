@@ -26,11 +26,12 @@ public class CR_ProcessInitialAction implements CR_Action {
 	}
 
 	@Override
-	public void execute(final @NotNull CR_State st, final CB_Output aO) {
+	public Operation<Boolean> execute(final @NotNull CR_State st, final CB_Output aO) {
 		try {
 			compilationRunner.compilation.use(ci, do_out);
+			return Operation.success(true);
 		} catch (final Exception aE) {
-			throw new RuntimeException(aE); // FIXME
+			return Operation.failure(aE);
 		}
 	}
 
