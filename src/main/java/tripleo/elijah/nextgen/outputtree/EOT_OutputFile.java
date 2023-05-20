@@ -1,5 +1,6 @@
 package tripleo.elijah.nextgen.outputtree;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.lang.OS_Module;
@@ -12,6 +13,7 @@ import tripleo.elijah.nextgen.outputstatement.EG_SingleStatement;
 import tripleo.elijah.nextgen.outputstatement.EG_Statement;
 import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
+import tripleo.elijah.stages.write_stage.pipeline_impl.WPIS_WriteInputs;
 import tripleo.util.buffer.Buffer;
 
 import java.util.ArrayList;
@@ -27,7 +29,8 @@ public class EOT_OutputFile {
 	private final List<EIT_Input> _inputs = new ArrayList<>();
 	private final String          _filename;
 	private final EOT_OutputType  _type;
-	private final EG_Statement    _sequence; // TODO List<?> ??
+	private final EG_Statement                                        _sequence; // TODO List<?> ??
+	public        List<Triple<String, WPIS_WriteInputs.XSRC, String>> x;
 
 	public EOT_OutputFile(final @NotNull Compilation c,
 						  final @NotNull List<EIT_Input> inputs,
@@ -51,9 +54,9 @@ public class EOT_OutputFile {
 
 		final EX_Explanation       explanation = EX_Explanation.withMessage("grToOutputFile >> statement -- " + "generate-result-item");
 
-		final EG_CompoundStatement seq = new EG_CompoundStatement(beginning, ending, middle, false, explanation);
+		final EG_CompoundStatement seq         = new EG_CompoundStatement(beginning, ending, middle, false, explanation);
 
-		final EOT_OutputFile eof = new EOT_OutputFile(aC, inputs, ab.output, EOT_OutputType.SOURCES, seq);
+		final EOT_OutputFile       eof         = new EOT_OutputFile(aC, inputs, ab.output, EOT_OutputType.SOURCES, seq);
 		return eof;
 	}
 

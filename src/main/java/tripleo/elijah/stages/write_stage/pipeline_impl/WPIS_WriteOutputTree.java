@@ -14,6 +14,7 @@ import tripleo.util.io.FileCharSink;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.List;
 
 public class WPIS_WriteOutputTree implements WP_Indiviual_Step {
@@ -33,10 +34,13 @@ public class WPIS_WriteOutputTree implements WP_Indiviual_Step {
 
 			switch (outputFile.getType()) {
 			case SOURCES -> {
-				path = "COMP///code/" + path0;
+				path = MessageFormat.format("COMP/{0}/code/{1}", st.base_dir, path0);
 			}
 			case LOGS -> {
-				path = "COMP///logs/" + path0;
+				path = MessageFormat.format("COMP/{0}/logs/{1}", st.base_dir, path0);
+			}
+			case INPUTS -> {
+				path = MessageFormat.format("COMP/{0}/inputs.txt", st.base_dir);
 			}
 			default -> path = path0;
 			}

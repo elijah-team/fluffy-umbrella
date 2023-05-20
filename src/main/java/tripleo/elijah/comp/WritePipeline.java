@@ -52,12 +52,7 @@ public class WritePipeline implements PipelineMember, Consumer<Supplier<Generate
 
 
 	public WritePipeline(final @NotNull IPipelineAccess pa) {
-		st = new WritePipelineSharedState();
-
-		st.pa = pa;
-
-		// given
-		st.c = pa.getCompilation();
+		st = new WritePipelineSharedState(pa);
 
 		// computed
 		st.file_prefix = new File("COMP", st.c.getCompilationNumberString());

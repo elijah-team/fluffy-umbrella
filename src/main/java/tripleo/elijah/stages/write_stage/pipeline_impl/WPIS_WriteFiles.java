@@ -62,7 +62,7 @@ public class WPIS_WriteFiles implements WP_Indiviual_Step {
 
 		st.c.getOutputTree().set(leof);
 
-		final File fn1 = choose_dir_name(st.c);
+		final File fn1 = st.base_dir;
 
 		try {
 			__rest(st.mmb, fn1, leof, st.c);
