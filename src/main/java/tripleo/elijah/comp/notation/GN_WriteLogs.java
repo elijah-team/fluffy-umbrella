@@ -34,10 +34,10 @@ public class GN_WriteLogs implements GN_Notable {
 			logMap.put(deduceLog.getFileName(), deduceLog);
 		}
 
-			for (final Map.Entry<String, Collection<ElLog>> stringCollectionEntry : logMap.asMap().entrySet()) {
-				final F202 f202 = new F202(ca.getCompilation().getErrSink(), ca.getCompilation());
-				f202.processLogs(stringCollectionEntry.getValue());
-			}
+		final F202 f202 = new F202(ca.getCompilation().getErrSink(), ca.getCompilation());
+
+		for (final Map.Entry<String, Collection<ElLog>> stringCollectionEntry : logMap.asMap().entrySet()) {
+			f202.processLogs(stringCollectionEntry.getValue());
 		}
 	}
 }
