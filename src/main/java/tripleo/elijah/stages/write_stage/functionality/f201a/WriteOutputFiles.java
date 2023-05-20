@@ -1,5 +1,6 @@
 package tripleo.elijah.stages.write_stage.functionality.f201a;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.IO;
@@ -29,6 +30,7 @@ public class WriteOutputFiles {
 		}
 	}
 
+	@Contract("_, _, _, _, null -> fail")
 	private /*static*/ void writeOutputFile(final IO io,
 											final ErrSink errSink,
 											final String prefix,

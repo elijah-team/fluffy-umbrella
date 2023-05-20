@@ -1,6 +1,7 @@
 package tripleo.elijah.stages.write_stage.pipeline_impl;
 
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.nextgen.outputstatement.EG_Naming;
 import tripleo.elijah.nextgen.outputstatement.EG_SequenceStatement;
 import tripleo.elijah.nextgen.outputstatement.EG_SingleStatement;
@@ -14,6 +15,7 @@ import tripleo.util.io.CharSink;
 import tripleo.util.io.FileCharSink;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -42,24 +44,7 @@ public class WPIS_WriteOutputTree implements WP_Indiviual_Step {
 		//
 		//
 		//
-		final List<ElLog> logs = st.pa.getCompilationEnclosure().getPipelineLogic().elLogs;
-		final String s1 = logs.get(0).getFileName();
-
-		for (final ElLog log : logs) {
-			final List<EG_Statement> stmts = new ArrayList<>();
-
-			if (log.getEntries().size() == 0) continue;
-
-			for (final LogEntry entry : log.getEntries()) {
-				final String logentry = String.format("[%s] [%tD %tT] %s %s", s1, entry.time, entry.time, entry.level, entry.message);
-				stmts.add(new EG_SingleStatement(logentry));
-			}
-
-			final EG_SequenceStatement seq      = new EG_SequenceStatement(new EG_Naming("wot.log.seq"), stmts);
-			final String               fileName = new String(log.getFileName()).replace("/", "~~");
-			final EOT_OutputFile       off      = new EOT_OutputFile(st.c, List_of(), fileName, EOT_OutputType.LOGS, seq);
-			l.add(off);
-		}
+		addLogs(l, st.pa);
 
 		for (final EOT_OutputFile outputFile : l) {
 			final String       path0 = outputFile.getFilename();
@@ -73,6 +58,8 @@ public class WPIS_WriteOutputTree implements WP_Indiviual_Step {
 			default 	 -> path = path0;
 			}
 
+			FileSystems.getDefault().getPath(path).getParent().toFile().mkdirs();
+
 			System.out.println("401 Writing path: " + path);
 			CharSink x = null;
 			try {
@@ -84,6 +71,27 @@ public class WPIS_WriteOutputTree implements WP_Indiviual_Step {
 				if (x != null)
 					((FileCharSink) x).close();
 			}
+		}
+	}
+
+	private static void addLogs(final List<EOT_OutputFile> l, final @NotNull IPipelineAccess aPa) {
+		final List<ElLog>     logs = aPa.getCompilationEnclosure().getPipelineLogic().elLogs;
+		final String          s1   = logs.get(0).getFileName();
+
+		for (final ElLog log : logs) {
+			final List<EG_Statement> stmts = new ArrayList<>();
+
+			if (log.getEntries().size() == 0) continue; // README Prelude.elijjah "fails" here
+
+			for (final LogEntry entry : log.getEntries()) {
+				final String logentry = String.format("[%s] [%tD %tT] %s %s", s1, entry.time, entry.time, entry.level, entry.message);
+				stmts.add(new EG_SingleStatement(logentry+"\n"));
+			}
+
+			final EG_SequenceStatement seq      = new EG_SequenceStatement(new EG_Naming("wot.log.seq"), stmts);
+			final String               fileName = log.getFileName().replace("/", "~~");
+			final EOT_OutputFile       off      = new EOT_OutputFile(aPa.getCompilation(), List_of(), fileName, EOT_OutputType.LOGS, seq);
+			l.add(off);
 		}
 	}
 }

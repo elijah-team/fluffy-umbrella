@@ -24,7 +24,12 @@ class CR_FindStdlibAction implements CR_Action {
 
 	@Override
 	public Operation<Boolean> execute(final CR_State st, final CB_Output aO) {
-		Operation<CompilerDriven> ocrfsld = compilationRunner.compilation.cb.cd.get(Compilation.CompilationAlways.Tokens.COMPILATION_RUNNER_FIND_STDLIB);
+		Operation<CompilerDriven> ocrfsld = compilationRunner
+				.compilation
+				.getCompilationEnclosure()
+				.getCompilationBus()
+				.cd
+				.get(Compilation.CompilationAlways.Tokens.COMPILATION_RUNNER_FIND_STDLIB);
 
 		if (ocrfsld.mode() == FAILURE) {
 			throw new Error();
@@ -33,7 +38,9 @@ class CR_FindStdlibAction implements CR_Action {
 		Operation<CompilerInstructions>[] y = new Operation[1];
 
 		final CD_FindStdLib findStdLib = (CD_FindStdLib) ocrfsld.success();
-		findStdLib.findStdLib(compilationRunner, Compilation.CompilationAlways.defaultPrelude(), compilationRunner.compilation, (x1) -> y[0] = x1);
+		findStdLib.findStdLib(st,
+							  Compilation.CompilationAlways.defaultPrelude(),
+							  (x1) -> y[0] = x1);
 
 		final Operation<CompilerInstructions> x = y[0];
 		if (x.mode() == Mode.FAILURE) {

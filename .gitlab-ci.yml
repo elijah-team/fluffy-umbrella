@@ -24,7 +24,7 @@ test:
   stage: test
   script:
     - mvn $MAVEN_CLI_OPTS test
-    - curl -s https://codecov.io/bash | bash -s - -t d63d15e4-247f-4588-b8bf-b31e34529ef5
+#    - curl -s https://codecov.io/bash | bash -s - -t d63d15e4-247f-4588-b8bf-b31e34529ef5
   artifacts:
     paths: [ COMP ]
 

@@ -15,17 +15,15 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.comp.internal.DefaultCompilationAccess;
 import tripleo.elijah.comp.notation.GN_GenerateNodesIntoSink;
-import tripleo.elijah.entrypoints.EntryPoint;
+import tripleo.elijah.comp.notation.GN_PL_Run2;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
-import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.stages.gen_generic.pipeline_impl.ProcessedNode;
 import tripleo.elijah.stages.logging.ElLog;
-import tripleo.elijah.util.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -45,22 +43,20 @@ public class PipelineLogic {
 		@Contract(value = "_ -> fail", pure = true)
 		@Override
 		public void onSubscribe(Disposable d) {
-			throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+			throw new UnsupportedOperationException("Not supported yet.");
 		}
 
 		@Override
-		public void onNext(OS_Module mod) {
-			NotImplementedException.raise();
-
+		public void onNext(final @NotNull OS_Module mod) {
 			//System.err.printf("7070 %s %d%n", mod.getFileName(), mod.entryPoints.size());
 
-			run2(mod, mod.entryPoints);
+			pa.notate(7059, new GN_PL_Run2(PipelineLogic.this, mod));
 		}
 
 		@Contract(value = "_ -> fail", pure = true)
 		@Override
 		public void onError(Throwable e) {
-			throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+			throw new UnsupportedOperationException("Not supported yet.");
 		}
 
 		@Override
@@ -95,137 +91,12 @@ public class PipelineLogic {
 		pa.notate(117, new GN_GenerateNodesIntoSink(lgc, aResultSink, mods, verbosity, gr, pa, pa.getCompilationEnclosure()));
 	}
 
-	protected void run2(OS_Module mod, @NotNull List<EntryPoint> epl) {
-		final GenerateFunctions gfm = getGenerateFunctions(mod);
-		gfm.generateFromEntryPoints(epl, dp);
-
-//		WorkManager wm = new WorkManager();
-//		WorkList wl = new WorkList();
-
-		DeducePhase.@NotNull GeneratedClasses lgc            = dp.generatedClasses;
-		List<EvaNode>                         resolved_nodes = new ArrayList<EvaNode>();
-
-		assert lgc.copy().size() >0;
-
-		for (final EvaNode evaNode : lgc) {
-			if (evaNode instanceof GNCoded) {
-				final GNCoded coded = (GNCoded) evaNode;
-
-				final ICodeRegistrar cr = generatePhase.codeRegistrar;
-
-				switch (coded.getRole()) {
-				case FUNCTION: {
-//					EvaFunction generatedFunction = (EvaFunction) generatedNode;
-					if (coded.getCode() == 0)
-						coded.setCode(mod.getCompilation().nextFunctionCode());
-					cr.registerFunction((BaseEvaFunction) evaNode);
-					break;
-				}
-				case CLASS: {
-					final EvaClass evaClass = (EvaClass) evaNode;
-//					if (generatedClass.getCode() == 0)
-//						generatedClass.setCode(mod.getCompilation().nextClassCode());
-					for (EvaClass evaClass2 : evaClass.classMap.values()) {
-						if (evaClass2.getCode() == 0)
-							evaClass2.setCode(mod.getCompilation().nextClassCode());
-					}
-					for (EvaFunction generatedFunction : evaClass.functionMap.values()) {
-						for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
-							if (identTableEntry.isResolved()) {
-								EvaNode node = identTableEntry.resolvedType();
-								resolved_nodes.add(node);
-							}
-						}
-					}
-					break;
-				}
-				case NAMESPACE: {
-					final EvaNamespace generatedNamespace = (EvaNamespace) evaNode;
-					if (coded.getCode() == 0)
-						coded.setCode(mod.getCompilation().nextClassCode());
-					for (EvaClass evaClass : generatedNamespace.classMap.values()) {
-						if (evaClass.getCode() == 0)
-							evaClass.setCode(mod.getCompilation().nextClassCode());
-					}
-					for (EvaFunction generatedFunction : generatedNamespace.functionMap.values()) {
-						for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
-							if (identTableEntry.isResolved()) {
-								EvaNode node = identTableEntry.resolvedType();
-								resolved_nodes.add(node);
-							}
-						}
-					}
-					break;
-				}
-				default:
-					throw new IllegalStateException("Unexpected value: " + coded.getRole());
-				}
-
-			} else {
-				throw new IllegalStateException("node must be coded");
-			}
-		}
-
-		for (final EvaNode evaNode : resolved_nodes) {
-/*
-			if (generatedNode instanceof EvaFunction) {
-				EvaFunction generatedFunction = (EvaFunction) generatedNode;
-				if (generatedFunction.getCode() == 0)
-					generatedFunction.setCode(mod.getCompilation().nextFunctionCode());
-			} else if (generatedNode instanceof EvaClass) {
-				final EvaClass generatedClass = (EvaClass) generatedNode;
-				if (generatedClass.getCode() == 0)
-					generatedClass.setCode(mod.getCompilation().nextClassCode());
-			} else if (generatedNode instanceof EvaNamespace) {
-				final EvaNamespace generatedNamespace = (EvaNamespace) generatedNode;
-				if (generatedNamespace.getCode() == 0)
-					generatedNamespace.setCode(mod.getCompilation().nextClassCode());
-			}
-*/
-			if (evaNode instanceof GNCoded) {
-				final GNCoded coded = (GNCoded) evaNode;
-				final int     code;
-				if (coded.getCode() == 0) {
-					switch (coded.getRole()) {
-					case FUNCTION:
-						code = (mod.getCompilation().nextFunctionCode());
-						break;
-					case NAMESPACE:
-					case CLASS:
-						code = mod.getCompilation().nextClassCode();
-						break;
-					default:
-						throw new IllegalStateException("Invalid coded role");
-					}
-					coded.setCode(code);
-				}
-			} else
-				throw new IllegalStateException("node is not coded");
-		}
-
-		dp.deduceModule(mod, lgc, verbosity);
-
-		resolveCheck(lgc);
-
-//		for (final GeneratedNode gn : lgf) {
-//			if (gn instanceof EvaFunction) {
-//				EvaFunction gf = (EvaFunction) gn;
-//				System.out.println("----------------------------------------------------------");
-//				System.out.println(gf.name());
-//				System.out.println("----------------------------------------------------------");
-//				EvaFunction.printTables(gf);
-//				System.out.println("----------------------------------------------------------");
-//			}
-//		}
-
-	}
-
 	@NotNull
-	private GenerateFunctions getGenerateFunctions(OS_Module mod) {
+	public GenerateFunctions getGenerateFunctions(OS_Module mod) {
 		return generatePhase.getGenerateFunctions(mod);
 	}
 
-	private void resolveCheck(DeducePhase.GeneratedClasses lgc) {
+	public void resolveCheck(DeducePhase.GeneratedClasses lgc) {
 		for (final EvaNode evaNode : lgc) {
 			if (evaNode instanceof EvaFunction) {
 
@@ -272,6 +143,7 @@ public class PipelineLogic {
 	public ElLog.Verbosity getVerbosity() {
 		return this.verbosity;
 	}
+
 }
 
 //

@@ -22,15 +22,16 @@ import tripleo.elijah.stages.logging.ElLog;
 import java.util.List;
 
 public class CR_State {
-	//private final CompilationRunner         compilationRunner;
+	private final CompilationRunner         compilationRunner;
 	public        ICompilationBus.CB_Action cur;
 	public        ProcessRecord             pr;
 	public        RuntimeProcesses          rt;
+	public boolean started;
 	ICompilationAccess ca;
 
 	@Contract(pure = true)
-	public CR_State(final CompilationRunner ignoredACompilationRunner, ICompilationAccess aCa) {
-		//compilationRunner       = aCompilationRunner;
+	public CR_State(final CompilationRunner aCompilationRunner, ICompilationAccess aCa) {
+		compilationRunner       = aCompilationRunner;
 		ca                      = aCa;
 		ca.getCompilation().set_pa(new ProcessRecord_PipelineAccess());
 		pr                      = new ProcessRecordImpl(ca);
@@ -40,6 +41,9 @@ public class CR_State {
 		return ca;
 	}
 
+	public CompilationRunner runner() {
+		return compilationRunner;
+	}
 
 	public interface PipelinePlugin {
 		String name();

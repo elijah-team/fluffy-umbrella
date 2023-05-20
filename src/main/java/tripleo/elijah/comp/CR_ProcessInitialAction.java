@@ -25,6 +25,8 @@ public class CR_ProcessInitialAction implements CR_Action {
 
 	@Override
 	public Operation<Boolean> execute(final @NotNull CR_State st, final CB_Output aO) {
+		compilationRunner = st.runner();
+
 		try {
 			compilationRunner.compilation.use(ci, do_out);
 			return Operation.success(true);

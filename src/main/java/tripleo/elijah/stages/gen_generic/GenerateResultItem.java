@@ -57,14 +57,14 @@ public class GenerateResultItem {
 	}
 
 	public String jsonString() {
-		final StringBuilder sb = new StringBuilder("{\".class\": GenerateResultItem, ");
+		final StringBuilder sb = new StringBuilder("{\".class\": \"GenerateResultItem\", ");
 		sb.append("counter: "+counter+", ");
 		sb.append("ty: "+ty+", ");
 		sb.append("output: "+output+", ");
 		sb.append("outputFile: "+outputFile+", ");
 		sb.append("lsp: "+lsp+", ");
 		sb.append("node: "+node+", ");
-		sb.append("buffer: "+buffer.getText()+", ");
+		sb.append("buffer: \"\"\""+buffer.getText()+"\"\"\", ");
 		sb.append("dependency: "+dependency.jsonString()+", ");
 		sb.append("dependencies: "+dependencies()/*+", "*/);
 		sb.append("}");

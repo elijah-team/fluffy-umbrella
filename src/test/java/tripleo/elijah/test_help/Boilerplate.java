@@ -27,19 +27,15 @@ public class Boilerplate {
 		final ICompilationAccess aca1 = ((CompilationImpl) comp)._access();
 		aca       = aca1 != null ? aca1 : new DefaultCompilationAccess(comp);
 		cr        = new CompilationRunner(aca);
-		comp.__cr = cr;
 
+		comp.getCompilationEnclosure().setCompilationRunner(cr);
 
-		final CR_State crState = comp.__cr.crState;
+		final CR_State crState = comp.getCompilationEnclosure().getCompilationRunner().crState;
 		crState.ca();
+		assert comp.getCompilationEnclosure().getCompilationRunner().crState != null; // always true
 
 		pr            = cr.crState.pr;
 		pipelineLogic = pr.pipelineLogic();
-
-		assert comp.__cr.crState != null; // always true
-
-
-
 
 		if (module != null) {
 			module.setParent(comp);

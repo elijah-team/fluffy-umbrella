@@ -25,7 +25,6 @@ import tripleo.elijah.ci.LibraryStatementPartImpl;
 import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
 import tripleo.elijah.comp.diagnostic.FileNotFoundDiagnostic;
 import tripleo.elijah.comp.i.*;
-import tripleo.elijah.comp.internal.CompilationBus;
 import tripleo.elijah.comp.internal.DefaultCompilerController;
 import tripleo.elijah.comp.internal.DriverToken;
 import tripleo.elijah.comp.queries.QuerySourceFileToModule;
@@ -60,24 +59,22 @@ public abstract class Compilation {
 	public final  CIS                               _cis      = new CIS();
 	public final  USE                               use       = new USE(this);
 	final         ErrSink                           errSink;
-	final         Map<String, CompilerInstructions> fn2ci     = new HashMap<String, CompilerInstructions>();
+	public final  Map<String, CompilerInstructions> fn2ci     = new HashMap<String, CompilerInstructions>();
 	private final Pipeline                          pipelines = new Pipeline();
 	private final int                               _compilationNumber;
 	private final Map<String, OS_Package>           _packages = new HashMap<String, OS_Package>();
 
 	public        LivingRepo                        _repo     = new DefaultLivingRepo();
-	public  CompilationRunner __cr;
-	private IPipelineAccess   _pa;
-	public  CompilationBus    cb;
-	public CompilationConfig cfg = new CompilationConfig();
+	private      IPipelineAccess   _pa;
+	public final CompilationConfig cfg = new CompilationConfig();
 	CompilerInstructions rootCI;
 	private IO             io;
 	//
 	//
-	private int               _packageCode  = 1;
 	private int               _classCode    = 101;
 	private int               _functionCode = 1001;
 	private CompilationEnclosure compilationEnclosure = new CompilationEnclosure(this);
+	private List<CompilerInput>                      _inputs;
 
 	public Compilation(final ErrSink errSink, final IO io) {
 		this.errSink            = errSink;
@@ -136,7 +133,7 @@ public abstract class Compilation {
 		//assert _pa != null;
 
 		if (_pa == null) {
-			__cr.crState.ca();
+			getCompilationEnclosure().getCompilationRunner().crState.ca();
 		}
 
 		return _pa;
@@ -165,6 +162,7 @@ public abstract class Compilation {
 				})
 				.collect(Collectors.toList());
 
+		_inputs = inputs;
 
 		controller._setInputs(this, inputs);
 		controller.processOptions();
@@ -185,7 +183,14 @@ public abstract class Compilation {
 
 		rootCI = cis.get(0);
 
-		__cr.start(rootCI, do_out, pa);
+		pa.setCompilerInput(pa.getCompilation().getInputs());
+
+		getCompilationEnclosure().getCompilationRunner().start(rootCI, do_out, pa);
+	}
+
+	@Contract(pure = true)
+	private List<CompilerInput> getInputs() {
+		return _inputs;
 	}
 
 	public void pushItem(CompilerInstructions aci) {
@@ -275,12 +280,11 @@ public abstract class Compilation {
 	// region PACKAGES
 	//
 
-	public boolean isPackage(final String pkg) {
+	public boolean isPackage(final @NotNull String pkg) {
+		if (pkg.equals("C")) {
+			int y=2;
+		}
 		return _packages.containsKey(pkg);
-	}
-
-	private int nextPackageCode() {
-		return _packageCode++;
 	}
 
 	public int nextClassCode() {
@@ -388,16 +392,9 @@ public abstract class Compilation {
 				return Operation2.failure(new FileNotFoundDiagnostic(local_prelude));
 			}
 
-			try {
-				final Operation2<OS_Module> om = realParseElijjahFile2(local_prelude.getName(), local_prelude, false);
-
-				assert om.mode() == SUCCESS;
-
-				return Operation2.success(om.success());
-			} catch (final Exception e) {
-				errSink.exception(e);
-				return Operation2.failure(new ExceptionDiagnostic(e));
-			}
+			final Operation2<OS_Module> om = realParseElijjahFile2(local_prelude.getName(), local_prelude, false);
+			assert om.mode() == SUCCESS;
+			return Operation2.success(om.success());
 		}
 
 		private Operation2<OS_Module> parseElijjahFile(final @NotNull File f,

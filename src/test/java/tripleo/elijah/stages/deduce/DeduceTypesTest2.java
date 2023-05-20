@@ -74,9 +74,9 @@ public class DeduceTypesTest2 {
 		c.__cr = new CompilationRunner(aca);
 */
 
-		assert c.__cr.crState != null; // always true
+		assert c.getCompilationEnclosure().getCompilationRunner().crState != null; // always true
 
-		final CR_State     crState = c.__cr.crState;
+		final CR_State     crState = c.getCompilationEnclosure().getCompilationRunner().crState;
 		final DeducePhase  dp      = crState.pr.pipelineLogic().dp;
 		final DeduceTypes2 d       = dp.deduceModule(mod);
 
