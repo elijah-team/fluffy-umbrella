@@ -13,10 +13,14 @@ import static tripleo.elijah.nextgen.query.Mode.SUCCESS;
 
 public class CD_FindStdLibImpl implements CD_FindStdLib {
 	@Override
-	public void findStdLib(final CompilationRunner aCompilationRunner, final String aPreludeName, final Compilation aC, Consumer<Operation<CompilerInstructions>> coci) {
+	public void findStdLib(final CR_State crState,
+						   final String aPreludeName,
+						   final @NotNull Consumer<Operation<CompilerInstructions>> coci) {
 		int y = 2;
 		try {
-			@NotNull final Operation<CompilerInstructions> oci = _____findStdLib(aPreludeName, aCompilationRunner.compilation.getCompilationClosure(), aCompilationRunner);
+			final CompilationRunner compilationRunner = crState.runner();
+
+			@NotNull final Operation<CompilerInstructions> oci = _____findStdLib(aPreludeName, compilationRunner.compilation.getCompilationClosure(), compilationRunner);
 			coci.accept(oci);
 		} catch (Exception aE) {
 			throw new RuntimeException(aE);

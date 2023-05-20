@@ -17,14 +17,14 @@ public class DoubleLatch<T> {
 		action = aAction;
 	}
 
-	public void notify(T att) {
+	public void notifyData(T att) {
 		tt = att;
 		if (simple && tt != null) {
 			action.accept(tt);
 		}
 	}
 
-	public void notify(boolean ass) {
+	public void notifyLatch(boolean ass) {
 		simple = ass;
 		if (simple && tt != null) {
 			action.accept(tt);

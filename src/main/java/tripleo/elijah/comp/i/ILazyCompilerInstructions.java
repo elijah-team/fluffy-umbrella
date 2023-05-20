@@ -26,7 +26,7 @@ public interface ILazyCompilerInstructions {
 			@Override
 			public CompilerInstructions get() {
 				try {
-					final Operation<CompilerInstructions> oci = c.__cr.parseEzFile1(aFile, aFile.getPath(), c.getErrSink(), c.getIO(), c);
+					final Operation<CompilerInstructions> oci = c.getCompilationEnclosure().getCompilationRunner().parseEzFile1(aFile, aFile.getPath(), c.getErrSink(), c.getIO(), c);
 
 					if (oci.mode() == Mode.SUCCESS) {
 						final CompilerInstructions parsed = oci.success();

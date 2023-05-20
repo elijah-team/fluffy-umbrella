@@ -3,6 +3,7 @@ package tripleo.elijah.comp;
 import antlr.ANTLRException;
 import antlr.RecognitionException;
 import antlr.TokenStreamException;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
@@ -14,9 +15,10 @@ import tripleo.elijah.comp.internal.*;
 import tripleo.elijah.comp.queries.QueryEzFileToModule;
 import tripleo.elijah.comp.queries.QueryEzFileToModuleParams;
 import tripleo.elijah.diagnostic.Diagnostic;
-import tripleo.elijah.util.Maybe;
 import tripleo.elijah.stateful.DefaultStateful;
 import tripleo.elijah.stateful.State;
+import tripleo.elijah.util.Maybe;
+import tripleo.elijah.util.Stupidity;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -31,29 +33,32 @@ public class CompilationRunner {
 	private static final List<State>     registeredStates = new ArrayList<>();
 	public final         Compilation     compilation;
 	public final         ICompilationBus cb;
+	public final CR_State crState;
+	public final IProgressSink progressSink;
 	final                Compilation.CIS cis;
 	private final        CCI             cci;
 	CR_FindCIs cr_find_cis;
-	public final CR_State crState;
 
 	public CompilationRunner(final @NotNull ICompilationAccess aca) {
 		compilation = aca.getCompilation();
-		
+
 		aca.getCompilation().getCompilationEnclosure().setCompilationAccess(aca);
 
-		cis         = aca.getCompilation()._cis;
-		cb          = aca.getCompilation().cb;
+		cis = aca.getCompilation()._cis;
+		cb  = aca.getCompilation().getCompilationEnclosure().getCompilationBus();
 
-		cci = new DefaultCCI(compilation, cis, new IProgressSink() {
+		progressSink = new IProgressSink() {
 			@Override
 			public void note(final int aCode, final ProgressSinkComponent aProgressSinkComponent, final int aType, final Object[] aParams) {
-				tripleo.elijah.util.Stupidity.println_err_2(aProgressSinkComponent.printErr(aCode, aType, aParams));
+				Stupidity.println_err_2(aProgressSinkComponent.printErr(aCode, aType, aParams));
 			}
-		});
+		};
 
+		cci     = new DefaultCCI(compilation, cis, progressSink);
 		crState = new CR_State(this, aca);
 	}
 
+	@Contract("_ -> param1")
 	public static State registerState(final State aState) {
 		if (!(registeredStates.contains(aState))) {
 			registeredStates.add(aState);
@@ -73,31 +78,16 @@ public class CompilationRunner {
 		if (false) {
 			cb.add(new CompilationRunnerProcess((CompilerInstructionsImpl) ci, do_out));
 		} else {
-			final Operation<CompilerDriven> ocrsd = pa.getCompilationEnclosure().getCompilationBus().cd.get(Compilation.CompilationAlways.Tokens.COMPILATION_RUNNER_START);
-
-			switch (ocrsd.mode()) {
-			case SUCCESS -> {
-				((CD_CompilationRunnerStart) ocrsd.success()).start(this, ci, do_out, pa);
-			}
-			case FAILURE, NOTHING -> throw new Error();
-			}
+			cb.add(new ICompilationBus.CB_Process() {
+				@Override
+				public List<ICompilationBus.CB_Action> steps() {
+					return List_of(
+							new StartCompilationRunnerAction(pa, ci)
+								  );
+				}
+			});
 
 		}
-	}
-
-	public Operation<CompilerInstructions> findStdLib(final String prelude_name, final @NotNull Compilation c) {
-		Operation<CompilerDriven> ocrfsld = compilation.cb.cd.get(Compilation.CompilationAlways.Tokens.COMPILATION_RUNNER_FIND_STDLIB);
-
-		if (ocrfsld.mode() == FAILURE) {
-			throw new Error();
-		}
-
-		Operation<CompilerInstructions>[] y = new Operation[1];
-
-		final CD_FindStdLib findStdLib = (CD_FindStdLib) ocrfsld.success();
-		findStdLib.findStdLib(this, prelude_name, c, (x) -> y[0] = x);
-
-		return y[0];
 	}
 
 	/*
@@ -109,7 +99,6 @@ public class CompilationRunner {
 	 */
 	@NotNull
 	public Operation<CompilerInstructions> findStdLib2(final String prelude_name, final @NotNull CompilationClosure ccl) {
-		final ErrSink     errSink = ccl.errSink();
 		final IO          io      = ccl.io();
 		final Compilation c       = ccl.getCompilation();
 
@@ -231,7 +220,14 @@ public class CompilationRunner {
 		/********************/
 		/********************/
 		/********************/
-		cr_find_cis = new CR_FindCIs(List_of());
+		final IProgressSink ps = new IProgressSink() {
+			@Override
+			public void note(final int aCode, final ProgressSinkComponent aCci, final int aType, final Object[] aParams) {
+				tripleo.elijah.util.Stupidity.println_err_2(aCci.printErr(aCode, aType, aParams));
+			}
+		};
+
+		cr_find_cis = new CR_FindCIs(List_of(), c, ps);
 		/********************/
 		/********************/
 		/********************/
@@ -245,15 +241,6 @@ public class CompilationRunner {
 		/********************/
 		/********************/
 		cr_find_cis.execute(crState, new CB_Output());
-
-
-		//final IProgressSink ps = cis.ps;
-		final IProgressSink ps = new IProgressSink() {
-			@Override
-			public void note(final int aCode, final ProgressSinkComponent aCci, final int aType, final Object[] aParams) {
-				tripleo.elijah.util.Stupidity.println_err_2(aCci.printErr(aCode, aType, aParams));
-			}
-		};
 
 
 		CompilerInstructions ez_file;
@@ -442,7 +429,7 @@ public class CompilationRunner {
 
 	public void doFindCIs(final List<CompilerInput> inputs, final String[] args2, final ICompilationBus cb) {
 		// TODO map + "extract"
-		cb.add(new _FindCI_Steps(this, inputs, args2));
+		cb.add(new _FindCI_Steps(this, inputs));
 	}
 
 	public enum ST {
@@ -554,7 +541,7 @@ public class CompilationRunner {
 			// 2. process the initial
 			final ICompilationBus.CB_Action b = new ICompilationBus.CB_Action() {
 				final CB_Output o = new CB_Output();
-				private final CR_ProcessInitialAction aa = new CR_ProcessInitialAction(CompilationRunner.this, ci, do_out);
+				private final CR_ProcessInitialAction aa = new CR_ProcessInitialAction(ci, do_out);
 
 				@Override
 				public String name() {
@@ -593,6 +580,45 @@ public class CompilationRunner {
 			};
 
 			return List_of(a, b, c);
+		}
+	}
+
+	private class StartCompilationRunnerAction implements ICompilationBus.CB_Action {
+		private final @NotNull IPipelineAccess pa;
+		private final CompilerInstructions ci;
+
+		@Contract(pure = true)
+		public StartCompilationRunnerAction(final @NotNull IPipelineAccess aPa, final CompilerInstructions aCi) {
+			pa = aPa;
+			ci = aCi;
+		}
+
+		@Contract(pure = true)
+		@Override
+		public @NotNull String name() {
+			return "StartCompilationRunnerAction";
+		}
+
+		@Override
+		public void execute() {
+			final Operation<CompilerDriven> ocrsd = pa
+					.getCompilationEnclosure()
+					.getCompilationDriver()
+					.get(Compilation.CompilationAlways.Tokens.COMPILATION_RUNNER_START);
+
+			switch (ocrsd.mode()) {
+			case SUCCESS -> {
+				final CD_CompilationRunnerStart compilationRunnerStart = (CD_CompilationRunnerStart) ocrsd.success();
+
+				compilationRunnerStart.start(ci, crState);
+			}
+			case FAILURE, NOTHING -> throw new Error();
+			}
+		}
+
+		@Override
+		public List<ICompilationBus.OutputString> outputStrings() {
+			return null;
 		}
 	}
 }

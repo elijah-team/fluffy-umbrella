@@ -10,6 +10,7 @@
 package tripleo.elijah.comp.notation;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
@@ -33,7 +34,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GN_GenerateNodesIntoSink implements GN_Notable {
-	private final GenerateResultSink resultSink;
+	private final GenerateResultSink   resultSink;
 	private final EIT_ModuleList       mods;
 	private final List<ProcessedNode>  processedNodes;
 	private final GenerateResult       gr;
@@ -41,6 +42,7 @@ public class GN_GenerateNodesIntoSink implements GN_Notable {
 	private final IPipelineAccess      pa;
 	private final CompilationEnclosure ce;
 
+	@Contract(pure = true)
 	public GN_GenerateNodesIntoSink(final List<ProcessedNode> algc,
 									final GenerateResultSink aResultSink,
 									final EIT_ModuleList aModuleList,

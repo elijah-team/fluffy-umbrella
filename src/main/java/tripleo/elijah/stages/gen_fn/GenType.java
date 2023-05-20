@@ -9,6 +9,7 @@
 package tripleo.elijah.stages.gen_fn;
 
 import org.jdeferred2.DoneCallback;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
@@ -64,9 +65,12 @@ public class GenType {
 								 final DeducePhase phase) {
 		SetGenCI              sgci = new SetGenCI();
 		final ClassInvocation ci   = sgci.call(this, aGenericTypeName, deduceTypes2, errSink, phase);
-		return ci;
+		final ClassInvocation ci1  = ci;
+		final ClassInvocation ci11 = ci1;
+		return ci11;
 	}
 
+	@Contract(pure = true)
 	public GenType() {
 	}
 
@@ -161,7 +165,7 @@ public class GenType {
 					}
 				}
 
-				private void gotResolved(final GenType gt) {
+				private void gotResolved(final @NotNull GenType gt) {
 					if (gt.resolved.getClassOf().getGenericPart().size() != 0) {
 						//throw new AssertionError();
 						aLOG.info("149 non-generic type " + tn1);
@@ -206,6 +210,7 @@ public class GenType {
 			throw new IllegalStateException("invalid invocation");
 	}
 
+	@Contract(value = "null -> false", pure = true)
 	@Override
 	public boolean equals(final Object aO) {
 		if (this == aO) return true;
@@ -248,7 +253,7 @@ public class GenType {
 		return sb.toString();
 	}
 
-	public void set(OS_Type aType) {
+	public void set(@NotNull OS_Type aType) {
 		switch (aType.getType()) {
 		case USER:
 			typeName = aType;
@@ -405,5 +410,5 @@ public class GenType {
 }
 
 //
-//
+// vim:set shiftwidth=4 softtabstop=0 noexpandtab:
 //

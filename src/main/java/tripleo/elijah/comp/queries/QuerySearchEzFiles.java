@@ -1,5 +1,8 @@
 package tripleo.elijah.comp.queries;
 
+import antlr.ANTLRException;
+import antlr.RecognitionException;
+import antlr.TokenStreamException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
@@ -8,28 +11,26 @@ import tripleo.elijah.comp.i.CompilationClosure;
 import tripleo.elijah.nextgen.query.Mode;
 import tripleo.elijah.nextgen.query.Operation2;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import static tripleo.elijah.nextgen.query.Mode.FAILURE;
+import static tripleo.elijah.nextgen.query.Mode.SUCCESS;
 
 public class QuerySearchEzFiles {
 	private final Compilation       c;
 	private final ErrSink           errSink;
 	private final IO                io;
-	private final CompilationRunner cr;
 
-	public QuerySearchEzFiles(final CompilationClosure ccl, final CompilationRunner aCr) {
+	public QuerySearchEzFiles(final @NotNull CompilationClosure ccl) {
 		c       = ccl.getCompilation();
 		errSink = ccl.errSink();
 		io      = ccl.io();
-		cr      = aCr;
 	}
 
-	public Operation2<List<CompilerInstructions>> process(final File directory) {
+	public Operation2<List<CompilerInstructions>> process(final @NotNull File directory) {
 		final List<CompilerInstructions> R = new ArrayList<CompilerInstructions>();
 		final FilenameFilter filter = new FilenameFilter() {
 			@Override
@@ -111,6 +112,60 @@ public class QuerySearchEzFiles {
 														   final InputStream s,
 														   final @NotNull File file,
 														   final Compilation c) {
-		return cr.realParseEzFile(f, s, file, c);
+		final String absolutePath;
+		try {
+			absolutePath = file.getCanonicalFile().toString(); // TODO 04/10 hash this and "attach"
+			//queryDB.attach(compilerInput, new EzFileIdentity_Sha256($hash)); // ??
+		} catch (IOException aE) {
+			//throw new RuntimeException(aE);
+			return Operation.failure(aE);
+		}
+
+		// TODO 04/10
+		// Cache<CompilerInput, CompilerInstructions> fn2ci /*EzFileIdentity??*/(MAP/*??*/, resolver is try stmt)
+		if (c.fn2ci.containsKey(absolutePath)) { // don't parse twice
+			// TODO 04/10
+			// ...queryDB.attach(compilerInput, new EzFileIdentity_Sha256($hash)); // ?? fnci
+			return Operation.success(c.fn2ci.get(absolutePath));
+		}
+
+		try {
+			try {
+				final Operation<CompilerInstructions> cio = parseEzFile_(f, s);
+
+				if (cio.mode() != SUCCESS) {
+					final Exception e = cio.failure();
+					assert e != null;
+
+					tripleo.elijah.util.Stupidity.println_err_2(("parser exception: " + e));
+					e.printStackTrace(System.err);
+					//s.close();
+					return cio;
+				}
+
+				final CompilerInstructions R = cio.success();
+				R.setFilename(file.toString());
+				c.fn2ci.put(absolutePath, R);
+				return cio;
+			} catch (final ANTLRException e) {
+				tripleo.elijah.util.Stupidity.println_err_2(("parser exception: " + e));
+				e.printStackTrace(System.err);
+				return Operation.failure(e);
+			}
+		} finally {
+			if (s != null) {
+				try {
+					s.close();
+				} catch (IOException aE) {
+					// TODO return inside finally: is this ok??
+					return new Operation<>(null, aE, FAILURE);
+				}
+			}
+		}
+	}
+
+	private Operation<CompilerInstructions> parseEzFile_(final String f, final InputStream s) throws RecognitionException, TokenStreamException {
+		final QueryEzFileToModuleParams qp = new QueryEzFileToModuleParams(f, s);
+		return new QueryEzFileToModule(qp).calculate();
 	}
 }

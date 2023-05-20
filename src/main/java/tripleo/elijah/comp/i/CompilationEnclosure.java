@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.CompilationRunner;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.internal.CR_State;
 import tripleo.elijah.comp.internal.CompilationBus;
@@ -23,6 +24,7 @@ public class CompilationEnclosure {
 	private @NotNull ICompilationAccess                          ca;
 	private          CompilationBus                              compilationBus;
 	private          CompilerDriver                              compilerDriver;
+	private CompilationRunner compilationRunner;
 
 	public CompilationEnclosure(final Compilation aCompilation) {
 		compilation = aCompilation;
@@ -94,5 +96,17 @@ public class CompilationEnclosure {
 
 	public IPipelineAccess getPipelineAccess() {
 		return pa;
+	}
+
+	public void setCompilationRunner(final CompilationRunner aCompilationRunner) {
+		compilationRunner = aCompilationRunner;
+	}
+
+	public CompilationRunner getCompilationRunner() {
+		return compilationRunner;
+	}
+
+	public CompilerDriver getCompilationDriver() {
+		return getCompilationBus().cd;
 	}
 }

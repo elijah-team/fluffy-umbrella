@@ -27,23 +27,23 @@ public class WPIS_WriteBuffers implements WP_Indiviual_Step {
 		try {
 			st.file_prefix.mkdirs();
 
-			debug_buffers(sc);
+			debug_buffers(st, sc);
 		} catch (FileNotFoundException aE) {
 			sc.exception(aE);
 		}
 	}
 
-	private void debug_buffers(final WP_State_Control aSc) throws FileNotFoundException {
+	private void debug_buffers(final @NotNull WritePipelineSharedState st, final WP_State_Control aSc) throws FileNotFoundException {
 		// TODO can/should this fail??
 
-		final List<GenerateResultItem> generateResultItems1 = writePipeline.st.getGr().results();
+		final List<GenerateResultItem> generateResultItems1 = st.getGr().results();
 
 		writePipeline.prom.then(new DoneCallback<GenerateResult>() {
 			@Override
 			public void onDone(final GenerateResult result) {
-				final File file = new File(writePipeline.st.file_prefix, "buffers.txt");
+				final File file = new File(st.file_prefix, "buffers.txt");
 
-				WriteBufferText wbt = new WriteBufferText(writePipeline.st, aSc);
+				WriteBufferText wbt = new WriteBufferText(st, aSc);
 				//wbt.setFile(file);
 				wbt.setResult(result);
 				wbt.run();

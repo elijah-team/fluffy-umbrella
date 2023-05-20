@@ -30,6 +30,8 @@ import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.lang2.SpecialFunctions;
 import tripleo.elijah.lang2.SpecialVariables;
 import tripleo.elijah.nextgen.ClassDefinition;
+import tripleo.elijah.nextgen.query.Mode;
+import tripleo.elijah.nextgen.query.Operation2;
 import tripleo.elijah.stages.deduce.declarations.DeferredMember;
 import tripleo.elijah.stages.deduce.declarations.DeferredMemberFunction;
 import tripleo.elijah.stages.deduce.post_bytecode.*;
@@ -1021,11 +1023,10 @@ public class DeduceTypes2 {
 
 		final DeduceElement3_IdentTableEntry x = ((DeduceElement3_IdentTableEntry) ite.getDeduceElement3(this, generatedFunction));
 		x.assign_type_to_idte(aFunctionContext, aContext);
-
 	}
 
 	void resolve_function_return_type(@NotNull BaseEvaFunction generatedFunction) {
-		final DeduceElement3_Function f = _zero.get(generatedFunction);
+		final DeduceElement3_Function f = _zero.get(DeduceTypes2.this, generatedFunction);
 
 		final GenType gt = f.resolve_function_return_type_int(errSink);
 		if (gt != null)
@@ -1552,12 +1553,6 @@ public class DeduceTypes2 {
 		}
 	}
 
-/*
-	private void forFunction(EvaFunction gf, ForFunction forFunction) {
-		phase.forFunction(this, gf, forFunction);
-	}
-*/
-
 	public static class ClassInvocationMake {
 		public static ClassInvocation withGenericPart(ClassStatement best,
 													  String constructorName,
@@ -2075,6 +2070,8 @@ public class DeduceTypes2 {
 			final @Nullable DeduceElement target = dpc.target();
 			int                           y      = 2;
 
+			DeclAnchor xxv = target.declAnchor();
+
 			{
 				@Nullable OS_Element el3;
 				@Nullable Context    ectx = generatedFunction.getFD().getContext();
@@ -2097,24 +2094,20 @@ public class DeduceTypes2 {
 
 
 						if (lrl == null && ectx instanceof DeducePath.MemberContext) {
+							final DeduceElement3_IdentTableEntry de3_idte      = _zero.getIdent(idte2, generatedFunction, DeduceTypes2.this);
+							final DeduceElement3_Type            de3_idte_type = de3_idte.type();
 
-							int yyy = 2;
+							final OS_Type  ty = de3_idte_type.genType().typeName;
 
-							@NotNull TypeTableEntry tte = idte2.type;
-							try {
-								Preconditions.checkState(tte.genType.typeName.getType() == OS_Type.Type.USER);
+							Preconditions.checkState(ty.getType() == OS_Type.Type.USER);
 
-								final TypeName   tn = tte.genType.typeName.getTypeName();
-								@NotNull OS_Type ty = new OS_UserType(tn);
+							final Operation2<GenType> resolved = de3_idte_type.resolved(ectx);
 
-								@NotNull final GenType resolved = resolve_type(ty, ectx);
-								LOG.err("892 resolved: " + resolved);
-								tte.setAttached(resolved);
-							} catch (ResolveError aResolveError) {
-								errSink.reportDiagnostic(aResolveError);
+							if (resolved.mode() == Mode.FAILURE) {
+								errSink.reportDiagnostic(resolved.failure());
+							} else {
+								LOG.err("892 resolved: " + resolved.success());
 							}
-
-
 						} else {
 
 							@Nullable OS_Element el2 = lrl.chooseBest(null);
@@ -2208,19 +2201,14 @@ public class DeduceTypes2 {
 			TypeName tyn = aTy.getTypeName();
 			if (tyn instanceof NormalTypeName) {
 				final @NotNull NormalTypeName tyn1 = (NormalTypeName) tyn;
-				_implement_construct_type(co, constructorName, (NormalTypeName) tyn, aGenType);
+				_implement_construct_type(co, constructorName, tyn1, aGenType);
 			}
 
 			final ClassInvocation classInvocation = pte.getClassInvocation();
 			if (co != null) {
 				co.setConstructable(pte);
 				assert classInvocation != null;
-				classInvocation.resolvePromise().done(new DoneCallback<EvaClass>() {
-					@Override
-					public void onDone(EvaClass result) {
-						co.resolveTypeToClass(result);
-					}
-				});
+				classInvocation.resolvePromise().done(co::resolveTypeToClass);
 			}
 
 			if (classInvocation != null) {
@@ -2309,21 +2297,14 @@ public class DeduceTypes2 {
 			if (co instanceof IdentTableEntry) {
 				final @Nullable IdentTableEntry idte3 = (IdentTableEntry) co;
 				idte3.type.genTypeCI(aClsinv);
-//				aClsinv.resolvePromise().then(new DoneCallback<EvaClass>() {
-//					@Override
-//					public void onDone(EvaClass result) {
-//						idte3.resolveTypeToClass(result);
-//					}
-//				});
+				aClsinv.resolvePromise().then(
+						idte3::resolveTypeToClass);
 			} else if (co instanceof VariableTableEntry) {
 				final @NotNull VariableTableEntry vte = (VariableTableEntry) co;
 				vte.type.genTypeCI(aClsinv);
-//				aClsinv.resolvePromise().then(new DoneCallback<EvaClass>() {
-//					@Override
-//					public void onDone(EvaClass result) {
-//						vte.resolveTypeToClass(result);
-//					}
-//				});
+				aClsinv.resolvePromise().then(
+						vte::resolveTypeToClass
+);
 			}
 		}
 
@@ -2367,7 +2348,7 @@ public class DeduceTypes2 {
 	class Zero {
 		final Map<Object, IDeduceElement3> l = new HashMap<>();
 
-		public DeduceElement3_Function get(final BaseEvaFunction aGeneratedFunction) {
+		public DeduceElement3_Function get(final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aGeneratedFunction) {
 			if (l.containsKey(aGeneratedFunction)) {
 				return (DeduceElement3_Function) l.get(aGeneratedFunction);
 			}
@@ -2397,10 +2378,16 @@ public class DeduceTypes2 {
 			return de3;
 		}
 
+		public DeduceElement3_IdentTableEntry getIdent(final IdentTableEntry vte, final BaseEvaFunction aGeneratedFunction, final DeduceTypes2 aDeduceTypes2) {
+			if (l.containsKey(vte)) {
+				return (DeduceElement3_IdentTableEntry) l.get(vte);
+			}
 
-		//public IDeduceElement3 get(final Object o) {
-		//	return null;
-		//}
+			final DeduceElement3_IdentTableEntry de3 = new DeduceElement3_IdentTableEntry(vte);
+			de3.setDeduceTypes(aDeduceTypes2, aGeneratedFunction);
+			l.put(vte, de3);
+			return de3;
+		}
 	}
 
 	class PromiseExpectations {
@@ -2442,7 +2429,7 @@ public class DeduceTypes2 {
 				assert false;
 			result    = aResult;
 			satisfied = true;
-////////			LOG.info(String.format("Expectation (%s, %d)%s met: %s %s", DeduceTypes2.this, counter, satisfied_already, desc, base.expectationString()));
+			LOG.info(String.format("Expectation (%s, %d)%s met: %s %s", DeduceTypes2.this, counter, satisfied_already, desc, base.expectationString()));
 		}
 
 		public void fail() {
@@ -2685,14 +2672,12 @@ public class DeduceTypes2 {
 								}
 								@Nullable OS_Element best = lrl.chooseBest(null);
 								// README commented out because only firing for dir.listFiles, and we always use `best'
-//					if (best != ele2) LOG.err(String.format("2824 Divergent for %s, %s and %s", ite, best, ele2));;
+					//if (best != ele2) LOG.err(String.format("2824 Divergent for %s, %s and %s", ite, best, ele2));;
 								ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolderWithType(best, ty, DeduceTypes2.this));
 							}
 						});
 					} else {
-						@Nullable LookupResultList lrl = null;
-
-						lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele2.getContext(), DeduceTypes2.this);
+						@Nullable LookupResultList lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele2.getContext(), DeduceTypes2.this);
 						@Nullable OS_Element best = lrl.chooseBest(null);
 						// README commented out because only firing for dir.listFiles, and we always use `best'
 //					if (best != ele2) LOG.err(String.format("2824 Divergent for %s, %s and %s", ite, best, ele2));;
@@ -2856,12 +2841,11 @@ public class DeduceTypes2 {
 							boolean skip = false;
 
 							if (!ty.getTypeName().isNull()) {
-								{
-									final TypeNameList gp = ((NormalTypeName) ty.getTypeName()).getGenericPart();
-									if (gp != null)
-										if (gp.size() > 0 && ite.type.genType.nonGenericTypeName == null) {
-											skip = true;
-										}
+								final TypeNameList gp = ((NormalTypeName) ty.getTypeName()).getGenericPart();
+								if (gp != null) {
+									if (gp.size() > 0 && ite.type.genType.nonGenericTypeName == null) {
+										skip = true;
+									}
 								}
 							}
 							if (!skip)

@@ -14,16 +14,13 @@ class _FindCI_Steps implements ICompilationBus.CB_Process {
 
 	private final CompilationRunner   compilationRunner;
 	final         CR_State            st1;
-	private final String[]            args2;
 	private final List<CompilerInput> inputs;
 
 	@Contract(pure = true)
 	public _FindCI_Steps(final @NotNull CompilationRunner aCompilationRunner,
-						 final @NotNull List<CompilerInput> aInputs,
-						 final @NotNull String[] aArgs2) {
+						 final @NotNull List<CompilerInput> aInputs) {
 		compilationRunner = aCompilationRunner;
 		inputs            = aInputs;
-		args2             = aArgs2;
 		//
 		st1               = compilationRunner.crState;
 	}
@@ -32,7 +29,7 @@ class _FindCI_Steps implements ICompilationBus.CB_Process {
 	@NotNull
 	public List<ICompilationBus.CB_Action> steps() {
 		final ICompilationBus.CB_Action a = new _ActionBase(this, () -> {
-			return new CR_FindCIs(inputs);
+			return new CR_FindCIs(inputs, compilationRunner.compilation, compilationRunner.progressSink);
 		}, compilationRunner) {
 			@Override
 			public void execute() {
@@ -42,10 +39,11 @@ class _FindCI_Steps implements ICompilationBus.CB_Process {
 			}
 		};
 
-		final ICompilationBus.CB_Action b = new _ActionBase(this, () -> new CR_AlmostComplete(compilationRunner), compilationRunner) {
+		final ICompilationBus.CB_Action b = new _ActionBase(this,
+															() -> new CR_AlmostComplete(compilationRunner),
+															compilationRunner) {
 		};
 
 		return List_of(a, b);
 	}
-
 }

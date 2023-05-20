@@ -1,9 +1,12 @@
 package tripleo.elijah.comp.i;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.comp.CompilationRunner;
+import tripleo.elijah.comp.internal.CR_State;
 import tripleo.elijah.comp.internal.CompilerDriven;
 
 public interface CD_CompilationRunnerStart extends CompilerDriven {
-	void start(final CompilationRunner aCompilationRunner, CompilerInstructions ci, boolean aDoOut, final IPipelineAccess pa);
+
+	void start(@NotNull CompilerInstructions aCompilerInstructions,
+			   @NotNull CR_State crState);
 }

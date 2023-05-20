@@ -22,6 +22,37 @@ public class DeduceElement3_IdentTableEntry extends DefaultStateful implements I
 	private      GenType         genType;
 	private      Context         fdCtx;
 	private      Context         context;
+	private GenType _resolved;
+
+	private DeduceElement3_Type _type = new DeduceElement3_Type() {
+
+		@Contract(pure = true)
+		@Override
+		public TypeTableEntry typeTableEntry() {
+			return principal.type;
+		}
+
+		@Contract(pure = true)
+		@Override
+		public GenType genType() {
+			return typeTableEntry().genType;
+		}
+
+		@Override
+		public Operation2<GenType> resolved(final Context ectx) {
+			try {
+				if (_resolved == null) {
+					_resolved = deduceTypes2.resolve_type(genType().typeName, ectx);
+
+					typeTableEntry().setAttached(_resolved);
+				}
+
+				return Operation2.success(_resolved);
+			} catch (ResolveError aResolveError) {
+				return Operation2.failure(aResolveError);
+			}
+		}
+	};
 
 	@Contract(pure = true)
 	public DeduceElement3_IdentTableEntry(final IdentTableEntry aIdentTableEntry) {
@@ -93,6 +124,15 @@ public class DeduceElement3_IdentTableEntry extends DefaultStateful implements I
 
 	public void assign_type_to_idte(final Context aFunctionContext, final Context aContext) {
 		new ST.ExitGetType().assign_type_to_idte(principal, generatedFunction, aFunctionContext, aContext, deduceTypes2, deduceTypes2._phase());
+	}
+
+	public DeduceElement3_Type type() {
+		return _type;
+	}
+
+	public void setDeduceTypes(final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aGeneratedFunction) {
+		deduceTypes2 = aDeduceTypes2;
+		generatedFunction = aGeneratedFunction;
 	}
 
 	public static class ST {

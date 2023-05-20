@@ -15,14 +15,14 @@ import java.util.Map;
 
 public class GN_WriteLogs implements GN_Notable {
 	private final ICompilationAccess ca;
-	private final boolean            silent;
+	//private final boolean            silent;
 	private final List<ElLog>        logs;
 
 	@Contract(pure = true)
 	public GN_WriteLogs(final @NotNull ICompilationAccess aCa,
 						final @NotNull List<ElLog> aLogs) {
 		ca     = aCa;
-		silent = aCa.testSilence() == ElLog.Verbosity.SILENT;
+		//silent = aCa.testSilence() == ElLog.Verbosity.SILENT;
 		logs   = aLogs;
 	}
 
@@ -30,15 +30,14 @@ public class GN_WriteLogs implements GN_Notable {
 	public void run() {
 		final Multimap<String, ElLog> logMap = ArrayListMultimap.create();
 
-		if (true || silent) {
-			for (final ElLog deduceLog : logs) {
-				logMap.put(deduceLog.getFileName(), deduceLog);
-			}
-
-			for (final Map.Entry<String, Collection<ElLog>> stringCollectionEntry : logMap.asMap().entrySet()) {
-				final F202 f202 = new F202(ca.getCompilation().getErrSink(), ca.getCompilation());
-				f202.processLogs(stringCollectionEntry.getValue());
-			}
+		for (final ElLog deduceLog : logs) {
+			logMap.put(deduceLog.getFileName(), deduceLog);
 		}
+
+		//final F202 f202 = new F202(ca.getCompilation().getErrSink(), ca.getCompilation());
+		//
+		//for (final Map.Entry<String, Collection<ElLog>> stringCollectionEntry : logMap.asMap().entrySet()) {
+		//	f202.processLogs(stringCollectionEntry.getValue());
+		//}
 	}
 }

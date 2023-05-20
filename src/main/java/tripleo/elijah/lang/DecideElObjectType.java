@@ -25,6 +25,7 @@ public enum DecideElObjectType {
 
 		if (input instanceof ClassStatement) return ElObjectType.CLASS;
 		if (input instanceof NamespaceStatement) return ElObjectType.NAMESPACE;
+		if (input instanceof AliasStatement) return ElObjectType.ALIAS;
 		if (input instanceof VariableSequence) return ElObjectType.VAR_SEQ;
 		if (input instanceof VariableStatement) return ElObjectType.VAR;
 		if (input instanceof ConstructorDef) return ElObjectType.CONSTRUCTOR;

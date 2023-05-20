@@ -458,14 +458,16 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 	private void setup_GenType(OS_Element element, @NotNull GenType aGt) {
 		final DeducePhase phase = deduceTypes2._phase();
 
-		if (element instanceof NamespaceStatement) {
+		switch (DecideElObjectType.getElObjectType(element)) {
+		case NAMESPACE -> {
 			final @NotNull NamespaceStatement namespaceStatement = (NamespaceStatement) element;
 			aGt.resolvedn = (NamespaceStatement) element;
 			final NamespaceInvocation nsi = phase.registerNamespaceInvocation(namespaceStatement);
 //			pte.setNamespaceInvocation(nsi);
 			aGt.ci = nsi;
 //			fi = newFunctionInvocation(fd, pte, nsi, phase);
-		} else if (element instanceof ClassStatement) {
+		}
+		case CLASS -> {
 			final @NotNull ClassStatement classStatement = (ClassStatement) element;
 			aGt.resolved = ((ClassStatement) element).getOS_Type();
 			// TODO genCI ??
@@ -474,7 +476,8 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 			aGt.ci = ci;
 //			pte.setClassInvocation(ci);
 //			fi = newFunctionInvocation(fd, pte, ci, phase);
-		} else if (element instanceof FunctionDef) {
+		}
+		case FUNCTION -> {
 			// TODO this seems to be an elaborate copy of the above with no differentiation for functionDef
 			final @NotNull FunctionDef functionDef = (FunctionDef) element;
 			OS_Element                 parent      = functionDef.getParent();
@@ -483,47 +486,42 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 			case CLASS:
 				aGt.resolved = ((ClassStatement) parent).getOS_Type();
 				inv = phase.registerClassInvocation((ClassStatement) parent, null);
-				((ClassInvocation) inv).resolveDeferred().then(new DoneCallback<EvaClass>() {
-					@Override
-					public void onDone(EvaClass result) {
+				((ClassInvocation) inv).resolveDeferred().then((final EvaClass result) -> {
 						result.functionMapDeferred(functionDef, new FunctionMapDeferred() {
 							@Override
 							public void onNotify(final EvaFunction aGeneratedFunction) {
 								aGt.node = aGeneratedFunction;
 							}
 						});
-					}
 				});
 				break;
 			case NAMESPACE:
 				aGt.resolvedn = (NamespaceStatement) parent;
 				inv = phase.registerNamespaceInvocation((NamespaceStatement) parent);
-				((NamespaceInvocation) inv).resolveDeferred().then(new DoneCallback<EvaNamespace>() {
-					@Override
-					public void onDone(EvaNamespace result) {
+				((NamespaceInvocation) inv).resolveDeferred().then((final EvaNamespace result) -> {
 						result.functionMapDeferred(functionDef, new FunctionMapDeferred() {
 							@Override
 							public void onNotify(final EvaFunction aGeneratedFunction) {
 								aGt.node = aGeneratedFunction;
 							}
 						});
-					}
 				});
 				break;
 			default:
 				throw new NotImplementedException();
 			}
 			aGt.ci = inv;
-		} else if (element instanceof AliasStatement) {
+		}
+		case ALIAS -> {
 			@Nullable OS_Element el = element;
 			while (el instanceof AliasStatement) {
 				el = DeduceLookupUtils._resolveAlias((AliasStatement) el, deduceTypes2);
 			}
 			setup_GenType(el, aGt);
-		} else // TODO will fail on FunctionDef's
-			throw new IllegalStateException("Unknown parent");
+		}
+		default -> throw new IllegalStateException("Unknown parent");
+		}
 	}
-
 
 	public static class ST {
 		public static State EXIT_RESOLVE;
@@ -728,3 +726,7 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 		}
 	}
 }
+
+//
+// vim:set shiftwidth=4 softtabstop=0 noexpandtab:
+//

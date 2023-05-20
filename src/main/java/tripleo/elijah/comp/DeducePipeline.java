@@ -45,5 +45,5 @@ public class DeducePipeline implements PipelineMember, Consumer<Supplier<Generat
 }
 
 //
-//
+// vim:set shiftwidth=4 softtabstop=0 noexpandtab:
 //

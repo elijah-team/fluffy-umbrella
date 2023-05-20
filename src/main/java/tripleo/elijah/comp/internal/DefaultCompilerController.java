@@ -2,6 +2,7 @@ package tripleo.elijah.comp.internal;
 
 import tripleo.elijah.comp.*;
 import tripleo.elijah.comp.i.CompilationEnclosure;
+import tripleo.elijah.comp.i.ICompilationAccess;
 import tripleo.elijah.comp.i.OptionsProcessor;
 
 import java.util.List;
@@ -45,22 +46,25 @@ public class DefaultCompilerController implements CompilerController {
 
 	@Override
 	public void runner() {
-		try {
+		//try {
 			c.subscribeCI(c._cis._cio);
 
-			assert c.getCompilationEnclosure().getCompilationAccess() != null;
-			//final DefaultCompilationAccess ca = new DefaultCompilationAccess(c);
-			//c.getCompilationEnclosure().setCompilationAccess(ca);
+			final CompilationEnclosure ce = c.getCompilationEnclosure();
 
-			c.__cr = new CompilationRunner(c.getCompilationEnclosure().getCompilationAccess());
+			final ICompilationAccess   compilationAccess    = ce.getCompilationAccess();
+			assert compilationAccess != null;
 
-			hook(c.__cr);
+			//ce.setCompilationAccess(compilationAccess);
 
-			c.__cr.doFindCIs(inputs, args2, cb);
-		} catch (final Exception e) {
-			c.getErrSink().exception(e);
-			throw new RuntimeException(e);
-		}
+			final CompilationRunner cr = new CompilationRunner(compilationAccess);
+			ce.setCompilationRunner(cr);
+
+			hook(cr);
+			cr.doFindCIs(inputs, args2, cb);
+		//} catch (final Exception e) {
+		//	c.getErrSink().exception(e);
+		//	throw new RuntimeException(e);
+		//}
 	}
 
 	public void hook(final CompilationRunner aCr) {
@@ -71,9 +75,13 @@ public class DefaultCompilerController implements CompilerController {
 	public void _setInputs(final Compilation aCompilation, final List<CompilerInput> aInputs) {
 		c      = aCompilation;
 		inputs = aInputs;
+
+		c.getCompilationEnclosure().getPipelineAccessPromise().then((pa)-> pa.setCompilerInput(inputs));
 	}
 
 	public void _setInputs(final List<CompilerInput> aInputs) {
 		inputs = aInputs;
+
+		c.getCompilationEnclosure().getPipelineAccessPromise().then((pa)-> pa.setCompilerInput(inputs));
 	}
 }

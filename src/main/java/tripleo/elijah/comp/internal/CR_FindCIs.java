@@ -31,55 +31,20 @@ public class CR_FindCIs extends DefaultStateful implements CR_Action {
 	private       ICompilationBus     cb;
 
 	@Contract(pure = true)
-	public CR_FindCIs(final List<CompilerInput> aArgs2) {
+	public CR_FindCIs(final List<CompilerInput> aArgs2, final @NotNull Compilation comp, final IProgressSink aPs) {
 		inputs = aArgs2;
 		st     = CompilationRunner.ST.INITIAL;
+
+		cci = new DefaultCCI(comp, comp._cis, aPs);
 	}
 
 	@Override
 	public void attach(final @NotNull CompilationRunner cr) {
 		compilationRunner = cr;
-
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-
-		//cb                = cr.cb; //compilation.pa().getCompilation().;
-		//cci               = cr.cci;
-
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-		/********************/
-
 	}
 
 	@Override
-	public void execute(final @NotNull CR_State st, final CB_Output aO) {
+	public Operation<Boolean> execute(final @NotNull CR_State st, final CB_Output aO) {
 		final Compilation c = st.ca().getCompilation();
 
 		final IProgressSink ps = new IProgressSink() {
@@ -94,6 +59,8 @@ public class CR_FindCIs extends DefaultStateful implements CR_Action {
 		for (final CompilerInput compilerInput : x) {
 			cci.accept(compilerInput.acceptance_ci(), ps);
 		}
+
+		return Operation.success(true);
 	}
 
 	@Override
@@ -169,7 +136,7 @@ public class CR_FindCIs extends DefaultStateful implements CR_Action {
 	}
 
 	private List<CompilerInstructions> searchEzFiles(final File directory, final CompilationClosure ccl) {
-		final QuerySearchEzFiles                     q    = new QuerySearchEzFiles(ccl, compilationRunner);
+		final QuerySearchEzFiles                     q    = new QuerySearchEzFiles(ccl);
 		final Operation2<List<CompilerInstructions>> olci = q.process(directory);
 
 		if (olci.mode() == Mode.SUCCESS) {

@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.comp.functionality.f202;
 
+import org.jetbrains.annotations.Contract;
 import tripleo.elijah.comp.Compilation;
 
 import java.io.File;
@@ -18,6 +19,7 @@ import java.io.File;
 public class DefaultGetLogDirectoryBehavior implements GetLogDirectoryBehavior {
 	private final Compilation c;
 
+	@Contract(pure = true)
 	public DefaultGetLogDirectoryBehavior(Compilation aCompilation) {
 		c = aCompilation;
 	}

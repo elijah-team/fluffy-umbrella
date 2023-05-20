@@ -75,7 +75,7 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 		//
 
 		grs = new DefaultGenerateResultSink(this, pa);
-		pa.registerNodeList(latch2::notify);
+		pa.registerNodeList(latch2::notifyData);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class GeneratePipeline implements PipelineMember, Consumer<Supplier<Gener
 
 	@Override
 	public void run() {
-		latch2.notify(true);
+		latch2.notifyLatch(true);
 
 		if (false && pipelineLogic != null) {
 			Preconditions.checkNotNull(lgc);

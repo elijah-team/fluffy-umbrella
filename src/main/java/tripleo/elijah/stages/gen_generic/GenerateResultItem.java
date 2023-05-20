@@ -4,10 +4,10 @@
  * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- *
  */
 package tripleo.elijah.stages.gen_generic;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.stages.gen_fn.EvaNode;
@@ -29,6 +29,7 @@ public class GenerateResultItem {
 	public                String               output;
 	public                IOutputFile          outputFile;
 
+	@Contract(pure = true)
 	public GenerateResultItem(final @NotNull GenerateResult.TY aTy,
 							  final @NotNull Buffer aBuffer,
 							  final @NotNull EvaNode aNode,
@@ -56,14 +57,14 @@ public class GenerateResultItem {
 	}
 
 	public String jsonString() {
-		final StringBuilder sb = new StringBuilder("{\".class\": GenerateResultItem, ");
+		final StringBuilder sb = new StringBuilder("{\".class\": \"GenerateResultItem\", ");
 		sb.append("counter: "+counter+", ");
 		sb.append("ty: "+ty+", ");
 		sb.append("output: "+output+", ");
 		sb.append("outputFile: "+outputFile+", ");
 		sb.append("lsp: "+lsp+", ");
 		sb.append("node: "+node+", ");
-		sb.append("buffer: "+buffer.getText()+", ");
+		sb.append("buffer: \"\"\""+buffer.getText()+"\"\"\", ");
 		sb.append("dependency: "+dependency.jsonString()+", ");
 		sb.append("dependencies: "+dependencies()/*+", "*/);
 		sb.append("}");
@@ -72,5 +73,5 @@ public class GenerateResultItem {
 }
 
 //
-//
+// vim:set shiftwidth=4 softtabstop=0 noexpandtab:
 //
