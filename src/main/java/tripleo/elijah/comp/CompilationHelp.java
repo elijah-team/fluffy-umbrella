@@ -8,12 +8,10 @@
  */
 package tripleo.elijah.comp;
 
-import com.google.common.base.Preconditions;
-import tripleo.vendor.mal.stepA_mal;
-import tripleo.vendor.mal.types;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.comp.internal.ProcessRecord;
+import com.google.common.base.*;
+import org.jetbrains.annotations.*;
+import tripleo.elijah.comp.internal.*;
+import tripleo.vendor.mal.*;
 
 interface RuntimeProcess {
 	void run();
@@ -77,7 +75,7 @@ class RuntimeProcesses {
 }
 
 final class EmptyProcess implements RuntimeProcess {
-	public EmptyProcess(final ICompilationAccess aCompilationAccess, final ProcessRecord aPr) {
+	public EmptyProcess(final ICompilationAccess ignoredACompilationAccess, final ProcessRecord ignoredAPr) {
 	}
 
 	@Override
@@ -119,8 +117,8 @@ class DStageProcess implements RuntimeProcess {
 }
 
 class OStageProcess implements RuntimeProcess {
-	final         stepA_mal.MalEnv2  env;
-	private final ProcessRecord      pr;
+	final         stepA_mal.MalEnv2 env;
+	private final ProcessRecord     pr;
 	private final ICompilationAccess ca;
 
 	OStageProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
@@ -166,9 +164,6 @@ class OStageProcess implements RuntimeProcess {
 //		env.re("(def! GeneratePipeline 'native)");
 		env.re("(add-pipeline 'DeducePipeline)"); // FIXME note moved from ...
 
-//		ab.add(GeneratePipeline::new);
-//		ab.add(WritePipeline::new);
-//		ab.add(WriteMesonPipeline::new);
 		env.re("(add-pipeline 'GeneratePipeline)");
 		env.re("(add-pipeline 'WritePipeline)");
 		env.re("(add-pipeline 'WriteMesonPipeline)");
@@ -187,7 +182,7 @@ class OStageProcess implements RuntimeProcess {
 			ab = aAb;
 		}
 
-		public types.MalVal apply(final types.MalList args) throws types.MalThrowable {
+		public types.MalVal apply(final types.MalList args) {
 			final types.MalVal a0 = args.nth(0);
 
 			if (a0 instanceof final types.MalSymbol pipelineSymbol) {
