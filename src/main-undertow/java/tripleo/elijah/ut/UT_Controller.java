@@ -69,4 +69,8 @@ public class UT_Controller implements CompilerController {
 	public List<ICompilationBus.CB_Action> actions() {
 		return ((UT_CompilationBus) cb).actions;
 	}
+
+	public UT_CompilationBus cb() {
+		return (UT_CompilationBus) cb;
+	}
 }

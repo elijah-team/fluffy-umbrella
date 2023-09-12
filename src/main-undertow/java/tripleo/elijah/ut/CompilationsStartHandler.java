@@ -48,7 +48,7 @@ public class CompilationsStartHandler implements HttpHandler {
 		exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/html");
 
 		final StringBuilder sb    = new StringBuilder();
-		final int           num   = Integer.valueOf(exchange.getRequestPath().substring(7)) - 1;
+		final int           num   = Integer.parseInt(exchange.getRequestPath().substring(7)) - 1;
 		final List<Path>    paths = utr.paths;
 		final Path          p     = paths.get(num);
 		final Compilation   c     = CompilationFactory.mkCompilation(new StdErrSink(), new IO());
@@ -61,13 +61,14 @@ public class CompilationsStartHandler implements HttpHandler {
 
 		c.feedCmdLine(List_of(p.toString()), utc);
 
-		final ICompilationBus.CB_Process l = ((UT_CompilationBus) (((UT_Controller) utc).cb)).getLast();
+		final UT_CompilationBus          cb = getController().cb();
+		final ICompilationBus.CB_Process l  = cb.getLast();
 
 		sb.append("<html><body>\n");
 
 //		sb.append("<h3>"+l.name()+"</h3>\n");
 
-		final List<ICompilationBus.CB_Action> actions = ((UT_Controller) utc).actions();
+		final List<ICompilationBus.CB_Action> actions = getController().actions();
 
 		for (final ICompilationBus.CB_Action step : l.steps()) {
 			final String f = "" + new Random().nextInt();
@@ -79,5 +80,9 @@ public class CompilationsStartHandler implements HttpHandler {
 		sb.append("</body></html>\n");
 
 		exchange.getResponseSender().send(sb.toString());
+	}
+
+	private UT_Controller getController() {
+		return (UT_Controller) utc;
 	}
 }
