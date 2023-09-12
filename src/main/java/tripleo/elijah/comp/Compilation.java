@@ -8,41 +8,26 @@
  */
 package tripleo.elijah.comp;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import io.reactivex.rxjava3.annotations.NonNull;
+import com.google.common.collect.*;
+import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.subjects.ReplaySubject;
-import io.reactivex.rxjava3.subjects.Subject;
-import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.comp.functionality.f202.F202;
-import tripleo.elijah.comp.queries.QueryEzFileToModule;
-import tripleo.elijah.comp.queries.QueryEzFileToModuleParams;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.lang.OS_Package;
-import tripleo.elijah.lang.Qualident;
-import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
-import tripleo.elijah.nextgen.query.Operation2;
-import tripleo.elijah.stages.deduce.DeducePhase;
-import tripleo.elijah.stages.deduce.FunctionMapHook;
-import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
-import tripleo.elijah.stages.logging.ElLog;
-import tripleo.elijah.ut.UT_Controller;
-import tripleo.elijah.world.impl.DefaultLivingRepo;
+import io.reactivex.rxjava3.disposables.*;
+import io.reactivex.rxjava3.subjects.*;
+import org.jetbrains.annotations.*;
+import tripleo.elijah.ci.*;
+import tripleo.elijah.comp.functionality.f202.*;
+import tripleo.elijah.lang.*;
+import tripleo.elijah.nextgen.outputtree.*;
+import tripleo.elijah.nextgen.query.*;
+import tripleo.elijah.stages.deduce.*;
+import tripleo.elijah.stages.deduce.fluffy.i.*;
+import tripleo.elijah.stages.gen_fn.*;
+import tripleo.elijah.stages.logging.*;
+import tripleo.elijah.ut.*;
+import tripleo.elijah.world.impl.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.io.*;
+import java.util.*;
 
 public abstract class Compilation {
 
@@ -65,7 +50,7 @@ public abstract class Compilation {
 	public        CompilationRunner    __cr;
 	private       CompilerInstructions rootCI;
 
-	public Compilation(final ErrSink aErrSink, final IO aIO) {
+	public Compilation(final @NotNull ErrSink aErrSink, final IO aIO) {
 		errSink            = aErrSink;
 		io                 = aIO;
 		_compilationNumber = new Random().nextInt(Integer.MAX_VALUE);
@@ -120,16 +105,6 @@ public abstract class Compilation {
 	//
 	//
 	//
-
-	public Operation<CompilerInstructions> parseEzFile(final @NotNull File aFile) {
-		try {
-			final QueryEzFileToModuleParams       params = new QueryEzFileToModuleParams(aFile.getAbsolutePath(), io.readFile(aFile));
-			final Operation<CompilerInstructions> x      = new QueryEzFileToModule(params).calculate();
-			return x;
-		} catch (final FileNotFoundException aE) {
-			return Operation.failure(aE);
-		}
-	}
 
 	public void pushItem(final CompilerInstructions aci) {
 		_cis.onNext(aci);
