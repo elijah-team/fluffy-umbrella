@@ -169,7 +169,8 @@ class USE {
 
 	public Operation<OS_Module> realParseElijjahFile(final String f, final @NotNull File file, final boolean do_out) throws Exception {
 		try (final InputStream s = c.getIO().readFile(file)) {
-			return realParseElijjahFile(new ElijahSpec(f, file, s, do_out));
+			final ElijahSpec spec = new ElijahSpec(f, file, s, do_out);
+			return realParseElijjahFile(spec);
 		}
 	}
 

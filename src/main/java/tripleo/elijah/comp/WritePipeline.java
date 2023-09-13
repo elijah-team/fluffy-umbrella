@@ -146,14 +146,10 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 			System.out.println("201 Writing path: " + path);
 			final CharSink x = c.getIO().openWrite(path);
 
-			final EG_SingleStatement beginning = new EG_SingleStatement("", new EX_Explanation() {
-			});
+			final EG_SingleStatement beginning = new EG_SingleStatement("", EX_Explanation.withMessage("WritePipeline.beginning"));
 			final EG_Statement middle = new GE_BuffersStatement(entry);
-			final EG_SingleStatement ending = new EG_SingleStatement("", new EX_Explanation() {
-			});
-			final EX_Explanation explanation = new EX_Explanation() {
-				final String message = "write output file";
-			};
+			final EG_SingleStatement ending = new EG_SingleStatement("", EX_Explanation.withMessage("WritePipeline.ending"));
+			final EX_Explanation explanation = EX_Explanation.withMessage("write output file");
 
 			final EG_CompoundStatement seq = new EG_CompoundStatement(beginning, ending, middle, false, explanation);
 

@@ -62,6 +62,14 @@ public class Finally {
 		private final Nameable nameable;
 		private final Out2 ty;
 
+		@Override
+		public String toString() {
+			return "Input{" +
+			  "name=" + nameable.getName() +
+			  ", ty=" + ty +
+			  '}';
+		}
+
 		public Input(final Nameable aNameable, final Out2 aTy) {
 			nameable = aNameable;
 			ty       = aTy;

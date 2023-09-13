@@ -1,17 +1,23 @@
 package tripleo.elijah.nextgen.outputtree;
 
-import org.jetbrains.annotations.*;
-import tripleo.elijah.comp.*;
-import tripleo.elijah.lang.*;
-import tripleo.elijah.nextgen.inputtree.*;
-import tripleo.elijah.nextgen.outputstatement.*;
-import tripleo.elijah.stages.gen_generic.*;
-import tripleo.util.buffer.*;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.nextgen.inputtree.EIT_Input;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
+import tripleo.elijah.nextgen.outputstatement.EG_Naming;
+import tripleo.elijah.nextgen.outputstatement.EG_SequenceStatement;
+import tripleo.elijah.nextgen.outputstatement.EG_SingleStatement;
+import tripleo.elijah.nextgen.outputstatement.EG_Statement;
+import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
+import tripleo.util.buffer.Buffer;
 
-import java.util.*;
-import java.util.stream.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import static tripleo.elijah.util.Helpers.*;
+import static tripleo.elijah.util.Helpers.List_of;
 
 public class EOT_OutputFile {
 	//    private final OS_Module module;
@@ -34,6 +40,7 @@ public class EOT_OutputFile {
 		_inputs.addAll(inputs);
 	}
 
+/*
 	public static EOT_OutputFile grToOutputFile(final Compilation aC, final GenerateResultItem ab) {
 		final List<EIT_Input> inputs = List_of(new EIT_ModuleInput(ab.node.module(), aC));
 
@@ -57,6 +64,7 @@ public class EOT_OutputFile {
 
 		return eof;
 	}
+*/
 
 	public static @NotNull EOT_OutputFile bufferSetToOutputFile(final String aFilename,
 	                                                            final @NotNull Collection<Buffer> aBuffers,
@@ -66,8 +74,7 @@ public class EOT_OutputFile {
 
 		final List<EG_Statement> statementStream = aBuffers.stream()
 		                                                   .map(buffer ->
-		                                                     new EG_SingleStatement(buffer.getText(), new EX_Explanation() {
-		                                                     })
+		                                                     new EG_SingleStatement(buffer.getText(), EX_Explanation.withMessage("bufferSetToOutputFile"))
 		                                                   ).collect(Collectors.toList());
 		final EG_SequenceStatement seq = new EG_SequenceStatement(new EG_Naming("yyy"), statementStream);
 

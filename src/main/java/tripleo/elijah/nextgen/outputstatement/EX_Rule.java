@@ -6,4 +6,9 @@ public class EX_Rule implements EX_Explanation {
 	public EX_Rule(final String aRule) {
 		rule = aRule;
 	}
+
+	@Override
+	public String getText() {
+		return "EX_Rule "+rule;
+	}
 }
