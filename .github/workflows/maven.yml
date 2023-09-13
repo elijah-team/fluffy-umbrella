@@ -7,7 +7,7 @@ on:
   push:
     branches: [ "mainline-k" ]
   pull_request:
-    branches: [ "mainline-k" ]
+    branches: [ "mainline-k",  "mainline-k-2023-09", "mainline-k-2023-09-specs" ]
 
 jobs:
   build:
