@@ -13,10 +13,12 @@ import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.subjects.*;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.*;
 import tripleo.elijah.ci.*;
 import tripleo.elijah.comp.functionality.f202.*;
 import tripleo.elijah.lang.*;
+import tripleo.elijah.nextgen.inputtree.*;
 import tripleo.elijah.nextgen.outputtree.*;
 import tripleo.elijah.nextgen.query.*;
 import tripleo.elijah.stages.deduce.*;
@@ -24,6 +26,8 @@ import tripleo.elijah.stages.deduce.fluffy.i.*;
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.logging.*;
 import tripleo.elijah.ut.*;
+import tripleo.elijah.util.*;
+import tripleo.elijah.world.i.*;
 import tripleo.elijah.world.impl.*;
 
 import java.io.*;
@@ -49,6 +53,40 @@ public abstract class Compilation {
 	public        PipelineLogic        pipelineLogic;
 	public        CompilationRunner    __cr;
 	private       CompilerInstructions rootCI;
+	private final   CompFactory                       _con    = new CompFactory() {
+		@Override
+		public @NotNull EIT_ModuleInput createModuleInput(final OS_Module aModule) {
+			return new EIT_ModuleInput(aModule, Compilation.this);
+		}
+
+		@Override
+		public @NotNull Qualident createQualident(final @NotNull List<String> sl) {
+			var R = new Qualident();
+			for (String s : sl) {
+				R.append(Helpers.string_to_ident(s));
+			}
+			return R;
+		}
+
+		@Override
+		public @NotNull InputRequest createInputRequest(final File aFile, final boolean aDo_out, final @Nullable LibraryStatementPart aLsp) {
+			return new InputRequest(aFile, aDo_out, aLsp);
+		}
+
+		@Override
+		public @NotNull WorldModule createWorldModule(final OS_Module m) {
+			CompilationEnclosure ce = getCompilationEnclosure();
+			final WorldModule    R  = new DefaultWorldModule(m, ce);
+
+			return R;
+		}
+	};
+	private Finally _f = new Finally();
+
+	private CompilationEnclosure getCompilationEnclosure() {
+		throw new NotImplementedException();
+	}
+
 
 	public Compilation(final @NotNull ErrSink aErrSink, final IO aIO) {
 		errSink            = aErrSink;
@@ -247,6 +285,10 @@ public abstract class Compilation {
 
 	public ModuleBuilder moduleBuilder() {
 		return new ModuleBuilder(this);
+	}
+
+	public Finally reports() {
+		return _f;
 	}
 
 	static class MOD {

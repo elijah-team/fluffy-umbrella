@@ -1,25 +1,17 @@
 package tripleo.elijah.nextgen.outputtree;
 
-import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.nextgen.inputtree.EIT_Input;
-import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
-import tripleo.elijah.nextgen.outputstatement.EG_CompoundStatement;
-import tripleo.elijah.nextgen.outputstatement.EG_Naming;
-import tripleo.elijah.nextgen.outputstatement.EG_SequenceStatement;
-import tripleo.elijah.nextgen.outputstatement.EG_SingleStatement;
-import tripleo.elijah.nextgen.outputstatement.EG_Statement;
-import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
-import tripleo.elijah.stages.gen_generic.GenerateResultItem;
-import tripleo.util.buffer.Buffer;
+import org.jetbrains.annotations.*;
+import tripleo.elijah.comp.*;
+import tripleo.elijah.lang.*;
+import tripleo.elijah.nextgen.inputtree.*;
+import tripleo.elijah.nextgen.outputstatement.*;
+import tripleo.elijah.stages.gen_generic.*;
+import tripleo.util.buffer.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.*;
 
-import static tripleo.elijah.util.Helpers.List_of;
+import static tripleo.elijah.util.Helpers.*;
 
 public class EOT_OutputFile {
 	//    private final OS_Module module;
@@ -60,6 +52,9 @@ public class EOT_OutputFile {
 		final EG_CompoundStatement seq = new EG_CompoundStatement(beginning, ending, middle, false, explanation);
 
 		final EOT_OutputFile eof = new EOT_OutputFile(aC, inputs, ab.output, EOT_OutputType.SOURCES, seq);
+
+		aC.reports().addCodeOutput(()->ab.output, eof);
+
 		return eof;
 	}
 
@@ -77,6 +72,9 @@ public class EOT_OutputFile {
 		final EG_SequenceStatement seq = new EG_SequenceStatement(new EG_Naming("yyy"), statementStream);
 
 		final EOT_OutputFile eof = new EOT_OutputFile(comp, inputs, aFilename, EOT_OutputType.SOURCES, seq);
+
+		comp.reports().addCodeOutput(()->aFilename, eof);
+
 		return eof;
 	}
 
@@ -104,4 +102,10 @@ public class EOT_OutputFile {
 	}
 
 	// rules/constraints whatever
+
+	@FunctionalInterface
+	public interface FileNameProvider {
+		String getFilename();
+	}
+
 }

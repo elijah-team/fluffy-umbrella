@@ -134,7 +134,13 @@ class USE {
 		final File[] files = dir.listFiles(accept_source_files);
 		if (files != null) {
 			for (final File file : files) {
-				parseElijjahFile(file, file.toString(), do_out, lsp);
+//				final CompFactory.InputRequest inp = c.con().createInputRequest(file, do_out, lsp);
+
+				final String file_name = file.toString();
+				parseElijjahFile(file, file_name, do_out, lsp);
+
+//				c.reports().addInput(inp, Finally.Out2.ELIJAH);
+				c.reports().addInput(()->file_name, Finally.Out2.ELIJAH);
 			}
 		}
 	}

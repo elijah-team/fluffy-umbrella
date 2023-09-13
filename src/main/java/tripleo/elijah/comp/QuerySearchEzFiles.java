@@ -42,6 +42,9 @@ class QuerySearchEzFiles {
 					final Operation<CompilerInstructions> oci    = parseEzFile(file, file.toString(), errSink, io, c);
 					final CompilerInstructions            ezFile = oci.success();
 					if (ezFile != null) {
+
+						c.reports().addInput(()->file_name, Finally.Out2.EZ);
+
 						R.add(ezFile);
 					} else {
 						errSink.reportError("9995 ezFile is null " + file);
