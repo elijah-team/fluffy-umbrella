@@ -90,10 +90,8 @@ public class _GF {
 			}
 		});
 
-		beginning   = new EG_SingleStatement("", new EX_Explanation() {
-		});
-		ending      = new EG_SingleStatement("", new EX_Explanation() {
-		});
+		beginning   = new EG_SingleStatement("", EX_Explanation.withMessage("_GF.beginning"));
+		ending      = new EG_SingleStatement("",  EX_Explanation.withMessage(("_GF.ending")));
 		explanation = new EX_ProcTableEntryExplanation(de_pte);
 		middle      = new EG_SingleStatement(sb.toString(), explanation);
 
