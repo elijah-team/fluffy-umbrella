@@ -130,6 +130,14 @@ public class DeduceTypes2 {
 */
 
 		@NotNull List<GeneratedNode> generatedClasses = (phase.generatedClasses.copy());
+
+		// flow
+		module.getCompilation().reports().flow().report(new FlowK.DeduceTypes2__deduceFunctions__post(this, generatedClasses));
+		// flow
+
+
+
+		// TODO 09/14 here here
 		// TODO consider using reactive here
 		int size;
 		do {
@@ -1394,40 +1402,7 @@ public class DeduceTypes2 {
 		}
 	}
 
-	public void onExitFunction(final @NotNull BaseGeneratedFunction generatedFunction, final Context aFd_ctx, final Context aContext) {
-		//
-		// resolve var table. moved from `E'
-		//
-		for (@NotNull final VariableTableEntry vte : generatedFunction.vte_list) {
-			final DeduceElement3_VariableTableEntry vte_de = (DeduceElement3_VariableTableEntry) vte.getDeduceElement3();
-			vte_de.mvState(null, DeduceElement3_VariableTableEntry.ST.EXIT_RESOLVE);
-		}
-		for (@NotNull final IStateRunnable runnable : onRunnables) {
-			runnable.mvState(null, IStateRunnable.ST.EXIT_RUN);
-		}
-//					LOG.info("167 "+generatedFunction);
-		//
-		// ATTACH A TYPE TO VTE'S
-		// CONVERT USER TYPES TO USER_CLASS TYPES
-		//
-		for (final @NotNull VariableTableEntry vte : generatedFunction.vte_list) {
-//						LOG.info("704 "+vte.type.attached+" "+vte.potentialTypes());
-			final DeduceElement3_VariableTableEntry vte_de = (DeduceElement3_VariableTableEntry) vte.getDeduceElement3();
-			vte_de.setDeduceTypes2(this, generatedFunction);
-			vte_de.mvState(null, DeduceElement3_VariableTableEntry.ST.EXIT_CONVERT_USER_TYPES);
-		}
-		for (final @NotNull VariableTableEntry vte : generatedFunction.vte_list) {
-			if (vte.vtt == VariableTableType.ARG) {
-				final OS_Type attached = vte.type.getAttached();
-				if (attached != null) {
-					if (attached.getType() == OS_Type.Type.USER)
-						//throw new AssertionError();
-						errSink.reportError("369 ARG USER type (not deduced) " + vte);
-				} else {
-					errSink.reportError("457 ARG type not deduced/attached " + vte);
-				}
-			}
-		}
+	private void on_exit_function_calculate_deferred_calls(final @NotNull BaseGeneratedFunction generatedFunction, final Context fd_ctx) {
 		//
 		// ATTACH A TYPE TO IDTE'S
 		//
@@ -1728,6 +1703,13 @@ public class DeduceTypes2 {
 				public void foundElement(final OS_Element e) {
 //					LOG.info(String.format("600 %s %s", xx ,e));
 //					LOG.info("601 "+identIA.getEntry().getStatus());
+
+					// flow
+					module.getCompilation().reports().flow().report(new FlowK.DeduceTypes2__FoundElement__do_assign_call(DeduceTypes2.this, identIA, e, pte, vte, generatedFunction));
+					// flow
+
+
+
 					final OS_Element resolved_element = identIA.getEntry().getResolvedElement();
 					assert e == resolved_element;
 //					set_resolved_element_pte(identIA, e, pte);

@@ -99,4 +99,61 @@ public interface FlowK {
 			  .toString();
 		}
 	}
+
+	public class DeduceTypes2__onExitFunction implements FlowK {
+		private final BaseGeneratedFunction generatedFunction;
+		private final BaseFunctionDef fd;
+
+		public DeduceTypes2__onExitFunction(final @NotNull BaseGeneratedFunction aGeneratedFunction, final BaseFunctionDef aFd) {
+			generatedFunction = aGeneratedFunction;
+			fd                = aFd;
+		}
+
+		@Override
+		public String report() {
+			return "@@ DeduceTypes2::onExitFunction: "+generatedFunction.getFunctionName();
+		}
+	}
+
+	public class DeduceTypes2__deduceFunctions__post implements FlowK {
+		private final DeduceTypes2 deduceTypes2;
+		private final List<GeneratedNode> generatedClasses;
+
+		public DeduceTypes2__deduceFunctions__post(final DeduceTypes2 aDeduceTypes2, final @NotNull List<GeneratedNode> aGeneratedClasses) {
+			deduceTypes2     = aDeduceTypes2;
+			generatedClasses = aGeneratedClasses;
+		}
+
+		@Override
+		public String report() {
+			var l = generatedClasses.stream()
+			  .map(evaNode -> evaNode.identityString())
+			  .collect(Collectors.toList());
+
+			return "@@ DeduceTypes2::deduceFunctions: [post] "+ deduceTypes2._module().getFileName() + " " + l;
+		}
+	}
+
+	public class DeduceTypes2__FoundElement__do_assign_call implements FlowK {
+		private final DeduceTypes2 deduceTypes2;
+		private final IdentIA identIA;
+		private final OS_Element e;
+		private final ProcTableEntry pte;
+		private final VariableTableEntry vte;
+		private final BaseGeneratedFunction generatedFunction;
+
+		public DeduceTypes2__FoundElement__do_assign_call(final DeduceTypes2 aDeduceTypes2, final @NotNull IdentIA aIdentIA, final OS_Element aE, final @NotNull ProcTableEntry aPte, final @NotNull VariableTableEntry aVte, final @NotNull BaseGeneratedFunction aGeneratedFunction) {
+			deduceTypes2 = aDeduceTypes2;
+			identIA      = aIdentIA;
+			e            = aE;
+			pte          = aPte;
+			vte          = aVte;
+			generatedFunction = aGeneratedFunction;
+		}
+
+		@Override
+		public String report() {
+			return "@@ DeduceTypes2::...:FoundElement:do_assign_call " + identIA.getEntry().toString() + " " + e;
+		}
+	}
 }
