@@ -96,6 +96,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	}
 
 	public void addPotentialType(final int instructionIndex, final TypeTableEntry tte) {
+		// TODO 09/14 DR_PossibleType here
 		if (!typeDeferred.isPending()) {
 			tripleo.elijah.util.Stupidity.println_err2("62 addPotentialType while typeDeferred is already resolved " + this);//throw new AssertionError();
 			return;
@@ -107,6 +108,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 			final TypeTableEntry v = potentialTypes.get(instructionIndex);
 			if (v.getAttached() == null) {
 				v.setAttached(tte.getAttached());
+				// TODO 09/14 wrap all type and type.genType calls?
 				type.genType.copy(tte.genType); // README don't lose information
 			} else if (tte.lifetime == TypeTableEntry.Type.TRANSIENT && v.lifetime == TypeTableEntry.Type.SPECIFIED) {
 				//v.attached = v.attached; // leave it as is

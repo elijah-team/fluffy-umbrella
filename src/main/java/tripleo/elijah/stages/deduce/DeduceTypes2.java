@@ -989,14 +989,9 @@ public class DeduceTypes2 {
 			case AGN:
 				do_assign_normal(generatedFunction, fd_ctx, instruction, context);
 				break;
-			case AGNK: {
-				final @NotNull IntegerIA          arg  = (IntegerIA) instruction.getArg(0);
-				final @NotNull VariableTableEntry vte  = generatedFunction.getVarTableEntry(arg.getIndex());
-				final InstructionArgument         i2   = instruction.getArg(1);
-				final @NotNull ConstTableIA       ctia = (ConstTableIA) i2;
-				do_assign_constant(generatedFunction, instruction, vte, ctia);
-			}
-			break;
+			case AGNK:
+				do_assign_k(generatedFunction, instruction);
+				break;
 			case AGNT:
 				break;
 			case AGNF:
@@ -1011,64 +1006,12 @@ public class DeduceTypes2 {
 				break;
 			case JMP:
 				break;
-			case CALL: {
-				final int                     pte_num = ((ProcIA) instruction.getArg(0)).getIndex();
-				final @NotNull ProcTableEntry pte     = generatedFunction.getProcTableEntry(pte_num);
-//				final InstructionArgument i2 = (instruction.getArg(1));
-				{
-					final @NotNull IdentIA identIA = (IdentIA) pte.expression_num;
-					final String           x       = generatedFunction.getIdentIAPathNormal(identIA);
-					LOG.info("298 Calling " + x);
-					resolveIdentIA_(context, identIA, generatedFunction, new FoundElement(phase) {
-
-						@SuppressWarnings("unused")
-						final String xx = x;
-
-						@Override
-						public void foundElement(final OS_Element e) {
-							pte.setStatus(BaseTableEntry.Status.KNOWN, new ConstructableElementHolder(e, identIA));
-							if (fd instanceof DefFunctionDef) {
-								final IInvocation invocation = getInvocation((GeneratedFunction) generatedFunction);
-								forFunction(newFunctionInvocation((FunctionDef) e, pte, invocation, phase), new ForFunction() {
-									@Override
-									public void typeDecided(@NotNull final GenType aType) {
-										@Nullable final InstructionArgument x = generatedFunction.vte_lookup("Result");
-										assert x != null;
-										((IntegerIA) x).getEntry().type.setAttached(gt(aType));
-									}
-								});
-							}
-						}
-
-						@Override
-						public void noFoundElement() {
-							errSink.reportError("370 Can't find callsite " + x);
-							// TODO don't know if this is right
-							@NotNull final IdentTableEntry entry = identIA.getEntry();
-							if (entry.getStatus() != BaseTableEntry.Status.UNKNOWN)
-								entry.setStatus(BaseTableEntry.Status.UNKNOWN, null);
-						}
-					});
-				}
-			}
-			break;
-			case CALLS: {
-				final int                     i1  = to_int(instruction.getArg(0));
-				final InstructionArgument     i2  = (instruction.getArg(1));
-				final @NotNull ProcTableEntry fn1 = generatedFunction.getProcTableEntry(i1);
-				{
-					implement_calls(generatedFunction, fd_ctx, i2, fn1, instruction.getIndex());
-				}
-/*
-				if (i2 instanceof IntegerIA) {
-					int i2i = to_int(i2);
-					VariableTableEntry vte = generatedFunction.getVarTableEntry(i2i);
-					int y =2;
-				} else
-					throw new NotImplementedException();
-*/
-			}
-			break;
+			case CALL:
+				do_call_normal(generatedFunction, fd, instruction, context);
+				break;
+			case CALLS:
+				do_call_s(generatedFunction, instruction, fd_ctx);
+				break;
 			case RET:
 				break;
 			case YIELD:
@@ -1095,49 +1038,246 @@ public class DeduceTypes2 {
 				throw new IllegalStateException("Unexpected value: " + instruction.getName());
 			}
 		}
+		on_exit_function_vte_list_001(generatedFunction, fd_ctx);
+		on_exit_function_calculate_deferred_calls(generatedFunction, fd_ctx);
+	}
+
+	public void onEnterFunction(final @NotNull BaseGeneratedFunction generatedFunction, final Context aContext) {
+		// TODO 09/14 mvState here
+		for (final VariableTableEntry variableTableEntry : generatedFunction.vte_list) {
+//			final DeduceElement3_VariableTableEntry vte_de = (DeduceElement3_VariableTableEntry) variableTableEntry.getDeduceElement3();
+//			vte_de.mvState(null, DeduceElement3_VariableTableEntry.ST.ENTER_SET_DEDUCE_TYPES);
+			variableTableEntry.setDeduceTypes2(this, aContext, generatedFunction);
+		}
+		for (final IdentTableEntry identTableEntry : generatedFunction.idte_list) {
+			identTableEntry.setDeduceTypes2(this, aContext, generatedFunction);
+		}
+		for (final ProcTableEntry procTableEntry : generatedFunction.prte_list) {
+			procTableEntry.setDeduceTypes2(this, aContext, generatedFunction, errSink);
+		}
+		//
+		// resolve all cte expressions
+		//
+		for (final @NotNull ConstantTableEntry cte : generatedFunction.cte_list) {
+			resolve_cte_expression(cte, aContext);
+		}
+		//
+		// add proc table listeners
+		//
+		add_proc_table_listeners(generatedFunction);
+		//
+		// resolve ident table
+		//
+		for (@NotNull final IdentTableEntry ite : generatedFunction.idte_list) {
+			ite.resolveExpectation = promiseExpectation(ite, "Element Resolved");
+			resolve_ident_table_entry(ite, generatedFunction, aContext);
+		}
+		//
+		// resolve arguments table
+		//
+		@NotNull final Resolve_Variable_Table_Entry    rvte = new Resolve_Variable_Table_Entry(generatedFunction, aContext, this);
+		@NotNull final DeduceTypes2.IVariableConnector connector;
+		if (generatedFunction instanceof GeneratedConstructor) {
+			connector = new CtorConnector((GeneratedConstructor) generatedFunction);
+		} else {
+			connector = new NullConnector();
+		}
+		for (@NotNull final VariableTableEntry vte : generatedFunction.vte_list) {
+			rvte.action(vte, connector);
+		}
+	}
+
+	public void onExitFunction(final @NotNull BaseGeneratedFunction generatedFunction, final Context aFd_ctx, final Context aContext) {
+
+		// flow
+		var fd = generatedFunction.getFD();
+		fd.getModule().getCompilation().reports().flow().report(new FlowK.DeduceTypes2__onExitFunction(generatedFunction, fd));
+		// flow
+
+		//
+		// resolve var table. moved from `E'
+		//
+		for (@NotNull final VariableTableEntry vte : generatedFunction.vte_list) {
+			final DeduceElement3_VariableTableEntry vte_de = (DeduceElement3_VariableTableEntry) vte.getDeduceElement3();
+			vte_de.mvState(null, DeduceElement3_VariableTableEntry.ST.EXIT_RESOLVE);
+		}
+		for (@NotNull final IStateRunnable runnable : onRunnables) {
+			runnable.mvState(null, IStateRunnable.ST.EXIT_RUN);
+		}
+//					LOG.info("167 "+generatedFunction);
+		//
+		// ATTACH A TYPE TO VTE'S
+		// CONVERT USER TYPES TO USER_CLASS TYPES
+		//
 		for (final @NotNull VariableTableEntry vte : generatedFunction.vte_list) {
-			if (vte.type.getAttached() == null) {
-				final int potential_size = vte.potentialTypes().size();
-				if (potential_size == 1)
-					vte.type.setAttached(getPotentialTypesVte(vte).get(0).getAttached());
-				else if (potential_size > 1) {
-					// TODO Check type compatibility
-					LOG.err("703 " + vte.getName() + " " + vte.potentialTypes());
-					errSink.reportDiagnostic(new CantDecideType(vte, vte.potentialTypes()));
-				} else {
-					// potential_size == 0
-					// Result is handled by phase.typeDecideds, self is always valid
-					if (/*vte.getName() != null &&*/ !(vte.vtt == VariableTableType.RESULT || vte.vtt == VariableTableType.SELF))
-						errSink.reportDiagnostic(new CantDecideType(vte, vte.potentialTypes()));
-				}
-			} else if (vte.vtt == VariableTableType.RESULT) {
+//						LOG.info("704 "+vte.type.attached+" "+vte.potentialTypes());
+			final DeduceElement3_VariableTableEntry vte_de = (DeduceElement3_VariableTableEntry) vte.getDeduceElement3();
+			vte_de.setDeduceTypes2(this, generatedFunction);
+			vte_de.mvState(null, DeduceElement3_VariableTableEntry.ST.EXIT_CONVERT_USER_TYPES);
+		}
+		for (final @NotNull VariableTableEntry vte : generatedFunction.vte_list) {
+			if (vte.vtt == VariableTableType.ARG) {
 				final OS_Type attached = vte.type.getAttached();
-				if (attached.getType() == OS_Type.Type.USER) {
-					try {
-						vte.type.setAttached(resolve_type(attached, fd_ctx));
-					} catch (final ResolveError aResolveError) {
-						aResolveError.printStackTrace();
-						assert false;
-					}
+				if (attached != null) {
+					if (attached.getType() == OS_Type.Type.USER)
+						//throw new AssertionError();
+						errSink.reportError("369 ARG USER type (not deduced) " + vte);
+				} else {
+					errSink.reportError("457 ARG type not deduced/attached " + vte);
 				}
+			}
+		}
+		//
+		// ATTACH A TYPE TO IDTE'S
+		//
+		for (@NotNull final IdentTableEntry ite : generatedFunction.idte_list) {
+			final DeduceElement3_IdentTableEntry ite_de = (DeduceElement3_IdentTableEntry) ite.getDeduceElement3(this, generatedFunction);
+			ite_de._ctxts(aFd_ctx, aContext);
+			ite_de.mvState(null, DeduceElement3_IdentTableEntry.ST.EXIT_GET_TYPE);
+		}
+		{
+			// TODO why are we doing this?
+			final Resolve_each_typename ret = new Resolve_each_typename(phase, this, errSink);
+			for (final TypeTableEntry typeTableEntry : generatedFunction.tte_list) {
+				ret.action(typeTableEntry);
 			}
 		}
 		{
-			//
-			// NOW CALCULATE DEFERRED CALLS
-			//
-			for (final Integer deferred_call : generatedFunction.deferred_calls) {
-				final Instruction instruction = generatedFunction.getInstruction(deferred_call);
+			final @NotNull WorkManager  workManager = wm;//new WorkManager();
+			@NotNull final Dependencies deps        = new Dependencies(this,/*phase, this, errSink*/workManager);
+			deps.subscribeTypes(generatedFunction.dependentTypesSubject());
+			deps.subscribeFunctions(generatedFunction.dependentFunctionSubject());
+//						for (@NotNull GenType genType : generatedFunction.dependentTypes()) {
+//							deps.action_type(genType, workManager);
+//						}
+//						for (@NotNull FunctionInvocation dependentFunction : generatedFunction.dependentFunctions()) {
+//							deps.action_function(dependentFunction, workManager);
+//						}
+			final int x = workManager.totalSize();
 
-				final int                     i1  = to_int(instruction.getArg(0));
-				final InstructionArgument     i2  = (instruction.getArg(1));
-				final @NotNull ProcTableEntry fn1 = generatedFunction.getProcTableEntry(i1);
-				{
-//					generatedFunction.deferred_calls.remove(deferred_call);
-					implement_calls_(generatedFunction, fd_ctx, i2, fn1, instruction.getIndex());
+			workManager.drain();
+		}
+		//
+		// RESOLVE FUNCTION RETURN TYPES
+		//
+		resolve_function_return_type(generatedFunction);
+		{
+			for (final VariableTableEntry variableTableEntry : generatedFunction.vte_list) {
+				final @NotNull Collection<TypeTableEntry> pot = variableTableEntry.potentialTypes();
+				final int                                 y   = 2;
+				if (pot.size() == 1 && variableTableEntry.genType.isNull()) {
+					final OS_Type x = pot.iterator().next().getAttached();
+					if (x != null)
+						if (x.getType() == OS_Type.Type.USER_CLASS) {
+							try {
+								final @NotNull GenType yy = resolve_type(x, aFd_ctx);
+								// HACK TIME
+								if (yy.resolved == null && yy.typeName.getType() == OS_Type.Type.USER_CLASS) {
+									yy.resolved = yy.typeName;
+									yy.typeName = null;
+								}
+
+								yy.genCIForGenType2(this);
+								variableTableEntry.resolveType(yy);
+								variableTableEntry.resolveTypeToClass(yy.node);
+//								variableTableEntry.dlv.type.resolve(yy);
+							} catch (final ResolveError aResolveError) {
+								aResolveError.printStackTrace();
+							}
+						}
 				}
 			}
 		}
+		//
+		// LOOKUP FUNCTIONS
+		//
+		{
+			@NotNull final DeduceTypes2.Lookup_function_on_exit lfoe = new Lookup_function_on_exit();
+			for (@NotNull final ProcTableEntry pte : generatedFunction.prte_list) {
+				lfoe.action(pte);
+			}
+			wm.drain();
+		}
+
+
+		for (final ProcTableEntry procTableEntry : generatedFunction.prte_list) {
+			final DeduceElement3_ProcTableEntry de_pte = (DeduceElement3_ProcTableEntry) procTableEntry.getDeduceElement3(this, generatedFunction);
+
+			de_pte.doFunctionInvocation(); // TODO mvState
+		}
+
+		expectations.check();
+	}
+
+	private void do_assign_k(final @NotNull BaseGeneratedFunction generatedFunction, final @NotNull Instruction instruction) {
+		final @NotNull IntegerIA          arg  = (IntegerIA) instruction.getArg(0);
+		final @NotNull VariableTableEntry vte  = generatedFunction.getVarTableEntry(arg.getIndex());
+		final InstructionArgument         i2   = instruction.getArg(1);
+		final @NotNull ConstTableIA       ctia = (ConstTableIA) i2;
+		do_assign_constant(generatedFunction, instruction, vte, ctia);
+	}
+
+	private void do_call_normal(final @NotNull BaseGeneratedFunction generatedFunction, final @NotNull BaseFunctionDef fd, final @NotNull Instruction instruction, final Context context) {
+		final int                     pte_num = ((ProcIA) instruction.getArg(0)).getIndex();
+		final @NotNull ProcTableEntry pte     = generatedFunction.getProcTableEntry(pte_num);
+//				final InstructionArgument i2 = (instruction.getArg(1));
+		{
+			final @NotNull IdentIA identIA = (IdentIA) pte.expression_num;
+			final String           x       = generatedFunction.getIdentIAPathNormal(identIA);
+			LOG.info("298 Calling " + x);
+
+			// TODO 09/14 they said
+			// var reso = identIA.getResolver();
+			// reso.resolve(...);
+
+			resolveIdentIA_(context, identIA, generatedFunction, new FoundElement(phase) {
+
+				@SuppressWarnings("unused")
+				final String xx = x;
+
+				@Override
+				public void foundElement(final OS_Element e) {
+					pte.setStatus(BaseTableEntry.Status.KNOWN, new ConstructableElementHolder(e, identIA));
+					if (fd instanceof DefFunctionDef) {
+						final IInvocation invocation = getInvocation((GeneratedFunction) generatedFunction);
+						forFunction(newFunctionInvocation((FunctionDef) e, pte, invocation, phase), new ForFunction() {
+							@Override
+							public void typeDecided(@NotNull final GenType aType) {
+								@Nullable final InstructionArgument x = generatedFunction.vte_lookup("Result");
+								assert x != null;
+								((IntegerIA) x).getEntry().type.setAttached(gt(aType));
+							}
+						});
+					}
+				}
+
+				@Override
+				public void noFoundElement() {
+					errSink.reportError("370 Can't find callsite " + x);
+					// TODO don't know if this is right
+					@NotNull final IdentTableEntry entry = identIA.getEntry();
+					if (entry.getStatus() != BaseTableEntry.Status.UNKNOWN)
+						entry.setStatus(BaseTableEntry.Status.UNKNOWN, null);
+				}
+			});
+		}
+	}
+
+	private void do_call_s(final @NotNull BaseGeneratedFunction generatedFunction, final @NotNull Instruction instruction, final Context fd_ctx) {
+		final int                     i1  = to_int(instruction.getArg(0));
+		final InstructionArgument     i2  = (instruction.getArg(1));
+		final @NotNull ProcTableEntry fn1 = generatedFunction.getProcTableEntry(i1);
+		{
+			implement_calls(generatedFunction, fd_ctx, i2, fn1, instruction.getIndex());
+		}
+/*
+				if (i2 instanceof IntegerIA) {
+					int i2i = to_int(i2);
+					VariableTableEntry vte = generatedFunction.getVarTableEntry(i2i);
+					int y =2;
+				} else
+					throw new NotImplementedException();
+*/
 	}
 
 	public void do_assign_normal(final @NotNull BaseGeneratedFunction generatedFunction, final Context aFd_ctx, final @NotNull Instruction instruction, final Context aContext) {
@@ -1309,45 +1449,33 @@ public class DeduceTypes2 {
 		assert testing_type != null;
 	}
 
-	public void onEnterFunction(final @NotNull BaseGeneratedFunction generatedFunction, final Context aContext) {
-		for (final VariableTableEntry variableTableEntry : generatedFunction.vte_list) {
-			variableTableEntry.setDeduceTypes2(this, aContext, generatedFunction);
-		}
-		for (final IdentTableEntry identTableEntry : generatedFunction.idte_list) {
-			identTableEntry.setDeduceTypes2(this, aContext, generatedFunction);
-		}
-		for (final ProcTableEntry procTableEntry : generatedFunction.prte_list) {
-			procTableEntry.setDeduceTypes2(this, aContext, generatedFunction, errSink);
-		}
-		//
-		// resolve all cte expressions
-		//
-		for (final @NotNull ConstantTableEntry cte : generatedFunction.cte_list) {
-			resolve_cte_expression(cte, aContext);
-		}
-		//
-		// add proc table listeners
-		//
-		add_proc_table_listeners(generatedFunction);
-		//
-		// resolve ident table
-		//
-		for (@NotNull final IdentTableEntry ite : generatedFunction.idte_list) {
-			ite.resolveExpectation = promiseExpectation(ite, "Element Resolved");
-			resolve_ident_table_entry(ite, generatedFunction, aContext);
-		}
-		//
-		// resolve arguments table
-		//
-		@NotNull final Resolve_Variable_Table_Entry    rvte = new Resolve_Variable_Table_Entry(generatedFunction, aContext, this);
-		@NotNull final DeduceTypes2.IVariableConnector connector;
-		if (generatedFunction instanceof GeneratedConstructor) {
-			connector = new CtorConnector((GeneratedConstructor) generatedFunction);
-		} else {
-			connector = new NullConnector();
-		}
-		for (@NotNull final VariableTableEntry vte : generatedFunction.vte_list) {
-			rvte.action(vte, connector);
+	private void on_exit_function_vte_list_001(final @NotNull BaseGeneratedFunction generatedFunction, final Context fd_ctx) {
+		for (final @NotNull VariableTableEntry vte : generatedFunction.vte_list) {
+			if (vte.type.getAttached() == null) {
+				final int potential_size = vte.potentialTypes().size();
+				if (potential_size == 1)
+					vte.type.setAttached(getPotentialTypesVte(vte).get(0).getAttached());
+				else if (potential_size > 1) {
+					// TODO Check type compatibility
+					LOG.err("703 " + vte.getName() + " " + vte.potentialTypes());
+					errSink.reportDiagnostic(new CantDecideType(vte, vte.potentialTypes()));
+				} else {
+					// potential_size == 0
+					// Result is handled by phase.typeDecideds, self is always valid
+					if (/*vte.getName() != null &&*/ !(vte.vtt == VariableTableType.RESULT || vte.vtt == VariableTableType.SELF))
+						errSink.reportDiagnostic(new CantDecideType(vte, vte.potentialTypes()));
+				}
+			} else if (vte.vtt == VariableTableType.RESULT) {
+				final OS_Type attached = vte.type.getAttached();
+				if (attached.getType() == OS_Type.Type.USER) {
+					try {
+						vte.type.setAttached(resolve_type(attached, fd_ctx));
+					} catch (final ResolveError aResolveError) {
+						aResolveError.printStackTrace();
+						assert false;
+					}
+				}
+			}
 		}
 	}
 
@@ -1404,85 +1532,19 @@ public class DeduceTypes2 {
 
 	private void on_exit_function_calculate_deferred_calls(final @NotNull BaseGeneratedFunction generatedFunction, final Context fd_ctx) {
 		//
-		// ATTACH A TYPE TO IDTE'S
+		// NOW CALCULATE DEFERRED CALLS
 		//
-		for (@NotNull final IdentTableEntry ite : generatedFunction.idte_list) {
-			final DeduceElement3_IdentTableEntry ite_de = (DeduceElement3_IdentTableEntry) ite.getDeduceElement3(this, generatedFunction);
-			ite_de._ctxts(aFd_ctx, aContext);
-			ite_de.mvState(null, DeduceElement3_IdentTableEntry.ST.EXIT_GET_TYPE);
-		}
-		{
-			// TODO why are we doing this?
-			final Resolve_each_typename ret = new Resolve_each_typename(phase, this, errSink);
-			for (final TypeTableEntry typeTableEntry : generatedFunction.tte_list) {
-				ret.action(typeTableEntry);
+		for (final Integer deferred_call : generatedFunction.deferred_calls) {
+			final Instruction instruction = generatedFunction.getInstruction(deferred_call);
+
+			final int                     i1  = to_int(instruction.getArg(0));
+			final InstructionArgument     i2  = (instruction.getArg(1));
+			final @NotNull ProcTableEntry fn1 = generatedFunction.getProcTableEntry(i1);
+			{
+//					generatedFunction.deferred_calls.remove(deferred_call);
+				implement_calls_(generatedFunction, fd_ctx, i2, fn1, instruction.getIndex());
 			}
 		}
-		{
-			final @NotNull WorkManager  workManager = wm;//new WorkManager();
-			@NotNull final Dependencies deps        = new Dependencies(this,/*phase, this, errSink*/workManager);
-			deps.subscribeTypes(generatedFunction.dependentTypesSubject());
-			deps.subscribeFunctions(generatedFunction.dependentFunctionSubject());
-//						for (@NotNull GenType genType : generatedFunction.dependentTypes()) {
-//							deps.action_type(genType, workManager);
-//						}
-//						for (@NotNull FunctionInvocation dependentFunction : generatedFunction.dependentFunctions()) {
-//							deps.action_function(dependentFunction, workManager);
-//						}
-			final int x = workManager.totalSize();
-
-			workManager.drain();
-		}
-		//
-		// RESOLVE FUNCTION RETURN TYPES
-		//
-		resolve_function_return_type(generatedFunction);
-		{
-			for (final VariableTableEntry variableTableEntry : generatedFunction.vte_list) {
-				final @NotNull Collection<TypeTableEntry> pot = variableTableEntry.potentialTypes();
-				final int                                 y   = 2;
-				if (pot.size() == 1 && variableTableEntry.genType.isNull()) {
-					final OS_Type x = pot.iterator().next().getAttached();
-					if (x != null)
-						if (x.getType() == OS_Type.Type.USER_CLASS) {
-							try {
-								final @NotNull GenType yy = resolve_type(x, aFd_ctx);
-								// HACK TIME
-								if (yy.resolved == null && yy.typeName.getType() == OS_Type.Type.USER_CLASS) {
-									yy.resolved = yy.typeName;
-									yy.typeName = null;
-								}
-
-								yy.genCIForGenType2(this);
-								variableTableEntry.resolveType(yy);
-								variableTableEntry.resolveTypeToClass(yy.node);
-//								variableTableEntry.dlv.type.resolve(yy);
-							} catch (final ResolveError aResolveError) {
-								aResolveError.printStackTrace();
-							}
-						}
-				}
-			}
-		}
-		//
-		// LOOKUP FUNCTIONS
-		//
-		{
-			@NotNull final DeduceTypes2.Lookup_function_on_exit lfoe = new Lookup_function_on_exit();
-			for (@NotNull final ProcTableEntry pte : generatedFunction.prte_list) {
-				lfoe.action(pte);
-			}
-			wm.drain();
-		}
-
-
-		for (final ProcTableEntry procTableEntry : generatedFunction.prte_list) {
-			final DeduceElement3_ProcTableEntry de_pte = (DeduceElement3_ProcTableEntry) procTableEntry.getDeduceElement3(this, generatedFunction);
-
-			de_pte.doFunctionInvocation(); // TODO mvState
-		}
-
-		expectations.check();
 	}
 
 	@NotNull DeferredMemberFunction deferred_member_function(final OS_Element aParent,
@@ -1694,6 +1756,10 @@ public class DeduceTypes2 {
 
 		if (identIA != null) {
 //			LOG.info("594 "+identIA.getEntry().getStatus());
+
+			// TODO 09/14 they said
+//			var reso = identIA.getResolver(ctx, generatedFunction);
+//			reso.resolve(...);
 
 			resolveIdentIA_(ctx, identIA, generatedFunction, new FoundElement(phase) {
 
@@ -2343,6 +2409,10 @@ public class DeduceTypes2 {
 			_zeros.put(aFuncExprType, new Zero_FuncExprType(aFuncExprType));
 
 		return (Zero_FuncExprType) _zeros.get(aFuncExprType);
+	}
+
+	public OS_Module _module() {
+		return module;
 	}
 
 	interface IElementProcessor {

@@ -3,11 +3,18 @@ package tripleo.elijah.comp;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.entrypoints.EntryPointProcessor;
 import tripleo.elijah.lang.BaseFunctionDef;
+import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
 import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_fn.ProcTableEntry;
+import tripleo.elijah.stages.gen_fn.VariableTableEntry;
+import tripleo.elijah.stages.instructions.IdentIA;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public interface FlowK {
 	String report();

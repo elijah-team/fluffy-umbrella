@@ -258,6 +258,7 @@ public class DeducePhase {
 			LOG.info("197 lgf.size " + p.size());
 		}
 
+		// TODO 09/14 flow here???
 		deduceTypes2.deduceFunctions(lgf);
 
 		final List<GeneratedClass> matching_class_list = generatedClasses.filterClassesByModule(m);
