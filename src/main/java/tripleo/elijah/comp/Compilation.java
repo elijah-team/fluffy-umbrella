@@ -8,30 +8,45 @@
  */
 package tripleo.elijah.comp;
 
-import com.google.common.collect.*;
-import io.reactivex.rxjava3.annotations.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.*;
-import io.reactivex.rxjava3.subjects.*;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.subjects.ReplaySubject;
+import io.reactivex.rxjava3.subjects.Subject;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.*;
-import tripleo.elijah.ci.*;
-import tripleo.elijah.comp.functionality.f202.*;
-import tripleo.elijah.lang.*;
-import tripleo.elijah.nextgen.inputtree.*;
-import tripleo.elijah.nextgen.outputtree.*;
-import tripleo.elijah.nextgen.query.*;
-import tripleo.elijah.stages.deduce.*;
-import tripleo.elijah.stages.deduce.fluffy.i.*;
-import tripleo.elijah.stages.gen_fn.*;
-import tripleo.elijah.stages.logging.*;
-import tripleo.elijah.ut.*;
-import tripleo.elijah.util.*;
-import tripleo.elijah.world.i.*;
-import tripleo.elijah.world.impl.*;
+import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.ci.LibraryStatementPart;
+import tripleo.elijah.comp.functionality.f202.F202;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.lang.OS_Package;
+import tripleo.elijah.lang.Qualident;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
+import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
+import tripleo.elijah.nextgen.query.Operation2;
+import tripleo.elijah.stages.deduce.DeducePhase;
+import tripleo.elijah.stages.deduce.FunctionMapHook;
+import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
+import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.ut.UT_Controller;
+import tripleo.elijah.util.Helpers;
+import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.world.i.WorldModule;
+import tripleo.elijah.world.impl.DefaultLivingRepo;
+import tripleo.elijah.world.impl.DefaultWorldModule;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public abstract class Compilation {
 
@@ -77,10 +92,10 @@ public abstract class Compilation {
 		public @NotNull WorldModule createWorldModule(final OS_Module m) {
 			CompilationEnclosure ce = getCompilationEnclosure();
 			final WorldModule    R  = new DefaultWorldModule(m, ce);
-
 			return R;
 		}
 	};
+
 	private Finally _f = new Finally();
 
 	private CompilationEnclosure getCompilationEnclosure() {
