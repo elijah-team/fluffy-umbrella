@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
+import tripleo.elijah.comp.FlowK;
 import tripleo.elijah.contexts.ClassContext;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_AnyType;
@@ -948,6 +949,12 @@ public class DeduceTypes2 {
 	}
 
 	public void deduce_generated_function_base(final @NotNull BaseGeneratedFunction generatedFunction, @NotNull final BaseFunctionDef fd) {
+
+		// flow
+		fd.getModule().getCompilation().reports().flow().report(new FlowK.DeduceTypes2__deduce_generated_function_base(generatedFunction, fd));
+		// flow
+
+
 		final Context fd_ctx = fd.getContext();
 		//
 		{

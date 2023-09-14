@@ -18,6 +18,7 @@ import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.FlowK;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.ClassStatement;
@@ -318,6 +319,11 @@ public class DeducePhase {
 	 * @param verbosity
 	 */
 	public void deduceModule(@NotNull final OS_Module m, @NotNull final Iterable<GeneratedNode> lgc, final boolean _unused, final ElLog.Verbosity verbosity) {
+		// flow
+		m.getCompilation().reports().flow().report(new FlowK.DeducePhase__deduceModule(m, lgc));
+		// flow
+
+
 		final @NotNull List<GeneratedNode> lgf = new ArrayList<GeneratedNode>();
 
 		for (@NotNull final GeneratedNode lgci : lgc) {
