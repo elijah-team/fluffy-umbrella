@@ -616,6 +616,10 @@ public class DeducePhase {
 		}
 	}
 
+	public void finish_default() {
+		this.finish(this.generatedClasses);
+	}
+
 	static class ResolvedVariables {
 		final IdentTableEntry identTableEntry;
 		final OS_Element      parent; // README tripleo.elijah.lang._CommonNC, but that's package-private
