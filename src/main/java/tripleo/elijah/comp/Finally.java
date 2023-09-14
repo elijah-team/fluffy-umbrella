@@ -1,9 +1,12 @@
 package tripleo.elijah.comp;
 
-import org.jetbrains.annotations.*;
-import tripleo.elijah.nextgen.outputtree.*;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.nextgen.outputtree.EOT_OutputFile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Finally {
 	private final Set<Outs>    outputOffs = new HashSet<>();
@@ -45,6 +48,28 @@ public class Finally {
 
 	public void addCodeOutput(final EOT_OutputFile.FileNameProvider aFileNameProvider, final EOT_OutputFile aOff) {
 		outputs.add(new Output(aFileNameProvider, aOff));
+	}
+
+	public void _RuntimeProcesses_logProgress(final String aPrepare, final RuntimeProcess aProcess) {
+		final String string = new StringBuilder()
+		  .append("***** RuntimeProcess [")
+		  .append(aPrepare)
+		  .append("] named ")
+		  .append(aProcess.toString()).toString();
+		_RuntimeProcesses_logProgressString(string);
+	}
+
+	public void _RuntimeProcesses_logProgressString(final String aString) {
+		System.err.println(aString);
+	}
+
+	public void _RuntimeProcesses_logProgress2(final String aS, final RuntimeProcess aProcess) {
+		final String string = new StringBuilder()
+		  .append("***** RuntimeProcess^ [")
+		  .append(aS)
+		  .append("] named ")
+		  .append(aProcess.toString()).toString();
+		_RuntimeProcesses_logProgressString(string);
 	}
 
 	public enum Outs {Out_6262, Out_727, Out_350, Out_364, Out_252, Out_2121, Out_486, Out_5757, Out_1069, Out_141, Out_EVTE_159, Out_401b}
