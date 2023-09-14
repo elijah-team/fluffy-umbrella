@@ -13,9 +13,15 @@ public interface FlowK {
 	String report();
 
 	class EntryPointList_generateFromEntryPoints__eps_isEmpty implements FlowK {
+		private final OS_Module mod;
+
+		public EntryPointList_generateFromEntryPoints__eps_isEmpty(final OS_Module aModule) {
+			mod = aModule;
+		}
+
 		@Override
 		public String report() {
-			return "@@ EntryPointList::generateFromEntryPoints: eps isEmpty";
+			return "@@ EntryPointList::generateFromEntryPoints: eps isEmpty for " + mod.getFileName();
 		}
 	}
 
@@ -85,7 +91,12 @@ public interface FlowK {
 
 		@Override
 		public String report() {
-			return new StringBuilder().append("@@ DeduceTypes2::deduce_generated_function_base: ").append(fd.getNameNode().getText()).append(" ").append(fd.getModule().getFileName()).toString();
+			return new StringBuilder()
+			  .append("@@ DeduceTypes2::deduce_generated_function_base: ")
+			  .append(fd.getNameNode().getText())
+			  .append(" ")
+			  .append(fd.getModule().getFileName())
+			  .toString();
 		}
 	}
 }

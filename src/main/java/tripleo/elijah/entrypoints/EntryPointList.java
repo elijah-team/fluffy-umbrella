@@ -16,11 +16,13 @@ import java.util.function.Supplier;
 
 public class EntryPointList {
 
-	final @NotNull List<EntryPoint> eps;
+	private final @NotNull List<EntryPoint> eps;
+	private final OS_Module mod;
 
 	@Contract(pure = true)
 	public EntryPointList(final OS_Module aMod) {
 		eps = new ArrayList<>();
+		mod = aMod;
 	}
 
 	public void generate(@NotNull final GenerateFunctions aGenerateFunctions, final DeducePhase aDeducePhase, @NotNull final Supplier<WorkManager> wm) {
@@ -32,7 +34,7 @@ public class EntryPointList {
 	                                     final WorkManager wm) {
 		if (eps.isEmpty()) {
 			// flow
-			flow(deducePhase).report(new FlowK.EntryPointList_generateFromEntryPoints__eps_isEmpty());
+			flow(deducePhase).report(new FlowK.EntryPointList_generateFromEntryPoints__eps_isEmpty(mod));
 			// flow
 			return; // short circuit
 		}
