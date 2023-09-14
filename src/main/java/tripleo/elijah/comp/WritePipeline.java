@@ -47,18 +47,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
  * Created 8/21/21 10:19 PM
  */
 public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResultListener {
-	final OutputStrategy os;
-	final ElSystem       sys;
+	final         OutputStrategy os;
+	final         ElSystem       sys;
 	private final Compilation    c;
-	private final File file_prefix;
+	private final File           file_prefix;
 	private       GenerateResult gr;
 
 	public WritePipeline(@NotNull final AccessBus ab) {
@@ -138,6 +136,9 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 		for (final Map.Entry<String, Collection<Buffer>> entry : mb.asMap().entrySet()) {
 			final String key  = entry.getKey();
 			final Path   path = FileSystems.getDefault().getPath(prefix, key);
+
+			var fnp = new _WP_FileNameProvider(key, aFile_prefix);
+
 //			BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
 
 			path.getParent().toFile().mkdirs();
@@ -146,10 +147,10 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 			System.out.println("201 Writing path: " + path);
 			final CharSink x = c.getIO().openWrite(path);
 
-			final EG_SingleStatement beginning = new EG_SingleStatement("", EX_Explanation.withMessage("WritePipeline.beginning"));
-			final EG_Statement middle = new GE_BuffersStatement(entry);
-			final EG_SingleStatement ending = new EG_SingleStatement("", EX_Explanation.withMessage("WritePipeline.ending"));
-			final EX_Explanation explanation = EX_Explanation.withMessage("write output file");
+			final EG_SingleStatement beginning   = new EG_SingleStatement("", EX_Explanation.withMessage("WritePipeline.beginning"));
+			final EG_Statement       middle      = new GE_BuffersStatement(entry);
+			final EG_SingleStatement ending      = new EG_SingleStatement("", EX_Explanation.withMessage("WritePipeline.ending"));
+			final EX_Explanation     explanation = EX_Explanation.withMessage("write output file");
 
 			final EG_CompoundStatement seq = new EG_CompoundStatement(beginning, ending, middle, false, explanation);
 
@@ -160,7 +161,8 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 			((FileCharSink) x).close();
 
 			final @NotNull EOT_OutputTree cot = c.getOutputTree();
-			cot._putSeq(key, path, seq);
+
+			cot._putSeq(key, fnp, seq);
 		}
 	}
 
