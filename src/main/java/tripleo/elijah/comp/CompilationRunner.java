@@ -1,22 +1,31 @@
 package tripleo.elijah.comp;
 
-import org.jetbrains.annotations.*;
-import tripleo.elijah.ci.*;
-import tripleo.elijah.comp.caches.*;
-import tripleo.elijah.comp.diagnostic.*;
-import tripleo.elijah.comp.i.*;
-import tripleo.elijah.comp.internal.*;
-import tripleo.elijah.comp.specs.*;
-import tripleo.elijah.diagnostic.*;
-import tripleo.elijah.nextgen.query.*;
-import tripleo.elijah.stages.deduce.post_bytecode.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.comp.caches.DefaultEzCache;
+import tripleo.elijah.comp.diagnostic.TooManyEz_ActuallyNone;
+import tripleo.elijah.comp.diagnostic.TooManyEz_BeSpecific;
+import tripleo.elijah.comp.i.IProgressSink;
+import tripleo.elijah.comp.i.ProgressSinkComponent;
+import tripleo.elijah.comp.internal.DefaultProgressSink;
+import tripleo.elijah.comp.internal.ProcessRecord;
+import tripleo.elijah.comp.specs.EzCache;
+import tripleo.elijah.comp.specs.EzSpec;
+import tripleo.elijah.diagnostic.Diagnostic;
+import tripleo.elijah.nextgen.query.Mode;
+import tripleo.elijah.nextgen.query.Operation2;
+import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
 
-import java.io.*;
-import java.text.*;
-import java.util.*;
-import java.util.regex.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
-import static tripleo.elijah.util.Helpers.*;
+import static tripleo.elijah.util.Helpers.List_of;
 
 public class CompilationRunner {
 	private final Compilation                       compilation;
@@ -35,12 +44,13 @@ public class CompilationRunner {
 	}
 
 	@Contract(pure = true)
-	public CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis, final ICompilationBus aCb) {
+	public CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis, final ICompilationBus aCompilationBus) {
+		final DefaultProgressSink ps1 = new DefaultProgressSink();
+
 		compilation = aCompilation;
 		cis         = a_cis;
-		final DefaultProgressSink ps1 = new DefaultProgressSink();
-		cci = new CCI(compilation, a_cis, ps1);
-		cb  = aCb;
+		cci         = new CCI(compilation, a_cis, ps1);
+		cb          = aCompilationBus;
 	}
 
 	void start(final CompilerInstructions ci, final boolean do_out) throws Exception {
