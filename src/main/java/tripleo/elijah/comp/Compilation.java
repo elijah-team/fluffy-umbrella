@@ -16,14 +16,15 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.ReplaySubject;
 import io.reactivex.rxjava3.subjects.Subject;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.functionality.f202.F202;
-import tripleo.elijah.comp.queries.QueryEzFileToModule;
-import tripleo.elijah.comp.queries.QueryEzFileToModuleParams;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
 import tripleo.elijah.lang.Qualident;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 import tripleo.elijah.nextgen.query.Operation2;
 import tripleo.elijah.stages.deduce.DeducePhase;
@@ -32,10 +33,13 @@ import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
 import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.ut.UT_Controller;
+import tripleo.elijah.util.Helpers;
+import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.world.i.WorldModule;
 import tripleo.elijah.world.impl.DefaultLivingRepo;
+import tripleo.elijah.world.impl.DefaultWorldModule;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,8 +68,42 @@ public abstract class Compilation {
 	public        PipelineLogic        pipelineLogic;
 	public        CompilationRunner    __cr;
 	private       CompilerInstructions rootCI;
+	private final   CompFactory                       _con    = new CompFactory() {
+		@Override
+		public @NotNull EIT_ModuleInput createModuleInput(final OS_Module aModule) {
+			return new EIT_ModuleInput(aModule, Compilation.this);
+		}
 
-	public Compilation(final ErrSink aErrSink, final IO aIO) {
+		@Override
+		public @NotNull Qualident createQualident(final @NotNull List<String> sl) {
+			var R = new Qualident();
+			for (String s : sl) {
+				R.append(Helpers.string_to_ident(s));
+			}
+			return R;
+		}
+
+		@Override
+		public @NotNull InputRequest createInputRequest(final File aFile, final boolean aDo_out, final @Nullable LibraryStatementPart aLsp) {
+			return new InputRequest(aFile, aDo_out, aLsp);
+		}
+
+		@Override
+		public @NotNull WorldModule createWorldModule(final OS_Module m) {
+			CompilationEnclosure ce = getCompilationEnclosure();
+			final WorldModule    R  = new DefaultWorldModule(m, ce);
+			return R;
+		}
+	};
+
+	private Finally _f = new Finally();
+
+	private CompilationEnclosure getCompilationEnclosure() {
+		throw new NotImplementedException();
+	}
+
+
+	public Compilation(final @NotNull ErrSink aErrSink, final IO aIO) {
 		errSink            = aErrSink;
 		io                 = aIO;
 		_compilationNumber = new Random().nextInt(Integer.MAX_VALUE);
@@ -120,16 +158,6 @@ public abstract class Compilation {
 	//
 	//
 	//
-
-	public Operation<CompilerInstructions> parseEzFile(final @NotNull File aFile) {
-		try {
-			final QueryEzFileToModuleParams       params = new QueryEzFileToModuleParams(aFile.getAbsolutePath(), io.readFile(aFile));
-			final Operation<CompilerInstructions> x      = new QueryEzFileToModule(params).calculate();
-			return x;
-		} catch (final FileNotFoundException aE) {
-			return Operation.failure(aE);
-		}
-	}
 
 	public void pushItem(final CompilerInstructions aci) {
 		_cis.onNext(aci);
@@ -272,6 +300,10 @@ public abstract class Compilation {
 
 	public ModuleBuilder moduleBuilder() {
 		return new ModuleBuilder(this);
+	}
+
+	public Finally reports() {
+		return _f;
 	}
 
 	static class MOD {

@@ -1,42 +1,30 @@
 package tripleo.elijah.comp;
 
-import antlr.ANTLRException;
-import antlr.RecognitionException;
-import antlr.TokenStreamException;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.ci.CompilerInstructionsImpl;
-import tripleo.elijah.ci.GenerateStatement;
-import tripleo.elijah.ci.LibraryStatementPart;
-import tripleo.elijah.ci.LibraryStatementPartImpl;
-import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
-import tripleo.elijah.comp.diagnostic.FileNotFoundDiagnostic;
-import tripleo.elijah.comp.queries.QuerySourceFileToModule;
-import tripleo.elijah.comp.queries.QuerySourceFileToModuleParams;
-import tripleo.elijah.diagnostic.Diagnostic;
-import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.lang.StringExpression;
-import tripleo.elijah.nextgen.query.Mode;
-import tripleo.elijah.nextgen.query.Operation2;
-import tripleo.elijah.util.Helpers;
+import org.jetbrains.annotations.*;
+import tripleo.elijah.ci.*;
+import tripleo.elijah.comp.caches.*;
+import tripleo.elijah.comp.diagnostic.*;
+import tripleo.elijah.comp.specs.*;
+import tripleo.elijah.diagnostic.*;
+import tripleo.elijah.lang.*;
+import tripleo.elijah.nextgen.query.*;
+import tripleo.elijah.util.*;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
+import java.io.*;
+import java.util.*;
+import java.util.regex.*;
 
+@SuppressWarnings("UnnecessaryLocalVariable")
 class USE {
-	private static final FilenameFilter         accept_source_files = (directory, file_name) -> {
+	private final        Compilation            c;
+	private final        ErrSink                errSink;
+
+	private static final FilenameFilter accept_source_files = (directory, file_name) -> {
 		final boolean matches = Pattern.matches(".+\\.elijah$", file_name)
 		  || Pattern.matches(".+\\.elijjah$", file_name);
 		return matches;
 	};
-	private final        Compilation            c;
-	private final        ErrSink                errSink;
-	private final        Map<String, OS_Module> fn2m                = new HashMap<String, OS_Module>();
+
 
 	@Contract(pure = true)
 	public USE(final Compilation aCompilation) {
@@ -66,20 +54,7 @@ class USE {
 		lsp.setInstructions(compilerInstructions);
 		use_internal(instruction_dir, do_out, lsp);
 	}
-
-	private void use_internal(final @NotNull File dir, final boolean do_out, final LibraryStatementPart lsp) throws Exception {
-		if (!dir.isDirectory()) {
-			errSink.reportError("9997 Not a directory " + dir);
-			return;
-		}
-		//
-		final File[] files = dir.listFiles(accept_source_files);
-		if (files != null) {
-			for (final File file : files) {
-				parseElijjahFile(file, file.toString(), do_out, lsp);
-			}
-		}
-	}
+	private final ElijahCache elijahCache = new DefaultElijahCache();
 
 	public Operation2<OS_Module> findPrelude(final String prelude_name) {
 		final File local_prelude = new File("lib_elijjah/lib-" + prelude_name + "/Prelude.elijjah");
@@ -150,6 +125,26 @@ class USE {
 		}
 	}
 
+	private void use_internal(final @NotNull File dir, final boolean do_out, final LibraryStatementPart lsp) {
+		if (!dir.isDirectory()) {
+			errSink.reportError("9997 Not a directory " + dir);
+			return;
+		}
+		//
+		final File[] files = dir.listFiles(accept_source_files);
+		if (files != null) {
+			for (final File file : files) {
+//				final CompFactory.InputRequest inp = c.con().createInputRequest(file, do_out, lsp);
+
+				final String file_name = file.toString();
+				parseElijjahFile(file, file_name, do_out, lsp);
+
+//				c.reports().addInput(inp, Finally.Out2.ELIJAH);
+				c.reports().addInput(()->file_name, Finally.Out2.ELIJAH);
+			}
+		}
+	}
+
 	public Operation2<OS_Module> realParseElijjahFile2(final String f, final @NotNull File file, final boolean do_out) {
 		final Operation<OS_Module> om;
 
@@ -160,54 +155,43 @@ class USE {
 		}
 
 		switch (om.mode()) {
-		case SUCCESS:
+		case SUCCESS -> {
 			return Operation2.success(om.success());
-		case FAILURE:
+		}
+		case FAILURE -> {
 			final Exception e = om.failure();
 			errSink.exception(e);
 			return Operation2.failure(new ExceptionDiagnostic(e));
-		default:
-			throw new IllegalStateException("Unexpected value: " + om.mode());
 		}
-	}
-
-	private Operation<OS_Module> parseFile_(final String f, final InputStream s, final boolean do_out) throws RecognitionException, TokenStreamException {
-		final QuerySourceFileToModuleParams qp = new QuerySourceFileToModuleParams(s, f, do_out);
-		return new QuerySourceFileToModule(qp, c).calculate();
+		default -> throw new IllegalStateException("Unexpected value: " + om.mode());
+		}
 	}
 
 	public Operation<OS_Module> realParseElijjahFile(final String f, final @NotNull File file, final boolean do_out) throws Exception {
-		final String absolutePath = file.getCanonicalFile().toString();
-		if (fn2m.containsKey(absolutePath)) { // don't parse twice
-			final OS_Module m = fn2m.get(absolutePath);
-			return Operation.success(m);
+		try (final InputStream s = c.getIO().readFile(file)) {
+			final ElijahSpec spec = new ElijahSpec(f, file, s, do_out);
+			return realParseElijjahFile(spec);
 		}
+	}
 
-		final IO io = c.getIO();
+	public Operation<OS_Module> realParseElijjahFile(final ElijahSpec spec) {
+		final File file = spec.file();
 
-		// tree add something
-
-		final InputStream s = io.readFile(file);
+		final String absolutePath;
 		try {
-			final Operation<OS_Module> om = parseFile_(f, s, do_out);
-			if (om.mode() != Mode.SUCCESS) {
-				final Exception e = om.failure();
-				assert e != null;
-
-				tripleo.elijah.util.Stupidity.println_err2(("parser exception: " + e));
-				e.printStackTrace(System.err);
-				s.close();
-				return Operation.failure(e);
-			}
-			final OS_Module R = om.success();
-			fn2m.put(absolutePath, R);
-			s.close();
-			return Operation.success(R);
-		} catch (final ANTLRException e) {
-			tripleo.elijah.util.Stupidity.println_err2(("parser exception: " + e));
-			e.printStackTrace(System.err);
-			s.close();
-			return Operation.failure(e);
+			absolutePath = file.getCanonicalFile().toString();
+		} catch (final IOException aE) {
+			return Operation.failure(aE);
 		}
+
+		final Optional<OS_Module> early = elijahCache.get(absolutePath);
+
+		if (early.isPresent()) {
+			return Operation.success(early.get());
+		}
+
+		final var calm = CX_ParseElijahFile.parseAndCache(spec, elijahCache, absolutePath, c);
+
+		return calm;
 	}
 }

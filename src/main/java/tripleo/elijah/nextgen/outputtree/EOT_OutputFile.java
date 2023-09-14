@@ -5,13 +5,11 @@ import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_Input;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
-import tripleo.elijah.nextgen.outputstatement.EG_CompoundStatement;
 import tripleo.elijah.nextgen.outputstatement.EG_Naming;
 import tripleo.elijah.nextgen.outputstatement.EG_SequenceStatement;
 import tripleo.elijah.nextgen.outputstatement.EG_SingleStatement;
 import tripleo.elijah.nextgen.outputstatement.EG_Statement;
 import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
-import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.util.buffer.Buffer;
 
 import java.util.ArrayList;
@@ -42,6 +40,7 @@ public class EOT_OutputFile {
 		_inputs.addAll(inputs);
 	}
 
+/*
 	public static EOT_OutputFile grToOutputFile(final Compilation aC, final GenerateResultItem ab) {
 		final List<EIT_Input> inputs = List_of(new EIT_ModuleInput(ab.node.module(), aC));
 
@@ -60,8 +59,12 @@ public class EOT_OutputFile {
 		final EG_CompoundStatement seq = new EG_CompoundStatement(beginning, ending, middle, false, explanation);
 
 		final EOT_OutputFile eof = new EOT_OutputFile(aC, inputs, ab.output, EOT_OutputType.SOURCES, seq);
+
+		aC.reports().addCodeOutput(()->ab.output, eof);
+
 		return eof;
 	}
+*/
 
 	public static @NotNull EOT_OutputFile bufferSetToOutputFile(final String aFilename,
 	                                                            final @NotNull Collection<Buffer> aBuffers,
@@ -71,12 +74,14 @@ public class EOT_OutputFile {
 
 		final List<EG_Statement> statementStream = aBuffers.stream()
 		                                                   .map(buffer ->
-		                                                     new EG_SingleStatement(buffer.getText(), new EX_Explanation() {
-		                                                     })
+		                                                     new EG_SingleStatement(buffer.getText(), EX_Explanation.withMessage("bufferSetToOutputFile"))
 		                                                   ).collect(Collectors.toList());
 		final EG_SequenceStatement seq = new EG_SequenceStatement(new EG_Naming("yyy"), statementStream);
 
 		final EOT_OutputFile eof = new EOT_OutputFile(comp, inputs, aFilename, EOT_OutputType.SOURCES, seq);
+
+		comp.reports().addCodeOutput(()->aFilename, eof);
+
 		return eof;
 	}
 
@@ -104,4 +109,10 @@ public class EOT_OutputFile {
 	}
 
 	// rules/constraints whatever
+
+	@FunctionalInterface
+	public interface FileNameProvider {
+		String getFilename();
+	}
+
 }
