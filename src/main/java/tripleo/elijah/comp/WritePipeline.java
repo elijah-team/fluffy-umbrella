@@ -210,24 +210,6 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 	public void gr_slot(final GenerateResult gr) {
 		this.gr = gr;
 	}
-
-	public Consumer<Supplier<GenerateResult>> consumer() {
-		return new Consumer<Supplier<GenerateResult>>() {
-			@Override
-			public void accept(final Supplier<GenerateResult> aGenerateResultSupplier) {
-//				if (grs != null) {
-//					tripleo.elijah.util.Stupidity.println_err2("234 grs not null "+grs.getClass().getName());
-//					return;
-//				}
-//
-//				assert false;
-//				grs = aGenerateResultSupplier;
-//				//final GenerateResult gr = aGenerateResultSupplier.get();
-				final int y = 2;
-			}
-		};
-	}
-
 }
 
 //

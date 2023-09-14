@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.stages.gen_generic.DoubleLatch;
-import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.util.io.CharSink;
 import tripleo.util.io.FileCharSink;
 
@@ -24,8 +23,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -36,16 +33,14 @@ import static tripleo.elijah.util.Helpers.String_join;
 /**
  * Created 9/13/21 11:58 PM
  */
-public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Supplier<GenerateResult>> {
+public class WriteMesonPipeline implements PipelineMember {
 //	private final File file_prefix;
 //	private final GenerateResult gr;
 
-	final         Pattern       pullPat = Pattern.compile("/[^/]+/(.+)");
+	private final Pattern       pullPat = Pattern.compile("/[^/]+/(.+)");
 	private final WritePipeline writePipeline;
 	private final Compilation   c;
-	DoubleLatch<Multimap<CompilerInstructions, String>> write_makefiles_latch = new DoubleLatch<>(this::write_makefiles_action);
-	private Supplier<GenerateResult>                         grs;
-	private Consumer<Multimap<CompilerInstructions, String>> _wmc;
+	private final DoubleLatch<Multimap<CompilerInstructions, String>> write_makefiles_latch = new DoubleLatch<>(this::write_makefiles_action);
 
 	public WriteMesonPipeline(final @NotNull AccessBus ab) {
 		c = ab.getCompilation();
@@ -55,27 +50,7 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 		ab.subscribePipelineLogic(this::pl_slot);
 	}
 
-//	public WriteMesonPipeline(final Compilation aCompilation,
-//	                          final ProcessRecord ignoredAPr,
-//	                          final @NotNull Promise<PipelineLogic, Void, Void> ppl,
-//	                          final WritePipeline aWritePipeline) {
-//		c = aCompilation;
-////		gr = aGr;
-//		writePipeline = aWritePipeline;
-//
-////		file_prefix = new File("COMP", c.getCompilationNumberString());
-//
-//		ppl.then((x) -> {
-//			final GenerateResult ignoredAGr;
-//
-//			ignoredAGr = x.__ab.gr;
-//
-//			grs = () -> ignoredAGr;
-//		});
-//	}
-
 	private void pl_slot(final PipelineLogic pll) {
-		grs = () -> pll.__ab.gr;
 	}
 
 	private void write_makefiles_action(final Multimap<CompilerInstructions, String> lsp_outputs) {
@@ -203,19 +178,6 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 		return null;
 	}
 
-	public Consumer<Multimap<CompilerInstructions, String>> write_makefiles_consumer() {
-		if (_wmc != null)
-			return _wmc;
-
-		final Consumer<Multimap<CompilerInstructions, String>> consumer = (aCompilerInstructionsStringMultimap) -> {
-			write_makefiles_latch.notify(aCompilerInstructionsStringMultimap);
-		};
-
-		_wmc = consumer;
-
-		return _wmc;
-	}
-
 	@Override
 	public void run() throws Exception {
 		write_makefiles();
@@ -226,29 +188,6 @@ public class WriteMesonPipeline implements PipelineMember, @NotNull Consumer<Sup
 
 		//write_makefiles_latch.notify(lsp_outputs);
 		write_makefiles_latch.notify(true);
-	}
-
-	@Override
-	public void accept(final @NotNull Supplier<GenerateResult> aGenerateResultSupplier) {
-		final GenerateResult gr = aGenerateResultSupplier.get();
-		grs = aGenerateResultSupplier;
-		final int y = 2;
-	}
-
-	public Consumer<Supplier<GenerateResult>> consumer() {
-		return new Consumer<Supplier<GenerateResult>>() {
-			@Override
-			public void accept(final Supplier<GenerateResult> aGenerateResultSupplier) {
-				if (grs != null) {
-					tripleo.elijah.util.Stupidity.println_err2("234 grs not null " + grs.getClass().getName());
-					return;
-				}
-
-				assert false;
-				grs = aGenerateResultSupplier;
-				//final GenerateResult gr = aGenerateResultSupplier.get();
-			}
-		};
 	}
 }
 
