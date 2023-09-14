@@ -1803,7 +1803,6 @@ import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.entrypoints.EntryPoint;
 import tripleo.elijah.entrypoints.EntryPointList;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_BuiltinType;
@@ -1857,15 +1856,6 @@ public class GenerateFunctions {
 		LOG    = new ElLog(module.getFileName(), aPhase.getVerbosity(), PHASE);
 		//
 		aPipelineLogic.addLog(LOG);
-	}
-
-	@Deprecated
-	public void generateFromEntryPoints(final List<EntryPoint> entryPoints, final DeducePhase dp) {
-		@NotNull final EntryPointList epl = new EntryPointList();
-
-		entryPoints.stream().forEach(epl::add);
-
-		generateFromEntryPoints(epl, dp);
 	}
 
 	public void generateFromEntryPoints(final EntryPointList epl, final DeducePhase deducePhase) {

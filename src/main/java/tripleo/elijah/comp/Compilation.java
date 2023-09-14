@@ -96,7 +96,8 @@ public abstract class Compilation {
 		}
 	};
 
-	private Finally _f = new Finally();
+	private final Finally      _f;
+	private final Finally.Flow _flow;
 
 	private CompilationEnclosure getCompilationEnclosure() {
 		throw new NotImplementedException();
@@ -108,6 +109,9 @@ public abstract class Compilation {
 		io                 = aIO;
 		_compilationNumber = new Random().nextInt(Integer.MAX_VALUE);
 		pipelines          = new Pipeline(aErrSink);
+
+		_f                 = new Finally();
+		_flow              = _f.flow();
 	}
 
 	public static ElLog.Verbosity gitlabCIVerbosity() {
@@ -304,6 +308,10 @@ public abstract class Compilation {
 
 	public Finally reports() {
 		return _f;
+	}
+
+	public Finally.Flow flow() {
+		return _flow;
 	}
 
 	static class MOD {

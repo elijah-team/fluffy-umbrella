@@ -1,5 +1,6 @@
 package tripleo.elijah.comp;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputFile;
 
@@ -13,6 +14,7 @@ public class Finally {
 	private final List<Input>  inputs  = new ArrayList<>();
 	private final List<Output> outputs = new ArrayList<>();
 	private       boolean      turnAllOutputOff;
+	private Flow _flow;
 
 	public void turnOutputOff(final Outs aOut) {
 		outputOffs.add(aOut);
@@ -70,6 +72,13 @@ public class Finally {
 		  .append("] named ")
 		  .append(aProcess.toString()).toString();
 		_RuntimeProcesses_logProgressString(string);
+	}
+
+	public Flow flow() {
+		if (_flow == null) {
+			_flow = new Flow();
+		}
+		return _flow;
 	}
 
 	public enum Outs {Out_6262, Out_727, Out_350, Out_364, Out_252, Out_2121, Out_486, Out_5757, Out_1069, Out_141, Out_EVTE_159, Out_401b}
@@ -136,6 +145,25 @@ public class Finally {
 
 		public String name() {
 			return fileNameProvider.getFilename();
+		}
+	}
+
+	public class Flow {
+		List<Triple<Integer, FlowK, Object[]>> reports = new ArrayList<>();
+		private int index = 0;
+
+		public void report(final FlowK aFlowK) {
+			final var tr = Triple.of(++index, aFlowK, (Object[])null);
+			reports.add(tr);
+
+			System.out.println(aFlowK.report());
+		}
+
+		public void report(final FlowK aFlowK, Object... o) {
+			final var tr = Triple.of(++index, aFlowK, o);
+			reports.add(tr);
+
+			System.out.println(aFlowK.report());
 		}
 	}
 }

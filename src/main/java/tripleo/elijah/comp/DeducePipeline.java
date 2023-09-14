@@ -11,6 +11,7 @@ package tripleo.elijah.comp;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.entrypoints.EntryPoint;
+import tripleo.elijah.entrypoints.EntryPointList;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.deduce.DeducePhase;
@@ -106,7 +107,13 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 			final GenerateFunctions gfm         = mapper.apply(mod);
 			final DeducePhase       deducePhase = pipelineLogic.dp;
 
-			gfm.generateFromEntryPoints(entryPoints, deducePhase);
+			{
+				@NotNull final EntryPointList epl = new EntryPointList(mod);
+
+				entryPoints.stream().forEach(epl::add);
+
+				gfm.generateFromEntryPoints(epl, deducePhase);
+			}
 
 			final List<GeneratedNode>          lgc            = pipelineLogic.generatedClassesCopy();
 			@NotNull final List<GeneratedNode> resolved_nodes = new ArrayList<GeneratedNode>();
