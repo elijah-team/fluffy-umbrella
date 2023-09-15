@@ -2,6 +2,7 @@ package tripleo.elijah.comp;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.VerbosityFlag;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputFile;
 
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class Finally {
 	}
 
 	public void _RuntimeProcesses_logProgressString(final String aString) {
-		System.err.println(aString);
+//		System.err.println(aString);
 	}
 
 	public void _RuntimeProcesses_logProgress2(final String aS, final RuntimeProcess aProcess) {
@@ -156,14 +157,16 @@ public class Finally {
 			final var tr = Triple.of(++index, aFlowK, (Object[])null);
 			reports.add(tr);
 
-			System.out.println(aFlowK.report());
+			if (!VerbosityFlag.Flow)
+				System.out.println(aFlowK.report());
 		}
 
 		public void report(final FlowK aFlowK, Object... o) {
 			final var tr = Triple.of(++index, aFlowK, o);
 			reports.add(tr);
 
-			System.out.println(aFlowK.report());
+			if (!VerbosityFlag.Flow)
+				System.out.println(aFlowK.report());
 		}
 	}
 }

@@ -251,7 +251,7 @@ public class DeducePhase {
 
 	public @NotNull DeduceTypes2 deduceModule(@NotNull final OS_Module m, @NotNull final Iterable<GeneratedNode> lgf, final ElLog.Verbosity verbosity) {
 		final @NotNull DeduceTypes2 deduceTypes2 = new DeduceTypes2(m, this, verbosity);
-		LOG.err("196 DeduceTypes " + deduceTypes2.getFileName());
+		LOG.info("196 DeduceTypes " + deduceTypes2.getFileName());
 		{
 			final ArrayList<GeneratedNode> p = new ArrayList<GeneratedNode>();
 			Iterables.addAll(p, lgf);

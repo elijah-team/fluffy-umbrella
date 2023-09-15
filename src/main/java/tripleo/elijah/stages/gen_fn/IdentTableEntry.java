@@ -25,6 +25,9 @@ import tripleo.elijah.stages.deduce.DeducePath;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.OnType;
+import tripleo.elijah.stages.deduce.nextgen.DN_Resolver;
+import tripleo.elijah.stages.deduce.nextgen.DN_ResolverRejection;
+import tripleo.elijah.stages.deduce.nextgen.DN_ResolverResolution;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.deduce.zero.ITE_Zero;
@@ -33,6 +36,7 @@ import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.util.Holder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -259,6 +263,41 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 			_zero = new ITE_Zero(this);
 		}
 		return _zero;
+	}
+
+	private final List<DN_Resolver> resolvers = new ArrayList<>();
+
+	public DN_Resolver newResolver(final Context aCtx, final BaseGeneratedFunction aGeneratedFunction) {
+		ITE_DefaultResolver x = new ITE_DefaultResolver(aCtx, aGeneratedFunction);
+		resolvers.add(x);
+		return x;
+	}
+
+	@Override
+	public IExpression _expression() {
+		return this.ident;
+	}
+
+	class ITE_DefaultResolver implements DN_Resolver {
+
+		private final Context ctx;
+		private final BaseGeneratedFunction generatedFunction;
+
+		public ITE_DefaultResolver(final Context aCtx, final BaseGeneratedFunction aGeneratedFunction) {
+			ctx = aCtx;
+			generatedFunction = aGeneratedFunction;
+		}
+
+		@Override
+		public void resolve(final DN_ResolverResolution aResolution) {
+			aResolution.apply();
+//			throw new NotImplementedException();
+		}
+
+		@Override
+		public void reject(final DN_ResolverRejection aRejection) {
+			aRejection.print_message(this, IdentTableEntry.this);
+		}
 	}
 
 //	private final DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();

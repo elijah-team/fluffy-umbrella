@@ -30,7 +30,8 @@ public class UT_CompilationBus implements ICompilationBus {
 
 	@Override
 	public void inst(final @NotNull ILazyCompilerInstructions aLazyCompilerInstructions) {
-		System.out.println("** [ci] " + aLazyCompilerInstructions.get().getFilename());
+		// TODO 09/15 how many times are we going to do this?
+//		System.out.println("** [ci] " + aLazyCompilerInstructions.get().getFilename());
 	}
 
 	public void add(final CB_Action action) {

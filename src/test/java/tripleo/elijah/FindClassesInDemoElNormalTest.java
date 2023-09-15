@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * @author Tripleo
  */
-public class FindClassesInDemoElNormal {
+public class FindClassesInDemoElNormalTest {
 
 	@Test
 	public final void testParseFile() throws Exception {
@@ -36,7 +36,7 @@ public class FindClassesInDemoElNormal {
 
 		final List<ClassStatement> aClassList = c.findClass("Main");
 		for (final ClassStatement classStatement : aClassList) {
-			System.out.println(classStatement.getPackageName().getName());
+			System.out.println("3939 "+classStatement.getPackageName().getName());
 		}
 		Assert.assertEquals(3, aClassList.size());  // NOTE this may change. be aware
 	}

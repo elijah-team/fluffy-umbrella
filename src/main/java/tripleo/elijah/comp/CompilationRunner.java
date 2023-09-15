@@ -127,7 +127,7 @@ public class CompilationRunner {
 	private void logProgress(final int number, final String text) {
 		if (number == 130) return;
 
-		System.err.println(MessageFormat.format("{0} {1}", number, text));
+		System.err.println(MessageFormat.format("CompilationRunner::logProgress: {0} {1}", number, text));
 	}
 
 	public void doFindCIs(final String[] args2, final ICompilationBus cb) {

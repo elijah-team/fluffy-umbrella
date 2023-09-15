@@ -50,7 +50,7 @@ public class UT_Controller implements CompilerController {
 				public void note(final int code, final ProgressSinkComponent component, final int type, final Object[] params) {
 					if (component.isPrintErr(code, type)) {
 						final String s = component.printErr(code, type, params);
-						System.err.println(s);
+						System.err.println("5353"+s);
 					}
 				}
 			});

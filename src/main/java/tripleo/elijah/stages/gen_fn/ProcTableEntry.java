@@ -247,6 +247,11 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 
 		return _zero;
 	}
+
+	@Override
+	public IExpression _expression() {
+		return expression;
+	}
 }
 
 //

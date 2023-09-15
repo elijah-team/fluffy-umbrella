@@ -13,19 +13,24 @@ import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeduceLocalVariable;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.nextgen.DN_Resolver2;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VariableTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.deduce.post_bytecode.PostBC_Processor;
 import tripleo.elijah.stages.deduce.zero.VTE_Zero;
 import tripleo.elijah.stages.instructions.VariableTableType;
+import tripleo.elijah.util.NotImplementedException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -247,6 +252,27 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		});
 
 	}
+
+	private final List<DN_Resolver2> resolvers = new ArrayList<>();
+
+	public DN_Resolver2 addResolver() {
+		var delegate = new DN_Resolver2() { // TODO ResolverRunner
+			@Override
+			public void resolve(final DN_Resolver2 aResolver2) {
+				throw new NotImplementedException();
+			}
+		};
+		resolvers.add(delegate);
+		return delegate;
+	}
+
+	@Override
+	public IExpression _expression() {
+		NotImplementedException.raise();
+		return null;
+		//this.getResolvedElement();
+	}
+
 
 //	public Promise<GenType, Void, Void> typeResolvePromise() {
 //		return typeDeferred.promise();

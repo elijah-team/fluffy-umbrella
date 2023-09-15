@@ -19,6 +19,8 @@ public class EOT_OutputTree {
 	}
 
 	public void _putSeq(final String aKey, final EOT_OutputFile.FileNameProvider aPath, final EG_Statement aStatement) {
-		System.err.printf("[_putSeq] %s %s {{%s}}%n", aKey, aPath.getFilename(), aStatement.getExplanation().getText());
+		if (false) {
+			System.out.printf("[_putSeq] %s %s {{%s}}%n", aKey, aPath.getFilename(), aStatement.getExplanation().getText());
+		}
 	}
 }

@@ -25,11 +25,11 @@ class UT_Root {
 			paths = listFiles(path);
 		} catch (final IOException aE) {
 //			throw new RuntimeException(aE);
-			System.err.println(aE);
+			System.err.println("UT_Root exception "+aE);
 			return;
 		}
 
-		paths.forEach(x -> System.out.println(x));
+		paths.forEach(x -> System.out.println("3232 "+x));
 	}
 
 	public static List<Path> listFiles(final Path path) throws IOException {

@@ -10,6 +10,8 @@ package tripleo.elijah.stages.instructions;
 
 import org.jdeferred2.Promise;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.stages.deduce.nextgen.DN_Resolver;
 import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
 import tripleo.elijah.stages.gen_fn.Constructable;
 import tripleo.elijah.stages.gen_fn.GenType;
@@ -76,6 +78,10 @@ public class IdentIA implements InstructionArgument, Constructable {
 	@Override
 	public Promise<ProcTableEntry, Void, Void> constructablePromise() {
 		return getEntry().constructablePromise();
+	}
+
+	public DN_Resolver newResolver(final Context aCtx, final BaseGeneratedFunction aGeneratedFunction) {
+		return getEntry().newResolver(aCtx, aGeneratedFunction);
 	}
 }
 

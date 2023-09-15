@@ -54,7 +54,7 @@ public interface FlowK {
 
 		@Override
 		public String report() {
-			return "EntryPointList::generateFromEntryPoints: epp [pre: process]";
+			return "";//EntryPointList::generateFromEntryPoints: epp [pre: process]";
 		}
 	}
 
@@ -67,7 +67,7 @@ public interface FlowK {
 
 		@Override
 		public String report() {
-			return "EntryPointList::generateFromEntryPoints: epp [post: process]";
+			return "";//EntryPointList::generateFromEntryPoints: epp [post: process]";
 		}
 	}
 
@@ -81,7 +81,7 @@ public interface FlowK {
 				l.add(aGeneratedNode);
 			}
 
-			return "DeducePhase::deduceModule:"
+			return "@@ DeducePhase::deduceModule:"
 			  + " " + module.getFileName()
 			  + " " + l;
 		}
@@ -160,7 +160,8 @@ public interface FlowK {
 
 		@Override
 		public String report() {
-			return "@@ DeduceTypes2::...:FoundElement:do_assign_call " + identIA.getEntry().toString() + " " + e;
+			final String s = "@@ DeduceTypes2::...:FoundElement:do_assign_call " + identIA.getEntry().toString() + " " + e;
+			return s;
 		}
 	}
 }
