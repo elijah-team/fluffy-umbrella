@@ -1,9 +1,0 @@
-#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Wed Oct 05 06:43:48 EDT 2022
-https\://gitlab.com/api/v4/projects/20346374/packages/maven/.lastUpdated=1664966627587
-https\://repo.maven.apache.org/maven2/.lastUpdated=1664966628836
-https\://gitlab.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven/.lastUpdated=1664966626354
-https\://gitlab.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven/.error=
-https\://gitlab.com/api/v4/projects/21223510/packages/maven/.error=
-https\://gitlab.com/api/v4/projects/21223510/packages/maven/.lastUpdated=1664966627797
-https\://gitlab.com/api/v4/projects/20346374/packages/maven/.error=
