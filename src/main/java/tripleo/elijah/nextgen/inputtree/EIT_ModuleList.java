@@ -86,11 +86,11 @@ public class EIT_ModuleList {
 
 		resolved_nodes.initial_feed(mod, lgc.copy(), codeRegistrar);
 
-		for (final GeneratedNode generatedNode : lgc) {
-			coder.codeNodes(mod, resolved_nodes._nodeList(), generatedNode);
-		}
-
-		resolved_nodes.forEach(generatedNode -> coder.codeNode(generatedNode, mod));
+//		for (final GeneratedNode generatedNode : lgc) {
+//			coder.codeNodes(mod, resolved_nodes._nodeList(), generatedNode);
+//		}
+//
+//		resolved_nodes.forEach(generatedNode -> coder.codeNode(generatedNode, mod));
 
 		plp.deduceModule();
 
