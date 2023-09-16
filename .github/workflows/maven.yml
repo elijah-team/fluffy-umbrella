@@ -6,8 +6,8 @@ name: Java CI with Maven
 on:
   push:
     branches: [ "mainline-k" ]
-  pull_request:
-    branches: [ "mainline-k",  "mainline-k-2023-09", "mainline-k-2023-09-specs" ]
+#  pull_request:
+#    branches: [ "mainline-k",  "mainline-k-2023-09", "mainline-k-2023-09-specs" ]
 
 jobs:
   build:
