@@ -83,7 +83,7 @@ public class DefaultLivingRepo implements LivingRepo {
 		}
 
 		final DefaultLivingFunction living = new DefaultLivingFunction(aFunction);
-		aFunction._living = living;
+		aFunction.setLiving(living);
 
 		return living;
 	}
