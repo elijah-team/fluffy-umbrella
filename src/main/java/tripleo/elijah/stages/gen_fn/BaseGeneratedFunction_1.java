@@ -498,7 +498,7 @@ public abstract class BaseGeneratedFunction_1 extends AbstractDependencyTracker 
 	}
 
 	@Override
-	public Iterable<? extends ProcTableEntry> prte_list() {
+	public List<ProcTableEntry> prte_list() {
 		return prte_list;
 	}
 
@@ -528,6 +528,21 @@ public abstract class BaseGeneratedFunction_1 extends AbstractDependencyTracker 
 	@Override
 	public @NotNull List<Integer> deferred_calls() {
 		return deferred_calls;
+	}
+
+	@Override
+	public void addProcTableEntry(final ProcTableEntry aPte) {
+		prte_list.add(aPte);
+	}
+
+	@Override
+	public void addConstantTableEntry(final ConstantTableEntry aCte) {
+		cte_list.add(aCte);
+	}
+
+	@Override
+	public void add_vte(final VariableTableEntry aVte) {
+		vte_list.add(aVte);
 	}
 
 	@Override

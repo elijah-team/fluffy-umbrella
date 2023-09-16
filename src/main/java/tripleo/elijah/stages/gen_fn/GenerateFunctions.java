@@ -2690,8 +2690,8 @@ public class GenerateFunctions {
 	}
 
 	public int addProcTableEntry(final IExpression expression, final InstructionArgument expression_num, final List<TypeTableEntry> args, final BaseGeneratedFunction gf) {
-		final ProcTableEntry pte = new ProcTableEntry(gf.prte_list.size(), expression, expression_num, args);
-		gf.prte_list.add(pte);
+		final ProcTableEntry pte = new ProcTableEntry(gf.prte_list().size(), expression, expression_num, args);
+		gf.addProcTableEntry(pte);
 		if (expression_num instanceof final IdentIA identIA) {
 			if (identIA.getEntry().getCallablePTE() == null)
 				identIA.getEntry().setCallablePTE(pte);
@@ -2838,7 +2838,7 @@ public class GenerateFunctions {
 		final int                         vte_index = gf.addVariableTableEntry(theName, VariableTableType.TEMP, tte, el);
 		final @NotNull VariableTableEntry vte       = gf.getVarTableEntry(vte_index);
 		vte.tempNum = num;
-		gf.vte_list.add(vte);
+		gf.add_vte(vte);
 		return vte.getIndex();
 	}
 
@@ -2853,8 +2853,8 @@ public class GenerateFunctions {
 	 */
 	private int addConstantTableEntry(final String name, final IExpression initialValue, final OS_Type type, final @NotNull BaseGeneratedFunction gf) {
 		final TypeTableEntry     tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, initialValue);
-		final ConstantTableEntry cte = new ConstantTableEntry(gf.cte_list.size(), name, initialValue, tte);
-		gf.cte_list.add(cte);
+		final ConstantTableEntry cte = new ConstantTableEntry(gf.cte_list().size(), name, initialValue, tte);
+		gf.addConstantTableEntry(cte);
 		return cte.index;
 	}
 
@@ -2869,8 +2869,8 @@ public class GenerateFunctions {
 	 */
 	private int addConstantTableEntry2(final String name, final IExpression initialValue, final OS_Type type, final @NotNull BaseGeneratedFunction gf) {
 		final TypeTableEntry     tte = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, type, initialValue);
-		final ConstantTableEntry cte = new ConstantTableEntry(gf.cte_list.size(), name, initialValue, tte);
-		gf.cte_list.add(cte);
+		final ConstantTableEntry cte = new ConstantTableEntry(gf.cte_list().size(), name, initialValue, tte); // TODO 09/16 make more complicated with builder
+		gf.addConstantTableEntry(cte);
 		return cte.index;
 	}
 
@@ -3208,8 +3208,8 @@ public class GenerateFunctions {
 						if (argument_type.getAttached() == null) {
 							// still dont know the argument types at this point, which creates a problem
 							// for resolving functions, so wait until later when more information is available
-							if (!gf.deferred_calls.contains(i))
-								gf.deferred_calls.add(i);
+							if (!gf.deferred_calls().contains(i))
+								gf.deferred_calls().add(i);
 							break;
 						}
 					}

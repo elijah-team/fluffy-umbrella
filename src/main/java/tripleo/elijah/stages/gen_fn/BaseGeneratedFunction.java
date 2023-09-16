@@ -147,7 +147,7 @@ public interface BaseGeneratedFunction extends DependencyTracker, GeneratedNode,
 
 	FunctionInvocation fi();
 
-	Iterable<? extends ProcTableEntry> prte_list();
+	List<ProcTableEntry> prte_list();
 
 	List<VariableTableEntry> vte_list();
 
@@ -239,4 +239,10 @@ public interface BaseGeneratedFunction extends DependencyTracker, GeneratedNode,
 		}
 		return s;
 	}
+
+	void addProcTableEntry(ProcTableEntry aPte);
+
+	void addConstantTableEntry(ConstantTableEntry aCte);
+
+	void add_vte(VariableTableEntry aVte);
 }
