@@ -51,7 +51,7 @@ public class Coder {
 		codeRegistrar.registerFunction(generatedFunction);
 	}
 
-	public void codeNodeClass(@NotNull final GeneratedClass generatedClass, final OS_Module mod) {
+	private void codeNodeClass(@NotNull final GeneratedClass generatedClass, final OS_Module mod) {
 //		if (generatedClass.getCode() == 0)
 //			generatedClass.setCode(mod.parent.nextClassCode());
 		codeRegistrar.registerClass(generatedClass);

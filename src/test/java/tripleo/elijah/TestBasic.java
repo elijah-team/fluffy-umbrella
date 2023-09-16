@@ -81,11 +81,10 @@ public class TestBasic {
 	}
 
 	@Test
-	public final void testBasic_listfolders3() throws Exception {
+	public final void testBasic_listfolders3() {
 		final String s = "test/basic/listfolders3/listfolders3.ez";
 
-		final ErrSink     eee = new StdErrSink();
-		final Compilation c   = new CompilationImpl(eee, new IO());
+		final Compilation c   = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(s, "-sO"));
 
@@ -100,8 +99,7 @@ public class TestBasic {
 	public final void testBasic_listfolders4() {
 		final String s = "test/basic/listfolders4/listfolders4.ez";
 
-		final ErrSink     eee = new StdErrSink();
-		final Compilation c   = new CompilationImpl(eee, new IO());
+		final Compilation c   = new CompilationImpl((ErrSink) new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(s, "-sO"));
 

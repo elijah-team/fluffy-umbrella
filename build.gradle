@@ -6,8 +6,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
 
-    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
-
+//    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
 }
 
 repositories {
@@ -33,44 +32,53 @@ dependencies {
     api 'org.hashids:hashids:1.0.3'
     api 'com.typesafe:config:1.4.2'
     api 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
-    api 'io.undertow:undertow-servlet:2.3.4.Final'
-    api 'org.apache.commons:commons-lang3:3.3'
+    api 'io.undertow:undertow-servlet:2.3.7.Final'
+    api 'io.undertow:undertow-core:2.3.7.Final'
+
     api 'net.java.dev.jna:jna:4.0.0'
-    api 'io.reactivex.rxjava3:rxjava:3.1.0'
     api 'me.friwi:jcefmaven:105.3.36'
+
+    api 'io.reactivex.rxjava3:rxjava:3.1.0'
     api 'org.reactivestreams:reactive-streams:1.0.3'
+
+    api 'org.apache.commons:commons-lang3:3.3'
     api 'commons-codec:commons-codec:1.15'
+
     api 'org.slf4j:slf4j-simple:1.7.25'
+    api 'org.slf4j:slf4j-api:1.7.25'
     api 'org.jdeferred.v2:jdeferred-core:2.0.0'
+
     api 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.200'
     api 'org.jetbrains:annotations:16.0.2'
+
     api 'antlr:antlr:2.7.7'
     api 'commons-cli:commons-cli:1.4'
     api 'com.github.spotbugs:spotbugs-annotations:4.0.1'
+
 //    api 'com.google.guava:guava:30.0-jre'
+    implementation 'com.google.guava:guava:32.1.1-jre'
+
     api 'tripleo.buffers:buffers-v1:0.0.3'
     api 'tripleo.util.range:range-v1:0.0.3b'
-    api 'io.undertow:undertow-core:2.2.22.Final'
-    api 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10'
+
     testImplementation 'org.easymock:easymock:5.1.0'
     testImplementation 'junit:junit:4.13.1'
-    testImplementation 'org.jetbrains.kotlin:kotlin-test:1.9.10'
+
+//    api 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10'
+//    testImplementation 'org.jetbrains.kotlin:kotlin-test:1.9.10'
+//    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit'
+//    api 'org.apache.commons:commons-math3:3.6.1'
 
     testImplementation 'com.tngtech.archunit:archunit:1.1.0'
 
-    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit' 
-//    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.3' 
 
-//    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    api 'org.apache.commons:commons-math3:3.6.1' 
-
-    implementation 'com.google.guava:guava:32.1.1-jre' 
 }
 
 group = 'tripleo.elijah'
-version = '0.0.9-flum-mainline-230416-SNAPSHOT'
+version = '0.0.11'
 description = 'eljc-v1-fluffy-umbrella'
 java.sourceCompatibility = JavaVersion.VERSION_17
+//kotlin.sourceCompatibility = JavaVersion.VERSION_17
 
 publishing {
     publications {
@@ -81,7 +89,19 @@ publishing {
 }
 
 
-    sourceSets {
-        main.java.srcDirs = ['src/main', 'src/main-cef/java', 'src/main-mal', 'src/main-undertow/java' ]
-        main.resources.srcDirs = ['src/resources']
-    }
+sourceSets {
+    main.java.srcDirs = [
+            'src/main/java',
+            'src/main-cef/java',
+            'src/main-mal/java',
+            'src/main-undertow/java'
+    ]
+//    main.kotlin.srcDirs = [
+//            'src/main/java',
+//            'src/main-cef/java',
+//            'src/main-mal/java',
+//            'src/main-undertow/java'
+//    ]
+//    main.resources.srcDirs = ['src/resources']
+}
+
