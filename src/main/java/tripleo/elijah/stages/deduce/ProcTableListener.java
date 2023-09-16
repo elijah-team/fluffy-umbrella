@@ -8,7 +8,6 @@
  */
 package tripleo.elijah.stages.deduce;
 
-import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.ClassStatement;
@@ -20,12 +19,15 @@ import tripleo.elijah.lang.NamespaceStatement;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.TypeName;
 import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.stages.deduce.nextgen.DN_Resolver;
+import tripleo.elijah.stages.deduce.nextgen.DN_Resolver2;
+import tripleo.elijah.stages.deduce.nextgen.DN_ResolverRejection;
+import tripleo.elijah.stages.deduce.nextgen.DN_ResolverResolution;
 import tripleo.elijah.stages.gen_fn.AbstractDependencyTracker;
 import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
 import tripleo.elijah.stages.gen_fn.BaseTableEntry;
 import tripleo.elijah.stages.gen_fn.Constructable;
 import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
 import tripleo.elijah.stages.gen_fn.IElementHolder;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
@@ -36,6 +38,8 @@ import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.stages.instructions.ProcIA;
 import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.util.Stupidity;
 
 /**
  * Created 9/10/21 3:42 AM
@@ -80,23 +84,18 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 	                              final AbstractDependencyTracker depTracker) {
 		@Nullable ClassInvocation ci;
 		final FunctionInvocation  fi;
-		@Nullable final GenType   genType = null;
 
 //		pte.setResolvedElement(e); // README already done
 		if (e instanceof ClassStatement) {
 			ci = new ClassInvocation((ClassStatement) e, null);
 			ci = dc.registerClassInvocation(ci);
+			assert ci != null;
 			fi = dc.newFunctionInvocation(ConstructorDef.defaultVirtualCtor, pte, ci); // TODO might not be virtual ctor, so check
 			pte.setFunctionInvocation(fi);
 
 			if (co != null) {
 				co.setConstructable(pte);
-				ci.resolvePromise().done(new DoneCallback<GeneratedClass>() {
-					@Override
-					public void onDone(final GeneratedClass result) {
-						co.resolveTypeToClass(result);
-					}
-				});
+				ci.resolvePromise().done(co::resolveTypeToClass);
 			}
 		} else if (e instanceof @NotNull final FunctionDef fd) {
 			resolved_element_pte_FunctionDef(co, pte, depTracker, fd);
@@ -145,6 +144,7 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 				//  So we correct it here
 				genType.resolved           = fd.getOS_Type();
 				genType.functionInvocation = fi; // DeduceTypes2.Dependencies#action_type
+				assert fi != null;
 				finish(co, depTracker, fi, genType);
 			}
 		} else {
@@ -156,15 +156,22 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 		}
 	}
 
-	private void resolved_element_pte_FunctionDef_IdentExpression(final Constructable co, final ProcTableEntry pte, final AbstractDependencyTracker depTracker, @NotNull final FunctionDef fd, @NotNull final IdentExpression parent) {
+	private void resolved_element_pte_FunctionDef_IdentExpression(final Constructable co,
+	                                                              final ProcTableEntry pte,
+	                                                              final AbstractDependencyTracker depTracker,
+	                                                              @NotNull final FunctionDef fd,
+	                                                              @NotNull final IdentExpression parent) {
 		@Nullable final InstructionArgument vte_ia = generatedFunction.vte_lookup(parent.getText());
 		assert vte_ia != null;
 		final @NotNull VariableTableEntry variableTableEntry = ((IntegerIA) vte_ia).getEntry();
 		VTE_TypePromises.resolved_element_pte(co, pte, depTracker, fd, variableTableEntry, this);
 	}
 
-	private void resolved_element_pte_FunctionDef_FormalArgListItem(final Constructable co, final ProcTableEntry pte, final AbstractDependencyTracker depTracker, @NotNull final FunctionDef fd, final FormalArgListItem parent) {
-		final FormalArgListItem             fali   = parent;
+	private void resolved_element_pte_FunctionDef_FormalArgListItem(final Constructable co,
+	                                                                final ProcTableEntry pte,
+	                                                                final AbstractDependencyTracker depTracker,
+	                                                                @NotNull final FunctionDef fd,
+	                                                                final FormalArgListItem fali) {
 		@Nullable final InstructionArgument vte_ia = generatedFunction.vte_lookup(fali.name());
 		assert vte_ia != null;
 		final @NotNull VariableTableEntry variableTableEntry = ((IntegerIA) vte_ia).getEntry();
@@ -177,7 +184,7 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 	                                                                final FunctionDef aFd,
 	                                                                final VariableStatement aParent) {
 //		throw new IllegalStateException();
-		tripleo.elijah.util.Stupidity.println2("***** 169");
+		Stupidity.println2("***** 169");
 //		resolved_element_pte_FunctionDef_VariableStatement(aCo, aPte, aDepTracker, aPte, aFd, aParent);
 	}
 
@@ -231,7 +238,7 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 						if (parent instanceof ClassStatement) {
 							// TODO might be wrong in the case of generics. check.
 							typeName = null;//new OS_Type((ClassStatement) parent);
-							tripleo.elijah.util.Stupidity.println_err2("NOTE ineresting in genericA/__preinc__");
+							Stupidity.println_err2("NOTE ineresting in genericA/__preinc__");
 						}
 					}
 				}
