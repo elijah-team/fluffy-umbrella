@@ -1,5 +1,7 @@
 package tripleo.elijah.nextgen.query;
 
+import tripleo.elijah.comp.Operation;
+import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
 import tripleo.elijah.diagnostic.Diagnostic;
 
 /**
@@ -28,6 +30,18 @@ public class Operation2<T> {
 	public static <T> Operation2<T> success(final T aSuccess) {
 		final Operation2<T> op = new Operation2<>(aSuccess, null, Mode.SUCCESS);
 		return op;
+	}
+
+	public static <TT> Operation2<TT> convert(final Operation<TT> aOperation) {
+		switch (aOperation.mode()) {
+		case SUCCESS -> {
+			return Operation2.success(aOperation.success());
+		}
+		case FAILURE -> {
+			return Operation2.failure(new ExceptionDiagnostic(aOperation.failure()));
+		}
+		default -> throw new IllegalStateException("Unexpected value: " + aOperation.mode());
+		}
 	}
 
 	public Mode mode() {

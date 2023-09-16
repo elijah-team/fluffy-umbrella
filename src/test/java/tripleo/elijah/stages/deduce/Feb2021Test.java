@@ -14,34 +14,40 @@ import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
 
+import static org.junit.Assert.assertEquals;
 import static tripleo.elijah.util.Helpers.List_of;
 
 /**
  * Created 9/9/21 4:16 AM
  */
-public class Feb2021 {
+public class Feb2021Test {
 
 	@Test
-	public void testProperty() throws Exception {
+	public void testProperty() {
 		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/property/"));
+
+		assertEquals(0, c.errorCount());
 	}
 
 	@Test
-	public void testFunction() throws Exception {
+	public void testFunction() {
 		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/function/"));
+
+		assertEquals(2, c.errorCount());
 	}
 
 	@Test
-	public void testHier() throws Exception {
+	public void testHier() {
 		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/hier/"));
-	}
 
+		assertEquals(0, c.errorCount());
+	}
 }
 
 //
