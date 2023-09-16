@@ -37,7 +37,7 @@ import java.util.Map;
  * Created 9/10/20 4:51 PM
  */
 public class VariableTableEntry extends BaseTableEntry1 implements Constructable, TableEntryIV, DeduceTypes2.ExpectationBase {
-	public final          VariableTableType                          vtt;
+	private final         VariableTableType                          vtt;
 	public final @NotNull Map<Integer, TypeTableEntry>               potentialTypes        = new HashMap<Integer, TypeTableEntry>();
 	public final          DeduceLocalVariable                        dlv                   = new DeduceLocalVariable(this);
 	final                 DeferredObject<ProcTableEntry, Void, Void> constructableDeferred = new DeferredObject<>();
@@ -273,6 +273,9 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		//this.getResolvedElement();
 	}
 
+	public VariableTableType vtt() {
+		return vtt;
+	}
 
 //	public Promise<GenType, Void, Void> typeResolvePromise() {
 //		return typeDeferred.promise();
