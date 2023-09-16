@@ -132,7 +132,7 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 		final OS_Type x = vte.type.getAttached();
 		if (x == null && vte.potentialTypes().size() == 0) {
 			final Diagnostic diag;
-			if (vte.vtt == VariableTableType.TEMP) {
+			if (vte.vtt()== VariableTableType.TEMP) {
 				diag = new Diagnostic_8884(vte, gf);
 			} else {
 				diag = new Diagnostic_8885(vte);

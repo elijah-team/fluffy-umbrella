@@ -307,7 +307,7 @@ public class DoAssignCall {
 						errSink.reportError("Cant resolve " + text);
 					}
 				} else {
-					dc.implement_calls(generatedFunction, ctx.getParent(), instruction.getArg(1), pte, instructionIndex);
+					dc.implement_calls(generatedFunction, ctx.getParent(), instruction.getArg(1), pte, instruction);
 				}
 			} else {
 				final int y = 2;

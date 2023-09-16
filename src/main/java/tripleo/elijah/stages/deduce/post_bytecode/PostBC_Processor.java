@@ -23,7 +23,7 @@ public interface PostBC_Processor {
 	static @NotNull PostBC_Processor make_VTE(@NotNull final VariableTableEntry aVariableTableEntry, final Context aFd_ctx, final DeduceTypes2.DeduceClient1 aDeduceTypes2) {
 		final OS_Type vte_type_attached = aVariableTableEntry.type.getAttached();
 
-		switch (aVariableTableEntry.vtt) {
+		switch (aVariableTableEntry.vtt()) {
 		case SELF:
 			return new PostBC_Processor__VTE_SELF(aVariableTableEntry, aFd_ctx, vte_type_attached, aDeduceTypes2);
 		case RESULT:
@@ -35,7 +35,7 @@ public interface PostBC_Processor {
 		case TEMP:
 			return new PostBC_Processor__VTE_TEMP(aVariableTableEntry, aFd_ctx, vte_type_attached, aDeduceTypes2);
 		default:
-			throw new IllegalStateException("Unexpected value: " + aVariableTableEntry.vtt);
+			throw new IllegalStateException("Unexpected value: " + aVariableTableEntry.vtt());
 		}
 	}
 
@@ -99,7 +99,7 @@ public interface PostBC_Processor {
 			final DeduceType3 r;
 
 			// TODO why both code paths the same? (evolution??)
-			switch (vte.vtt) {
+			switch (vte.vtt()) {
 			case RESULT:
 			case SELF:
 				// Result is handled by phase.typeDecideds, self is always valid

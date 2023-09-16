@@ -84,7 +84,7 @@ class Implement_construct {
 				if (ia2 instanceof IntegerIA) {
 					@NotNull final VariableTableEntry vte = ((IntegerIA) ia2).getEntry();
 					// TODO will fail if we try to construct a tmp var, but we never try to do that
-					assert vte.vtt != VariableTableType.TEMP;
+					assert vte.vtt()!= VariableTableType.TEMP;
 					assert el3 != null;
 					assert i == 0;
 					ectx = deducePath.getContext(i);

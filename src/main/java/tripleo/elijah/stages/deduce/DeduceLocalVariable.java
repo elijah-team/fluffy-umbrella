@@ -67,7 +67,7 @@ public class DeduceLocalVariable {
 		final VariableTableEntry vte = variableTableEntry;
 		final Context            ctx = context;
 
-		if (vte.vtt == VariableTableType.TEMP) {
+		if (vte.vtt()== VariableTableType.TEMP) {
 			final GenType genType = vte.type.genType;
 			final int     pts     = vte.potentialTypes().size();
 			if (genType.typeName != null && genType.typeName == genType.resolved) {

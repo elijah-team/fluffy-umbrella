@@ -57,6 +57,8 @@ public class VTE_TypePromises {
 				@Nullable final FunctionInvocation fi      = e_Is_FunctionDef.getFi();
 				final GenType                      genType = e_Is_FunctionDef.getGenType();
 				aProcTableListener.finish(co, depTracker, fi, genType);
+
+				pte.resolveWith(e_Is_FunctionDef.reso);
 			}
 		});
 	}
@@ -79,6 +81,9 @@ public class VTE_TypePromises {
 						@Nullable final FunctionInvocation                fi1              = e_Is_FunctionDef.getFi();
 						final GenType                                     genType1         = e_Is_FunctionDef.getGenType();
 						aProcTableListener.finish(co, depTracker, fi1, genType1);
+
+						var pte = aProcTableEntry;//aProcTableListener.
+						pte.resolveWith(e_Is_FunctionDef.reso);
 
 						break;
 					}
@@ -104,6 +109,8 @@ public class VTE_TypePromises {
 				@Nullable final FunctionInvocation                fi               = e_Is_FunctionDef.getFi();
 				final GenType                                     genType          = e_Is_FunctionDef.getGenType();
 				aProcTableListener.finish(co, depTracker, fi, genType);
+
+				pte.resolveWith(e_Is_FunctionDef.reso);
 			}
 		});
 	}

@@ -68,9 +68,9 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 		if (newStatus != BaseTableEntry.Status.UNKNOWN) { // means eh is null
 			@Nullable final AbstractDependencyTracker depTracker;
 			if (co instanceof final @NotNull IdentIA identIA) {
-				depTracker = identIA.gf;
+				depTracker = (AbstractDependencyTracker) identIA.gf;
 			} else if (co instanceof final @Nullable IntegerIA integerIA) {
-				depTracker = integerIA.gf;
+				depTracker = (AbstractDependencyTracker) integerIA.gf;
 			} else
 				depTracker = null;
 
@@ -128,7 +128,60 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 						// NOTE read note below
 						genType.resolved           = fd.getOS_Type();
 						genType.functionInvocation = fi; // DeduceTypes2.Dependencies#action_type
-						finish(co, depTracker, fi, genType);
+//						finish(co, depTracker, fi, genType);
+
+						e_Is_FunctionDef.reso = new PTE_Resolution(){
+							@Override
+							public void apply(ProcTableEntry pte) {
+								finish(co, depTracker, fi, genType);
+							}
+
+							void finish(@Nullable final Constructable co,
+							            @Nullable final AbstractDependencyTracker depTracker,
+							            @NotNull final FunctionInvocation aFi,
+							            @Nullable final GenType aGenType) {
+								if (co != null && aGenType != null)
+									co.setGenType(aGenType);
+
+								if (depTracker != null) {
+									if (aGenType == null) {
+										var reso = new DN_Resolver2() {
+											@Override
+											public void resolve(final DN_Resolver2 aResolver2) {
+
+											}
+										};
+										var rej = new DN_ResolverRejection() {
+											@Override
+											public void print_message(final DN_Resolver aResolver, final BaseTableEntry aBaseTableEntry) {
+												Stupidity.println_err2("247 genType is null");
+											}
+										};
+										var res = new DN_ResolverResolution() {
+											@Override
+											public void apply() {
+
+											}
+										};
+
+										rej.print_message(null, null);
+									}
+
+									if (/*aGenType == null &&*/ aFi.getFunction() instanceof ConstructorDef) {
+										final @NotNull ClassStatement c        = aFi.getClassInvocation().getKlass();
+										final @NotNull GenType        genType2 = new GenType(c);
+										depTracker.addDependentType(genType2);
+										// TODO why not add fi?
+									} else {
+										depTracker.addDependentFunction(aFi);
+										if (aGenType != null)
+											depTracker.addDependentType(aGenType);
+									}
+								}
+							}
+						};
+
+						pte.resolveWith(e_Is_FunctionDef.reso);
 					}
 				}
 			} else {
@@ -146,6 +199,8 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 				genType.functionInvocation = fi; // DeduceTypes2.Dependencies#action_type
 				assert fi != null;
 				finish(co, depTracker, fi, genType);
+
+				pte.resolveWith(e_Is_FunctionDef.reso);
 			}
 		} else {
 			final OS_Element parent = pte.getResolvedElement(); // for dunder methods
@@ -193,8 +248,28 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 			co.setGenType(aGenType);
 
 		if (depTracker != null) {
-			if (aGenType == null)
-				tripleo.elijah.util.Stupidity.println_err2("247 genType is null");
+			if (aGenType == null) {
+				var reso = new DN_Resolver2() {
+					@Override
+					public void resolve(final DN_Resolver2 aResolver2) {
+
+					}
+				};
+				var rej = new DN_ResolverRejection() {
+					@Override
+					public void print_message(final DN_Resolver aResolver, final BaseTableEntry aBaseTableEntry) {
+						Stupidity.println_err2("247 genType is null");
+					}
+				};
+				var res = new DN_ResolverResolution() {
+					@Override
+					public void apply() {
+
+					}
+				};
+
+				rej.print_message(null, null);
+			}
 
 			if (/*aGenType == null &&*/ aFi.getFunction() instanceof ConstructorDef) {
 				final @NotNull ClassStatement c        = aFi.getClassInvocation().getKlass();
@@ -248,6 +323,8 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 			fi      = e_Is_FunctionDef.getFi();
 			genType = e_Is_FunctionDef.getGenType();
 			finish(co, depTracker, fi, genType);
+
+			pte.resolveWith(e_Is_FunctionDef.reso);
 		}
 	}
 
@@ -288,10 +365,22 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 		VTE_TypePromises.resolved_element_pte_VariableStatement2(co, depTracker, pte, fd, variableTableEntry, this);
 	}
 
+	public interface PTE_Resolution {
+		void apply(ProcTableEntry pte);
+	}
+
+	public class PTE_Resolution_1 implements PTE_Resolution {
+		@Override
+		public void apply(final ProcTableEntry pte) {
+			throw new NotImplementedException();
+		}
+	}
+
 	class E_Is_FunctionDef {
 		private final     ProcTableEntry     pte;
 		private final     FunctionDef        fd;
 		private final     OS_Element         parent;
+		PTE_Resolution reso;
 		private @Nullable FunctionInvocation fi;
 		private           GenType            genType;
 
@@ -299,6 +388,8 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 			this.pte = pte;
 			fd       = aFd;
 			parent   = aParent;
+
+			this.reso = new PTE_Resolution_1();
 		}
 
 		public @Nullable FunctionInvocation getFi() {

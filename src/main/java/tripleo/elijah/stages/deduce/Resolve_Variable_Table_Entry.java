@@ -62,7 +62,7 @@ class Resolve_Variable_Table_Entry {
 	}
 
 	public void action(final @NotNull VariableTableEntry vte, final @NotNull DeduceTypes2.IVariableConnector aConnector) {
-		switch (vte.vtt) {
+		switch (vte.vtt()) {
 		case ARG:
 			action_ARG(vte);
 			break;
@@ -292,7 +292,7 @@ class Resolve_Variable_Table_Entry {
 	}
 
 	private @Nullable ProcTableEntry findProcTableEntry(@NotNull final BaseGeneratedFunction aGeneratedFunction, final IExpression aExpression) {
-		for (@NotNull final ProcTableEntry procTableEntry : aGeneratedFunction.prte_list) {
+		for (@NotNull final ProcTableEntry procTableEntry : aGeneratedFunction.prte_list()) {
 			if (procTableEntry.expression == aExpression)
 				return procTableEntry;
 		}
@@ -339,11 +339,16 @@ class Resolve_Variable_Table_Entry {
 					LOG.err("Can't resolve argument type " + attached);
 					return;
 				}
-				if (generatedFunction.fi.getClassInvocation() != null)
-					genNodeForGenType(tte.genType, generatedFunction.fi.getClassInvocation());
-				else
+			{
+				final ClassInvocation classInvocation = generatedFunction.fi().getClassInvocation();
+
+				if (classInvocation != null) {
+					genNodeForGenType(tte.genType, classInvocation);
+				} else {
 					genCIForGenType(tte.genType);
-				vte.resolveType(tte.genType);
+				}
+			}
+			vte.resolveType(tte.genType);
 				break;
 			case USER_CLASS:
 				if (tte.genType.resolved == null)
