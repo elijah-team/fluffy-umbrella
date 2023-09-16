@@ -21,11 +21,13 @@ import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
  * Created 8/21/21 10:10 PM
  */
+@SuppressWarnings("SimplifyStreamApiCallChains")
 public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListListener {
 	private final AccessBus       __ab;
 	private       PipelineLogic   pipelineLogic;
@@ -41,30 +43,25 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 	public void run() {
 		// TODO move this into a latch and wait for pipelineLogic and modules
 
-/*
-		final List<OS_Module> ms1 = __ab.getCompilation().getModules();
-
-		if (ms != null) tripleo.elijah.util.Stupidity.println_err2("ms.size() == " + ms.size());
-		else tripleo.elijah.util.Stupidity.println_err2("ms == null");
-		tripleo.elijah.util.Stupidity.println_err2("ms1.size() == " + ms1.size());
-*/
-
-		final List<GeneratedNode> lgc = pipelineLogic.generatedClassesCopy();
+//		final List<GeneratedNode> lgc = pipelineLogic.generatedClassesCopy();
 
 		resolveMods();
 
+		final Function<OS_Module, PL_Run2> pl_run2_er = mod -> {
+			final List<EntryPoint> entryPoints = mod.entryPoints._getMods();
+			final PL_Run2 pl_run2 = new PL_Run2(mod, entryPoints, pipelineLogic::getGenerateFunctions, pipelineLogic);
+			return pl_run2;
+		};
+
 		final List<PL_Run2> run2_work = pipelineLogic.mods.stream()
-		                                                  .map(mod -> new PL_Run2(mod,
-		                                                    mod.entryPoints._getMods(),
-		                                                    pipelineLogic::getGenerateFunctions,
-		                                                    pipelineLogic))
+		                                                  .map(pl_run2_er)
 		                                                  .collect(Collectors.toList());
 
 		final List<DeducePhase.GeneratedClasses> lgc2 = run2_work.stream()
 		                                                         .map(PL_Run2::run2)
 		                                                         .collect(Collectors.toList());
 
-		final ArrayList<GeneratedNode> lgc3 = new ArrayList<>();
+		final List<GeneratedNode> lgc3 = new ArrayList<>();
 
 		// TODO how to do this with streams
 		for (final DeducePhase.GeneratedClasses generatedClasses : lgc2) {
