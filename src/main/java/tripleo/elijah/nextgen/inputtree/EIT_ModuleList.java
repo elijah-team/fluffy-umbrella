@@ -2,21 +2,18 @@ package tripleo.elijah.nextgen.inputtree;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.comp.Coder;
 import tripleo.elijah.comp.DeducePipeline;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.entrypoints.EntryPointList;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.gen_fn.GenerateFunctions;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.util.Stupidity;
 import tripleo.elijah.work.WorkManager;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -82,15 +79,8 @@ public class EIT_ModuleList {
 		//assert lgc.size() == epl.size(); //hmm
 
 		final ICodeRegistrar codeRegistrar = env.getCodeRegistrar();
-		final Coder          coder         = new Coder(codeRegistrar);
 
 		resolved_nodes.initial_feed(mod, lgc.copy(), codeRegistrar);
-
-//		for (final GeneratedNode generatedNode : lgc) {
-//			coder.codeNodes(mod, resolved_nodes._nodeList(), generatedNode);
-//		}
-//
-//		resolved_nodes.forEach(generatedNode -> coder.codeNode(generatedNode, mod));
 
 		plp.deduceModule();
 
