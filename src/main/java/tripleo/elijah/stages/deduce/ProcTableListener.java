@@ -38,7 +38,6 @@ import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.stages.instructions.ProcIA;
 import tripleo.elijah.stages.logging.ElLog;
-import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.util.Stupidity;
 
 /**
@@ -372,7 +371,7 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 	public class PTE_Resolution_1 implements PTE_Resolution {
 		@Override
 		public void apply(final ProcTableEntry pte) {
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 	}
 

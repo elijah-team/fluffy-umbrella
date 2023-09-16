@@ -1079,6 +1079,8 @@ public class DeduceTypes2 {
 	                            final @NotNull VariableTableEntry vte,
 	                            final @NotNull FnCallArgs fca,
 	                            final @NotNull Instruction instruction) {
+		if (fca.expression_to_call.getArgsSize() == 0) return;
+
 		final int                     instructionIndex = instruction.getIndex();
 		final @NotNull ProcTableEntry pte              = generatedFunction.getProcTableEntry(to_int(fca.getArg(0)));
 		@NotNull final IdentIA        identIA          = (IdentIA) pte.expression_num;

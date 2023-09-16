@@ -2569,21 +2569,25 @@ public class GenerateFunctions {
 			final FnCallArgs fnCallArgs = new FnCallArgs(expression_to_call(pce, gf, cctx), gf);
 			final int ii2 = add_i(gf, InstructionName.AGN, List_of(new IntegerIA(vte, gf), fnCallArgs), cctx);
 			final VariableTableEntry vte_proccall = gf.getVarTableEntry(vte);
-			final InstructionArgument gg = fnCallArgs.expression_to_call.getArg(0);
+			final Instruction expressionToCall = fnCallArgs.expression_to_call;
+			if (expressionToCall.getName() == InstructionName.NOP) {}
+			else {
+				final InstructionArgument gg = expressionToCall.getArg(0);
 
-			@NotNull final TableEntryIV g;
-			if (gg instanceof IntegerIA) {
-				g = gf.getVarTableEntry(((IntegerIA) gg).getIndex());
-			} else if (gg instanceof IdentIA) {
-				g = gf.getIdentTableEntry(((IdentIA) gg).getIndex());
-			} else if (gg instanceof ProcIA) {
-				g = gf.getProcTableEntry(((ProcIA) gg).getIndex());
-			} else
-				throw new NotImplementedException();
+				@NotNull final TableEntryIV g;
+				if (gg instanceof IntegerIA) {
+					g = gf.getVarTableEntry(((IntegerIA) gg).getIndex());
+				} else if (gg instanceof IdentIA) {
+					g = gf.getIdentTableEntry(((IdentIA) gg).getIndex());
+				} else if (gg instanceof ProcIA) {
+					g = gf.getProcTableEntry(((ProcIA) gg).getIndex());
+				} else
+					throw new NotImplementedException();
 
-			final TypeTableEntry tte_proccall = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null, value, g);
-			fnCallArgs.setType(tte_proccall);
-			vte_proccall.addPotentialType(ii2, tte_proccall);
+				final TypeTableEntry tte_proccall = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null, value, g);
+				fnCallArgs.setType(tte_proccall);
+				vte_proccall.addPotentialType(ii2, tte_proccall);
+			}
 			break;
 		case NUMERIC:
 			final int ci = addConstantTableEntry(null, value, value.getType(), gf);

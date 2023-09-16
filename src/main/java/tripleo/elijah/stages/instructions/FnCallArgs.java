@@ -48,6 +48,7 @@ public class FnCallArgs implements InstructionArgument {
 			@Nullable
 			@Override
 			public String apply(@Nullable final InstructionArgument input) {
+				assert input != null;
 				return input.toString();
 			}
 		});
@@ -55,7 +56,6 @@ public class FnCallArgs implements InstructionArgument {
 		return String.format("(call %d [%s(%s)] %s)",
 		  index, procTableEntry.expression, procTableEntry.args,
 		  Helpers.String_join(" ", collect2));
-
 	}
 
 	@NotNull
