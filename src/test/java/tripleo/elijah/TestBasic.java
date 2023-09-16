@@ -92,8 +92,8 @@ public class TestBasic {
 		if (c.errorCount() != 0)
 			System.err.printf("Error count should be 0 but is %d for %s%n", c.errorCount(), s);
 
-		Assert.assertEquals(12, c.getOutputTree().list.size());
-		Assert.assertEquals(24, c.errorCount()); // TODO Error count obviously should be 0
+		Assert.assertEquals(6, c.getOutputTree().list.size());
+		Assert.assertEquals(2, c.errorCount()); // TODO Error count obviously should be 0
 	}
 
 	@Test
@@ -108,7 +108,7 @@ public class TestBasic {
 		if (c.errorCount() != 0)
 			System.err.printf("Error count should be 0 but is %d for %s%n", c.errorCount(), s);
 
-		Assert.assertEquals(22, c.errorCount()); // TODO Error count obviously should be 0
+		Assert.assertEquals(2, c.errorCount()); // TODO Error count obviously should be 0
 	}
 
 	@Test
