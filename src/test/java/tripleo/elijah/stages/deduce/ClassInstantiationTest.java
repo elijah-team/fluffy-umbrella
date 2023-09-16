@@ -15,6 +15,7 @@ import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.factory.comp.CompilationFactory;
 
+import static org.junit.Assert.assertEquals;
 import static tripleo.elijah.util.Helpers.List_of;
 
 /**
@@ -28,6 +29,8 @@ public class ClassInstantiationTest {
 		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
+
+		assertEquals(0, c.errorCount());
 	}
 
 	@Test
@@ -36,6 +39,8 @@ public class ClassInstantiationTest {
 		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
+
+		assertEquals(0, c.errorCount());
 	}
 
 	@Test
@@ -44,6 +49,8 @@ public class ClassInstantiationTest {
 		final Compilation c = CompilationFactory.mkCompilation(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
+
+		assertEquals(0, c.errorCount());
 	}
 }
 
