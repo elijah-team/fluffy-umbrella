@@ -216,10 +216,10 @@ public class VTE_TypePromises {
 				if (attached1 != null) {
 					switch (attached1.getType()) {
 					case USER_CLASS:
-						if (ite.type.getAttached() == null)
+						if (ite.getType().getAttached() == null)
 							ite.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, attached1);
 						else {
-							aDeduceTypes2.LOG.err(String.format("3603 Trying to set %s to %s", ite.type.getAttached(), attached1));
+							aDeduceTypes2.LOG.err(String.format("3603 Trying to set %s to %s", ite.getType().getAttached(), attached1));
 						}
 						break;
 					case USER:
@@ -230,7 +230,7 @@ public class VTE_TypePromises {
 							// README trying to keep genType up to date
 							tte4.setAttached(attached1);
 							tte4.setAttached(ty3);
-							ite.type = tte4; // or ty2?
+							ite.setType(tte4); // or ty2?
 						} catch (final ResolveError aResolveError) {
 							aResolveError.printStackTrace();
 						}

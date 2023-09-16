@@ -1394,7 +1394,7 @@ public class DeduceTypes2 {
 		// resolve ident table
 		//
 		for (@NotNull final IdentTableEntry ite : generatedFunction.idte_list()) {
-			ite.resolveExpectation = promiseExpectation(ite, "Element Resolved");
+			ite.setResolveExpectation(promiseExpectation(ite, "Element Resolved"));
 			resolve_ident_table_entry(ite, generatedFunction, aContext);
 		}
 		//
@@ -1620,7 +1620,7 @@ public class DeduceTypes2 {
 				do_assign_constant(generatedFunction, instruction, vte, (ConstTableIA) i2);
 			} else if (i2 instanceof IdentIA) {
 				@NotNull final IdentTableEntry idte = generatedFunction.getIdentTableEntry(to_int(i2));
-				if (idte.type == null) {
+				if (idte.getType() == null) {
 					final IdentIA identIA = new IdentIA(idte.getIndex(), generatedFunction);
 					resolveIdentIA_(aContext, identIA, generatedFunction, new FoundElement(phase) {
 
@@ -1635,9 +1635,9 @@ public class DeduceTypes2 {
 						}
 					});
 				}
-				assert idte.type != null;
+				assert idte.getType() != null;
 				assert idte.getResolvedElement() != null;
-				vte.addPotentialType(instruction.getIndex(), idte.type);
+				vte.addPotentialType(instruction.getIndex(), idte.getType());
 			} else if (i2 instanceof ProcIA) {
 				throw new NotImplementedException();
 			} else
@@ -1656,7 +1656,7 @@ public class DeduceTypes2 {
 				}
 				@NotNull final IdentTableEntry idte2 = generatedFunction.getIdentTableEntry(to_int(i2));
 				do_assign_normal_ident_deferred(generatedFunction, aFd_ctx, idte2);
-				idte.addPotentialType(instruction.getIndex(), idte2.type);
+				idte.addPotentialType(instruction.getIndex(), idte2.getType());
 			} else if (i2 instanceof ConstTableIA) {
 				do_assign_constant(generatedFunction, instruction, idte, (ConstTableIA) i2);
 			} else if (i2 instanceof ProcIA) {
@@ -1669,7 +1669,7 @@ public class DeduceTypes2 {
 	public void do_assign_normal_ident_deferred(final @NotNull BaseGeneratedFunction generatedFunction,
 	                                            final @NotNull Context aContext,
 	                                            final @NotNull IdentTableEntry aIdentTableEntry) {
-		if (aIdentTableEntry.type == null) {
+		if (aIdentTableEntry.getType() == null) {
 			aIdentTableEntry.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, (OS_Type) null);
 		}
 		final LookupResultList     lrl1 = aContext.lookup(aIdentTableEntry.getIdent().getText());
@@ -1706,7 +1706,7 @@ public class DeduceTypes2 {
 			@Override
 			public void onDone(final GenType result) {
 				assert result.resolved != null;
-				aIdentTableEntry.type.setAttached(result.resolved);
+				aIdentTableEntry.getType().setAttached(result.resolved);
 			}
 		});
 		generatedFunction.addDependentType(genType);
@@ -1723,7 +1723,7 @@ public class DeduceTypes2 {
 			@Override
 			public void onDone(@NotNull final GenType result) {
 				assert result.resolved != null;
-				aIdentTableEntry.type.setAttached(result.resolved);
+				aIdentTableEntry.getType().setAttached(result.resolved);
 			}
 		});
 		final GenType genType = new GenType();
@@ -2075,9 +2075,9 @@ public class DeduceTypes2 {
 		} else {
 			final IdentTableEntry idte = generatedFunction.getIdentTableEntryFor(vs.getNameToken());
 			assert idte != null;
-			if (idte.type == null) return;
+			if (idte.getType() == null) return;
 
-			@Nullable OS_Type ty = idte.type.getAttached();
+			@Nullable OS_Type ty = idte.getType().getAttached();
 			idte.onType(phase, new OnType() {
 				@Override
 				public void typeDeduced(final @NotNull OS_Type ty) {
@@ -2092,8 +2092,8 @@ public class DeduceTypes2 {
 			if (ty == null) {
 				@NotNull final TypeTableEntry tte3 = generatedFunction.newTypeTableEntry(
 				  TypeTableEntry.Type.SPECIFIED, new OS_UserType(vs.typeName()), vs.getNameToken());
-				idte.type = tte3;
-				ty        = idte.type.getAttached();
+				idte.setType(tte3);
+				ty        = idte.getType().getAttached();
 			}
 		}
 
@@ -2217,7 +2217,7 @@ public class DeduceTypes2 {
 			switch (e.getKind()) {
 			case NUMERIC: {
 				tte.setAttached(new OS_BuiltinType(BuiltInTypes.SystemInteger));
-				idte.type = tte; // TODO why not addPotentialType ? see below for example
+				idte.setType(tte); // TODO why not addPotentialType ? see below for example
 			}
 			break;
 			case IDENT: {
@@ -2328,11 +2328,11 @@ public class DeduceTypes2 {
 						public void typeDecided(final @NotNull GenType aType) {
 							assert fd == generatedFunction.getFD();
 							//
-							if (idte.type == null) {
+							if (idte.getType() == null) {
 								@NotNull final TypeTableEntry tte1 = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, gt(aType), idte); // TODO expression?
-								idte.type = tte1;
+								idte.setType(tte1);
 							} else
-								idte.type.setAttached(gt(aType));
+								idte.getType().setAttached(gt(aType));
 						}
 					});
 				} else {
@@ -2345,7 +2345,7 @@ public class DeduceTypes2 {
 	}
 
 	private void do_assign_constant(final @NotNull BaseGeneratedFunction generatedFunction, final @NotNull Instruction instruction, final @NotNull IdentTableEntry idte, final @NotNull ConstTableIA i2) {
-		if (idte.type != null && idte.type.getAttached() != null) {
+		if (idte.getType() != null && idte.getType().getAttached() != null) {
 			// TODO check types
 		}
 		final @NotNull ConstantTableEntry cte = generatedFunction.getConstTableEntry(i2.getIndex());
@@ -2374,7 +2374,7 @@ public class DeduceTypes2 {
 		dm.externalRef().then(new DoneCallback<GeneratedNode>() {
 			@Override
 			public void onDone(final GeneratedNode result) {
-				ite.externalRef = result;
+				ite.setExternalRef(result);
 			}
 		});
 		return dm;

@@ -167,7 +167,7 @@ class Resolve_Ident_IA {
 				y.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(el));
 			} else if (x instanceof IdentIA) {
 				@NotNull final IdentTableEntry y = ((IdentIA) x).getEntry();
-				if (!y.preUpdateStatusListenerAdded) {
+				if (!y.isPreUpdateStatusListenerAdded()) {
 					y.addStatusListener(new BaseTableEntry.StatusListener() {
 						@Override
 						public void onChange(final IElementHolder eh, final BaseTableEntry.Status newStatus) {
@@ -176,7 +176,7 @@ class Resolve_Ident_IA {
 							zero.preUpdateStatus_Change(eh, newStatus, foundElement, normal_path);
 						}
 					});
-					y.preUpdateStatusListenerAdded = true;
+					y.setPreUpdateStatusListenerAdded(true);
 				}
 			}
 		} else {
@@ -576,15 +576,15 @@ class Resolve_Ident_IA {
 				}
 //				assert idte.getStatus() != BaseTableEntry.Status.UNCHECKED;
 				final String normal_path = generatedFunction.getIdentIAPathNormal(identIA);
-				if (idte.resolveExpectation == null) {
+				if (idte.getResolveExpectation() == null) {
 					tripleo.elijah.util.Stupidity.println_err2("385 idte.resolveExpectation is null for " + idte);
 				} else
-					idte.resolveExpectation.satisfy(normal_path);
+					idte.getResolveExpectation().satisfy(normal_path);
 			} else if (idte.getStatus() == BaseTableEntry.Status.KNOWN) {
 				final String normal_path = generatedFunction.getIdentIAPathNormal(identIA);
 				//assert idte.resolveExpectation.isSatisfied();
-				if (idte.resolveExpectation != null && !idte.resolveExpectation.isSatisfied())
-					idte.resolveExpectation.satisfy(normal_path);
+				if (idte.getResolveExpectation() != null && !idte.getResolveExpectation().isSatisfied())
+					idte.getResolveExpectation().satisfy(normal_path);
 
 				el   = idte.getResolvedElement();
 				ectx = el.getContext();
@@ -597,8 +597,8 @@ class Resolve_Ident_IA {
 			if (idte.getStatus() == BaseTableEntry.Status.UNKNOWN) {
 //			LOG.info("1257 Not found for " + generatedFunction.getIdentIAPathNormal(ia));
 				// No need checking more than once
-				if (idte.resolveExpectation != null)
-					idte.resolveExpectation.fail();
+				if (idte.getResolveExpectation() != null)
+					idte.getResolveExpectation().fail();
 				foundElement.doNoFoundElement();
 				return true;
 			}

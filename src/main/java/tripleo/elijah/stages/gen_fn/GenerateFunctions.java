@@ -2758,7 +2758,7 @@ public class GenerateFunctions {
 					//
 					final int idte_index = gf.addIdentTableEntry((IdentExpression) arg, aContext);
 					tte                                    = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, arg);
-					gf.getIdentTableEntry(idte_index).type = tte;
+					gf.getIdentTableEntry(idte_index).setType(tte);
 				}
 				R.add(tte);
 			} else

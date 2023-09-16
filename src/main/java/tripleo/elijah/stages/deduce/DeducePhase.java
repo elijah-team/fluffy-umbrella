@@ -430,9 +430,9 @@ public class DeducePhase {
 		}
 		for (final Map.@NotNull Entry<IdentTableEntry, OnType> entry : idte_type_callbacks.entrySet()) {
 			final IdentTableEntry idte = entry.getKey();
-			if (idte.type != null && // TODO make a stage where this gets set (resolvePotentialTypes)
-			  idte.type.getAttached() != null)
-				entry.getValue().typeDeduced(idte.type.getAttached());
+			if (idte.getType() != null && // TODO make a stage where this gets set (resolvePotentialTypes)
+			  idte.getType().getAttached() != null)
+				entry.getValue().typeDeduced(idte.getType().getAttached());
 			else
 				entry.getValue().noTypeFound();
 		}
@@ -471,7 +471,7 @@ public class DeducePhase {
 				for (@NotNull final ResolvedVariables resolvedVariables : x) {
 					final GeneratedContainer.VarTableEntry variable = generatedContainer.getVariable(resolvedVariables.varName);
 					assert variable != null;
-					final TypeTableEntry type = resolvedVariables.identTableEntry.type;
+					final TypeTableEntry type = resolvedVariables.identTableEntry.getType();
 					if (type != null)
 						variable.addPotentialTypes(List_of(type));
 					variable.addPotentialTypes(resolvedVariables.identTableEntry.potentialTypes());
@@ -606,7 +606,7 @@ public class DeducePhase {
 					break;
 				case KNOWN:
 					assert identTableEntry.getResolvedElement() != null;
-					if (identTableEntry.type == null) {
+					if (identTableEntry.getType() == null) {
 						LOG.err(String.format("258 null type in KNOWN idte %s in %s", identTableEntry, generatedFunction));
 					}
 					break;
