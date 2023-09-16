@@ -17,11 +17,12 @@ import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.gen_fn.GenerateFunctions;
 import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -49,7 +50,7 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 
 		final Function<OS_Module, PL_Run2> pl_run2_er = mod -> {
 			final List<EntryPoint> entryPoints = mod.entryPoints._getMods();
-			final PL_Run2 pl_run2 = new PL_Run2(mod, entryPoints, pipelineLogic::getGenerateFunctions, pipelineLogic);
+			final PL_Run2          pl_run2     = new PL_Run2(mod, entryPoints, pipelineLogic::getGenerateFunctions, pipelineLogic);
 			return pl_run2;
 		};
 
@@ -112,14 +113,14 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 				gfm.generateFromEntryPoints(epl, deducePhase);
 			}
 
-			final List<GeneratedNode>          lgc            = pipelineLogic.generatedClassesCopy();
-			@NotNull final List<GeneratedNode> resolved_nodes = new ArrayList<GeneratedNode>();
+			final List<GeneratedNode> lgc = pipelineLogic.generatedClassesCopy();
 
-			final Coder coder = new Coder(deducePhase.codeRegistrar);
+			final ICodeRegistrar codeRegistrar  = deducePhase.codeRegistrar;
+			final ResolvedNodes  resolved_nodes = new ResolvedNodes();
 
-			lgc.stream().forEach(generatedNode -> coder.codeNodes(mod, resolved_nodes, generatedNode));
+			resolved_nodes.initial_feed(mod, lgc, codeRegistrar);
+			resolved_nodes.code_resolved();
 
-			resolved_nodes.forEach(generatedNode -> coder.codeNode(generatedNode, mod));
 
 			deducePhase.deduceModule(mod, lgc, true, pipelineLogic.getVerbosity());
 
@@ -137,6 +138,37 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 //		}
 
 			return deducePhase.generatedClasses; // NOTE .clone/immutable, etc
+		}
+	}
+
+	public static class ResolvedNodes {
+		private       tripleo.elijah.comp.Coder coder;
+		private final List<GeneratedNode>       resolved_nodes = new ArrayList<GeneratedNode>();
+		private       OS_Module           mod;
+
+		public void addAll(final List<GeneratedNode> aGeneratedNodes) {
+			resolved_nodes.addAll(aGeneratedNodes);
+		}
+
+		public void forEach(final Consumer<GeneratedNode> cgn) {
+			resolved_nodes.forEach(cgn);
+		}
+
+		public tripleo.elijah.comp.Coder initial_feed(final OS_Module aMod, final List<GeneratedNode> lgc, final ICodeRegistrar codeRegistrar) {
+			coder = new Coder(codeRegistrar);
+			mod   = aMod;
+
+			lgc.stream().forEach(generatedNode -> coder.codeNodes(mod, resolved_nodes, generatedNode));
+
+			return coder;
+		}
+
+		public void code_resolved() {
+			resolved_nodes.forEach(generatedNode -> coder.codeNode(generatedNode, mod));
+		}
+
+		public List<GeneratedNode> _nodeList() {
+			return this.resolved_nodes;
 		}
 	}
 }
