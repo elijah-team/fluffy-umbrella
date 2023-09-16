@@ -25,7 +25,7 @@ public class ConstTableIA implements InstructionArgument {
 
 	@Override
 	public String toString() {
-		final ConstantTableEntry constantTableEntry = gf.cte_list.get(index);
+		final ConstantTableEntry constantTableEntry = gf.cte_list().get(index);
 		final String             name               = constantTableEntry.getName();
 		if (name != null)
 			return String.format("(ct %d) [%s=%s]", index, name, constantTableEntry.initialValue);
