@@ -26,7 +26,6 @@ import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.deduce.nextgen.DeduceCreationContext;
 import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 import tripleo.elijah.util.Holder;
-import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkJob;
 import tripleo.elijah.work.WorkManager;
 
@@ -47,12 +46,21 @@ public class WlGenerateDefaultCtor implements WorkJob {
 		codeRegistrar      = aCodeRegistrar;
 	}
 
-	public WlGenerateDefaultCtor(final GenerateFunctions aGf, final FunctionInvocation aDependentFunction, final DeduceCreationContext aDeduceCreationContext, final ICodeRegistrar aCodeRegistrar) {
-		throw new NotImplementedException();
+	public WlGenerateDefaultCtor(final GenerateFunctions aGenerateFunctions,
+	                             final FunctionInvocation aFunctionInvocation,
+	                             final DeduceCreationContext aDeduceCreationContext,
+	                             final ICodeRegistrar aCodeRegistrar) {
+		generateFunctions  = aGenerateFunctions;
+		functionInvocation = aFunctionInvocation;
+		codeRegistrar      = aCodeRegistrar;
 	}
 
-	public WlGenerateDefaultCtor(final OS_Module aModule, final FunctionInvocation aFunctionInvocation, final Deduce_CreationClosure aCl) {
-		throw new NotImplementedException();
+	public WlGenerateDefaultCtor(final OS_Module aModule,
+	                             final FunctionInvocation aFunctionInvocation,
+	                             final Deduce_CreationClosure aCl) {
+		generateFunctions  = aCl.generatePhase().getGenerateFunctions(aModule);
+		functionInvocation = aFunctionInvocation;
+		codeRegistrar      = aCl.deducePhase().getCodeRegistrar();
 	}
 
 	@Override
