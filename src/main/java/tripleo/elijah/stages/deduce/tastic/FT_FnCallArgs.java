@@ -139,18 +139,21 @@ public class FT_FnCallArgs implements ITastic {
 		final DeduceTypes2.DeduceClient4 client4          = deduceTypes2._inj().new_DeduceClient4(deduceTypes2);
 		final DoAssignCall               dac              = deduceTypes2._inj().new_DoAssignCall(client4, generatedFunction, this);
 		final int                        instructionIndex = instruction.getIndex();
-		final @NotNull ProcTableEntry    pte              = ((ProcIA) fca.getArg(0)).getEntry();
 
-		if (aName instanceof IdentExpression ie) {
-			ie.getName().addUnderstanding(deduceTypes2._inj().new_ENU_FunctionCallTarget(pte));
-			ie.getName().addUnderstanding(deduceTypes2._inj().new_ENU_TypeTransitiveOver(pte));
-		}
+		if (fca.getArgSize()==0) {}
+		else {
+			final @NotNull ProcTableEntry pte = ((ProcIA) fca.getArg(0)).getEntry();
 
-		if (pte.typeDeferred().isResolved()) {
-			pte.typeDeferred().then(gt -> {
-				final TypeName nonGenericTypeName = gt.getNonGenericTypeName();
+			if (aName instanceof IdentExpression ie) {
+				ie.getName().addUnderstanding(deduceTypes2._inj().new_ENU_FunctionCallTarget(pte));
+				ie.getName().addUnderstanding(deduceTypes2._inj().new_ENU_TypeTransitiveOver(pte));
+			}
 
-				if (null == nonGenericTypeName) return;
+			if (pte.typeDeferred().isResolved()) {
+				pte.typeDeferred().then(gt -> {
+					final TypeName nonGenericTypeName = gt.getNonGenericTypeName();
+
+					if (null == nonGenericTypeName) return;
 
 //				var drType = generatedFunction.buildDrTypeFromNonGenericTypeName(nonGenericTypeName);
 //
@@ -159,8 +162,8 @@ public class FT_FnCallArgs implements ITastic {
 //				if (gt instanceof ForwardingGenType fgt) {
 //					fgt.unsparkled();
 //				}
-			});
-		}
+				});
+			}
 
 //		final ExpressionConfession ece = pte.expressionConfession();
 //
@@ -172,25 +175,26 @@ public class FT_FnCallArgs implements ITastic {
 //		default -> throw new IllegalStateException("Unexpected value: " + ece.getType());
 //		}
 
-		var exp = pte.expression;
-		var en  = exp.getEntry();
+			var exp = pte.expression;
+			var en  = exp.getEntry();
 
-		if (pte.expression_num instanceof @NotNull final IdentIA identIA) {
+			if (pte.expression_num instanceof @NotNull final IdentIA identIA) {
 
-			//08/13 System.err.println("--------------------- 158 "+(generatedFunction._getIdentIAResolvable(identIA).getNormalPath(generatedFunction, identIA)));
+				//08/13 System.err.println("--------------------- 158 "+(generatedFunction._getIdentIAResolvable(identIA).getNormalPath(generatedFunction, identIA)));
 
-			final FT_FCA_IdentIA             fca_ident = deduceTypes2._inj().new_FT_FCA_IdentIA(FT_FnCallArgs.this, identIA, vte);
-			final FT_FCA_IdentIA.Resolve_VTE rvte      = deduceTypes2._inj().new_FT_FCA_IdentIA_Resolve_VTE(vte, ctx, pte, instruction, fca);
+				final FT_FCA_IdentIA             fca_ident = deduceTypes2._inj().new_FT_FCA_IdentIA(FT_FnCallArgs.this, identIA, vte);
+				final FT_FCA_IdentIA.Resolve_VTE rvte      = deduceTypes2._inj().new_FT_FCA_IdentIA_Resolve_VTE(vte, ctx, pte, instruction, fca);
 
-			try {
-				fca_ident.resolve_vte(dac, rvte);
-				fca_ident.make2(dac, rvte);
-				fca_ident.loop1(dac, rvte);
-				fca_ident.loop2(dac, rvte);
-			} catch (FCA_Stop e) {
+				try {
+					fca_ident.resolve_vte(dac, rvte);
+					fca_ident.make2(dac, rvte);
+					fca_ident.loop1(dac, rvte);
+					fca_ident.loop2(dac, rvte);
+				} catch (FCA_Stop e) {
+				}
+			} else if (pte.expression_num instanceof final @NotNull IntegerIA integerIA) {
+				int y = 2;
 			}
-		} else if (pte.expression_num instanceof final @NotNull IntegerIA integerIA) {
-			int y = 2;
 		}
 	}
 
