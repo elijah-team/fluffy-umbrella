@@ -289,8 +289,7 @@ public abstract class Compilation {
 		return mod.size();
 	}
 
-	@NotNull
-	public abstract EOT_OutputTree getOutputTree();
+	public abstract @NotNull EOT_OutputTree getOutputTree();
 
 	public abstract @NotNull FluffyComp getFluffy();
 

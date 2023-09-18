@@ -22,6 +22,7 @@ import tripleo.elijah.nextgen.reactive.Reactivable;
 import tripleo.elijah.nextgen.reactive.Reactive;
 import tripleo.elijah.nextgen.reactive.ReactiveDimension;
 import tripleo.elijah.stages.inter.ModuleThing;
+import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.CompletableProcess;
 import tripleo.elijah.util.Eventual;
 import tripleo.elijah.world.i.WorldModule;
@@ -36,12 +37,12 @@ public class CompilationEnclosure {
 //	public final  DeferredObject<IPipelineAccess, Void, Void> pipelineAccessPromise = new DeferredObject<>();
 //	private final CB_Output                                   _cbOutput             = new CB_ListBackedOutput();
 	private final Compilation                           compilation;
-	private final DeferredObject<AccessBus, Void, Void> accessBusPromise = new DeferredObject<>();
-	private final Map<OS_Module, ModuleThing>           moduleThings     = new HashMap<>();
-	private final Subject<ReactiveDimension>            dimensionSubject = ReplaySubject.<ReactiveDimension>create();
+	private final DeferredObject<AccessBus, Void, Void> accessBusPromise   = new DeferredObject<>();
+	private final Map<OS_Module, ModuleThing>           moduleThings       = new HashMap<>();
+	private final Subject<ReactiveDimension>            dimensionSubject   = ReplaySubject.<ReactiveDimension>create();
 	private final Subject<Reactivable>                  reactivableSubject = ReplaySubject.<Reactivable>create();
 	private final List<ModuleListener>                  _moduleListeners   = new ArrayList<>();
-	Observer<ReactiveDimension> dimensionObserver = new Observer<ReactiveDimension>() {
+	Observer<ReactiveDimension> dimensionObserver   = new Observer<ReactiveDimension>() {
 		@Override
 		public void onSubscribe(@NonNull final Disposable d) {
 
@@ -63,7 +64,7 @@ public class CompilationEnclosure {
 
 		}
 	};
-	Observer<Reactivable> reactivableObserver = new Observer<Reactivable>() {
+	Observer<Reactivable>       reactivableObserver = new Observer<Reactivable>() {
 
 		@Override
 		public void onSubscribe(@NonNull final Disposable d) {
@@ -90,7 +91,7 @@ public class CompilationEnclosure {
 	private ICompilationAccess  ca;
 	private ICompilationBus     compilationBus;
 	private CompilationRunner   compilationRunner;
-//	private CompilerDriver      compilerDriver;
+	//	private CompilerDriver      compilerDriver;
 	private List<CompilerInput> inp;
 	private IPipelineAccess     pa;
 	private PipelineLogic       pipelineLogic;
@@ -343,7 +344,7 @@ public class CompilationEnclosure {
 		// throw new IllegalStateException("Error");
 
 		// aReactive.join();
-		System.err.println("reactiveJoin "+ aReactive.toString());
+		System.err.println("reactiveJoin " + aReactive.toString());
 	}
 
 	public void addModuleListener(final ModuleListener aModuleListener) {

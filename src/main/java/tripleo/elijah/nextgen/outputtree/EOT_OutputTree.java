@@ -6,16 +6,18 @@ package tripleo.elijah.nextgen.outputtree;
 
 import tripleo.elijah.nextgen.outputstatement.EG_Statement;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author olu
+ * @author tripleo
  */
 public class EOT_OutputTree {
-	public List<EOT_OutputFile> list;
+	public List<EOT_OutputFile> list = new ArrayList<>();
 
 	public void set(final List<EOT_OutputFile> aLeof) {
-		list = aLeof;
+		list.clear();
+		list.addAll(aLeof);
 	}
 
 	public void _putSeq(final String aKey, final EOT_OutputFile.FileNameProvider aPath, final EG_Statement aStatement) {

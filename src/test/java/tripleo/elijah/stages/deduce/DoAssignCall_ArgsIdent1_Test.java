@@ -30,7 +30,6 @@ import tripleo.elijah.util.Helpers;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
-import static tripleo.elijah.stages.logging.ElLog.Verbosity.VERBOSE;
 import static tripleo.elijah.util.Helpers.List_of;
 
 public class DoAssignCall_ArgsIdent1_Test {
@@ -49,7 +48,7 @@ public class DoAssignCall_ArgsIdent1_Test {
 		mod.setFileName("foo.elijah");
 
 		final PipelineLogic pipelineLogic = new PipelineLogic(new AccessBus(c));
-		final GeneratePhase generatePhase = new GeneratePhase(VERBOSE, pipelineLogic, c);
+		final GeneratePhase generatePhase = new GeneratePhase(ce, pipelineLogic);
 		final DeducePhase   phase         = new DeducePhase(c.getCompilationEnclosure());//generatePhase, pipelineLogic, ElLog.Verbosity.VERBOSE, c);
 
 		final DeduceTypes2 d = new DeduceTypes2(mod, phase);
