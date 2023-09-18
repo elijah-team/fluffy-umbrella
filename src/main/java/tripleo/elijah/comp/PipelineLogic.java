@@ -9,6 +9,7 @@
 package tripleo.elijah.comp;
 
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
@@ -46,16 +47,13 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	public PipelineLogic(final AccessBus iab) {
 		__ab = iab; // we're watching you
 
-		final boolean sil = __ab.getCompilation().getSilence(); // ca.testSilence
-
-		verbosity     = sil ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
-		generatePhase = new GeneratePhase(verbosity, this, __ab.getCompilation());
-
-
-		var ce = iab.getCompilation().getCompilationEnclosure();
+		final CompilationEnclosure ce = iab.getCompilation().getCompilationEnclosure();
+		final ElLog.Verbosity      ts = ce.testSilence();
 
 		ce.providePipelineLogic(this);
 
+		verbosity     = ts;
+		generatePhase = new GeneratePhase(ce, this);
 		dp            = new DeducePhase(ce, this);
 
 		// FIXME examine if this is necessary and possibly or actually elsewhere

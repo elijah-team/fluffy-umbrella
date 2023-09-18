@@ -378,6 +378,15 @@ public class CompilationEnclosure {
 		_p_PipelineAccess.resolve(aPipelineAccess);
 	}
 
+	public ElLog.Verbosity testSilence() {
+		final boolean sil = getCompilation().getSilence();
+		if (sil) {
+			return ElLog.Verbosity.SILENT;
+		} else {
+			return ElLog.Verbosity.VERBOSE;
+		}
+	}
+
 //	private final @NonNull OFA ofa = new OFA(/*outFileAssertions*/);
 
 //	public void addEntryPoint(final @NotNull Mirror_EntryPoint aMirrorEntryPoint, final IClassGenerator dcg) {
