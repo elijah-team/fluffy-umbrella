@@ -236,7 +236,7 @@ public class OS_Module implements OS_Element, OS_Container {
 	}
 
 	public List<EntryPoint> entryPoints() {
-		throw new NotImplementedException();
+		return entryPoints._getMods();
 	}
 }
 

@@ -6,6 +6,7 @@ import tripleo.elijah.comp.ICompilationAccess;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.contexts.ModuleContext;
@@ -31,10 +32,10 @@ public class Boilerplate {
 		aca  = ((CompilationImpl) comp)._access();
 		pr   = new ProcessRecord(aca);
 
-//		final RuntimeProcesses rt = StageToRuntime.get(ca.getStage(), ca, pr);
-
-		pipelineLogic = pr.ab.__getPL(); // FIXME make ab private
-		//getGenerateFiles(mod);
+		final CompilationEnclosure ce = pr.ab.getCompilation().getCompilationEnclosure();
+		ce.waitPipelineLogic(ipl -> {
+			pipelineLogic = ipl;
+		});
 
 		if (module != null) {
 			module.setParent(comp);

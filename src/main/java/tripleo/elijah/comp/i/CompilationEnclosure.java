@@ -95,6 +95,7 @@ public class CompilationEnclosure {
 	private List<CompilerInput> inp;
 	private IPipelineAccess     pa;
 	private PipelineLogic       pipelineLogic;
+	private CompilationRunner.CR_State crState;
 
 	public CompilationEnclosure(final Compilation aCompilation) {
 		compilation = aCompilation;
@@ -364,7 +365,11 @@ public class CompilationEnclosure {
 	}
 
 	public void providePipelineLogic(final PipelineLogic aPipelineLogic) {
-		_p_PipelineLogic.resolve(aPipelineLogic);
+		if (!_p_PipelineLogic.isResolved())
+			_p_PipelineLogic.resolve(aPipelineLogic);
+		else {
+			System.err.println("370370 PipelineLogic already resolved.");
+		}
 	}
 
 	public void provideCompilationAccess(final ICompilationAccess aCompilationAccess) {
@@ -386,6 +391,13 @@ public class CompilationEnclosure {
 		} else {
 			return ElLog.Verbosity.VERBOSE;
 		}
+	}
+
+	public CompilationRunner.CR_State getCrState(final ICompilationBus aCb) {
+		if (crState == null) {
+			crState = new CompilationRunner.CR_State();
+		}
+		return crState;
 	}
 
 //	private final @NonNull OFA ofa = new OFA(/*outFileAssertions*/);

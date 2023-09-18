@@ -94,6 +94,14 @@ public class CompilerInstructionsImpl implements CompilerInstructions {
 	public List<LibraryStatementPart> getLibraryStatementParts() {
 		return lsps;
 	}
+
+	@Override
+	public String toString() {
+		return "CompilerInstructionsImpl{" +
+		  "name='" + name + '\'' +
+		  ", filename='" + filename + '\'' +
+		  '}';
+	}
 }
 
 //

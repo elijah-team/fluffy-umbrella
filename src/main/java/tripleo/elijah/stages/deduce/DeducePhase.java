@@ -81,19 +81,19 @@ public class DeducePhase extends _RegistrationTarget implements ReactiveDimensio
 	final DeducePhaseInjector __inj = new DeducePhaseInjector();
 
 	public final @NotNull GeneratedClasses generatedClasses;
-	private @NotNull      ICodeRegistrar   codeRegistrar;
-	public final @NotNull GeneratePhase                                generatePhase;
-	private @NotNull      ICompilationAccess                           ca;
+	private @NotNull ICodeRegistrar     codeRegistrar;
+	public @NotNull  GeneratePhase      generatePhase;
+	private @NotNull ICompilationAccess ca;
 	private final         Map<NamespaceStatement, NamespaceInvocation> namespaceInvocationMap = _inj().new_HashMap__NamespaceInvocationMap();
 	private final          ExecutorService                              classGenerator         = Executors.newCachedThreadPool();
 	private final          Country1                                     country                 = _inj().new_Country1(this);
 	private final          List<DeferredMemberFunction>                 deferredMemberFunctions = _inj().new_ArrayList__DeferredaMemberFunction();
 	private final          List<FoundElement>                           foundElements       = _inj().new_ArrayList__FoundElement();
 	private final          Multimap<BaseFunctionDef, EvaFunction> functionMap         = ArrayListMultimap.create();
-	private final          Map<IdentTableEntry, OnType>       idte_type_callbacks = _inj().new_HashMap__IdentTableEntry();
-	private final @NotNull ElLog                                        LOG;
-	private final @NotNull PipelineLogic                                pipelineLogic;
-	private final          List<DE3_Active>                          _actives                = _inj().new_ArrayList__DE3_Active();
+	private final    Map<IdentTableEntry, OnType> idte_type_callbacks = _inj().new_HashMap__IdentTableEntry();
+	private @NotNull ElLog                        LOG;
+	private @NotNull PipelineLogic                pipelineLogic;
+	private final          List<DE3_Active> _actives                = _inj().new_ArrayList__DE3_Active();
 
 	public final @NotNull          List<IFunctionMapHook>                    functionMapHooks        = _inj().new_ArrayList__IFunctionMapHook();
 	private final @NotNull Multimap<ClassStatement, ClassInvocation> classInvocationMultimap = ArrayListMultimap.create();
@@ -110,11 +110,13 @@ public class DeducePhase extends _RegistrationTarget implements ReactiveDimensio
 
 	public DeducePhase(final @NotNull CompilationEnclosure ce,
 	                   final /*@NotNull*/ PipelineLogic aPipelineLogic) {
-		// given
-		pipelineLogic = aPipelineLogic;
+		ce.waitPipelineLogic(wpl -> {
+			pipelineLogic = wpl;
+			generatePhase = pipelineLogic.generatePhase;
 
-		// transitive
-		generatePhase = pipelineLogic.generatePhase;
+			LOG = _inj().new_ElLog("(DEDUCE_PHASE)", pipelineLogic.getVerbosity(), PHASE);
+			pipelineLogic.addLog(LOG);
+		});
 
 		ce.waitCompilationAccess(wca -> {
 			ca            = wca;
@@ -124,13 +126,6 @@ public class DeducePhase extends _RegistrationTarget implements ReactiveDimensio
 		ce.waitPipelineAccess(wpa -> {
 			pa = wpa;
 		});
-
-		// created
-		LOG = _inj().new_ElLog("(DEDUCE_PHASE)", pipelineLogic.getVerbosity(), PHASE);
-
-		// using
-
-		pipelineLogic.addLog(LOG);
 
 		ce.addReactiveDimension(this);
 

@@ -3,6 +3,7 @@ package tripleo.elijah.comp;
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
@@ -56,15 +57,12 @@ public class AccessBus {
 	}
 
 	public void addPipelineLogic(final @NotNull Function<AccessBus, PipelineLogic> aPlr) {
-		final PipelineLogic x = aPlr.apply(this);
+		final PipelineLogic        pipelineLogic = aPlr.apply(this);
+		final CompilationEnclosure ce            = _c.getCompilationEnclosure();
 
-		____pl = x;
+		ce.providePipelineLogic(pipelineLogic);
 
-		resolvePipelineLogic(x);
-	}
-
-	private void resolvePipelineLogic(final PipelineLogic pl) {
-		pipeLineLogicPromise.resolve(pl);
+		____pl = pipelineLogic;
 	}
 
 	public void subscribe_lgc(@NotNull final AB_LgcListener aLgcListener) {
@@ -130,10 +128,6 @@ public class AccessBus {
 
 	public @NotNull Compilation getCompilation() {
 		return _c;
-	}
-
-	public PipelineLogic __getPL() {
-		return ____pl; // TODO hack. remove soon
 	}
 
 	public void addPipelinePlugin(final ProcessRecord.PipelinePlugin aPlugin) {

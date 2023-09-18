@@ -88,11 +88,11 @@ public class Finally {
 		EZ, ELIJAH
 	}
 
-	interface Nameable {
+	public interface Nameable {
 		String getName();
 	}
 
-	public class Input {
+	public static class Input {
 
 		private final Nameable nameable;
 		private final Out2 ty;

@@ -47,8 +47,8 @@ class QuerySearchEzFiles {
 					final Operation<CompilerInstructions> oci    = parseEzFile(file, file.toString(), errSink, io, c);
 					final CompilerInstructions            ezFile = oci.success();
 					if (ezFile != null) {
-
-						c.reports().addInput(()->file_name, Finally.Out2.EZ);
+						c.reports().addInput(file::toString, Finally.Out2.EZ);
+//						c.reports().addInput(()->file_name, Finally.Out2.EZ);
 
 						R.add(ezFile);
 					} else {

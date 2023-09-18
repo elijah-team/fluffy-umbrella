@@ -1,5 +1,7 @@
 package tripleo.elijah.comp;
 
+import tripleo.elijah.comp.internal.CompilationBus;
+
 import java.util.List;
 
 public interface ICompilationBus {
@@ -27,9 +29,15 @@ public interface ICompilationBus {
 	}
 
 	interface CB_Process {
-//		void execute();
-
 		List<CB_Action> steps();
+
+		default String name() {return getClass().getName();}
+
+		default void execute(CompilationBus aCompilationBus) {
+			for (final CB_Action action : steps()) {
+				action.execute();
+			}
+		}
 	}
 
 	class COutputString implements OutputString {

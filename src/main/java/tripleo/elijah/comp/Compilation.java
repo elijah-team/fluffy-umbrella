@@ -13,14 +13,13 @@ import com.google.common.collect.Multimap;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.subjects.ReplaySubject;
-import io.reactivex.rxjava3.subjects.Subject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.functionality.f202.F202;
 import tripleo.elijah.comp.i.CompilationEnclosure;
+import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
@@ -33,7 +32,9 @@ import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.ut.UT_Controller;
+import tripleo.elijah.util.CompletableProcess;
 import tripleo.elijah.util.Helpers;
+import tripleo.elijah.util.ObservableCompletableProcess;
 import tripleo.elijah.util.Operation2;
 import tripleo.elijah.world.i.LivingRepo;
 import tripleo.elijah.world.i.WorldModule;
@@ -52,10 +53,10 @@ import java.util.Random;
 public abstract class Compilation {
 
 	public final  List<ElLog>          elLogs = new LinkedList<ElLog>();
-	public final  CompilationConfig    cfg    = new CompilationConfig();
-	public final  CIS                  _cis   = new CIS();
+	public final CompilationConfig cfg   = new CompilationConfig();
+	public final CIS               _cis  = new CIS();
 	//
-	public final  DefaultLivingRepo    _repo  = new DefaultLivingRepo();
+	public final DefaultLivingRepo _repo = new DefaultLivingRepo();
 	//
 	final         MOD                  mod    = new MOD(this);
 	private final Pipeline             pipelines;
@@ -127,12 +128,47 @@ public abstract class Compilation {
 		return System.getenv("GITLAB_CI") != null;
 	}
 
-	void hasInstructions(final @NotNull List<CompilerInstructions> cis) throws Exception {
-		assert cis.size() > 0;
+	final InstructionDoer id = new InstructionDoer();
 
-		rootCI = cis.get(0);
+	class InstructionDoer implements CompletableProcess<CompilerInstructions> {
+		CompilerInstructions root;
 
-		__cr.start(rootCI, cfg.do_out);
+		@Override
+		public void add(final CompilerInstructions item) {
+			if (root == null) {
+				root = item;
+				try {
+					rootCI = root;
+
+					__cr.start(rootCI, cfg.do_out);
+				} catch (Exception aE) {
+					throw new RuntimeException(aE);
+				}
+			} else {
+				System.err.println("second: "+ item.getFilename());
+//				throw new NotImplementedException();
+			}
+		}
+
+		@Override
+		public void complete() {
+			System.err.println("InstructionDoer::complete");
+		}
+
+		@Override
+		public void error(final Diagnostic d) {
+			System.err.println("InstructionDoer::error");
+		}
+
+		@Override
+		public void preComplete() {
+			System.err.println("InstructionDoer::preComplete");
+		}
+
+		@Override
+		public void start() {
+			System.err.println("InstructionDoer::start");
+		}
 	}
 
 	public void feedCmdLine(final @NotNull List<String> args) {
@@ -326,15 +362,18 @@ public abstract class Compilation {
 	static class MOD {
 		final         List<OS_Module>        modules = new ArrayList<OS_Module>();
 		private final Map<String, OS_Module> fn2m    = new HashMap<String, OS_Module>();
-//		private final Compilation            c;
+		private final Compilation            c;
 
 		public MOD(final Compilation aCompilation) {
-//			c = aCompilation;
+			c = aCompilation;
 		}
 
 		public void addModule(final OS_Module module, final String fn) {
 			modules.add(module);
 			fn2m.put(fn, module);
+
+			System.err.println("338 "+module.getFileName());
+			c.reports().addInput(module::getFileName, Finally.Out2.ELIJAH);
 		}
 
 		public int size() {
@@ -356,50 +395,51 @@ public abstract class Compilation {
 		boolean showTree = false;
 	}
 
-	static class CIS implements Observer<CompilerInstructions> {
+	public static class CIS {
+		private final ObservableCompletableProcess<CompilerInstructions> ocp = new ObservableCompletableProcess<>();
+		private       CompilerInstructionsObserver                       _cio;
 
-		private final Subject<CompilerInstructions> compilerInstructionsSubject = ReplaySubject.create();
-		CompilerInstructionsObserver _cio;
-
-		@Override
 		public void onSubscribe(@NonNull final Disposable d) {
-			compilerInstructionsSubject.onSubscribe(d);
+			ocp.onSubscribe(d);
 		}
 
-		@Override
+//		@Override
 		public void onNext(@NonNull final CompilerInstructions aCompilerInstructions) {
-			compilerInstructionsSubject.onNext(aCompilerInstructions);
+			ocp.onNext(aCompilerInstructions);
 		}
 
-		@Override
+//		@Override
 		public void onError(@NonNull final Throwable e) {
-			compilerInstructionsSubject.onError(e);
+			ocp.onError(e);
 		}
 
-		@Override
+//		@Override
 		public void onComplete() {
-			throw new IllegalStateException();
-			//compilerInstructionsSubject.onComplete();
+			ocp.onComplete();
 		}
 
 		public void almostComplete() {
-			_cio.almostComplete();
+			ocp.almostComplete();
 		}
 
 		public void subscribe(final Observer<CompilerInstructions> aCio) {
-			compilerInstructionsSubject.subscribe(aCio);
+			ocp.subscribe(aCio);
+		}
+
+		public void subscribe(final CompletableProcess<CompilerInstructions> aCompletableProcess) {
+			ocp.subscribe(aCompletableProcess);
+		}
+
+		public void set_cio(final CompilerInstructionsObserver aCompilerInstructionsObserver) {
+			_cio = aCompilerInstructionsObserver;
 		}
 	}
 
 	public static class CompilationAlways {
-		public static boolean VOODOO = false;
-
-		@NotNull
-		public static String defaultPrelude() {
+		public static @NotNull String defaultPrelude() {
 			return "c";
 		}
 	}
-
 }
 
 //

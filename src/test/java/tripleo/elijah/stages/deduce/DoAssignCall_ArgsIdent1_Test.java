@@ -5,6 +5,7 @@ import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.lang.ClassStatement;
@@ -47,9 +48,16 @@ public class DoAssignCall_ArgsIdent1_Test {
 		mod.setParent(c);
 		mod.setFileName("foo.elijah");
 
-		final PipelineLogic pipelineLogic = new PipelineLogic(new AccessBus(c));
+		CompilationEnclosure ce = c.getCompilationEnclosure();
+
+		final AccessBus     accessBus           = new AccessBus(c);
+//		ce.provideAccessBus(accessBus);
+
+		final PipelineLogic pipelineLogic = new PipelineLogic(accessBus);
+		ce.providePipelineLogic(pipelineLogic);
+
 		final GeneratePhase generatePhase = new GeneratePhase(ce, pipelineLogic);
-		final DeducePhase   phase         = new DeducePhase(c.getCompilationEnclosure());//generatePhase, pipelineLogic, ElLog.Verbosity.VERBOSE, c);
+		final DeducePhase   phase         = new DeducePhase(ce);
 
 		final DeduceTypes2 d = new DeduceTypes2(mod, phase);
 

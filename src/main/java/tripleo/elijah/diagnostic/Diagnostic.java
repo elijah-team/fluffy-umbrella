@@ -59,6 +59,8 @@ public interface Diagnostic {
 
 	void report(PrintStream stream);
 
+	default Object get() {return null;}
+
 	enum Severity {
 		INFO, LINT, WARN, ERROR
 	}

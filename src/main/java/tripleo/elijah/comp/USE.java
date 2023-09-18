@@ -198,7 +198,17 @@ class USE {
 				final String file_name = file.toString();
 				var          om        = parseElijjahFile(file, file_name, do_out, lsp);
 
-				assert om.mode() == Mode.SUCCESS;
+				if (om.mode() == Mode.SUCCESS) {
+//					throw new AssertionError();
+				} else if (om.mode() == Mode.FAILURE) {
+					System.err.println("204 "+om.failure());
+					var d = om.failure().get();
+					if (d instanceof Exception e) {
+						// help!!
+						e.printStackTrace();
+					}
+					System.err.println(d.getClass().getName());
+				}
 
 //				c.reports().addInput(inp, Finally.Out2.ELIJAH);
 				c.reports().addInput(() -> file_name, Finally.Out2.ELIJAH);

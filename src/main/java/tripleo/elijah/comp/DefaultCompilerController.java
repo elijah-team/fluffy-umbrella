@@ -1,6 +1,7 @@
 package tripleo.elijah.comp;
 
 import tripleo.elijah.comp.internal.CompilationBus;
+import tripleo.elijah.comp.internal.DefaultProgressSink;
 import tripleo.elijah.util.Ok;
 import tripleo.elijah.util.Operation;
 
@@ -34,7 +35,7 @@ public class DefaultCompilerController implements CompilerController {
 	@Override
 	public Operation<Ok> runner() {
 		try {
-			c.__cr = new CompilationRunner(c, c._cis, cb);
+			c.__cr = new CompilationRunner(c, c._cis, cb, new DefaultProgressSink());
 			c.__cr.doFindCIs(args2, cb);
 
 			cb.run_all();

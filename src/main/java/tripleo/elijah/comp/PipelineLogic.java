@@ -50,7 +50,7 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 		final CompilationEnclosure ce = iab.getCompilation().getCompilationEnclosure();
 		final ElLog.Verbosity      ts = ce.testSilence();
 
-		ce.providePipelineLogic(this);
+//		ce.providePipelineLogic(this);
 
 		verbosity     = ts;
 		generatePhase = new GeneratePhase(ce, this);

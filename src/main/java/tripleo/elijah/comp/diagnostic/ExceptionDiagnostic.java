@@ -38,4 +38,9 @@ public class ExceptionDiagnostic implements Diagnostic {
 	public void report(final PrintStream stream) {
 		stream.println(code() + " Some exception " + e);
 	}
+
+	@Override
+	public Object get() {
+		return e;
+	}
 }

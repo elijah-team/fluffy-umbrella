@@ -55,19 +55,19 @@ dependencies {
 
     api 'org.apache.commons:commons-lang3:3.3'
     api 'commons-codec:commons-codec:1.15'
+    api 'commons-cli:commons-cli:1.4'
 
-    api 'org.slf4j:slf4j-simple:1.7.25'
-    api 'org.slf4j:slf4j-api:1.7.25'
+    api 'org.slf4j:slf4j-jdk14:2.0.5'
+    api 'org.slf4j:slf4j-api:2.0.7'
+
     api 'org.jdeferred.v2:jdeferred-core:2.0.0'
 
     api 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.200'
     api 'org.jetbrains:annotations:16.0.2'
 
     api 'antlr:antlr:2.7.7'
-    api 'commons-cli:commons-cli:1.4'
     api 'com.github.spotbugs:spotbugs-annotations:4.0.1'
 
-//    api 'com.google.guava:guava:30.0-jre'
     implementation 'com.google.guava:guava:32.1.1-jre'
 
     api 'tripleo.buffers:buffers-v1:0.0.3'

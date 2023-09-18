@@ -13,15 +13,12 @@ public class CompilerInstructionsObserver implements Observer<CompilerInstructio
 	private final List<CompilerInstructions> l = new ArrayList<>();
 	private final Compilation                compilation;
 
-	public CompilerInstructionsObserver(final Compilation aCompilation, final OptionsProcessor ignoredAOp) {
-		compilation = aCompilation;
-	}
-
 	public CompilerInstructionsObserver(final Compilation aCompilation, final OptionsProcessor ignoredAOp, final Compilation.CIS cis) {
 		compilation = aCompilation;
-		cis._cio    = this;
+		cis.set_cio(this);
 
 		cis.subscribe(this);
+		cis.subscribe(compilation.id);
 	}
 
 	@Override
@@ -43,15 +40,5 @@ public class CompilerInstructionsObserver implements Observer<CompilerInstructio
 	@Override
 	public void onComplete() {
 		throw new RuntimeException();
-	}
-
-	public void almostComplete() {
-		try {
-			compilation.hasInstructions(l);
-		} catch (final Exception aE) {
-			compilation.getErrSink().exception(aE);
-//			NotImplementedException.raise();
-			throw new RuntimeException(aE);
-		}
 	}
 }
