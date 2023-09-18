@@ -132,7 +132,7 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 			resolved_nodes.code_resolved();
 
 			var wm = new DefaultWorldModule(mod, this.ce);
-			deducePhase.deduceModule(wm/*, lgc, true, pipelineLogic.getVerbosity()*/);
+			deducePhase.deduceModule(wm);
 
 //			PipelineLogic.resolveCheck(lgc);
 
@@ -152,7 +152,7 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 	}
 
 	public static class ResolvedNodes {
-		private       tripleo.elijah.comp.Coder coder;
+		private       Coder coder;
 		private final List<EvaNode>             resolved_nodes = new ArrayList<EvaNode>();
 		private       OS_Module                 mod;
 
@@ -164,17 +164,17 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 			resolved_nodes.forEach(cgn);
 		}
 
-		public tripleo.elijah.comp.Coder initial_feed(final OS_Module aMod, final List<EvaNode> lgc, final ICodeRegistrar codeRegistrar) {
+		public Coder initial_feed(final OS_Module aMod, final List<EvaNode> lgc, final ICodeRegistrar codeRegistrar) {
 			coder = new Coder(codeRegistrar);
 			mod   = aMod;
 
-			lgc.stream().forEach(generatedNode -> coder.codeNodes(mod, resolved_nodes, generatedNode));
+			lgc.stream().forEach(generatedNode -> coder.codeNodes(resolved_nodes, generatedNode));
 
 			return coder;
 		}
 
 		public void code_resolved() {
-			resolved_nodes.forEach(generatedNode -> coder.codeNode(generatedNode, mod));
+			resolved_nodes.forEach(generatedNode -> coder.codeNode(generatedNode));
 		}
 
 		public List<EvaNode> _nodeList() {
