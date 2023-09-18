@@ -30,6 +30,142 @@ import java.util.regex.Pattern;
 import static tripleo.elijah.util.Helpers.List_of;
 
 public class CompilationRunner {
+	private final EzCache         ezCache = new DefaultEzCache();
+	private final Compilation     compilation;
+	private final Compilation.CIS cis;
+	private final CCI             cci;
+	private final ICompilationBus cb;
+	private final IProgressSink   ps;
+
+	@Contract(pure = true)
+	public CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis, final ICompilationBus aCb, final IProgressSink ps1) {
+		compilation = aCompilation;
+		cis         = a_cis;
+		cci         = new CCI(compilation, a_cis, ps1);
+		cb          = aCb;
+		ps          = ps1;
+	}
+
+	public void doFindCIs(final String[] args2, final ICompilationBus cbx) {
+		final CR_State st1 = compilation.getCompilationEnclosure().getCrState(cb);
+
+		assert cbx == cb;
+
+		cb.add(new CB_FindCIs(args2, st1));
+	}
+
+	/**
+	 * - I don't remember what absolutePath is for
+	 * - Cache doesn't add to QueryDB
+	 * <p>
+	 * STEPS
+	 * ------
+	 * <p>
+	 * 1. Get absolutePath
+	 * 2. Check cache, return early
+	 * 3. Parse (Query is incorrect I think)
+	 * 4. Cache new result
+	 *
+	 * @param spec
+	 * @param cache
+	 * @return
+	 */
+	public Operation<CompilerInstructions> realParseEzFile(final EzSpec spec, final EzCache cache) {
+		final @NotNull File file = spec.file();
+
+		final String absolutePath;
+		try {
+			absolutePath = file.getCanonicalFile().toString();
+		} catch (final IOException aE) {
+			return Operation.failure(aE);
+		}
+
+		final Optional<CompilerInstructions> early = cache.get(absolutePath);
+
+		if (early.isPresent()) {
+			return Operation.success(early.get());
+		}
+
+		final Operation<CompilerInstructions> cio = CX_ParseEzFile.parseAndCache(spec, ezCache(), absolutePath);
+		return cio;
+	}
+
+	private @NotNull Operation<CompilerInstructions> findStdLib(final String prelude_name, final @NotNull Compilation c) {
+		final ErrSink errSink = c.getErrSink();
+		final IO      io      = c.getIO();
+
+		// TODO CP_Paths.stdlib(...)
+		final File local_stdlib = new File("lib_elijjah/lib-" + prelude_name + "/stdlib.ez");
+		if (local_stdlib.exists()) {
+			final EzSpec spec;
+			try (final InputStream s = io.readFile(local_stdlib)) {
+				spec = new EzSpec(local_stdlib.getName(), s, local_stdlib);
+				final Operation<CompilerInstructions> oci = realParseEzFile(spec, ezCache());
+				return oci;
+			} catch (final Exception e) {
+				return Operation.failure(e);
+			}
+		}
+
+		return Operation.failure(new Exception() {
+			public String message() {
+				return "No stdlib found";
+			}
+		});
+	}
+
+	private void logProgress(final int number, final String text) {
+		if (number == 130) return;
+
+		System.err.println(MessageFormat.format("CompilationRunner::logProgress: {0} {1}", number, text));
+	}
+
+	public EzCache ezCache() {
+		return ezCache;
+	}
+
+	public Compilation c() {
+		return this.compilation;
+	}
+
+	private @NotNull List<CompilerInstructions> searchEzFiles(final @NotNull File directory, final ErrSink errSink, final IO io, final Compilation c) {
+		final QuerySearchEzFiles                     q    = new QuerySearchEzFiles(c, errSink, io, this);
+		final Operation2<List<CompilerInstructions>> olci = q.process(directory);
+
+		if (olci.mode() == Mode.SUCCESS) {
+			return olci.success();
+		}
+
+		errSink.reportDiagnostic(olci.failure());
+		return List_of();
+	}
+
+	void start(final CompilerInstructions ci, final boolean do_out) throws Exception {
+		final CR_State st1 = compilation.getCompilationEnclosure().getCrState(cb);
+
+		cb.add(new CB_CR_Start(st1, ci, do_out));
+	}
+
+	public static class CR_State {
+		public ICompilationBus.CB_Action cur;
+		ICompilationAccess ca;
+		ProcessRecord      pr;
+		RuntimeProcesses   rt;
+
+		public CR_State() {
+			NotImplementedException.raise();
+		}
+
+		public ICompilationAccess ca(final Compilation aCompilation) {
+			if (ca == null) {
+				ca = new DefaultCompilationAccess(aCompilation);
+				pr = new ProcessRecord(ca);
+			}
+
+			return ca;
+		}
+	}
+
 	private class CB_CR_Start implements ICompilationBus.CB_Process {
 		private final CR_State             st1;
 		private final CompilerInstructions ci;
@@ -59,6 +195,7 @@ public class CompilationRunner {
 			return List_of(a, b, c);
 		}
 	}
+
 	private class CB_FindCIs implements ICompilationBus.CB_Process {
 		private final String[] args2;
 		private final CR_State crState;
@@ -77,6 +214,7 @@ public class CompilationRunner {
 			return List_of(a, b);
 		}
 	}
+
 	public interface CR_Action {
 		void attach(CompilationRunner cr);
 
@@ -84,6 +222,7 @@ public class CompilationRunner {
 
 		String name();
 	}
+
 	class CR_AlmostComplete implements CR_Action {
 
 		@Override
@@ -101,6 +240,7 @@ public class CompilationRunner {
 			return "cis almostComplete";
 		}
 	}
+
 	class CR_FindCIs implements CR_Action {
 
 		private final String[] args2;
@@ -181,6 +321,7 @@ public class CompilationRunner {
 			return "find cis";
 		}
 	}
+
 	private class CR_FindStdlibAction implements CR_Action {
 		@Override
 		public void attach(final CompilationRunner cr) {
@@ -267,157 +408,4 @@ public class CompilationRunner {
 		}
 	}
 
-	public static class CR_State {
-		public ICompilationBus.CB_Action cur;
-		ICompilationAccess ca;
-		ProcessRecord      pr;
-		RuntimeProcesses   rt;
-
-		public CR_State() {
-			NotImplementedException.raise();
-		}
-
-		public ICompilationAccess ca(final Compilation aCompilation) {
-			if (ca == null) {
-				ca = new DefaultCompilationAccess(aCompilation);
-				pr = new ProcessRecord(ca);
-			}
-
-			return ca;
-		}
-	}
-
-	private final Compilation     compilation;
-
-	private final Compilation.CIS cis;
-
-	private final CCI             cci;
-
-	private final ICompilationBus  cb;
-
-	private final EzCache          ezCache = new DefaultEzCache();
-
-	private final IProgressSink    ps;
-
-	@Contract(pure = true)
-	public CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis, final ICompilationBus aCb, final IProgressSink ps1) {
-		compilation = aCompilation;
-		cis         = a_cis;
-		cci         = new CCI(compilation, a_cis, ps1);
-		cb          = aCb;
-		ps          = ps1;
-	}
-
-	public void doFindCIs(final String[] args2, final ICompilationBus cbx) {
-		final CR_State st1 = compilation.getCompilationEnclosure().getCrState(cb);
-
-		cb.add(new CB_FindCIs(args2, st1));
-	}
-
-//	class CR_FindStdlib implements CR_Action {
-//
-//		private String prelude_name;
-//
-//		CR_FindStdlib(final String aPreludeName) {
-//			prelude_name = aPreludeName;
-//		}
-//
-//		@Override
-//		public void attach(final CompilationRunner cr) {
-//
-//		}
-//
-//		@Override
-//		public void execute(final CR_State st) {
-//			@NotNull final Operation<CompilerInstructions> op = findStdLib(prelude_name, compilation);
-//			assert op.mode() == Mode.SUCCESS; // TODO .NOTHING??
-//		}
-
-	public EzCache ezCache() {
-		return ezCache;
-	}
-
-	private @NotNull Operation<CompilerInstructions> findStdLib(final String prelude_name, final @NotNull Compilation c) {
-		final ErrSink errSink = c.getErrSink();
-		final IO      io      = c.getIO();
-
-		// TODO CP_Paths.stdlib(...)
-		final File local_stdlib = new File("lib_elijjah/lib-" + prelude_name + "/stdlib.ez");
-		if (local_stdlib.exists()) {
-			final EzSpec spec;
-			try (final InputStream s = io.readFile(local_stdlib)) {
-				spec = new EzSpec(local_stdlib.getName(), s, local_stdlib);
-				final Operation<CompilerInstructions> oci = realParseEzFile(spec, ezCache());
-				return oci;
-			} catch (final Exception e) {
-				return Operation.failure(e);
-			}
-		}
-
-		return Operation.failure(new Exception() {
-			public String message() {
-				return "No stdlib found";
-			}
-		});
-	}
-
-	private void logProgress(final int number, final String text) {
-		if (number == 130) return;
-
-		System.err.println(MessageFormat.format("CompilationRunner::logProgress: {0} {1}", number, text));
-	}
-
-	/**
-	 * - I don't remember what absolutePath is for
-	 * - Cache doesn't add to QueryDB
-	 * <p>
-	 * STEPS
-	 * ------
-	 * <p>
-	 * 1. Get absolutePath
-	 * 2. Check cache, return early
-	 * 3. Parse (Query is incorrect I think)
-	 * 4. Cache new result
-	 *
-	 * @param spec
-	 * @param cache
-	 * @return
-	 */
-	public Operation<CompilerInstructions> realParseEzFile(final EzSpec spec, final EzCache cache) {
-		final @NotNull File file = spec.file();
-
-		final String absolutePath;
-		try {
-			absolutePath = file.getCanonicalFile().toString();
-		} catch (final IOException aE) {
-			return Operation.failure(aE);
-		}
-
-		final Optional<CompilerInstructions> early = cache.get(absolutePath);
-
-		if (early.isPresent()) {
-			return Operation.success(early.get());
-		}
-
-		final Operation<CompilerInstructions> cio = CX_ParseEzFile.parseAndCache(spec, ezCache(), absolutePath);
-		return cio;
-	}
-
-	private @NotNull List<CompilerInstructions> searchEzFiles(final @NotNull File directory, final ErrSink errSink, final IO io, final Compilation c) {
-		final QuerySearchEzFiles                     q    = new QuerySearchEzFiles(c, errSink, io, this);
-		final Operation2<List<CompilerInstructions>> olci = q.process(directory);
-
-		if (olci.mode() == Mode.SUCCESS) {
-			return olci.success();
-		}
-
-		errSink.reportDiagnostic(olci.failure());
-		return List_of();
-	}
-
-	void start(final CompilerInstructions ci, final boolean do_out) throws Exception {
-		final CR_State st1 = compilation.getCompilationEnclosure().getCrState(cb);
-
-		cb.add(new CB_CR_Start(st1, ci, do_out));
-	}
 }
