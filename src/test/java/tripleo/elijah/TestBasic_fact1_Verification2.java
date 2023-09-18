@@ -1,11 +1,14 @@
 package tripleo.elijah;
 
-import org.junit.*;
-import tripleo.elijah.comp.*;
-import tripleo.elijah.comp.internal.*;
-import tripleo.elijah.util.*;
+import org.junit.Before;
+import org.junit.Test;
+import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.IO;
+import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationImpl;
+import tripleo.elijah.util.Helpers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("NewClassNamingConvention")
 public class TestBasic_fact1_Verification2 {
@@ -34,6 +37,14 @@ public class TestBasic_fact1_Verification2 {
 //        assertTrue(c.reports().containsInput("test/basic/fact1/main2/main2.ez"))
 	}
 
+	@Test
+	public void testOutputs_code_prelude_Prelude_Arguments_c() {
+		assertTrue(c.reports().containsCodeOutput("/prelude/Prelude/Arguments[].c"));
+	}
+	@Test
+	public void testOutputs_code_prelude_Prelude_Arguments_h() {
+		assertTrue(c.reports().containsCodeOutput("/prelude/Prelude/Arguments[].h"));
+	}
 	@Test
 	public void testOutputs_main2_Main_h() {
 		assertTrue(c.reports().containsCodeOutput("/main2/Main.h"));
