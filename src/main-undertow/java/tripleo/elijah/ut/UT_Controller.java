@@ -9,6 +9,8 @@ import tripleo.elijah.comp.ICompilationBus;
 import tripleo.elijah.comp.OptionsProcessor;
 import tripleo.elijah.comp.i.IProgressSink;
 import tripleo.elijah.comp.i.ProgressSinkComponent;
+import tripleo.elijah.util.Ok;
+import tripleo.elijah.util.Operation;
 
 import java.util.List;
 
@@ -43,7 +45,7 @@ public class UT_Controller implements CompilerController {
 	}
 
 	@Override
-	public void runner() {
+	public Operation<Ok> runner() {
 		try {
 			c.__cr = new CompilationRunner(c, c._cis, cb, new IProgressSink() {
 				@Override
@@ -59,6 +61,7 @@ public class UT_Controller implements CompilerController {
 			c.getErrSink().exception(e);
 			throw new RuntimeException(e);
 		}
+		return null;
 	}
 
 	public void _set(final Compilation aCompilation, final List<String> aArgs) {

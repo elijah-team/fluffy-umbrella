@@ -62,7 +62,7 @@ public class CompilationBus implements ICompilationBus {
 
 	@Override
 	public void run_all() {
-		for (final CB_Process process : processes) {
+		for (final CB_Process process : new ArrayList<>(processes)) {
 			for (final CB_Action action : process.steps()) {
 				action.execute();
 			}

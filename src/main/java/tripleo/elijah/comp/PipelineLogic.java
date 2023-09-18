@@ -53,10 +53,10 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 
 
 		var ce = iab.getCompilation().getCompilationEnclosure();
-		var ca = ce.getCompilationAccess();
-		var pa = ce.getPipelineAccess();
 
-		dp            = new DeducePhase(ca,pa,this);
+		ce.providePipelineLogic(this);
+
+		dp            = new DeducePhase(ce, this);
 
 		// FIXME examine if this is necessary and possibly or actually elsewhere
 		//  and/or just another section

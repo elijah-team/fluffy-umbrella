@@ -18,28 +18,8 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 
 	public DefaultCompilationAccess(final Compilation aCompilation) {
 		compilation = aCompilation;
-	}
 
-//	void registerPipelineLogic(final Consumer<PipelineLogic> aPipelineLogicConsumer) {
-//		pipelineLogicDeferred.then(new DoneCallback<PipelineLogic>() {
-//			@Override
-//			public void onDone(final PipelineLogic result) {
-//				try {
-//					aPipelineLogicConsumer.accept(result);
-//				} catch (final Throwable aE) {
-//					throw new RuntimeException(aE);
-//				}
-//			}
-//		});
-//	}
-
-	@Override
-	public void setPipelineLogic(final PipelineLogic pl) {
-		throw new Error() {
-		};
-//		compilation.pipelineLogic = pl;
-//
-//		pipelineLogicDeferred.resolve(pl);
+		compilation.getCompilationEnclosure().provideCompilationAccess(this);
 	}
 
 	@Override

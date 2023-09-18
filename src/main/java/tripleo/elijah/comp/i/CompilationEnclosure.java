@@ -23,12 +23,14 @@ import tripleo.elijah.nextgen.reactive.Reactive;
 import tripleo.elijah.nextgen.reactive.ReactiveDimension;
 import tripleo.elijah.stages.inter.ModuleThing;
 import tripleo.elijah.util.CompletableProcess;
+import tripleo.elijah.util.Eventual;
 import tripleo.elijah.world.i.WorldModule;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class CompilationEnclosure {
 //	public final  DeferredObject<IPipelineAccess, Void, Void> pipelineAccessPromise = new DeferredObject<>();
@@ -346,6 +348,34 @@ public class CompilationEnclosure {
 
 	public void addModuleListener(final ModuleListener aModuleListener) {
 		_moduleListeners.add(aModuleListener);
+	}
+
+	Eventual<ICompilationAccess> _p_CompilationAccess = new Eventual<>();
+	Eventual<PipelineLogic>      _p_PipelineLogic     = new Eventual<>();
+	Eventual<IPipelineAccess>    _p_PipelineAccess    = new Eventual<>();
+
+	public void waitCompilationAccess(final Consumer<ICompilationAccess> cica) {
+		_p_CompilationAccess.then(cica::accept);
+	}
+
+	public void waitPipelineLogic(final Consumer<PipelineLogic> cpl) {
+		_p_PipelineLogic.then(cpl::accept);
+	}
+
+	public void providePipelineLogic(final PipelineLogic aPipelineLogic) {
+		_p_PipelineLogic.resolve(aPipelineLogic);
+	}
+
+	public void provideCompilationAccess(final ICompilationAccess aCompilationAccess) {
+		_p_CompilationAccess.resolve(aCompilationAccess);
+	}
+
+	public void waitPipelineAccess(final Consumer<IPipelineAccess> cipa) {
+		_p_PipelineAccess.then(cipa::accept);
+	}
+
+	public void providePipelineAccess(final IPipelineAccess aPipelineAccess) {
+		_p_PipelineAccess.resolve(aPipelineAccess);
 	}
 
 //	private final @NonNull OFA ofa = new OFA(/*outFileAssertions*/);
