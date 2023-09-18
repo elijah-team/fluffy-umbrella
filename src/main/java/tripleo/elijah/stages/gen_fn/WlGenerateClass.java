@@ -44,8 +44,16 @@ public class WlGenerateClass implements WorkJob {
 		codeRegistrar     = aCodeRegistrar;
 	}
 
-	public WlGenerateClass(final GenerateFunctions aGenerateFunctions, final ClassInvocation aClassInvocation, final DeducePhase.GeneratedClasses aGeneratedClasses, final ICodeRegistrar aCodeRegistrar, final RegisterClassInvocation_env aEnv) {
-		throw new NotImplementedException();
+	public WlGenerateClass(final GenerateFunctions aGenerateFunctions,
+	                       final ClassInvocation aClassInvocation,
+	                       final DeducePhase.GeneratedClasses aGeneratedClasses,
+	                       final ICodeRegistrar aCodeRegistrar,
+	                       final RegisterClassInvocation_env aEnv) {
+		classStatement    = aClassInvocation.getKlass();
+		generateFunctions = aGenerateFunctions;
+		classInvocation   = aClassInvocation;
+		this.coll         = aGeneratedClasses;
+		codeRegistrar     = aCodeRegistrar;
 	}
 
 	@Override

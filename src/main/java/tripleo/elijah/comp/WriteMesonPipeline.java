@@ -12,6 +12,7 @@ import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.stages.gen_generic.DoubleLatch;
 import tripleo.util.io.CharSink;
 import tripleo.util.io.FileCharSink;
@@ -42,12 +43,12 @@ public class WriteMesonPipeline implements PipelineMember {
 	private final Compilation   c;
 	private final DoubleLatch<Multimap<CompilerInstructions, String>> write_makefiles_latch = new DoubleLatch<>(this::write_makefiles_action);
 
-	public WriteMesonPipeline(final @NotNull AccessBus ab) {
-		c = ab.getCompilation();
+	public WriteMesonPipeline(final CompilationEnclosure ce) {
+		c = ce.getCompilation();
 
 		writePipeline = null;
 
-		ab.subscribePipelineLogic(this::pl_slot);
+		ce.getAccessBusPromise().then(wab -> wab.subscribePipelineLogic(this::pl_slot));
 	}
 
 	private void pl_slot(final PipelineLogic pll) {

@@ -116,7 +116,7 @@ public class GetIdentIAPathTest_ForC {
 		final Compilation c = b.comp;
 //		final OS_Module mod = b.defaultMod();
 
-		final AccessBus         ab            = new AccessBus(c);
+		final AccessBus         ab            = new AccessBus(c, c.getCompilationEnclosure().getPipelineAccess());
 		final PipelineLogic     pl            = new PipelineLogic(ab);
 		final GeneratePhase     generatePhase = pl.generatePhase;
 		final GenerateFunctions gen           = generatePhase.getGenerateFunctions(mod);
@@ -147,7 +147,7 @@ public class GetIdentIAPathTest_ForC {
 		final Compilation c = b.comp;
 //		final OS_Module mod = b.defaultMod();
 
-		final AccessBus         ab            = new AccessBus(c);
+		final AccessBus         ab            = new AccessBus(c, c.getCompilationEnclosure().getPipelineAccess());
 		final PipelineLogic     pl            = new PipelineLogic(ab);
 		final GeneratePhase     generatePhase = pl.generatePhase;
 		final GenerateFunctions gen           = generatePhase.getGenerateFunctions(mod);
@@ -233,7 +233,7 @@ public class GetIdentIAPathTest_ForC {
 		final Compilation c = b.comp;
 //		final OS_Module mod = b.defaultMod();
 
-		final AccessBus           ab            = new AccessBus(c);
+		final AccessBus           ab            = new AccessBus(c, c.getCompilationEnclosure().getPipelineAccess());
 		final PipelineLogic       pl            = new PipelineLogic(ab);
 		final GeneratePhase       generatePhase = pl.generatePhase;
 		final GenerateFunctions   gen           = generatePhase.getGenerateFunctions(mod);

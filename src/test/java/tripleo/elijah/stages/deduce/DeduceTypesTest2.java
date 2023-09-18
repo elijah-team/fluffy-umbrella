@@ -65,7 +65,7 @@ public class DeduceTypesTest2 {
 
 		//
 
-		final AccessBus          ab         = new AccessBus(c);
+		final AccessBus          ab         = new AccessBus(c, c.getCompilationEnclosure().getPipelineAccess());
 		final PipelineLogic      pl         = new PipelineLogic(ab);
 		final DeducePhase        dp         = pl.dp;
 		final DefaultWorldModule wm         = new DefaultWorldModule(mod, c.getCompilationEnclosure());

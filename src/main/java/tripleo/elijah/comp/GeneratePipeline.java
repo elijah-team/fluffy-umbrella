@@ -10,6 +10,7 @@ package tripleo.elijah.comp;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.comp.notation.GM_GenerateModule;
 import tripleo.elijah.lang.OS_Module;
@@ -30,19 +31,24 @@ import java.util.stream.Collectors;
  * Created 8/21/21 10:16 PM
  */
 public class GeneratePipeline implements PipelineMember/*, AccessBus.AB_LgcListener*/ {
-	private final ErrSink             errSink;
-	private final AccessBus           __ab;
+	private final ErrSink   errSink;
+	private final CompilationEnclosure ce;
+	private       AccessBus __ab;
 	//	private final DeducePipeline dpl;
 	private       PipelineLogic pipelineLogic;
 	private       List<EvaNode> lgc;
 
-	public GeneratePipeline(@NotNull final AccessBus ab) {
-		errSink = ab.getCompilation().getErrSink();
+	public GeneratePipeline(final CompilationEnclosure aCe) {
+		this.ce = aCe;
 
-		ab.subscribePipelineLogic(aPl -> pipelineLogic = aPl);
-		ab.subscribe_lgc(aLgc -> lgc = aLgc);
+		errSink = aCe.getCompilation().getErrSink();
 
-		__ab = ab;
+		aCe.getAccessBusPromise().then(wab -> {
+			wab.subscribe_lgc(aLgc -> lgc = aLgc);
+
+			__ab = wab;
+		});
+		aCe.waitPipelineLogic(aPl -> pipelineLogic = aPl);
 	}
 
 	@Override
@@ -52,11 +58,9 @@ public class GeneratePipeline implements PipelineMember/*, AccessBus.AB_LgcListe
 
 		assert lgc.size() > 0;
 
-		final IPipelineAccess pipelineAccess = __ab.getCompilation().getCompilationEnclosure().getPipelineAccess();
-
-		var gm = new GM_GenerateModule(null); // !!
-
-		var fileGen = new GenerateResultEnv(new DefaultGenerateResultSink(pipelineAccess), __ab.gr, new WorkManager(), new WorkList(), gm);
+		final IPipelineAccess pipelineAccess = ce.getCompilation().getCompilationEnclosure().getPipelineAccess();
+		final GM_GenerateModule gm = new GM_GenerateModule(null); // !!
+		final GenerateResultEnv fileGen = new GenerateResultEnv(new DefaultGenerateResultSink(pipelineAccess), __ab.gr, new WorkManager(), new WorkList(), gm);
 
 		/*pipelineLogic.*/
 		generate(lgc, errSink, pipelineLogic.mods, pipelineLogic.getVerbosity(), fileGen);
@@ -69,7 +73,7 @@ public class GeneratePipeline implements PipelineMember/*, AccessBus.AB_LgcListe
 	                        final @NotNull GenerateResultEnv aFileGen) {
 		final WorkManager    wm   = new WorkManager();
 		final GenerateResult gr   = __ab.gr;
-		final Compilation    comp = __ab.getCompilation();
+		final Compilation    comp = ce.getCompilation();
 
 		for (final @NotNull OS_Module mod : mods.getMods()) {
 			final List<EvaNode> nodes = lgc.stream()

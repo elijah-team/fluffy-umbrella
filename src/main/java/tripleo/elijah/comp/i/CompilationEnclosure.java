@@ -5,6 +5,7 @@ import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.ReplaySubject;
 import io.reactivex.rxjava3.subjects.Subject;
+import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.Contract;
@@ -16,11 +17,22 @@ import tripleo.elijah.comp.CompilerInput;
 import tripleo.elijah.comp.ICompilationAccess;
 import tripleo.elijah.comp.ICompilationBus;
 import tripleo.elijah.comp.PipelineLogic;
+import tripleo.elijah.comp.WritePipeline;
+import tripleo.elijah.comp.internal.ProcessRecord;
+import tripleo.elijah.comp.internal.Provenance;
+import tripleo.elijah.comp.notation.GN_Env;
+import tripleo.elijah.comp.notation.GN_Notable;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.reactive.Reactivable;
 import tripleo.elijah.nextgen.reactive.Reactive;
 import tripleo.elijah.nextgen.reactive.ReactiveDimension;
+import tripleo.elijah.stages.gen_c.GenerateC;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
+import tripleo.elijah.stages.gen_fn.EvaClass;
+import tripleo.elijah.stages.gen_fn.EvaNamespace;
+import tripleo.elijah.stages.gen_fn.EvaNode;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.stages.inter.ModuleThing;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.CompletableProcess;
@@ -100,11 +112,11 @@ public class CompilationEnclosure {
 	public CompilationEnclosure(final Compilation aCompilation) {
 		compilation = aCompilation;
 
-//		getPipelineAccessPromise().then(pa -> {
-//			ab = new AccessBus(getCompilation(), pa);
-//
-//			accessBusPromise.resolve(ab);
-//
+		waitPipelineAccess(pa0 -> {
+			ab = new AccessBus(getCompilation(), pa0);
+
+			accessBusPromise.resolve(ab);
+
 //			ab.addPipelinePlugin(new CR_State.HooliganPipelinePlugin());
 //			ab.addPipelinePlugin(new CR_State.EvaPipelinePlugin());
 //			ab.addPipelinePlugin(new CR_State.DeducePipelinePlugin());
@@ -112,11 +124,11 @@ public class CompilationEnclosure {
 //			ab.addPipelinePlugin(new CR_State.WriteMakefilePipelinePlugin());
 //			ab.addPipelinePlugin(new CR_State.WriteMesonPipelinePlugin());
 //			ab.addPipelinePlugin(new CR_State.WriteOutputTreePipelinePlugin());
-//
-//			pa._setAccessBus(ab);
-//
-//			this.pa = pa;
-//		});
+
+			pa0._setAccessBus(ab);
+
+			this.pa = pa0;
+		});
 
 		compilation.world().addModuleProcess(new CompletableProcess<WorldModule>() {
 			@Override
@@ -150,12 +162,154 @@ public class CompilationEnclosure {
 
 			}
 		});
-	}
 
-//	@Contract(pure = true)
-//	public @NotNull Promise<IPipelineAccess, Void, Void> getPipelineAccessPromise() {
-//		return pipelineAccessPromise;
-//	}
+		providePipelineAccess(new IPipelineAccess() {
+			@Override
+			public void _setAccessBus(final AccessBus ab) {
+
+			}
+
+			@Override
+			public void addLog(final ElLog aLOG) {
+
+			}
+
+			@Override
+			public AccessBus getAccessBus() {
+				return null;
+			}
+
+			@Override
+			public Compilation getCompilation() {
+				return compilation;
+			}
+
+			@Override
+			public CompilationEnclosure getCompilationEnclosure() {
+				return compilation.getCompilationEnclosure();
+			}
+
+			@Override
+			public List<CompilerInput> getCompilerInput() {
+				return null;
+			}
+
+			@Override
+			public void setCompilerInput(final List<CompilerInput> aInputs) {
+
+			}
+
+			@Override
+			public GenerateResultSink getGenerateResultSink() {
+				return null;
+			}
+
+			@Override
+			public DeferredObject<PipelineLogic, Void, Void> getPipelineLogicPromise() {
+				return null;
+			}
+
+			@Override
+			public ProcessRecord getProcessRecord() {
+				return null;
+			}
+
+			@Override
+			public WritePipeline getWitePipeline() {
+				return null;
+			}
+
+			@Override
+			public void notate(final Provenance provenance, final GN_Notable aNotable) {
+
+			}
+
+			@Override
+			public PipelineLogic pipelineLogic() {
+				return null;
+			}
+
+			@Override
+			public void registerNodeList(final DoneCallback<List<EvaNode>> done) {
+
+			}
+
+			@Override
+			public void setGenerateResultSink(final GenerateResultSink aGenerateResultSink) {
+
+			}
+
+			@Override
+			public void setNodeList(final List<EvaNode> aEvaNodeList) {
+
+			}
+
+			@Override
+			public void setWritePipeline(final WritePipeline aWritePipeline) {
+
+			}
+
+			@Override
+			public void activeFunction(final BaseEvaFunction aEvaFunction) {
+
+			}
+
+			@Override
+			public void activeClass(final EvaClass aEvaClass) {
+
+			}
+
+			@Override
+			public void activeNamespace(final EvaNamespace aEvaNamespace) {
+
+			}
+
+			@Override
+			public List<EvaNamespace> getActiveNamespaces() {
+				return null;
+			}
+
+			@Override
+			public List<BaseEvaFunction> getActiveFunctions() {
+				return null;
+			}
+
+			@Override
+			public List<EvaClass> getActiveClasses() {
+				return null;
+			}
+
+			@Override
+			public void _send_GeneratedClass(final EvaNode aClass) {
+
+			}
+
+			@Override
+			public void waitGenC(final OS_Module mod, final Consumer<GenerateC> aCb) {
+
+			}
+
+			@Override
+			public void resolveWaitGenC(final OS_Module mod, final GenerateC gc) {
+
+			}
+
+			@Override
+			public void install_notate(final Provenance aProvenance, final Class<? extends GN_Notable> aRunClass, final Class<? extends GN_Env> aEnvClass) {
+
+			}
+
+			@Override
+			public void notate(final Provenance aProvenance, final GN_Env aPlRun2) {
+
+			}
+
+			@Override
+			public void resolvePipelinePromise(final PipelineLogic aPipelineLogic) {
+
+			}
+		});
+	}
 
 	@Contract(pure = true)
 	public Compilation getCompilation() {

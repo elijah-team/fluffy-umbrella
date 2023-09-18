@@ -63,7 +63,7 @@ public class Finally {
 	}
 
 	public void _RuntimeProcesses_logProgressString(final String aString) {
-//		System.err.println(aString);
+		System.err.println(aString);
 	}
 
 	public void _RuntimeProcesses_logProgress2(final String aS, final RuntimeProcess aProcess) {

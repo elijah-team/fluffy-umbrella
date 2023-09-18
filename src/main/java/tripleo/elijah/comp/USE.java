@@ -195,13 +195,12 @@ class USE {
 			for (final File file : files) {
 //				final CompFactory.InputRequest inp = c.con().createInputRequest(file, do_out, lsp);
 
-				final String file_name = file.toString();
-				var          om        = parseElijjahFile(file, file_name, do_out, lsp);
+				final String                file_name = file.toString();
+				final Operation2<OS_Module> om        = parseElijjahFile(file, file_name, do_out, lsp);
 
-				if (om.mode() == Mode.SUCCESS) {
-//					throw new AssertionError();
-				} else if (om.mode() == Mode.FAILURE) {
-					System.err.println("204 "+om.failure());
+				if (om.mode() == Mode.FAILURE) {
+					System.err.println("204 " + om.failure());
+
 					var d = om.failure().get();
 					if (d instanceof Exception e) {
 						// help!!

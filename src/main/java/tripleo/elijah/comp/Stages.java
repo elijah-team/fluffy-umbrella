@@ -2,6 +2,7 @@ package tripleo.elijah.comp;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.util.NotImplementedException;
 
@@ -13,7 +14,7 @@ public enum Stages {
 		}
 
 		@Override
-		public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
+		public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr, final CompilationEnclosure aCe) {
 			return new EmptyProcess(aCa, aPr);
 		}
 	},
@@ -24,7 +25,7 @@ public enum Stages {
 		}
 
 		@Override
-		public @NotNull RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
+		public @NotNull RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr, final CompilationEnclosure aCe) {
 			return new DStageProcess(aCa, aPr);
 		}
 	},
@@ -35,7 +36,7 @@ public enum Stages {
 		}
 
 		@Override
-		public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
+		public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr, final CompilationEnclosure aCe) {
 			throw new NotImplementedException();
 		}
 	},  // ??
@@ -46,8 +47,8 @@ public enum Stages {
 		}
 
 		@Override
-		public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
-			return new OStageProcess(aCa, aPr);
+		public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr, final CompilationEnclosure aCe) {
+			return new OStageProcess(aCa, aPr, aCe);
 		}
 	}  // Output
 	;
@@ -61,5 +62,5 @@ public enum Stages {
 
 	public abstract void writeLogs(final ICompilationAccess aCompilationAccess);
 
-	public abstract RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr);
+	public abstract RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr, final CompilationEnclosure aCe);
 }

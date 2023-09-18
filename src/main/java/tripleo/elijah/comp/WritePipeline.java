@@ -13,6 +13,7 @@ import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.functionality.f203.F203;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.outputstatement.EG_CompoundStatement;
 import tripleo.elijah.nextgen.outputstatement.EG_SingleStatement;
@@ -59,8 +60,8 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 	private final File           file_prefix;
 	private       GenerateResult gr;
 
-	public WritePipeline(@NotNull final AccessBus ab) {
-		c = ab.getCompilation();
+	public WritePipeline(final CompilationEnclosure ce) {
+		c = ce.getCompilation();
 
 		file_prefix = new File("COMP", c.getCompilationNumberString());
 
@@ -72,7 +73,7 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 		sys.setCompilation(c);
 		sys.setOutputStrategy(os);
 
-		ab.subscribe_GenerateResult(this);
+		ce.getAccessBusPromise().then(wab -> wab.subscribe_GenerateResult(this));
 	}
 
 	@Override

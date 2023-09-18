@@ -6,6 +6,7 @@ import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.caches.DefaultEzCache;
 import tripleo.elijah.comp.diagnostic.TooManyEz_ActuallyNone;
 import tripleo.elijah.comp.diagnostic.TooManyEz_BeSpecific;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.i.IProgressSink;
 import tripleo.elijah.comp.i.ProgressSinkComponent;
 import tripleo.elijah.comp.internal.ProcessRecord;
@@ -352,7 +353,11 @@ public class CompilationRunner {
 
 		@Override
 		public void execute(final CR_State st) {
-			st.rt = StageToRuntime.get(st.ca(compilation).getStage(), st.ca(compilation), st.pr);
+			final CompilationEnclosure ce = compilation.getCompilationEnclosure();
+
+			assert ce != null;
+
+			st.rt = StageToRuntime.get(st.ca(compilation).getStage(), st.ca(compilation), st.pr, ce);
 
 			try {
 				st.rt.run_better();

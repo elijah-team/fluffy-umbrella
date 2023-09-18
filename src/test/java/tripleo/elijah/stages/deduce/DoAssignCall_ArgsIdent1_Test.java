@@ -50,7 +50,7 @@ public class DoAssignCall_ArgsIdent1_Test {
 
 		CompilationEnclosure ce = c.getCompilationEnclosure();
 
-		final AccessBus     accessBus           = new AccessBus(c);
+		final AccessBus     accessBus           = new AccessBus(c, c.getCompilationEnclosure().getPipelineAccess());
 //		ce.provideAccessBus(accessBus);
 
 		final PipelineLogic pipelineLogic = new PipelineLogic(accessBus);

@@ -39,8 +39,8 @@ import java.util.List;
  * Created 9/12/20 10:07 PM
  */
 public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
-	public final  int                                             index;
-	public final  List<TypeTableEntry>                            args;
+	public final int                  index;
+	public final List<TypeTableEntry> args;
 
 	public int index() {
 		return index;
@@ -63,12 +63,12 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	 * <br/>
 	 * Or for synthetic methods
 	 */
-	public final  EvaExpression<IExpression>                                     expression;
-	public final  InstructionArgument                        expression_num;
-	public        DeduceProcCall                             dpc              = new DeduceProcCall(this);
-	private final DeferredObject<ProcTableEntry, Void, Void> completeDeferred = new DeferredObject<>();
+	public final  EvaExpression<IExpression>                      expression;
+	public final  InstructionArgument                             expression_num;
+	public        DeduceProcCall                                  dpc                   = new DeduceProcCall(this);
+	private final DeferredObject<ProcTableEntry, Void, Void>      completeDeferred      = new DeferredObject<>();
 	private final DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<>();
-	private final DeferredObject<GenType, ResolveError, Void>             typeDeferred          = new DeferredObject<>();
+	private final DeferredObject<GenType, ResolveError, Void>     typeDeferred          = new DeferredObject<>();
 	private       ClassInvocation                                 classInvocation;
 	private       FunctionInvocation                              functionInvocation;
 	private       DeduceElement3_ProcTableEntry                   _de3;
@@ -145,7 +145,6 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 //	private DeferredObject<ProcTableEntry, Void, Void> completeDeferred() {
 //		return completeDeferred;
 //	}
-
 	public void setArgType(final int aIndex, final OS_Type aType) {
 		args.get(aIndex).setAttached(aType);
 	}
