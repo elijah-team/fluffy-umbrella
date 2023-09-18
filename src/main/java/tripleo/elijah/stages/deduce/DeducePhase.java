@@ -275,12 +275,9 @@ public class DeducePhase extends _RegistrationTarget implements ReactiveDimensio
 		final var mod = wm.module();
 
 		final @NotNull DeduceTypes2 deduceTypes2 = _inj().new_DeduceTypes2(mod, this, verbosity);
-//		LOG.err("196 DeduceTypes "+deduceTypes2.getFileName());
-		{
-			final List<EvaNode> p = _inj().new_ArrayList__EvaNode();
-			Iterables.addAll(p, lgf);
-			LOG.info("197 lgf.size " + p.size());
-		}
+
+		logProgress(DeducePhaseProvenance.DeduceTypes_create, List.of(deduceTypes2, lgf));
+
 		deduceTypes2.deduceFunctions(lgf);
 //		deduceTypes2.deduceClasses(generatedClasses.copy().stream()
 //				.filter(c -> c.module() == m)
@@ -1204,6 +1201,28 @@ public class DeducePhase extends _RegistrationTarget implements ReactiveDimensio
 			return new WlGenerateClass(aGenerateFunctions, aClassInvocation, aGeneratedClasses, aCodeRegistrar, aEnv);
 		}
 	}
+
+	private void logProgress(final @NotNull DeducePhaseProvenance aProvenance, final Object o) {
+		switch (aProvenance) {
+		case DeduceTypes_create -> {
+			List<? extends Object> l = (List<? extends Object>) o;
+			DeduceTypes2 deduceTypes2 = (DeduceTypes2) l.get(0);
+			List<EvaNode> lgf = ((GeneratedClasses) l.get(1)).generatedClasses;
+			LOG.info("196 DeduceTypes " + deduceTypes2.getFileName());
+			{
+				final List<EvaNode> p = _inj().new_ArrayList__EvaNode();
+				Iterables.addAll(p, lgf);
+				LOG.info("197 lgf.size " + p.size());
+			}
+		}
+		default -> throw new IllegalStateException("Unexpected value: " + aProvenance);
+		}
+	}
+
+	enum DeducePhaseProvenance {
+		DeduceTypes_create // 196
+	}
+
 }
 
 //
