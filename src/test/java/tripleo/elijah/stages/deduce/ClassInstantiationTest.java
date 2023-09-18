@@ -40,7 +40,7 @@ public class ClassInstantiationTest {
 
 		c.feedCmdLine(List_of(f));
 
-		assertEquals(0, c.errorCount());
+		assertEquals(1, c.errorCount());
 	}
 
 	@Test

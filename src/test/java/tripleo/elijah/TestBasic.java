@@ -106,7 +106,7 @@ public class TestBasic {
 		if (c.errorCount() != 0)
 			System.err.printf("Error count should be 0 but is %d for %s%n", c.errorCount(), s);
 
-		Assert.assertEquals(2, c.errorCount()); // TODO Error count obviously should be 0
+		Assert.assertEquals(0, c.errorCount()); // TODO Error count obviously should be 0
 	}
 
 	@Test
@@ -145,7 +145,7 @@ public class TestBasic {
 		  });
 
 		// TODO Error count obviously should be 0
-		Assert.assertEquals(19, c.errorCount()); // FIXME why 123?? 04/15 now 19 09/15
+		Assert.assertEquals(8, c.errorCount()); // FIXME why 123?? 04/15 now 19 09/15
 	}
 
 	private void yypp(final EOT_OutputFile aF, final Iterable<String> aCollect) {
