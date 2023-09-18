@@ -1,13 +1,7 @@
 package tripleo.elijah.stages.gen_generic.pipeline_impl;
 
-import static tripleo.elijah.util.Helpers.List_of;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-
 import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
@@ -32,6 +26,11 @@ import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.world.i.LivingClass;
 import tripleo.elijah.world.i.LivingNamespace;
 import tripleo.util.buffer.Buffer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static tripleo.elijah.util.Helpers.List_of;
 
 public class DefaultGenerateResultSink implements GenerateResultSink {
 	public class NG_OutDep {
@@ -238,14 +237,16 @@ public class DefaultGenerateResultSink implements GenerateResultSink {
 		o.setClass(aGarishClass, aGenerateC);
 //		pa.addOutput(o);
 
-		System.err.println("5858 "+o);
+		System.err.println("5858 [DefaultGenerateResultSink::addClass_1] "+o.getOutputs());
 	}
+
 	@Override
 	public void addFunction(final BaseEvaFunction aGf, final List<C2C_Result> aRs, final GenerateFiles aGenerateFiles) {
 		NG_OutputFunction o = new NG_OutputFunction();
 		o.setFunction(aGf, aGenerateFiles, aRs);
 //		pa.addOutput(o);
-		System.err.println("5866 "+o);
+
+		System.err.println("5866 [DefaultGenerateResultSink::addFunction] "+o.getOutputs());
 	}
 
 	@Override
