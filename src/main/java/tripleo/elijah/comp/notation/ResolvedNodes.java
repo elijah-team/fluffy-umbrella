@@ -16,7 +16,8 @@ import tripleo.elijah.world.i.WorldModule;
 import java.util.ArrayList;
 import java.util.List;
 
-class ResolvedNodes {
+// FIXME: curiously unused
+public class ResolvedNodes {
 	final         List<EvaNode>  resolved_nodes = new ArrayList<EvaNode>();
 	private final ICodeRegistrar cr;
 
