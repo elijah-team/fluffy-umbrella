@@ -5,6 +5,7 @@ import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.CompilationChange;
 import tripleo.elijah.comp.ICompilationBus;
 import tripleo.elijah.comp.ILazyCompilerInstructions;
+import tripleo.elijah.util.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,11 @@ public class UT_CompilationBus implements ICompilationBus {
 	public void add(final CB_Process aProcess) {
 		last = aProcess;
 		p.add(last);
+	}
+
+	@Override
+	public void run_all() {
+		throw new NotImplementedException();
 	}
 
 	public CB_Process getLast() {
