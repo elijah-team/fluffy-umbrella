@@ -1,4 +1,4 @@
-package tripleo.elijah.stages.deduce.foo;
+package tripleo.elijah.stages.deduce.nextgen;
 
 public interface DN_Resolver {
 	void resolve(DN_ResolverResolution aResolution);

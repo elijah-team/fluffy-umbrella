@@ -30,9 +30,9 @@ import tripleo.elijah.stages.deduce.OnType;
 import tripleo.elijah.stages.deduce.PromiseExpectation;
 import tripleo.elijah.stages.deduce.ResolveError;
 import tripleo.elijah.stages.deduce.Resolve_Ident_IA;
-import tripleo.elijah.stages.deduce.foo.DN_Resolver;
-import tripleo.elijah.stages.deduce.foo.DN_ResolverRejection;
-import tripleo.elijah.stages.deduce.foo.DN_ResolverResolution;
+import tripleo.elijah.stages.deduce.nextgen.DN_Resolver;
+import tripleo.elijah.stages.deduce.nextgen.DN_ResolverRejection;
+import tripleo.elijah.stages.deduce.nextgen.DN_ResolverResolution;
 import tripleo.elijah.stages.deduce.nextgen.DR_Ident;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
 import tripleo.elijah.stages.deduce.zero.ITE_Zero;
@@ -66,7 +66,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	private TypeTableEntry type;
 	private EvaNode        externalRef;
 	private boolean        fefi           = false;
-	private ProcTableEntry             constructable_pte;
+	private ProcTableEntry                          constructable_pte;
 	private PromiseExpectation<String> resolveExpectation;
 	InstructionArgument backlink;
 	boolean             insideGetResolvedElement = false;
@@ -272,7 +272,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		return _zero;
 	}
 
-	private final List<DN_Resolver> resolvers = new ArrayList<>();
+	private final List<DN_Resolver>                       resolvers                 = new ArrayList<>();
 	public DeferredObject<OS_Element, ResolveError, Void> _p_resolvedElementPromise = new DeferredObject<OS_Element, ResolveError, Void>();
 
 	public DN_Resolver newResolver(final Context aCtx, final BaseEvaFunction aGeneratedFunction) {

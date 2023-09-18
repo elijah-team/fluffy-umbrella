@@ -11,7 +11,7 @@ package tripleo.elijah.stages.instructions;
 import org.jdeferred2.Promise;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.Context;
-import tripleo.elijah.stages.deduce.foo.DN_Resolver;
+import tripleo.elijah.stages.deduce.nextgen.DN_Resolver;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.Constructable;
 import tripleo.elijah.stages.gen_fn.EvaNode;
