@@ -8,18 +8,9 @@
  */
 package tripleo.elijah.stages.gen_c;
 
-import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-
+import com.google.common.base.Supplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import com.google.common.base.Supplier;
-
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.NormalTypeName;
 import tripleo.elijah.lang.OS_Type;
@@ -40,6 +31,7 @@ import tripleo.elijah.stages.gen_fn.EvaConstructor;
 import tripleo.elijah.stages.gen_fn.EvaContainerNC;
 import tripleo.elijah.stages.gen_fn.EvaFunction;
 import tripleo.elijah.stages.gen_fn.EvaNode;
+import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
 import tripleo.elijah.stages.gen_fn.TypeTableEntry;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
@@ -59,6 +51,12 @@ import tripleo.elijah.util.BufferTabbedOutputStream;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.util.Operation2;
 import tripleo.elijah.work.WorkList;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 
 /**
  * Created 6/21/21 5:53 AM
@@ -148,10 +146,14 @@ public class Generate_Code_For_Method {
 
 			if (!x.isEmpty()) {
 				if (x.get(0) instanceof final DR_Ident ident) {
-					dt2 = Objects.requireNonNull(ident.identTableEntry())._deduceTypes2();
-					gf1 = Objects.requireNonNull(ident.identTableEntry()).__gf;
+					final IdentTableEntry identTableEntry = ident.identTableEntry();
 
-					qqq = true;
+					if (identTableEntry != null) {
+						dt2 = (identTableEntry)._deduceTypes2();
+						gf1 = (identTableEntry).__gf;
+
+						qqq = true;
+					}
 				}
 			}
 		}

@@ -125,7 +125,7 @@ public class DR_Ident implements DR_Item {
 	public DR_Ident(final IdentExpression aIdent, final VariableTableEntry aVteBl1, final BaseEvaFunction aBaseEvaFunction) {
 		ident                 = aIdent;
 		vteBl1                = aVteBl1;
-		this._identTableEntry = null;
+		_identTableEntry = null;
 		baseEvaFunction       = aBaseEvaFunction;
 		mode                  = 1;
 	}
@@ -138,8 +138,8 @@ public class DR_Ident implements DR_Item {
 		mode             = 1;
 	}
 
-	public DR_Ident(final VariableTableEntry aVteBl1, final BaseEvaFunction aBaseEvaFunction) {
-		vteBl1           = aVteBl1;
+	public DR_Ident(final @Nullable VariableTableEntry aVariableTableEntry, final BaseEvaFunction aBaseEvaFunction) {
+		vteBl1           = aVariableTableEntry;
 		baseEvaFunction  = aBaseEvaFunction;
 		mode             = 2;
 		_identTableEntry = null;
@@ -152,7 +152,7 @@ public class DR_Ident implements DR_Item {
 	}
 
 	public void addPossibleType(final DR_PossibleType aPt) {
-		for (DoneCallback<DR_PossibleType> typePossible : typePossibles) {
+		for (final DoneCallback<DR_PossibleType> typePossible : typePossibles) {
 			typePossible.onDone(aPt);
 		}
 	}
