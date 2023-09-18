@@ -26,7 +26,10 @@ public class DefaultCompilerController implements CompilerController {
 	@Override
 	public void processOptions() {
 		final OptionsProcessor             op  = new ApacheOptionsProcessor();
-		final CompilerInstructionsObserver cio = new CompilerInstructionsObserver(c, op, c._cis);
+
+		c._cis.subscribe(c.id);
+
+//		final CompilerInstructionsObserver cio = new CompilerInstructionsObserver(c, op, c._cis);
 		cb = new CompilationBus(c);
 
 		try {

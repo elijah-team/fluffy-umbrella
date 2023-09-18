@@ -121,7 +121,16 @@ public abstract class Compilation {
 				}
 			} else {
 				System.err.println("second: "+ item.getFilename());
-//				throw new NotImplementedException();
+
+				var do_out = false;
+				var compilation = __cr.c();
+
+				try {
+					if (false)
+						compilation.use(item, do_out);
+				} catch (Exception aE) {
+					throw new RuntimeException(aE);
+				}
 			}
 		}
 
