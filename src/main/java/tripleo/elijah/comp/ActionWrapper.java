@@ -1,5 +1,12 @@
 package tripleo.elijah.comp;
 
+import tripleo.elijah.comp.i.CB_Monitor;
+import tripleo.elijah.comp.i.CB_OutputString;
+
+import java.util.List;
+
+import static tripleo.elijah.util.Helpers.List_of;
+
 class ActionWrapper implements ICompilationBus.CB_Action {
 	private final CompilationRunner.CR_Action a;
 	private final CompilationRunner.CR_State  crState;
@@ -10,7 +17,7 @@ class ActionWrapper implements ICompilationBus.CB_Action {
 	}
 
 	@Override
-	public void execute() {
+	public void execute(final CB_Monitor aMonitor) {
 		crState.cur = this;
 		a.execute(crState);
 		crState.cur = null;
@@ -22,7 +29,7 @@ class ActionWrapper implements ICompilationBus.CB_Action {
 	}
 
 	@Override
-	public ICompilationBus.OutputString[] outputStrings() {
-		return new ICompilationBus.OutputString[0];
+	public List<CB_OutputString> outputStrings() {
+		return List_of();
 	}
 }

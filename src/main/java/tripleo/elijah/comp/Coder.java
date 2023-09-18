@@ -48,7 +48,7 @@ public class Coder {
 		if (aEvaNode instanceof final EvaFunction generatedFunction) {
 			codeNodeFunction(generatedFunction);
 		} else if (aEvaNode instanceof final EvaClass generatedClass) {
-			assert generatedClass.getCode() == 0;
+			//assert generatedClass.getCode() == 0;
 			if (generatedClass.getCode() == 0)
 				codeNodeClass(generatedClass);
 

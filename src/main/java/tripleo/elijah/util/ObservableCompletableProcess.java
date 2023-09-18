@@ -1,20 +1,28 @@
 package tripleo.elijah.util;
 
-import org.jetbrains.annotations.NotNull;
-
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.ReplaySubject;
 import io.reactivex.rxjava3.subjects.Subject;
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ObservableCompletableProcess<T> implements Observer<T> {
 	//private       CompletableProcess<T> cpt;
 	private final Subject<T> subject = ReplaySubject.<T>create();
+	private final List<CompletableProcess<T>> cps = new ArrayList<>();
 
 	public void almostComplete() {
-		//cpt.preComplete();
+//		var v = ((ReplaySubject<?>)subject).getValues();
+//		System.err.println("1919 "+v);
+
+		for (final CompletableProcess<T> cp : cps) {
+			cp.preComplete();
+		}
 	}
 
 	@Override
@@ -41,6 +49,8 @@ public class ObservableCompletableProcess<T> implements Observer<T> {
 	}
 
 	public void subscribe(final @NotNull CompletableProcess<T> cp) {
+		cps.add(cp);
+
 		subject.subscribe(new Observer<T>() {
 			@Override
 			public void onComplete() {

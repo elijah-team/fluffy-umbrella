@@ -4,6 +4,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import tripleo.elijah.comp.ICompilationBus;
+import tripleo.elijah.comp.i.CB_OutputString;
 
 public class DoContinuationsHandler implements HttpHandler {
 
@@ -21,12 +22,13 @@ public class DoContinuationsHandler implements HttpHandler {
 		final String        num = (exchange.getRequestPath().substring(4));
 
 		final ICompilationBus.CB_Action x = utr.dcs(num);
-		x.execute();
+		x.execute(null);
 
 		sb.append("<html><body><pre>\n");
 
-		for (final ICompilationBus.OutputString outputString : x.outputStrings()) {
-			sb.append("" + outputString.getText() + "\n");
+		for (final CB_OutputString outputString : x.outputStrings()) {
+			sb.append(outputString.getText())
+			  .append("\n");
 		}
 
 		sb.append("<html><body><pre>\n");

@@ -7,6 +7,8 @@ import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.CompilationChange;
 import tripleo.elijah.comp.ICompilationBus;
 import tripleo.elijah.comp.ILazyCompilerInstructions;
+import tripleo.elijah.comp.i.CB_Monitor;
+import tripleo.elijah.comp.i.CB_OutputString;
 
 import java.util.List;
 import java.util.Queue;
@@ -26,8 +28,8 @@ public class CompilationBus implements ICompilationBus {
 		public List<CB_Action> steps() {
 			final var a = new CB_Action() {
 				@Override
-				public void execute() {
-					action.execute();
+				public void execute(final CB_Monitor aMonitor) {
+					action.execute(aMonitor);
 				}
 
 				@Override
@@ -36,8 +38,8 @@ public class CompilationBus implements ICompilationBus {
 				}
 
 				@Override
-				public OutputString[] outputStrings() {
-					return new OutputString[0];
+				public List<CB_OutputString> outputStrings() {
+					return List_of();
 				}
 			};
 			return List_of(a);

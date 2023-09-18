@@ -1,23 +1,40 @@
 package tripleo.elijah.comp;
 
+import tripleo.elijah.comp.i.CB_Monitor;
+import tripleo.elijah.comp.i.CB_OutputString;
+import tripleo.elijah.comp.internal.CB_Output;
 import tripleo.elijah.comp.internal.CompilationBus;
+import tripleo.elijah.util.NotImplementedException;
 
 import java.util.List;
 
 public interface ICompilationBus {
 	interface CB_Action {
-		void execute();
+		void execute(CB_Monitor aMonitor);
 
 		String name();
 
-		OutputString[] outputStrings();
+		List<CB_OutputString> outputStrings();
 
+//		OutputString[] outputStrings();
 	}
 
 	interface CB_Process {
 		default void execute(CompilationBus aCompilationBus) {
+			final CB_Monitor monitor = new CB_Monitor() {
+				@Override
+				public void reportFailure(final tripleo.elijah.comp.i.CB_Action aCBAction, final CB_Output aCB_output) {
+					throw new NotImplementedException();
+				}
+
+				@Override
+				public void reportSuccess(final tripleo.elijah.comp.i.CB_Action aCBAction, final CB_Output aCB_output) {
+					throw new NotImplementedException();
+				}
+			};
+
 			for (final CB_Action action : steps()) {
-				action.execute();
+				action.execute(monitor);
 			}
 		}
 

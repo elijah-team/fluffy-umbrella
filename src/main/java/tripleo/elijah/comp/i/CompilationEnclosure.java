@@ -5,6 +5,7 @@ import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.subjects.ReplaySubject;
 import io.reactivex.rxjava3.subjects.Subject;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
@@ -18,6 +19,7 @@ import tripleo.elijah.comp.ICompilationAccess;
 import tripleo.elijah.comp.ICompilationBus;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.WritePipeline;
+import tripleo.elijah.comp.internal.NotableAction;
 import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.comp.internal.Provenance;
 import tripleo.elijah.comp.notation.GN_Env;
@@ -39,6 +41,7 @@ import tripleo.elijah.util.CompletableProcess;
 import tripleo.elijah.util.Eventual;
 import tripleo.elijah.world.i.WorldModule;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,12 +49,14 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class CompilationEnclosure {
-public interface ModuleListener {
+	public interface ModuleListener {
 		void close();
 
 		void listen(WorldModule module);
 	}
-	//	public final  DeferredObject<IPipelineAccess, Void, Void> pipelineAccessPromise = new DeferredObject<>();
+
+	private final @NotNull Map<Provenance, Pair<Class, Class>> installs = new HashMap<>();
+//	public final  DeferredObject<IPipelineAccess, Void, Void> pipelineAccessPromise = new DeferredObject<>();
 //	private final CB_Output                                   _cbOutput             = new CB_ListBackedOutput();
 	private final Compilation                           compilation;
 	private final DeferredObject<AccessBus, Void, Void> accessBusPromise   = new DeferredObject<>();
@@ -117,9 +122,9 @@ public interface ModuleListener {
 
 	Eventual<ICompilationAccess> _p_CompilationAccess = new Eventual<>();
 
-	Eventual<PipelineLogic>      _p_PipelineLogic     = new Eventual<>();
+	Eventual<PipelineLogic> _p_PipelineLogic = new Eventual<>();
 
-	Eventual<IPipelineAccess>    _p_PipelineAccess    = new Eventual<>();
+	Eventual<IPipelineAccess> _p_PipelineAccess = new Eventual<>();
 
 	public CompilationEnclosure(final Compilation aCompilation) {
 		compilation = aCompilation;
@@ -127,7 +132,7 @@ public interface ModuleListener {
 		waitPipelineAccess(pa0 -> {
 			ab = new AccessBus(getCompilation(), pa0);
 
-			accessBusPromise.resolve(ab);
+			accessBusPromise.resolve(ab); // [T188036]
 
 //			ab.addPipelinePlugin(new CR_State.HooliganPipelinePlugin());
 //			ab.addPipelinePlugin(new CR_State.EvaPipelinePlugin());
@@ -185,7 +190,7 @@ public interface ModuleListener {
 
 			@Override
 			public void _setAccessBus(final AccessBus ab) {
-
+//				accessBusPromise.resolve(ab); // README not necessary [T188036]
 			}
 
 			@Override
@@ -265,14 +270,36 @@ public interface ModuleListener {
 
 			@Override
 			public void install_notate(final Provenance aProvenance, final Class<? extends GN_Notable> aRunClass, final Class<? extends GN_Env> aEnvClass) {
-
+				installs.put(aProvenance, Pair.of(aRunClass, aEnvClass));
 			}
 
 			@Override
-			public void notate(final Provenance aProvenance, final GN_Env aPlRun2) {
+			public void notate(final Provenance aProvenance, final GN_Env aGNEnv) {
+				var y = installs.get(aProvenance);
+				//System.err.println("210 "+y);
 
+				Class<?> x = y.getLeft();
+				//var z = y.getRight();
+
+				try {
+					var inst = x.getMethod("getFactoryEnv", GN_Env.class);
+
+					var notable1 = inst.invoke(null, aGNEnv);
+
+					if (notable1 instanceof @NotNull GN_Notable notable) {
+						final NotableAction notableAction = new NotableAction(notable);
+
+						//cb.add(notableAction);
+
+						notableAction._actual_run();
+
+						//System.err.println("227 "+inst);
+					}
+				} catch (NoSuchMethodException | SecurityException | InvocationTargetException | IllegalAccessException e) {
+					e.printStackTrace();
+					throw new RuntimeException(e);
+				}
 			}
-
 			@Override
 			public void notate(final Provenance provenance, final GN_Notable aNotable) {
 
@@ -507,9 +534,11 @@ public interface ModuleListener {
 	public void provideCompilationAccess(final ICompilationAccess aCompilationAccess) {
 		_p_CompilationAccess.resolve(aCompilationAccess);
 	}
+
 	public void providePipelineAccess(final IPipelineAccess aPipelineAccess) {
 		_p_PipelineAccess.resolve(aPipelineAccess);
 	}
+
 	public void providePipelineLogic(final PipelineLogic aPipelineLogic) {
 		if (!_p_PipelineLogic.isResolved())
 			_p_PipelineLogic.resolve(aPipelineLogic);
