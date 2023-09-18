@@ -79,6 +79,10 @@ public class FnCallArgs implements InstructionArgument {
 	public void setType(final TypeTableEntry tte2) {
 		_type = tte2;
 	}
+
+	public int getArgSize() {
+		return expression_to_call.getArgsSize();
+	}
 }
 
 //
