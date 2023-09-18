@@ -19,21 +19,15 @@ public class TypeOfTypeName implements TypeName {
 		_ctx = cur;
 	}
 
-	public void typeOf(final Qualident xy) {
-		_typeOf = xy;
-	}
-
-	public Qualident typeOf() {
-		return _typeOf;
-	}
-
-	public void set(final TypeModifiers modifiers_) {
-		modifiers = modifiers_;
+	// TODO what about keyword
+	@Override
+	public int getColumn() {
+		return _typeOf.parts().get(0).getColumn();
 	}
 
 	@Override
-	public boolean isNull() {
-		return false;
+	public int getColumnEnd() {
+		return _typeOf.parts().get(_typeOf.parts().size()).getColumnEnd();
 	}
 
 	@Override
@@ -42,14 +36,32 @@ public class TypeOfTypeName implements TypeName {
 	}
 
 	@Override
-	public void setContext(final Context context) {
-		_ctx = context;
+	public File getFile() {
+		return _typeOf.parts().get(0).getFile();
+	}
+
+	// TODO what about keyword
+	@Override
+	public int getLine() {
+		return _typeOf.parts().get(0).getLine();
+	}
+
+	@Override
+	public int getLineEnd() {
+		return _typeOf.parts().get(_typeOf.parts().size()).getLineEnd();
+	}
+
+	@Override
+	public boolean isNull() {
+		return false;
 	}
 
 	@Override
 	public Type kindOfType() {
 		return Type.TYPE_OF;
 	}
+
+	// region Locatable
 
 	public TypeName resolve(final @NotNull Context ctx, final DeduceTypes2 deduceTypes2) throws ResolveError {
 //		tripleo.elijah.util.Stupidity.println2(_typeOf.toString());
@@ -60,33 +72,21 @@ public class TypeOfTypeName implements TypeName {
 		return null;
 	}
 
-	// region Locatable
-
-	// TODO what about keyword
-	@Override
-	public int getLine() {
-		return _typeOf.parts().get(0).getLine();
-	}
-
-	// TODO what about keyword
-	@Override
-	public int getColumn() {
-		return _typeOf.parts().get(0).getColumn();
+	public void set(final TypeModifiers modifiers_) {
+		modifiers = modifiers_;
 	}
 
 	@Override
-	public int getLineEnd() {
-		return _typeOf.parts().get(_typeOf.parts().size()).getLineEnd();
+	public void setContext(final Context context) {
+		_ctx = context;
 	}
 
-	@Override
-	public int getColumnEnd() {
-		return _typeOf.parts().get(_typeOf.parts().size()).getColumnEnd();
+	public Qualident typeOf() {
+		return _typeOf;
 	}
 
-	@Override
-	public File getFile() {
-		return _typeOf.parts().get(0).getFile();
+	public void typeOf(final Qualident xy) {
+		_typeOf = xy;
 	}
 
 	// endregion

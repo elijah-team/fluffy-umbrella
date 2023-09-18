@@ -12,21 +12,19 @@ import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
 
 class DeduceType3 implements DED {
+	public static IDeduceElement3 dispatch(final @NotNull IdentTableEntry aIdentTableEntry, final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aGeneratedFunction) {
+		return aIdentTableEntry.getDeduceElement3(aDeduceTypes2, aGeneratedFunction);
+	}
+	public static IDeduceElement3 dispatch(final @NotNull VariableTableEntry aVariableTableEntry) {
+		return aVariableTableEntry.getDeduceElement3();
+	}
+
 	private final @Nullable IDeduceElement3 deduceElement3;
 	private final           Diagnostic      diagnostic;
 
 	private       GenType _genType;
+
 	private final OS_Type osType;
-
-	public DeduceType3(final OS_Type aOSType, final Diagnostic aDiagnostic) {
-		deduceElement3 = null;
-		osType         = aOSType;
-		diagnostic     = aDiagnostic;
-	}
-
-	public static IDeduceElement3 dispatch(final @NotNull IdentTableEntry aIdentTableEntry, final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aGeneratedFunction) {
-		return aIdentTableEntry.getDeduceElement3(aDeduceTypes2, aGeneratedFunction);
-	}
 
 	public DeduceType3(final IDeduceElement3 aDeduceElement3, final OS_Type aOSType, final Diagnostic aDiagnostic1) {
 		deduceElement3 = aDeduceElement3;
@@ -42,8 +40,10 @@ class DeduceType3 implements DED {
 //		return aConstantTableEntry.getDeduceElement3();
 //	}
 
-	public static IDeduceElement3 dispatch(final @NotNull VariableTableEntry aVariableTableEntry) {
-		return aVariableTableEntry.getDeduceElement3();
+	public DeduceType3(final OS_Type aOSType, final Diagnostic aDiagnostic) {
+		deduceElement3 = null;
+		osType         = aOSType;
+		diagnostic     = aDiagnostic;
 	}
 
 	public GenType getGenType() {

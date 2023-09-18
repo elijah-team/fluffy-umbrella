@@ -16,8 +16,12 @@ import tripleo.elijah.lang.NormalTypeName;
  * Created 11/29/21 12:24 AM
  */
 public class ClassInfo implements ContextInfo {
+	public enum ClassInfoType {
+		DIRECT, INHERITED, GENERIC
+	}
 	private final ClassStatement classStatement;
 	private final ClassInfoType  classInfoType;
+
 	private final NormalTypeName typeName;
 
 	public ClassInfo(final ClassStatement aClassStatement, final ClassInfoType aClassInfoType) {
@@ -32,20 +36,16 @@ public class ClassInfo implements ContextInfo {
 		typeName       = aTypeName;
 	}
 
-	public ClassStatement getClassStatement() {
-		return classStatement;
-	}
-
 	public ClassInfoType getClassInfoType() {
 		return classInfoType;
 	}
 
-	public NormalTypeName getTypeName() {
-		return typeName;
+	public ClassStatement getClassStatement() {
+		return classStatement;
 	}
 
-	public enum ClassInfoType {
-		DIRECT, INHERITED, GENERIC
+	public NormalTypeName getTypeName() {
+		return typeName;
 	}
 }
 

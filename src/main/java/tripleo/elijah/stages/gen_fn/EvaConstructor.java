@@ -10,6 +10,7 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.ConstructorDef;
@@ -27,8 +28,51 @@ import tripleo.elijah.util.NotImplementedException;
 public class EvaConstructor extends BaseEvaFunction_1 {
 	public final @Nullable ConstructorDef cd;
 
+	Eventual<IDeduceElement3> _p_de3_Promise = new Eventual<>();
+
 	public EvaConstructor(final @Nullable ConstructorDef aConstructorDef) {
 		cd = aConstructorDef;
+	}
+
+	//
+	// region toString
+	//
+
+	public Eventual<IDeduceElement3> de3_Promise() {
+		return _p_de3_Promise;
+	}
+
+	@Override
+	public @NotNull BaseFunctionDef getFD() {
+		if (cd == null) throw new IllegalStateException("No function");
+		return cd;
+	}
+
+	// endregion
+
+	@Override
+	public VariableTableEntry getSelf() {
+		if (getFD().getParent() instanceof ClassStatement)
+			return getVarTableEntry(0);
+		else
+			return null;
+	}
+
+	@Override
+	public String identityString() {
+		return String.valueOf(cd);
+	}
+
+	public String name() {
+		if (cd == null)
+			throw new IllegalArgumentException("null cd");
+		return cd.name();
+	}
+
+	@Override
+	public Reactive reactive() {
+		throw new NotImplementedException();
+
 	}
 
 	public void setFunctionInvocation(final FunctionInvocation fi) {
@@ -51,52 +95,9 @@ public class EvaConstructor extends BaseEvaFunction_1 {
 		resolveTypeDeferred(genType);
 	}
 
-	//
-	// region toString
-	//
-
 	@Override
 	public String toString() {
 		return String.format("<GeneratedConstructor %s>", cd);
-	}
-
-	public String name() {
-		if (cd == null)
-			throw new IllegalArgumentException("null cd");
-		return cd.name();
-	}
-
-	// endregion
-
-	@Override
-	public String identityString() {
-		return String.valueOf(cd);
-	}
-
-	@Override
-	public @NotNull BaseFunctionDef getFD() {
-		if (cd == null) throw new IllegalStateException("No function");
-		return cd;
-	}
-
-	@Override
-	public VariableTableEntry getSelf() {
-		if (getFD().getParent() instanceof ClassStatement)
-			return getVarTableEntry(0);
-		else
-			return null;
-	}
-
-	@Override
-	public Reactive reactive() {
-		throw new NotImplementedException();
-
-	}
-
-	Eventual<IDeduceElement3> _p_de3_Promise = new Eventual<>();
-
-	public Eventual<IDeduceElement3> de3_Promise() {
-		return _p_de3_Promise;
 	}
 }
 

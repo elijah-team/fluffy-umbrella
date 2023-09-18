@@ -43,6 +43,11 @@ public class IfConditionalContext extends Context {
 	}
 
 	@Override
+	public Context getParent() {
+		return _parent;
+	}
+
+	@Override
 	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 		for (final OS_Element/*StatementItem*/ item : carrier.getItems()) {
@@ -71,11 +76,6 @@ public class IfConditionalContext extends Context {
 				return context.lookup(name, level + 1, Result, alreadySearched, false);
 		}
 		return Result;
-	}
-
-	@Override
-	public Context getParent() {
-		return _parent;
 	}
 }
 

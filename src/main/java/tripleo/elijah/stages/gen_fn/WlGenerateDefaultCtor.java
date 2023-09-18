@@ -11,6 +11,7 @@ package tripleo.elijah.stages.gen_fn;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.ConstructStatement;
 import tripleo.elijah.lang.ConstructorDef;
@@ -39,17 +40,17 @@ public class WlGenerateDefaultCtor implements WorkJob {
 	private       boolean               _isDone = false;
 	private       BaseEvaFunction Result;
 
-	@Contract(pure = true)
-	public WlGenerateDefaultCtor(@NotNull final GenerateFunctions aGenerateFunctions, final FunctionInvocation aFunctionInvocation, final ICodeRegistrar aCodeRegistrar) {
+	public WlGenerateDefaultCtor(final GenerateFunctions aGenerateFunctions,
+	                             final FunctionInvocation aFunctionInvocation,
+	                             final DeduceCreationContext aDeduceCreationContext,
+	                             final ICodeRegistrar aCodeRegistrar) {
 		generateFunctions  = aGenerateFunctions;
 		functionInvocation = aFunctionInvocation;
 		codeRegistrar      = aCodeRegistrar;
 	}
 
-	public WlGenerateDefaultCtor(final GenerateFunctions aGenerateFunctions,
-	                             final FunctionInvocation aFunctionInvocation,
-	                             final DeduceCreationContext aDeduceCreationContext,
-	                             final ICodeRegistrar aCodeRegistrar) {
+	@Contract(pure = true)
+	public WlGenerateDefaultCtor(@NotNull final GenerateFunctions aGenerateFunctions, final FunctionInvocation aFunctionInvocation, final ICodeRegistrar aCodeRegistrar) {
 		generateFunctions  = aGenerateFunctions;
 		functionInvocation = aFunctionInvocation;
 		codeRegistrar      = aCodeRegistrar;
@@ -61,6 +62,19 @@ public class WlGenerateDefaultCtor implements WorkJob {
 		generateFunctions  = aCl.generatePhase().getGenerateFunctions(aModule);
 		functionInvocation = aFunctionInvocation;
 		codeRegistrar      = aCl.deducePhase().getCodeRegistrar();
+	}
+
+	private boolean getPragma(final String aAuto_construct) {
+		return false;
+	}
+
+	public BaseEvaFunction getResult() {
+		return Result;
+	}
+
+	@Override
+	public boolean isDone() {
+		return _isDone;
 	}
 
 	@Override
@@ -124,19 +138,6 @@ public class WlGenerateDefaultCtor implements WorkJob {
 		}
 
 		_isDone = true;
-	}
-
-	@Override
-	public boolean isDone() {
-		return _isDone;
-	}
-
-	private boolean getPragma(final String aAuto_construct) {
-		return false;
-	}
-
-	public BaseEvaFunction getResult() {
-		return Result;
 	}
 }
 

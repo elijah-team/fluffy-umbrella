@@ -10,6 +10,7 @@ package tripleo.elijah.stages.deduce;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.PipelineLogic;
@@ -32,6 +33,12 @@ import tripleo.elijah.util.Helpers;
 import tripleo.elijah.world.impl.DefaultWorldModule;
 
 public class DeduceTypesTest2 {
+
+	private boolean genTypeEquals(final GenType a, final GenType b) {
+		// TODO hack
+		return a.typeName.isEqual(b.typeName) &&
+		  a.resolved.isEqual(b.resolved);
+	}
 
 	@Test
 	public void testDeduceIdentExpression() throws ResolveError {
@@ -84,11 +91,5 @@ public class DeduceTypesTest2 {
 //		Assert.assertEquals(new OS_Type(tn).getTypeName(), x.getTypeName());
 		Assert.assertTrue(genTypeEquals(d.resolve_type(new OS_UserType(tn), tn.getContext()), x));
 //		Assert.assertEquals(new OS_Type(tn).toString(), x.toString());
-	}
-
-	private boolean genTypeEquals(final GenType a, final GenType b) {
-		// TODO hack
-		return a.typeName.isEqual(b.typeName) &&
-		  a.resolved.isEqual(b.resolved);
 	}
 }

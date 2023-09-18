@@ -32,21 +32,33 @@ import tripleo.elijah.util.Stupidity;
 import java.util.List;
 
 public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
+	private static class STOP extends Exception {
+
+	}
+	private static void noteNonsense(int code, String message) {
+		Stupidity.println_out_2(String.format("%d %s%n", code, message));
+	}
+	private static void noteNonsenseErr(int code, String message) {
+		Stupidity.println_err2(String.format("** [noteNonsenseErr] %d %s%n", code, message));
+	}
+
 	private final EvaContainer.VarTableEntry _principal;
+
 	private final DeduceTypes2               _deduceTypes2;
+
 	public        RegisterClassInvocation_env __passthru;
+
+	@Contract(pure = true)
+	public DeduceElement3_VarTableEntry(final EvaContainer.VarTableEntry aVarTableEntry) {
+		_principal = aVarTableEntry;
+		_deduceTypes2 = null;
+	}
 
 	@Contract(pure = true)
 	public DeduceElement3_VarTableEntry(final @NotNull EvaContainer.VarTableEntry aVarTableEntry,
 										final @NotNull DeduceTypes2 aDeduceTypes2) {
 		_principal    = aVarTableEntry;
 		_deduceTypes2 = aDeduceTypes2;
-	}
-
-	@Contract(pure = true)
-	public DeduceElement3_VarTableEntry(final EvaContainer.VarTableEntry aVarTableEntry) {
-		_principal = aVarTableEntry;
-		_deduceTypes2 = null;
 	}
 
 	private void __one_potential(final @NotNull DeducePhase aDeducePhase,
@@ -120,6 +132,11 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 			throw new STOP();
 	}
 
+//	@Override
+//	public @NotNull DED elementDiscriminator() {
+//		return DED.dispatch(_principal);
+//	}
+
 	@Contract("_, null -> fail")
 	private void __zero_potential(final EvaContainer.@NotNull VarTableEntry varTableEntry, final TypeName tn) {
 		Preconditions.checkNotNull(tn);
@@ -182,11 +199,6 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 		return _deduceTypes2;
 	}
 
-//	@Override
-//	public @NotNull DED elementDiscriminator() {
-//		return DED.dispatch(_principal);
-//	}
-
 	@Override
 	public BaseEvaFunction generatedFunction() {
 		throw new NotImplementedException();
@@ -210,6 +222,11 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 	}
 
 	@Override
+	public void mvState(final State aO, final State aCheckEvaClassVarTable) {
+
+	}
+
+	@Override
 	public void resolve(final Context aContext, final DeduceTypes2 dt2) {
 		throw new NotImplementedException();
 	}
@@ -217,11 +234,6 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 	@Override
 	public void resolve(final IdentIA aIdentIA, final Context aContext, final FoundElement aFoundElement) {
 		throw new NotImplementedException();
-	}
-
-	@Override
-	public void mvState(final State aO, final State aCheckEvaClassVarTable) {
-
 	}
 
 	public void resolve_var_table_entries(final @NotNull DeducePhase aDeducePhase, final @NotNull ClassInvocation ci) {
@@ -243,17 +255,5 @@ public class DeduceElement3_VarTableEntry implements IDeduceElement3 {
 		} catch (STOP stop) {
 			NotImplementedException.raise();
 		}
-	}
-
-	private static class STOP extends Exception {
-
-	}
-
-	private static void noteNonsense(int code, String message) {
-		Stupidity.println_out_2(String.format("%d %s%n", code, message));
-	}
-
-	private static void noteNonsenseErr(int code, String message) {
-		Stupidity.println_err2(String.format("** [noteNonsenseErr] %d %s%n", code, message));
 	}
 }

@@ -1,8 +1,13 @@
 package tripleo.elijah.stages.gen_c;
 
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.function.Consumer;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.diagnostic.Diagnostic.Severity;
@@ -25,10 +30,6 @@ import tripleo.elijah.stages.instructions.Instruction;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.ProcIA;
 import tripleo.elijah.util.Operation2;
-
-import java.text.MessageFormat;
-import java.util.List;
-import java.util.function.Consumer;
 
 class GI_ProcIA implements GenerateC_Item {
 	private final          GenerateC      gc;

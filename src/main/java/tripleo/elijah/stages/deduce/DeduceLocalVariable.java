@@ -9,10 +9,15 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ClassStatement;
@@ -41,16 +46,86 @@ import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.stages.instructions.VariableTableType;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 /**
  * Created 11/30/21 1:32 AM
  */
 public class DeduceLocalVariable {
+	public static class MemberInvocation {
+		enum Role {DIRECT, INHERITED}
+		final OS_Element element;
+
+		final Role       role;
+
+		public MemberInvocation(final OS_Element aElement, final Role aRole) {
+			element = aElement;
+			role    = aRole;
+		}
+
+	}
+	static ClassStatement class_inherits(final @NotNull ClassStatement aFirstClass, final OS_Element aInherited) {
+		if (!(aInherited instanceof ClassStatement)) return null;
+
+		final Map<TypeName, ClassStatement> inh1 = aFirstClass.getContext().inheritance();
+		for (Map.Entry<TypeName, ClassStatement> entry : inh1.entrySet()) {
+			if (entry.getValue().equals(aInherited))
+				return (ClassStatement) aInherited;
+		}
+		return null;
+	}
+
 	private final   VariableTableEntry                   variableTableEntry;
+
 	public @NotNull DeferredObject2<GenType, Void, Void> type = new DeferredObject2<>();
+	private Context                           context;
+	private DeduceElement3_VariableTableEntry de3;
+	private DeduceTypes2                      deduceTypes2;
+
+	private BaseEvaFunction                   generatedFunction;
+
+	public DeduceLocalVariable(final VariableTableEntry aVariableTableEntry) {
+		variableTableEntry = aVariableTableEntry;
+	}
+
+	@Nullable
+	private OS_Element ___pt1_work_001(final @NotNull BaseEvaFunction generatedFunction,
+									   final @NotNull OS_Element e,
+									   final OS_Element self_class) {
+		final OS_Element Self;
+		final OS_Element e_parent = e.getParent();
+
+		short          state = 0;
+		ClassStatement b     = null;
+
+		if (e_parent == self_class) {
+			state = 1;
+		} else {
+			b = class_inherits((ClassStatement) self_class, e_parent);
+			if (b != null)
+				state = 3;
+			else
+				state = 2;
+		}
+
+		switch (state) {
+		case 1:
+			final InstructionArgument self1 = generatedFunction.vte_lookup("self");
+			assert self1 instanceof IntegerIA;
+			Self = deduceTypes2._inj().new_DeduceTypes2_OS_SpecialVariable(((IntegerIA) self1).getEntry(), VariableTableType.SELF, generatedFunction);
+			break;
+		case 2:
+			Self = e_parent;
+			break;
+		case 3:
+			final InstructionArgument self2 = generatedFunction.vte_lookup("self");
+			assert self2 instanceof IntegerIA;
+			Self = deduceTypes2._inj().new_DeduceTypes2_OS_SpecialVariable(((IntegerIA) self2).getEntry(), VariableTableType.SELF, generatedFunction);
+			((DeduceTypes2.OS_SpecialVariable) Self).memberInvocation = deduceTypes2._inj().new_MemberInvocation(b, MemberInvocation.Role.INHERITED);
+			break;
+		default:
+			throw new IllegalStateException();
+		}
+		return Self;
+	}
 
 	@Nullable
 	private OS_Element ___pt1_work_001b(final @NotNull BaseEvaFunction generatedFunction,
@@ -115,24 +190,117 @@ public class DeduceLocalVariable {
 		return Self;
 	}
 
-	private Context                           context;
-	private DeduceElement3_VariableTableEntry de3;
-	private DeduceTypes2                      deduceTypes2;
-	private BaseEvaFunction                   generatedFunction;
+	private void __pt_work_002(final @NotNull VariableTableEntry vte, final @NotNull ProcTableEntry procTableEntry, final OS_Element Self) {
+		final @Nullable DeferredMemberFunction                   dm;
+		final DeferredObject<DeferredMemberFunction, Void, Void> pdm = new DeferredObject<>();
 
-	public DeduceLocalVariable(final VariableTableEntry aVariableTableEntry) {
-		variableTableEntry = aVariableTableEntry;
+		pdm.then(dm1 -> {
+			dm1.externalRef().then(new DoneCallback<BaseEvaFunction>() {
+				@Override
+				public void onDone(final BaseEvaFunction result) {
+					NotImplementedException.raise();
+				}
+			});
+			dm1.typePromise().then(new DoneCallback<GenType>() {
+				@Override
+				public void onDone(final GenType result) {
+					procTableEntry.resolveType(result);
+				}
+			});
+			procTableEntry.typePromise().then((final @NotNull GenType result) -> {
+				vte.getType().setAttached(result);
+				vte.resolveType(result);
+
+				EvaNode node = result.getNode();
+
+				if (node == null) {
+					//result.genCI(null, deduceTypes2, deduceTypes2._errSink(), deduceTypes2._phase());
+					result.genCIForGenType2__(deduceTypes2);
+					node = result.getNode();
+					assert node != null;
+				}
+
+				vte.resolveTypeToClass(node);
+			});
+		});
+
+		OS_Element resolvedElement = procTableEntry.getResolvedElement();
+		if (resolvedElement instanceof BaseFunctionDef) {
+			dm = deduceTypes2.deferred_member_function(Self, null, (BaseFunctionDef) resolvedElement, procTableEntry.getFunctionInvocation());
+			pdm.resolve(dm);
+		} else {
+			procTableEntry.onFunctionInvocation(fi -> {
+				if (fi.fd instanceof ConstructorDef cd) {
+					final DeferredMemberFunction dm2 = deduceTypes2.deferred_member_function(Self,
+																							 null,
+																							 cd,
+																							 procTableEntry.getFunctionInvocation());
+
+					pdm.resolve(dm2);
+				} else {
+					System.err.println("********************************* not a Constructor");
+				}
+			});
+		}
 	}
 
-	static ClassStatement class_inherits(final @NotNull ClassStatement aFirstClass, final OS_Element aInherited) {
-		if (!(aInherited instanceof ClassStatement)) return null;
+	private void __pt_work_002b(final @NotNull VariableTableEntry vte,
+								final @NotNull ProcTableEntry procTableEntry,
+								final Object @NotNull [] o) {
+		final OS_Element Self = (OS_Element) o[0];
 
-		final Map<TypeName, ClassStatement> inh1 = aFirstClass.getContext().inheritance();
-		for (Map.Entry<TypeName, ClassStatement> entry : inh1.entrySet()) {
-			if (entry.getValue().equals(aInherited))
-				return (ClassStatement) aInherited;
+		final OS_Element resolvedElement1 = procTableEntry.getResolvedElement();
+		OS_Element       resolvedElement0 = resolvedElement1;
+
+		while (resolvedElement0 instanceof AliasStatement) {
+			try {
+				resolvedElement0 = DeduceLookupUtils._resolveAlias2((AliasStatement) resolvedElement1, deduceTypes2);
+			} catch (ResolveError aE) {
+				//throw new RuntimeException(aE);
+				return;
+			}
 		}
-		return null;
+
+		if (Self == null) {
+			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
+			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
+			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
+			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
+			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
+			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
+			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
+			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
+			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
+			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
+			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
+			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
+			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
+			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
+
+			return;
+		}
+
+		final @Nullable DeferredMemberFunction dm = deduceTypes2.deferred_member_function(Self, null, (BaseFunctionDef) resolvedElement0, procTableEntry.getFunctionInvocation());
+		dm.externalRef().then(new DoneCallback<BaseEvaFunction>() {
+			@Override
+			public void onDone(final BaseEvaFunction result) {
+				NotImplementedException.raise();
+			}
+		});
+		dm.typePromise().then(new DoneCallback<GenType>() {
+			@Override
+			public void onDone(final GenType result) {
+				procTableEntry.typeDeferred().resolve(result);
+			}
+		});
+		procTableEntry.typePromise().then(new DoneCallback<GenType>() {
+			@Override
+			public void onDone(final @NotNull GenType result) {
+				vte.getType().setAttached(result);
+				vte.resolveType(result);
+				vte.resolveTypeToClass(result.getNode());
+			}
+		});
 	}
 
 	public void resolve_var_table_entry_for_exit_function() {
@@ -340,179 +508,12 @@ public class DeduceLocalVariable {
 		}
 	}
 
-	@Nullable
-	private OS_Element ___pt1_work_001(final @NotNull BaseEvaFunction generatedFunction,
-									   final @NotNull OS_Element e,
-									   final OS_Element self_class) {
-		final OS_Element Self;
-		final OS_Element e_parent = e.getParent();
-
-		short          state = 0;
-		ClassStatement b     = null;
-
-		if (e_parent == self_class) {
-			state = 1;
-		} else {
-			b = class_inherits((ClassStatement) self_class, e_parent);
-			if (b != null)
-				state = 3;
-			else
-				state = 2;
-		}
-
-		switch (state) {
-		case 1:
-			final InstructionArgument self1 = generatedFunction.vte_lookup("self");
-			assert self1 instanceof IntegerIA;
-			Self = deduceTypes2._inj().new_DeduceTypes2_OS_SpecialVariable(((IntegerIA) self1).getEntry(), VariableTableType.SELF, generatedFunction);
-			break;
-		case 2:
-			Self = e_parent;
-			break;
-		case 3:
-			final InstructionArgument self2 = generatedFunction.vte_lookup("self");
-			assert self2 instanceof IntegerIA;
-			Self = deduceTypes2._inj().new_DeduceTypes2_OS_SpecialVariable(((IntegerIA) self2).getEntry(), VariableTableType.SELF, generatedFunction);
-			((DeduceTypes2.OS_SpecialVariable) Self).memberInvocation = deduceTypes2._inj().new_MemberInvocation(b, MemberInvocation.Role.INHERITED);
-			break;
-		default:
-			throw new IllegalStateException();
-		}
-		return Self;
-	}
-
 	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseEvaFunction aGeneratedFunction) {
 		deduceTypes2      = aDeduceTypes2;
 		context           = aContext;
 		generatedFunction = aGeneratedFunction;
 
 		de3 = deduceTypes2._inj().new_DeduceElement3_VariableTableEntry(variableTableEntry, aDeduceTypes2, aGeneratedFunction);
-	}
-
-	private void __pt_work_002b(final @NotNull VariableTableEntry vte,
-								final @NotNull ProcTableEntry procTableEntry,
-								final Object @NotNull [] o) {
-		final OS_Element Self = (OS_Element) o[0];
-
-		final OS_Element resolvedElement1 = procTableEntry.getResolvedElement();
-		OS_Element       resolvedElement0 = resolvedElement1;
-
-		while (resolvedElement0 instanceof AliasStatement) {
-			try {
-				resolvedElement0 = DeduceLookupUtils._resolveAlias2((AliasStatement) resolvedElement1, deduceTypes2);
-			} catch (ResolveError aE) {
-				//throw new RuntimeException(aE);
-				return;
-			}
-		}
-
-		if (Self == null) {
-			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
-			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
-			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
-			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
-			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
-			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
-			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
-			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
-			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
-			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
-			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
-			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
-			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
-			tripleo.elijah.util.Stupidity.println_err_2("336 ======================================================");
-
-			return;
-		}
-
-		final @Nullable DeferredMemberFunction dm = deduceTypes2.deferred_member_function(Self, null, (BaseFunctionDef) resolvedElement0, procTableEntry.getFunctionInvocation());
-		dm.externalRef().then(new DoneCallback<BaseEvaFunction>() {
-			@Override
-			public void onDone(final BaseEvaFunction result) {
-				NotImplementedException.raise();
-			}
-		});
-		dm.typePromise().then(new DoneCallback<GenType>() {
-			@Override
-			public void onDone(final GenType result) {
-				procTableEntry.typeDeferred().resolve(result);
-			}
-		});
-		procTableEntry.typePromise().then(new DoneCallback<GenType>() {
-			@Override
-			public void onDone(final @NotNull GenType result) {
-				vte.getType().setAttached(result);
-				vte.resolveType(result);
-				vte.resolveTypeToClass(result.getNode());
-			}
-		});
-	}
-
-	private void __pt_work_002(final @NotNull VariableTableEntry vte, final @NotNull ProcTableEntry procTableEntry, final OS_Element Self) {
-		final @Nullable DeferredMemberFunction                   dm;
-		final DeferredObject<DeferredMemberFunction, Void, Void> pdm = new DeferredObject<>();
-
-		pdm.then(dm1 -> {
-			dm1.externalRef().then(new DoneCallback<BaseEvaFunction>() {
-				@Override
-				public void onDone(final BaseEvaFunction result) {
-					NotImplementedException.raise();
-				}
-			});
-			dm1.typePromise().then(new DoneCallback<GenType>() {
-				@Override
-				public void onDone(final GenType result) {
-					procTableEntry.resolveType(result);
-				}
-			});
-			procTableEntry.typePromise().then((final @NotNull GenType result) -> {
-				vte.getType().setAttached(result);
-				vte.resolveType(result);
-
-				EvaNode node = result.getNode();
-
-				if (node == null) {
-					//result.genCI(null, deduceTypes2, deduceTypes2._errSink(), deduceTypes2._phase());
-					result.genCIForGenType2__(deduceTypes2);
-					node = result.getNode();
-					assert node != null;
-				}
-
-				vte.resolveTypeToClass(node);
-			});
-		});
-
-		OS_Element resolvedElement = procTableEntry.getResolvedElement();
-		if (resolvedElement instanceof BaseFunctionDef) {
-			dm = deduceTypes2.deferred_member_function(Self, null, (BaseFunctionDef) resolvedElement, procTableEntry.getFunctionInvocation());
-			pdm.resolve(dm);
-		} else {
-			procTableEntry.onFunctionInvocation(fi -> {
-				if (fi.fd instanceof ConstructorDef cd) {
-					final DeferredMemberFunction dm2 = deduceTypes2.deferred_member_function(Self,
-																							 null,
-																							 cd,
-																							 procTableEntry.getFunctionInvocation());
-
-					pdm.resolve(dm2);
-				} else {
-					System.err.println("********************************* not a Constructor");
-				}
-			});
-		}
-	}
-
-	public static class MemberInvocation {
-		final OS_Element element;
-		final Role       role;
-
-		public MemberInvocation(final OS_Element aElement, final Role aRole) {
-			element = aElement;
-			role    = aRole;
-		}
-
-		enum Role {DIRECT, INHERITED}
-
 	}
 }
 

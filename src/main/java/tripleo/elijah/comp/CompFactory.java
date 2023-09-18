@@ -13,14 +13,6 @@ import java.util.List;
 
 public interface CompFactory {
 
-	EIT_ModuleInput createModuleInput(OS_Module aModule);
-
-	Qualident createQualident(List<String> sl);
-
-	InputRequest createInputRequest(File aFile, final boolean aDo_out, final @Nullable LibraryStatementPart aLsp);
-
-	WorldModule createWorldModule(OS_Module aM);
-
 	class InputRequest {
 		private final File                    _file;
 		private final boolean                 _do_out;
@@ -33,12 +25,12 @@ public interface CompFactory {
 			lsp     = aLsp;
 		}
 
-		public File file() {
-			return _file;
-		}
-
 		public boolean do_out() {
 			return _do_out;
+		}
+
+		public File file() {
+			return _file;
 		}
 
 		public LibraryStatementPart lsp() {
@@ -49,4 +41,12 @@ public interface CompFactory {
 			op = aOwm;
 		}
 	}
+
+	InputRequest createInputRequest(File aFile, final boolean aDo_out, final @Nullable LibraryStatementPart aLsp);
+
+	EIT_ModuleInput createModuleInput(OS_Module aModule);
+
+	Qualident createQualident(List<String> sl);
+
+	WorldModule createWorldModule(OS_Module aM);
 }

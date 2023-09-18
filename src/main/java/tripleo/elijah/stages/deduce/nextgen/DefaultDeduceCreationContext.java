@@ -17,13 +17,9 @@ public class DefaultDeduceCreationContext implements DeduceCreationContext {
 	}
 
 	@Override
-	public Eventual<BaseEvaFunction> makeGenerated_fi__Eventual(final @NotNull FunctionInvocation aFunctionInvocation) {
-		final GeneratePhase generatePhase = getGeneratePhase();
-		final DeducePhase   deducePhase   = getDeducePhase();
-
-		final Deduce_CreationClosure cl = new Deduce_CreationClosure(deducePhase, this, deduceTypes2, generatePhase);
-
-		return aFunctionInvocation.makeGenerated__Eventual(cl, null);
+	@NotNull
+	public DeducePhase getDeducePhase() {
+		return deduceTypes2.phase;
 	}
 
 	@Override
@@ -33,13 +29,17 @@ public class DefaultDeduceCreationContext implements DeduceCreationContext {
 
 	@Override
 	@NotNull
-	public DeducePhase getDeducePhase() {
-		return deduceTypes2.phase;
+	public GeneratePhase getGeneratePhase() {
+		return getDeducePhase().generatePhase;
 	}
 
 	@Override
-	@NotNull
-	public GeneratePhase getGeneratePhase() {
-		return getDeducePhase().generatePhase;
+	public Eventual<BaseEvaFunction> makeGenerated_fi__Eventual(final @NotNull FunctionInvocation aFunctionInvocation) {
+		final GeneratePhase generatePhase = getGeneratePhase();
+		final DeducePhase   deducePhase   = getDeducePhase();
+
+		final Deduce_CreationClosure cl = new Deduce_CreationClosure(deducePhase, this, deduceTypes2, generatePhase);
+
+		return aFunctionInvocation.makeGenerated__Eventual(cl, null);
 	}
 }

@@ -23,6 +23,20 @@ public class OS_UserClassType extends __Abstract_OS_Type {
 		_classStatement = aClassStatement;
 	}
 
+	protected boolean _isEqual(final OS_Type aType) {
+		return aType.getType() == Type.USER_CLASS && _classStatement.equals(((OS_UserClassType) aType)._classStatement);
+	}
+
+	@Override
+	public String asString() {
+		return MessageFormat.format("<OS_UserClassType {0}>", _classStatement);
+	}
+
+	@Override
+	public ClassStatement getClassOf() {
+		return _classStatement;
+	}
+
 	@Override
 	public OS_Element getElement() {
 		return _classStatement;
@@ -31,11 +45,6 @@ public class OS_UserClassType extends __Abstract_OS_Type {
 	@Override
 	public Type getType() {
 		return Type.USER_CLASS;
-	}
-
-	@Override
-	public String asString() {
-		return MessageFormat.format("<OS_UserClassType {0}>", _classStatement);
 	}
 
 	@NotNull
@@ -53,14 +62,5 @@ public class OS_UserClassType extends __Abstract_OS_Type {
 		} else
 			clsinv = (ClassInvocation) genType.ci;
 		return clsinv;
-	}
-
-	@Override
-	public ClassStatement getClassOf() {
-		return _classStatement;
-	}
-
-	protected boolean _isEqual(final OS_Type aType) {
-		return aType.getType() == Type.USER_CLASS && _classStatement.equals(((OS_UserClassType) aType)._classStatement);
 	}
 }

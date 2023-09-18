@@ -2,6 +2,7 @@ package tripleo.elijah.world.impl;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.NamespaceStatement;
 import tripleo.elijah.stages.garish.GarishNamespace;
 import tripleo.elijah.stages.gen_c.GenerateC;

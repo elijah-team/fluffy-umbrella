@@ -35,47 +35,22 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 		_parent = aSequence;
 	}
 
-	public String getName() {
-		return name.getText();
-	}
-
-	public void setName(final IdentExpression s) {
-		name = s;
-	}
-
-	public IdentExpression getNameToken() {
-		return name;
-	}
-
-	public void initial(@NotNull final IExpression aExpr) {
-		initialValue = aExpr;
-	}
-
-	public void set(final TypeModifiers y) {
-		typeModifiers = y;
-	}
-
-	public TypeModifiers getTypeModifiers() {
-		return typeModifiers;
-	}
-
-	@NotNull
-	public TypeName typeName() {
-		return typeName;
-	}
-
-	public void setTypeName(@NotNull final TypeName tn) {
-		typeName = tn;
-	}
-
-	@NotNull
-	public IExpression initialValue() {
-		return initialValue;
+	public void addAnnotation(final AnnotationClause a) {
+		if (annotations == null)
+			annotations = new ArrayList<AnnotationClause>();
+		annotations.add(a);
 	}
 
 	@Override
-	public void visitGen(final ElElementVisitor visit) {
-		visit.visitVariableStatement(this);
+	public int getColumn() {
+		// TODO what about annotations
+		return name.getColumn();
+	}
+
+	@Override
+	public int getColumnEnd() {
+		// TODO what about initialValue
+		return name.getColumnEnd();
 	}
 
 	@Override
@@ -83,17 +58,75 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 		return getParent().getContext();
 	}
 
-	// region annotations
+	@Override
+	public File getFile() {
+		return name.getFile();
+	}
+
+	@Override
+	public int getLine() {
+		// TODO what about annotations
+		return name.getLine();
+	}
+
+	@Override
+	public int getLineEnd() {
+		// TODO what about initialValue
+		return name.getLineEnd();
+	}
+
+	public String getName() {
+		return name.getText();
+	}
+
+	public IdentExpression getNameToken() {
+		return name;
+	}
 
 	@Override
 	public OS_Element getParent() {
 		return _parent;
 	}
 
-	public void addAnnotation(final AnnotationClause a) {
-		if (annotations == null)
-			annotations = new ArrayList<AnnotationClause>();
-		annotations.add(a);
+	public TypeModifiers getTypeModifiers() {
+		return typeModifiers;
+	}
+
+	// region annotations
+
+	public void initial(@NotNull final IExpression aExpr) {
+		initialValue = aExpr;
+	}
+
+	@NotNull
+	public IExpression initialValue() {
+		return initialValue;
+	}
+
+	public void set(final TypeModifiers y) {
+		typeModifiers = y;
+	}
+
+	// endregion
+
+	// region Locatable
+
+	public void setName(final IdentExpression s) {
+		name = s;
+	}
+
+	public void setTypeName(@NotNull final TypeName tn) {
+		typeName = tn;
+	}
+
+	@NotNull
+	public TypeName typeName() {
+		return typeName;
+	}
+
+	@Override
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitVariableStatement(this);
 	}
 
 	public void walkAnnotations(final AnnotationWalker annotationWalker) {
@@ -110,39 +143,6 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 				annotationWalker.annotation(annotationPart);
 			}
 		}
-	}
-
-	// endregion
-
-	// region Locatable
-
-	@Override
-	public int getLine() {
-		// TODO what about annotations
-		return name.getLine();
-	}
-
-	@Override
-	public int getColumn() {
-		// TODO what about annotations
-		return name.getColumn();
-	}
-
-	@Override
-	public int getLineEnd() {
-		// TODO what about initialValue
-		return name.getLineEnd();
-	}
-
-	@Override
-	public int getColumnEnd() {
-		// TODO what about initialValue
-		return name.getColumnEnd();
-	}
-
-	@Override
-	public File getFile() {
-		return name.getFile();
 	}
 
 	// endregion

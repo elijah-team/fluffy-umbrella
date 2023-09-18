@@ -8,8 +8,34 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.lang.*;
+
+import tripleo.elijah.lang.AccessNotation;
+import tripleo.elijah.lang.AliasStatement;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.ConstructStatement;
+import tripleo.elijah.lang.ConstructorDef;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.ExpressionBuilder;
+import tripleo.elijah.lang.ExpressionKind;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.IExpression;
+import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.NormalTypeName;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.Scope3;
+import tripleo.elijah.lang.StatementWrapper;
+import tripleo.elijah.lang.TypeName;
 import tripleo.elijah.lang.types.OS_GenericTypeNameType;
 import tripleo.elijah.nextgen.reactive.DefaultReactive;
 import tripleo.elijah.nextgen.reactive.Reactive;
@@ -28,36 +54,42 @@ import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.util.UnintendedUseException;
 import tripleo.elijah.world.i.LivingClass;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-
 /**
  * Created 10/29/20 4:26 AM
  */
 public class EvaClass extends EvaContainerNC implements GNCoded {
+	public static class _Reactive_EvaClass extends DefaultReactive {
+		@Override
+		public <T> void addListener(final Consumer<T> t) {
+			throw new UnintendedUseException();
+		}
+
+		@Override
+		public <T> void addResolveListener(final Consumer<T> aO) {
+			throw new NotImplementedException();
+		}
+	}
 	public final  Map<ConstructorDef, EvaConstructor> constructors = new HashMap<ConstructorDef, EvaConstructor>();
 	private final OS_Module                           module;
 	private final ClassStatement  klass;
 	public        ClassInvocation ci;
 	public        LivingClass     _living;
+
 	private       boolean                                   resolve_var_table_entries_already = false;
+
+	final _Reactive_EvaClass reactiveEvaClass = new _Reactive_EvaClass();
 
 	public EvaClass(final ClassStatement klass, final OS_Module module) {
 		this.klass  = klass;
 		this.module = module;
 	}
 
-	public boolean isGeneric() {
-		return klass.getGenericPart().size() > 0;
-	}
-
 	public void addAccessNotation(final AccessNotation an) {
 		throw new NotImplementedException();
+	}
+
+	public void addConstructor(final ConstructorDef aConstructorDef, @NotNull final EvaConstructor aGeneratedFunction) {
+		constructors.put(aConstructorDef, aGeneratedFunction);
 	}
 
 	public void createCtor0() {
@@ -79,143 +111,6 @@ public class EvaClass extends EvaContainerNC implements GNCoded {
 				}
 			}
 		}
-	}
-
-	private boolean getPragma(final String auto_construct) { // TODO this should be part of Context
-		return false;
-	}
-
-	public void addConstructor(final ConstructorDef aConstructorDef, @NotNull final EvaConstructor aGeneratedFunction) {
-		constructors.put(aConstructorDef, aGeneratedFunction);
-	}
-
-	public boolean resolve_var_table_entries(final @NotNull DeducePhase aDeducePhase) {
-		boolean Result = false;
-
-		if (resolve_var_table_entries_already) return true;
-
-		for (final VarTableEntry varTableEntry : varTable) {
-			if (varTableEntry.potentialTypes.size() == 0 && (varTableEntry.varType == null || varTableEntry.typeName.isNull())) {
-				final TypeName tn = varTableEntry.typeName;
-				if (tn != null) {
-					if (tn instanceof final NormalTypeName tn2) {
-						if (!tn.isNull()) {
-							final LookupResultList lrl  = tn.getContext().lookup(tn2.getName());
-							OS_Element             best = lrl.chooseBest(null);
-							if (best != null) {
-								if (best instanceof AliasStatement)
-									best = DeduceLookupUtils._resolveAlias((AliasStatement) best, null);
-								assert best instanceof ClassStatement;
-								varTableEntry.varType = ((ClassStatement) best).getOS_Type();
-							} else {
-								// TODO shouldn't this already be calculated?
-							}
-						}
-					}
-				} else {
-					// must be unknown
-				}
-			} else {
-				tripleo.elijah.util.Stupidity.println_err(String.format("108 %s %s", varTableEntry.nameToken, varTableEntry.potentialTypes));
-				if (varTableEntry.potentialTypes.size() == 1) {
-					final TypeTableEntry potentialType = varTableEntry.potentialTypes.get(0);
-					if (potentialType.resolved() == null) {
-						assert potentialType.getAttached() != null;
-//						assert potentialType.getAttached().getType() == OS_Type.Type.USER_CLASS;
-						//
-						// HACK
-						//
-						if (potentialType.getAttached().getType() != OS_Type.Type.USER_CLASS) {
-							final TypeName t = potentialType.getAttached().getTypeName();
-							if (ci.genericPart_ != null) {
-								for (final Map.Entry<TypeName, OS_Type> typeEntry : ci.genericPart_.entrySet()) {
-									if (typeEntry.getKey().equals(t)) {
-										final OS_Type v = typeEntry.getValue();
-										potentialType.setAttached(v);
-										assert potentialType.getAttached().getType() == OS_Type.Type.USER_CLASS;
-										break;
-									}
-								}
-							}
-						}
-						//
-						if (potentialType.getAttached().getType() == OS_Type.Type.USER_CLASS) {
-							ClassInvocation xci = new ClassInvocation(potentialType.getAttached().getClassOf(), null);
-							{
-								for (final Map.Entry<TypeName, OS_Type> entry : xci.genericPart_.entrySet()) {
-									if (entry.getKey().equals(varTableEntry.typeName)) {
-										xci.genericPart_.put(entry.getKey(), varTableEntry.varType);
-									}
-								}
-							}
-							xci = aDeducePhase.registerClassInvocation(xci);
-							@NotNull final GenerateFunctions gf  = aDeducePhase.generatePhase.getGenerateFunctions(xci.getKlass().getContext().module());
-							final WlGenerateClass            wgc = new WlGenerateClass(gf, xci, aDeducePhase.generatedClasses, aDeducePhase.getCodeRegistrar());
-							wgc.run(null); // !
-							potentialType.genType.ci = xci; // just for completeness
-							potentialType.resolve(wgc.getResult());
-							Result = true;
-						} else {
-							final int y = 2;
-							tripleo.elijah.util.Stupidity.println_err("177 not a USER_CLASS " + potentialType.getAttached());
-						}
-					}
-					if (potentialType.resolved() != null)
-						varTableEntry.resolve(potentialType.resolved());
-					else {
-						tripleo.elijah.util.Stupidity.println_err("114 Can't resolve " + varTableEntry);
-					}
-				}
-			}
-		}
-
-		resolve_var_table_entries_already = true; // TODO is this right?
-		return Result;
-	}
-
-	@Override
-	public OS_Element getElement() {
-		return getKlass();
-	}
-
-	public ClassStatement getKlass() {
-		return this.klass;
-	}
-
-	@Override
-	public void generateCode(final CodeGenerator aCodeGenerator, final GenerateResult aGr) {
-		aCodeGenerator.generate_class(this, aGr);
-	}
-
-	@Override
-	public String identityString() {
-		return String.valueOf(klass);
-	}
-
-	@Override
-	public OS_Module module() {
-		return module;
-	}
-
-	@Override
-	public void generateCode(GenerateResultEnv aFileGen, @NotNull CodeGenerator aCodeGenerator) {
-		aCodeGenerator.generate_class(aFileGen, this);
-	}
-
-	@NotNull
-	public String getNumberedName() {
-		return getKlass().getName() + "_" + getCode();
-	}
-
-	@Override
-	public Role getRole() {
-		return Role.CLASS;
-	}
-
-	@Override
-	public void register(final ICodeRegistrar aCr) {
-		throw new NotImplementedException();
-
 	}
 
 	public void fixupUserClasses(final DeduceTypes2 aDeduceTypes2, final Context aContext) {
@@ -319,8 +214,31 @@ public class EvaClass extends EvaContainerNC implements GNCoded {
 		}
 	}
 
-	public String toString() {
-		return String.format("<EvaClass %d %s>", getCode(), getName()); // TODO package, full-name
+	@Override
+	public void generateCode(final CodeGenerator aCodeGenerator, final GenerateResult aGr) {
+		aCodeGenerator.generate_class(this, aGr);
+	}
+
+	@Override
+	public void generateCode(GenerateResultEnv aFileGen, @NotNull CodeGenerator aCodeGenerator) {
+		aCodeGenerator.generate_class(aFileGen, this);
+	}
+
+	public GarishClass_Generator generator() {
+		return new GarishClass_Generator(this);
+	}
+
+	@Override
+	public OS_Element getElement() {
+		return getKlass();
+	}
+
+	public ClassStatement getKlass() {
+		return this.klass;
+	}
+
+	public LivingClass getLiving() {
+		return _living;
 	}
 
 	@NotNull
@@ -347,30 +265,130 @@ public class EvaClass extends EvaContainerNC implements GNCoded {
 		return Helpers.String_join(", ", ls);
 	}
 
-	public LivingClass getLiving() {
-		return _living;
+	@NotNull
+	public String getNumberedName() {
+		return getKlass().getName() + "_" + getCode();
 	}
 
-	public GarishClass_Generator generator() {
-		return new GarishClass_Generator(this);
+	private boolean getPragma(final String auto_construct) { // TODO this should be part of Context
+		return false;
 	}
 
-	final _Reactive_EvaClass reactiveEvaClass = new _Reactive_EvaClass();
+	@Override
+	public Role getRole() {
+		return Role.CLASS;
+	}
+
+	@Override
+	public String identityString() {
+		return String.valueOf(klass);
+	}
+
+	public boolean isGeneric() {
+		return klass.getGenericPart().size() > 0;
+	}
+
+	@Override
+	public OS_Module module() {
+		return module;
+	}
 
 	public Reactive reactive() {
 		return reactiveEvaClass;
 	}
 
-	public static class _Reactive_EvaClass extends DefaultReactive {
-		@Override
-		public <T> void addListener(final Consumer<T> t) {
-			throw new UnintendedUseException();
+	@Override
+	public void register(final ICodeRegistrar aCr) {
+		throw new NotImplementedException();
+
+	}
+
+	public boolean resolve_var_table_entries(final @NotNull DeducePhase aDeducePhase) {
+		boolean Result = false;
+
+		if (resolve_var_table_entries_already) return true;
+
+		for (final VarTableEntry varTableEntry : varTable) {
+			if (varTableEntry.potentialTypes.size() == 0 && (varTableEntry.varType == null || varTableEntry.typeName.isNull())) {
+				final TypeName tn = varTableEntry.typeName;
+				if (tn != null) {
+					if (tn instanceof final NormalTypeName tn2) {
+						if (!tn.isNull()) {
+							final LookupResultList lrl  = tn.getContext().lookup(tn2.getName());
+							OS_Element             best = lrl.chooseBest(null);
+							if (best != null) {
+								if (best instanceof AliasStatement)
+									best = DeduceLookupUtils._resolveAlias((AliasStatement) best, null);
+								assert best instanceof ClassStatement;
+								varTableEntry.varType = ((ClassStatement) best).getOS_Type();
+							} else {
+								// TODO shouldn't this already be calculated?
+							}
+						}
+					}
+				} else {
+					// must be unknown
+				}
+			} else {
+				tripleo.elijah.util.Stupidity.println_err(String.format("108 %s %s", varTableEntry.nameToken, varTableEntry.potentialTypes));
+				if (varTableEntry.potentialTypes.size() == 1) {
+					final TypeTableEntry potentialType = varTableEntry.potentialTypes.get(0);
+					if (potentialType.resolved() == null) {
+						assert potentialType.getAttached() != null;
+//						assert potentialType.getAttached().getType() == OS_Type.Type.USER_CLASS;
+						//
+						// HACK
+						//
+						if (potentialType.getAttached().getType() != OS_Type.Type.USER_CLASS) {
+							final TypeName t = potentialType.getAttached().getTypeName();
+							if (ci.genericPart_ != null) {
+								for (final Map.Entry<TypeName, OS_Type> typeEntry : ci.genericPart_.entrySet()) {
+									if (typeEntry.getKey().equals(t)) {
+										final OS_Type v = typeEntry.getValue();
+										potentialType.setAttached(v);
+										assert potentialType.getAttached().getType() == OS_Type.Type.USER_CLASS;
+										break;
+									}
+								}
+							}
+						}
+						//
+						if (potentialType.getAttached().getType() == OS_Type.Type.USER_CLASS) {
+							ClassInvocation xci = new ClassInvocation(potentialType.getAttached().getClassOf(), null);
+							{
+								for (final Map.Entry<TypeName, OS_Type> entry : xci.genericPart_.entrySet()) {
+									if (entry.getKey().equals(varTableEntry.typeName)) {
+										xci.genericPart_.put(entry.getKey(), varTableEntry.varType);
+									}
+								}
+							}
+							xci = aDeducePhase.registerClassInvocation(xci);
+							@NotNull final GenerateFunctions gf  = aDeducePhase.generatePhase.getGenerateFunctions(xci.getKlass().getContext().module());
+							final WlGenerateClass            wgc = new WlGenerateClass(gf, xci, aDeducePhase.generatedClasses, aDeducePhase.getCodeRegistrar());
+							wgc.run(null); // !
+							potentialType.genType.ci = xci; // just for completeness
+							potentialType.resolve(wgc.getResult());
+							Result = true;
+						} else {
+							final int y = 2;
+							tripleo.elijah.util.Stupidity.println_err("177 not a USER_CLASS " + potentialType.getAttached());
+						}
+					}
+					if (potentialType.resolved() != null)
+						varTableEntry.resolve(potentialType.resolved());
+					else {
+						tripleo.elijah.util.Stupidity.println_err("114 Can't resolve " + varTableEntry);
+					}
+				}
+			}
 		}
 
-		@Override
-		public <T> void addResolveListener(final Consumer<T> aO) {
-			throw new NotImplementedException();
-		}
+		resolve_var_table_entries_already = true; // TODO is this right?
+		return Result;
+	}
+
+	public String toString() {
+		return String.format("<EvaClass %d %s>", getCode(), getName()); // TODO package, full-name
 	}
 
 }

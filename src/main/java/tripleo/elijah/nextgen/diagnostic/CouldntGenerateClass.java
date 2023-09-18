@@ -41,24 +41,8 @@ public class CouldntGenerateClass implements Diagnostic {
 		return "E2000";
 	}
 
-	@Override
-	public Severity severity() {
-		return Severity.ERROR;
-	}
-
-	@Override
-	public @NotNull Locatable primary() {
-		return null;
-	}
-
-	@Override
-	public @NotNull List<Locatable> secondary() {
-		return null;
-	}
-
-	@Override
-	public void report(final PrintStream stream) {
-		NotImplementedException.raise();
+	public ClassDefinition getClassDefinition() {
+		return classDefinition;
 	}
 
 	public ClassInvocation getClassInvocation() {
@@ -69,8 +53,24 @@ public class CouldntGenerateClass implements Diagnostic {
 		return generateFunctions;
 	}
 
-	public ClassDefinition getClassDefinition() {
-		return classDefinition;
+	@Override
+	public @NotNull Locatable primary() {
+		return null;
+	}
+
+	@Override
+	public void report(final PrintStream stream) {
+		NotImplementedException.raise();
+	}
+
+	@Override
+	public @NotNull List<Locatable> secondary() {
+		return null;
+	}
+
+	@Override
+	public Severity severity() {
+		return Severity.ERROR;
 	}
 }
 

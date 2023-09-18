@@ -15,14 +15,14 @@ import java.util.List;
 public class EOT_OutputTree {
 	public List<EOT_OutputFile> list = new ArrayList<>();
 
-	public void set(final List<EOT_OutputFile> aLeof) {
-		list.clear();
-		list.addAll(aLeof);
-	}
-
 	public void _putSeq(final String aKey, final EOT_OutputFile.FileNameProvider aPath, final EG_Statement aStatement) {
 		if (false) {
 			System.out.printf("[_putSeq] %s %s {{%s}}%n", aKey, aPath.getFilename(), aStatement.getExplanation().getText());
 		}
+	}
+
+	public void set(final List<EOT_OutputFile> aLeof) {
+		list.clear();
+		list.addAll(aLeof);
 	}
 }

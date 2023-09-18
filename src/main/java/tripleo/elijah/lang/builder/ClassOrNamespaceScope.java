@@ -9,26 +9,16 @@
 
 package tripleo.elijah.lang.builder;
 
-import tripleo.elijah.lang.IExpression;
-import tripleo.elijah.lang.IdentExpression;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import tripleo.elijah.lang.IExpression;
+import tripleo.elijah.lang.IdentExpression;
 
 /**
  * Created 12/23/20 2:54 AM
  */
 public abstract class ClassOrNamespaceScope extends BaseScope {
-
-	List<IspPart> isps = new ArrayList<IspPart>();
-
-	public void addProp(final PropertyStatementBuilder ps) {
-		add(ps);
-	}
-
-	public void addInvariantStatementPart(final IdentExpression i1, final IExpression expr) {
-		isps.add(new IspPart(i1, expr));
-	}
 
 	static class IspPart {
 		final IdentExpression ident;
@@ -38,6 +28,16 @@ public abstract class ClassOrNamespaceScope extends BaseScope {
 			this.ident = i1;
 			this.expr  = expr;
 		}
+	}
+
+	List<IspPart> isps = new ArrayList<IspPart>();
+
+	public void addInvariantStatementPart(final IdentExpression i1, final IExpression expr) {
+		isps.add(new IspPart(i1, expr));
+	}
+
+	public void addProp(final PropertyStatementBuilder ps) {
+		add(ps);
 	}
 
 }

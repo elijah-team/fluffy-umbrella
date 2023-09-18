@@ -20,13 +20,13 @@ public class UnaryExpression extends AbstractExpression {
 	}
 
 	@Override
-	public boolean is_simple() {
-		return false;
+	public OS_Type getType() {
+		return null;
 	}
 
 	@Override
-	public OS_Type getType() {
-		return null;
+	public boolean is_simple() {
+		return false;
 	}
 
 	@Override

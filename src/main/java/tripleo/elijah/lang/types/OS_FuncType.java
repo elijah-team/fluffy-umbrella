@@ -36,14 +36,8 @@ public class OS_FuncType extends __Abstract_OS_Type {
 		this.function_def = functionDef;
 	}
 
-	@Override
-	public OS_Element getElement() {
-		return function_def;
-	}
-
-	@Override
-	public Type getType() {
-		return Type.FUNCTION;
+	protected boolean _isEqual(final OS_Type aType) {
+		return aType.getType() == Type.FUNCTION && function_def.equals(aType.getElement());
 	}
 
 	@Override
@@ -52,8 +46,13 @@ public class OS_FuncType extends __Abstract_OS_Type {
 	}
 
 	@Override
-	public String toString() {
-		return String.format("<OS_FuncType %s>", function_def);
+	public OS_Element getElement() {
+		return function_def;
+	}
+
+	@Override
+	public Type getType() {
+		return Type.FUNCTION;
 	}
 
 	@NotNull
@@ -76,8 +75,9 @@ public class OS_FuncType extends __Abstract_OS_Type {
 	}
 
 
-	protected boolean _isEqual(final OS_Type aType) {
-		return aType.getType() == Type.FUNCTION && function_def.equals(aType.getElement());
+	@Override
+	public String toString() {
+		return String.format("<OS_FuncType %s>", function_def);
 	}
 }
 

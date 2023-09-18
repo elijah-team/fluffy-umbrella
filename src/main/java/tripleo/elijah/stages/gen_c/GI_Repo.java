@@ -1,15 +1,16 @@
 package tripleo.elijah.stages.gen_c;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.PropertyStatement;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.instructions.ProcIA;
-
-import java.util.HashMap;
-import java.util.Map;
 
 class GI_Repo {
 	final GenerateC generateC;

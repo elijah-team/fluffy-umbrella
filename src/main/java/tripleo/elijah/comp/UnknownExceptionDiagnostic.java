@@ -22,13 +22,13 @@ class UnknownExceptionDiagnostic implements Diagnostic {
 	}
 
 	@Override
-	public Severity severity() {
-		return Severity.ERROR;
+	public @NotNull Locatable primary() {
+		return null;
 	}
 
 	@Override
-	public @NotNull Locatable primary() {
-		return null;
+	public void report(final PrintStream stream) {
+		stream.printf("%s Some error %s%n", code(), m.failure());
 	}
 
 	@Override
@@ -37,7 +37,7 @@ class UnknownExceptionDiagnostic implements Diagnostic {
 	}
 
 	@Override
-	public void report(final PrintStream stream) {
-		stream.printf("%s Some error %s%n", code(), m.failure());
+	public Severity severity() {
+		return Severity.ERROR;
 	}
 }

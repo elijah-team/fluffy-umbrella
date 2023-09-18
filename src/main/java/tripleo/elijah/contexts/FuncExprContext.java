@@ -38,6 +38,11 @@ public class FuncExprContext extends FunctionContext {
 	}
 
 	@Override
+	public Context getParent() {
+		return _parent;
+	}
+
+	@Override
 	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 		for (final FunctionItem item : carrier.getItems()) {
@@ -69,11 +74,6 @@ public class FuncExprContext extends FunctionContext {
 				return context.lookup(name, level + 1, Result, alreadySearched, false);
 		}
 		return Result;
-	}
-
-	@Override
-	public Context getParent() {
-		return _parent;
 	}
 
 }

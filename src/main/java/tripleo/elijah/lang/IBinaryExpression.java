@@ -12,12 +12,12 @@ public interface IBinaryExpression extends IExpression {
 
 	IExpression getRight();
 
+	@Deprecated
+	void set(IBinaryExpression aEx); // TODO what is this for?
+
 	void setRight(IExpression iexpression);
 
 	@Deprecated
 	void shift(ExpressionKind aType);
-
-	@Deprecated
-	void set(IBinaryExpression aEx); // TODO what is this for?
 
 }

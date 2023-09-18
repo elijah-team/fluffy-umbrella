@@ -12,6 +12,7 @@ package tripleo.elijah.stages.deduce;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.lang.ClassStatement;
@@ -59,35 +60,14 @@ class Found_Element_For_ITE {
 		deduceTypes2 = dc._deduceTypes2();
 	}
 
+	private DeduceTypes2.DeduceTypes2Injector _inj() {
+		return deduceTypes2._inj();
+	}
+
 	public void action(@NotNull IdentTableEntry ite) {
 		action2(ite);
 
 		generatedFunction.getIdent(ite).resolve();
-	}
-
-	private void action2(final @NotNull IdentTableEntry ite) {
-		final OS_Element y = ite.getResolvedElement();
-
-		if (y instanceof VariableStatement) {
-			action_VariableStatement(ite, (VariableStatement) y);
-		} else if (y instanceof ClassStatement) {
-			action_ClassStatement(ite, (ClassStatement) y);
-			central.note_Class((ClassStatement) y, ctx).attach(ite, generatedFunction);
-		} else if (y instanceof FunctionDef) {
-			action_FunctionDef(ite, (FunctionDef) y);
-		} else if (y instanceof PropertyStatement) {
-			action_PropertyStatement(ite, (PropertyStatement) y);
-		} else if (y instanceof AliasStatement) {
-			action_AliasStatement(ite, (AliasStatement) y);
-		} else {
-			//LookupResultList exp = lookupExpression();
-			LOG.info("2009 " + y);
-			return;
-		}
-
-		final String normal_path = generatedFunction.getIdentIAPathNormal(deduceTypes2._inj().new_IdentIA(ite.getIndex(), generatedFunction));
-		if (!ite.getResolveExpectation().isSatisfied())
-			ite.getResolveExpectation().satisfy(normal_path);
 	}
 
 	public void action_AliasStatement(@NotNull IdentTableEntry ite, @NotNull AliasStatement y) {
@@ -145,10 +125,6 @@ class Found_Element_For_ITE {
 			ite.getType().setAttached(attached);
 		dc.genCIForGenType2(ite.getType().genType);
 		int yy = 2;
-	}
-
-	private DeduceTypes2.DeduceTypes2Injector _inj() {
-		return deduceTypes2._inj();
 	}
 
 	public void action_VariableStatement(@NotNull IdentTableEntry ite, @NotNull VariableStatement vs) {
@@ -228,6 +204,31 @@ class Found_Element_For_ITE {
 //				LOG.err("394 typename is null " + vs.getName());
 			}
 		}
+	}
+
+	private void action2(final @NotNull IdentTableEntry ite) {
+		final OS_Element y = ite.getResolvedElement();
+
+		if (y instanceof VariableStatement) {
+			action_VariableStatement(ite, (VariableStatement) y);
+		} else if (y instanceof ClassStatement) {
+			action_ClassStatement(ite, (ClassStatement) y);
+			central.note_Class((ClassStatement) y, ctx).attach(ite, generatedFunction);
+		} else if (y instanceof FunctionDef) {
+			action_FunctionDef(ite, (FunctionDef) y);
+		} else if (y instanceof PropertyStatement) {
+			action_PropertyStatement(ite, (PropertyStatement) y);
+		} else if (y instanceof AliasStatement) {
+			action_AliasStatement(ite, (AliasStatement) y);
+		} else {
+			//LookupResultList exp = lookupExpression();
+			LOG.info("2009 " + y);
+			return;
+		}
+
+		final String normal_path = generatedFunction.getIdentIAPathNormal(deduceTypes2._inj().new_IdentIA(ite.getIndex(), generatedFunction));
+		if (!ite.getResolveExpectation().isSatisfied())
+			ite.getResolveExpectation().satisfy(normal_path);
 	}
 
 	/**

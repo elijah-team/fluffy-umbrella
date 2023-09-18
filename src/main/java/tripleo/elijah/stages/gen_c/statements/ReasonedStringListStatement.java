@@ -1,14 +1,29 @@
 package tripleo.elijah.stages.gen_c.statements;
 
-import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.nextgen.outputstatement.EG_Statement;
-import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.jetbrains.annotations.Nullable;
+
+import tripleo.elijah.nextgen.outputstatement.EG_Statement;
+import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
+
 public class ReasonedStringListStatement implements EG_Statement {
+	private final List<IReasonedString> rss = new ArrayList<>();
+
+	public void append(final EG_Statement aText, final String aReason) {
+		rss.add(new ReasonedStatementString(aText, aReason));
+	}
+
+	public void append(final String aText, final String aReason) {
+		rss.add(new ReasonedString(aText, aReason));
+	}
+
+	public void append(final Supplier<String> aText, final String aReason) {
+		rss.add(new ReasonedSuppliedString(aText, aReason));
+	}
+
 	@Override
 	public EX_Explanation getExplanation() {
 		return EX_Explanation.withMessage("xyz");
@@ -22,18 +37,4 @@ public class ReasonedStringListStatement implements EG_Statement {
 		}
 		return sb2.toString();
 	}
-
-	public void append(final String aText, final String aReason) {
-		rss.add(new ReasonedString(aText, aReason));
-	}
-
-	public void append(final Supplier<String> aText, final String aReason) {
-		rss.add(new ReasonedSuppliedString(aText, aReason));
-	}
-
-	public void append(final EG_Statement aText, final String aReason) {
-		rss.add(new ReasonedStatementString(aText, aReason));
-	}
-
-	private final List<IReasonedString> rss = new ArrayList<>();
 }

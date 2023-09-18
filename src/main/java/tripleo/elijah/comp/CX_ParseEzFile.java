@@ -16,20 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 class CX_ParseEzFile {
-	public static Operation<CompilerInstructions> parseAndCache(final EzSpec aSpec, final EzCache aEzCache, final String absolutePath) {
-		final Operation<CompilerInstructions> cio = parseEzFile_(aSpec);
-
-		if (cio.mode() == Mode.SUCCESS) {
-			aEzCache.put(aSpec, absolutePath, cio.success());
-		}
-
-		return cio;
-	}
-
-	public static Operation<CompilerInstructions> parseEzFile_(final EzSpec spec) {
-		return calculate(spec.f(), spec.s());
-	}
-
 	private static Operation<CompilerInstructions> calculate(final String aAbsolutePath, final InputStream aReadFile) {
 		final EzLexer lexer = new EzLexer(aReadFile);
 		lexer.setFilename(aAbsolutePath);
@@ -45,13 +31,14 @@ class CX_ParseEzFile {
 		return Operation.success(instructions);
 	}
 
-	public static Operation<CompilerInstructions> parseEzFile(final @NotNull File aFile, final Compilation aCompilation) {
-		try (final InputStream readFile = aCompilation.getIO().readFile(aFile)) {
-			final Operation<CompilerInstructions> cio = calculate(aFile.getAbsolutePath(), readFile);
-			return cio;
-		} catch (final IOException aE) {
-			return Operation.failure(aE);
+	public static Operation<CompilerInstructions> parseAndCache(final EzSpec aSpec, final EzCache aEzCache, final String absolutePath) {
+		final Operation<CompilerInstructions> cio = parseEzFile_(aSpec);
+
+		if (cio.mode() == Mode.SUCCESS) {
+			aEzCache.put(aSpec, absolutePath, cio.success());
 		}
+
+		return cio;
 	}
 
 	public static Operation<CompilerInstructions> parseAndCache(final @NotNull File aFile, final Compilation aCompilation, final EzCache aEzCache) {
@@ -68,5 +55,18 @@ class CX_ParseEzFile {
 		} catch (final IOException aE) {
 			return Operation.failure(aE);
 		}
+	}
+
+	public static Operation<CompilerInstructions> parseEzFile(final @NotNull File aFile, final Compilation aCompilation) {
+		try (final InputStream readFile = aCompilation.getIO().readFile(aFile)) {
+			final Operation<CompilerInstructions> cio = calculate(aFile.getAbsolutePath(), readFile);
+			return cio;
+		} catch (final IOException aE) {
+			return Operation.failure(aE);
+		}
+	}
+
+	public static Operation<CompilerInstructions> parseEzFile_(final EzSpec spec) {
+		return calculate(spec.f(), spec.s());
 	}
 }

@@ -8,11 +8,11 @@ import tripleo.util.buffer.Buffer;
 public interface C2C_Result {
 	Buffer getBuffer();
 
-	EG_Statement getStatement();
-
-	GenerateResult.TY ty();
-
 	OS_Module getDefinedModule();
 
+	EG_Statement getStatement();
+
 	WhyNotGarish_BaseFunction getWhyNotGarishFunction();
+
+	GenerateResult.TY ty();
 }

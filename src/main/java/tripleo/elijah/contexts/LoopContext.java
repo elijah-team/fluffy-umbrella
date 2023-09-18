@@ -43,6 +43,11 @@ public class LoopContext extends Context {
 	}
 
 	@Override
+	public Context getParent() {
+		return _parent;
+	}
+
+	@Override
 	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 
@@ -83,11 +88,6 @@ public class LoopContext extends Context {
 		}
 		return Result;
 
-	}
-
-	@Override
-	public Context getParent() {
-		return _parent;
 	}
 
 }

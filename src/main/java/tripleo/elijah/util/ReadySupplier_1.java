@@ -1,8 +1,8 @@
 package tripleo.elijah.util;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Objects;
+
+import org.jetbrains.annotations.NotNull;
 
 public class ReadySupplier_1<T> implements ReadySupplier<T> {
 	private final T t;

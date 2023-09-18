@@ -35,48 +35,37 @@ import java.util.List;
  * Created 12/30/20 2:14 AM
  */
 public class PipelineLogic implements AccessBus.AB_ModuleListListener {
-	public final GeneratePhase generatePhase;
-	public final DeducePhase   dp;
-	final        AccessBus     __ab;
+	public class ModuleCompletableProcess implements CompletableProcess<WorldModule> {
+		@Override
+		public void add(final WorldModule item) {
+			throw new NotImplementedException();
 
-	private final ElLog.Verbosity verbosity;
-
-	private final List<OS_Module> __mods_BACKING = new ArrayList<OS_Module>();
-	final         EIT_ModuleList  mods           = new EIT_ModuleList(__mods_BACKING);
-
-	public PipelineLogic(final AccessBus iab) {
-		__ab = iab; // we're watching you
-
-		final CompilationEnclosure ce = iab.getCompilation().getCompilationEnclosure();
-		final ElLog.Verbosity      ts = ce.testSilence();
-
-//		ce.providePipelineLogic(this);
-
-		verbosity     = ts;
-		generatePhase = new GeneratePhase(ce, this);
-		dp            = new DeducePhase(ce, this);
-
-		// FIXME examine if this is necessary and possibly or actually elsewhere
-		//  and/or just another section
-		subscribeMods(this);
-	}
-
-	public void subscribeMods(final AccessBus.AB_ModuleListListener l) {
-		__ab.subscribe_moduleList(l);
-	}
-
-	/*
-	public void generate__new(List<GeneratedNode> lgc) {
-		final WorkManager wm = new WorkManager();
-		// README use any errSink, they should all be the same
-		for (OS_Module mod : mods.getMods()) {
-			__ab.doModule(lgc, wm, mod, this);
 		}
 
-		__ab.resolveGenerateResult(gr);
-	}
-*/
+		@Override
+		public void complete() {
+			throw new NotImplementedException();
 
+		}
+
+		@Override
+		public void error(final Diagnostic d) {
+			throw new NotImplementedException();
+
+		}
+
+		@Override
+		public void preComplete() {
+			throw new NotImplementedException();
+
+		}
+
+		@Override
+		public void start() {
+			throw new NotImplementedException();
+
+		}
+	}
 	public static void debug_buffers(@NotNull final GenerateResult gr, final PrintStream stream) {
 		for (final GenerateResultItem ab : gr.results()) {
 			stream.println("---------------------------------------------------------------");
@@ -88,7 +77,6 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 			stream.println("---------------------------------------------------------------");
 		}
 	}
-
 	public static void resolveCheck(final DeducePhase.@NotNull GeneratedClasses lgc) {
 		for (final EvaNode evaNode : lgc) {
 			if (evaNode instanceof EvaFunction) {
@@ -125,39 +113,44 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 		}
 	}
 
-	public void addModule(final WorldModule m) {
-		mods.add(m.module());
+	public final GeneratePhase generatePhase;
+
+	public final DeducePhase   dp;
+	final        AccessBus     __ab;
+
+	private final ElLog.Verbosity verbosity;
+
+	private final List<OS_Module> __mods_BACKING = new ArrayList<OS_Module>();
+
+	/*
+	public void generate__new(List<GeneratedNode> lgc) {
+		final WorkManager wm = new WorkManager();
+		// README use any errSink, they should all be the same
+		for (OS_Module mod : mods.getMods()) {
+			__ab.doModule(lgc, wm, mod, this);
+		}
+
+		__ab.resolveGenerateResult(gr);
 	}
+*/
 
-	public ElLog.Verbosity getVerbosity() {
-		return verbosity;
-	}
+	final         EIT_ModuleList  mods           = new EIT_ModuleList(__mods_BACKING);
 
-	public void addLog(final ElLog aLog) {
-		__ab.getCompilation().elLogs.add(aLog);
-	}
+	public PipelineLogic(final AccessBus iab) {
+		__ab = iab; // we're watching you
 
-	@Override
-	public void mods_slot(final @NotNull EIT_ModuleList aModuleList) {
-		aModuleList.process__PL(this::getGenerateFunctions, this);
+		final CompilationEnclosure ce = iab.getCompilation().getCompilationEnclosure();
+		final ElLog.Verbosity      ts = ce.testSilence();
 
-		dp.finish_default();
-	}
+//		ce.providePipelineLogic(this);
 
-	@NotNull GenerateFunctions getGenerateFunctions(final OS_Module mod) {
-		return generatePhase.getGenerateFunctions(mod);
-	}
+		verbosity     = ts;
+		generatePhase = new GeneratePhase(ce, this);
+		dp            = new DeducePhase(ce, this);
 
-	public GenerateResult getGR() {
-		return __ab.gr;
-	}
-
-	public List<EvaNode> generatedClassesCopy() {
-		return dp.generatedClasses.copy();
-	}
-
-	public void addModule(OS_Module aOSModule) {
-		mods.add(aOSModule);
+		// FIXME examine if this is necessary and possibly or actually elsewhere
+		//  and/or just another section
+		subscribeMods(this);
 	}
 
 	public ModuleCompletableProcess _mcp() {
@@ -169,36 +162,43 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 		throw new NotImplementedException();
 	}
 
-	public class ModuleCompletableProcess implements CompletableProcess<WorldModule> {
-		@Override
-		public void add(final WorldModule item) {
-			throw new NotImplementedException();
+	public void addLog(final ElLog aLog) {
+		__ab.getCompilation().elLogs.add(aLog);
+	}
 
-		}
+	public void addModule(OS_Module aOSModule) {
+		mods.add(aOSModule);
+	}
 
-		@Override
-		public void complete() {
-			throw new NotImplementedException();
+	public void addModule(final WorldModule m) {
+		mods.add(m.module());
+	}
 
-		}
+	public List<EvaNode> generatedClassesCopy() {
+		return dp.generatedClasses.copy();
+	}
 
-		@Override
-		public void error(final Diagnostic d) {
-			throw new NotImplementedException();
+	@NotNull GenerateFunctions getGenerateFunctions(final OS_Module mod) {
+		return generatePhase.getGenerateFunctions(mod);
+	}
 
-		}
+	public GenerateResult getGR() {
+		return __ab.gr;
+	}
 
-		@Override
-		public void preComplete() {
-			throw new NotImplementedException();
+	public ElLog.Verbosity getVerbosity() {
+		return verbosity;
+	}
 
-		}
+	@Override
+	public void mods_slot(final @NotNull EIT_ModuleList aModuleList) {
+		aModuleList.process__PL(this::getGenerateFunctions, this);
 
-		@Override
-		public void start() {
-			throw new NotImplementedException();
+		dp.finish_default();
+	}
 
-		}
+	public void subscribeMods(final AccessBus.AB_ModuleListListener l) {
+		__ab.subscribe_moduleList(l);
 	}
 }
 

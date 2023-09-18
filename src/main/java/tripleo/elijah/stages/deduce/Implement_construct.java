@@ -1,8 +1,15 @@
 package tripleo.elijah.stages.deduce;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import com.google.common.base.Preconditions;
+
 import tripleo.elijah.lang.ClassItem;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.ConstructorDef;
@@ -42,16 +49,69 @@ import tripleo.elijah.util.Operation;
 import tripleo.elijah.util.Operation2;
 import tripleo.elijah.work.WorkList;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-
 public class Implement_construct {
+	public class ICH {
+		private final GenType genType;
+
+		public ICH(final GenType aGenType) {
+			genType = aGenType;
+		}
+
+		@NotNull
+		ClassInvocation getClassInvocation(final @Nullable String constructorName,
+										   final @NotNull NormalTypeName aTyn1,
+										   final @Nullable GenType aGenType,
+										   final @NotNull ClassStatement aBest) {
+			final ClassInvocation clsinv;
+			if (aGenType != null && aGenType.getCi() != null) {
+				assert aGenType.getCi() instanceof ClassInvocation;
+				clsinv = (ClassInvocation) aGenType.getCi();
+			} else {
+				final Operation<ClassInvocation> oi = DeduceTypes2.ClassInvocationMake.withGenericPart(aBest, constructorName, aTyn1, deduceTypes2);
+				assert oi.mode() == Mode.SUCCESS;
+
+				ClassInvocation clsinv2 = oi.success();
+				clsinv = deduceTypes2.phase.registerClassInvocation(clsinv2);
+			}
+			return clsinv;
+		}
+
+		@NotNull ClassStatement lookupTypeName(final @NotNull NormalTypeName normalTypeName, final @NotNull String typeName) {
+			final OS_Element best;
+			if (genType != null && genType.getResolved() != null) {
+				best = genType.getResolved().getClassOf();
+			} else {
+				LookupResultList lrl = normalTypeName.getContext().lookup(typeName);
+				best = lrl.chooseBest(null);
+			}
+			assert best instanceof ClassStatement;
+			return (ClassStatement) best;
+		}
+	}
 	private final InstructionArgument expression;
 	private final BaseEvaFunction     generatedFunction;
 	private final DeduceTypes2        deduceTypes2;
+
 	private final Instruction         instruction;
+
+	private final @NotNull ProcTableEntry pte;
+
+	public Implement_construct(final DeduceTypes2 aDeduceTypes2, BaseEvaFunction aGeneratedFunction, Instruction aInstruction) {
+		deduceTypes2      = aDeduceTypes2;
+		generatedFunction = aGeneratedFunction;
+		instruction       = aInstruction;
+
+		// README all these asserts are redundant, I know
+		assert instruction.getName() == InstructionName.CONSTRUCT;
+		assert instruction.getArg(0) instanceof ProcIA;
+
+		final int pte_num = ((ProcIA) instruction.getArg(0)).index();
+		pte = generatedFunction.getProcTableEntry(pte_num);
+
+		expression = pte.expression_num;
+
+		assert expression instanceof IntegerIA || expression instanceof IdentIA;
+	}
 
 	private void _implement_construct_type(final @Nullable Constructable co,
 										   final @Nullable String constructorName,
@@ -104,36 +164,8 @@ public class Implement_construct {
 		}
 	}
 
-	private final @NotNull ProcTableEntry pte;
-
-	public Implement_construct(final DeduceTypes2 aDeduceTypes2, BaseEvaFunction aGeneratedFunction, Instruction aInstruction) {
-		deduceTypes2      = aDeduceTypes2;
-		generatedFunction = aGeneratedFunction;
-		instruction       = aInstruction;
-
-		// README all these asserts are redundant, I know
-		assert instruction.getName() == InstructionName.CONSTRUCT;
-		assert instruction.getArg(0) instanceof ProcIA;
-
-		final int pte_num = ((ProcIA) instruction.getArg(0)).index();
-		pte = generatedFunction.getProcTableEntry(pte_num);
-
-		expression = pte.expression_num;
-
-		assert expression instanceof IntegerIA || expression instanceof IdentIA;
-	}
-
-	private void genTypeCI_and_ResolveTypeToClass(@NotNull final Constructable co, final @NotNull ClassInvocation aClsinv) {
-		if (co instanceof final @Nullable IdentTableEntry idte3) {
-			idte3.getType().genTypeCI(aClsinv);
-			aClsinv.resolvePromise().then(
-					idte3::resolveTypeToClass);
-		} else if (co instanceof final @NotNull VariableTableEntry vte) {
-			vte.getType().genTypeCI(aClsinv);
-			aClsinv.resolvePromise().then(
-					vte::resolveTypeToClass
-										 );
-		}
+	private DeduceTypes2.DeduceTypes2Injector _inj() {
+		return deduceTypes2._inj();
 	}
 
 	public void action(final Context aContext) throws FCA_Stop {
@@ -232,54 +264,52 @@ public class Implement_construct {
 		}
 	}
 
-	private boolean action_IdentIA___0001_5(final @NotNull DeducePath deducePath, final @NotNull DeducePath.MemberContext ectx, final int i, final @NotNull IdentTableEntry idte2, final String s) {
-		final DeduceElement3_IdentTableEntry de3_idte      = deduceTypes2._zero_getIdent(idte2, generatedFunction, deduceTypes2);
-		final DeduceElement3_Type            de3_idte_type = de3_idte.type();
+	private void action_IdentIA___0001_1(final @NotNull IdentTableEntry idte, final @NotNull DeducePath deducePath, final @NotNull DeduceProcCall dpc, final @NotNull DeduceElement target, final int i, final @NotNull IdentTableEntry idte2, final String s) {
+		@Nullable GenType type = deducePath.getType(i);
 
-		final OS_Type ty = de3_idte_type.genType().getTypeName();
+		// FIXME or idte2??
+		if (idte.getType() == null) {
+			final OS_UserType osType = _inj().new_OS_UserType(((VariableStatement) target.element()).typeName());
+			idte.setType(dpc._generatedFunction().newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, osType));
 
-		Preconditions.checkState(ty.getType() == OS_Type.Type.USER);
+			type = idte.getType().genType;
 
-		final @NotNull Operation2<GenType> resolved = de3_idte_type.resolved(ectx);
-
-		if (resolved.mode() == Mode.FAILURE) {
-			deduceTypes2._errSink().reportDiagnostic(resolved.failure());
-		} else {
-			action_IdentIA___0001_4(deducePath, i, idte2, s, ty, resolved);
-			return true;
+			deducePath.injectType(i, type);
 		}
-		return false;
+
+		if (type.getNonGenericTypeName() != null) {
+			if (((NormalTypeName) type.getNonGenericTypeName()).getGenericPart().size() > 0) {
+				// goal: create an equavalent (Regular)TypeName without the genericPart
+				// method: copy the context and the name
+				final RegularTypeName rtn = _inj().new_RegularTypeNameImpl(type.getNonGenericTypeName().getContext());
+				rtn.setName(((NormalTypeName) type.getNonGenericTypeName()).getRealName());
+				type.setNonGenericTypeName(rtn);
+			}
+			//type.nonGenericTypeName = Objects.requireNonNull(deducePath.getType(i - 1)).nonGenericTypeName; // HACK. not guararnteed to work!
+		}
+
+		implement_construct_type(idte2, type.getTypeName(), s, type);
+
+		final VariableTableEntry x = (VariableTableEntry) (deducePath.getEntry(i - 1));
+		if (type.getCi() == null && type.getNode() == null)
+			type.genCIForGenType2(deduceTypes2);
+		assert x != null;
+		x.resolveTypeToClass(type.getNode());
 	}
 
-	private void action_IdentIA___0001_4(final @NotNull DeducePath deducePath,
-	                                     final int i,
-	                                     final @NotNull IdentTableEntry idte2,
-	                                     final String s,
-	                                     final @NotNull OS_Type ty,
-	                                     final Operation2<GenType> resolved) {
-		GenType success = resolved.success();
+	private void action_IdentIA___0001_2(final @NotNull DeducePath deducePath, final int i, final @NotNull IdentTableEntry idte2, final String s) {
+		@Nullable GenType type = deducePath.getType(i);
+		if (type.getNonGenericTypeName() == null) {
+			type.setNonGenericTypeName(Objects.requireNonNull(deducePath.getType(i - 1)).getNonGenericTypeName()); // HACK. not guararnteed to work!
+		}
+		@NotNull OS_Type ty = _inj().new_OS_UserType(type.getNonGenericTypeName());
+		implement_construct_type(idte2, ty, s, type);
 
-		idte2.setStatus(BaseTableEntry.Status.KNOWN, _inj().new_GenericElementHolder(success.getResolved().getElement()));
-
-		deduceTypes2.LOG.err("892 resolved: " + success);
-
-		implement_construct_type(idte2, ty, s, null);
-
-/*
-						if (success == null) {
-							try {
-								success = resolve_type(ty, ectx);
-							} catch (ResolveError aResolveError) {
-								errSink.reportDiagnostic(aResolveError);
-//									aResolveError.printStackTrace();
-								assert false;
-							}
-						}
-*/
 		final VariableTableEntry x = (VariableTableEntry) (deducePath.getEntry(i - 1));
-		x.resolveType(success);
-		//success.genCIForGenType2(DeduceTypes2.this);
-		return;
+		if (type.getCi() == null && type.getNode() == null)
+			type.genCIForGenType2(deduceTypes2);
+		assert x != null;
+		x.resolveTypeToClass(type.getNode());
 	}
 
 	private void action_IdentIA___0001_3(final @NotNull DeducePath deducePath, final @Nullable OS_Element el3, final int i, final @NotNull IdentTableEntry idte2, final String s) {
@@ -320,52 +350,54 @@ public class Implement_construct {
 		return;
 	}
 
-	private void action_IdentIA___0001_2(final @NotNull DeducePath deducePath, final int i, final @NotNull IdentTableEntry idte2, final String s) {
-		@Nullable GenType type = deducePath.getType(i);
-		if (type.getNonGenericTypeName() == null) {
-			type.setNonGenericTypeName(Objects.requireNonNull(deducePath.getType(i - 1)).getNonGenericTypeName()); // HACK. not guararnteed to work!
-		}
-		@NotNull OS_Type ty = _inj().new_OS_UserType(type.getNonGenericTypeName());
-		implement_construct_type(idte2, ty, s, type);
+	private void action_IdentIA___0001_4(final @NotNull DeducePath deducePath,
+	                                     final int i,
+	                                     final @NotNull IdentTableEntry idte2,
+	                                     final String s,
+	                                     final @NotNull OS_Type ty,
+	                                     final Operation2<GenType> resolved) {
+		GenType success = resolved.success();
 
+		idte2.setStatus(BaseTableEntry.Status.KNOWN, _inj().new_GenericElementHolder(success.getResolved().getElement()));
+
+		deduceTypes2.LOG.err("892 resolved: " + success);
+
+		implement_construct_type(idte2, ty, s, null);
+
+/*
+						if (success == null) {
+							try {
+								success = resolve_type(ty, ectx);
+							} catch (ResolveError aResolveError) {
+								errSink.reportDiagnostic(aResolveError);
+//									aResolveError.printStackTrace();
+								assert false;
+							}
+						}
+*/
 		final VariableTableEntry x = (VariableTableEntry) (deducePath.getEntry(i - 1));
-		if (type.getCi() == null && type.getNode() == null)
-			type.genCIForGenType2(deduceTypes2);
-		assert x != null;
-		x.resolveTypeToClass(type.getNode());
+		x.resolveType(success);
+		//success.genCIForGenType2(DeduceTypes2.this);
+		return;
 	}
 
-	private void action_IdentIA___0001_1(final @NotNull IdentTableEntry idte, final @NotNull DeducePath deducePath, final @NotNull DeduceProcCall dpc, final @NotNull DeduceElement target, final int i, final @NotNull IdentTableEntry idte2, final String s) {
-		@Nullable GenType type = deducePath.getType(i);
+	private boolean action_IdentIA___0001_5(final @NotNull DeducePath deducePath, final @NotNull DeducePath.MemberContext ectx, final int i, final @NotNull IdentTableEntry idte2, final String s) {
+		final DeduceElement3_IdentTableEntry de3_idte      = deduceTypes2._zero_getIdent(idte2, generatedFunction, deduceTypes2);
+		final DeduceElement3_Type            de3_idte_type = de3_idte.type();
 
-		// FIXME or idte2??
-		if (idte.getType() == null) {
-			final OS_UserType osType = _inj().new_OS_UserType(((VariableStatement) target.element()).typeName());
-			idte.setType(dpc._generatedFunction().newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, osType));
+		final OS_Type ty = de3_idte_type.genType().getTypeName();
 
-			type = idte.getType().genType;
+		Preconditions.checkState(ty.getType() == OS_Type.Type.USER);
 
-			deducePath.injectType(i, type);
+		final @NotNull Operation2<GenType> resolved = de3_idte_type.resolved(ectx);
+
+		if (resolved.mode() == Mode.FAILURE) {
+			deduceTypes2._errSink().reportDiagnostic(resolved.failure());
+		} else {
+			action_IdentIA___0001_4(deducePath, i, idte2, s, ty, resolved);
+			return true;
 		}
-
-		if (type.getNonGenericTypeName() != null) {
-			if (((NormalTypeName) type.getNonGenericTypeName()).getGenericPart().size() > 0) {
-				// goal: create an equavalent (Regular)TypeName without the genericPart
-				// method: copy the context and the name
-				final RegularTypeName rtn = _inj().new_RegularTypeNameImpl(type.getNonGenericTypeName().getContext());
-				rtn.setName(((NormalTypeName) type.getNonGenericTypeName()).getRealName());
-				type.setNonGenericTypeName(rtn);
-			}
-			//type.nonGenericTypeName = Objects.requireNonNull(deducePath.getType(i - 1)).nonGenericTypeName; // HACK. not guararnteed to work!
-		}
-
-		implement_construct_type(idte2, type.getTypeName(), s, type);
-
-		final VariableTableEntry x = (VariableTableEntry) (deducePath.getEntry(i - 1));
-		if (type.getCi() == null && type.getNode() == null)
-			type.genCIForGenType2(deduceTypes2);
-		assert x != null;
-		x.resolveTypeToClass(type.getNode());
+		return false;
 	}
 
 	public void action_IntegerIA() {
@@ -378,6 +410,19 @@ public class Implement_construct {
 			final OS_Type ty2 = vte.getType().genType.getTypeName();
 			assert ty2 != null;
 			implement_construct_type(vte, ty2, null, vte.getType().genType);
+		}
+	}
+
+	private void genTypeCI_and_ResolveTypeToClass(@NotNull final Constructable co, final @NotNull ClassInvocation aClsinv) {
+		if (co instanceof final @Nullable IdentTableEntry idte3) {
+			idte3.getType().genTypeCI(aClsinv);
+			aClsinv.resolvePromise().then(
+					idte3::resolveTypeToClass);
+		} else if (co instanceof final @NotNull VariableTableEntry vte) {
+			vte.getType().genTypeCI(aClsinv);
+			aClsinv.resolvePromise().then(
+					vte::resolveTypeToClass
+										 );
 		}
 	}
 
@@ -427,49 +472,6 @@ public class Implement_construct {
 					deduceTypes2.wm.addJobs(wl);
 				});
 			}
-		}
-	}
-
-	private DeduceTypes2.DeduceTypes2Injector _inj() {
-		return deduceTypes2._inj();
-	}
-
-	public class ICH {
-		private final GenType genType;
-
-		public ICH(final GenType aGenType) {
-			genType = aGenType;
-		}
-
-		@NotNull
-		ClassInvocation getClassInvocation(final @Nullable String constructorName,
-										   final @NotNull NormalTypeName aTyn1,
-										   final @Nullable GenType aGenType,
-										   final @NotNull ClassStatement aBest) {
-			final ClassInvocation clsinv;
-			if (aGenType != null && aGenType.getCi() != null) {
-				assert aGenType.getCi() instanceof ClassInvocation;
-				clsinv = (ClassInvocation) aGenType.getCi();
-			} else {
-				final Operation<ClassInvocation> oi = DeduceTypes2.ClassInvocationMake.withGenericPart(aBest, constructorName, aTyn1, deduceTypes2);
-				assert oi.mode() == Mode.SUCCESS;
-
-				ClassInvocation clsinv2 = oi.success();
-				clsinv = deduceTypes2.phase.registerClassInvocation(clsinv2);
-			}
-			return clsinv;
-		}
-
-		@NotNull ClassStatement lookupTypeName(final @NotNull NormalTypeName normalTypeName, final @NotNull String typeName) {
-			final OS_Element best;
-			if (genType != null && genType.getResolved() != null) {
-				best = genType.getResolved().getClassOf();
-			} else {
-				LookupResultList lrl = normalTypeName.getContext().lookup(typeName);
-				best = lrl.chooseBest(null);
-			}
-			assert best instanceof ClassStatement;
-			return (ClassStatement) best;
 		}
 	}
 }

@@ -8,10 +8,18 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.mock;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static tripleo.elijah.util.Helpers.List_of;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.PipelineLogic;
@@ -38,13 +46,16 @@ import tripleo.elijah.stages.instructions.VariableTableType;
 import tripleo.elijah.test_help.Boilerplate;
 import tripleo.elijah.util.Helpers;
 
-import static org.easymock.EasyMock.*;
-import static tripleo.elijah.util.Helpers.List_of;
-
 public class GetIdentIAPathTest_ForC {
 
 	EvaFunction gf;
 	OS_Module         mod;
+
+	String getIdentIAPath(final IdentIA ia2, final EvaFunction generatedFunction) {
+		final CReference reference = new CReference(null, null);
+		reference.getIdentIAPath(ia2, Generate_Code_For_Method.AOG.GET, null); // TODO is null correct?
+		return reference.build();
+	}
 
 	@Before
 	public void setUp() throws Exception {
@@ -75,12 +86,6 @@ public class GetIdentIAPathTest_ForC {
 		final IdentIA ident_ia = new IdentIA(ite_index, gf);
 		final String  x        = getIdentIAPath(ident_ia, gf);
 		Assert.assertEquals("vvx->vmfoo", x);
-	}
-
-	String getIdentIAPath(final IdentIA ia2, final EvaFunction generatedFunction) {
-		final CReference reference = new CReference(null, null);
-		reference.getIdentIAPath(ia2, Generate_Code_For_Method.AOG.GET, null); // TODO is null correct?
-		return reference.build();
 	}
 
 	@Test

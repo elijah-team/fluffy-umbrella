@@ -18,12 +18,6 @@ import java.util.List;
  * Created 9/6/20 12:04 PM
  */
 public class GenerateStatement {
-	public final List<Directive> dirs = new ArrayList<Directive>();
-
-	public void addDirective(final Token token, final IExpression expression) {
-		dirs.add(new Directive(token, expression));
-	}
-
 	public class Directive {
 
 		private final IExpression expression;
@@ -41,6 +35,12 @@ public class GenerateStatement {
 		public String getName() {
 			return name;
 		}
+	}
+
+	public final List<Directive> dirs = new ArrayList<Directive>();
+
+	public void addDirective(final Token token, final IExpression expression) {
+		dirs.add(new Directive(token, expression));
 	}
 }
 

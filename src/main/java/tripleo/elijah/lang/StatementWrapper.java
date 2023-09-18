@@ -15,8 +15,8 @@ public class StatementWrapper implements StatementItem, FunctionItem, OS_Element
 	}
 
 	@Override
-	public String toString() {
-		return expr.toString();
+	public Context getContext() {
+		return _ctx;
 	}
 
 	/**
@@ -27,18 +27,18 @@ public class StatementWrapper implements StatementItem, FunctionItem, OS_Element
 	}
 
 	@Override
-	public void visitGen(final ElElementVisitor visit) {
-		visit.visitStatementWrapper(this);
-	}
-
-	@Override
-	public Context getContext() {
-		return _ctx;
-	}
-
-	@Override
 	public OS_Element getParent() {
 		return _parent;
+	}
+
+	@Override
+	public String toString() {
+		return expr.toString();
+	}
+
+	@Override
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitStatementWrapper(this);
 	}
 
 }

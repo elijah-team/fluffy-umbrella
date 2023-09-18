@@ -9,6 +9,7 @@
 package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.nextgen.reactive.Reactive;
 import tripleo.elijah.util.NotImplementedException;
 
@@ -19,24 +20,24 @@ public abstract class BaseTableEntry1 extends BaseTableEntry {
 
 	private ProcTableEntry callable_pte;
 
-	public @Nullable ProcTableEntry getCallablePTE() {
+	public ProcTableEntry _callable_pte() {
 		return callable_pte;
-	}
-
-	public void setCallablePTE(final ProcTableEntry aProcTableEntry) {
-		callable_pte = aProcTableEntry;
 	}
 
 	public BaseEvaFunction _generatedFunction() {
 		return __gf;
 	}
 
+	public @Nullable ProcTableEntry getCallablePTE() {
+		return callable_pte;
+	}
+
 	public Reactive reactive() {
 		throw new NotImplementedException();
 	}
 
-	public ProcTableEntry _callable_pte() {
-		return callable_pte;
+	public void setCallablePTE(final ProcTableEntry aProcTableEntry) {
+		callable_pte = aProcTableEntry;
 	}
 }
 

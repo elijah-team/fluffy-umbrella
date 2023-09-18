@@ -32,13 +32,23 @@ public class TmpSSACtxNode {
 		this._ctx = cctx;
 	}
 
-	public String text() {
-		return ExpressionNode.getStringPCE((ProcedureCallExpression) getExprType());
-		//"--------------------"; // TODO hardcoded
+	public void GenLocalAgn(final CompilerContext cctx, final GenBuffer gbn) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public CompilerContext getCtx() {
+		return _ctx;
 	}
 
 	public IExpression getExprType() {
 		return __expr;
+	}
+
+	public IExpressionNode getType() {
+		if (_node != null)
+			return _node;
+		return new ExpressionNode(getExprType());
 	}
 
 	public void setExprType(final IExpression __expr) {
@@ -49,19 +59,9 @@ public class TmpSSACtxNode {
 		this._node = node;
 	}
 
-	public IExpressionNode getType() {
-		if (_node != null)
-			return _node;
-		return new ExpressionNode(getExprType());
-	}
-
-	public CompilerContext getCtx() {
-		return _ctx;
-	}
-
-	public void GenLocalAgn(final CompilerContext cctx, final GenBuffer gbn) {
-		// TODO Auto-generated method stub
-
+	public String text() {
+		return ExpressionNode.getStringPCE((ProcedureCallExpression) getExprType());
+		//"--------------------"; // TODO hardcoded
 	}
 }
 

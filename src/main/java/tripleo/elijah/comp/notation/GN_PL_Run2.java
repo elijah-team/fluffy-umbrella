@@ -14,7 +14,28 @@ import tripleo.elijah.world.impl.DefaultWorldModule;
 import java.util.function.Consumer;
 
 public class GN_PL_Run2 implements GN_Notable, @NotNull EventualRegister {
-//	private final @NotNull WorldModule mod;
+interface IClassGenerator {}
+
+	public record GenerateFunctionsRequest(IClassGenerator classGenerator,
+										   DefaultWorldModule worldModule
+	) {
+		public ModuleThing mt() {
+			return worldModule.thing();
+		}
+
+		public OS_Module mod() {
+			return worldModule.module();
+		}
+	}
+
+	@Contract("_ -> new")
+	@SuppressWarnings("unused")
+	public static @NotNull GN_PL_Run2 getFactoryEnv(GN_Env env1) {
+		var env = (GN_PL_Run2_Env) env1;
+		return new GN_PL_Run2(env.pipelineLogic(), env.mod(), env.ce(), env.worldConsumer());
+	}
+
+	//	private final @NotNull WorldModule mod;
 //	private final PipelineLogic         pipelineLogic;
 //	private final CompilationEnclosure  ce;
 //	private final DefaultClassGenerator dcg;
@@ -31,6 +52,20 @@ public class GN_PL_Run2 implements GN_Notable, @NotNull EventualRegister {
 //		worldConsumer = aWorldConsumer;
 //
 //		dcg = new DefaultClassGenerator(pipelineLogic.dp);
+	}
+
+	private void _finish() {
+//		pipelineLogic.checkFinishEventuals();
+	}
+
+	@Override
+	public void checkFinishEventuals() {
+
+	}
+
+	@Override
+	public <P> void register(final Eventual<P> e) {
+
 	}
 
 	@Override
@@ -55,40 +90,5 @@ public class GN_PL_Run2 implements GN_Notable, @NotNull EventualRegister {
 //		});
 //
 		_finish();
-	}
-
-	private void _finish() {
-//		pipelineLogic.checkFinishEventuals();
-	}
-
-	@Override
-	public <P> void register(final Eventual<P> e) {
-
-	}
-
-	@Override
-	public void checkFinishEventuals() {
-
-	}
-
-	interface IClassGenerator {}
-
-	public record GenerateFunctionsRequest(IClassGenerator classGenerator,
-										   DefaultWorldModule worldModule
-	) {
-		public ModuleThing mt() {
-			return worldModule.thing();
-		}
-
-		public OS_Module mod() {
-			return worldModule.module();
-		}
-	}
-
-	@Contract("_ -> new")
-	@SuppressWarnings("unused")
-	public static @NotNull GN_PL_Run2 getFactoryEnv(GN_Env env1) {
-		var env = (GN_PL_Run2_Env) env1;
-		return new GN_PL_Run2(env.pipelineLogic(), env.mod(), env.ce(), env.worldConsumer());
 	}
 }

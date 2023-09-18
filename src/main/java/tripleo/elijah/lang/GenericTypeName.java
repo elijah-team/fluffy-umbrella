@@ -28,53 +28,9 @@ public class GenericTypeName implements TypeName {
 		_ctx = cur;
 	}
 
-	public void typeName(final Qualident xy) {
-		_typeName = xy;
-	}
-
-	public void set(final TypeModifiers modifiers_) {
-		modifiers = modifiers_;
-	}
-
-	@Override
-	public boolean isNull() {
-		return _typeName == null;
-	}
-
-	@Override
-	public Context getContext() {
-		return _ctx;
-	}
-
-	@Override
-	public void setContext(final Context context) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public Type kindOfType() {
-		return Type.GENERIC;
-	}
-
-	public void setConstraint(final TypeName aConstraint) {
-		constraint = aConstraint;
-	}
-
-	// region Locatable
-
-	@Override
-	public int getLine() {
-		return _typeName.parts().get(0).getLine();
-	}
-
 	@Override
 	public int getColumn() {
 		return _typeName.parts().get(0).getColumn();
-	}
-
-	@Override
-	public int getLineEnd() {
-		return _typeName.parts().get(_typeName.parts().size() - 1).getLineEnd();
 	}
 
 	@Override
@@ -83,8 +39,52 @@ public class GenericTypeName implements TypeName {
 	}
 
 	@Override
+	public Context getContext() {
+		return _ctx;
+	}
+
+	@Override
 	public File getFile() {
 		return _typeName.parts().get(0).getFile();
+	}
+
+	@Override
+	public int getLine() {
+		return _typeName.parts().get(0).getLine();
+	}
+
+	@Override
+	public int getLineEnd() {
+		return _typeName.parts().get(_typeName.parts().size() - 1).getLineEnd();
+	}
+
+	@Override
+	public boolean isNull() {
+		return _typeName == null;
+	}
+
+	// region Locatable
+
+	@Override
+	public Type kindOfType() {
+		return Type.GENERIC;
+	}
+
+	public void set(final TypeModifiers modifiers_) {
+		modifiers = modifiers_;
+	}
+
+	public void setConstraint(final TypeName aConstraint) {
+		constraint = aConstraint;
+	}
+
+	@Override
+	public void setContext(final Context context) {
+		throw new NotImplementedException();
+	}
+
+	public void typeName(final Qualident xy) {
+		_typeName = xy;
 	}
 
 	// endregion

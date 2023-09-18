@@ -1,8 +1,8 @@
 package tripleo.elijah.stages.gen_c.c_ast1;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.text.MessageFormat;
+
+import org.jetbrains.annotations.NotNull;
 
 public class C_Assignment {
 	private String          left;

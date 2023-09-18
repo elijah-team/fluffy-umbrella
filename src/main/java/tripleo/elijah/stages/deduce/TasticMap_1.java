@@ -1,9 +1,9 @@
 package tripleo.elijah.stages.deduce;
 
-import tripleo.elijah.stages.deduce.tastic.ITastic;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import tripleo.elijah.stages.deduce.tastic.ITastic;
 
 class TasticMap_1 implements ITasticMap {
 	private final Map<Object, ITastic> _map_tasticMap = new HashMap<>();

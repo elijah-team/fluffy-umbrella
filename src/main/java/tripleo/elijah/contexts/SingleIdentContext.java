@@ -20,8 +20,9 @@ public class SingleIdentContext extends Context {
 		this.element = element;
 	}
 
-	public void setString(final IdentExpression carrier) {
-		this.carrier = carrier;
+	@Override
+	public Context getParent() {
+		return _parent;
 	}
 
 	@Override
@@ -39,8 +40,7 @@ public class SingleIdentContext extends Context {
 		return Result;
 	}
 
-	@Override
-	public Context getParent() {
-		return _parent;
+	public void setString(final IdentExpression carrier) {
+		this.carrier = carrier;
 	}
 }

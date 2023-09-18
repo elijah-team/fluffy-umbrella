@@ -9,8 +9,11 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import java.util.function.Consumer;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.contexts.ClassContext;
 import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.lang.ClassStatement;
@@ -31,48 +34,13 @@ import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.function.Consumer;
-
 /**
  * Created 11/18/21 10:51 PM
  */
 public enum ResolveType {
 	;
 
-	public static @NotNull GenType resolve_type(final @NotNull OS_Module module,
-												final @NotNull OS_Type type,
-												final Context ctx,
-												final @NotNull ElLog LOG,
-												final @NotNull DeduceTypes2 dt2) throws ResolveError {
-		@NotNull GenType R = new GenType();
-		if (type.getType() != OS_Type.Type.USER_CLASS)
-			R.setTypeName(type);
-
-		switch (type.getType()) {
-
-		case BUILT_IN:
-			resolve_built_in(module, type, dt2, R);
-			break;
-		case USER:
-			resolve_user2(type, LOG, dt2, R::copy);
-			break;
-		case USER_CLASS:
-			R.setResolved(type);
-			break;
-		case FUNCTION:
-			break;
-		case FUNC_EXPR:
-			R.setResolved(type);//((OS_FuncExprType)type).getElement();
-			break;
-		default:
-			throw new IllegalStateException("565 Unexpected value: " + type.getType());
-		}
-
-		return R;
-	}
-
-	ResolveTypeInjector _inj() {
-		return __inj;
+	static class ResolveTypeInjector {
 	}
 
 	private static void resolve_built_in(final @NotNull OS_Module module, final @NotNull OS_Type type, final @NotNull DeduceTypes2 dt2, final @NotNull GenType aR) throws ResolveError {
@@ -157,10 +125,48 @@ public enum ResolveType {
 		}
 	}
 
-	private static void resolve_user2(final @NotNull OS_Type type,
-									  final @NotNull ElLog LOG,
-									  final @NotNull DeduceTypes2 dt2,
-									  final @NotNull Consumer<GenType> cgt) throws ResolveError {
+	public static @NotNull GenType resolve_type(final @NotNull OS_Module module,
+												final @NotNull OS_Type type,
+												final Context ctx,
+												final @NotNull ElLog LOG,
+												final @NotNull DeduceTypes2 dt2) throws ResolveError {
+		@NotNull GenType R = new GenType();
+		if (type.getType() != OS_Type.Type.USER_CLASS)
+			R.setTypeName(type);
+
+		switch (type.getType()) {
+
+		case BUILT_IN:
+			resolve_built_in(module, type, dt2, R);
+			break;
+		case USER:
+			resolve_user2(type, LOG, dt2, R::copy);
+			break;
+		case USER_CLASS:
+			R.setResolved(type);
+			break;
+		case FUNCTION:
+			break;
+		case FUNC_EXPR:
+			R.setResolved(type);//((OS_FuncExprType)type).getElement();
+			break;
+		default:
+			throw new IllegalStateException("565 Unexpected value: " + type.getType());
+		}
+
+		return R;
+	}
+
+	private static void resolve_user(final @NotNull IDeduceElement3 aDeduceElement3,
+									 final @NotNull OS_Type type1,
+									 final @NotNull ElLog LOG,
+									 final @NotNull Consumer<GenType> cgt) throws ResolveError {
+		final @NotNull OS_Type type = aDeduceElement3.genType().getResolved();
+		assert type1 == type;
+
+		//final @NotNull ElLog LOG;
+		final @NotNull DeduceTypes2 dt2 = aDeduceElement3.deduceTypes2();
+
 		resolve_user(type, LOG, dt2, cgt);
 	}
 
@@ -223,22 +229,17 @@ public enum ResolveType {
 		cgt.accept(ggg);
 	}
 
-	private static void resolve_user(final @NotNull IDeduceElement3 aDeduceElement3,
-									 final @NotNull OS_Type type1,
-									 final @NotNull ElLog LOG,
-									 final @NotNull Consumer<GenType> cgt) throws ResolveError {
-		final @NotNull OS_Type type = aDeduceElement3.genType().getResolved();
-		assert type1 == type;
-
-		//final @NotNull ElLog LOG;
-		final @NotNull DeduceTypes2 dt2 = aDeduceElement3.deduceTypes2();
-
+	private static void resolve_user2(final @NotNull OS_Type type,
+									  final @NotNull ElLog LOG,
+									  final @NotNull DeduceTypes2 dt2,
+									  final @NotNull Consumer<GenType> cgt) throws ResolveError {
 		resolve_user(type, LOG, dt2, cgt);
 	}
 
 	private final ResolveTypeInjector __inj = new ResolveTypeInjector();
 
-	static class ResolveTypeInjector {
+	ResolveTypeInjector _inj() {
+		return __inj;
 	}
 }
 

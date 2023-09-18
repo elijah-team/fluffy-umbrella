@@ -19,15 +19,15 @@ import java.io.File;
  * Created 12/26/20 5:32 AM
  */
 public interface Locatable {
-	int getLine();
-
 	int getColumn();
-
-	int getLineEnd();
 
 	int getColumnEnd();
 
 	File getFile();
+
+	int getLine();
+
+	int getLineEnd();
 }
 
 //

@@ -14,9 +14,9 @@ package tripleo.elijah.work;
  */
 public interface WorkJob {
 
-	void run(WorkManager aWorkManager);
-
 	boolean isDone();
+
+	void run(WorkManager aWorkManager);
 }
 
 //

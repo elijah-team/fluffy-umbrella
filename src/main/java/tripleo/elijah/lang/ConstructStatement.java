@@ -53,9 +53,8 @@ public class ConstructStatement implements FunctionItem, StatementItem, OS_Eleme
 //		return _type;
 //	}
 
-	@Override
-	public void visitGen(final ElElementVisitor visit) {
-		visit.visitConstructStatement(this);
+	public @Nullable ExpressionList getArgs() {
+		return _args;
 	}
 
 	@Override
@@ -63,17 +62,18 @@ public class ConstructStatement implements FunctionItem, StatementItem, OS_Eleme
 		return context;
 	}
 
+	public IExpression getExpr() {
+		return _expr;
+	}
+
 	@Override
 	public OS_Element getParent() {
 		return parent;
 	}
 
-	public IExpression getExpr() {
-		return _expr;
-	}
-
-	public @Nullable ExpressionList getArgs() {
-		return _args;
+	@Override
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitConstructStatement(this);
 	}
 }
 

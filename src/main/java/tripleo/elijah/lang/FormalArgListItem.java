@@ -17,15 +17,14 @@ public class FormalArgListItem implements OS_Element, OS_Element2 {
 	private TypeName        tn = null;
 
 	@Override // OS_Element
-	public void visitGen(final ElElementVisitor visit) {
-		visit.visitFormalArgListItem(this);
-	}
-
-	@Override // OS_Element
 	public Context getContext() {
 //        throw new NotImplementedException();
 //        return null;
 		return name.getContext();
+	}
+
+	public IdentExpression getNameToken() {
+		return name;
 	}
 
 	@Override // OS_Element
@@ -39,10 +38,6 @@ public class FormalArgListItem implements OS_Element, OS_Element2 {
 		return name.getText();
 	}
 
-	public IdentExpression getNameToken() {
-		return name;
-	}
-
 	public void setName(final IdentExpression s) {
 		name = s;
 	}
@@ -53,6 +48,11 @@ public class FormalArgListItem implements OS_Element, OS_Element2 {
 
 	public TypeName typeName() {
 		return tn;
+	}
+
+	@Override // OS_Element
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitFormalArgListItem(this);
 	}
 }
 

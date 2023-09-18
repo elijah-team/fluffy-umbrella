@@ -1,7 +1,8 @@
 package tripleo.elijah.ut.vendor.com.stubbornjava.undertow.handlers.accesslog;
 
-import io.undertow.server.handlers.accesslog.AccessLogReceiver;
 import org.slf4j.Logger;
+
+import io.undertow.server.handlers.accesslog.AccessLogReceiver;
 
 public class Slf4jAccessLogReceiver implements AccessLogReceiver {
 	private final Logger logger;

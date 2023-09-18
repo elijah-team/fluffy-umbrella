@@ -46,7 +46,12 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class CompilationEnclosure {
-//	public final  DeferredObject<IPipelineAccess, Void, Void> pipelineAccessPromise = new DeferredObject<>();
+public interface ModuleListener {
+		void close();
+
+		void listen(WorldModule module);
+	}
+	//	public final  DeferredObject<IPipelineAccess, Void, Void> pipelineAccessPromise = new DeferredObject<>();
 //	private final CB_Output                                   _cbOutput             = new CB_ListBackedOutput();
 	private final Compilation                           compilation;
 	private final DeferredObject<AccessBus, Void, Void> accessBusPromise   = new DeferredObject<>();
@@ -56,7 +61,12 @@ public class CompilationEnclosure {
 	private final List<ModuleListener>                  _moduleListeners   = new ArrayList<>();
 	Observer<ReactiveDimension> dimensionObserver   = new Observer<ReactiveDimension>() {
 		@Override
-		public void onSubscribe(@NonNull final Disposable d) {
+		public void onComplete() {
+
+		}
+
+		@Override
+		public void onError(@NonNull final Throwable e) {
 
 		}
 
@@ -67,19 +77,19 @@ public class CompilationEnclosure {
 		}
 
 		@Override
-		public void onError(@NonNull final Throwable e) {
-
-		}
-
-		@Override
-		public void onComplete() {
+		public void onSubscribe(@NonNull final Disposable d) {
 
 		}
 	};
 	Observer<Reactivable>       reactivableObserver = new Observer<Reactivable>() {
 
 		@Override
-		public void onSubscribe(@NonNull final Disposable d) {
+		public void onComplete() {
+
+		}
+
+		@Override
+		public void onError(@NonNull final Throwable e) {
 
 		}
 
@@ -90,12 +100,7 @@ public class CompilationEnclosure {
 		}
 
 		@Override
-		public void onError(@NonNull final Throwable e) {
-
-		}
-
-		@Override
-		public void onComplete() {
+		public void onSubscribe(@NonNull final Disposable d) {
 
 		}
 	};
@@ -107,7 +112,14 @@ public class CompilationEnclosure {
 	private List<CompilerInput> inp;
 	private IPipelineAccess     pa;
 	private PipelineLogic       pipelineLogic;
+
 	private CompilationRunner.CR_State crState;
+
+	Eventual<ICompilationAccess> _p_CompilationAccess = new Eventual<>();
+
+	Eventual<PipelineLogic>      _p_PipelineLogic     = new Eventual<>();
+
+	Eventual<IPipelineAccess>    _p_PipelineAccess    = new Eventual<>();
 
 	public CompilationEnclosure(final Compilation aCompilation) {
 		compilation = aCompilation;
@@ -167,7 +179,27 @@ public class CompilationEnclosure {
 
 		providePipelineAccess(new IPipelineAccess() {
 			@Override
+			public void _send_GeneratedClass(final EvaNode aClass) {
+
+			}
+
+			@Override
 			public void _setAccessBus(final AccessBus ab) {
+
+			}
+
+			@Override
+			public void activeClass(final EvaClass aEvaClass) {
+
+			}
+
+			@Override
+			public void activeFunction(final BaseEvaFunction aEvaFunction) {
+
+			}
+
+			@Override
+			public void activeNamespace(final EvaNamespace aEvaNamespace) {
 
 			}
 
@@ -178,6 +210,21 @@ public class CompilationEnclosure {
 
 			@Override
 			public AccessBus getAccessBus() {
+				return null;
+			}
+
+			@Override
+			public List<EvaClass> getActiveClasses() {
+				return null;
+			}
+
+			@Override
+			public List<BaseEvaFunction> getActiveFunctions() {
+				return null;
+			}
+
+			@Override
+			public List<EvaNamespace> getActiveNamespaces() {
 				return null;
 			}
 
@@ -194,11 +241,6 @@ public class CompilationEnclosure {
 			@Override
 			public List<CompilerInput> getCompilerInput() {
 				return null;
-			}
-
-			@Override
-			public void setCompilerInput(final List<CompilerInput> aInputs) {
-
 			}
 
 			@Override
@@ -222,6 +264,16 @@ public class CompilationEnclosure {
 			}
 
 			@Override
+			public void install_notate(final Provenance aProvenance, final Class<? extends GN_Notable> aRunClass, final Class<? extends GN_Env> aEnvClass) {
+
+			}
+
+			@Override
+			public void notate(final Provenance aProvenance, final GN_Env aPlRun2) {
+
+			}
+
+			@Override
 			public void notate(final Provenance provenance, final GN_Notable aNotable) {
 
 			}
@@ -233,6 +285,21 @@ public class CompilationEnclosure {
 
 			@Override
 			public void registerNodeList(final DoneCallback<List<EvaNode>> done) {
+
+			}
+
+			@Override
+			public void resolvePipelinePromise(final PipelineLogic aPipelineLogic) {
+
+			}
+
+			@Override
+			public void resolveWaitGenC(final OS_Module mod, final GenerateC gc) {
+
+			}
+
+			@Override
+			public void setCompilerInput(final List<CompilerInput> aInputs) {
 
 			}
 
@@ -252,82 +319,47 @@ public class CompilationEnclosure {
 			}
 
 			@Override
-			public void activeFunction(final BaseEvaFunction aEvaFunction) {
-
-			}
-
-			@Override
-			public void activeClass(final EvaClass aEvaClass) {
-
-			}
-
-			@Override
-			public void activeNamespace(final EvaNamespace aEvaNamespace) {
-
-			}
-
-			@Override
-			public List<EvaNamespace> getActiveNamespaces() {
-				return null;
-			}
-
-			@Override
-			public List<BaseEvaFunction> getActiveFunctions() {
-				return null;
-			}
-
-			@Override
-			public List<EvaClass> getActiveClasses() {
-				return null;
-			}
-
-			@Override
-			public void _send_GeneratedClass(final EvaNode aClass) {
-
-			}
-
-			@Override
 			public void waitGenC(final OS_Module mod, final Consumer<GenerateC> aCb) {
-
-			}
-
-			@Override
-			public void resolveWaitGenC(final OS_Module mod, final GenerateC gc) {
-
-			}
-
-			@Override
-			public void install_notate(final Provenance aProvenance, final Class<? extends GN_Notable> aRunClass, final Class<? extends GN_Env> aEnvClass) {
-
-			}
-
-			@Override
-			public void notate(final Provenance aProvenance, final GN_Env aPlRun2) {
-
-			}
-
-			@Override
-			public void resolvePipelinePromise(final PipelineLogic aPipelineLogic) {
 
 			}
 		});
 	}
 
-	@Contract(pure = true)
-	public Compilation getCompilation() {
-		return compilation;
+	private void _resolvePipelineAccess(final PipelineLogic aPipelineLogic) {
 	}
 
-	public void addReactive(@NotNull Reactive r) {
+//	@Contract(pure = true)
+//	public CB_Output getCB_Output() {
+//		return this._cbOutput;
+//	}
+
+	public void addModuleListener(final ModuleListener aModuleListener) {
+		_moduleListeners.add(aModuleListener);
+	}
+
+	public @NotNull ModuleThing addModuleThing(final OS_Module aMod) {
+		var mt = new ModuleThing(aMod);
+		moduleThings.put(aMod, mt);
+		return mt;
+	}
+
+	//@Contract(pure = true) //??
+//	public CompilationClosure getCompilationClosure() {
+//		return this.getCompilation().getCompilationClosure();
+//	}
+
+//	private final List<Triple<AssOutFile, EOT_OutputFile.FileNameProvider, NG_OutputRequest>> outFileAssertions = new ArrayList<>();
+
+	public void addReactive(@NotNull Reactivable r) {
+		int y = 2;
+		// reactivableObserver.onNext(r);
+		reactivableSubject.onNext(r);
+
+		// reactivableObserver.
 		dimensionSubject.subscribe(new Observer<ReactiveDimension>() {
 			@Override
-			public void onSubscribe(@NonNull final Disposable d) {
+			public void onComplete() {
 
-			}
-
-			@Override
-			public void onNext(@NonNull ReactiveDimension dim) {
-				r.join(dim);
 			}
 
 			@Override
@@ -336,7 +368,37 @@ public class CompilationEnclosure {
 			}
 
 			@Override
+			public void onNext(final ReactiveDimension aReactiveDimension) {
+				// r.join(aReactiveDimension);
+				r.respondTo(aReactiveDimension);
+			}
+
+			@Override
+			public void onSubscribe(@NonNull final Disposable d) {
+
+			}
+		});
+	}
+
+	public void addReactive(@NotNull Reactive r) {
+		dimensionSubject.subscribe(new Observer<ReactiveDimension>() {
+			@Override
 			public void onComplete() {
+
+			}
+
+			@Override
+			public void onError(@NonNull final @NotNull Throwable e) {
+				e.printStackTrace();
+			}
+
+			@Override
+			public void onNext(@NonNull ReactiveDimension dim) {
+				r.join(dim);
+			}
+
+			@Override
+			public void onSubscribe(@NonNull final Disposable d) {
 
 			}
 		});
@@ -347,8 +409,13 @@ public class CompilationEnclosure {
 
 		reactivableSubject.subscribe(new Observer<Reactivable>() {
 			@Override
-			public void onSubscribe(@NonNull final Disposable d) {
+			public void onComplete() {
 
+			}
+
+			@Override
+			public void onError(@NonNull final @NotNull Throwable e) {
+				e.printStackTrace();
 			}
 
 			@Override
@@ -357,12 +424,7 @@ public class CompilationEnclosure {
 			}
 
 			@Override
-			public void onError(@NonNull final @NotNull Throwable e) {
-				e.printStackTrace();
-			}
-
-			@Override
-			public void onComplete() {
+			public void onSubscribe(@NonNull final Disposable d) {
 
 			}
 		});
@@ -370,77 +432,8 @@ public class CompilationEnclosure {
 //		aReactiveDimension.setReactiveSink(addReactive);
 	}
 
-	public void addReactive(@NotNull Reactivable r) {
-		int y = 2;
-		// reactivableObserver.onNext(r);
-		reactivableSubject.onNext(r);
-
-		// reactivableObserver.
-		dimensionSubject.subscribe(new Observer<ReactiveDimension>() {
-			@Override
-			public void onSubscribe(@NonNull final Disposable d) {
-
-			}
-
-			@Override
-			public void onNext(final ReactiveDimension aReactiveDimension) {
-				// r.join(aReactiveDimension);
-				r.respondTo(aReactiveDimension);
-			}
-
-			@Override
-			public void onError(@NonNull final @NotNull Throwable e) {
-				e.printStackTrace();
-			}
-
-			@Override
-			public void onComplete() {
-
-			}
-		});
-	}
-
 	public @NotNull Promise<AccessBus, Void, Void> getAccessBusPromise() {
 		return accessBusPromise;
-	}
-
-//	@Contract(pure = true)
-//	public CB_Output getCB_Output() {
-//		return this._cbOutput;
-//	}
-
-	@Contract(pure = true)
-	public @NotNull ICompilationAccess getCompilationAccess() {
-		return ca;
-	}
-
-	public void setCompilationAccess(@NotNull ICompilationAccess aca) {
-		ca = aca;
-	}
-
-	//@Contract(pure = true) //??
-//	public CompilationClosure getCompilationClosure() {
-//		return this.getCompilation().getCompilationClosure();
-//	}
-
-//	private final List<Triple<AssOutFile, EOT_OutputFile.FileNameProvider, NG_OutputRequest>> outFileAssertions = new ArrayList<>();
-
-	@Contract(pure = true)
-	public ICompilationBus getCompilationBus() {
-		return compilationBus;
-	}
-
-	public void setCompilationBus(final ICompilationBus aCompilationBus) {
-		compilationBus = aCompilationBus;
-	}
-
-	@Contract(pure = true)
-	public CompilationRunner getCompilationRunner() {
-		return compilationRunner;
-	}
-
-	public void setCompilationRunner(final CompilationRunner aCompilationRunner) {
-		compilationRunner = aCompilationRunner;
 	}
 
 //	public void setCompilerDriver(final CompilerDriver aCompilerDriver) {
@@ -448,22 +441,23 @@ public class CompilationEnclosure {
 //	}
 
 	@Contract(pure = true)
-	public List<CompilerInput> getCompilerInput() {
-		return inp;
-	}
-
-	public void setCompilerInput(final List<CompilerInput> aInputs) {
-		inp = aInputs;
+	public Compilation getCompilation() {
+		return compilation;
 	}
 
 	@Contract(pure = true)
-	public IPipelineAccess getPipelineAccess() {
-		return pa;
+	public @NotNull ICompilationAccess getCompilationAccess() {
+		return ca;
 	}
 
 	@Contract(pure = true)
-	public PipelineLogic getPipelineLogic() {
-		return pipelineLogic;
+	public ICompilationBus getCompilationBus() {
+		return compilationBus;
+	}
+
+	@Contract(pure = true)
+	public CompilationRunner getCompilationRunner() {
+		return compilationRunner;
 	}
 
 //	public void setPipelineLogic(final PipelineLogic aPipelineLogic) {
@@ -472,7 +466,16 @@ public class CompilationEnclosure {
 //		getPipelineAccessPromise().then(pa->pa.resolvePipelinePromise(aPipelineLogic));
 //	}
 
-	private void _resolvePipelineAccess(final PipelineLogic aPipelineLogic) {
+	@Contract(pure = true)
+	public List<CompilerInput> getCompilerInput() {
+		return inp;
+	}
+
+	public CompilationRunner.CR_State getCrState(final ICompilationBus aCb) {
+		if (crState == null) {
+			crState = new CompilationRunner.CR_State();
+		}
+		return crState;
 	}
 
 	public ModuleThing getModuleThing(final OS_Module aMod) {
@@ -480,12 +483,6 @@ public class CompilationEnclosure {
 			return moduleThings.get(aMod);
 		}
 		return addModuleThing(aMod);
-	}
-
-	public @NotNull ModuleThing addModuleThing(final OS_Module aMod) {
-		var mt = new ModuleThing(aMod);
-		moduleThings.put(aMod, mt);
-		return mt;
 	}
 
 /*
@@ -497,29 +494,22 @@ public class CompilationEnclosure {
 	}
 */
 
-	public void reactiveJoin(final Reactive aReactive) {
-		// throw new IllegalStateException("Error");
-
-		// aReactive.join();
-		System.err.println("reactiveJoin " + aReactive.toString());
+	@Contract(pure = true)
+	public IPipelineAccess getPipelineAccess() {
+		return pa;
 	}
 
-	public void addModuleListener(final ModuleListener aModuleListener) {
-		_moduleListeners.add(aModuleListener);
+	@Contract(pure = true)
+	public PipelineLogic getPipelineLogic() {
+		return pipelineLogic;
 	}
 
-	Eventual<ICompilationAccess> _p_CompilationAccess = new Eventual<>();
-	Eventual<PipelineLogic>      _p_PipelineLogic     = new Eventual<>();
-	Eventual<IPipelineAccess>    _p_PipelineAccess    = new Eventual<>();
-
-	public void waitCompilationAccess(final Consumer<ICompilationAccess> cica) {
-		_p_CompilationAccess.then(cica::accept);
+	public void provideCompilationAccess(final ICompilationAccess aCompilationAccess) {
+		_p_CompilationAccess.resolve(aCompilationAccess);
 	}
-
-	public void waitPipelineLogic(final Consumer<PipelineLogic> cpl) {
-		_p_PipelineLogic.then(cpl::accept);
+	public void providePipelineAccess(final IPipelineAccess aPipelineAccess) {
+		_p_PipelineAccess.resolve(aPipelineAccess);
 	}
-
 	public void providePipelineLogic(final PipelineLogic aPipelineLogic) {
 		if (!_p_PipelineLogic.isResolved())
 			_p_PipelineLogic.resolve(aPipelineLogic);
@@ -528,16 +518,27 @@ public class CompilationEnclosure {
 		}
 	}
 
-	public void provideCompilationAccess(final ICompilationAccess aCompilationAccess) {
-		_p_CompilationAccess.resolve(aCompilationAccess);
+	public void reactiveJoin(final Reactive aReactive) {
+		// throw new IllegalStateException("Error");
+
+		// aReactive.join();
+		System.err.println("reactiveJoin " + aReactive.toString());
 	}
 
-	public void waitPipelineAccess(final Consumer<IPipelineAccess> cipa) {
-		_p_PipelineAccess.then(cipa::accept);
+	public void setCompilationAccess(@NotNull ICompilationAccess aca) {
+		ca = aca;
 	}
 
-	public void providePipelineAccess(final IPipelineAccess aPipelineAccess) {
-		_p_PipelineAccess.resolve(aPipelineAccess);
+	public void setCompilationBus(final ICompilationBus aCompilationBus) {
+		compilationBus = aCompilationBus;
+	}
+
+	public void setCompilationRunner(final CompilationRunner aCompilationRunner) {
+		compilationRunner = aCompilationRunner;
+	}
+
+	public void setCompilerInput(final List<CompilerInput> aInputs) {
+		inp = aInputs;
 	}
 
 	public ElLog.Verbosity testSilence() {
@@ -549,11 +550,12 @@ public class CompilationEnclosure {
 		}
 	}
 
-	public CompilationRunner.CR_State getCrState(final ICompilationBus aCb) {
-		if (crState == null) {
-			crState = new CompilationRunner.CR_State();
-		}
-		return crState;
+	public void waitCompilationAccess(final Consumer<ICompilationAccess> cica) {
+		_p_CompilationAccess.then(cica::accept);
+	}
+
+	public void waitPipelineAccess(final Consumer<IPipelineAccess> cipa) {
+		_p_PipelineAccess.then(cipa::accept);
 	}
 
 //	private final @NonNull OFA ofa = new OFA(/*outFileAssertions*/);
@@ -615,10 +617,8 @@ public class CompilationEnclosure {
 
 //	public enum AssOutFile {CLASS, NAMESPACE, FUNCTION}
 
-	public interface ModuleListener {
-		void listen(WorldModule module);
-
-		void close();
+	public void waitPipelineLogic(final Consumer<PipelineLogic> cpl) {
+		_p_PipelineLogic.then(cpl::accept);
 	}
 
 //	public class OFA implements Iterable<Triple<AssOutFile, EOT_OutputFile.FileNameProvider, NG_OutputRequest>> {

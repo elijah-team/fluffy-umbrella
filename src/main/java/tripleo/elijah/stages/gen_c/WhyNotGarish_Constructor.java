@@ -1,7 +1,10 @@
 package tripleo.elijah.stages.gen_c;
 
+import java.util.List;
+
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
@@ -20,8 +23,6 @@ import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkList;
 import tripleo.elijah.world.WorldGlobals;
 
-import java.util.List;
-
 public class WhyNotGarish_Constructor extends WhyNotGarish_BaseFunction implements WhyNotGarish_Item {
 	private final EvaConstructor                                gf;
 	private final GenerateC                                     generateC;
@@ -32,6 +33,49 @@ public class WhyNotGarish_Constructor extends WhyNotGarish_BaseFunction implemen
 		generateC = aGenerateC;
 
 		fileGenPromise.then(this::onFileGen);
+	}
+
+	@Override
+	public EvaConstructor cheat() {
+		return gf;
+	}
+
+	private void generateIdent(@NotNull IdentTableEntry identTableEntry, @NotNull GenerateResultEnv aFileGen) {
+		assert identTableEntry.isResolved();
+
+		final @NotNull EvaNode   x           = identTableEntry.resolvedType();
+		final WorkList           wl          = aFileGen.wl();
+
+		if (x instanceof final EvaClass evaClass) {
+			generateC.generate_class(aFileGen, evaClass);
+		} else if (x instanceof final EvaFunction evaFunction) {
+			wl.addJob(new GenerateC.WlGenerateFunctionC(aFileGen, evaFunction, generateC));
+		} else {
+			generateC.LOG.err(x.toString());
+			throw new NotImplementedException();
+		}
+	}
+
+	@NotNull String getConstructorNameText() {
+		final IdentExpression constructorName = gf.getFD().getNameNode();
+
+		final String constructorNameText;
+		if (constructorName == WorldGlobals.emptyConstructorName) {
+			constructorNameText = "";
+		} else {
+			constructorNameText = constructorName.getText();
+		}
+		return constructorNameText;
+	}
+
+	@Override
+	public BaseEvaFunction getGf() {
+		return gf;
+	}
+
+	@Override
+	public boolean hasFileGen() {
+		return fileGenPromise.isResolved();
 	}
 
 	void onFileGen(final @NotNull GenerateResultEnv aFileGen) {
@@ -65,42 +109,6 @@ public class WhyNotGarish_Constructor extends WhyNotGarish_BaseFunction implemen
 		}
 	}
 
-	public void resolveFileGenPromise(final GenerateResultEnv aFileGen) {
-		fileGenPromise.resolve(aFileGen);
-	}
-
-	@Override
-	public boolean hasFileGen() {
-		return fileGenPromise.isResolved();
-	}
-
-	@Override
-	public void provideFileGen(final GenerateResultEnv fg) {
-		fileGenPromise.resolve(fg);
-	}
-
-	@Override
-	public BaseEvaFunction getGf() {
-		return gf;
-	}
-
-	@Override
-	public EvaConstructor cheat() {
-		return gf;
-	}
-
-	@NotNull String getConstructorNameText() {
-		final IdentExpression constructorName = gf.getFD().getNameNode();
-
-		final String constructorNameText;
-		if (constructorName == WorldGlobals.emptyConstructorName) {
-			constructorNameText = "";
-		} else {
-			constructorNameText = constructorName.getText();
-		}
-		return constructorNameText;
-	}
-
 	public void postGenerateCodeForConstructor(final WorkList aWl, final GenerateResultEnv aFileGen) {
 		for (IdentTableEntry identTableEntry : gf.idte_list) {
 			//IdentTableEntry.;
@@ -129,19 +137,12 @@ public class WhyNotGarish_Constructor extends WhyNotGarish_BaseFunction implemen
 		}
 	}
 
-	private void generateIdent(@NotNull IdentTableEntry identTableEntry, @NotNull GenerateResultEnv aFileGen) {
-		assert identTableEntry.isResolved();
+	@Override
+	public void provideFileGen(final GenerateResultEnv fg) {
+		fileGenPromise.resolve(fg);
+	}
 
-		final @NotNull EvaNode   x           = identTableEntry.resolvedType();
-		final WorkList           wl          = aFileGen.wl();
-
-		if (x instanceof final EvaClass evaClass) {
-			generateC.generate_class(aFileGen, evaClass);
-		} else if (x instanceof final EvaFunction evaFunction) {
-			wl.addJob(new GenerateC.WlGenerateFunctionC(aFileGen, evaFunction, generateC));
-		} else {
-			generateC.LOG.err(x.toString());
-			throw new NotImplementedException();
-		}
+	public void resolveFileGenPromise(final GenerateResultEnv aFileGen) {
+		fileGenPromise.resolve(aFileGen);
 	}
 }

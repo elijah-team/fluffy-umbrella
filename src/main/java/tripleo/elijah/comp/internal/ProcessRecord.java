@@ -12,6 +12,62 @@ import tripleo.elijah.comp.WritePipeline;
 import tripleo.elijah.comp.i.CompilationEnclosure;
 
 public class ProcessRecord {
+	class DeducePipelinePlugin implements PipelinePlugin {
+
+		@Override
+		public PipelineMember instance(final CompilationEnclosure ce) {
+			return new DeducePipeline(ce);
+		}
+
+		@Override
+		public String name() {
+			return "DeducePipeline";
+		}
+	}
+
+	class GeneratePipelinePlugin implements PipelinePlugin {
+
+		@Override
+		public PipelineMember instance(final CompilationEnclosure ce) {
+			return new GeneratePipeline(ce);
+		}
+
+		@Override
+		public String name() {
+			return "GeneratePipeline";
+		}
+	}
+
+	public interface PipelinePlugin {
+		PipelineMember instance(final CompilationEnclosure ce);
+
+		String name();
+	}
+
+	class WriteMesonPipelinePlugin implements PipelinePlugin {
+		@Override
+		public PipelineMember instance(final CompilationEnclosure ce) {
+			return new WriteMesonPipeline(ce);
+		}
+
+		@Override
+		public String name() {
+			return "WriteMesonPipeline";
+		}
+	}
+
+	class WritePipelinePlugin implements PipelinePlugin {
+		@Override
+		public PipelineMember instance(final CompilationEnclosure ce) {
+			return new WritePipeline(ce);
+		}
+
+		@Override
+		public String name() {
+			return "WritePipeline";
+		}
+	}
+
 	public final AccessBus ab;
 
 	public ProcessRecord(final @NotNull ICompilationAccess ca0) {
@@ -29,62 +85,6 @@ public class ProcessRecord {
 	public void writeLogs(final @NotNull ICompilationAccess ca) {
 		//ab.writeLogs();
 		ca.getStage().writeLogs(ca);
-	}
-
-	public interface PipelinePlugin {
-		String name();
-
-		PipelineMember instance(final CompilationEnclosure ce);
-	}
-
-	class GeneratePipelinePlugin implements PipelinePlugin {
-
-		@Override
-		public String name() {
-			return "GeneratePipeline";
-		}
-
-		@Override
-		public PipelineMember instance(final CompilationEnclosure ce) {
-			return new GeneratePipeline(ce);
-		}
-	}
-
-	class DeducePipelinePlugin implements PipelinePlugin {
-
-		@Override
-		public String name() {
-			return "DeducePipeline";
-		}
-
-		@Override
-		public PipelineMember instance(final CompilationEnclosure ce) {
-			return new DeducePipeline(ce);
-		}
-	}
-
-	class WritePipelinePlugin implements PipelinePlugin {
-		@Override
-		public String name() {
-			return "WritePipeline";
-		}
-
-		@Override
-		public PipelineMember instance(final CompilationEnclosure ce) {
-			return new WritePipeline(ce);
-		}
-	}
-
-	class WriteMesonPipelinePlugin implements PipelinePlugin {
-		@Override
-		public String name() {
-			return "WriteMesonPipeline";
-		}
-
-		@Override
-		public PipelineMember instance(final CompilationEnclosure ce) {
-			return new WriteMesonPipeline(ce);
-		}
 	}
 
 }

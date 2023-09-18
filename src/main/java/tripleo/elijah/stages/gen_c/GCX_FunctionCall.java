@@ -1,8 +1,11 @@
 package tripleo.elijah.stages.gen_c;
 
+import java.util.List;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.nextgen.outputstatement.EG_CompoundStatement;
@@ -16,8 +19,6 @@ import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.stages.instructions.ProcIA;
 import tripleo.elijah.util.Helpers;
-
-import java.util.List;
 
 public class GCX_FunctionCall implements EG_Statement {
 	private final          GenerateC                 gc;

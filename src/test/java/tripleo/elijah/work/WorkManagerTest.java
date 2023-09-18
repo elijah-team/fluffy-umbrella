@@ -8,12 +8,42 @@
  */
 package tripleo.elijah.work;
 
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
 public class WorkManagerTest {
+
+	static class AppendChar implements WorkJob {
+
+		private final int          level;
+		private final List<String> sink;
+		private final String       state;
+		private       boolean      _done;
+
+		public AppendChar(final String s, final int level, final List<String> aSink) {
+			state      = s + (char) (level + 'A');
+			this.level = level;
+			sink       = aSink;
+		}
+
+		@Override
+		public boolean isDone() {
+			return _done;
+		}
+
+		@Override
+		public void run(final WorkManager aWorkManager) {
+			if (level < 4) {
+				final WorkList wl = new WorkList();
+				wl.addJob(new AppendChar(state, level + 1, sink));
+				aWorkManager.addJobs(wl);
+			}
+			sink.add(state);
+			_done = true;
+		}
+	}
 
 	@Test
 	public void testWorkManager() {
@@ -31,36 +61,6 @@ public class WorkManagerTest {
 		workManager.drain();
 
 		System.err.println("testWorkManager::sink: "+sink);
-	}
-
-	static class AppendChar implements WorkJob {
-
-		private final int          level;
-		private final List<String> sink;
-		private final String       state;
-		private       boolean      _done;
-
-		public AppendChar(final String s, final int level, final List<String> aSink) {
-			state      = s + (char) (level + 'A');
-			this.level = level;
-			sink       = aSink;
-		}
-
-		@Override
-		public void run(final WorkManager aWorkManager) {
-			if (level < 4) {
-				final WorkList wl = new WorkList();
-				wl.addJob(new AppendChar(state, level + 1, sink));
-				aWorkManager.addJobs(wl);
-			}
-			sink.add(state);
-			_done = true;
-		}
-
-		@Override
-		public boolean isDone() {
-			return _done;
-		}
 	}
 }
 

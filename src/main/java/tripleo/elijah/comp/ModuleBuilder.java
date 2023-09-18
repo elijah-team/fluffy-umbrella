@@ -17,9 +17,8 @@ public class ModuleBuilder {
 		mod.setParent(aCompilation);
 	}
 
-	public ModuleBuilder setContext() {
-		final ModuleContext mctx = new ModuleContext(mod);
-		mod.setContext(mctx);
+	public ModuleBuilder addToCompilation() {
+		_addToCompilation = true;
 		return this;
 	}
 
@@ -31,13 +30,9 @@ public class ModuleBuilder {
 		return mod;
 	}
 
-	public ModuleBuilder withPrelude(final String aPrelude) {
-		final Operation2<OS_Module> p = mod.getCompilation().findPrelude(aPrelude);
-
-		assert p.mode() == Mode.SUCCESS;
-
-		mod.setPrelude(p.success());
-
+	public ModuleBuilder setContext() {
+		final ModuleContext mctx = new ModuleContext(mod);
+		mod.setContext(mctx);
 		return this;
 	}
 
@@ -47,8 +42,13 @@ public class ModuleBuilder {
 		return this;
 	}
 
-	public ModuleBuilder addToCompilation() {
-		_addToCompilation = true;
+	public ModuleBuilder withPrelude(final String aPrelude) {
+		final Operation2<OS_Module> p = mod.getCompilation().findPrelude(aPrelude);
+
+		assert p.mode() == Mode.SUCCESS;
+
+		mod.setPrelude(p.success());
+
 		return this;
 	}
 }

@@ -9,10 +9,13 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import java.util.Objects;
+
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.FunctionDef;
@@ -29,8 +32,6 @@ import tripleo.elijah.stages.gen_fn.ProcTableEntry;
 import tripleo.elijah.stages.gen_fn.TypeTableEntry;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
 import tripleo.elijah.stages.instructions.IntegerIA;
-
-import java.util.Objects;
 
 /**
  * Created 11/27/21 12:51 PM

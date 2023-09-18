@@ -19,18 +19,18 @@ public class PL_Each_Env {
 		return codeRegistrar;
 	}
 
-	public ResolvedNodes getResolvedNodes() {
-		if (resolvedNodes == null) {
-			resolvedNodes = new ResolvedNodes();
-		}
-		return resolvedNodes;
+	public ICodeRegistrar getCodeRegistrar() {
+		return codeRegistrar();
 	}
 
 	public EIT_ModuleList._ProcessParams getProcessParams() {
 		return processParams;
 	}
 
-	public ICodeRegistrar getCodeRegistrar() {
-		return codeRegistrar();
+	public ResolvedNodes getResolvedNodes() {
+		if (resolvedNodes == null) {
+			resolvedNodes = new ResolvedNodes();
+		}
+		return resolvedNodes;
 	}
 }

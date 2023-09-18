@@ -1,22 +1,15 @@
 package tripleo.elijah.stages.deduce;
 
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.stateful.DefaultStateful;
 import tripleo.elijah.stateful.State;
 import tripleo.elijah.stateful.StateRegistrationToken;
 import tripleo.elijah.stateful.Stateful;
 
 public interface IStateRunnable extends Stateful {
-	void run();
-
 	enum ST {
 		;
-		public static State EXIT_RUN;
-
-		public static void register(final @NotNull DeducePhase phase) {
-			EXIT_RUN = phase.registerState(new ExitRunState());
-		}
-
 		private static class ExitRunState implements State {
 			private boolean runAlready;
 			private StateRegistrationToken identity;
@@ -42,5 +35,13 @@ public interface IStateRunnable extends Stateful {
 
 		}
 
+		public static State EXIT_RUN;
+
+		public static void register(final @NotNull DeducePhase phase) {
+			EXIT_RUN = phase.registerState(new ExitRunState());
+		}
+
 	}
+
+	void run();
 }

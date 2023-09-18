@@ -14,18 +14,18 @@ public class ENU_LookupResult implements EN_Understanding {
 	private LookupResultList       lrl;
 	private ImmutableList<Context> contexts;
 
-	public ENU_LookupResult(LookupResultList aLrl, int aLevel, ImmutableList<Context> aContexts) {
-		this.lrl      = aLrl;
-		this.level    = aLevel;
-		this.contexts = aContexts;
-	}
-
 	public ENU_LookupResult(LookupResultList lrl2) {
 		this.lrl   = lrl2;
 		this.level = -10000;
 
 		final List<Context> collect = lrl2.results().stream().map(lr -> lr.getContext()).collect(Collectors.toList());
 		this.contexts = ImmutableList.copyOf(collect);
+	}
+
+	public ENU_LookupResult(LookupResultList aLrl, int aLevel, ImmutableList<Context> aContexts) {
+		this.lrl      = aLrl;
+		this.level    = aLevel;
+		this.contexts = aContexts;
 	}
 
 }

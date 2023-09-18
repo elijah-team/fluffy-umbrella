@@ -1,15 +1,16 @@
 package tripleo.elijah.stages.gen_c;
 
+import static tripleo.elijah.util.Helpers.List_of;
+
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultEnv;
 import tripleo.elijah.util.BufferTabbedOutputStream;
 import tripleo.util.buffer.Buffer;
-
-import java.util.List;
-
-import static tripleo.elijah.util.Helpers.List_of;
 
 public class C2C_CodeForMethod implements Generate_Code_For_Method.C2C_Results {
 	private final GenerateResult           gr;
@@ -27,16 +28,6 @@ public class C2C_CodeForMethod implements Generate_Code_For_Method.C2C_Results {
 
 		final GenerateC gc = aGenerateCodeForMethod.gc;
 		whyNotGarishFunction = gc.a_lookup(aGf);
-	}
-
-	public GenerateResult getGenerateResult() {
-		return gr;
-	}
-
-	@Override
-	public @NotNull List<C2C_Result> getResults() {
-		calculate();
-		return List_of(buf, bufHdr);
 	}
 
 	private void calculate() {
@@ -64,5 +55,15 @@ public class C2C_CodeForMethod implements Generate_Code_For_Method.C2C_Results {
 
 			_calculated = true;
 		}
+	}
+
+	public GenerateResult getGenerateResult() {
+		return gr;
+	}
+
+	@Override
+	public @NotNull List<C2C_Result> getResults() {
+		calculate();
+		return List_of(buf, bufHdr);
 	}
 }

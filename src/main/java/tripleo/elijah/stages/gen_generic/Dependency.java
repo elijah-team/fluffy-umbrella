@@ -8,17 +8,18 @@
  */
 package tripleo.elijah.stages.gen_generic;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.gen_fn.AbstractDependencyTracker;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.EvaContainerNC;
 import tripleo.elijah.stages.gen_fn.GenType;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created 9/13/21 4:00 AM
@@ -34,12 +35,12 @@ public class Dependency {
 		referent = aReferent;
 	}
 
-	public DependencyRef getRef() {
-		return dref;
+	public @NotNull Set<Dependency> getNotedDeps() {
+		return deps;
 	}
 
-	public void setRef(final DependencyRef aDref) {
-		dref = aDref;
+	public DependencyRef getRef() {
+		return dref;
 	}
 
 	public void noteDependencies(final AbstractDependencyTracker aDependencyTracker,
@@ -65,8 +66,8 @@ public class Dependency {
 		}
 	}
 
-	public @NotNull Set<Dependency> getNotedDeps() {
-		return deps;
+	public void setRef(final DependencyRef aDref) {
+		dref = aDref;
 	}
 }
 

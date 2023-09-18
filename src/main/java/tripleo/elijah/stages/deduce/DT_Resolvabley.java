@@ -1,6 +1,10 @@
 package tripleo.elijah.stages.deduce;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.ConstructorDef;
 import tripleo.elijah.lang.FormalArgListItem;
@@ -12,9 +16,6 @@ import tripleo.elijah.stages.gen_fn.BaseTableEntry;
 import tripleo.elijah.stages.gen_fn.IdentIaResolveable;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.util.Helpers;
-
-import java.util.LinkedList;
-import java.util.List;
 
 public class DT_Resolvabley  implements IdentIaResolveable {
 	private final List<DT_Resolvable> x;

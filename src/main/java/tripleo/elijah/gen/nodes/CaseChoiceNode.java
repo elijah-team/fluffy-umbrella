@@ -21,14 +21,13 @@ public class CaseChoiceNode {
 	public        ScopeNode              right;
 	private       String                 _defaultName;
 
-	public CaseChoiceNode(final NumericExpression expr1, final CaseHdrNode header) {
-		// TODO Auto-generated constructor stub
-		left         = new ExpressionNode(expr1);
-		this.header  = header;
-		right        = null;
-		_defaultName = null;
-		_varref      = null;
-		varref3      = null;
+	public CaseChoiceNode(final CompilerContext cctx, final VariableReferenceNode3 varref, final CaseHdrNode header) {
+		this.header = header;
+		left        = null;
+		right       = null;
+		setDefaultName("----------FOO------------" /*varref.getName()*/);
+		_varref = null/*varref*/; //new VariableReferenceNode3(cctx, varref);
+		varref3 = varref;
 	}
 
 //	/**
@@ -47,15 +46,6 @@ public class CaseChoiceNode {
 //		_varref = new VariableReferenceNode(cctx, varref);
 //	}
 
-	public CaseChoiceNode(final CompilerContext cctx, final VariableReferenceNode3 varref, final CaseHdrNode header) {
-		this.header = header;
-		left        = null;
-		right       = null;
-		setDefaultName("----------FOO------------" /*varref.getName()*/);
-		_varref = null/*varref*/; //new VariableReferenceNode3(cctx, varref);
-		varref3 = varref;
-	}
-
 	public CaseChoiceNode(final ExpressionNode left, final ScopeNode right, final CaseHdrNode header) {
 		super();
 		this.right   = right;
@@ -66,20 +56,30 @@ public class CaseChoiceNode {
 		varref3      = null;
 	}
 
+	public CaseChoiceNode(final NumericExpression expr1, final CaseHdrNode header) {
+		// TODO Auto-generated constructor stub
+		left         = new ExpressionNode(expr1);
+		this.header  = header;
+		right        = null;
+		_defaultName = null;
+		_varref      = null;
+		varref3      = null;
+	}
+
 	public String getDefaultName() {
 		return _defaultName;
 	}
 
-	public void setDefaultName(@NonNull final String _defaultName) {
-		this._defaultName = _defaultName;
+	public boolean is_default() {
+		return _defaultName != null && _defaultName != "_";
 	}
 
 	public boolean is_simple() {
 		return _defaultName != null;
 	}
 
-	public boolean is_default() {
-		return _defaultName != null && _defaultName != "_";
+	public void setDefaultName(@NonNull final String _defaultName) {
+		this._defaultName = _defaultName;
 	}
 
 	public VariableReferenceNode varref() {

@@ -25,6 +25,20 @@ public class EntryPointList {
 		mod = aMod;
 	}
 
+	public List<EntryPoint> _getMods() {
+		return eps;
+	}
+
+	public void add(final EntryPoint aEntryPoint) {
+		eps.add(aEntryPoint);
+	}
+
+	private Finally.Flow flow(final DeducePhase aDeducePhase) {
+		var compilation = aDeducePhase._compilation();
+
+		return compilation.flow();
+	}
+
 	public void generate(@NotNull final GenerateFunctions aGenerateFunctions, final DeducePhase aDeducePhase, @NotNull final Supplier<WorkManager> wm) {
 		generateFromEntryPoints(aDeducePhase, aGenerateFunctions, wm.get());
 	}
@@ -61,20 +75,6 @@ public class EntryPointList {
 
 		wm.addJobs(wl);
 		wm.drain();
-	}
-
-	private Finally.Flow flow(final DeducePhase aDeducePhase) {
-		var compilation = aDeducePhase._compilation();
-
-		return compilation.flow();
-	}
-
-	public void add(final EntryPoint aEntryPoint) {
-		eps.add(aEntryPoint);
-	}
-
-	public List<EntryPoint> _getMods() {
-		return eps;
 	}
 
 	public int size() {

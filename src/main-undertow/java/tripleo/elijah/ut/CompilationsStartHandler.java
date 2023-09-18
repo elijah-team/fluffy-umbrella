@@ -1,6 +1,17 @@
 package tripleo.elijah.ut;
 
+import static tripleo.elijah.util.Helpers.List_of;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.google.common.base.Preconditions;
+
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
@@ -11,27 +22,10 @@ import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.factory.comp.CompilationFactory;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static tripleo.elijah.util.Helpers.List_of;
-
 public class CompilationsStartHandler implements HttpHandler {
 
 	//	private final Map<Integer, Compilation> cs = new HashMap<>();
 
-
-	private final UT_Root            utr;
-	private       CompilerController utc = null;
-
-	public CompilationsStartHandler(final UT_Root aUtr) {
-		utr = aUtr;
-	}
 
 	public static List<Path> listFiles(final Path path) throws IOException {
 		final List<Path> result;
@@ -41,6 +35,17 @@ public class CompilationsStartHandler implements HttpHandler {
 			             .collect(Collectors.toList());
 		}
 		return result;
+	}
+	private final UT_Root            utr;
+
+	private       CompilerController utc = null;
+
+	public CompilationsStartHandler(final UT_Root aUtr) {
+		utr = aUtr;
+	}
+
+	private UT_Controller getController() {
+		return (UT_Controller) utc;
 	}
 
 	@Override
@@ -80,9 +85,5 @@ public class CompilationsStartHandler implements HttpHandler {
 		sb.append("</body></html>\n");
 
 		exchange.getResponseSender().send(sb.toString());
-	}
-
-	private UT_Controller getController() {
-		return (UT_Controller) utc;
 	}
 }

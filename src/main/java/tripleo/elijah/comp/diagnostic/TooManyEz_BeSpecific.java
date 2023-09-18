@@ -16,13 +16,13 @@ public class TooManyEz_BeSpecific implements Diagnostic {
 	}
 
 	@Override
-	public Severity severity() {
-		return Severity.ERROR;
+	public @NotNull Locatable primary() {
+		return null;
 	}
 
 	@Override
-	public @NotNull Locatable primary() {
-		return null;
+	public void report(final PrintStream stream) {
+		stream.printf("%s %s%n", code(), message);
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class TooManyEz_BeSpecific implements Diagnostic {
 	}
 
 	@Override
-	public void report(final PrintStream stream) {
-		stream.printf("%s %s%n", code(), message);
+	public Severity severity() {
+		return Severity.ERROR;
 	}
 }

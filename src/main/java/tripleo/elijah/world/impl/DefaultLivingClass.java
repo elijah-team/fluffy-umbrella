@@ -3,6 +3,7 @@ package tripleo.elijah.world.impl;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.stages.garish.GarishClass;
 import tripleo.elijah.stages.gen_fn.EvaClass;

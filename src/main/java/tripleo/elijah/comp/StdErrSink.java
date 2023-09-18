@@ -23,26 +23,15 @@ public class StdErrSink implements ErrSink {
 	private int _errorCount;
 
 	@Override
+	public int errorCount() {
+		return _errorCount;
+	}
+
+	@Override
 	public void exception(final Exception e) {
 		_errorCount++;
 		tripleo.elijah.util.Stupidity.println_err2("exception: " + e);
 		e.printStackTrace(System.err);
-	}
-
-	@Override
-	public void reportError(final String s) {
-		_errorCount++;
-		if (DebugFlags.QUIET_ERR_SINK) System.err.printf("ERROR: %s%n", s);
-	}
-
-	@Override
-	public void reportWarning(final String s) {
-		if (DebugFlags.QUIET_ERR_SINK) System.err.printf("WARNING: %s%n", s);
-	}
-
-	@Override
-	public int errorCount() {
-		return _errorCount;
 	}
 
 	@Override
@@ -56,6 +45,17 @@ public class StdErrSink implements ErrSink {
 			_errorCount++;
 		if (DebugFlags.QUIET_ERR_SINK)
 			diagnostic.report(System.err);
+	}
+
+	@Override
+	public void reportError(final String s) {
+		_errorCount++;
+		if (DebugFlags.QUIET_ERR_SINK) System.err.printf("ERROR: %s%n", s);
+	}
+
+	@Override
+	public void reportWarning(final String s) {
+		if (DebugFlags.QUIET_ERR_SINK) System.err.printf("WARNING: %s%n", s);
 	}
 }
 

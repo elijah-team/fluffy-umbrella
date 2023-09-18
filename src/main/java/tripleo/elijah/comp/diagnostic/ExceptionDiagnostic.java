@@ -20,17 +20,12 @@ public class ExceptionDiagnostic implements Diagnostic {
 	}
 
 	@Override
-	public Severity severity() {
-		return Severity.ERROR;
+	public Object get() {
+		return e;
 	}
 
 	@Override
 	public @NotNull Locatable primary() {
-		return null;
-	}
-
-	@Override
-	public @NotNull List<Locatable> secondary() {
 		return null;
 	}
 
@@ -40,7 +35,12 @@ public class ExceptionDiagnostic implements Diagnostic {
 	}
 
 	@Override
-	public Object get() {
-		return e;
+	public @NotNull List<Locatable> secondary() {
+		return null;
+	}
+
+	@Override
+	public Severity severity() {
+		return Severity.ERROR;
 	}
 }

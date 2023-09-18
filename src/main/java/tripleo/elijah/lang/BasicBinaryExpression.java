@@ -29,6 +29,70 @@ public class BasicBinaryExpression implements IBinaryExpression {
 		right = aRight;
 	}
 
+	@Override
+	public ExpressionKind getKind() {
+		return _kind;
+	}
+
+	@Override
+	public IExpression getLeft() {
+		return left;
+	}
+
+	@Override
+	public IExpression getRight() {
+		return right;
+	}
+
+	@Override
+	public OS_Type getType() {
+		return _type;
+	}
+
+	@Override
+	public boolean is_simple() {
+		return getLeft().is_simple() && getRight().is_simple();
+	}
+
+	@Override
+	public String repr_() {
+		return String.format("<Expression %s %s %s>", left, _kind, right);
+	}
+
+	@Override
+	public void set(final IBinaryExpression aEx) {
+		left  = aEx.getLeft();
+		_kind = aEx.getKind();
+		right = aEx.getRight();
+	}
+
+	@Override
+	public void setKind(final ExpressionKind aKind) {
+		_kind = aKind;
+	}
+
+	@Override
+	public void setLeft(final IExpression aLeft) {
+		left = aLeft;
+	}
+
+	@Override
+	public void setRight(final IExpression aRight) {
+		right = aRight;
+	}
+
+	@Override
+	public void setType(final OS_Type deducedExpression) {
+		_type = deducedExpression;
+	}
+
+	@Override
+	public void shift(final ExpressionKind aType) {
+		left  = new BasicBinaryExpression(left, _kind, right); //TODO
+		_kind = aType;
+		right = null;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -305,70 +369,6 @@ public class BasicBinaryExpression implements IBinaryExpression {
 
 		}
 		return sb.toString();
-	}
-
-	@Override
-	public ExpressionKind getKind() {
-		return _kind;
-	}
-
-	@Override
-	public IExpression getRight() {
-		return right;
-	}
-
-	@Override
-	public void setRight(final IExpression aRight) {
-		right = aRight;
-	}
-
-	@Override
-	public void shift(final ExpressionKind aType) {
-		left  = new BasicBinaryExpression(left, _kind, right); //TODO
-		_kind = aType;
-		right = null;
-	}
-
-	@Override
-	public void set(final IBinaryExpression aEx) {
-		left  = aEx.getLeft();
-		_kind = aEx.getKind();
-		right = aEx.getRight();
-	}
-
-	@Override
-	public void setKind(final ExpressionKind aKind) {
-		_kind = aKind;
-	}
-
-	@Override
-	public IExpression getLeft() {
-		return left;
-	}
-
-	@Override
-	public void setLeft(final IExpression aLeft) {
-		left = aLeft;
-	}
-
-	@Override
-	public String repr_() {
-		return String.format("<Expression %s %s %s>", left, _kind, right);
-	}
-
-	@Override
-	public boolean is_simple() {
-		return getLeft().is_simple() && getRight().is_simple();
-	}
-
-	@Override
-	public OS_Type getType() {
-		return _type;
-	}
-
-	@Override
-	public void setType(final OS_Type deducedExpression) {
-		_type = deducedExpression;
 	}
 
 }

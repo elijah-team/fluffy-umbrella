@@ -16,17 +16,17 @@ import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
  * Created 11/19/21 9:08 PM
  */
 public interface GNCoded {
-	int getCode();
+	enum Role {
+		FUNCTION, CLASS, NAMESPACE
+	}
 
-	void setCode(int aCode);
+	int getCode();
 
 	Role getRole();
 
 	void register(ICodeRegistrar aCr);
 
-	enum Role {
-		FUNCTION, CLASS, NAMESPACE
-	}
+	void setCode(int aCode);
 }
 
 //

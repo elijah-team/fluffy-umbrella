@@ -1,7 +1,10 @@
 package tripleo.elijah.stages.gen_c;
 
+import java.util.List;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.ConstructorDef;
@@ -22,17 +25,64 @@ import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.List;
-
 class CReference_getIdentIAPath_IdentIAHelper {
+	class CodeResolver {
+		private int    code;
+		private String reason;
+		private boolean is_set;
+		private boolean is_anti;
+
+		public void anti_provide(final int _code, final String _reason) {
+			code   = _code;
+			reason = _reason;
+			is_anti = true;
+		}
+
+		int getCode() {
+			return code;
+		}
+
+		public boolean isAnti() {
+			return is_anti;
+		}
+
+		public boolean isSet() {
+			return is_set;
+		}
+
+		public void provide(final @NotNull EvaContainerNC aNc, final String aReason) {
+			code   = aNc.getCode();
+			reason = aReason;
+			is_set = true;
+		}
+
+		public void provide(int _code, String _reason) {
+			code   = _code;
+			reason = _reason;
+			is_set = true;
+		}
+	}
+	interface ICodeResolver {
+		int getCode();
+	}
+	@Contract(pure = true)
+	private static void _act_AliasStatement() {
+		final int y = 2;
+		NotImplementedException.raise();
+		//			text = Emit.emit("/*167*/")+((AliasStatementImpl)resolved_element).name();
+		//			return _getIdentIAPath_IdentIAHelper(text, sl, i, sSize, _res)
+	}
 	private final BaseEvaFunction     generatedFunction;
 	private final int                 i;
 	private final EvaNode             resolved;
 	private final OS_Element          resolved_element;
 	private final List<String>        sl;
 	private final InstructionArgument ia_next;
+
 	private final int                 sSize;
+
 	private final String              value;
+
 	public        int                 code = -1;
 
 	@Contract(pure = true)
@@ -45,39 +95,6 @@ class CReference_getIdentIAPath_IdentIAHelper {
 		this.generatedFunction = generatedFunction;
 		resolved               = aResolved;
 		value                  = aValue;
-	}
-
-	boolean action(final CRI_Ident aCRI_ident, final @NotNull CReference aCReference) {
-		boolean          b               = false;
-		final OS_Element resolvedElement = getResolved_element();
-
-		if (resolvedElement instanceof ClassStatement) {
-			b = _act_ClassStatement(aCReference, b);
-		} else if (resolvedElement instanceof ConstructorDef) {
-			_act_ConstructorDef(aCReference);
-		} else if (resolvedElement instanceof FunctionDef) {
-			_act_FunctionDef(aCReference);
-		} else if (resolvedElement instanceof DefFunctionDef) {
-			_act_DefFunctionDef(aCReference);
-		} else if (resolvedElement instanceof VariableStatement) {
-			_act_VariableStatement(aCReference);
-		} else if (resolvedElement instanceof PropertyStatement) {
-			_act_PropertyStatement(aCReference);
-		} else if (resolvedElement instanceof AliasStatement) {
-			_act_AliasStatement();
-		} else if (resolvedElement instanceof final FormalArgListItem fali) {
-			_act_FormalArgListItem(aCReference, fali);
-		} else {
-			// text = idte.getIdent().getText();
-			tripleo.elijah.util.Stupidity.println_out("1008 " + resolvedElement.getClass().getName());
-			throw new NotImplementedException();
-		}
-		return b;
-	}
-
-	@Contract(pure = true)
-	public OS_Element getResolved_element() {
-		return resolved_element;
 	}
 
 	private boolean _act_ClassStatement(final @NotNull CReference aCReference, boolean b) {
@@ -133,6 +150,55 @@ class CReference_getIdentIAPath_IdentIAHelper {
 		final String text  = ((ConstructorDef) getResolved_element()).name();
 		final String text2 = String.format("ZC%d%s", code, text);
 		aCReference.addRef(text2, CReference.Ref.CONSTRUCTOR);
+	}
+
+	private void _act_DefFunctionDef(final @NotNull CReference aCReference) {
+		final OS_Element parent = getResolved_element().getParent();
+		int        code   = -100;
+
+		var cr = new CodeResolver();
+
+		if (getResolved() != null) {
+			if ((getResolved() instanceof BaseEvaFunction rf)) {
+				final EvaNode gc = rf.getGenClass();
+				if (gc instanceof final EvaContainerNC nc) // and not another function
+				{
+					code = nc.getCode();
+
+					cr.provide(nc, "_act_DefFunctionDef:getResolved-instanceof-BaseEvaFunction:genClass-instanceof-EvaContainerNC");
+				} else {
+					code = -2;
+
+					cr.anti_provide(-2, "_act_DefFunctionDef:getResolved-instanceof-BaseEvaFunction:genClass-NOT-instanceof-EvaContainerNC");
+				}
+			} else {
+				assert false;
+			}
+		} else {
+			if (parent instanceof ClassStatement) {
+				code = -3;
+			} else if (parent instanceof NamespaceStatement) {
+				code = -3;
+			} else {
+				// TODO what about FunctionDef, etc
+				code = -1;
+			}
+		}
+		// TODO what about overloaded functions
+		assert getI() == getsSize() - 1; // Make sure we are ending with a ProcedureCall
+		getSl().clear();
+		if (code == -1) {
+//				text2 = String.format("ZT%d_%d", enclosing_function._a.getCode(), closure_index);
+		}
+		final DefFunctionDef defFunctionDef = (DefFunctionDef) getResolved_element();
+		final String         text2          = String.format("z%d%s", code, defFunctionDef.name());
+		aCReference.addRef(text2, CReference.Ref.FUNCTION);
+	}
+
+	private void _act_FormalArgListItem(final @NotNull CReference aCReference, final @NotNull FormalArgListItem fali) {
+		final int    y     = 2;
+		final String text2 = "va" + fali.getNameToken().getText();
+		aCReference.addRef(text2, CReference.Ref.LOCAL); // TODO
 	}
 
 	private void _act_FunctionDef(final @NotNull CReference aCReference) {
@@ -200,56 +266,6 @@ class CReference_getIdentIAPath_IdentIAHelper {
 		aCReference.addRef(text2, CReference.Ref.FUNCTION);
 	}
 
-	private void _act_DefFunctionDef(final @NotNull CReference aCReference) {
-		final OS_Element parent = getResolved_element().getParent();
-		int        code   = -100;
-
-		var cr = new CodeResolver();
-
-		if (getResolved() != null) {
-			if ((getResolved() instanceof BaseEvaFunction rf)) {
-				final EvaNode gc = rf.getGenClass();
-				if (gc instanceof final EvaContainerNC nc) // and not another function
-				{
-					code = nc.getCode();
-
-					cr.provide(nc, "_act_DefFunctionDef:getResolved-instanceof-BaseEvaFunction:genClass-instanceof-EvaContainerNC");
-				} else {
-					code = -2;
-
-					cr.anti_provide(-2, "_act_DefFunctionDef:getResolved-instanceof-BaseEvaFunction:genClass-NOT-instanceof-EvaContainerNC");
-				}
-			} else {
-				assert false;
-			}
-		} else {
-			if (parent instanceof ClassStatement) {
-				code = -3;
-			} else if (parent instanceof NamespaceStatement) {
-				code = -3;
-			} else {
-				// TODO what about FunctionDef, etc
-				code = -1;
-			}
-		}
-		// TODO what about overloaded functions
-		assert getI() == getsSize() - 1; // Make sure we are ending with a ProcedureCall
-		getSl().clear();
-		if (code == -1) {
-//				text2 = String.format("ZT%d_%d", enclosing_function._a.getCode(), closure_index);
-		}
-		final DefFunctionDef defFunctionDef = (DefFunctionDef) getResolved_element();
-		final String         text2          = String.format("z%d%s", code, defFunctionDef.name());
-		aCReference.addRef(text2, CReference.Ref.FUNCTION);
-	}
-
-	private void _act_VariableStatement(final @NotNull CReference aCReference) {
-		final VariableStatement variableStatement = (VariableStatement) getResolved_element();
-
-		GI_VariableStatement givs = (GI_VariableStatement) aCReference._repo().itemFor(variableStatement);
-		givs._createReferenceForVariableStatement(aCReference, getGeneratedFunction(), getValue());
-	}
-
 	private void _act_PropertyStatement(final @NotNull CReference aCReference) {
 		getSl().clear();  // don't we want all the text including from sl?
 
@@ -263,43 +279,39 @@ class CReference_getIdentIAPath_IdentIAHelper {
 		aCReference.__cheat_ret = text2;
 	}
 
-	@Contract(pure = true)
-	private static void _act_AliasStatement() {
-		final int y = 2;
-		NotImplementedException.raise();
-		//			text = Emit.emit("/*167*/")+((AliasStatementImpl)resolved_element).name();
-		//			return _getIdentIAPath_IdentIAHelper(text, sl, i, sSize, _res)
+	private void _act_VariableStatement(final @NotNull CReference aCReference) {
+		final VariableStatement variableStatement = (VariableStatement) getResolved_element();
+
+		GI_VariableStatement givs = (GI_VariableStatement) aCReference._repo().itemFor(variableStatement);
+		givs._createReferenceForVariableStatement(aCReference, getGeneratedFunction(), getValue());
 	}
 
-	private void _act_FormalArgListItem(final @NotNull CReference aCReference, final @NotNull FormalArgListItem fali) {
-		final int    y     = 2;
-		final String text2 = "va" + fali.getNameToken().getText();
-		aCReference.addRef(text2, CReference.Ref.LOCAL); // TODO
-	}
+	boolean action(final CRI_Ident aCRI_ident, final @NotNull CReference aCReference) {
+		boolean          b               = false;
+		final OS_Element resolvedElement = getResolved_element();
 
-	@Contract(pure = true)
-	public EvaNode getResolved() {
-		return resolved;
-	}
-
-	@Contract(pure = true)
-	public InstructionArgument getIa_next() {
-		return ia_next;
-	}
-
-	@Contract(pure = true)
-	public int getI() {
-		return i;
-	}
-
-	@Contract(pure = true)
-	public int getsSize() {
-		return sSize;
-	}
-
-	@Contract(pure = true)
-	public List<String> getSl() {
-		return sl;
+		if (resolvedElement instanceof ClassStatement) {
+			b = _act_ClassStatement(aCReference, b);
+		} else if (resolvedElement instanceof ConstructorDef) {
+			_act_ConstructorDef(aCReference);
+		} else if (resolvedElement instanceof FunctionDef) {
+			_act_FunctionDef(aCReference);
+		} else if (resolvedElement instanceof DefFunctionDef) {
+			_act_DefFunctionDef(aCReference);
+		} else if (resolvedElement instanceof VariableStatement) {
+			_act_VariableStatement(aCReference);
+		} else if (resolvedElement instanceof PropertyStatement) {
+			_act_PropertyStatement(aCReference);
+		} else if (resolvedElement instanceof AliasStatement) {
+			_act_AliasStatement();
+		} else if (resolvedElement instanceof final FormalArgListItem fali) {
+			_act_FormalArgListItem(aCReference, fali);
+		} else {
+			// text = idte.getIdent().getText();
+			tripleo.elijah.util.Stupidity.println_out("1008 " + resolvedElement.getClass().getName());
+			throw new NotImplementedException();
+		}
+		return b;
 	}
 
 	@Contract(pure = true)
@@ -308,48 +320,37 @@ class CReference_getIdentIAPath_IdentIAHelper {
 	}
 
 	@Contract(pure = true)
+	public int getI() {
+		return i;
+	}
+
+	@Contract(pure = true)
+	public InstructionArgument getIa_next() {
+		return ia_next;
+	}
+
+	@Contract(pure = true)
+	public EvaNode getResolved() {
+		return resolved;
+	}
+
+	@Contract(pure = true)
+	public OS_Element getResolved_element() {
+		return resolved_element;
+	}
+
+	@Contract(pure = true)
+	public List<String> getSl() {
+		return sl;
+	}
+
+	@Contract(pure = true)
+	public int getsSize() {
+		return sSize;
+	}
+
+	@Contract(pure = true)
 	public String getValue() {
 		return value;
-	}
-
-	interface ICodeResolver {
-		int getCode();
-	}
-
-	class CodeResolver {
-		private int    code;
-		private String reason;
-		private boolean is_set;
-		private boolean is_anti;
-
-		public boolean isSet() {
-			return is_set;
-		}
-
-		public boolean isAnti() {
-			return is_anti;
-		}
-
-		public void provide(int _code, String _reason) {
-			code   = _code;
-			reason = _reason;
-			is_set = true;
-		}
-
-		int getCode() {
-			return code;
-		}
-
-		public void provide(final @NotNull EvaContainerNC aNc, final String aReason) {
-			code   = aNc.getCode();
-			reason = aReason;
-			is_set = true;
-		}
-
-		public void anti_provide(final int _code, final String _reason) {
-			code   = _code;
-			reason = _reason;
-			is_anti = true;
-		}
 	}
 }

@@ -21,12 +21,12 @@ public class ClassDeclNode {
 		// TODO Auto-generated constructor stub
 	}
 
-	public void GenClassDecl(final CompilerContext cctx, final GenBuffer gbn) {
+	public void CloseClassDecl(final CompilerContext cctx, final GenBuffer gbn) {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void CloseClassDecl(final CompilerContext cctx, final GenBuffer gbn) {
+	public void GenClassDecl(final CompilerContext cctx, final GenBuffer gbn) {
 		// TODO Auto-generated method stub
 
 	}

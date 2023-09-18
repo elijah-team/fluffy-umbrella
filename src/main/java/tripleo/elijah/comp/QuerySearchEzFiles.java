@@ -20,13 +20,6 @@ class QuerySearchEzFiles {
 	private final IO                io;
 	private final CompilationRunner cr;
 
-	public QuerySearchEzFiles(final Compilation aC, final ErrSink aErrSink, final IO aIo, final CompilationRunner aCr) {
-		c       = aC;
-		errSink = aErrSink;
-		io      = aIo;
-		cr      = aCr;
-	}
-
 	final FilenameFilter ez_files_filter = new FilenameFilter() {
 		@Override
 		public boolean accept(final File file, final String s) {
@@ -34,6 +27,31 @@ class QuerySearchEzFiles {
 			return matches2;
 		}
 	};
+
+	public QuerySearchEzFiles(final Compilation aC, final ErrSink aErrSink, final IO aIo, final CompilationRunner aCr) {
+		c       = aC;
+		errSink = aErrSink;
+		io      = aIo;
+		cr      = aCr;
+	}
+
+	@NotNull Operation<CompilerInstructions> parseEzFile(final @NotNull File f, final String file_name, final ErrSink errSink, final IO io, final Compilation c) throws Exception {
+		System.out.printf("   %s%n", new File(file_name).getAbsolutePath());
+
+		/*final */
+		Operation<CompilerInstructions> result;
+		final File                      file = new File(file_name);
+		final EzSpec                    spec;
+
+		try (final InputStream s = io.readFile(file)) {
+			spec   = new EzSpec(file_name, s, file);
+			result = cr.realParseEzFile(spec, cr.ezCache());
+		} catch (final IOException aE) {
+			result = Operation.failure(aE);
+		}
+
+		return result;
+	}
 
 	// TODO list of operations, not operation of list
 	public Operation2<List<CompilerInstructions>> process(final File directory) {
@@ -60,23 +78,5 @@ class QuerySearchEzFiles {
 			}
 		}
 		return Operation2.success(R);
-	}
-
-	@NotNull Operation<CompilerInstructions> parseEzFile(final @NotNull File f, final String file_name, final ErrSink errSink, final IO io, final Compilation c) throws Exception {
-		System.out.printf("   %s%n", new File(file_name).getAbsolutePath());
-
-		/*final */
-		Operation<CompilerInstructions> result;
-		final File                      file = new File(file_name);
-		final EzSpec                    spec;
-
-		try (final InputStream s = io.readFile(file)) {
-			spec   = new EzSpec(file_name, s, file);
-			result = cr.realParseEzFile(spec, cr.ezCache());
-		} catch (final IOException aE) {
-			result = Operation.failure(aE);
-		}
-
-		return result;
 	}
 }

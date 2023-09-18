@@ -9,11 +9,14 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import java.util.List;
+
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.FailCallback;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.LookupResultList;
@@ -34,30 +37,136 @@ import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.stages.instructions.ProcIA;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.List;
-
 /**
  * Created 7/9/21 6:10 AM
  */
 public class DeducePath {
+	public interface DeducePathItem {
+		//base = aIdentTableEntry;
+		//ias  = aX;
+
+		MemberContext context();
+
+		OS_Element element();
+
+		int getIndex();
+
+		InstructionArgument instructionArgument();
+
+		GenType type();
+
+	}
+	public class DeducePathItemImpl implements DeducePathItem {
+		private final int                 index;
+		private final InstructionArgument instructionArgument;
+		private       MemberContext       context;
+		private       OS_Element          element;
+		private       GenType             type;
+
+		public DeducePathItemImpl(final InstructionArgument aInstructionArgument, final int aIndex) {
+			instructionArgument = aInstructionArgument;
+			index               = aIndex;
+		}
+
+		@Override
+		public MemberContext context() {
+			return context;
+		}
+
+		@Override
+		public OS_Element element() {
+			return element;
+		}
+
+		@Override
+		public int getIndex() {
+			return index;
+		}
+
+		@Override
+		public InstructionArgument instructionArgument() {
+			return instructionArgument;
+		}
+
+		@Override
+		public GenType type() {
+			return type;
+		}
+	}
+	class MemberContext extends Context {
+
+		private final           DeducePath deducePath;
+		private final           OS_Element element;
+		private final           int        index;
+		private final @Nullable GenType    type;
+
+		public MemberContext(DeducePath aDeducePath, int aIndex, OS_Element aElement) {
+			assert aIndex >= 0;
+
+			deducePath = aDeducePath;
+			index      = aIndex;
+			element    = aElement;
+
+			type = deducePath.getType(aIndex);
+		}
+
+		@Override
+		public @Nullable Context getParent() {
+			if (index == 0)
+				return element.getContext().getParent();
+			return deducePath.getContext(index - 1);
+		}
+
+		@Override
+		public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public @Nullable LookupResultList lookup(String name, int level, LookupResultList Result, SearchList alreadySearched, boolean one) {
+//			if (index == 0)
+
+
+			if (type.getResolved() == null) {
+
+				//c = getContext(this.index)
+				@Nullable final OS_Element ell = deducePath.getElement(this.index);
+				if (ell == null) {
+					throw new AssertionError("202 no element found");
+				} else {
+
+					if (ell instanceof VariableStatement) {
+						VariableStatement variableStatement = (VariableStatement) ell;
+						final Context         ctx2              = variableStatement.getParent().getContext();
+
+						String n2 = null;
+						if (type.getNonGenericTypeName() != null) {
+							final RegularTypeName ngtn = (RegularTypeName) type.getTypeName().getTypeName();
+							n2 = ngtn.getName();
+						}
+
+						if (n2 != null) {
+							return ctx2.lookup(n2, level + 1, Result, alreadySearched, one);
+						}
+					}
+				}
+				return null;
+			}
+
+
+			return type.getResolved().getElement().getContext().lookup(name, level, Result, alreadySearched, one);
+//			else
+//				return null;
+		}
+	}
 	private final          IdentTableEntry           base;
 	private final          MemberContext @NotNull [] contexts;
+
 	private final          OS_Element @NotNull []    elements;  // arrays because they never need to be resized
+
 	private final @NotNull List<InstructionArgument> ias;
+
 	private final          GenType @NotNull []       types;
-
-	public InstructionArgument getIA(int index) {
-		return ias.get(index);
-	}
-
-	public void setTarget(final @NotNull DeduceElement aTarget) {
-		//assert elements[0] == null;
-		elements[0] = aTarget.element();
-	}
-
-	public int size() {
-		return ias.size();
-	}
 
 	@Contract(pure = true)
 	public DeducePath(IdentTableEntry aIdentTableEntry, @NotNull List<InstructionArgument> aX) {
@@ -70,56 +179,6 @@ public class DeducePath {
 		elements = new OS_Element[size];
 		types    = new GenType[size];
 		contexts = new MemberContext[size];
-	}
-
-	public @Nullable Context getContext(int aIndex) {
-		if (contexts[aIndex] == null) {
-			final @Nullable MemberContext memberContext = new MemberContext(this, aIndex, getElement(aIndex));
-			contexts[aIndex] = memberContext;
-			return memberContext;
-		} else
-			return contexts[aIndex];
-
-	}
-
-	@Nullable
-	public OS_Element getElement(int aIndex) {
-		if (elements[aIndex] == null) {
-			InstructionArgument  ia2 = getIA(aIndex);
-			@Nullable OS_Element el;
-			if (ia2 instanceof IntegerIA) {
-				el = elementForIndex(aIndex, (IntegerIA) ia2);
-			} else if (ia2 instanceof IdentIA) {
-				el = elementForIndex(aIndex, (IdentIA) ia2);
-			} else if (ia2 instanceof ProcIA) {
-				el = elementForIndex((ProcIA) ia2);
-			} else
-				el = null; // README shouldn't be calling for other subclasses
-			elements[aIndex] = el;
-			return el;
-		} else {
-			return elements[aIndex];
-		}
-	}
-
-	@Nullable
-	private OS_Element elementForIndex(final int aIndex, final @NotNull IntegerIA ia2) {
-		@Nullable OS_Element        el;
-		@NotNull VariableTableEntry vte = ia2.getEntry();
-		el = vte.getResolvedElement();
-		if (el == null) {
-			// never called bc above will NEVER be true due to construction of vte
-			vte.elementPromise((el2) -> {
-				vte.setStatus(BaseTableEntry.Status.KNOWN,
-							  new GenericElementHolderWithIntegerIA(el2,
-																	(IntegerIA) ias.get(aIndex)));
-			}, null);
-		} else {
-			// set this to set resolved_elements of remaining entries
-			vte.setStatus(BaseTableEntry.Status.KNOWN, //dt2._inj().new_
-						  new GenericElementHolderWithIntegerIA(el, (IntegerIA) ias.get(aIndex)));
-		}
-		return el;
 	}
 
 	@Nullable
@@ -149,6 +208,26 @@ public class DeducePath {
 				identTableEntry.setStatus(BaseTableEntry.Status.KNOWN, //_inj().new_
 										  new GenericElementHolder(x));
 			});
+		}
+		return el;
+	}
+
+	@Nullable
+	private OS_Element elementForIndex(final int aIndex, final @NotNull IntegerIA ia2) {
+		@Nullable OS_Element        el;
+		@NotNull VariableTableEntry vte = ia2.getEntry();
+		el = vte.getResolvedElement();
+		if (el == null) {
+			// never called bc above will NEVER be true due to construction of vte
+			vte.elementPromise((el2) -> {
+				vte.setStatus(BaseTableEntry.Status.KNOWN,
+							  new GenericElementHolderWithIntegerIA(el2,
+																	(IntegerIA) ias.get(aIndex)));
+			}, null);
+		} else {
+			// set this to set resolved_elements of remaining entries
+			vte.setStatus(BaseTableEntry.Status.KNOWN, //dt2._inj().new_
+						  new GenericElementHolderWithIntegerIA(el, (IntegerIA) ias.get(aIndex)));
 		}
 		return el;
 	}
@@ -188,6 +267,36 @@ public class DeducePath {
 		return el;
 	}
 
+	public @Nullable Context getContext(int aIndex) {
+		if (contexts[aIndex] == null) {
+			final @Nullable MemberContext memberContext = new MemberContext(this, aIndex, getElement(aIndex));
+			contexts[aIndex] = memberContext;
+			return memberContext;
+		} else
+			return contexts[aIndex];
+
+	}
+
+	@Nullable
+	public OS_Element getElement(int aIndex) {
+		if (elements[aIndex] == null) {
+			InstructionArgument  ia2 = getIA(aIndex);
+			@Nullable OS_Element el;
+			if (ia2 instanceof IntegerIA) {
+				el = elementForIndex(aIndex, (IntegerIA) ia2);
+			} else if (ia2 instanceof IdentIA) {
+				el = elementForIndex(aIndex, (IdentIA) ia2);
+			} else if (ia2 instanceof ProcIA) {
+				el = elementForIndex((ProcIA) ia2);
+			} else
+				el = null; // README shouldn't be calling for other subclasses
+			elements[aIndex] = el;
+			return el;
+		} else {
+			return elements[aIndex];
+		}
+	}
+
 	public void getElementPromise(int aIndex, DoneCallback<OS_Element> aOS_elementDoneCallback, FailCallback<Diagnostic> aDiagnosticFailCallback) {
 		getEntry(aIndex).elementPromise(aOS_elementDoneCallback, aDiagnosticFailCallback);
 	}
@@ -208,20 +317,8 @@ public class DeducePath {
 		return null;
 	}
 
-	public interface DeducePathItem {
-		//base = aIdentTableEntry;
-		//ias  = aX;
-
-		MemberContext context();
-
-		OS_Element element();
-
-		int getIndex();
-
-		InstructionArgument instructionArgument();
-
-		GenType type();
-
+	public InstructionArgument getIA(int index) {
+		return ias.get(index);
 	}
 
 	public @Nullable GenType getType(int aIndex) {
@@ -257,109 +354,13 @@ public class DeducePath {
 		types[index] = aType;
 	}
 
-	public class DeducePathItemImpl implements DeducePathItem {
-		private final int                 index;
-		private final InstructionArgument instructionArgument;
-		private       MemberContext       context;
-		private       OS_Element          element;
-		private       GenType             type;
-
-		public DeducePathItemImpl(final InstructionArgument aInstructionArgument, final int aIndex) {
-			instructionArgument = aInstructionArgument;
-			index               = aIndex;
-		}
-
-		@Override
-		public MemberContext context() {
-			return context;
-		}
-
-		@Override
-		public OS_Element element() {
-			return element;
-		}
-
-		@Override
-		public int getIndex() {
-			return index;
-		}
-
-		@Override
-		public InstructionArgument instructionArgument() {
-			return instructionArgument;
-		}
-
-		@Override
-		public GenType type() {
-			return type;
-		}
+	public void setTarget(final @NotNull DeduceElement aTarget) {
+		//assert elements[0] == null;
+		elements[0] = aTarget.element();
 	}
 
-	class MemberContext extends Context {
-
-		private final           DeducePath deducePath;
-		private final           OS_Element element;
-		private final           int        index;
-		private final @Nullable GenType    type;
-
-		public MemberContext(DeducePath aDeducePath, int aIndex, OS_Element aElement) {
-			assert aIndex >= 0;
-
-			deducePath = aDeducePath;
-			index      = aIndex;
-			element    = aElement;
-
-			type = deducePath.getType(aIndex);
-		}
-
-		@Override
-		public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
-			throw new NotImplementedException();
-		}
-
-		@Override
-		public @Nullable Context getParent() {
-			if (index == 0)
-				return element.getContext().getParent();
-			return deducePath.getContext(index - 1);
-		}
-
-		@Override
-		public @Nullable LookupResultList lookup(String name, int level, LookupResultList Result, SearchList alreadySearched, boolean one) {
-//			if (index == 0)
-
-
-			if (type.getResolved() == null) {
-
-				//c = getContext(this.index)
-				@Nullable final OS_Element ell = deducePath.getElement(this.index);
-				if (ell == null) {
-					throw new AssertionError("202 no element found");
-				} else {
-
-					if (ell instanceof VariableStatement) {
-						VariableStatement variableStatement = (VariableStatement) ell;
-						final Context         ctx2              = variableStatement.getParent().getContext();
-
-						String n2 = null;
-						if (type.getNonGenericTypeName() != null) {
-							final RegularTypeName ngtn = (RegularTypeName) type.getTypeName().getTypeName();
-							n2 = ngtn.getName();
-						}
-
-						if (n2 != null) {
-							return ctx2.lookup(n2, level + 1, Result, alreadySearched, one);
-						}
-					}
-				}
-				return null;
-			}
-
-
-			return type.getResolved().getElement().getContext().lookup(name, level, Result, alreadySearched, one);
-//			else
-//				return null;
-		}
+	public int size() {
+		return ias.size();
 	}
 }
 

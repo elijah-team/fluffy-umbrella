@@ -9,6 +9,7 @@
 package tripleo.elijah.stages.deduce;
 
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.OS_Element;
 
 /**

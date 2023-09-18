@@ -9,18 +9,18 @@
 
 package tripleo.elijah.stages.gen_fn;
 
-import tripleo.elijah.stages.deduce.FunctionInvocation;
-
 import java.util.List;
+
+import tripleo.elijah.stages.deduce.FunctionInvocation;
 
 /**
  * Created 6/22/21 3:40 AM
  */
 public interface DependencyTracker {
+	List<FunctionInvocation> dependentFunctions();
+
 	// for use in DeduceTypes2
 	List<GenType> dependentTypes();
-
-	List<FunctionInvocation> dependentFunctions();
 }
 
 //

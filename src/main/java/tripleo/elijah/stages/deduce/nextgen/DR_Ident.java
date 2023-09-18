@@ -25,39 +25,102 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class DR_Ident implements DR_Item {
+	class BacklinkUnderstanding implements Understanding {
+		private final InstructionArgument ia;
+
+		public BacklinkUnderstanding(final InstructionArgument aIa) {
+			ia = aIa;
+		}
+
+		@Override
+		public String asString() {
+			return String.format("BacklinkUnderstanding %s", ia);
+		}
+	}
+
+	class ClassUnderstanding implements Understanding {
+		private final DG_ClassStatement dcs;
+
+		public ClassUnderstanding(final DG_ClassStatement aDcs) {
+			dcs = aDcs;
+		}
+
+		@Override
+		public @NotNull String asString() {
+			return "ClassUnderstanding " + dcs.classInvocation();
+		}
+	}
+	public static class ElementUnderstanding implements Understanding {
+		private final OS_Element x;
+
+		public ElementUnderstanding(final OS_Element aX) {
+			x = aX;
+		}
+
+		@Override
+		public @NotNull String asString() {
+			String xx = x.toString();
+
+			if (x instanceof VariableStatement vs) {
+				xx = vs.getName();
+			}
+
+			return "ElementUnderstanding " + xx;
+		}
+
+		public OS_Element getElement() {
+			return x;
+		}
+	}
+	class PTEUnderstanding implements Understanding {
+
+		private final ProcTableEntry pte;
+
+		public PTEUnderstanding(final ProcTableEntry aPte) {
+			pte = aPte;
+		}
+
+		@Override
+		public String asString() {
+			return String.format("PTEUnderstanding " + pte.__debug_expression());
+		}
+	}
+	public interface Understanding {
+		String asString();
+	}
+	public static @NotNull DR_Ident create(final IdentExpression aIdent, final VariableTableEntry aVteBl1, final BaseEvaFunction aBaseEvaFunction) {
+		return new DR_Ident(aIdent, aVteBl1, aBaseEvaFunction);
+	}
+
+	public static @NotNull DR_Ident create(@NotNull IdentTableEntry aIdentTableEntry, BaseEvaFunction aGeneratedFunction) {
+		return new DR_Ident(aIdentTableEntry, aGeneratedFunction);
+	}
+
+	public static @NotNull DR_Ident create(final VariableTableEntry aVariableTableEntry, final BaseEvaFunction aGeneratedFunction) {
+		return new DR_Ident(aVariableTableEntry, aGeneratedFunction);
+	}
+
 	private final List<DT_ResolveObserver> resolveObserverList = new LinkedList<>();
 
 	private final @Nullable IdentExpression    ident;
+
 	private final @Nullable VariableTableEntry vteBl1;
+
 	@NotNull                List<DoneCallback<DR_PossibleType>> typePossibles = new ArrayList<>();
+
 	boolean _b;
+
 	private final @Nullable IdentTableEntry _identTableEntry;
 
 	private final BaseEvaFunction baseEvaFunction;
-
-	public DR_Ident(final @NotNull IdentTableEntry aIdentTableEntry, final BaseEvaFunction aBaseEvaFunction) {
-		ident            = aIdentTableEntry.getIdent();
-		vteBl1           = null;
-		_identTableEntry = aIdentTableEntry;
-		baseEvaFunction  = aBaseEvaFunction;
-		mode             = 1;
-	}
 
 	private final int mode;
 
 	private final DeferredObject<DR_PossibleType, Void, Void> typePossibleDeferred = new DeferredObject<>();
 
-	public static @NotNull DR_Ident create(final IdentExpression aIdent, final VariableTableEntry aVteBl1, final BaseEvaFunction aBaseEvaFunction) {
-		return new DR_Ident(aIdent, aVteBl1, aBaseEvaFunction);
-	}
-
 	private final List<DR_PossibleType> typeProposals = new ArrayList<>();
 
 	public final List<Understanding> u = new ArrayList<>();
-
-	public static @NotNull DR_Ident create(@NotNull IdentTableEntry aIdentTableEntry, BaseEvaFunction aGeneratedFunction) {
-		return new DR_Ident(aIdentTableEntry, aGeneratedFunction);
-	}
 
 	public DR_Ident(final IdentExpression aIdent, final VariableTableEntry aVteBl1, final BaseEvaFunction aBaseEvaFunction) {
 		ident                 = aIdent;
@@ -67,8 +130,12 @@ public class DR_Ident implements DR_Item {
 		mode                  = 1;
 	}
 
-	public static @NotNull DR_Ident create(final VariableTableEntry aVariableTableEntry, final BaseEvaFunction aGeneratedFunction) {
-		return new DR_Ident(aVariableTableEntry, aGeneratedFunction);
+	public DR_Ident(final @NotNull IdentTableEntry aIdentTableEntry, final BaseEvaFunction aBaseEvaFunction) {
+		ident            = aIdentTableEntry.getIdent();
+		vteBl1           = null;
+		_identTableEntry = aIdentTableEntry;
+		baseEvaFunction  = aBaseEvaFunction;
+		mode             = 1;
 	}
 
 	public DR_Ident(final VariableTableEntry aVteBl1, final BaseEvaFunction aBaseEvaFunction) {
@@ -90,12 +157,24 @@ public class DR_Ident implements DR_Item {
 		}
 	}
 
+	public void addResolveObserver(final DT_ResolveObserver aDTResolveObserver) {
+		resolveObserverList.add(aDTResolveObserver);
+	}
+
 	public void addUnderstanding(final @NotNull Understanding aUnderstanding) {
 		//System.err.println("*** 162 Understanding DR_Ident >> " + this.simplified() + " " + aUnderstanding.asString());
 		u.add(aUnderstanding);
 	}
 
 	public void foo() {
+	}
+
+	public BaseEvaFunction getNode() {
+		return baseEvaFunction;
+	}
+
+	public @Nullable IdentTableEntry identTableEntry() {
+		return _identTableEntry;
 	}
 
 	public boolean isResolved() {
@@ -221,84 +300,5 @@ public class DR_Ident implements DR_Item {
 		for (DT_ResolveObserver resolveObserver : resolveObserverList) {
 			resolveObserver.onElement(best);
 		}
-	}
-
-	public void addResolveObserver(final DT_ResolveObserver aDTResolveObserver) {
-		resolveObserverList.add(aDTResolveObserver);
-	}
-
-	public @Nullable IdentTableEntry identTableEntry() {
-		return _identTableEntry;
-	}
-
-	class BacklinkUnderstanding implements Understanding {
-		private final InstructionArgument ia;
-
-		public BacklinkUnderstanding(final InstructionArgument aIa) {
-			ia = aIa;
-		}
-
-		@Override
-		public String asString() {
-			return String.format("BacklinkUnderstanding %s", ia);
-		}
-	}
-
-	public static class ElementUnderstanding implements Understanding {
-		private final OS_Element x;
-
-		public ElementUnderstanding(final OS_Element aX) {
-			x = aX;
-		}
-
-		@Override
-		public @NotNull String asString() {
-			String xx = x.toString();
-
-			if (x instanceof VariableStatement vs) {
-				xx = vs.getName();
-			}
-
-			return "ElementUnderstanding " + xx;
-		}
-
-		public OS_Element getElement() {
-			return x;
-		}
-	}
-
-	class ClassUnderstanding implements Understanding {
-		private final DG_ClassStatement dcs;
-
-		public ClassUnderstanding(final DG_ClassStatement aDcs) {
-			dcs = aDcs;
-		}
-
-		@Override
-		public @NotNull String asString() {
-			return "ClassUnderstanding " + dcs.classInvocation();
-		}
-	}
-
-	class PTEUnderstanding implements Understanding {
-
-		private final ProcTableEntry pte;
-
-		public PTEUnderstanding(final ProcTableEntry aPte) {
-			pte = aPte;
-		}
-
-		@Override
-		public String asString() {
-			return String.format("PTEUnderstanding " + pte.__debug_expression());
-		}
-	}
-
-	public interface Understanding {
-		String asString();
-	}
-
-	public BaseEvaFunction getNode() {
-		return baseEvaFunction;
 	}
 }

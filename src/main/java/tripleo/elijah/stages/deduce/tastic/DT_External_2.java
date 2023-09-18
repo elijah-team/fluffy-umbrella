@@ -4,6 +4,7 @@ import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.FunctionDef;
@@ -87,53 +88,57 @@ public class DT_External_2 implements DT_External {
 		_p_resolvedElementPromise.then(this::onResolvedElement);
 	}
 
-	private void onResolvedElement(OS_Element el) {
-		if (el instanceof FunctionDef fd) {
-			var name = fd.getEnName();
+	private /*static*/ void __make2_1__createFunctionInvocation(final ProcTableEntry pte__,
+																final FT_FCA_IdentIA.FakeDC4 dc__,
+																final ElLog LOG__,
+																final FunctionDef resolved_element,
+																final OS_Element parent,
+																final IInvocation invocation2) {
+		final @NotNull FunctionInvocation fi;
+		fi = dc.newFunctionInvocation(resolved_element, pte, invocation2);
 
-			FunctionDef __test_resolved = null;
+		final DeferredMemberFunction dmf = dc.deferred_member_function(parent, invocation2, resolved_element, fi);
 
-			for (EN_Understanding understanding : name.getUnderstandings()) {
-				if (understanding instanceof ENU_ResolveToFunction rtf) {
-					__test_resolved = rtf.fd();
-				}
+		dmf.typeResolved().then((final @NotNull GenType result) -> {
+			LOG.info("2717 " + dmf.getFunctionDef() + " " + result);
+			if (pte.typeDeferred().isPending())
+				pte.typeDeferred().resolve(result);
+			else {
+				int y = 2;
 			}
-
-			final OS_Element parent = el.getParent();
-
-			if (__test_resolved != null) {
-				assert __test_resolved == el;
-			}
-
-			var target_p2 = pte.dpc.targetP2();
-
-			target_p2.then(target0 -> {
-
-				if (target0 == null) {
-					if (false)
-						System.err.println("542542  ");
-					return;
-				}
-
-
-				IInvocation invocation2 = target0.declAnchor().getInvocation();
-				if (invocation2 instanceof ClassInvocation) {
-					invocation2 = dc.registerClassInvocation((ClassInvocation) invocation2);
-				}
-
-				if (!(invocation2 instanceof FunctionInvocation)) {
-					__make2_1__createFunctionInvocation(pte, dc, LOG, (FunctionDef) el, parent, invocation2);
-				} else {
-					__make2_1__hasFunctionInvocation(pte, (FunctionInvocation) invocation2);
-				}
-			});
-		}
+		});
 	}
 
-	@Override
-	public OS_Module targetModule() { // [T1160118]
-		//assert mod1Promise.isResolved(); // !!
-		return mod1;
+	private /*static*/ void __make2_1__hasFunctionInvocation(final @NotNull ProcTableEntry pte, final @NotNull FunctionInvocation fi) {
+		fi.generateDeferred().then((BaseEvaFunction ef) -> {
+			var result = _inj().new_GenTypeImpl();
+			result.setFunctionInvocation(fi);
+			result.setNode(ef);
+
+			assert fi.pte != pte;
+
+			if (fi.pte == null) {
+				System.err.println("******************************* Unexpected error");
+				return;
+			}
+
+			if (fi.pte.typeResolvePromise().isResolved()) {
+				fi.pte.typeResolvePromise().then(gt -> {
+					result.setResolved(gt.getResolved());
+					gt.copy(result);
+				});
+			}
+
+			LOG.info("2717c " + ef.getFD() + " " + result);
+
+			if (pte.typeDeferred().isPending()) {
+				pte.typeDeferred().resolve(result);
+			}
+		});
+	}
+
+	private DeduceTypes2.DeduceTypes2Injector _inj() {
+		return dc._deduceTypes2();
 	}
 
 	@Override
@@ -203,13 +208,62 @@ public class DT_External_2 implements DT_External {
 		});
 	}
 
-	private DeduceTypes2.DeduceTypes2Injector _inj() {
-		return dc._deduceTypes2();
+	public void onResolve(DoneCallback<OS_Element> cb) {
+		_p_resolvedElementPromise.then(cb); // TODO ?? shaky
+	}
+
+	private void onResolvedElement(OS_Element el) {
+		if (el instanceof FunctionDef fd) {
+			var name = fd.getEnName();
+
+			FunctionDef __test_resolved = null;
+
+			for (EN_Understanding understanding : name.getUnderstandings()) {
+				if (understanding instanceof ENU_ResolveToFunction rtf) {
+					__test_resolved = rtf.fd();
+				}
+			}
+
+			final OS_Element parent = el.getParent();
+
+			if (__test_resolved != null) {
+				assert __test_resolved == el;
+			}
+
+			var target_p2 = pte.dpc.targetP2();
+
+			target_p2.then(target0 -> {
+
+				if (target0 == null) {
+					if (false)
+						System.err.println("542542  ");
+					return;
+				}
+
+
+				IInvocation invocation2 = target0.declAnchor().getInvocation();
+				if (invocation2 instanceof ClassInvocation) {
+					invocation2 = dc.registerClassInvocation((ClassInvocation) invocation2);
+				}
+
+				if (!(invocation2 instanceof FunctionInvocation)) {
+					__make2_1__createFunctionInvocation(pte, dc, LOG, (FunctionDef) el, parent, invocation2);
+				} else {
+					__make2_1__hasFunctionInvocation(pte, (FunctionInvocation) invocation2);
+				}
+			});
+		}
 	}
 
 	@Override
 	public @NotNull Promise<OS_Module, Void, Void> onTargetModulePromise() {
 		return mod1Promise;
+	}
+
+	@Override
+	public OS_Module targetModule() { // [T1160118]
+		//assert mod1Promise.isResolved(); // !!
+		return mod1;
 	}
 
 	/* extra large wtf */
@@ -233,58 +287,5 @@ public class DT_External_2 implements DT_External {
 				});
 			}
 		}
-	}
-
-	private /*static*/ void __make2_1__createFunctionInvocation(final ProcTableEntry pte__,
-																final FT_FCA_IdentIA.FakeDC4 dc__,
-																final ElLog LOG__,
-																final FunctionDef resolved_element,
-																final OS_Element parent,
-																final IInvocation invocation2) {
-		final @NotNull FunctionInvocation fi;
-		fi = dc.newFunctionInvocation(resolved_element, pte, invocation2);
-
-		final DeferredMemberFunction dmf = dc.deferred_member_function(parent, invocation2, resolved_element, fi);
-
-		dmf.typeResolved().then((final @NotNull GenType result) -> {
-			LOG.info("2717 " + dmf.getFunctionDef() + " " + result);
-			if (pte.typeDeferred().isPending())
-				pte.typeDeferred().resolve(result);
-			else {
-				int y = 2;
-			}
-		});
-	}
-
-	private /*static*/ void __make2_1__hasFunctionInvocation(final @NotNull ProcTableEntry pte, final @NotNull FunctionInvocation fi) {
-		fi.generateDeferred().then((BaseEvaFunction ef) -> {
-			var result = _inj().new_GenTypeImpl();
-			result.setFunctionInvocation(fi);
-			result.setNode(ef);
-
-			assert fi.pte != pte;
-
-			if (fi.pte == null) {
-				System.err.println("******************************* Unexpected error");
-				return;
-			}
-
-			if (fi.pte.typeResolvePromise().isResolved()) {
-				fi.pte.typeResolvePromise().then(gt -> {
-					result.setResolved(gt.getResolved());
-					gt.copy(result);
-				});
-			}
-
-			LOG.info("2717c " + ef.getFD() + " " + result);
-
-			if (pte.typeDeferred().isPending()) {
-				pte.typeDeferred().resolve(result);
-			}
-		});
-	}
-
-	public void onResolve(DoneCallback<OS_Element> cb) {
-		_p_resolvedElementPromise.then(cb); // TODO ?? shaky
 	}
 }

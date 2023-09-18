@@ -19,11 +19,6 @@ public class YieldExpression /*extends BasicBinaryExpression*/ implements OS_Ele
 	}
 
 	@Override
-	public void visitGen(final ElElementVisitor visit) {
-		visit.visitYield(this);
-	}
-
-	@Override
 	public Context getContext() {
 		throw new NotImplementedException();
 //		return null;
@@ -33,6 +28,11 @@ public class YieldExpression /*extends BasicBinaryExpression*/ implements OS_Ele
 	public OS_Element getParent() {
 		throw new NotImplementedException();
 //		return null;
+	}
+
+	@Override
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitYield(this);
 	}
 }
 

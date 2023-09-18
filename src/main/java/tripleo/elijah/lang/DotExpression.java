@@ -23,13 +23,13 @@ public class DotExpression extends BasicBinaryExpression {
 	}
 
 	@Override
-	public String toString() {
-		return String.format("%s.%s", left, right);
+	public boolean is_simple() {
+		return false; // TODO when is this true or not? see {@link Qualident}
 	}
 
 	@Override
-	public boolean is_simple() {
-		return false; // TODO when is this true or not? see {@link Qualident}
+	public String toString() {
+		return String.format("%s.%s", left, right);
 	}
 
 }

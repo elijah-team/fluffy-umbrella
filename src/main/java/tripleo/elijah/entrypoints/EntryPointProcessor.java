@@ -19,72 +19,6 @@ import tripleo.elijah.work.WorkList;
 import tripleo.elijah.world.i.LivingRepo;
 
 public interface EntryPointProcessor {
-	static @NotNull EntryPointProcessor dispatch(final EntryPoint ep, final DeducePhase aDeducePhase, final WorkList aWl, final GenerateFunctions aGenerateFunctions) {
-		if (ep instanceof MainClassEntryPoint) {
-			return new EPP_MCEP((MainClassEntryPoint) ep, aDeducePhase, aWl, aGenerateFunctions);
-		} else if (ep instanceof ArbitraryFunctionEntryPoint) {
-			return new EPP_AFEP((ArbitraryFunctionEntryPoint) ep, aDeducePhase, aWl, aGenerateFunctions);
-		}
-
-		throw new IllegalStateException();
-	}
-
-	void process();
-
-	class EPP_MCEP implements EntryPointProcessor {
-		private final MainClassEntryPoint mcep;
-		private final DeducePhase         deducePhase;
-		private final WorkList            wl;
-		private final GenerateFunctions   generateFunctions;
-
-		public EPP_MCEP(final MainClassEntryPoint aEp, final DeducePhase aDeducePhase, final WorkList aWl, final GenerateFunctions aGenerateFunctions) {
-			mcep              = aEp;
-			deducePhase       = aDeducePhase;
-			wl                = aWl;
-			generateFunctions = aGenerateFunctions;
-		}
-
-		@Override
-		public void process() {
-			final @NotNull ClassStatement cs = mcep.getKlass();
-			final @NotNull FunctionDef    f  = mcep.getMainFunction();
-			final ClassInvocation         ci = deducePhase.registerClassInvocation(cs, null, new NULL_DeduceTypes2());
-
-			assert ci != null; // TODO use eventual with registrar this
-
-			final ICodeRegistrar codeRegistrar = new ICodeRegistrar() {
-				final Compilation compilation = deducePhase._compilation();
-
-				@Override
-				public void registerNamespace(final EvaNamespace aNamespace) {
-					compilation._repo.addNamespace(aNamespace, LivingRepo.Add.NONE);
-				}
-
-				@Override
-				public void registerClass(final EvaClass aClass) {
-					compilation._repo.addClass(aClass, LivingRepo.Add.MAIN_CLASS);
-				}
-
-				@Override
-				public void registerFunction(final BaseEvaFunction aFunction) {
-					compilation._repo.addFunction(aFunction, LivingRepo.Add.MAIN_FUNCTION);
-				}
-			};
-
-
-//			final ICodeRegistrar           cr = deducePhase.codeRegistrar;
-			final ICodeRegistrar cr = codeRegistrar;
-
-			final @NotNull WlGenerateClass job = new WlGenerateClass(generateFunctions, ci, deducePhase.generatedClasses, cr);
-			wl.addJob(job);
-
-			final @NotNull FunctionInvocation fi = new FunctionInvocation(f, null, ci, deducePhase.generatePhase);
-//				fi.setPhase(phase);
-			final @NotNull WlGenerateFunction job1 = new WlGenerateFunction(generateFunctions, fi, cr);
-			wl.addJob(job1);
-		}
-	}
-
 	class EPP_AFEP implements EntryPointProcessor {
 
 		private final ArbitraryFunctionEntryPoint afep;
@@ -113,4 +47,70 @@ public interface EntryPointProcessor {
 			wl.addJob(job1);
 		}
 	}
+
+	class EPP_MCEP implements EntryPointProcessor {
+		private final MainClassEntryPoint mcep;
+		private final DeducePhase         deducePhase;
+		private final WorkList            wl;
+		private final GenerateFunctions   generateFunctions;
+
+		public EPP_MCEP(final MainClassEntryPoint aEp, final DeducePhase aDeducePhase, final WorkList aWl, final GenerateFunctions aGenerateFunctions) {
+			mcep              = aEp;
+			deducePhase       = aDeducePhase;
+			wl                = aWl;
+			generateFunctions = aGenerateFunctions;
+		}
+
+		@Override
+		public void process() {
+			final @NotNull ClassStatement cs = mcep.getKlass();
+			final @NotNull FunctionDef    f  = mcep.getMainFunction();
+			final ClassInvocation         ci = deducePhase.registerClassInvocation(cs, null, new NULL_DeduceTypes2());
+
+			assert ci != null; // TODO use eventual with registrar this
+
+			final ICodeRegistrar codeRegistrar = new ICodeRegistrar() {
+				final Compilation compilation = deducePhase._compilation();
+
+				@Override
+				public void registerClass(final EvaClass aClass) {
+					compilation._repo.addClass(aClass, LivingRepo.Add.MAIN_CLASS);
+				}
+
+				@Override
+				public void registerFunction(final BaseEvaFunction aFunction) {
+					compilation._repo.addFunction(aFunction, LivingRepo.Add.MAIN_FUNCTION);
+				}
+
+				@Override
+				public void registerNamespace(final EvaNamespace aNamespace) {
+					compilation._repo.addNamespace(aNamespace, LivingRepo.Add.NONE);
+				}
+			};
+
+
+//			final ICodeRegistrar           cr = deducePhase.codeRegistrar;
+			final ICodeRegistrar cr = codeRegistrar;
+
+			final @NotNull WlGenerateClass job = new WlGenerateClass(generateFunctions, ci, deducePhase.generatedClasses, cr);
+			wl.addJob(job);
+
+			final @NotNull FunctionInvocation fi = new FunctionInvocation(f, null, ci, deducePhase.generatePhase);
+//				fi.setPhase(phase);
+			final @NotNull WlGenerateFunction job1 = new WlGenerateFunction(generateFunctions, fi, cr);
+			wl.addJob(job1);
+		}
+	}
+
+	static @NotNull EntryPointProcessor dispatch(final EntryPoint ep, final DeducePhase aDeducePhase, final WorkList aWl, final GenerateFunctions aGenerateFunctions) {
+		if (ep instanceof MainClassEntryPoint) {
+			return new EPP_MCEP((MainClassEntryPoint) ep, aDeducePhase, aWl, aGenerateFunctions);
+		} else if (ep instanceof ArbitraryFunctionEntryPoint) {
+			return new EPP_AFEP((ArbitraryFunctionEntryPoint) ep, aDeducePhase, aWl, aGenerateFunctions);
+		}
+
+		throw new IllegalStateException();
+	}
+
+	void process();
 }

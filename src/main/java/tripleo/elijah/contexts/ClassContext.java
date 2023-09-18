@@ -41,14 +41,76 @@ import static tripleo.elijah.contexts.ClassInfo.ClassInfoType.INHERITED;
  */
 public class ClassContext extends Context {
 
+	/**
+	 * An Element that only holds a {@link TypeName}.
+	 * <p>
+	 * NOTE: It seems to be connected to {@link ClassContext}
+	 */
+	public class OS_TypeNameElement implements OS_Element {
+		private final TypeName typeName;
+
+		public OS_TypeNameElement(final TypeName aTypeName) {
+			typeName = aTypeName;
+		}
+
+		@Override
+		public Context getContext() {
+			return ClassContext.this;
+		}
+
+		@Override
+		public OS_Element getParent() {
+			return carrier;
+		}
+
+		public TypeName getTypeName() {
+			return typeName;
+		}
+
+		@Override
+		public void visitGen(final ElElementVisitor visit) {
+			visit.visitTypeNameElement(this);
+		}
+	}
 	public final  Map<TypeName, ClassStatement> _inheritance = new HashMap<>();
 	private final ClassStatement                carrier;
 	private final Context                       _parent;
+
 	private       boolean                       _didInheritance;
 
 	public ClassContext(final Context aParent, final ClassStatement cls) {
 		_parent = aParent;
 		carrier = cls;
+	}
+
+	public ClassStatement getCarrier() {
+		return carrier;
+	}
+
+	@Override
+	public Context getParent() {
+		return _parent;
+	}
+
+	public Map<TypeName, ClassStatement> inheritance() {
+		if (!_didInheritance) {
+			for (final TypeName tn1 : carrier.classInheritance().tns) {
+				tripleo.elijah.util.Stupidity.println2("1001 " + tn1);
+				final NormalTypeName       tn  = (NormalTypeName) tn1;
+				final @Nullable OS_Element best;
+				final LookupResultList     tnl = tn.getContext().lookup(tn.getName());
+				tripleo.elijah.util.Stupidity.println2("1002 " + tnl.results());
+				best = tnl.chooseBest(null);
+
+				if (best != null) {
+					_inheritance.put(tn1, (ClassStatement) best);
+				}
+
+//				tripleo.elijah.util.Stupidity.println2("1003 "+name+" "+Result.results());
+				_didInheritance = true;
+			}
+		}
+		return _inheritance;
 	}
 
 	@Override
@@ -109,70 +171,8 @@ public class ClassContext extends Context {
 	}
 
 	@Override
-	public Context getParent() {
-		return _parent;
-	}
-
-	@Override
 	public @Nullable LookupResultList lookup(final String name, final int level, final LookupResultList Result, final SearchList alreadySearched, final boolean one) {
 		return lookup(name, level, Result, new ArrayList<>(), one);
-	}
-
-	public Map<TypeName, ClassStatement> inheritance() {
-		if (!_didInheritance) {
-			for (final TypeName tn1 : carrier.classInheritance().tns) {
-				tripleo.elijah.util.Stupidity.println2("1001 " + tn1);
-				final NormalTypeName       tn  = (NormalTypeName) tn1;
-				final @Nullable OS_Element best;
-				final LookupResultList     tnl = tn.getContext().lookup(tn.getName());
-				tripleo.elijah.util.Stupidity.println2("1002 " + tnl.results());
-				best = tnl.chooseBest(null);
-
-				if (best != null) {
-					_inheritance.put(tn1, (ClassStatement) best);
-				}
-
-//				tripleo.elijah.util.Stupidity.println2("1003 "+name+" "+Result.results());
-				_didInheritance = true;
-			}
-		}
-		return _inheritance;
-	}
-
-	public ClassStatement getCarrier() {
-		return carrier;
-	}
-
-	/**
-	 * An Element that only holds a {@link TypeName}.
-	 * <p>
-	 * NOTE: It seems to be connected to {@link ClassContext}
-	 */
-	public class OS_TypeNameElement implements OS_Element {
-		private final TypeName typeName;
-
-		public OS_TypeNameElement(final TypeName aTypeName) {
-			typeName = aTypeName;
-		}
-
-		public TypeName getTypeName() {
-			return typeName;
-		}
-
-		@Override
-		public void visitGen(final ElElementVisitor visit) {
-			visit.visitTypeNameElement(this);
-		}
-
-		@Override
-		public Context getContext() {
-			return ClassContext.this;
-		}
-
-		@Override
-		public OS_Element getParent() {
-			return carrier;
-		}
 	}
 }
 

@@ -46,6 +46,84 @@ import static tripleo.elijah.gen.TypeRef.is_integer_code;
  */
 public class ExpressionNodeBuilder {
 
+	private static class MyIExpressionNode1 implements IExpressionNode {
+		static String printableExpression(@NotNull final IExpression expression) {
+//			if (expression instanceof OS_Integer) {
+//				return Integer.toString(((OS_Integer) expression).getValue());
+//			} else
+			if (expression instanceof NumericExpression) {
+				return Integer.toString(((NumericExpression) expression).getValue());
+			}
+			return "-------------7";
+		}
+		private final VariableReferenceNode3 _left;
+		private final ExpressionOperators    _middle;
+
+		private final IExpressionNode _right;
+
+		public MyIExpressionNode1(final VariableReferenceNode3 left, final ExpressionOperators middle, final IExpressionNode right) {
+			_left   = left;
+			_middle = middle;
+			_right  = right;
+		}
+
+		@Override
+		public String genText() {
+			return null;
+		}
+
+		@Override
+		public String genText(final CompilerContext cctx) {
+			final String left    = _left.genText();
+			final String middle1 = _middle.getSymbol();
+			final String right   = printableExpression(_right.getExpr());
+
+			return String.format("%s %s %s", left, middle1, right);
+		}
+
+		@Override
+		public String genType() {
+			// TODO need lookup somewhere, prolly not here tho...
+			if (_middle == ExpressionOperators.OP_MINUS) {
+				if (_left.getType().getCode() == CODE_U64 &&
+				  is_integer_code(_right.getType().getCode())) {
+					return _left.getType().genName();
+				}
+			}
+			return null;
+		}
+
+		@Override
+		public IExpression getExpr() {
+			return null;
+		}
+
+		@Override
+		public TypeRef getType() {
+			return null;
+		}
+
+		@Override
+		public boolean is_const_expr() {
+			return false;
+		}
+
+		@Override
+		public boolean is_simple() {
+			return false;
+		}
+
+		@Override
+		public boolean is_underscore() {
+			return false;
+		}
+
+		@Override
+		public boolean is_var_ref() {
+			return false;
+		}
+	}
+
 	@NotNull
 	@Contract("_, _, _, _ -> new")
 	public static IExpression binex(final TypeRef rt, final VariableReference left, final ExpressionOperators middle, final IExpression right) {
@@ -74,28 +152,8 @@ public class ExpressionNodeBuilder {
 	public static IExpressionNode binex(final TypeRef rt, final VariableReferenceNode3 varref, final ExpressionOperators operators, final TmpSSACtxNode node) {
 		return new IExpressionNode() {
 			@Override
-			public IExpression getExpr() {
+			public String genText() {
 				return null;
-			}
-
-			@Override
-			public boolean is_const_expr() {
-				return false;
-			}
-
-			@Override
-			public boolean is_underscore() {
-				return false;
-			}
-
-			@Override
-			public boolean is_var_ref() {
-				return false;
-			}
-
-			@Override
-			public boolean is_simple() {
-				return false;
 			}
 
 			@Override
@@ -109,13 +167,33 @@ public class ExpressionNodeBuilder {
 			}
 
 			@Override
-			public String genText() {
+			public IExpression getExpr() {
 				return null;
 			}
 
 			@Override
 			public TypeRef getType() {
 				return rt;
+			}
+
+			@Override
+			public boolean is_const_expr() {
+				return false;
+			}
+
+			@Override
+			public boolean is_simple() {
+				return false;
+			}
+
+			@Override
+			public boolean is_underscore() {
+				return false;
+			}
+
+			@Override
+			public boolean is_var_ref() {
+				return false;
 			}
 		};
 	}
@@ -135,28 +213,9 @@ public class ExpressionNodeBuilder {
 		//
 		return new IExpressionNode() {
 			@Override
-			public IExpression getExpr() {
-				return pce1;
-			}
-
-			@Override
-			public boolean is_const_expr() {
-				return false;
-			}
-
-			@Override
-			public boolean is_underscore() {
-				return false;
-			}
-
-			@Override
-			public boolean is_var_ref() {
-				return false;
-			}
-
-			@Override
-			public boolean is_simple() {
-				return false;
+			public String genText() {
+				NotImplementedException.raise();
+				return null;
 			}
 
 			@Override
@@ -206,9 +265,8 @@ public class ExpressionNodeBuilder {
 			}
 
 			@Override
-			public String genText() {
-				NotImplementedException.raise();
-				return null;
+			public IExpression getExpr() {
+				return pce1;
 			}
 
 			@Override
@@ -216,8 +274,33 @@ public class ExpressionNodeBuilder {
 				NotImplementedException.raise();
 				return null;
 			}
+
+			@Override
+			public boolean is_const_expr() {
+				return false;
+			}
+
+			@Override
+			public boolean is_simple() {
+				return false;
+			}
+
+			@Override
+			public boolean is_underscore() {
+				return false;
+			}
+
+			@Override
+			public boolean is_var_ref() {
+				return false;
+			}
 		};
 	}
+
+//	public static IExpressionNode fncall(String string, List<@NotNull NumericExpression> list_of) {
+//		final ExpressionList expl = Helpers.LocalAgnTmpNodeToListVarRef(of);
+//		return fncall(string, expl);
+//	}
 
 	public static IExpressionNode fncall(final String string, final List<LocalAgnTmpNode> of) { // todo wrong
 		// TODO Auto-generated method stub
@@ -232,28 +315,9 @@ public class ExpressionNodeBuilder {
 		//
 		return new IExpressionNode() {
 			@Override
-			public IExpression getExpr() {
-				return pce1;
-			}
-
-			@Override
-			public boolean is_const_expr() {
-				return false;
-			}
-
-			@Override
-			public boolean is_underscore() {
-				return false;
-			}
-
-			@Override
-			public boolean is_var_ref() {
-				return false;
-			}
-
-			@Override
-			public boolean is_simple() {
-				return false;
+			public String genText() {
+				NotImplementedException.raise();
+				return null;
 			}
 
 			@Override
@@ -269,9 +333,8 @@ public class ExpressionNodeBuilder {
 			}
 
 			@Override
-			public String genText() {
-				NotImplementedException.raise();
-				return null;
+			public IExpression getExpr() {
+				return pce1;
 			}
 
 			@Override
@@ -279,13 +342,28 @@ public class ExpressionNodeBuilder {
 				NotImplementedException.raise();
 				return null;
 			}
+
+			@Override
+			public boolean is_const_expr() {
+				return false;
+			}
+
+			@Override
+			public boolean is_simple() {
+				return false;
+			}
+
+			@Override
+			public boolean is_underscore() {
+				return false;
+			}
+
+			@Override
+			public boolean is_var_ref() {
+				return false;
+			}
 		};
 	}
-
-//	public static IExpressionNode fncall(String string, List<@NotNull NumericExpression> list_of) {
-//		final ExpressionList expl = Helpers.LocalAgnTmpNodeToListVarRef(of);
-//		return fncall(string, expl);
-//	}
 
 	/**
 	 * Return a parser-level OS_ELement for std integer {@param i}
@@ -318,84 +396,6 @@ public class ExpressionNodeBuilder {
 	@Contract("_, _, _ -> new")
 	public static VariableReferenceNode3 varref(final String string, final Node container, final TypeRef typeRef) {
 		return new VariableReferenceNode3(string, container, typeRef);
-	}
-
-	private static class MyIExpressionNode1 implements IExpressionNode {
-		private final VariableReferenceNode3 _left;
-		private final ExpressionOperators    _middle;
-		private final IExpressionNode _right;
-
-		public MyIExpressionNode1(final VariableReferenceNode3 left, final ExpressionOperators middle, final IExpressionNode right) {
-			_left   = left;
-			_middle = middle;
-			_right  = right;
-		}
-
-		@Override
-		public IExpression getExpr() {
-			return null;
-		}
-
-		@Override
-		public boolean is_const_expr() {
-			return false;
-		}
-
-		@Override
-		public boolean is_underscore() {
-			return false;
-		}
-
-		@Override
-		public boolean is_var_ref() {
-			return false;
-		}
-
-		@Override
-		public boolean is_simple() {
-			return false;
-		}
-
-		@Override
-		public String genText(final CompilerContext cctx) {
-			final String left    = _left.genText();
-			final String middle1 = _middle.getSymbol();
-			final String right   = printableExpression(_right.getExpr());
-
-			return String.format("%s %s %s", left, middle1, right);
-		}
-
-		static String printableExpression(@NotNull final IExpression expression) {
-//			if (expression instanceof OS_Integer) {
-//				return Integer.toString(((OS_Integer) expression).getValue());
-//			} else
-			if (expression instanceof NumericExpression) {
-				return Integer.toString(((NumericExpression) expression).getValue());
-			}
-			return "-------------7";
-		}
-
-		@Override
-		public String genType() {
-			// TODO need lookup somewhere, prolly not here tho...
-			if (_middle == ExpressionOperators.OP_MINUS) {
-				if (_left.getType().getCode() == CODE_U64 &&
-				  is_integer_code(_right.getType().getCode())) {
-					return _left.getType().genName();
-				}
-			}
-			return null;
-		}
-
-		@Override
-		public String genText() {
-			return null;
-		}
-
-		@Override
-		public TypeRef getType() {
-			return null;
-		}
 	}
 
 }

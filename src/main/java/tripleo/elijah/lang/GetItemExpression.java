@@ -35,6 +35,11 @@ public class GetItemExpression extends AbstractExpression { // TODO binary?
 		return ExpressionKind.GET_ITEM;
 	}
 
+	@Override
+	public OS_Type getType() {
+		return _type;
+	}
+
 	/* (non-Javadoc)
 	 * @see tripleo.elijah.lang.IExpression#is_simple()
 	 */
@@ -43,19 +48,14 @@ public class GetItemExpression extends AbstractExpression { // TODO binary?
 		return false; // TODO is this correct? Let's err on the side of caution
 	}
 
-	@Override
-	public OS_Type getType() {
-		return _type;
+	public void parens(final Token lb, final Token rb) {
+		// TODO implement me later
+
 	}
 
 	@Override
 	public void setType(final OS_Type deducedExpression) {
 		_type = deducedExpression;
-	}
-
-	public void parens(final Token lb, final Token rb) {
-		// TODO implement me later
-
 	}
 
 }

@@ -1,6 +1,7 @@
 package tripleo.elijah.stages.gen_c;
 
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.CharLitExpression;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.NumericExpression;

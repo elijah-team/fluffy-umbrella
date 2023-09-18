@@ -8,11 +8,33 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Stack;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.contexts.FunctionContext;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.AliasStatement;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.DecideElObjectType;
+import tripleo.elijah.lang.DotExpression;
+import tripleo.elijah.lang.ExpressionKind;
+import tripleo.elijah.lang.FormalArgListItem;
+import tripleo.elijah.lang.FuncExpr;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.IExpression;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.ProcedureCallExpression;
+import tripleo.elijah.lang.Qualident;
+import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.lang.types.OS_UnknownType;
 import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
@@ -21,10 +43,6 @@ import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
-
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Stack;
 
 /**
  * Created 3/7/21 1:13 AM

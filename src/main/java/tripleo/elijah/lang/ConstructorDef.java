@@ -43,11 +43,6 @@ public class ConstructorDef extends BaseFunctionDef {
 		setSpecies(Species.CTOR);
 	}
 
-	@Override
-	public void visitGen(final ElElementVisitor visit) {
-		visit.visitConstructorDef(this);
-	}
-
 	@Override // OS_Element
 	public OS_Element getParent() {
 		return parent;
@@ -61,6 +56,11 @@ public class ConstructorDef extends BaseFunctionDef {
 	@Override
 	public String toString() {
 		return String.format("<Constructor %s %s %s>", parent, name(), getArgs());
+	}
+
+	@Override
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitConstructorDef(this);
 	}
 
 

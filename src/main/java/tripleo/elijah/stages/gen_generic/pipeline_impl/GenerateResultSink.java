@@ -1,6 +1,9 @@
 package tripleo.elijah.stages.gen_generic.pipeline_impl;
 
+import java.util.List;
+
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.stages.garish.GarishClass;
 import tripleo.elijah.stages.garish.GarishNamespace;
 import tripleo.elijah.stages.gen_c.C2C_Result;
@@ -14,8 +17,6 @@ import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.world.i.LivingClass;
 import tripleo.elijah.world.i.LivingNamespace;
 import tripleo.util.buffer.Buffer;
-
-import java.util.List;
 
 public interface GenerateResultSink {
 	void add(EvaNode node);

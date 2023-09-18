@@ -1,9 +1,9 @@
 package tripleo.elijah.stages.deduce;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
 
 class PromiseExpectations {
 	long counter = 0;

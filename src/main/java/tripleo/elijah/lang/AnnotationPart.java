@@ -15,16 +15,16 @@ public class AnnotationPart {
 	private Qualident      _class;
 	private ExpressionList _exprs;
 
-	public void setClass(final Qualident q) {
-		_class = q;
-	}
-
 	public Qualident annoClass() {
 		return _class;
 	}
 
 	public ExpressionList getExprs() {
 		return _exprs;
+	}
+
+	public void setClass(final Qualident q) {
+		_class = q;
 	}
 
 	public void setExprs(final ExpressionList el) {

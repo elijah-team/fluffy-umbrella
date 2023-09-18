@@ -1,6 +1,7 @@
 package tripleo.elijah.test_help;
 
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ICompilationAccess;
 import tripleo.elijah.comp.IO;
@@ -27,6 +28,17 @@ public class Boilerplate {
 	public GenerateFiles      generateFiles;
 	OS_Module module;
 
+	public OS_Module defaultMod() {
+		if (module == null) {
+			module = new OS_Module();
+			module.setContext(new ModuleContext(module));
+			if (comp != null)
+				module.setParent(comp);
+		}
+
+		return module;
+	}
+
 	public void get() {
 		comp = new CompilationImpl(new StdErrSink(), new IO());
 		aca  = ((CompilationImpl) comp)._access();
@@ -42,6 +54,10 @@ public class Boilerplate {
 		}
 	}
 
+	public DeducePhase getDeducePhase() {
+		return pipelineLogic.dp;
+	}
+
 	public void getGenerateFiles(final @NotNull OS_Module mod) {
 		generateFiles = OutputFileFactory.create(Compilation.CompilationAlways.defaultPrelude(),
 		  new OutputFileFactoryParams(mod,
@@ -50,35 +66,6 @@ public class Boilerplate {
 			pipelineLogic,
 		    mod.getCompilation().getCompilationEnclosure()),
 		  null);
-	}
-
-	public OS_Module defaultMod() {
-		if (module == null) {
-			module = new OS_Module();
-			module.setContext(new ModuleContext(module));
-			if (comp != null)
-				module.setParent(comp);
-		}
-
-		return module;
-	}
-
-	public BoilerplateModuleBuilder withModBuilder(final OS_Module aMod) {
-		return new BoilerplateModuleBuilder(aMod);
-	}
-
-	public DeduceTypes2 simpleDeduceModule3(final OS_Module aMod) {
-		final ElLog.Verbosity verbosity = Compilation.gitlabCIVerbosity();
-		@NotNull final String s         = Compilation.CompilationAlways.defaultPrelude();
-		return simpleDeduceModule2(aMod, s, verbosity);
-	}
-
-	public DeduceTypes2 simpleDeduceModule2(final OS_Module mod, final @NotNull String aS, final ElLog.Verbosity aVerbosity) {
-		final Compilation c = mod.getCompilation();
-
-		mod.setPrelude(c.findPrelude(aS).success());
-
-		return simpleDeduceModule(aVerbosity);
 	}
 
 	public DeduceTypes2 simpleDeduceModule(final ElLog.Verbosity verbosity) {
@@ -93,7 +80,21 @@ public class Boilerplate {
 		return d;
 	}
 
-	public DeducePhase getDeducePhase() {
-		return pipelineLogic.dp;
+	public DeduceTypes2 simpleDeduceModule2(final OS_Module mod, final @NotNull String aS, final ElLog.Verbosity aVerbosity) {
+		final Compilation c = mod.getCompilation();
+
+		mod.setPrelude(c.findPrelude(aS).success());
+
+		return simpleDeduceModule(aVerbosity);
+	}
+
+	public DeduceTypes2 simpleDeduceModule3(final OS_Module aMod) {
+		final ElLog.Verbosity verbosity = Compilation.gitlabCIVerbosity();
+		@NotNull final String s         = Compilation.CompilationAlways.defaultPrelude();
+		return simpleDeduceModule2(aMod, s, verbosity);
+	}
+
+	public BoilerplateModuleBuilder withModBuilder(final OS_Module aMod) {
+		return new BoilerplateModuleBuilder(aMod);
 	}
 }

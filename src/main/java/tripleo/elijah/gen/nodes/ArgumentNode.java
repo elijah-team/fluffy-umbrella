@@ -30,16 +30,8 @@ public class ArgumentNode {
 		this.typeRef = typeRef;
 	}
 
-	public TypeRef getTypeRef() {
-		return typeRef;
-	}
-
-	public IdentExpression getIdent() {
-		return ident;
-	}
-
-	public void setIdent(final IdentExpression ident) {
-		this.ident = ident;
+	public String getGenName() {
+		return String.format("va%s", getVarName());
 	}
 
 	public String getGenType() {
@@ -47,16 +39,24 @@ public class ArgumentNode {
 		return typeRef.genType();
 	}
 
-	public void setGenType(final String genType) {
-		this.genType = genType;
+	public IdentExpression getIdent() {
+		return ident;
 	}
 
-	public String getGenName() {
-		return String.format("va%s", getVarName());
+	public TypeRef getTypeRef() {
+		return typeRef;
 	}
 
 	public String getVarName() {
 		return varName;
+	}
+
+	public void setGenType(final String genType) {
+		this.genType = genType;
+	}
+
+	public void setIdent(final IdentExpression ident) {
+		this.ident = ident;
 	}
 
 	public void setVarName(final String _varName) {

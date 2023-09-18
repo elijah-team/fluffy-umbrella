@@ -31,11 +31,6 @@ public class EIT_ModuleInput implements EIT_Input {
 		this.c      = c;
 	}
 
-	@Override
-	public EIT_InputType getType() {
-		return EIT_InputType.ELIJAH_SOURCE;
-	}
-
 	public void doGenerate(final List<EvaNode> nodes,
 	                       final ErrSink aErrSink,
 	                       final ElLog.Verbosity verbosity,
@@ -60,6 +55,11 @@ public class EIT_ModuleInput implements EIT_Input {
 
 		// 4. tail process results
 		resultConsumer.accept(gr2);
+	}
+
+	@Override
+	public EIT_InputType getType() {
+		return EIT_InputType.ELIJAH_SOURCE;
 	}
 
 	@NotNull

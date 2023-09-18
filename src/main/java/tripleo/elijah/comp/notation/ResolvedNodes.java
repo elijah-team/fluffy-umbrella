@@ -25,6 +25,17 @@ public class ResolvedNodes {
 		cr = aCr;
 	}
 
+	private void __processResolvedNodes(final @NotNull List<EvaNode> resolved_nodes, final ICodeRegistrar cr) {
+		resolved_nodes.stream()
+				.filter(evaNode -> evaNode instanceof GNCoded)
+				.map(evaNode -> (GNCoded) evaNode)
+				.filter(coded -> coded.getCode() == 0)
+				.forEach(coded -> {
+					System.err.println("-*-*- __processResolvedNodes [NOT CODED] " + coded);
+					coded.register(cr);
+				});
+	}
+
 	public void init(final DeducePhase.@NotNull GeneratedClasses c) {
 		System.err.println("2222 " + c);
 
@@ -90,17 +101,6 @@ public class ResolvedNodes {
 
 	public void part2() {
 		__processResolvedNodes(resolved_nodes, cr);
-	}
-
-	private void __processResolvedNodes(final @NotNull List<EvaNode> resolved_nodes, final ICodeRegistrar cr) {
-		resolved_nodes.stream()
-				.filter(evaNode -> evaNode instanceof GNCoded)
-				.map(evaNode -> (GNCoded) evaNode)
-				.filter(coded -> coded.getCode() == 0)
-				.forEach(coded -> {
-					System.err.println("-*-*- __processResolvedNodes [NOT CODED] " + coded);
-					coded.register(cr);
-				});
 	}
 
 	public void part3(final @NotNull PipelineLogic pipelineLogic, final WorldModule mod, final DeducePhase.GeneratedClasses lgc) {

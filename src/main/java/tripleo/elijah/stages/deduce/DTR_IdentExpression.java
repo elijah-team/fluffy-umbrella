@@ -1,6 +1,7 @@
 package tripleo.elijah.stages.deduce;
 
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.stages.gen_fn.BaseTableEntry;
 import tripleo.elijah.stages.gen_fn.GenType;
@@ -21,6 +22,11 @@ public class DTR_IdentExpression {
 		bte               = aBte;
 	}
 
+	private void q(final GenType result) {
+		if (genType == result) return; // !!??
+		genType.copy(result); // TODO genType = result?? because we want updates...
+	}
+
 	public void run(final IElementHolder eh, final GenType genType1) {
 		this.genType = genType1;
 
@@ -35,10 +41,5 @@ public class DTR_IdentExpression {
 
 			bte.typeResolvePromise().then(this::q);
 		}
-	}
-
-	private void q(final GenType result) {
-		if (genType == result) return; // !!??
-		genType.copy(result); // TODO genType = result?? because we want updates...
 	}
 }

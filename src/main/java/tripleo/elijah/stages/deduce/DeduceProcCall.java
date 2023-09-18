@@ -13,6 +13,7 @@ import org.jdeferred2.Promise;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ClassStatement;
@@ -36,77 +37,15 @@ import tripleo.elijah.util.ReadySupplier_1;
  * Created 11/30/21 11:56 PM
  */
 public class DeduceProcCall {
-	private final @NotNull ProcTableEntry                                 procTableEntry;
-	private final          DT_Resolvable11<DeduceElement>                 _pr_target  = new DT_Resolvable11<>();
-	private final          DeferredObject2<DeduceElement, FCA_Stop, Void> _p_targetP2 = new DeferredObject2<>();
-	private                Context                                        _g_context;
-	private                DeduceTypes2                                   _g_deduceTypes2;
-	private                ErrSink                                        _g_errSink;
-	private                BaseEvaFunction                                _g_generatedFunction;
-	private                DeduceElement                                  target;
-
-	public BaseEvaFunction _generatedFunction() {
-		return _g_generatedFunction;
-	}
-
-	@Contract(pure = true)
-	public DeduceProcCall(final @NotNull ProcTableEntry aProcTableEntry) {
-		procTableEntry = aProcTableEntry;
-	}
-
-	public void __mk() {
-		procTableEntry.onFunctionInvocation((final @NotNull FunctionInvocation functionInvocation) -> {
-			functionInvocation.generatePromise().then((BaseEvaFunction evaFunction) -> {
-				final @NotNull BaseFunctionDef best = evaFunction.getFD();
-
-				final DeclAnchor.AnchorType anchorType = DeclAnchor.AnchorType.MEMBER;
-				final OS_Element            declAnchor = best.getParent();
-				try {
-					setTarget(new DeclTarget(best, declAnchor, anchorType, this));
-					_pr_target.resolve(getTarget());
-					_p_targetP2.resolve(getTarget());
-				} catch (FCA_Stop aE) {
-					_p_targetP2.reject(aE);
-				}
-			});
-		});
-	}
-
-	public DeduceElement getTarget() {
-		return target;
-	}
-
-	public @Nullable Promise<DeduceElement, FCA_Stop, Void> targetP2() {
-		return _p_targetP2;
-	}
-
-	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2,
-								final Context aContext,
-								final BaseEvaFunction aGeneratedFunction,
-								final ErrSink aErrSink) {
-		_g_deduceTypes2      = aDeduceTypes2;
-		_g_context           = aContext;
-		_g_generatedFunction = aGeneratedFunction;
-		_g_errSink           = aErrSink;
-	}
-
-	public void setTarget(DeduceElement aTarget) {
-		target = aTarget;
-	}
-
-	public @Nullable DT_Resolvable11<DeduceElement> targetP() {
-		return _pr_target;
-	}
-
-	public DeduceTypes2 _deduceTypes2() {
-		return this._g_deduceTypes2;
-	}
-
 	public class DeclTarget implements DeduceElement {
 		private @NotNull
 		final DeclAnchor anchor;
 		private @NotNull
 		final OS_Element element;
+
+		public DeclTarget(final FunctionDef aBest, final OS_Element aDeclAnchor, final DeclAnchor.AnchorType aAnchorType, final DeduceTypes2.DeduceTypes2Injector aDeduceTypes2Injector) {
+			throw new NotImplementedException();
+		}
 
 		/**
 		 * $element(FunctionDef Directory.listFiles) is a $anchorType(MEMBER) of anchorElement(ClassSt std.io::Directory)
@@ -156,10 +95,6 @@ public class DeduceProcCall {
 			anchor.setInvocation(invocation);
 		}
 
-		public DeclTarget(final FunctionDef aBest, final OS_Element aDeclAnchor, final DeclAnchor.AnchorType aAnchorType, final DeduceTypes2.DeduceTypes2Injector aDeduceTypes2Injector) {
-			throw new NotImplementedException();
-		}
-
 		@Contract(pure = true)
 		@Override
 		public @NotNull DeclAnchor declAnchor() {
@@ -171,6 +106,72 @@ public class DeduceProcCall {
 		public @NotNull OS_Element element() {
 			return element;
 		}
+	}
+	private final @NotNull ProcTableEntry                                 procTableEntry;
+	private final          DT_Resolvable11<DeduceElement>                 _pr_target  = new DT_Resolvable11<>();
+	private final          DeferredObject2<DeduceElement, FCA_Stop, Void> _p_targetP2 = new DeferredObject2<>();
+	private                Context                                        _g_context;
+	private                DeduceTypes2                                   _g_deduceTypes2;
+	private                ErrSink                                        _g_errSink;
+	private                BaseEvaFunction                                _g_generatedFunction;
+
+	private                DeduceElement                                  target;
+
+	@Contract(pure = true)
+	public DeduceProcCall(final @NotNull ProcTableEntry aProcTableEntry) {
+		procTableEntry = aProcTableEntry;
+	}
+
+	public void __mk() {
+		procTableEntry.onFunctionInvocation((final @NotNull FunctionInvocation functionInvocation) -> {
+			functionInvocation.generatePromise().then((BaseEvaFunction evaFunction) -> {
+				final @NotNull BaseFunctionDef best = evaFunction.getFD();
+
+				final DeclAnchor.AnchorType anchorType = DeclAnchor.AnchorType.MEMBER;
+				final OS_Element            declAnchor = best.getParent();
+				try {
+					setTarget(new DeclTarget(best, declAnchor, anchorType, this));
+					_pr_target.resolve(getTarget());
+					_p_targetP2.resolve(getTarget());
+				} catch (FCA_Stop aE) {
+					_p_targetP2.reject(aE);
+				}
+			});
+		});
+	}
+
+	public DeduceTypes2 _deduceTypes2() {
+		return this._g_deduceTypes2;
+	}
+
+	public BaseEvaFunction _generatedFunction() {
+		return _g_generatedFunction;
+	}
+
+	public DeduceElement getTarget() {
+		return target;
+	}
+
+	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2,
+								final Context aContext,
+								final BaseEvaFunction aGeneratedFunction,
+								final ErrSink aErrSink) {
+		_g_deduceTypes2      = aDeduceTypes2;
+		_g_context           = aContext;
+		_g_generatedFunction = aGeneratedFunction;
+		_g_errSink           = aErrSink;
+	}
+
+	public void setTarget(DeduceElement aTarget) {
+		target = aTarget;
+	}
+
+	public @Nullable DT_Resolvable11<DeduceElement> targetP() {
+		return _pr_target;
+	}
+
+	public @Nullable Promise<DeduceElement, FCA_Stop, Void> targetP2() {
+		return _p_targetP2;
 	}
 }
 

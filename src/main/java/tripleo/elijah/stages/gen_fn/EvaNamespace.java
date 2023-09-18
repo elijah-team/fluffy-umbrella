@@ -8,7 +8,10 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import java.util.function.Consumer;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.AccessNotation;
 import tripleo.elijah.lang.ConstructStatement;
 import tripleo.elijah.lang.ExpressionBuilder;
@@ -31,15 +34,27 @@ import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.util.UnintendedUseException;
 import tripleo.elijah.world.impl.DefaultLivingNamespace;
 
-import java.util.function.Consumer;
-
 /**
  * Created 12/22/20 5:39 PM
  */
 public class EvaNamespace extends EvaContainerNC implements GNCoded {
+	static class _Reactive_EvaNamespace extends DefaultReactive {
+		@Override
+		public <T> void addListener(final Consumer<T> t) {
+			throw new UnintendedUseException();
+		}
+
+		@Override
+		public <T> void addResolveListener(final Consumer<T> aO) {
+			throw new NotImplementedException();
+		}
+	}
 	private final OS_Module          module;
 	private final NamespaceStatement namespaceStatement;
+
 	private DefaultLivingNamespace _living;
+
+	private final _Reactive_EvaNamespace reactiveEvaNamespace = new _Reactive_EvaNamespace();
 
 	public EvaNamespace(final NamespaceStatement namespace1, final OS_Module module) {
 		this.namespaceStatement = namespace1;
@@ -71,12 +86,14 @@ public class EvaNamespace extends EvaContainerNC implements GNCoded {
 		}
 	}
 
-	private boolean getPragma(final String auto_construct) { // TODO this should be part of Context
-		return false;
+	@Override
+	public void generateCode(final CodeGenerator aCodeGenerator, final GenerateResult aGr) {
+		aCodeGenerator.generate_namespace(this, aGr);
 	}
 
-	public String getName() {
-		return namespaceStatement.getName();
+	@Override
+	public void generateCode(final GenerateResultEnv aFileGen, final CodeGenerator aGgc) {
+		throw new NotImplementedException();
 	}
 
 	@Override
@@ -84,13 +101,21 @@ public class EvaNamespace extends EvaContainerNC implements GNCoded {
 		return getNamespaceStatement();
 	}
 
+	public String getName() {
+		return namespaceStatement.getName();
+	}
+
 	public NamespaceStatement getNamespaceStatement() {
 		return this.namespaceStatement;
 	}
 
+	private boolean getPragma(final String auto_construct) { // TODO this should be part of Context
+		return false;
+	}
+
 	@Override
-	public void generateCode(final CodeGenerator aCodeGenerator, final GenerateResult aGr) {
-		aCodeGenerator.generate_namespace(this, aGr);
+	public Role getRole() {
+		return Role.NAMESPACE;
 	}
 
 	@Override
@@ -103,14 +128,8 @@ public class EvaNamespace extends EvaContainerNC implements GNCoded {
 		return module;
 	}
 
-	@Override
-	public void generateCode(final GenerateResultEnv aFileGen, final CodeGenerator aGgc) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public Role getRole() {
-		return Role.NAMESPACE;
+	public Reactive reactive() {
+		return reactiveEvaNamespace;
 	}
 
 	@Override
@@ -121,24 +140,6 @@ public class EvaNamespace extends EvaContainerNC implements GNCoded {
 
 	public void setLiving(final DefaultLivingNamespace aLiving) {
 		_living = aLiving;
-	}
-
-	private final _Reactive_EvaNamespace reactiveEvaNamespace = new _Reactive_EvaNamespace();
-
-	public Reactive reactive() {
-		return reactiveEvaNamespace;
-	}
-
-	static class _Reactive_EvaNamespace extends DefaultReactive {
-		@Override
-		public <T> void addListener(final Consumer<T> t) {
-			throw new UnintendedUseException();
-		}
-
-		@Override
-		public <T> void addResolveListener(final Consumer<T> aO) {
-			throw new NotImplementedException();
-		}
 	}
 
 }

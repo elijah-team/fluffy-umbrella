@@ -1,5 +1,11 @@
 package tripleo.vendor.mal;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import tripleo.vendor.mal.env.Env;
 import tripleo.vendor.mal.types.MalException;
 import tripleo.vendor.mal.types.MalFunction;
@@ -11,95 +17,60 @@ import tripleo.vendor.mal.types.MalThrowable;
 import tripleo.vendor.mal.types.MalVal;
 import tripleo.vendor.mal.types.MalVector;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 public class stepA_mal {
-	// read
-	public static MalVal READ(final String str) throws MalThrowable {
-		return reader.read_str(str);
-	}
+	public static class MalEnv2 {
+		final Env repl_env = new Env(null);
 
-	// eval
-	public static Boolean starts_with(final MalVal ast, final String sym) {
-		//  Liskov, forgive me
-		if (ast instanceof MalList && !(ast instanceof MalVector) && ((MalList) ast).size() == 2) {
-			final MalVal a0 = ((MalList) ast).nth(0);
-			return a0 instanceof MalSymbol && ((MalSymbol) a0).getName().equals(sym);
+		{
+			for (final String key :  tripleo.vendor.mal.core.ns.keySet()) {
+				repl_env.set(new MalSymbol(key),  tripleo.vendor.mal.core.ns.get(key));
+			}
+			repl_env.set(new MalSymbol("eval"), new MalFunction() {
+				public MalVal apply(final MalList args) throws MalThrowable {
+					return EVAL(args.nth(0), repl_env);
+				}
+			});
 		}
-		return false;
-	}
 
-	public static MalVal quasiquote(final MalVal ast) {
-		if ((ast instanceof MalSymbol || ast instanceof MalHashMap))
-			return new MalList(new MalSymbol("quote"), ast);
-
-		if (!(ast instanceof MalList))
-			return ast;
-
-		if (starts_with(ast, "unquote"))
-			return ((MalList) ast).nth(1);
-
-		MalVal res = new MalList();
-		for (Integer i = ((MalList) ast).size() - 1; 0 <= i; i--) {
-			final MalVal elt = ((MalList) ast).nth(i);
-			if (starts_with(elt, "splice-unquote"))
-				res = new MalList(new MalSymbol("concat"), ((MalList) elt).nth(1), res);
-			else
-				res = new MalList(new MalSymbol("cons"), quasiquote(elt), res);
-		}
-		if (ast instanceof MalVector)
-			res = new MalList(new MalSymbol("vec"), res);
-		return res;
-	}
-
-	public static Boolean is_macro_call(final MalVal ast, final Env env)
-	  throws MalThrowable {
-		if (ast instanceof MalList) {
-			final MalVal a0 = ((MalList) ast).nth(0);
-			if (a0 instanceof MalSymbol &&
-			  env.find(((MalSymbol) a0)) != null) {
-				final MalVal mac = env.get(((MalSymbol) a0));
-				return mac instanceof MalFunction &&
-				  ((MalFunction) mac).isMacro();
+		public MalEnv2(String[] args) {
+			try {
+				if (args == null) args = new String[]{};
+				init(args);
+			} catch (final MalThrowable aE) {
+				throw new RuntimeException(aE);
 			}
 		}
-		return false;
-	}
 
-	public static MalVal macroexpand(MalVal ast, final Env env)
-	  throws MalThrowable {
-		while (is_macro_call(ast, env)) {
-			final MalSymbol   a0  = (MalSymbol) ((MalList) ast).nth(0);
-			final MalFunction mac = (MalFunction) env.get(a0);
-			ast = mac.apply(((MalList) ast).rest());
+		public void init(final String[] args) throws MalThrowable {
+			final MalList _argv = new MalList();
+			for (Integer i = 1; i < args.length; i++) {
+				_argv.conj_BANG(new MalString(args[i]));
+			}
+			repl_env.set(new MalSymbol("*ARGV*"), _argv);
+
+
+			// core.mal: defined using the language itself
+			re("(def! *host-language* \"java\")");
+			re("(def! not (fn* (a) (if a false true)))");
+			re("(def! load-file (fn* (f) (eval (read-string (str \"(do \" (slurp f) \"\nnil)\")))))");
+			re("(defmacro! cond (fn* (& xs) (if (> (count xs) 0) (list 'if (first xs) (if (> (count xs) 1) (nth xs 1) (throw \"odd number of forms to cond\")) (cons 'cond (rest (rest xs)))))))");
+
+			int fileIdx = 0;
+			if (args.length > 0 && args[0].equals("--raw")) {
+				readline.mode = readline.Mode.JAVA;
+				fileIdx       = 1;
+			}
+			if (args.length > fileIdx) {
+				RE(repl_env, "(load-file \"" + args[fileIdx] + "\")");
+			}
 		}
-		return ast;
-	}
 
-	public static MalVal eval_ast(final MalVal ast, final Env env) throws MalThrowable {
-		if (ast instanceof MalSymbol) {
-			return env.get((MalSymbol) ast);
-		} else if (ast instanceof final MalList old_lst) {
-			final MalList new_lst = ast.list_Q() ? new MalList()
-			  : new MalVector();
-			for (final MalVal mv : (List<MalVal>) old_lst.value) {
-				new_lst.conj_BANG(EVAL(mv, env));
-			}
-			return new_lst;
-		} else if (ast instanceof MalHashMap) {
-			final MalHashMap new_hm = new MalHashMap();
-			final Iterator   it     = ((MalHashMap) ast).value.entrySet().iterator();
-			while (it.hasNext()) {
-				final Map.Entry entry = (Map.Entry) it.next();
-				new_hm.value.put(entry.getKey(), EVAL((MalVal) entry.getValue(), env));
-			}
-			return new_hm;
-		} else {
-			return ast;
+		public void re(final String str) throws MalThrowable {
+			RE(repl_env, str);
+		}
+
+		public void set(final MalSymbol aSymbol, final MalFunction aFunction) {
+			repl_env.set(aSymbol, aFunction);
 		}
 	}
 
@@ -235,14 +206,89 @@ public class stepA_mal {
 		}
 	}
 
+	public static MalVal eval_ast(final MalVal ast, final Env env) throws MalThrowable {
+		if (ast instanceof MalSymbol) {
+			return env.get((MalSymbol) ast);
+		} else if (ast instanceof final MalList old_lst) {
+			final MalList new_lst = ast.list_Q() ? new MalList()
+			  : new MalVector();
+			for (final MalVal mv : (List<MalVal>) old_lst.value) {
+				new_lst.conj_BANG(EVAL(mv, env));
+			}
+			return new_lst;
+		} else if (ast instanceof MalHashMap) {
+			final MalHashMap new_hm = new MalHashMap();
+			final Iterator   it     = ((MalHashMap) ast).value.entrySet().iterator();
+			while (it.hasNext()) {
+				final Map.Entry entry = (Map.Entry) it.next();
+				new_hm.value.put(entry.getKey(), EVAL((MalVal) entry.getValue(), env));
+			}
+			return new_hm;
+		} else {
+			return ast;
+		}
+	}
+
+	public static Boolean is_macro_call(final MalVal ast, final Env env)
+	  throws MalThrowable {
+		if (ast instanceof MalList) {
+			final MalVal a0 = ((MalList) ast).nth(0);
+			if (a0 instanceof MalSymbol &&
+			  env.find(((MalSymbol) a0)) != null) {
+				final MalVal mac = env.get(((MalSymbol) a0));
+				return mac instanceof MalFunction &&
+				  ((MalFunction) mac).isMacro();
+			}
+		}
+		return false;
+	}
+
+	public static MalVal macroexpand(MalVal ast, final Env env)
+	  throws MalThrowable {
+		while (is_macro_call(ast, env)) {
+			final MalSymbol   a0  = (MalSymbol) ((MalList) ast).nth(0);
+			final MalFunction mac = (MalFunction) env.get(a0);
+			ast = mac.apply(((MalList) ast).rest());
+		}
+		return ast;
+	}
+
 	// print
 	public static String PRINT(final MalVal exp) {
 		return printer._pr_str(exp, true);
 	}
 
+	public static MalVal quasiquote(final MalVal ast) {
+		if ((ast instanceof MalSymbol || ast instanceof MalHashMap))
+			return new MalList(new MalSymbol("quote"), ast);
+
+		if (!(ast instanceof MalList))
+			return ast;
+
+		if (starts_with(ast, "unquote"))
+			return ((MalList) ast).nth(1);
+
+		MalVal res = new MalList();
+		for (Integer i = ((MalList) ast).size() - 1; 0 <= i; i--) {
+			final MalVal elt = ((MalList) ast).nth(i);
+			if (starts_with(elt, "splice-unquote"))
+				res = new MalList(new MalSymbol("concat"), ((MalList) elt).nth(1), res);
+			else
+				res = new MalList(new MalSymbol("cons"), quasiquote(elt), res);
+		}
+		if (ast instanceof MalVector)
+			res = new MalList(new MalSymbol("vec"), res);
+		return res;
+	}
+
 	// repl
 	public static MalVal RE(final Env env, final String str) throws MalThrowable {
 		return EVAL(READ(str), env);
+	}
+
+	// read
+	public static MalVal READ(final String str) throws MalThrowable {
+		return reader.read_str(str);
 	}
 
 //	public static void main(final String[] args) throws MalThrowable {
@@ -314,59 +360,13 @@ public class stepA_mal {
 //		}
 //	}
 
-	public static class MalEnv2 {
-		final Env repl_env = new Env(null);
-
-		{
-			for (final String key :  tripleo.vendor.mal.core.ns.keySet()) {
-				repl_env.set(new MalSymbol(key),  tripleo.vendor.mal.core.ns.get(key));
-			}
-			repl_env.set(new MalSymbol("eval"), new MalFunction() {
-				public MalVal apply(final MalList args) throws MalThrowable {
-					return EVAL(args.nth(0), repl_env);
-				}
-			});
+	// eval
+	public static Boolean starts_with(final MalVal ast, final String sym) {
+		//  Liskov, forgive me
+		if (ast instanceof MalList && !(ast instanceof MalVector) && ((MalList) ast).size() == 2) {
+			final MalVal a0 = ((MalList) ast).nth(0);
+			return a0 instanceof MalSymbol && ((MalSymbol) a0).getName().equals(sym);
 		}
-
-		public MalEnv2(String[] args) {
-			try {
-				if (args == null) args = new String[]{};
-				init(args);
-			} catch (final MalThrowable aE) {
-				throw new RuntimeException(aE);
-			}
-		}
-
-		public void init(final String[] args) throws MalThrowable {
-			final MalList _argv = new MalList();
-			for (Integer i = 1; i < args.length; i++) {
-				_argv.conj_BANG(new MalString(args[i]));
-			}
-			repl_env.set(new MalSymbol("*ARGV*"), _argv);
-
-
-			// core.mal: defined using the language itself
-			re("(def! *host-language* \"java\")");
-			re("(def! not (fn* (a) (if a false true)))");
-			re("(def! load-file (fn* (f) (eval (read-string (str \"(do \" (slurp f) \"\nnil)\")))))");
-			re("(defmacro! cond (fn* (& xs) (if (> (count xs) 0) (list 'if (first xs) (if (> (count xs) 1) (nth xs 1) (throw \"odd number of forms to cond\")) (cons 'cond (rest (rest xs)))))))");
-
-			int fileIdx = 0;
-			if (args.length > 0 && args[0].equals("--raw")) {
-				readline.mode = readline.Mode.JAVA;
-				fileIdx       = 1;
-			}
-			if (args.length > fileIdx) {
-				RE(repl_env, "(load-file \"" + args[fileIdx] + "\")");
-			}
-		}
-
-		public void re(final String str) throws MalThrowable {
-			RE(repl_env, str);
-		}
-
-		public void set(final MalSymbol aSymbol, final MalFunction aFunction) {
-			repl_env.set(aSymbol, aFunction);
-		}
+		return false;
 	}
 }

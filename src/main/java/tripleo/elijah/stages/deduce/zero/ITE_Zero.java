@@ -3,6 +3,7 @@ package tripleo.elijah.stages.deduce.zero;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.lang.LookupResultList;
 import tripleo.elijah.lang.OS_Element;
@@ -73,10 +74,6 @@ public class ITE_Zero {
 		}
 	}
 
-	public void setType(final GenType aGenType) {
-		// TODO fill this in later with a Promise, perhaps
-	}
-
 	public void preUpdateStatus_Change(final IElementHolder eh, final BaseTableEntry.Status newStatus, final FoundElement foundElement, final String normal_path) {
 		if (_preUpdateStatus_Change_called) return;
 
@@ -91,5 +88,9 @@ public class ITE_Zero {
 			foundElement.doFoundElement(eh.getElement());
 		}
 
+	}
+
+	public void setType(final GenType aGenType) {
+		// TODO fill this in later with a Promise, perhaps
 	}
 }

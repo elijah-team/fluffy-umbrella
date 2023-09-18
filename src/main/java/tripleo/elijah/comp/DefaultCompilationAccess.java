@@ -23,6 +23,21 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 	}
 
 	@Override
+	public List<IFunctionMapHook> functionMapHooks() {
+		return compilation.getDeducePhase().functionMapHooks;
+	}
+
+	@Override
+	public Compilation getCompilation() {
+		return compilation;
+	}
+
+	@Override
+	public Stages getStage() {
+		return getCompilation().cfg.stage;
+	}
+
+	@Override
 	@NotNull
 	public ElLog.Verbosity testSilence() {
 		//final boolean isSilent = compilation.silent; // TODO No such thing. silent is a local var
@@ -32,25 +47,10 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 	}
 
 	@Override
-	public Compilation getCompilation() {
-		return compilation;
-	}
-
-	@Override
 	public void writeLogs() {
 		final boolean silent = testSilence() == ElLog.Verbosity.SILENT;
 
 		writeLogs(silent, compilation.elLogs);
-	}
-
-	@Override
-	public List<IFunctionMapHook> functionMapHooks() {
-		return compilation.getDeducePhase().functionMapHooks;
-	}
-
-	@Override
-	public Stages getStage() {
-		return getCompilation().cfg.stage;
 	}
 
 	private void writeLogs(final boolean aSilent, final List<ElLog> aLogs) {

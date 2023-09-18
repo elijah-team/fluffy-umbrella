@@ -27,14 +27,8 @@ public class OS_GenericTypeNameType extends __Abstract_OS_Type {
 		genericTypename = aGenericTypename;
 	}
 
-	@Override
-	public OS_Element getElement() {
-		return genericTypename;
-	}
-
-	@Override
-	public Type getType() {
-		return Type.GENERIC_TYPENAME;
+	protected boolean _isEqual(final OS_Type aType) {
+		return aType.getType() == Type.GENERIC_TYPENAME && genericTypename.equals(((OS_GenericTypeNameType) aType).genericTypename);
 	}
 
 	@Override
@@ -42,12 +36,18 @@ public class OS_GenericTypeNameType extends __Abstract_OS_Type {
 		return MessageFormat.format("<OS_GenericTypeNameType {0}>", genericTypename);
 	}
 
+	@Override
+	public OS_Element getElement() {
+		return genericTypename;
+	}
+
 	public TypeName getRealTypeName() {
 		return genericTypename.getTypeName();
 	}
 
-	protected boolean _isEqual(final OS_Type aType) {
-		return aType.getType() == Type.GENERIC_TYPENAME && genericTypename.equals(((OS_GenericTypeNameType) aType).genericTypename);
+	@Override
+	public Type getType() {
+		return Type.GENERIC_TYPENAME;
 	}
 }
 

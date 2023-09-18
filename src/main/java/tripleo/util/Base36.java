@@ -8,11 +8,11 @@ package tripleo.util;
 public class Base36 {
 	private static final int RADIX = 36;
 
-	public static String encode(final int value) {
-		return Integer.toString(value, RADIX);
-	}
-
 	public static long decode(final String base36String) {
 		return Integer.parseInt(base36String, RADIX);
+	}
+
+	public static String encode(final int value) {
+		return Integer.toString(value, RADIX);
 	}
 }

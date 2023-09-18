@@ -30,6 +30,11 @@ public class EG_CompoundStatement implements EG_Statement {
 	}
 
 	@Override
+	public EX_Explanation getExplanation() {
+		return explanation;
+	}
+
+	@Override
 	public String getText() {
 
 		final String sb = beginning.getText() +
@@ -37,10 +42,5 @@ public class EG_CompoundStatement implements EG_Statement {
 		  ending.getText();
 
 		return sb;
-	}
-
-	@Override
-	public EX_Explanation getExplanation() {
-		return explanation;
 	}
 }

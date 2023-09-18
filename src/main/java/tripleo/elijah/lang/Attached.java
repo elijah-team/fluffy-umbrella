@@ -18,25 +18,25 @@ public class Attached {
 	int     _code;
 	Context _context;
 
-	public Attached(final Context aContext) {
-		_context = aContext;
-	}
-
 	public Attached() {
 
 		// TODO Auto-generated constructor stub
+	}
+
+	public Attached(final Context aContext) {
+		_context = aContext;
 	}
 
 	public int getCode() {
 		return _code;
 	}
 
-	public void setCode(final int aCode) {
-		_code = aCode;
-	}
-
 	public Context getContext() {
 		return _context;
+	}
+
+	public void setCode(final int aCode) {
+		_code = aCode;
 	}
 
 	public void setContext(final Context aContext) {

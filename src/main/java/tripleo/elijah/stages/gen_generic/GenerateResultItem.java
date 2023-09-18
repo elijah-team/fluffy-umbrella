@@ -8,13 +8,14 @@
  */
 package tripleo.elijah.stages.gen_generic;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.util.buffer.Buffer;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created 4/27/21 1:12 AM
@@ -43,11 +44,6 @@ public class GenerateResultItem {
 		counter    = aCounter;
 	}
 
-	public Dependency getDependency() {
-		final List<DependencyRef> ds = dependencies();
-		return dependency;
-	}
-
 	public List<DependencyRef> dependencies() {
 //		List<DependencyRef> x = Lists.transform(new ArrayList<>(dependency.deps), new Function<Dependency, DependencyRef>() {
 //			@Override
@@ -60,6 +56,11 @@ public class GenerateResultItem {
 		                                        .map(dep -> dep.dref)
 		                                        .collect(Collectors.toList());
 		return x;
+	}
+
+	public Dependency getDependency() {
+		final List<DependencyRef> ds = dependencies();
+		return dependency;
 	}
 }
 

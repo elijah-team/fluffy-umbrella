@@ -1,7 +1,10 @@
 package tripleo.elijah.stages.deduce.tastic;
 
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.NamespaceStatement;
@@ -19,8 +22,6 @@ import tripleo.elijah.stages.gen_fn.VariableTableEntry;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.util.ReadySupplier_1;
 
-import java.util.List;
-
 public class FT_FCA_FunctionDef {
 	private final FunctionDef  fd;
 	private final DeduceTypes2 _dt2;
@@ -28,6 +29,10 @@ public class FT_FCA_FunctionDef {
 	public FT_FCA_FunctionDef(final FunctionDef aFd, final DeduceTypes2 aDt2) {
 		fd   = aFd;
 		_dt2 = aDt2;
+	}
+
+	private DeduceTypes2.DeduceTypes2Injector _inj() {
+		return _dt2._inj();
 	}
 
 	void loop2_i(@NotNull FT_FnCallArgs.DoAssignCall aDoAssignCall, final @NotNull ProcTableEntry pte, final @NotNull VariableTableEntry vte, final int instructionIndex) {
@@ -67,9 +72,5 @@ public class FT_FCA_FunctionDef {
 				vte.addPotentialType(instructionIndex, tte);
 			}
 		});
-	}
-
-	private DeduceTypes2.DeduceTypes2Injector _inj() {
-		return _dt2._inj();
 	}
 }

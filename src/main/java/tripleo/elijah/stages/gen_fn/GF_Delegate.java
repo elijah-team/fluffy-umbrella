@@ -3,6 +3,7 @@ package tripleo.elijah.stages.gen_fn;
 import org.jdeferred2.Promise;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.stages.deduce.ClassInvocation;
@@ -15,6 +16,32 @@ public class GF_Delegate {
 	public GF_Delegate(EvaFunction aGeneratedFunction, final @Nullable FunctionDef aFd) {
 		generatedFunction = aGeneratedFunction;
 		fd                = aFd;
+	}
+
+	public @NotNull FunctionDef getFD() {
+		if (fd != null) return fd;
+		throw new IllegalStateException("No function");
+	}
+
+	public GNCoded.Role getRole() {
+		return GNCoded.Role.FUNCTION;
+	}
+
+	public VariableTableEntry getSelf() {
+		if (generatedFunction.getFD().getParent() instanceof ClassStatement)
+			return generatedFunction.getVarTableEntry(0);
+		else
+			return null;
+	}
+
+	public String identityString() {
+		return String.valueOf(fd);
+	}
+
+	public String name() {
+		if (fd == null)
+			throw new IllegalArgumentException("null fd");
+		return fd.name();
 	}
 
 	@Override
@@ -92,31 +119,5 @@ public class GF_Delegate {
 
 		// ... otherwise use parsetree parent
 		return R;
-	}
-
-	public String name() {
-		if (fd == null)
-			throw new IllegalArgumentException("null fd");
-		return fd.name();
-	}
-
-	public String identityString() {
-		return String.valueOf(fd);
-	}
-
-	public @NotNull FunctionDef getFD() {
-		if (fd != null) return fd;
-		throw new IllegalStateException("No function");
-	}
-
-	public VariableTableEntry getSelf() {
-		if (generatedFunction.getFD().getParent() instanceof ClassStatement)
-			return generatedFunction.getVarTableEntry(0);
-		else
-			return null;
-	}
-
-	public GNCoded.Role getRole() {
-		return GNCoded.Role.FUNCTION;
 	}
 }

@@ -8,9 +8,14 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.ConstructStatement;
 import tripleo.elijah.lang.ConstructorDef;
@@ -32,10 +37,6 @@ import tripleo.elijah.util.Holder;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkJob;
 import tripleo.elijah.work.WorkManager;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Created 7/3/21 6:24 AM
@@ -60,6 +61,19 @@ public class WlGenerateCtor implements WorkJob {
 
 	public WlGenerateCtor(final OS_Module aModule, final IdentExpression aNameNode, final FunctionInvocation aFunctionInvocation, final Deduce_CreationClosure aCl) {
 		throw new NotImplementedException();
+	}
+
+	private boolean getPragma(final String aAuto_construct) {
+		return false;
+	}
+
+	public EvaConstructor getResult() {
+		return result;
+	}
+
+	@Override
+	public boolean isDone() {
+		return _isDone;
 	}
 
 	@Override
@@ -172,19 +186,6 @@ public class WlGenerateCtor implements WorkJob {
 		}
 
 		_isDone = true;
-	}
-
-	@Override
-	public boolean isDone() {
-		return _isDone;
-	}
-
-	private boolean getPragma(final String aAuto_construct) {
-		return false;
-	}
-
-	public EvaConstructor getResult() {
-		return result;
 	}
 }
 

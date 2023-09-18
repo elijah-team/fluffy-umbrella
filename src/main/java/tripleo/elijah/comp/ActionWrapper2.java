@@ -12,13 +12,13 @@ class ActionWrapper2 implements ICompilationBus.CB_Action {
 	}
 
 	@Override
-	public String name() {
-		return name;
+	public void execute() {
+		aa.execute(crState);
 	}
 
 	@Override
-	public void execute() {
-		aa.execute(crState);
+	public String name() {
+		return name;
 	}
 
 	@Override

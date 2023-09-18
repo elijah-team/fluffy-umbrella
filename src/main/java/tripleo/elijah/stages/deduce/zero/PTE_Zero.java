@@ -4,6 +4,7 @@ import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.BaseFunctionDef;
@@ -27,6 +28,22 @@ public class PTE_Zero {
 		procTableEntry = aProcTableEntry;
 	}
 
+	public void calculateConstructor(@NotNull final EvaConstructor constructorDef, @NotNull final IdentTableEntry ite, @NotNull final DeduceTypes2 deduceTypes2) {
+		if (_foundCounstructorDef2Promise.isResolved()) return;
+
+		@NotNull final BaseFunctionDef ele = constructorDef.getFD();
+
+		try {
+			final LookupResultList     lrl  = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
+			@Nullable final OS_Element best = lrl.chooseBest(null);
+//            ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
+			final GenericElementHolder elementHolder = new GenericElementHolder(best);
+			_foundCounstructorDef2Promise.resolve(elementHolder);
+		} catch (final ResolveError aResolveError) {
+			_foundCounstructorDef2Promise.reject(aResolveError);
+		}
+	}
+
 	public void foundCounstructorDef(final @NotNull EvaConstructor constructorDef,
 	                                 final @NotNull IdentTableEntry ite,
 	                                 final @NotNull DeduceTypes2 deduceTypes2,
@@ -45,21 +62,5 @@ public class PTE_Zero {
 
 	public Promise<IElementHolder, Diagnostic, Void> foundCounstructorPromise() {
 		return _foundCounstructorDef2Promise.promise();
-	}
-
-	public void calculateConstructor(@NotNull final EvaConstructor constructorDef, @NotNull final IdentTableEntry ite, @NotNull final DeduceTypes2 deduceTypes2) {
-		if (_foundCounstructorDef2Promise.isResolved()) return;
-
-		@NotNull final BaseFunctionDef ele = constructorDef.getFD();
-
-		try {
-			final LookupResultList     lrl  = DeduceLookupUtils.lookupExpression(ite.getIdent(), ele.getContext(), deduceTypes2);
-			@Nullable final OS_Element best = lrl.chooseBest(null);
-//            ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
-			final GenericElementHolder elementHolder = new GenericElementHolder(best);
-			_foundCounstructorDef2Promise.resolve(elementHolder);
-		} catch (final ResolveError aResolveError) {
-			_foundCounstructorDef2Promise.reject(aResolveError);
-		}
 	}
 }

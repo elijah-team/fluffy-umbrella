@@ -41,17 +41,17 @@ public class WithStatementBuilder extends ElBuilder {
 		return withStatement;
 	}
 
-	@Override
-	protected void setContext(final Context context) {
-		_context = context;
-	}
-
 	public VariableSequenceBuilder sb() {
 		return _sb;
 	}
 
 	public BaseScope scope() {
 		return _scope;
+	}
+
+	@Override
+	protected void setContext(final Context context) {
+		_context = context;
 	}
 }
 

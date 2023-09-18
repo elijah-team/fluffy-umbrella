@@ -1,10 +1,10 @@
 package tripleo.elijah.ut.vendor.com.stubbornjava.common.undertow;
 
+import java.util.Optional;
+
 import io.undertow.attribute.RequestHeaderAttribute;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
-
-import java.util.Optional;
 
 public interface Headers {
 

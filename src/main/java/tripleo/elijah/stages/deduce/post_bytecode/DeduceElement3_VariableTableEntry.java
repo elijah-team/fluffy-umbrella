@@ -64,20 +64,240 @@ import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 
 public class DeduceElement3_VariableTableEntry extends DefaultStateful implements IDeduceElement3 {
 
+	public static class Diagnostic_8884 implements GCFM_Diagnostic {
+		private final int                _code = 8884;
+		private final BaseEvaFunction    gf;
+		private final VariableTableEntry vte;
+
+		public Diagnostic_8884(final VariableTableEntry aVte, final BaseEvaFunction aGf) {
+			vte = aVte;
+			gf  = aGf;
+		}
+
+		@Override
+		public String _message() {
+			return String.format("%d temp variable has no type %s %s", _code, vte, gf);
+		}
+
+		@Override
+		public @NotNull String code() {
+			return "" + _code;
+		}
+
+		@Override
+		public @NotNull Locatable primary() {
+			return null;
+		}
+
+		@Override
+		public void report(final @NotNull PrintStream stream) {
+			stream.printf(_message());
+		}
+
+		@Override
+		public @NotNull List<Locatable> secondary() {
+			return null;
+		}
+
+		@Override
+		public @NotNull Severity severity() {
+			return Severity.ERROR;
+		}
+	}
+	public static class Diagnostic_8885 implements GCFM_Diagnostic {
+		private final int                _code = 8885;
+		private final VariableTableEntry vte;
+
+		public Diagnostic_8885(final VariableTableEntry aVte) {
+			vte = aVte;
+		}
+
+		@Override
+		public String _message() {
+			return String.format("%d x is null (No typename specified) for %s%n", _code, vte.getName());
+		}
+
+		@Override
+		public @NotNull String code() {
+			return "" + _code;
+		}
+
+		@Override
+		public @NotNull Locatable primary() {
+			return null;
+		}
+
+		@Override
+		public void report(final @NotNull PrintStream stream) {
+			stream.printf(_message());
+		}
+
+		@Override
+		public @NotNull List<Locatable> secondary() {
+			return null;
+		}
+
+		@Override
+		public @NotNull Severity severity() {
+			return Severity.ERROR;
+		}
+	}
+	public enum ST {
+		;
+
+		static class ExitConvertUserTypes implements State {
+			private static void apply_normal(final @NotNull VariableTableEntry vte,
+											 final @NotNull DeduceTypes2 dt2,
+											 final @NotNull ErrSink errSink,
+											 final DeducePhase phase,
+											 final @NotNull ElLog LOG,
+											 final @NotNull OS_Type attached,
+											 final @NotNull TypeName x,
+											 final @NotNull String tn) {
+				final LookupResultList lrl  = x.getContext().lookup(tn);
+				@Nullable OS_Element   best = lrl.chooseBest(null);
+
+				while (best instanceof AliasStatement) {
+					best = DeduceLookupUtils._resolveAlias((AliasStatement) best, dt2);
+				}
+
+				if (best != null) {
+					if (!(OS_Type.isConcreteType(best))) {
+						errSink.reportError(String.format("Not a concrete type %s for (%s)", best, tn));
+					} else {
+						LOG.info("705 " + best);
+						// NOTE that when we set USER_CLASS from USER generic information is
+						// still contained in constructable_pte
+						@NotNull final GenType genType = dt2._inj().new_GenTypeImpl(attached, ((ClassStatement) best).getOS_Type(), true, x, dt2, errSink, phase);
+						vte.setLikelyType(genType);
+					}
+					//vte.el = best;
+					// NOTE we called resolve_var_table_entry above
+					LOG.info("200 " + best);
+					assert vte.getResolvedElement() == null || vte.getStatus() == BaseTableEntry.Status.KNOWN;
+					//									vte.setStatus(BaseTableEntry.Status.KNOWN, best/*vte.el*/);
+				} else {
+					errSink.reportDiagnostic(dt2._inj().new_ResolveError(x, lrl));
+				}
+			}
+
+			private StateRegistrationToken identity;
+
+			@Override
+			public void apply(final @NotNull DefaultStateful element) {
+				final VariableTableEntry vte = ((DeduceElement3_VariableTableEntry) element).principal;
+
+				final DeduceTypes2         dt2     = ((DeduceElement3_VariableTableEntry) element).deduceTypes2();
+				final ErrSink              errSink = dt2._errSink();
+				final @NotNull DeducePhase phase   = dt2._phase();
+				final @NotNull ElLog       LOG     = dt2._LOG();
+
+				if (vte.getType() == null) return; // TODO only for tests
+
+				final @Nullable OS_Type attached = vte.getType().getAttached();
+
+				if (attached == null) return;
+				if (Objects.requireNonNull(attached.getType()) == OS_Type.Type.USER) {
+					final TypeName x = attached.getTypeName();
+					if (x instanceof NormalTypeName) {
+						final String tn = ((NormalTypeName) x).getName();
+						apply_normal(vte, dt2, errSink, phase, LOG, attached, x, tn);
+					}
+				}
+			}
+
+			@Override
+			public boolean checkState(final DefaultStateful aElement3) {
+				return true;
+			}
+
+			@Override
+			public void setIdentity(final StateRegistrationToken aId) {
+				identity = aId;
+			}
+		}
+		static class ExitResolveState implements State {
+			private StateRegistrationToken identity;
+
+			@Override
+			public void apply(final @NotNull DefaultStateful element) {
+				final VariableTableEntry vte = ((DeduceElement3_VariableTableEntry) element).principal;
+				vte.resolve_var_table_entry_for_exit_function();
+			}
+
+			@Override
+			public boolean checkState(final @NotNull DefaultStateful aElement3) {
+				return ((DeduceElement3_VariableTableEntry) aElement3).st == ST.INITIAL;
+			}
+
+			@Override
+			public void setIdentity(final StateRegistrationToken aId) {
+				identity = aId;
+			}
+		}
+		static class InitialState implements State {
+			private StateRegistrationToken identity;
+
+			@Override
+			public void apply(final DefaultStateful element) {
+
+			}
+
+			@Override
+			public boolean checkState(final DefaultStateful aElement3) {
+				return true;
+			}
+
+			@Override
+			public void setIdentity(final StateRegistrationToken aId) {
+				identity = aId;
+			}
+		}
+
+		public static State EXIT_CONVERT_USER_TYPES;
+
+		public static State EXIT_RESOLVE;
+
+		static        State INITIAL;
+
+		public static void register(final @NotNull DeducePhase aDeducePhase) {
+			EXIT_RESOLVE            = aDeducePhase.registerState(new ExitResolveState());
+			INITIAL                 = aDeducePhase.registerState(new InitialState());
+			EXIT_CONVERT_USER_TYPES = aDeducePhase.registerState(new ExitConvertUserTypes());
+		}
+	}
+	@NotNull
+	private static ArrayList<TypeTableEntry> getPotentialTypesVte(@NotNull final EvaFunction generatedFunction, @NotNull final InstructionArgument vte_index) {
+		return getPotentialTypesVte(generatedFunction.getVarTableEntry(to_int(vte_index)));
+	}
+	@NotNull
+	static ArrayList<TypeTableEntry> getPotentialTypesVte(@NotNull final VariableTableEntry vte) {
+		return new ArrayList<TypeTableEntry>(vte.potentialTypes());
+	}
+
 	private final VariableTableEntry principal;
+
 	private final State              st;
+
 	private       DeduceTypes2       deduceTypes2;
+
 	private       BaseEvaFunction    generatedFunction;
+
 	private       GenType            genType;
+
+	DeduceElement3_VariableTableEntry(final OS_Type vte_type_attached) {
+		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+	}
+
+	@Contract(pure = true)
+	public DeduceElement3_VariableTableEntry(final VariableTableEntry aVariableTableEntry) {
+		principal = aVariableTableEntry;
+		st        = ST.INITIAL;
+	}
 
 	public DeduceElement3_VariableTableEntry(final VariableTableEntry aVariableTableEntry, final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aGeneratedFunction) {
 		this(aVariableTableEntry);
 		setDeduceTypes2(aDeduceTypes2, aGeneratedFunction);
-	}
-
-	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aGeneratedFunction) {
-		deduceTypes2      = aDeduceTypes2;
-		generatedFunction = aGeneratedFunction;
 	}
 
 	public void __action_VAR_pot_1_tableEntry_null(final @NotNull VariableStatement aVariableStatement) {
@@ -88,64 +308,6 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 
 		final @Nullable GenType gt = __getGenTypeFromInitialValue(iv);
 		assert gt != null;
-	}
-
-	public @Nullable GenType __getGenTypeFromInitialValue(final @NotNull IExpression iv) {
-/*
-		final @NotNull IExpression iv = aVariableStatement.initialValue();
-		if (iv == IExpression.UNASSIGNED) {
-			NotImplementedException.raise();
-		}
-*/
-
-		switch (iv.getKind()) {
-		case PROCEDURE_CALL -> {
-			final ProcedureCallExpression procedureCallExpression = (ProcedureCallExpression) iv;
-			final IExpression             name_exp                = procedureCallExpression.getLeft();
-			assert name_exp instanceof IdentExpression;
-
-			final IdentExpression      name2 = (IdentExpression) name_exp;
-			final LookupResultList     lrl2  = name2.getContext().lookup(name2.getText());
-			final @Nullable OS_Element el2   = lrl2.chooseBest(null);
-
-			if (el2 == null) {
-				return null;
-			}
-
-			switch (DecideElObjectType.getElObjectType(el2)) {
-			case CLASS -> {
-				final ClassStatement classStatement = (ClassStatement) el2;
-
-				var dt2 = principal._deduceTypes2();
-				assert dt2 != null;
-
-				final GenType genType1 = dt2._inj().new_GenTypeImpl(classStatement);
-
-				//deferredMember.typeResolved().resolve(genType1);
-				genType1.genCIForGenType2(deduceTypes2);
-
-				// TODO and what? 05/24
-
-				this.genType = genType1;
-
-				return genType1;
-			}
-			default -> {
-				NotImplementedException.raise();
-			}
-			}
-		}
-		case IDENT -> {
-			final IdentExpression identExpression = (IdentExpression) iv;
-			final String          ident           = identExpression.getText();
-			int                   y               = 2;
-		}
-		default -> {
-			NotImplementedException.raise();
-		}
-		}
-
-		return null;
 	}
 
 	public void __action_vp1o(final @NotNull VariableTableEntry vte,
@@ -217,26 +379,6 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 		}
 	}
 
-	private void __action_vp1o__FunctionDef__VTE(final @NotNull VariableTableEntry vte, final @NotNull ProcTableEntry pte1, final @NotNull FunctionDef e, final @NotNull VariableTableEntry vte1) {
-		var dt2 = principal._deduceTypes2();
-		assert dt2 != null;
-
-		//DeducePath               dp   = vte1.buildDeducePath(generatedFunction);
-
-		final DeduceElement3_VariableTableEntry de3_vte = vte1.getDeduceElement3();
-		final GenType                           t       = de3_vte.genType;
-
-		//assert t != null;
-
-		vte.setStatus(BaseTableEntry.Status.KNOWN, dt2._inj().new_GenericElementHolder(e));
-		pte1.setStatus(BaseTableEntry.Status.KNOWN, dt2._inj().new_GenericElementHolder(e));
-
-		pte1.typePromise().then(genType1 -> {
-			if (t != null)
-				t.copy(genType1);
-		});
-	}
-
 	private void __action_vp1o__FunctionDef__ITE(final @NotNull ProcTableEntry pte1, final @NotNull FunctionDef e, final @NotNull IdentTableEntry ite1) {
 		var dt2 = principal._deduceTypes2();
 		assert dt2 != null;
@@ -259,14 +401,185 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 		});
 	}
 
-	DeduceElement3_VariableTableEntry(final OS_Type vte_type_attached) {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+	private void __action_vp1o__FunctionDef__VTE(final @NotNull VariableTableEntry vte, final @NotNull ProcTableEntry pte1, final @NotNull FunctionDef e, final @NotNull VariableTableEntry vte1) {
+		var dt2 = principal._deduceTypes2();
+		assert dt2 != null;
+
+		//DeducePath               dp   = vte1.buildDeducePath(generatedFunction);
+
+		final DeduceElement3_VariableTableEntry de3_vte = vte1.getDeduceElement3();
+		final GenType                           t       = de3_vte.genType;
+
+		//assert t != null;
+
+		vte.setStatus(BaseTableEntry.Status.KNOWN, dt2._inj().new_GenericElementHolder(e));
+		pte1.setStatus(BaseTableEntry.Status.KNOWN, dt2._inj().new_GenericElementHolder(e));
+
+		pte1.typePromise().then(genType1 -> {
+			if (t != null)
+				t.copy(genType1);
+		});
 	}
 
-	@Contract(pure = true)
-	public DeduceElement3_VariableTableEntry(final VariableTableEntry aVariableTableEntry) {
-		principal = aVariableTableEntry;
-		st        = ST.INITIAL;
+	private void __doLogic_pot_size_0(final @NotNull Promise<GenType, Void, Void> p, final @NotNull ElLog LOG, final @NotNull VariableTableEntry vte1, final @NotNull ErrSink errSink, final @NotNull Context ctx, final @NotNull String e_text, final @NotNull VariableTableEntry vte) {
+		// README moved up here to elimiate work
+		if (p.isResolved()) {
+			System.out.printf("890-1 Already resolved type: vte1.type = %s, gf = %s %n", vte1.getType(), generatedFunction);
+			return;
+		}
+		final LookupResultList     lrl  = ctx.lookup(e_text);
+		@Nullable final OS_Element best = lrl.chooseBest(null);
+		if (best instanceof @NotNull final FormalArgListItem fali) {
+			__doLogic_pot_size_0__fali(vte1, errSink, vte, fali);
+		} else if (best instanceof final @NotNull VariableStatement vs) {
+			__doLogic_pot_size_0__varstmt(p, vte1, e_text, vte, vs, best);
+		} else {
+			final int y = 2;
+			LOG.err("543 " + best.getClass().getName());
+			throw new NotImplementedException();
+		}
+	}
+
+	private void __doLogic_pot_size_0__fali(final @NotNull VariableTableEntry vte1, final @NotNull ErrSink errSink, final @NotNull VariableTableEntry vte, final @NotNull FormalArgListItem fali) {
+		final @NotNull OS_Type osType = deduceTypes2._inj().new_OS_UserType(fali.typeName());
+		if (!osType.equals(vte.getType().getAttached())) {
+			final TypeTableEntry tte1 = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, osType, fali.getNameToken(), vte1);
+			/*if (p.isResolved())
+				System.out.printf("890 Already resolved type: vte1.type = %s, gf = %s, tte1 = %s %n", vte1.type, generatedFunction, tte1);
+			else*/
+			{
+				final OS_Type attached = tte1.getAttached();
+				switch (attached.getType()) {
+				case USER -> vte1.getType().setAttached(attached); // !!
+				case USER_CLASS -> {
+					final GenType gt = vte1.getGenType();
+					gt.setResolved(attached);
+					vte1.resolveType(gt);
+				}
+				default -> errSink.reportWarning("2853 Unexpected value: " + attached.getType());
+				}
+			}
+		}
+	}
+
+	private void __doLogic_pot_size_0__varstmt(final @NotNull Promise<GenType, Void, Void> p, final @NotNull VariableTableEntry vte1, final @NotNull String e_text, final @NotNull VariableTableEntry vte, final @NotNull VariableStatement vs, final @NotNull OS_Element best) {
+		//
+		assert vs.getName().equals(e_text);
+		//
+		@Nullable final InstructionArgument vte2_ia = generatedFunction.vte_lookup(vs.getName());
+		@NotNull final VariableTableEntry   vte2    = generatedFunction.getVarTableEntry(to_int(vte2_ia));
+		if (p.isResolved())
+			System.out.printf("915 Already resolved type: vte2.type = %s, gf = %s %n", vte1.getType(), generatedFunction);
+		else {
+			final GenType gt       = vte1.getGenType();
+			final OS_Type attached = vte2.getType().getAttached();
+			gt.setResolved(attached);
+			vte1.resolveType(gt);
+		}
+//								vte.type = vte2.type;
+//								tte.attached = vte.type.attached;
+		vte.setStatus(BaseTableEntry.Status.KNOWN, deduceTypes2._inj().new_GenericElementHolder(best));
+		vte2.setStatus(BaseTableEntry.Status.KNOWN, deduceTypes2._inj().new_GenericElementHolder(best)); // TODO ??
+	}
+
+//	@Override
+//	public @NotNull DED elementDiscriminator() {
+//		return new DED_VTE(principal);
+//	}
+
+	private void __doLogic_pot_size_1(final @NotNull List<TypeTableEntry> potentialTypes, final @NotNull Promise<GenType, Void, Void> p, final @NotNull ElLog LOG, final @NotNull VariableTableEntry vte1, final @NotNull ErrSink errSink) {
+		//							tte.attached = ll.get(0).attached;
+//							vte.addPotentialType(instructionIndex, ll.get(0));
+		if (p.isResolved()) {
+			LOG.info(String.format("1047 (vte already resolved) %s vte1.type = %s, gf = %s, tte1 = %s %n", vte1.getName(), vte1.getType(), generatedFunction, potentialTypes.get(0)));
+		} else {
+			final OS_Type attached = potentialTypes.get(0).getAttached();
+			if (attached == null) return;
+			switch (attached.getType()) {
+			case USER:
+				vte1.getType().setAttached(attached); // !!
+				break;
+			case USER_CLASS:
+				final GenType gt = vte1.getGenType();
+				gt.setResolved(attached);
+				vte1.resolveType(gt);
+				break;
+			default:
+				errSink.reportWarning("Unexpected value: " + attached.getType());
+//										throw new IllegalStateException("Unexpected value: " + attached.getType());
+			}
+		}
+	}
+
+	private void __doLogic_pot_size_default(final @NotNull List<TypeTableEntry> potentialTypes, final @NotNull Promise<GenType, Void, Void> p, final @NotNull ElLog LOG, final @NotNull VariableTableEntry vte1, final @NotNull ErrSink errSink, final @NotNull Context ctx, final @NotNull String e_text, final @NotNull VariableTableEntry vte) {
+		// TODO hopefully this works
+		var potentialTypes1 = potentialTypes.stream()
+				.filter(input -> input.getAttached() != null)
+				.collect(Collectors.toList());
+
+		// prevent infinite recursion
+		if (potentialTypes1.size() < potentialTypes.size())
+			doLogic(potentialTypes1, p, LOG, vte1, errSink, ctx, e_text, vte);
+		else
+			LOG.info("913 Don't know");
+	}
+
+	public @Nullable GenType __getGenTypeFromInitialValue(final @NotNull IExpression iv) {
+/*
+		final @NotNull IExpression iv = aVariableStatement.initialValue();
+		if (iv == IExpression.UNASSIGNED) {
+			NotImplementedException.raise();
+		}
+*/
+
+		switch (iv.getKind()) {
+		case PROCEDURE_CALL -> {
+			final ProcedureCallExpression procedureCallExpression = (ProcedureCallExpression) iv;
+			final IExpression             name_exp                = procedureCallExpression.getLeft();
+			assert name_exp instanceof IdentExpression;
+
+			final IdentExpression      name2 = (IdentExpression) name_exp;
+			final LookupResultList     lrl2  = name2.getContext().lookup(name2.getText());
+			final @Nullable OS_Element el2   = lrl2.chooseBest(null);
+
+			if (el2 == null) {
+				return null;
+			}
+
+			switch (DecideElObjectType.getElObjectType(el2)) {
+			case CLASS -> {
+				final ClassStatement classStatement = (ClassStatement) el2;
+
+				var dt2 = principal._deduceTypes2();
+				assert dt2 != null;
+
+				final GenType genType1 = dt2._inj().new_GenTypeImpl(classStatement);
+
+				//deferredMember.typeResolved().resolve(genType1);
+				genType1.genCIForGenType2(deduceTypes2);
+
+				// TODO and what? 05/24
+
+				this.genType = genType1;
+
+				return genType1;
+			}
+			default -> {
+				NotImplementedException.raise();
+			}
+			}
+		}
+		case IDENT -> {
+			final IdentExpression identExpression = (IdentExpression) iv;
+			final String          ident           = identExpression.getText();
+			int                   y               = 2;
+		}
+		default -> {
+			NotImplementedException.raise();
+		}
+		}
+
+		return null;
 	}
 
 	private void __itemFali__isFunctionDef(final @NotNull DeduceTypes2 aDeduceTypes2, final @NotNull FunctionDef fd) {
@@ -379,36 +692,6 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 		return p;
 	}
 
-	@Override
-	public DeduceTypes2 deduceTypes2() {
-		return deduceTypes2;
-	}
-
-//	@Override
-//	public @NotNull DED elementDiscriminator() {
-//		return new DED_VTE(principal);
-//	}
-
-	@Override
-	public BaseEvaFunction generatedFunction() {
-		return generatedFunction;
-	}
-
-	@Override
-	public GenType genType() {
-		return genType;
-	}
-
-	@Override
-	public @NotNull DeduceElement3_Kind kind() {
-		return DeduceElement3_Kind.GEN_FN__VTE;
-	}
-
-	@Override
-	public OS_Element getPrincipal() {
-		return principal.getResolvedElement();
-	}
-
 	public @NotNull Operation2<OS_Type> decl_test_001(final BaseEvaFunction gf) {
 		//var dt2 = principal.getDeduceElement3().deduceTypes2();
 		//assert dt2 != null;
@@ -433,6 +716,11 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 		return Operation2.success(x);
 	}
 
+	@Override
+	public DeduceTypes2 deduceTypes2() {
+		return deduceTypes2;
+	}
+
 	public void doLogic(@NotNull final List<TypeTableEntry> potentialTypes, final @NotNull Promise<GenType, Void, Void> p, final @NotNull ElLog LOG, final @NotNull VariableTableEntry vte1, final @NotNull ErrSink errSink, final @NotNull Context ctx, final @NotNull String e_text, final @NotNull VariableTableEntry vte) {
 		switch (potentialTypes.size()) {
 		case 1 -> __doLogic_pot_size_1(potentialTypes, p, LOG, vte1, errSink);
@@ -441,112 +729,14 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 		}
 	}
 
-	private void __doLogic_pot_size_default(final @NotNull List<TypeTableEntry> potentialTypes, final @NotNull Promise<GenType, Void, Void> p, final @NotNull ElLog LOG, final @NotNull VariableTableEntry vte1, final @NotNull ErrSink errSink, final @NotNull Context ctx, final @NotNull String e_text, final @NotNull VariableTableEntry vte) {
-		// TODO hopefully this works
-		var potentialTypes1 = potentialTypes.stream()
-				.filter(input -> input.getAttached() != null)
-				.collect(Collectors.toList());
-
-		// prevent infinite recursion
-		if (potentialTypes1.size() < potentialTypes.size())
-			doLogic(potentialTypes1, p, LOG, vte1, errSink, ctx, e_text, vte);
-		else
-			LOG.info("913 Don't know");
-	}
-
-	private void __doLogic_pot_size_0(final @NotNull Promise<GenType, Void, Void> p, final @NotNull ElLog LOG, final @NotNull VariableTableEntry vte1, final @NotNull ErrSink errSink, final @NotNull Context ctx, final @NotNull String e_text, final @NotNull VariableTableEntry vte) {
-		// README moved up here to elimiate work
-		if (p.isResolved()) {
-			System.out.printf("890-1 Already resolved type: vte1.type = %s, gf = %s %n", vte1.getType(), generatedFunction);
-			return;
-		}
-		final LookupResultList     lrl  = ctx.lookup(e_text);
-		@Nullable final OS_Element best = lrl.chooseBest(null);
-		if (best instanceof @NotNull final FormalArgListItem fali) {
-			__doLogic_pot_size_0__fali(vte1, errSink, vte, fali);
-		} else if (best instanceof final @NotNull VariableStatement vs) {
-			__doLogic_pot_size_0__varstmt(p, vte1, e_text, vte, vs, best);
-		} else {
-			final int y = 2;
-			LOG.err("543 " + best.getClass().getName());
-			throw new NotImplementedException();
-		}
-	}
-
-	private void __doLogic_pot_size_0__varstmt(final @NotNull Promise<GenType, Void, Void> p, final @NotNull VariableTableEntry vte1, final @NotNull String e_text, final @NotNull VariableTableEntry vte, final @NotNull VariableStatement vs, final @NotNull OS_Element best) {
-		//
-		assert vs.getName().equals(e_text);
-		//
-		@Nullable final InstructionArgument vte2_ia = generatedFunction.vte_lookup(vs.getName());
-		@NotNull final VariableTableEntry   vte2    = generatedFunction.getVarTableEntry(to_int(vte2_ia));
-		if (p.isResolved())
-			System.out.printf("915 Already resolved type: vte2.type = %s, gf = %s %n", vte1.getType(), generatedFunction);
-		else {
-			final GenType gt       = vte1.getGenType();
-			final OS_Type attached = vte2.getType().getAttached();
-			gt.setResolved(attached);
-			vte1.resolveType(gt);
-		}
-//								vte.type = vte2.type;
-//								tte.attached = vte.type.attached;
-		vte.setStatus(BaseTableEntry.Status.KNOWN, deduceTypes2._inj().new_GenericElementHolder(best));
-		vte2.setStatus(BaseTableEntry.Status.KNOWN, deduceTypes2._inj().new_GenericElementHolder(best)); // TODO ??
-	}
-
-	private void __doLogic_pot_size_0__fali(final @NotNull VariableTableEntry vte1, final @NotNull ErrSink errSink, final @NotNull VariableTableEntry vte, final @NotNull FormalArgListItem fali) {
-		final @NotNull OS_Type osType = deduceTypes2._inj().new_OS_UserType(fali.typeName());
-		if (!osType.equals(vte.getType().getAttached())) {
-			final TypeTableEntry tte1 = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, osType, fali.getNameToken(), vte1);
-			/*if (p.isResolved())
-				System.out.printf("890 Already resolved type: vte1.type = %s, gf = %s, tte1 = %s %n", vte1.type, generatedFunction, tte1);
-			else*/
-			{
-				final OS_Type attached = tte1.getAttached();
-				switch (attached.getType()) {
-				case USER -> vte1.getType().setAttached(attached); // !!
-				case USER_CLASS -> {
-					final GenType gt = vte1.getGenType();
-					gt.setResolved(attached);
-					vte1.resolveType(gt);
-				}
-				default -> errSink.reportWarning("2853 Unexpected value: " + attached.getType());
-				}
-			}
-		}
-	}
-
-	private void __doLogic_pot_size_1(final @NotNull List<TypeTableEntry> potentialTypes, final @NotNull Promise<GenType, Void, Void> p, final @NotNull ElLog LOG, final @NotNull VariableTableEntry vte1, final @NotNull ErrSink errSink) {
-		//							tte.attached = ll.get(0).attached;
-//							vte.addPotentialType(instructionIndex, ll.get(0));
-		if (p.isResolved()) {
-			LOG.info(String.format("1047 (vte already resolved) %s vte1.type = %s, gf = %s, tte1 = %s %n", vte1.getName(), vte1.getType(), generatedFunction, potentialTypes.get(0)));
-		} else {
-			final OS_Type attached = potentialTypes.get(0).getAttached();
-			if (attached == null) return;
-			switch (attached.getType()) {
-			case USER:
-				vte1.getType().setAttached(attached); // !!
-				break;
-			case USER_CLASS:
-				final GenType gt = vte1.getGenType();
-				gt.setResolved(attached);
-				vte1.resolveType(gt);
-				break;
-			default:
-				errSink.reportWarning("Unexpected value: " + attached.getType());
-//										throw new IllegalStateException("Unexpected value: " + attached.getType());
-			}
-		}
+	@Override
+	public BaseEvaFunction generatedFunction() {
+		return generatedFunction;
 	}
 
 	@Override
-	public void resolve(final Context aContext, final DeduceTypes2 aDeduceTypes2) {
-		throw new UnsupportedOperationException("Should not be reached");
-	}
-
-	@Override
-	public void resolve(final IdentIA aIdentIA, final Context aContext, final FoundElement aFoundElement) {
-		throw new UnsupportedOperationException("Should not be reached");
+	public GenType genType() {
+		return genType;
 	}
 
 	public void getItemFali(final Context aCtx, final @NotNull DeduceTypes2 aDeduceTypes2, final @NotNull GenType genType) {
@@ -582,19 +772,34 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 
 	}
 
+	@Override
+	public OS_Element getPrincipal() {
+		return principal.getResolvedElement();
+	}
+
+	@Override
+	public @NotNull DeduceElement3_Kind kind() {
+		return DeduceElement3_Kind.GEN_FN__VTE;
+	}
+
 	public void potentialTypesRunnableDo(final @Nullable InstructionArgument vte_ia, final @NotNull ElLog aLOG, final @NotNull VariableTableEntry aVte1, final @NotNull ErrSink errSink, final @NotNull Context ctx, final @NotNull String aE_text, final @NotNull VariableTableEntry aVte) {
 		final @NotNull List<TypeTableEntry> ll = getPotentialTypesVte((EvaFunction) generatedFunction, vte_ia);
 		doLogic(ll, aVte1.typePromise(), aLOG, aVte1, errSink, ctx, aE_text, aVte);
 	}
 
-	@NotNull
-	private static ArrayList<TypeTableEntry> getPotentialTypesVte(@NotNull final EvaFunction generatedFunction, @NotNull final InstructionArgument vte_index) {
-		return getPotentialTypesVte(generatedFunction.getVarTableEntry(to_int(vte_index)));
+	@Override
+	public void resolve(final Context aContext, final DeduceTypes2 aDeduceTypes2) {
+		throw new UnsupportedOperationException("Should not be reached");
 	}
 
-	@NotNull
-	static ArrayList<TypeTableEntry> getPotentialTypesVte(@NotNull final VariableTableEntry vte) {
-		return new ArrayList<TypeTableEntry>(vte.potentialTypes());
+	@Override
+	public void resolve(final IdentIA aIdentIA, final Context aContext, final FoundElement aFoundElement) {
+		throw new UnsupportedOperationException("Should not be reached");
+	}
+
+	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aGeneratedFunction) {
+		deduceTypes2      = aDeduceTypes2;
+		generatedFunction = aGeneratedFunction;
 	}
 
 	private void setup_GenType(@NotNull OS_Element element, @NotNull GenType aGt) {
@@ -664,211 +869,6 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 			setup_GenType(el, aGt);
 		}
 		default -> throw new IllegalStateException("Unknown parent");
-		}
-	}
-
-	public enum ST {
-		;
-
-		public static State EXIT_CONVERT_USER_TYPES;
-		public static State EXIT_RESOLVE;
-		static        State INITIAL;
-
-		public static void register(final @NotNull DeducePhase aDeducePhase) {
-			EXIT_RESOLVE            = aDeducePhase.registerState(new ExitResolveState());
-			INITIAL                 = aDeducePhase.registerState(new InitialState());
-			EXIT_CONVERT_USER_TYPES = aDeducePhase.registerState(new ExitConvertUserTypes());
-		}
-
-		static class ExitConvertUserTypes implements State {
-			private StateRegistrationToken identity;
-
-			@Override
-			public void apply(final @NotNull DefaultStateful element) {
-				final VariableTableEntry vte = ((DeduceElement3_VariableTableEntry) element).principal;
-
-				final DeduceTypes2         dt2     = ((DeduceElement3_VariableTableEntry) element).deduceTypes2();
-				final ErrSink              errSink = dt2._errSink();
-				final @NotNull DeducePhase phase   = dt2._phase();
-				final @NotNull ElLog       LOG     = dt2._LOG();
-
-				if (vte.getType() == null) return; // TODO only for tests
-
-				final @Nullable OS_Type attached = vte.getType().getAttached();
-
-				if (attached == null) return;
-				if (Objects.requireNonNull(attached.getType()) == OS_Type.Type.USER) {
-					final TypeName x = attached.getTypeName();
-					if (x instanceof NormalTypeName) {
-						final String tn = ((NormalTypeName) x).getName();
-						apply_normal(vte, dt2, errSink, phase, LOG, attached, x, tn);
-					}
-				}
-			}
-
-			private static void apply_normal(final @NotNull VariableTableEntry vte,
-											 final @NotNull DeduceTypes2 dt2,
-											 final @NotNull ErrSink errSink,
-											 final DeducePhase phase,
-											 final @NotNull ElLog LOG,
-											 final @NotNull OS_Type attached,
-											 final @NotNull TypeName x,
-											 final @NotNull String tn) {
-				final LookupResultList lrl  = x.getContext().lookup(tn);
-				@Nullable OS_Element   best = lrl.chooseBest(null);
-
-				while (best instanceof AliasStatement) {
-					best = DeduceLookupUtils._resolveAlias((AliasStatement) best, dt2);
-				}
-
-				if (best != null) {
-					if (!(OS_Type.isConcreteType(best))) {
-						errSink.reportError(String.format("Not a concrete type %s for (%s)", best, tn));
-					} else {
-						LOG.info("705 " + best);
-						// NOTE that when we set USER_CLASS from USER generic information is
-						// still contained in constructable_pte
-						@NotNull final GenType genType = dt2._inj().new_GenTypeImpl(attached, ((ClassStatement) best).getOS_Type(), true, x, dt2, errSink, phase);
-						vte.setLikelyType(genType);
-					}
-					//vte.el = best;
-					// NOTE we called resolve_var_table_entry above
-					LOG.info("200 " + best);
-					assert vte.getResolvedElement() == null || vte.getStatus() == BaseTableEntry.Status.KNOWN;
-					//									vte.setStatus(BaseTableEntry.Status.KNOWN, best/*vte.el*/);
-				} else {
-					errSink.reportDiagnostic(dt2._inj().new_ResolveError(x, lrl));
-				}
-			}
-
-			@Override
-			public boolean checkState(final DefaultStateful aElement3) {
-				return true;
-			}
-
-			@Override
-			public void setIdentity(final StateRegistrationToken aId) {
-				identity = aId;
-			}
-		}
-
-		static class ExitResolveState implements State {
-			private StateRegistrationToken identity;
-
-			@Override
-			public void apply(final @NotNull DefaultStateful element) {
-				final VariableTableEntry vte = ((DeduceElement3_VariableTableEntry) element).principal;
-				vte.resolve_var_table_entry_for_exit_function();
-			}
-
-			@Override
-			public boolean checkState(final @NotNull DefaultStateful aElement3) {
-				return ((DeduceElement3_VariableTableEntry) aElement3).st == ST.INITIAL;
-			}
-
-			@Override
-			public void setIdentity(final StateRegistrationToken aId) {
-				identity = aId;
-			}
-		}
-
-		static class InitialState implements State {
-			private StateRegistrationToken identity;
-
-			@Override
-			public void apply(final DefaultStateful element) {
-
-			}
-
-			@Override
-			public boolean checkState(final DefaultStateful aElement3) {
-				return true;
-			}
-
-			@Override
-			public void setIdentity(final StateRegistrationToken aId) {
-				identity = aId;
-			}
-		}
-	}
-
-	public static class Diagnostic_8884 implements GCFM_Diagnostic {
-		private final int                _code = 8884;
-		private final BaseEvaFunction    gf;
-		private final VariableTableEntry vte;
-
-		public Diagnostic_8884(final VariableTableEntry aVte, final BaseEvaFunction aGf) {
-			vte = aVte;
-			gf  = aGf;
-		}
-
-		@Override
-		public @NotNull String code() {
-			return "" + _code;
-		}
-
-		@Override
-		public @NotNull Locatable primary() {
-			return null;
-		}
-
-		@Override
-		public void report(final @NotNull PrintStream stream) {
-			stream.printf(_message());
-		}
-
-		@Override
-		public String _message() {
-			return String.format("%d temp variable has no type %s %s", _code, vte, gf);
-		}
-
-		@Override
-		public @NotNull List<Locatable> secondary() {
-			return null;
-		}
-
-		@Override
-		public @NotNull Severity severity() {
-			return Severity.ERROR;
-		}
-	}
-
-	public static class Diagnostic_8885 implements GCFM_Diagnostic {
-		private final int                _code = 8885;
-		private final VariableTableEntry vte;
-
-		public Diagnostic_8885(final VariableTableEntry aVte) {
-			vte = aVte;
-		}
-
-		@Override
-		public @NotNull String code() {
-			return "" + _code;
-		}
-
-		@Override
-		public @NotNull Locatable primary() {
-			return null;
-		}
-
-		@Override
-		public void report(final @NotNull PrintStream stream) {
-			stream.printf(_message());
-		}
-
-		@Override
-		public String _message() {
-			return String.format("%d x is null (No typename specified) for %s%n", _code, vte.getName());
-		}
-
-		@Override
-		public @NotNull List<Locatable> secondary() {
-			return null;
-		}
-
-		@Override
-		public @NotNull Severity severity() {
-			return Severity.ERROR;
 		}
 	}
 

@@ -9,19 +9,19 @@
 
 package tripleo.elijah.stages.gen_generic;
 
-import tripleo.util.buffer.Buffer;
-
 import java.util.List;
+
+import tripleo.util.buffer.Buffer;
 
 /**
  * Created 9/13/21 11:12 PM
  */
 public interface IOutputFile {
-	void putDependencies(List<DependencyRef> aDependencies);
+	String getOutput();
 
 	void putBuffer(Buffer aBuffer);
 
-	String getOutput();
+	void putDependencies(List<DependencyRef> aDependencies);
 }
 
 //

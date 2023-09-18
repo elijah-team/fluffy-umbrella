@@ -1,10 +1,19 @@
 package tripleo.elijah.util;
 
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.diagnostic.Diagnostic;
 
 public class Maybe<T> {
+	public static <TT> Maybe<TT> empty() {
+		return new Maybe<>(null, null);
+	}
+	public static <TT> Maybe<TT> of(final TT aTT) {
+		return new Maybe<>(aTT, null);
+	}
+
 	public final @Nullable Diagnostic exc;
+
 	public final @Nullable T          o;
 
 	public Maybe(final @Nullable T o, final Diagnostic exc) {
@@ -20,14 +29,6 @@ public class Maybe<T> {
 
 		this.o   = o;
 		this.exc = exc;
-	}
-
-	public static <TT> Maybe<TT> empty() {
-		return new Maybe<>(null, null);
-	}
-
-	public static <TT> Maybe<TT> of(final TT aTT) {
-		return new Maybe<>(aTT, null);
 	}
 
 	public boolean isException() {

@@ -1,10 +1,21 @@
 package tripleo.elijah.world.impl;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.lang.BaseFunctionDef;
@@ -25,15 +36,6 @@ import tripleo.elijah.world.i.LivingPackage;
 import tripleo.elijah.world.i.LivingRepo;
 import tripleo.elijah.world.i.WorldModule;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 public class DefaultLivingRepo implements LivingRepo {
 
 	private final @NotNull ObservableCompletableProcess<WorldModule> wmo = new ObservableCompletableProcess<>();
@@ -46,6 +48,11 @@ public class DefaultLivingRepo implements LivingRepo {
 	private       int                                              _classCode    = 101;
 	private       int                                              _functionCode = 1001;
 	private       int                                              _packageCode  = 1;
+
+	@Override
+	public @Nullable LivingClass addClass(final ClassStatement cs) {
+		return null;
+	}
 
 	@Override
 	public @NotNull DefaultLivingClass addClass(final @NotNull EvaClass aClass, final @NotNull Add addFlag) {
@@ -81,11 +88,6 @@ public class DefaultLivingRepo implements LivingRepo {
 	}
 
 	@Override
-	public @Nullable LivingClass addClass(final ClassStatement cs) {
-		return null;
-	}
-
-	@Override
 	public @NotNull DefaultLivingFunction addFunction(final @NotNull BaseEvaFunction aFunction, final @NotNull Add addFlag) {
 		switch (addFlag) {
 		case NONE -> {
@@ -115,19 +117,26 @@ public class DefaultLivingRepo implements LivingRepo {
 	}
 
 	@Override
+	public @Nullable LivingFunction addFunction(final BaseFunctionDef fd) {
+		return null;
+	}
+
+	@Override
 	public void addModule(final @NotNull OS_Module mod, final @NotNull String aFilename, final @NotNull Compilation aC) {
 		System.out.println("LivingRepo::addModule >> " + aFilename);
 		//addModule2();
 	}
 
 	@Override
-	public @Nullable LivingFunction addFunction(final BaseFunctionDef fd) {
-		return null;
+	public void addModule2(final WorldModule aWorldModule) {
+		_modules.add(aWorldModule);
+
+		wmo.onNext(aWorldModule);
 	}
 
 	@Override
-	public @Nullable LivingPackage addPackage(final OS_Package pk) {
-		return null;
+	public void addModuleProcess(CompletableProcess<WorldModule> wmcp) {
+		wmo.subscribe(wmcp);
 	}
 
 	@Override
@@ -153,20 +162,8 @@ public class DefaultLivingRepo implements LivingRepo {
 	}
 
 	@Override
-	public @NotNull LivingNamespace getNamespace(final EvaNamespace aEvaNamespace) {
-		for (LivingNode livingNode : repo) {
-			if (livingNode instanceof final @NotNull LivingNamespace livingNamespace) {
-				if (livingNamespace.evaNode().equals(aEvaNamespace))
-					return livingNamespace;
-			}
-		}
-
-		final DefaultLivingNamespace living = new DefaultLivingNamespace(aEvaNamespace);
-		//klass._living = living;
-
-		repo.add(living);
-
-		return living;
+	public @Nullable LivingPackage addPackage(final OS_Package pk) {
+		return null;
 	}
 
 	@Override
@@ -187,73 +184,17 @@ public class DefaultLivingRepo implements LivingRepo {
 	}
 
 	@Override
-	public OS_Package getPackage(final String aPackageName) {
-		return _packages.get(aPackageName);
-	}
+	public @NotNull List<LivingClass> getClassesForClassNamed(final String className) {
+		List<LivingClass> lcs = new LinkedList<>();
 
-	@Override
-	public boolean hasPackage(final @NotNull String aPackageName) {
-		if (aPackageName.equals("C")) {
-			int y = 2;
+		for (LivingNode livingNode : repo) {
+			if (livingNode instanceof final @NotNull LivingClass livingClass) {
+				if (livingClass.getElement().name().equals(className))
+					lcs.add(livingClass);
+			}
 		}
-		return _packages.containsKey(aPackageName);
-	}
 
-	@Override
-	public @Nullable LivingFunction getFunction(final BaseEvaFunction aBaseEvaFunction) {
-		var c = functionMap.get(aBaseEvaFunction);
-
-		if (c.size() > 0)
-			return c.iterator().next();
-
-		return null;
-	}
-
-	@Override
-	public Collection<WorldModule> modules() {
-		return _modules;
-	}
-
-	@Override
-	public void addModule2(final WorldModule aWorldModule) {
-		_modules.add(aWorldModule);
-
-		wmo.onNext(aWorldModule);
-	}
-
-	@Override
-	public void addModuleProcess(CompletableProcess<WorldModule> wmcp) {
-		wmo.subscribe(wmcp);
-	}
-
-	@Override
-	public @Nullable WorldModule getModule(final OS_Module aModule) {
-		return _modules.stream()
-				.filter(module -> module.module() == aModule)
-				.findFirst()
-				.orElse(null);
-	}
-
-	@Override
-	public OS_Package makePackage(final @NotNull Qualident pkg_name) {
-		final String pkg_name_s = pkg_name.toString();
-		if (!isPackage(pkg_name_s)) {
-			final OS_Package newPackage = new OS_Package(pkg_name, nextPackageCode());
-			_packages.put(pkg_name_s, newPackage);
-			return newPackage;
-		} else
-			return _packages.get(pkg_name_s);
-	}
-
-	public boolean isPackage(final String pkg) {
-		return _packages.containsKey(pkg);
-	}
-
-	@Contract(mutates = "this")
-	private int nextPackageCode() {
-		int i = _packageCode;
-		_packageCode++;
-		return i;
+		return lcs;
 	}
 
 	@Override
@@ -271,17 +212,77 @@ public class DefaultLivingRepo implements LivingRepo {
 	}
 
 	@Override
-	public @NotNull List<LivingClass> getClassesForClassNamed(final String className) {
-		List<LivingClass> lcs = new LinkedList<>();
+	public @Nullable LivingFunction getFunction(final BaseEvaFunction aBaseEvaFunction) {
+		var c = functionMap.get(aBaseEvaFunction);
 
+		if (c.size() > 0)
+			return c.iterator().next();
+
+		return null;
+	}
+
+	@Override
+	public @Nullable WorldModule getModule(final OS_Module aModule) {
+		return _modules.stream()
+				.filter(module -> module.module() == aModule)
+				.findFirst()
+				.orElse(null);
+	}
+
+	@Override
+	public @NotNull LivingNamespace getNamespace(final EvaNamespace aEvaNamespace) {
 		for (LivingNode livingNode : repo) {
-			if (livingNode instanceof final @NotNull LivingClass livingClass) {
-				if (livingClass.getElement().name().equals(className))
-					lcs.add(livingClass);
+			if (livingNode instanceof final @NotNull LivingNamespace livingNamespace) {
+				if (livingNamespace.evaNode().equals(aEvaNamespace))
+					return livingNamespace;
 			}
 		}
 
-		return lcs;
+		final DefaultLivingNamespace living = new DefaultLivingNamespace(aEvaNamespace);
+		//klass._living = living;
+
+		repo.add(living);
+
+		return living;
+	}
+
+	@Override
+	public OS_Package getPackage(final String aPackageName) {
+		return _packages.get(aPackageName);
+	}
+
+	@Override
+	public boolean hasPackage(final @NotNull String aPackageName) {
+		if (aPackageName.equals("C")) {
+			int y = 2;
+		}
+		return _packages.containsKey(aPackageName);
+	}
+
+	public boolean isPackage(final String pkg) {
+		return _packages.containsKey(pkg);
+	}
+
+	@Override
+	public OS_Package makePackage(final @NotNull Qualident pkg_name) {
+		final String pkg_name_s = pkg_name.toString();
+		if (!isPackage(pkg_name_s)) {
+			final OS_Package newPackage = new OS_Package(pkg_name, nextPackageCode());
+			_packages.put(pkg_name_s, newPackage);
+			return newPackage;
+		} else
+			return _packages.get(pkg_name_s);
+	}
+
+	@Override
+	public Collection<WorldModule> modules() {
+		return _modules;
+	}
+
+	public int nextClassCode() {
+		int i = _classCode;
+		_classCode++;
+		return i;
 	}
 
 	public int nextFunctionCode() {
@@ -290,9 +291,10 @@ public class DefaultLivingRepo implements LivingRepo {
 		return i;
 	}
 
-	public int nextClassCode() {
-		int i = _classCode;
-		_classCode++;
+	@Contract(mutates = "this")
+	private int nextPackageCode() {
+		int i = _packageCode;
+		_packageCode++;
 		return i;
 	}
 }

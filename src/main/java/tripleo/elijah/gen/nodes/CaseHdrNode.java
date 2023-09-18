@@ -25,6 +25,16 @@ public class CaseHdrNode implements Node {
 		this.expr = varref;
 	}
 
+	/**
+	 * do not call
+	 *
+	 * @return
+	 */
+	@Override
+	public int getCode() {
+		return -1;
+	}
+
 	public IExpressionNode getExpr() {
 		return expr;
 	}
@@ -45,16 +55,6 @@ public class CaseHdrNode implements Node {
 //			return expr.genText();
 //		}
 		throw new IllegalStateException("no implementation");
-	}
-
-	/**
-	 * do not call
-	 *
-	 * @return
-	 */
-	@Override
-	public int getCode() {
-		return -1;
 	}
 }
 

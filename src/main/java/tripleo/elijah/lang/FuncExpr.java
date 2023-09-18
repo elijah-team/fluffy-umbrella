@@ -27,17 +27,20 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 	private FuncExprContext _ctx;
 //	private Scope3 scope3;
 
-	public void type(final TypeModifiers modifier) {
-		assert modifier == TypeModifiers.FUNCTION ||
-		  modifier == TypeModifiers.PROCEDURE;
+	@Override
+	public List<FormalArgListItem> getArgs() {
+		return mFal.falis;
 	}
 
-	public TypeName returnType() {
-		return _returnType;
+	@Override
+	public Context getContext() {
+		return _ctx;
 	}
 
-	public void setReturnType(final TypeName tn) {
-		_returnType = tn;
+	/****** FOR IEXPRESSION ******/
+	@Override
+	public ExpressionKind getKind() {
+		return ExpressionKind.FUNC_EXPR;
 	}
 
 //	public List<FunctionItem> getItems() {
@@ -51,8 +54,8 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 //	}
 
 	@Override
-	public List<FormalArgListItem> getArgs() {
-		return mFal.falis;
+	public IExpression getLeft() {
+		return null;
 	}
 
 	@Override
@@ -63,71 +66,68 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 
 	// region arglist
 
-	@Override
-	public Context getContext() {
-		return _ctx;
+	public Scope3 getScope() {
+		return scope3;
 	}
 
-	public void setContext(final FuncExprContext ctx) {
-		_ctx = ctx;
+	@Override
+	public OS_Type getType() {
+		return _type;
 	}
 
 	// endregion
+
+	@Override
+	public boolean is_simple() {
+		return false;
+	}
 
 	@Override
 	public void postConstruct() {
 		// nop
 	}
 
+	@Override
+	public String repr_() {
+		return null;
+	}
+
+	public TypeName returnType() {
+		return _returnType;
+	}
+
 	public void setArgList(final FormalArgList argList) {
 		mFal = argList;
 	}
 
-	/****** FOR IEXPRESSION ******/
-	@Override
-	public ExpressionKind getKind() {
-		return ExpressionKind.FUNC_EXPR;
+	public void setContext(final FuncExprContext ctx) {
+		_ctx = ctx;
 	}
 
 	@Override
 	public void setKind(final ExpressionKind aKind) {
 		throw new NotImplementedException();
-	}
-
-	@Override
-	public IExpression getLeft() {
-		return null;
-	}
-
-	@Override
+	}	@Override
 	public void setLeft(final IExpression iexpression) {
 		throw new NotImplementedException();
 	}
 
-	@Override
-	public String repr_() {
-		return null;
+	public void setReturnType(final TypeName tn) {
+		_returnType = tn;
 	}	/************* FOR THE OTHER ONE ******************/
 	@Override
 	public void setType(final OS_Type deducedExpression) {
 		_type = deducedExpression;
 	}
 
-	@Override
-	public boolean is_simple() {
-		return false;
-	}	@Override
-	public OS_Type getType() {
-		return _type;
+	public void type(final TypeModifiers modifier) {
+		assert modifier == TypeModifiers.FUNCTION ||
+		  modifier == TypeModifiers.PROCEDURE;
 	}
 
 	@Override
 	public void visitGen(final ElElementVisitor visit) {
 		visit.visitFuncExpr(this);
-	}
-
-	public Scope3 getScope() {
-		return scope3;
 	}
 
 

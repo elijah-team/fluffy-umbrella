@@ -9,9 +9,14 @@
  */
 package tripleo.elijah.stages.deduce.tastic;
 
+import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
+
+import java.util.List;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.ConstructorDef;
@@ -47,15 +52,59 @@ import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.util.ReadySupplier_1;
 
-import java.util.List;
-
-import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
-
 public class FT_FnCallArgs implements ITastic {
-	final @NotNull ElLog LOG;
+	/**
+	 * Created 12/12/21 12:30 AM
+	 */
+	public class DoAssignCall {
+		public static class NullFoundElement extends FoundElement {
+			public NullFoundElement(DeduceTypes2.@NotNull DeduceClient4 dc) {
+				super(dc.getPhase());
+			}
 
+			@Override
+			public void foundElement(final OS_Element e) {
+			}
+
+			@Override
+			public void noFoundElement() {
+
+			}
+		}
+		final          DeduceTypes2.DeduceClient4 dc;
+		final          ErrSink                    errSink;
+		final @NotNull BaseEvaFunction            generatedFunction;
+		final @NotNull         ElLog     LOG;
+
+		private final @NotNull OS_Module module;
+
+		public DoAssignCall(final DeduceTypes2.DeduceClient4 aDeduceClient4,
+							final @NotNull BaseEvaFunction aGeneratedFunction) {
+			dc                = aDeduceClient4;
+			generatedFunction = aGeneratedFunction;
+			//
+			module  = dc.getModule();
+			LOG     = dc.getLOG();
+			errSink = dc.getErrSink();
+		}
+
+		public OS_Module getModule() {
+			return module;
+		}
+	}
+
+	final @NotNull ElLog LOG;
 	final @NotNull DeduceTypes2 deduceTypes2;
+
 	private final  FnCallArgs   fca;
+
+	@Contract(pure = true)
+	public FT_FnCallArgs(final @NotNull DeduceTypes2 aDeduceTypes2, final FnCallArgs aO) {
+		deduceTypes2 = aDeduceTypes2;
+		fca          = aO;
+		//
+		LOG = aDeduceTypes2.LOG;
+	}
 
 	@Override
 	public void do_assign_call(final @NotNull BaseEvaFunction generatedFunction, final @NotNull Context ctx,
@@ -124,14 +173,6 @@ public class FT_FnCallArgs implements ITastic {
 		}
 	}
 
-	@Contract(pure = true)
-	public FT_FnCallArgs(final @NotNull DeduceTypes2 aDeduceTypes2, final FnCallArgs aO) {
-		deduceTypes2 = aDeduceTypes2;
-		fca          = aO;
-		//
-		LOG = aDeduceTypes2.LOG;
-	}
-
 	@Override
 	public void do_assign_call(final @NotNull BaseEvaFunction generatedFunction, final @NotNull Context ctx,
 							   final @NotNull VariableTableEntry vte, final @NotNull Instruction instruction, final OS_Element aName) {
@@ -194,46 +235,6 @@ public class FT_FnCallArgs implements ITastic {
 				}
 			} else if (pte.expression_num instanceof final @NotNull IntegerIA integerIA) {
 				int y = 2;
-			}
-		}
-	}
-
-	/**
-	 * Created 12/12/21 12:30 AM
-	 */
-	public class DoAssignCall {
-		final          DeduceTypes2.DeduceClient4 dc;
-		final          ErrSink                    errSink;
-		final @NotNull BaseEvaFunction            generatedFunction;
-		final @NotNull         ElLog     LOG;
-		private final @NotNull OS_Module module;
-
-		public OS_Module getModule() {
-			return module;
-		}
-
-		public DoAssignCall(final DeduceTypes2.DeduceClient4 aDeduceClient4,
-							final @NotNull BaseEvaFunction aGeneratedFunction) {
-			dc                = aDeduceClient4;
-			generatedFunction = aGeneratedFunction;
-			//
-			module  = dc.getModule();
-			LOG     = dc.getLOG();
-			errSink = dc.getErrSink();
-		}
-
-		public static class NullFoundElement extends FoundElement {
-			public NullFoundElement(DeduceTypes2.@NotNull DeduceClient4 dc) {
-				super(dc.getPhase());
-			}
-
-			@Override
-			public void foundElement(final OS_Element e) {
-			}
-
-			@Override
-			public void noFoundElement() {
-
 			}
 		}
 	}

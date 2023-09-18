@@ -4,10 +4,20 @@
 
 package tripleo.elijah.cef;
 
-import me.friwi.jcefmaven.CefAppBuilder;
-import me.friwi.jcefmaven.CefInitializationException;
-import me.friwi.jcefmaven.MavenCefAppHandlerAdapter;
-import me.friwi.jcefmaven.UnsupportedPlatformException;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+
+import javax.swing.JFrame;
+import javax.swing.JTextField;
+
 import org.cef.CefApp;
 import org.cef.CefApp.CefAppState;
 import org.cef.CefClient;
@@ -17,23 +27,26 @@ import org.cef.browser.CefMessageRouter;
 import org.cef.handler.CefDisplayHandlerAdapter;
 import org.cef.handler.CefFocusHandlerAdapter;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.IOException;
+import me.friwi.jcefmaven.CefAppBuilder;
+import me.friwi.jcefmaven.CefInitializationException;
+import me.friwi.jcefmaven.MavenCefAppHandlerAdapter;
+import me.friwi.jcefmaven.UnsupportedPlatformException;
 
 public class MainFrame extends JFrame {
 	private static final long       serialVersionUID = -5570653778104813836L;
+	public static void main(final String[] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
+		//Print some info for the test reports. You can ignore this.
+//        TestReportGenerator.print(args);
+
+		final boolean useOsr = false;
+		new MainFrame("http://localhost:9898/", useOsr, false, args);
+	}
 	private final        JTextField address_;
 	private final        CefApp     cefApp_;
 	private final        CefClient  client_;
 	private final        CefBrowser browser_;
 	private final        Component  browerUI_;
+
 	private              boolean    browserFocus_    = true;
 
 	/**
@@ -180,13 +193,5 @@ public class MainFrame extends JFrame {
 				dispose();
 			}
 		});
-	}
-
-	public static void main(final String[] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
-		//Print some info for the test reports. You can ignore this.
-//        TestReportGenerator.print(args);
-
-		final boolean useOsr = false;
-		new MainFrame("http://localhost:9898/", useOsr, false, args);
 	}
 }

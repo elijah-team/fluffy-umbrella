@@ -18,49 +18,6 @@ import java.util.List;
  * Created 9/6/20 12:06 PM
  */
 public class LibraryStatementPartImpl implements LibraryStatementPart {
-	private String          name;
-	private String          dirName;
-	private List<Directive> dirs = null;
-
-	private CompilerInstructions ci;
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public void setName(final Token i1) {
-		name = i1.getText();
-	}
-
-	@Override
-	public String getDirName() {
-		return dirName;
-	}
-
-	@Override
-	public void setDirName(final Token dirName) {
-		this.dirName = dirName.getText();
-	}
-
-	@Override
-	public void addDirective(final Token token, final IExpression iExpression) {
-		if (dirs == null)
-			dirs = new ArrayList<Directive>();
-		dirs.add(new Directive(token, iExpression));
-	}
-
-	@Override
-	public CompilerInstructions getInstructions() {
-		return ci;
-	}
-
-	@Override
-	public void setInstructions(final CompilerInstructions instructions) {
-		ci = instructions;
-	}
-
 	public class Directive {
 
 		private final IExpression expression;
@@ -70,6 +27,49 @@ public class LibraryStatementPartImpl implements LibraryStatementPart {
 			name       = token_.getText();
 			expression = expression_;
 		}
+	}
+	private String          name;
+	private String          dirName;
+
+	private List<Directive> dirs = null;
+
+	private CompilerInstructions ci;
+
+	@Override
+	public void addDirective(final Token token, final IExpression iExpression) {
+		if (dirs == null)
+			dirs = new ArrayList<Directive>();
+		dirs.add(new Directive(token, iExpression));
+	}
+
+	@Override
+	public String getDirName() {
+		return dirName;
+	}
+
+	@Override
+	public CompilerInstructions getInstructions() {
+		return ci;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public void setDirName(final Token dirName) {
+		this.dirName = dirName.getText();
+	}
+
+	@Override
+	public void setInstructions(final CompilerInstructions instructions) {
+		ci = instructions;
+	}
+
+	@Override
+	public void setName(final Token i1) {
+		name = i1.getText();
 	}
 
 }

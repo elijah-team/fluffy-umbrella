@@ -11,6 +11,7 @@ package tripleo.elijah.stages.gen_fn;
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeducePhase;
@@ -56,6 +57,15 @@ public class WlGenerateClass implements WorkJob {
 		codeRegistrar     = aCodeRegistrar;
 	}
 
+	public EvaClass getResult() {
+		return Result;
+	}
+
+	@Override
+	public boolean isDone() {
+		return _isDone;
+	}
+
 	@Override
 	public void run(final WorkManager aWorkManager) {
 		final DeferredObject<EvaClass, Void, Void> resolvePromise = classInvocation.resolveDeferred();
@@ -84,15 +94,6 @@ public class WlGenerateClass implements WorkJob {
 			throw new NotImplementedException();
 		}
 		_isDone = true;
-	}
-
-	@Override
-	public boolean isDone() {
-		return _isDone;
-	}
-
-	public EvaClass getResult() {
-		return Result;
 	}
 }
 

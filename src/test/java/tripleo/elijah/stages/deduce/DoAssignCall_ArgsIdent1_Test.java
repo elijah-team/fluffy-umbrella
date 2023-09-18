@@ -1,6 +1,15 @@
 package tripleo.elijah.stages.deduce;
 
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.mock;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static tripleo.elijah.util.Helpers.List_of;
+
+import java.util.List;
+
 import org.junit.Test;
+
 import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.PipelineLogic;
@@ -27,11 +36,6 @@ import tripleo.elijah.stages.gen_fn.TypeTableEntry;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
 import tripleo.elijah.stages.instructions.VariableTableType;
 import tripleo.elijah.util.Helpers;
-
-import java.util.List;
-
-import static org.easymock.EasyMock.*;
-import static tripleo.elijah.util.Helpers.List_of;
 
 public class DoAssignCall_ArgsIdent1_Test {
 	/*

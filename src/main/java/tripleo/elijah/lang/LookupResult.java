@@ -18,14 +18,6 @@ public class LookupResult {
 	private final int         level;
 	private final ContextInfo importInfo;
 
-	public LookupResult(final String name, final OS_Element element, final int level, final Context aContext, final ContextInfo aImportInfo) {
-		this.name       = name;
-		this.element    = element;
-		this.level      = level;
-		this.context    = aContext;
-		this.importInfo = aImportInfo;
-	}
-
 	public LookupResult(final String name, final OS_Element element, final int level, final Context aContext) {
 		this.name       = name;
 		this.element    = element;
@@ -34,15 +26,23 @@ public class LookupResult {
 		this.importInfo = null;
 	}
 
+	public LookupResult(final String name, final OS_Element element, final int level, final Context aContext, final ContextInfo aImportInfo) {
+		this.name       = name;
+		this.element    = element;
+		this.level      = level;
+		this.context    = aContext;
+		this.importInfo = aImportInfo;
+	}
+
 	public Context getContext() {
 		return context;
 	}
 
 	/**
-	 * @return the name
+	 * @return the element
 	 */
-	public String getName() {
-		return name;
+	public OS_Element getElement() {
+		return element;
 	}
 
 //	/**
@@ -52,11 +52,8 @@ public class LookupResult {
 //		this.name = name;
 //	}
 
-	/**
-	 * @return the element
-	 */
-	public OS_Element getElement() {
-		return element;
+	public ContextInfo getImportInfo() {
+		return importInfo;
 	}
 
 //	/**
@@ -80,12 +77,15 @@ public class LookupResult {
 //		this.level = level;
 //	}
 
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
 	@Override
 	public String toString() {
 		return String.format("<%s %s %d>", element, name, level);
-	}
-
-	public ContextInfo getImportInfo() {
-		return importInfo;
 	}
 }

@@ -1,7 +1,11 @@
 package tripleo.elijah.stages.gen_c;
 
+import java.util.List;
+import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.deduce.DeduceElement;
@@ -12,9 +16,6 @@ import tripleo.elijah.stages.instructions.Instruction;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.util.Helpers;
-
-import java.util.List;
-import java.util.Map;
 
 public class GCX_FunctionCall_Special {
 	private final GenerateC       gc;

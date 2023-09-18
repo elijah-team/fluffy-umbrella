@@ -69,34 +69,11 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 		setContext(new ClassContext(parentContext, this));
 	}
 
-	@Override
-	public void visitGen(final ElElementVisitor visit) {
-		visit.addClass(this); // TODO visitClass
-	}
-
-	@Override // OS_Element
-	public ClassContext getContext() {
-		return (ClassContext) _a._context;
-	}
-
-	@Override
-	public OS_Element getParent() {
-		return parent;
-	}
-
-	public void setContext(final ClassContext ctx) {
-		_a.setContext(ctx);
-	}
-
-	@Override
-	public String toString() {
-		final String package_name;
-		if (getPackageName() != null && getPackageName()._name != null) {
-			final Qualident package_name_q = getPackageName()._name;
-			package_name = package_name_q.toString();
-		} else
-			package_name = "`'";
-		return String.format("<Class %d %s %s>", _a.getCode(), package_name, getName());
+	@Override // OS_Container
+	public void add(final OS_Element anElement) {
+		if (!(anElement instanceof ClassItem))
+			throw new IllegalStateException(String.format("Cant add %s to ClassStatement", anElement));
+		items.add((ClassItem) anElement);
 	}
 
 	public ConstructorDef addCtor(final IdentExpression aConstructorName) {
@@ -105,46 +82,6 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 
 	public DestructorDef addDtor() {
 		return new DestructorDef(this, getContext());
-	}
-
-	public List<ClassItem> findFunction(final String name) {
-		return items.stream().filter((Predicate<ClassItem>) item -> {
-			if (item instanceof FunctionDef && !(item instanceof ConstructorDef))
-				return ((FunctionDef) item).name().equals(name);
-			return false;
-		}).collect(Collectors.toList());
-	}
-
-	public ClassTypes getType() {
-		return _type;
-	}
-
-	public void setType(final ClassTypes aType) {
-		_type = aType;
-	}
-
-	public void postConstruct() {
-		assert nameToken != null;
-		int destructor_count = 0;
-		for (final ClassItem item : items) {
-			if (item instanceof DestructorDef)
-				destructor_count++;
-		}
-		assert destructor_count == 0 || destructor_count == 1;
-	}
-
-	public IdentExpression getNameNode() {
-		return nameToken;
-	}
-
-	// region inheritance
-
-	public void setInheritance(final ClassInheritance inh) {
-		_inh = inh;
-	}
-
-	public ClassInheritance classInheritance() {
-		return _inh;
 	}
 
 	public @NotNull Iterable<AnnotationPart> annotationIterable() {
@@ -156,65 +93,24 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 		return aps;
 	}
 
-	// endregion
-
-	// region annotations
-
-	public FunctionDef funcDef() {
-		return new FunctionDef(this, getContext());
+	public ClassInheritance classInheritance() {
+		return _inh;
 	}
-
-	// endregion
-
-	// region called from parser
 
 	public DefFunctionDef defFuncDef() {
 		return new DefFunctionDef(this, getContext());
 	}
 
-	public PropertyStatement prop() {
-		final PropertyStatement propertyStatement = new PropertyStatement(this, getContext());
-		add(propertyStatement);
-		return propertyStatement;
+	public List<ClassItem> findFunction(final String name) {
+		return items.stream().filter((Predicate<ClassItem>) item -> {
+			if (item instanceof FunctionDef && !(item instanceof ConstructorDef))
+				return ((FunctionDef) item).name().equals(name);
+			return false;
+		}).collect(Collectors.toList());
 	}
 
-	@Override // OS_Container
-	public void add(final OS_Element anElement) {
-		if (!(anElement instanceof ClassItem))
-			throw new IllegalStateException(String.format("Cant add %s to ClassStatement", anElement));
-		items.add((ClassItem) anElement);
-	}
-
-	public @org.jetbrains.annotations.Nullable TypeAliasStatement typeAlias() {
-		NotImplementedException.raise();
-		return null;
-	}
-
-	public InvariantStatement invariantStatement() {
-		NotImplementedException.raise();
-		return null;
-	}
-
-	public ProgramClosure XXX() {
-		return new ProgramClosure() {
-		};
-	}
-
-	public StatementClosure statementClosure() {
-		return new AbstractStatementClosure(this);
-	}
-
-	// endregion
-
-	public @NotNull List<TypeName> getGenericPart() {
-		if (genericPart == null)
-			return emptyTypeNameList;
-		else
-			return genericPart.p;
-	}
-
-	public void setGenericPart(final TypeNameList genericPart) {
-		this.genericPart = genericPart;
+	public FunctionDef funcDef() {
+		return new FunctionDef(this, getContext());
 	}
 
 	public Collection<ConstructorDef> getConstructors() {
@@ -233,10 +129,114 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 		});
 	}
 
+	@Override // OS_Element
+	public ClassContext getContext() {
+		return (ClassContext) _a._context;
+	}
+
+	public @NotNull List<TypeName> getGenericPart() {
+		if (genericPart == null)
+			return emptyTypeNameList;
+		else
+			return genericPart.p;
+	}
+
+	public IdentExpression getNameNode() {
+		return nameToken;
+	}
+
+	// region inheritance
+
 	public OS_Type getOS_Type() {
 		if (osType == null)
 			osType = new OS_UserClassType(this);
 		return osType;
+	}
+
+	@Override
+	public OS_Element getParent() {
+		return parent;
+	}
+
+	public ClassTypes getType() {
+		return _type;
+	}
+
+	// endregion
+
+	// region annotations
+
+	public InvariantStatement invariantStatement() {
+		NotImplementedException.raise();
+		return null;
+	}
+
+	// endregion
+
+	// region called from parser
+
+	public void postConstruct() {
+		assert nameToken != null;
+		int destructor_count = 0;
+		for (final ClassItem item : items) {
+			if (item instanceof DestructorDef)
+				destructor_count++;
+		}
+		assert destructor_count == 0 || destructor_count == 1;
+	}
+
+	public PropertyStatement prop() {
+		final PropertyStatement propertyStatement = new PropertyStatement(this, getContext());
+		add(propertyStatement);
+		return propertyStatement;
+	}
+
+	public void setContext(final ClassContext ctx) {
+		_a.setContext(ctx);
+	}
+
+	public void setGenericPart(final TypeNameList genericPart) {
+		this.genericPart = genericPart;
+	}
+
+	public void setInheritance(final ClassInheritance inh) {
+		_inh = inh;
+	}
+
+	public void setType(final ClassTypes aType) {
+		_type = aType;
+	}
+
+	public StatementClosure statementClosure() {
+		return new AbstractStatementClosure(this);
+	}
+
+	// endregion
+
+	@Override
+	public String toString() {
+		final String package_name;
+		if (getPackageName() != null && getPackageName()._name != null) {
+			final Qualident package_name_q = getPackageName()._name;
+			package_name = package_name_q.toString();
+		} else
+			package_name = "`'";
+		return String.format("<Class %d %s %s>", _a.getCode(), package_name, getName());
+	}
+
+	public @org.jetbrains.annotations.Nullable TypeAliasStatement typeAlias() {
+		NotImplementedException.raise();
+		return null;
+	}
+
+	@Override
+	public void visitGen(final ElElementVisitor visit) {
+		visit.addClass(this); // TODO visitClass
+	}
+
+	public ProgramClosure XXX() {
+		return new ProgramClosure() {
+		};
 	}
 }
 

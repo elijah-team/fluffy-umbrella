@@ -8,15 +8,16 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+
 import io.reactivex.rxjava3.subjects.ReplaySubject;
 import io.reactivex.rxjava3.subjects.Subject;
-import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.gen_generic.Dependency;
 import tripleo.elijah.util.NotImplementedException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created 6/21/21 11:36 PM
@@ -41,14 +42,9 @@ public abstract class AbstractDependencyTracker implements DependencyTracker {
 	private final List<FunctionInvocation> dependentFunctions = new ArrayList<FunctionInvocation>();
 	private final List<GenType>            dependentTypes     = new ArrayList<GenType>();
 
-	@Override
-	public List<GenType> dependentTypes() {
-		return dependentTypes;
-	}
-
-	@Override
-	public List<FunctionInvocation> dependentFunctions() {
-		return dependentFunctions;
+	public void addDependentFunction(@NotNull final FunctionInvocation aFunction) {
+//		dependentFunctions.add(aFunction);
+		dependentFunctionsSubject.onNext(aFunction);
 	}
 
 	public void addDependentType(@NotNull final GenType aType) {
@@ -56,17 +52,22 @@ public abstract class AbstractDependencyTracker implements DependencyTracker {
 		dependentTypesSubject.onNext(aType);
 	}
 
-	public void addDependentFunction(@NotNull final FunctionInvocation aFunction) {
-//		dependentFunctions.add(aFunction);
-		dependentFunctionsSubject.onNext(aFunction);
-	}
-
-	public Subject<GenType> dependentTypesSubject() {
-		return dependentTypesSubject;
+	@Override
+	public List<FunctionInvocation> dependentFunctions() {
+		return dependentFunctions;
 	}
 
 	public Subject<FunctionInvocation> dependentFunctionSubject() {
 		return dependentFunctionsSubject;
+	}
+
+	@Override
+	public List<GenType> dependentTypes() {
+		return dependentTypes;
+	}
+
+	public Subject<GenType> dependentTypesSubject() {
+		return dependentTypesSubject;
 	}
 
 	public void noteDependencies(final Dependency aDependency) {

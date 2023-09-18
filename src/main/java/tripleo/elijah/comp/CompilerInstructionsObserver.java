@@ -22,8 +22,13 @@ public class CompilerInstructionsObserver implements Observer<CompilerInstructio
 	}
 
 	@Override
-	public void onSubscribe(@NonNull final Disposable d) {
+	public void onComplete() {
+		throw new RuntimeException();
+	}
 
+	@Override
+	public void onError(@NonNull final Throwable e) {
+		NotImplementedException.raise();
 	}
 
 	@Override
@@ -33,12 +38,7 @@ public class CompilerInstructionsObserver implements Observer<CompilerInstructio
 	}
 
 	@Override
-	public void onError(@NonNull final Throwable e) {
-		NotImplementedException.raise();
-	}
+	public void onSubscribe(@NonNull final Disposable d) {
 
-	@Override
-	public void onComplete() {
-		throw new RuntimeException();
 	}
 }

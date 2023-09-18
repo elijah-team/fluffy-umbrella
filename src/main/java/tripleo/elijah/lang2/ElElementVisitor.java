@@ -8,7 +8,7 @@ public interface ElElementVisitor {
 
 	void addClass(ClassStatement klass);
 
-	void addModule(OS_Module module);
+	void addFunctionItem(FunctionItem element);
 
 //	private void addModuleItem(ModuleItem element) ;
 
@@ -16,19 +16,23 @@ public interface ElElementVisitor {
 
 //	private void addClassItem(ClassItem element) ;
 
-	void addFunctionItem(FunctionItem element);
-
-	void visitAliasStatement(AliasStatement aAliasStatement);
+	void addModule(OS_Module module);
 
 	void visitAccessNotation(AccessNotation aAccessNotation);
+
+	void visitAliasStatement(AliasStatement aAliasStatement);
 
 	void visitCaseConditional(CaseConditional aCaseConditional);
 
 	void visitCaseScope(CaseConditional.CaseScope aCaseScope);
 
-	void visitTypeNameElement(ClassContext.OS_TypeNameElement aOS_typeNameElement);
+	void visitConstructorDef(ConstructorDef aConstructorDef);
 
 	void visitConstructStatement(ConstructStatement aConstructExpression);
+
+	void visitDefFunction(DefFunctionDef aDefFunctionDef);
+
+	void visitDestructor(DestructorDef aDestructorDef);
 
 	void visitFormalArgListItem(FormalArgListItem aFormalArgListItem);
 
@@ -40,9 +44,9 @@ public interface ElElementVisitor {
 
 	void visitIfConditional(IfConditional aIfConditional);
 
-	void visitLoop(Loop aLoop);
-
 	void visitImportStatment(ImportStatement aImportStatement);
+
+	void visitLoop(Loop aLoop);
 
 	void visitMatchConditional(MatchConditional aMatchConditional);
 
@@ -58,19 +62,15 @@ public interface ElElementVisitor {
 
 	void visitTypeAlias(TypeAliasStatement aTypeAliasStatement);
 
-	void visitVariableSequence(VariableSequence aVariableSequence);
+	void visitTypeNameElement(ClassContext.OS_TypeNameElement aOS_typeNameElement);
 
-	void visitWithStatement(WithStatement aWithStatement);
+	void visitVariableSequence(VariableSequence aVariableSequence);
 
 	void visitVariableStatement(VariableStatement aVariableStatement);
 
+	void visitWithStatement(WithStatement aWithStatement);
+
 	void visitYield(YieldExpression aYieldExpression);
-
-	void visitConstructorDef(ConstructorDef aConstructorDef);
-
-	void visitDefFunction(DefFunctionDef aDefFunctionDef);
-
-	void visitDestructor(DestructorDef aDestructorDef);
 
 	// return, continue, next
 }

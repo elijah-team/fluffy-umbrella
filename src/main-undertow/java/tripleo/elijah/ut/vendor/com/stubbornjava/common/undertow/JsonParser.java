@@ -1,6 +1,7 @@
 package tripleo.elijah.ut.vendor.com.stubbornjava.common.undertow;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+
 import io.undertow.server.HttpServerExchange;
 import tripleo.elijah.ut.vendor.com.stubbornjava.common.Json;
 

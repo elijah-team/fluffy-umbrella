@@ -32,9 +32,8 @@ public class DeduceElement3_ConstantTableEntry implements IDeduceElement3 {
 		principal = aConstantTableEntry;
 	}
 
-	@Override
-	public DeduceTypes2 deduceTypes2() {
-		return deduceTypes2;
+	private DeduceTypes2Injector _inj() {
+		return deduceTypes2()._inj();
 	}
 
 //	@Override
@@ -42,8 +41,9 @@ public class DeduceElement3_ConstantTableEntry implements IDeduceElement3 {
 //		return new DED_CTE(principal);
 //	}
 
-	private DeduceTypes2Injector _inj() {
-		return deduceTypes2()._inj();
+	@Override
+	public DeduceTypes2 deduceTypes2() {
+		return deduceTypes2;
 	}
 
 	@Override
@@ -67,6 +67,11 @@ public class DeduceElement3_ConstantTableEntry implements IDeduceElement3 {
 	}
 
 	@Override
+	public void mvState(final State aO, final State aCheckEvaClassVarTable) {
+
+	}
+
+	@Override
 	public void resolve(final Context aContext, final DeduceTypes2 aDeduceTypes2) {
 		//		deduceTypes2.resolveIdentIA_(aContext, aIdentIA, generatedFunction, aFoundElement);
 		throw new NotImplementedException();
@@ -78,11 +83,6 @@ public class DeduceElement3_ConstantTableEntry implements IDeduceElement3 {
 	public void resolve(final @NotNull IdentIA aIdentIA, final @NotNull Context aContext, final @NotNull FoundElement aFoundElement) {
 		// FoundElement is the "disease"
 		deduceTypes2.resolveIdentIA_(aContext, aIdentIA, generatedFunction, aFoundElement);
-	}
-
-	@Override
-	public void mvState(final State aO, final State aCheckEvaClassVarTable) {
-
 	}
 
 }

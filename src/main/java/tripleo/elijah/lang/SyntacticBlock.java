@@ -36,22 +36,20 @@ public class SyntacticBlock implements OS_Element, OS_Container, FunctionItem, S
 	}
 
 	@Override
-	public void visitGen(final @NotNull ElElementVisitor visit) {
-		visit.visitSyntacticBlock(this);
+	public void add(final OS_Element anElement) {
+		if (!(anElement instanceof FunctionItem))
+			return; // TODO throw?
+		scope3.add(anElement);
+	}
+
+	@Override
+	public void addDocString(final Token s1) {
+		scope3.addDocString(s1);
 	}
 
 	@Override
 	public Context getContext() {
 		return ctx;
-	}
-
-	@Override
-	public OS_Element getParent() {
-		return _parent;
-	}
-
-	public void setContext(final SyntacticBlockContext ctx) {
-		this.ctx = ctx;
 	}
 
 	public List<FunctionItem> getItems() {
@@ -64,7 +62,9 @@ public class SyntacticBlock implements OS_Element, OS_Container, FunctionItem, S
 		//return _items;
 	}
 
-	public void postConstruct() {
+	@Override
+	public OS_Element getParent() {
+		return _parent;
 	}
 
 	@Override
@@ -85,20 +85,20 @@ public class SyntacticBlock implements OS_Element, OS_Container, FunctionItem, S
 		return new ArrayList<OS_Element2>(c);
 	}
 
-	@Override
-	public void add(final OS_Element anElement) {
-		if (!(anElement instanceof FunctionItem))
-			return; // TODO throw?
-		scope3.add(anElement);
-	}
-
-	@Override
-	public void addDocString(final Token s1) {
-		scope3.addDocString(s1);
+	public void postConstruct() {
 	}
 
 	public void scope(final Scope3 sco) {
 		scope3 = sco;
+	}
+
+	public void setContext(final SyntacticBlockContext ctx) {
+		this.ctx = ctx;
+	}
+
+	@Override
+	public void visitGen(final @NotNull ElElementVisitor visit) {
+		visit.visitSyntacticBlock(this);
 	}
 
 }

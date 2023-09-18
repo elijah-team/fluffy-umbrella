@@ -9,9 +9,9 @@
 package tripleo.elijah.lang;
 
 public abstract class ProgramClosure {
-	public ClassStatement classStatement(final OS_Element aParent, final Context ctx) {
-		final ClassStatement classStatement = new ClassStatement(aParent, ctx);
-		return classStatement;
+	public AliasStatement aliasStatement(final OS_Element aParent) {
+		final AliasStatement aliasStatement = new AliasStatement(aParent);
+		return aliasStatement;
 	}
 
 //	public ImportStatement importStatement(OS_Element aParent) {
@@ -19,14 +19,14 @@ public abstract class ProgramClosure {
 //		return importStatement;
 //	}
 
+	public ClassStatement classStatement(final OS_Element aParent, final Context ctx) {
+		final ClassStatement classStatement = new ClassStatement(aParent, ctx);
+		return classStatement;
+	}
+
 	public NamespaceStatement namespaceStatement(final OS_Element aParent, final Context ctx) {
 		final NamespaceStatement namespaceStatement = new NamespaceStatement(aParent, ctx);
 		return namespaceStatement;
-	}
-
-	public AliasStatement aliasStatement(final OS_Element aParent) {
-		final AliasStatement aliasStatement = new AliasStatement(aParent);
-		return aliasStatement;
 	}
 
 }

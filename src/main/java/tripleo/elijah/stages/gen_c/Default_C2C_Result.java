@@ -1,6 +1,7 @@
 package tripleo.elijah.stages.gen_c;
 
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.outputstatement.EG_Statement;
 import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
@@ -32,6 +33,11 @@ class Default_C2C_Result implements C2C_Result {
 	}
 
 	@Override
+	public OS_Module getDefinedModule() {
+		return module;
+	}
+
+	@Override
 	public @NotNull EG_Statement getStatement() {
 		if (!_calculated) {
 			_my_statement = EG_Statement.of(buffer.getText(), EX_Explanation.withMessage(explanation_message));
@@ -41,17 +47,12 @@ class Default_C2C_Result implements C2C_Result {
 	}
 
 	@Override
-	public Old_GenerateResult.TY ty() {
-		return _ty;
-	}
-
-	@Override
-	public OS_Module getDefinedModule() {
-		return module;
-	}
-
-	@Override
 	public WhyNotGarish_BaseFunction getWhyNotGarishFunction() {
 		return whyNotGarishFunction;
+	}
+
+	@Override
+	public Old_GenerateResult.TY ty() {
+		return _ty;
 	}
 }

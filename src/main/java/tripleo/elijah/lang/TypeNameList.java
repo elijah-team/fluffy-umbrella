@@ -29,6 +29,10 @@ public class TypeNameList {
 		return p.get(index);
 	}
 
+	public List<TypeName> p() {
+		return p;
+	}
+
 	public int size() {
 		return p.size();
 	}
@@ -43,10 +47,6 @@ public class TypeNameList {
 				return input.toString();
 			}
 		}));
-	}
-
-	public List<TypeName> p() {
-		return p;
 	}
 }
 

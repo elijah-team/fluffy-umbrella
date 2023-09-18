@@ -52,84 +52,59 @@ import java.util.Random;
 
 public abstract class Compilation {
 
-	public final  List<ElLog>          elLogs = new LinkedList<ElLog>();
-	public final CompilationConfig cfg   = new CompilationConfig();
-	public final CIS               _cis  = new CIS();
-	//
-	public final DefaultLivingRepo _repo = new DefaultLivingRepo();
-	//
-	final         MOD                  mod    = new MOD(this);
-	private final Pipeline             pipelines;
-	private final int                  _compilationNumber;
-	private final ErrSink              errSink;
-	private final IO                   io;
-	private final USE                  use    = new USE(this);
-	//
-	//
-	//
-	public        PipelineLogic        pipelineLogic;
-	public        CompilationRunner    __cr;
-	private       CompilerInstructions rootCI;
-	private final   CompFactory                       _con    = new CompFactory() {
-		@Override
-		public @NotNull EIT_ModuleInput createModuleInput(final OS_Module aModule) {
-			return new EIT_ModuleInput(aModule, Compilation.this);
+	public static class CIS {
+		private final ObservableCompletableProcess<CompilerInstructions> ocp = new ObservableCompletableProcess<>();
+		private       CompilerInstructionsObserver                       _cio;
+
+		public void almostComplete() {
+			ocp.almostComplete();
 		}
 
-		@Override
-		public @NotNull Qualident createQualident(final @NotNull List<String> sl) {
-			var R = new Qualident();
-			for (String s : sl) {
-				R.append(Helpers.string_to_ident(s));
-			}
-			return R;
+//		@Override
+		public void onComplete() {
+			ocp.onComplete();
 		}
 
-		@Override
-		public @NotNull InputRequest createInputRequest(final File aFile, final boolean aDo_out, final @Nullable LibraryStatementPart aLsp) {
-			return new InputRequest(aFile, aDo_out, aLsp);
+//		@Override
+		public void onError(@NonNull final Throwable e) {
+			ocp.onError(e);
 		}
 
-		@Override
-		public @NotNull WorldModule createWorldModule(final OS_Module m) {
-			CompilationEnclosure ce = getCompilationEnclosure();
-			final WorldModule    R  = new DefaultWorldModule(m, ce);
-			return R;
+//		@Override
+		public void onNext(@NonNull final CompilerInstructions aCompilerInstructions) {
+			ocp.onNext(aCompilerInstructions);
 		}
-	};
 
-	private final Finally      _f;
-	private final Finally.Flow _flow;
-	private       LivingRepo _world;
+		public void onSubscribe(@NonNull final Disposable d) {
+			ocp.onSubscribe(d);
+		}
 
-	private final CompilationEnclosure ce = new CompilationEnclosure(this);
+		public void set_cio(final CompilerInstructionsObserver aCompilerInstructionsObserver) {
+			_cio = aCompilerInstructionsObserver;
+		}
 
-	public CompilationEnclosure getCompilationEnclosure() {
-		return ce;
+		public void subscribe(final CompletableProcess<CompilerInstructions> aCompletableProcess) {
+			ocp.subscribe(aCompletableProcess);
+		}
+
+		public void subscribe(final Observer<CompilerInstructions> aCio) {
+			ocp.subscribe(aCio);
+		}
 	}
-
-
-	public Compilation(final @NotNull ErrSink aErrSink, final IO aIO) {
-		errSink            = aErrSink;
-		io                 = aIO;
-		_compilationNumber = new Random().nextInt(Integer.MAX_VALUE);
-		pipelines          = new Pipeline(aErrSink);
-
-		_f                 = new Finally();
-		_flow              = _f.flow();
+	public static class CompilationAlways {
+		public static @NotNull String defaultPrelude() {
+			return "c";
+		}
 	}
-
-	public static ElLog.Verbosity gitlabCIVerbosity() {
-		final boolean gitlab_ci = isGitlab_ci();
-		return gitlab_ci ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
+	//
+	//
+	//
+	static class CompilationConfig {
+		public    boolean do_out;
+		public    Stages  stage  = Stages.O; // Output
+		protected boolean silent = false;
+		boolean showTree = false;
 	}
-
-	public static boolean isGitlab_ci() {
-		return System.getenv("GITLAB_CI") != null;
-	}
-
-	final InstructionDoer id = new InstructionDoer();
-
 	class InstructionDoer implements CompletableProcess<CompilerInstructions> {
 		CompilerInstructions root;
 
@@ -170,6 +145,129 @@ public abstract class Compilation {
 			System.err.println("InstructionDoer::start");
 		}
 	}
+	static class MOD {
+		final         List<OS_Module>        modules = new ArrayList<OS_Module>();
+		private final Map<String, OS_Module> fn2m    = new HashMap<String, OS_Module>();
+		private final Compilation            c;
+
+		public MOD(final Compilation aCompilation) {
+			c = aCompilation;
+		}
+
+		public void addModule(final OS_Module module, final String fn) {
+			modules.add(module);
+			fn2m.put(fn, module);
+
+			System.err.println("338 "+module.getFileName());
+			c.reports().addInput(module::getFileName, Finally.Out2.ELIJAH);
+		}
+
+		public List<OS_Module> modules() {
+			return modules;
+		}
+
+		public int size() {
+			return modules.size();
+		}
+	}
+	public static ElLog.Verbosity gitlabCIVerbosity() {
+		final boolean gitlab_ci = isGitlab_ci();
+		return gitlab_ci ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
+	}
+	public static boolean isGitlab_ci() {
+		return System.getenv("GITLAB_CI") != null;
+	}
+	public final  List<ElLog>          elLogs = new LinkedList<ElLog>();
+	public final CompilationConfig cfg   = new CompilationConfig();
+	public final CIS               _cis  = new CIS();
+	//
+	public final DefaultLivingRepo _repo = new DefaultLivingRepo();
+	//
+	final         MOD                  mod    = new MOD(this);
+	private final Pipeline             pipelines;
+	private final int                  _compilationNumber;
+
+	private final ErrSink              errSink;
+	private final IO                   io;
+	private final USE                  use    = new USE(this);
+
+	//
+	//
+	//
+	public        PipelineLogic        pipelineLogic;
+
+	public        CompilationRunner    __cr;
+
+
+	private       CompilerInstructions rootCI;
+
+	private final   CompFactory                       _con    = new CompFactory() {
+		@Override
+		public @NotNull InputRequest createInputRequest(final File aFile, final boolean aDo_out, final @Nullable LibraryStatementPart aLsp) {
+			return new InputRequest(aFile, aDo_out, aLsp);
+		}
+
+		@Override
+		public @NotNull EIT_ModuleInput createModuleInput(final OS_Module aModule) {
+			return new EIT_ModuleInput(aModule, Compilation.this);
+		}
+
+		@Override
+		public @NotNull Qualident createQualident(final @NotNull List<String> sl) {
+			var R = new Qualident();
+			for (String s : sl) {
+				R.append(Helpers.string_to_ident(s));
+			}
+			return R;
+		}
+
+		@Override
+		public @NotNull WorldModule createWorldModule(final OS_Module m) {
+			CompilationEnclosure ce = getCompilationEnclosure();
+			final WorldModule    R  = new DefaultWorldModule(m, ce);
+			return R;
+		}
+	};
+
+	private final Finally      _f;
+
+	private final Finally.Flow _flow;
+
+	private       LivingRepo _world;
+
+	private final CompilationEnclosure ce = new CompilationEnclosure(this);
+
+	final InstructionDoer id = new InstructionDoer();
+
+	public Compilation(final @NotNull ErrSink aErrSink, final IO aIO) {
+		errSink            = aErrSink;
+		io                 = aIO;
+		_compilationNumber = new Random().nextInt(Integer.MAX_VALUE);
+		pipelines          = new Pipeline(aErrSink);
+
+		_f                 = new Finally();
+		_flow              = _f.flow();
+	}
+
+	public void addFunctionMapHook(final FunctionMapHook aFunctionMapHook) {
+		getDeducePhase().addFunctionMapHook(aFunctionMapHook);
+	}
+
+	//
+	//
+	//
+
+	public void addModule(final OS_Module module, final String fn) {
+		mod.addModule(module, fn);
+	}
+
+	public int compilationNumber() {
+		return _compilationNumber;
+	}
+
+	public int errorCount() {
+		return errSink.errorCount();
+	}
 
 	public void feedCmdLine(final @NotNull List<String> args) {
 		feedCmdLine(args, new DefaultCompilerController());
@@ -191,20 +289,15 @@ public abstract class Compilation {
 		ctl.runner();
 	}
 
-	public String getProjectName() {
-		return rootCI.getName();
-	}
+//	public void setIO(final IO io) {
+//		this.io = io;
+//	}
 
-	public OS_Module realParseElijjahFile(final String f, final @NotNull File file, final boolean do_out) throws Exception {
-		return use.realParseElijjahFile(f, file, do_out).success();
-	}
-
-	//
-	//
-	//
-
-	public void pushItem(final CompilerInstructions aci) {
-		_cis.onNext(aci);
+	public OS_Module fileNameToModule(final String fileName) {
+		if (mod.fn2m.containsKey(fileName)) {
+			return mod.fn2m.get(fileName);
+		}
+		return null;
 	}
 
 	public List<ClassStatement> findClass(final String string) {
@@ -217,12 +310,122 @@ public abstract class Compilation {
 		return l;
 	}
 
+	//
+	// region MODULE STUFF
+	//
+
+	public Operation2<OS_Module> findPrelude(final String prelude_name) {
+		return use.findPrelude(prelude_name);
+	}
+
+	public Finally.Flow flow() {
+		return _flow;
+	}
+
+	// endregion
+
+	//
+	// region CLASS AND FUNCTION CODES
+	//
+
+	public CompilationEnclosure getCompilationEnclosure() {
+		return ce;
+	}
+
+	public String getCompilationNumberString() {
+		return String.format("%08x", _compilationNumber);
+	}
+
+	public @NotNull DeducePhase getDeducePhase() {
+		// TODO subscribeDeducePhase??
+		return pipelineLogic.dp;
+	}
+
+	public ErrSink getErrSink() {
+		return errSink;
+	}
+
+	public abstract @NotNull FluffyComp getFluffy();
+
+	// endregion
+
+	//
+	// region PACKAGES
+	//
+
+	public IO getIO() {
+		return io;
+	}
+
+	public @NotNull List<EvaNode> getLGC() {
+		return getDeducePhase().generatedClasses.copy();
+	}
+
+	// endregion
+
+	public abstract @NotNull EOT_OutputTree getOutputTree();
+
+	public OS_Package getPackage(final Qualident pkg_name) {
+		return _repo.getPackage(pkg_name.toString());
+	}
+
+	public Pipeline getPipelines() {
+		return pipelines;
+	}
+
+	public String getProjectName() {
+		return rootCI.getName();
+	}
+
+	public boolean getSilence() {
+		return cfg.silent;
+	}
+
+	public boolean isPackage(final String aPackageName) {
+		return _repo.isPackage(aPackageName);
+	}
+
+	public OS_Package makePackage(final Qualident pkg_name) {
+		return _repo.makePackage(pkg_name);
+	}
+
+	public ModuleBuilder moduleBuilder() {
+		return new ModuleBuilder(this);
+	}
+
+	@Deprecated
+	public int modules_size() {
+		return mod.size();
+	}
+
+	public int nextClassCode() {
+		return _repo.nextClassCode();
+	}
+
+	public int nextFunctionCode() {
+		return _repo.nextFunctionCode();
+	}
+
+	public void pushItem(final CompilerInstructions aci) {
+		_cis.onNext(aci);
+	}
+
+	public OS_Module realParseElijjahFile(final String f, final @NotNull File file, final boolean do_out) throws Exception {
+		return use.realParseElijjahFile(f, file, do_out).success();
+	}
+
+	public Finally reports() {
+		return _f;
+	}
+
 	public void use(final @NotNull CompilerInstructions compilerInstructions, final boolean do_out) throws Exception {
 		use.use(compilerInstructions, do_out);    // NOTE Rust
 	}
 
-	public int errorCount() {
-		return errSink.errorCount();
+	public LivingRepo world() {
+		if (_world == null)
+			_world = new DefaultLivingRepo();
+		return _world;
 	}
 
 	void writeLogs(final boolean aSilent, final @NotNull List<ElLog> aLogs) {
@@ -235,209 +438,6 @@ public abstract class Compilation {
 				final F202 f202 = new F202(getErrSink(), this);
 				f202.processLogs(stringCollectionEntry.getValue());
 			}
-		}
-	}
-
-//	public void setIO(final IO io) {
-//		this.io = io;
-//	}
-
-	public ErrSink getErrSink() {
-		return errSink;
-	}
-
-	public IO getIO() {
-		return io;
-	}
-
-	//
-	// region MODULE STUFF
-	//
-
-	public void addModule(final OS_Module module, final String fn) {
-		mod.addModule(module, fn);
-	}
-
-	public OS_Module fileNameToModule(final String fileName) {
-		if (mod.fn2m.containsKey(fileName)) {
-			return mod.fn2m.get(fileName);
-		}
-		return null;
-	}
-
-	// endregion
-
-	//
-	// region CLASS AND FUNCTION CODES
-	//
-
-	public boolean getSilence() {
-		return cfg.silent;
-	}
-
-	public Operation2<OS_Module> findPrelude(final String prelude_name) {
-		return use.findPrelude(prelude_name);
-	}
-
-	public void addFunctionMapHook(final FunctionMapHook aFunctionMapHook) {
-		getDeducePhase().addFunctionMapHook(aFunctionMapHook);
-	}
-
-	public @NotNull DeducePhase getDeducePhase() {
-		// TODO subscribeDeducePhase??
-		return pipelineLogic.dp;
-	}
-
-	public int nextClassCode() {
-		return _repo.nextClassCode();
-	}
-
-	// endregion
-
-	//
-	// region PACKAGES
-	//
-
-	public int nextFunctionCode() {
-		return _repo.nextFunctionCode();
-	}
-
-	public OS_Package getPackage(final Qualident pkg_name) {
-		return _repo.getPackage(pkg_name.toString());
-	}
-
-	// endregion
-
-	public OS_Package makePackage(final Qualident pkg_name) {
-		return _repo.makePackage(pkg_name);
-	}
-
-	public int compilationNumber() {
-		return _compilationNumber;
-	}
-
-	public String getCompilationNumberString() {
-		return String.format("%08x", _compilationNumber);
-	}
-
-	@Deprecated
-	public int modules_size() {
-		return mod.size();
-	}
-
-	public abstract @NotNull EOT_OutputTree getOutputTree();
-
-	public abstract @NotNull FluffyComp getFluffy();
-
-	public @NotNull List<EvaNode> getLGC() {
-		return getDeducePhase().generatedClasses.copy();
-	}
-
-	public boolean isPackage(final String aPackageName) {
-		return _repo.isPackage(aPackageName);
-	}
-
-	public Pipeline getPipelines() {
-		return pipelines;
-	}
-
-	public ModuleBuilder moduleBuilder() {
-		return new ModuleBuilder(this);
-	}
-
-	public Finally reports() {
-		return _f;
-	}
-
-	public Finally.Flow flow() {
-		return _flow;
-	}
-
-	public LivingRepo world() {
-		if (_world == null)
-			_world = new DefaultLivingRepo();
-		return _world;
-	}
-
-	static class MOD {
-		final         List<OS_Module>        modules = new ArrayList<OS_Module>();
-		private final Map<String, OS_Module> fn2m    = new HashMap<String, OS_Module>();
-		private final Compilation            c;
-
-		public MOD(final Compilation aCompilation) {
-			c = aCompilation;
-		}
-
-		public void addModule(final OS_Module module, final String fn) {
-			modules.add(module);
-			fn2m.put(fn, module);
-
-			System.err.println("338 "+module.getFileName());
-			c.reports().addInput(module::getFileName, Finally.Out2.ELIJAH);
-		}
-
-		public int size() {
-			return modules.size();
-		}
-
-		public List<OS_Module> modules() {
-			return modules;
-		}
-	}
-
-	//
-	//
-	//
-	static class CompilationConfig {
-		public    boolean do_out;
-		public    Stages  stage  = Stages.O; // Output
-		protected boolean silent = false;
-		boolean showTree = false;
-	}
-
-	public static class CIS {
-		private final ObservableCompletableProcess<CompilerInstructions> ocp = new ObservableCompletableProcess<>();
-		private       CompilerInstructionsObserver                       _cio;
-
-		public void onSubscribe(@NonNull final Disposable d) {
-			ocp.onSubscribe(d);
-		}
-
-//		@Override
-		public void onNext(@NonNull final CompilerInstructions aCompilerInstructions) {
-			ocp.onNext(aCompilerInstructions);
-		}
-
-//		@Override
-		public void onError(@NonNull final Throwable e) {
-			ocp.onError(e);
-		}
-
-//		@Override
-		public void onComplete() {
-			ocp.onComplete();
-		}
-
-		public void almostComplete() {
-			ocp.almostComplete();
-		}
-
-		public void subscribe(final Observer<CompilerInstructions> aCio) {
-			ocp.subscribe(aCio);
-		}
-
-		public void subscribe(final CompletableProcess<CompilerInstructions> aCompletableProcess) {
-			ocp.subscribe(aCompletableProcess);
-		}
-
-		public void set_cio(final CompilerInstructionsObserver aCompilerInstructionsObserver) {
-			_cio = aCompilerInstructionsObserver;
-		}
-	}
-
-	public static class CompilationAlways {
-		public static @NotNull String defaultPrelude() {
-			return "c";
 		}
 	}
 }

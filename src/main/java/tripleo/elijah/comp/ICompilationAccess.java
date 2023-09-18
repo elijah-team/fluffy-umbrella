@@ -8,15 +8,15 @@ import java.util.List;
 public interface ICompilationAccess {
 //	void addPipeline(final PipelineMember pl);
 
-	ElLog.Verbosity testSilence();
+	List<IFunctionMapHook> functionMapHooks();
 
 	Compilation getCompilation();
 
-	void writeLogs();
+	Stages getStage();
 
-	List<IFunctionMapHook> functionMapHooks();
+	ElLog.Verbosity testSilence();
 
 //	Pipeline pipelines();
 
-	Stages getStage();
+	void writeLogs();
 }

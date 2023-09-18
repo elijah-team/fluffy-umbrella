@@ -36,24 +36,19 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 	private VariableSequence         vsq;
 	private YieldExpression          yiex;
 
-	public AbstractStatementClosure(final Scope aParent) {
-		// TODO doesn't set _parent
-		parent_scope = aParent;
-	}
-
 	public AbstractStatementClosure(final ClassStatement classStatement) {
 		// TODO check final member
 		_parent      = classStatement;
 		parent_scope = new AbstractScope2(_parent) {
 
 			@Override
-			public void addDocString(final Token s1) {
-				classStatement.addDocString(s1);
+			public void add(final StatementItem aItem) {
+				classStatement.add((ClassItem) aItem);
 			}
 
 			@Override
-			public void add(final StatementItem aItem) {
-				classStatement.add((ClassItem) aItem);
+			public void addDocString(final Token s1) {
+				classStatement.addDocString(s1);
 			}
 
 			@Override
@@ -64,31 +59,34 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 		};
 	}
 
+	public AbstractStatementClosure(final Scope aParent) {
+		// TODO doesn't set _parent
+		parent_scope = aParent;
+	}
+
 	public AbstractStatementClosure(final Scope scope, final OS_Element parent1) {
 		parent_scope = scope;
 		_parent      = parent1;
 	}
 
-	@Override
-	public VariableSequence varSeq(final Context ctx) {
-		vsq = new VariableSequence(ctx);
-		vsq.setParent(parent_scope.getParent()/*this.getParent()*/); // TODO look at this
-//		vsq.setContext(ctx); //redundant
-		return (VariableSequence) add(vsq);
+	@Contract("_ -> param1")
+	private StatementItem add(final StatementItem aItem) {
+		parent_scope.add(aItem);
+		return aItem;
 	}
 
 	@Override
-	public ProcedureCallExpression procedureCallExpression() {
-		pce = new ProcedureCallExpression();
-		add(new StatementWrapper(pce, getParent().getContext(), getParent()));
-		return pce;
+	public BlockStatement blockClosure() {
+		bs = new BlockStatement(this.parent_scope);
+		add(bs);
+		return bs;
 	}
 
 	@Override
-	public Loop loop() {
-		loop = new Loop(this.parent_scope.getElement());
-		add(loop);
-		return loop;
+	public CaseConditional caseConditional(final Context parentContext) {
+		final CaseConditional caseConditional = new CaseConditional(getParent(), parentContext);
+		add(caseConditional);
+		return caseConditional;
 	}
 
 	@Override
@@ -96,9 +94,8 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 		add(new ConstructStatement(_parent, _parent.getContext(), aExpr, null, aO)); // TODO provide for name
 	}
 
-	@Override
-	public void yield(final IExpression aExpr) {
-		add(new YieldExpression(aExpr));
+	private OS_Element getParent() {
+		return _parent;
 	}
 
 	@Override
@@ -110,23 +107,10 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 	}
 
 	@Override
-	public BlockStatement blockClosure() {
-		bs = new BlockStatement(this.parent_scope);
-		add(bs);
-		return bs;
-	}
-
-	@Contract("_ -> param1")
-	private StatementItem add(final StatementItem aItem) {
-		parent_scope.add(aItem);
-		return aItem;
-	}
-
-	@Override
-	public CaseConditional caseConditional(final Context parentContext) {
-		final CaseConditional caseConditional = new CaseConditional(getParent(), parentContext);
-		add(caseConditional);
-		return caseConditional;
+	public Loop loop() {
+		loop = new Loop(this.parent_scope.getElement());
+		add(loop);
+		return loop;
 	}
 
 	@Override
@@ -137,12 +121,28 @@ public final class AbstractStatementClosure implements StatementClosure, Stateme
 	}
 
 	@Override
+	public ProcedureCallExpression procedureCallExpression() {
+		pce = new ProcedureCallExpression();
+		add(new StatementWrapper(pce, getParent().getContext(), getParent()));
+		return pce;
+	}
+
+	@Override
 	public void statementWrapper(final IExpression expr) {
 		parent_scope.statementWrapper(expr);
 	}
 
-	private OS_Element getParent() {
-		return _parent;
+	@Override
+	public VariableSequence varSeq(final Context ctx) {
+		vsq = new VariableSequence(ctx);
+		vsq.setParent(parent_scope.getParent()/*this.getParent()*/); // TODO look at this
+//		vsq.setContext(ctx); //redundant
+		return (VariableSequence) add(vsq);
+	}
+
+	@Override
+	public void yield(final IExpression aExpr) {
+		add(new YieldExpression(aExpr));
 	}
 }
 

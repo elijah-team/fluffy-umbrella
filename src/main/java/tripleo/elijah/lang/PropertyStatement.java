@@ -35,23 +35,37 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 		this.context = new PropertyStatementContext(cur, this);
 	}
 
-	@Override // OS_Element
-	public void visitGen(final ElElementVisitor visit) {
-		visit.visitPropertyStatement(this);
+	public void addGet() {
+		_get_is_abstract = true;
 	}
 
-	@Override // OS_Element
-	public Context getContext() {
-		return context;
+	public void addSet() {
+		_set_is_abstract = true;
 	}
 
-	@Override // OS_Element
-	public OS_Element getParent() {
-		return parent;
+	@NotNull
+	private FunctionDef createGetFunction() {
+		final FunctionDef functionDef = new FunctionDef(this, getContext());
+		functionDef.setName(Helpers.string_to_ident(String.format("<prop_get %s>", prop_name)));
+		functionDef.setSpecies(FunctionDef.Species.PROP_GET);
+		functionDef.setReturnType(typeName);
+		return functionDef;
 	}
 
-	public void setName(final IdentExpression prop_name) {
-		this.prop_name = prop_name;
+	@NotNull
+	private FunctionDef createSetFunction() {
+		final FunctionDef functionDef = new FunctionDef(this, getContext());
+		functionDef.setName(Helpers.string_to_ident(String.format("<prop_set %s>", prop_name)));
+		functionDef.setSpecies(FunctionDef.Species.PROP_SET);
+		final @NotNull FormalArgList fal  = new FormalArgList();
+		final FormalArgListItem      fali = fal.next();
+		fali.setName(Helpers.string_to_ident("Value"));
+		fali.setTypeName(this.typeName);
+		final RegularTypeName unitType = new RegularTypeName();
+		unitType.setName(Helpers.string_to_qualident("Unit"));
+		functionDef.setReturnType(unitType/*BuiltInTypes.Unit*/);
+		functionDef.setFal(fal);
+		return functionDef;
 	}
 
 //	public TypeName typeName() {
@@ -74,8 +88,32 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 		return get_fn;
 	}
 
-	public FunctionDef set_fn() {
-		return set_fn;
+	public void get_scope(final Scope3 sco) {
+		get_fn.scope(sco);
+	}
+
+	@Override
+	public AccessNotation getAccess() {
+		return access_note;
+	}
+
+	@Override
+	public El_Category getCategory() {
+		return category;
+	}
+
+	@Override // OS_Element
+	public Context getContext() {
+		return context;
+	}
+
+	@Override // OS_Element
+	public OS_Element getParent() {
+		return parent;
+	}
+
+	public TypeName getTypeName() {
+		return typeName;
 	}
 
 	@Override
@@ -83,8 +121,28 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 		return prop_name.getText();
 	}
 
-	public TypeName getTypeName() {
-		return typeName;
+	public FunctionDef set_fn() {
+		return set_fn;
+	}
+
+	// region ClassItem
+
+	public void set_scope(final Scope3 sco) {
+		set_fn.scope(sco);
+	}
+
+	@Override
+	public void setAccess(final AccessNotation aNotation) {
+		access_note = aNotation;
+	}
+
+	@Override
+	public void setCategory(final El_Category aCategory) {
+		category = aCategory;
+	}
+
+	public void setName(final IdentExpression prop_name) {
+		this.prop_name = prop_name;
 	}
 
 	public void setTypeName(final TypeName typeName) {
@@ -94,67 +152,9 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 		this.get_fn   = createGetFunction();
 	}
 
-	@NotNull
-	private FunctionDef createSetFunction() {
-		final FunctionDef functionDef = new FunctionDef(this, getContext());
-		functionDef.setName(Helpers.string_to_ident(String.format("<prop_set %s>", prop_name)));
-		functionDef.setSpecies(FunctionDef.Species.PROP_SET);
-		final @NotNull FormalArgList fal  = new FormalArgList();
-		final FormalArgListItem      fali = fal.next();
-		fali.setName(Helpers.string_to_ident("Value"));
-		fali.setTypeName(this.typeName);
-		final RegularTypeName unitType = new RegularTypeName();
-		unitType.setName(Helpers.string_to_qualident("Unit"));
-		functionDef.setReturnType(unitType/*BuiltInTypes.Unit*/);
-		functionDef.setFal(fal);
-		return functionDef;
-	}
-
-	@NotNull
-	private FunctionDef createGetFunction() {
-		final FunctionDef functionDef = new FunctionDef(this, getContext());
-		functionDef.setName(Helpers.string_to_ident(String.format("<prop_get %s>", prop_name)));
-		functionDef.setSpecies(FunctionDef.Species.PROP_GET);
-		functionDef.setReturnType(typeName);
-		return functionDef;
-	}
-
-	public void addGet() {
-		_get_is_abstract = true;
-	}
-
-	public void addSet() {
-		_set_is_abstract = true;
-	}
-
-	// region ClassItem
-
-	public void get_scope(final Scope3 sco) {
-		get_fn.scope(sco);
-	}
-
-	public void set_scope(final Scope3 sco) {
-		set_fn.scope(sco);
-	}
-
-	@Override
-	public El_Category getCategory() {
-		return category;
-	}
-
-	@Override
-	public void setCategory(final El_Category aCategory) {
-		category = aCategory;
-	}
-
-	@Override
-	public AccessNotation getAccess() {
-		return access_note;
-	}
-
-	@Override
-	public void setAccess(final AccessNotation aNotation) {
-		access_note = aNotation;
+	@Override // OS_Element
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitPropertyStatement(this);
 	}
 
 	// endregion

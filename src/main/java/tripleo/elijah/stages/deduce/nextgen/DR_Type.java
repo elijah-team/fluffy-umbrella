@@ -18,6 +18,10 @@ public class DR_Type {
 		nonGenericTypeName = (RegularTypeName) aNonGenericTypeName;
 	}
 
+	public void addUsage(EN_Usage us) {
+		base.getName().addUsage(us);
+	}
+
 	public void build() {
 		if (null == nonGenericTypeName) {
 			NotImplementedException.raise();
@@ -34,9 +38,5 @@ public class DR_Type {
 		for (TypeName typeName : nonGenericTypeName.getGenericPart().p()) {
 
 		}
-	}
-
-	public void addUsage(EN_Usage us) {
-		base.getName().addUsage(us);
 	}
 }

@@ -20,35 +20,6 @@ import tripleo.elijah.util.NotImplementedException;
 import java.util.function.Supplier;
 
 public interface PostBC_Processor {
-	@Contract("_, _, _ -> new")
-	static @NotNull PostBC_Processor make_VTE(@NotNull final VariableTableEntry aVariableTableEntry, final Context aFd_ctx, final DeduceTypes2.DeduceClient1 aDeduceTypes2) {
-		final OS_Type vte_type_attached = aVariableTableEntry.getType().getAttached();
-
-		switch (aVariableTableEntry.getVtt()) {
-		case SELF:
-			return new PostBC_Processor__VTE_SELF(aVariableTableEntry, aFd_ctx, vte_type_attached, aDeduceTypes2);
-		case RESULT:
-			return new PostBC_Processor__VTE_RESULT(aVariableTableEntry, aFd_ctx, vte_type_attached, aDeduceTypes2);
-		case ARG:
-			return new PostBC_Processor__VTE_ARG(aVariableTableEntry, aFd_ctx, vte_type_attached, aDeduceTypes2);
-		case VAR:
-			return new PostBC_Processor__VTE_VAR(aVariableTableEntry, aFd_ctx, vte_type_attached, aDeduceTypes2);
-		case TEMP:
-			return new PostBC_Processor__VTE_TEMP(aVariableTableEntry, aFd_ctx, vte_type_attached, aDeduceTypes2);
-		default:
-			throw new IllegalStateException("Unexpected value: " + aVariableTableEntry.getVtt());
-		}
-	}
-//}
-
-	Maybe<OS_Type> doHasTypeAttached();
-
-	@Nullable DeduceType3 doNoTypeAttached(final ErrSink errSink1);
-
-	void doSetType(DeduceType3 aDeduceType3, ErrSink aErrSink1);
-
-	Promise<DeduceType3, Diagnostic, Void> getType(final ErrSink aErrSink1);
-
 	abstract class __PostBC_Processor__VTE implements PostBC_Processor {
 		private static @NotNull DeduceType3 doNoTypeAttached__single_potential(final VariableTableEntry vte, final DeduceTypes2.@NotNull DeduceClient1 deduceTypes2) {
 			final OS_Type     attached = deduceTypes2.getPotentialTypesVte(vte).get(0).getAttached();
@@ -60,6 +31,32 @@ public interface PostBC_Processor {
 			// ---------------------- vte.type.setAttached(attached);
 			return r;
 		}
+
+		private static @NotNull DeduceType3 doNoTypeAttached__zero_potential(final @NotNull VariableTableEntry vte, final @NotNull Supplier<CantDecideType> cdt) {
+			// invariant: potential_size == 0
+
+			final DeduceType3 r;
+
+			// TODO why both code paths the same? (evolution??)
+			switch (vte.getVtt()) {
+			case RESULT:
+			case SELF:
+				// Result is handled by phase.typeDecideds, self is always valid
+				r = new DeduceType3(DeduceType3.dispatch(vte), null, cdt.get());
+				break;
+			default:
+				assert vte.getName() != null;
+
+				r = new DeduceType3(DeduceType3.dispatch(vte), null, cdt.get());
+				break;
+			}
+
+			return r;
+		}
+
+		protected abstract Context ctx();
+
+		protected abstract DeduceTypes2.DeduceClient1 deduceTypes2();
 
 		@Override
 		public @Nullable DeduceType3 doNoTypeAttached(final @NotNull ErrSink errSink1) {
@@ -78,42 +75,6 @@ public interface PostBC_Processor {
 				break;
 			default: // potential_size > 1
 				r = doNoTypeAttached__numerous_potential(vte.getDeduceElement3(), cdt, errSink1);
-				break;
-			}
-
-			return r;
-		}
-
-		@Override
-		public void doSetType(final @NotNull DeduceType3 aDeduceType3, final @NotNull ErrSink errSink1) {
-			final VariableTableEntry vte = vte();
-
-			if (aDeduceType3.isException()) {
-				deduceTypes2().LOG_err("703-0000 " + vte.getName() + " " + vte.potentialTypes());
-				aDeduceType3.reportDiagnostic(errSink1);
-			} else {
-				vte.getType().setAttached(aDeduceType3.getGenType());
-			}
-		}
-
-		protected abstract DeduceTypes2.DeduceClient1 deduceTypes2();
-
-		private static @NotNull DeduceType3 doNoTypeAttached__zero_potential(final @NotNull VariableTableEntry vte, final @NotNull Supplier<CantDecideType> cdt) {
-			// invariant: potential_size == 0
-
-			final DeduceType3 r;
-
-			// TODO why both code paths the same? (evolution??)
-			switch (vte.getVtt()) {
-			case RESULT:
-			case SELF:
-				// Result is handled by phase.typeDecideds, self is always valid
-				r = new DeduceType3(DeduceType3.dispatch(vte), null, cdt.get());
-				break;
-			default:
-				assert vte.getName() != null;
-
-				r = new DeduceType3(DeduceType3.dispatch(vte), null, cdt.get());
 				break;
 			}
 
@@ -148,12 +109,22 @@ public interface PostBC_Processor {
 		}
 
 		@Override
+		public void doSetType(final @NotNull DeduceType3 aDeduceType3, final @NotNull ErrSink errSink1) {
+			final VariableTableEntry vte = vte();
+
+			if (aDeduceType3.isException()) {
+				deduceTypes2().LOG_err("703-0000 " + vte.getName() + " " + vte.potentialTypes());
+				aDeduceType3.reportDiagnostic(errSink1);
+			} else {
+				vte.getType().setAttached(aDeduceType3.getGenType());
+			}
+		}
+
+		@Override
 		public Promise<DeduceType3, Diagnostic, Void> getType(final ErrSink aErrSink) {
 			final Promise<DeduceType3, Diagnostic, Void> dty = postBC_getTypeFor_VTE(vte(), ctx(), aErrSink);
 			return dty;
 		}
-
-		protected abstract Context ctx();
 
 		private Promise<DeduceType3, Diagnostic, Void> postBC_getTypeFor_VTE(final @NotNull VariableTableEntry vte, final Context fd_ctx, final ErrSink errSink) {
 			final DeduceType3                r;
@@ -403,6 +374,15 @@ public interface PostBC_Processor {
 //			}
 
 		@Override
+		public @NotNull Maybe<OS_Type> doHasTypeAttached() {
+			final Maybe<OS_Type> r;
+
+			r = new Maybe<>(vte_type_attached, null);
+
+			return r;
+		}
+
+		@Override
 		public DeduceType3 doNoTypeAttached(final ErrSink errSink1) {
 			throw new NotImplementedException();
 		}
@@ -410,15 +390,6 @@ public interface PostBC_Processor {
 		@Override
 		protected VariableTableEntry vte() {
 			return variableTableEntry;
-		}
-
-		@Override
-		public @NotNull Maybe<OS_Type> doHasTypeAttached() {
-			final Maybe<OS_Type> r;
-
-			r = new Maybe<>(vte_type_attached, null);
-
-			return r;
 		}
 	}
 
@@ -446,11 +417,6 @@ public interface PostBC_Processor {
 		}
 
 		@Override
-		public DeduceType3 doNoTypeAttached(final ErrSink errSink1) {
-			return null;
-		}
-
-		@Override
 		public Maybe<OS_Type> doHasTypeAttached() {
 			//Maybe<OS_Type> r;
 
@@ -460,8 +426,42 @@ public interface PostBC_Processor {
 		}
 
 		@Override
+		public DeduceType3 doNoTypeAttached(final ErrSink errSink1) {
+			return null;
+		}
+
+		@Override
 		protected VariableTableEntry vte() {
 			return variableTableEntry;
 		}
 	}
+
+	@Contract("_, _, _ -> new")
+	static @NotNull PostBC_Processor make_VTE(@NotNull final VariableTableEntry aVariableTableEntry, final Context aFd_ctx, final DeduceTypes2.DeduceClient1 aDeduceTypes2) {
+		final OS_Type vte_type_attached = aVariableTableEntry.getType().getAttached();
+
+		switch (aVariableTableEntry.getVtt()) {
+		case SELF:
+			return new PostBC_Processor__VTE_SELF(aVariableTableEntry, aFd_ctx, vte_type_attached, aDeduceTypes2);
+		case RESULT:
+			return new PostBC_Processor__VTE_RESULT(aVariableTableEntry, aFd_ctx, vte_type_attached, aDeduceTypes2);
+		case ARG:
+			return new PostBC_Processor__VTE_ARG(aVariableTableEntry, aFd_ctx, vte_type_attached, aDeduceTypes2);
+		case VAR:
+			return new PostBC_Processor__VTE_VAR(aVariableTableEntry, aFd_ctx, vte_type_attached, aDeduceTypes2);
+		case TEMP:
+			return new PostBC_Processor__VTE_TEMP(aVariableTableEntry, aFd_ctx, vte_type_attached, aDeduceTypes2);
+		default:
+			throw new IllegalStateException("Unexpected value: " + aVariableTableEntry.getVtt());
+		}
+	}
+//}
+
+	Maybe<OS_Type> doHasTypeAttached();
+
+	@Nullable DeduceType3 doNoTypeAttached(final ErrSink errSink1);
+
+	void doSetType(DeduceType3 aDeduceType3, ErrSink aErrSink1);
+
+	Promise<DeduceType3, Diagnostic, Void> getType(final ErrSink aErrSink1);
 }

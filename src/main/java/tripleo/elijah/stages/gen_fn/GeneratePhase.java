@@ -8,15 +8,16 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.work.WorkManager;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created 5/16/21 12:35 AM

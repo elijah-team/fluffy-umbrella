@@ -8,10 +8,15 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
-import io.reactivex.rxjava3.subjects.Subject;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import io.reactivex.rxjava3.subjects.Subject;
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.DotExpression;
@@ -46,11 +51,26 @@ import tripleo.elijah.world.i.LivingFunction;
 import tripleo.elijah.world.impl.DefaultLivingFunction;
 import tripleo.util.range.Range;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 public interface BaseEvaFunction extends DependencyTracker, EvaNode, DeduceTypes2.ExpectationBase, IDependencyReferent {
+	static @NotNull List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
+		final LinkedList<InstructionArgument> s = new LinkedList<InstructionArgument>();
+		while (oo != null) {
+			if (oo instanceof IntegerIA) {
+				s.addFirst(oo);
+				oo = null;
+			} else if (oo instanceof IdentIA) {
+				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
+				s.addFirst(oo);
+				oo = ite1.getBacklink();
+			} else if (oo instanceof ProcIA) {
+				s.addFirst(oo);
+				oo = null;
+			} else
+				throw new IllegalStateException("Invalid InstructionArgument");
+		}
+		return s;
+	}
+
 	public static @NotNull List<DT_Resolvable> _getIdentIAResolvableList(@NotNull InstructionArgument oo) {
 		LinkedList<DT_Resolvable> R = new LinkedList<>();
 		while (oo != null) {
@@ -113,126 +133,81 @@ public interface BaseEvaFunction extends DependencyTracker, EvaNode, DeduceTypes
 		return R;
 	}
 
-	String getIdentIAPathNormal(IdentIA ia2);
+	static void printTables(EvaFunction gf) {
+		tripleo.elijah.util.Stupidity.println_out("VariableTable ");
+		for (final VariableTableEntry variableTableEntry : gf.vte_list) {
+			tripleo.elijah.util.Stupidity.println_out("\t" + variableTableEntry);
+		}
+		tripleo.elijah.util.Stupidity.println_out("ConstantTable ");
+		for (final ConstantTableEntry constantTableEntry : gf.cte_list) {
+			tripleo.elijah.util.Stupidity.println_out("\t" + constantTableEntry);
+		}
+		tripleo.elijah.util.Stupidity.println_out("ProcTable     ");
+		for (final ProcTableEntry procTableEntry : gf.prte_list) {
+			tripleo.elijah.util.Stupidity.println_out("\t" + procTableEntry);
+		}
+		tripleo.elijah.util.Stupidity.println_out("TypeTable     ");
+		for (final TypeTableEntry typeTableEntry : gf.tte_list) {
+			tripleo.elijah.util.Stupidity.println_out("\t" + typeTableEntry);
+		}
+		tripleo.elijah.util.Stupidity.println_out("IdentTable    ");
+		for (final IdentTableEntry identTableEntry : gf.idte_list) {
+			tripleo.elijah.util.Stupidity.println_out("\t" + identTableEntry);
+		}
+	}
 
-	@NotNull VariableTableEntry getVarTableEntry(int index);
-
-	@NotNull IdentTableEntry getIdentTableEntry(int index);
-
-	@NotNull ProcTableEntry getProcTableEntry(int index);
-
-	@NotNull List<Instruction> instructions();
-
-	Instruction getInstruction(int anIndex);
+	IdentIaResolveable _getIdentIAResolvable(IdentIA aIdentIA);
 
 	int add(InstructionName aName, List<InstructionArgument> args_, Context ctx);
 
-	@NotNull Label addLabel();
+	void add_vte(VariableTableEntry aVte);
 
-	@NotNull Label addLabel(String base_name, boolean append_int);
-
-	void place(@NotNull Label label);
-
-	@NotNull List<Label> labels();
-
-	@NotNull ConstantTableEntry getConstTableEntry(int index);
-
-	@NotNull TypeTableEntry getTypeTableEntry(int index);
-
-	@NotNull TypeTableEntry newTypeTableEntry(TypeTableEntry.Type type1, OS_Type type);
-
-	@NotNull TypeTableEntry newTypeTableEntry(TypeTableEntry.Type type1, OS_Type type, IExpression expression, TableEntryIV aTableEntryIV);
-
-	@NotNull TypeTableEntry newTypeTableEntry(TypeTableEntry.Type type1, OS_Type type, IExpression expression);
-
-	@NotNull TypeTableEntry newTypeTableEntry(TypeTableEntry.Type type1, OS_Type type, TableEntryIV aTableEntryIV);
+	void addConstantTableEntry(ConstantTableEntry aCte);
 
 	void addContext(Context context, Range r);
-
-	Context getContextFromPC(int pc);
-
-	@Nullable InstructionArgument vte_lookup(String text);
-
-	@NotNull InstructionArgument get_assignment_path(@NotNull IExpression expression,
-	                                                 @NotNull GenerateFunctions generateFunctions,
-	                                                 @NotNull Context context);
-
-	int nextTemp();
-
-	@Nullable Label findLabel(int index);
-
-	IdentTableEntry getIdentTableEntryFor(IExpression expression);
-
-	int addIdentTableEntry(IdentExpression ident, Context context);
-
-	int addVariableTableEntry(String name, VariableTableType vtt, TypeTableEntry type, OS_Element el);
-
-	@Override
-	String identityString();
-
-	@Override
-	OS_Module module();
-
-	@NotNull BaseFunctionDef getFD();
-
-	int getCode();
-
-	void setCode(int aCode);
-
-	EvaContainerNC getParent();
-
-	void setParent(EvaContainerNC aGeneratedContainerNC);
-
-	EvaNode getGenClass();
-
-	/*
-	 * Hook in for EvaClass
-	 */
-	void onGenClass(OnGenClass aOnGenClass);
-
-	void setClass(@NotNull EvaNode aNode);
-	void onType(DoneCallback<GenType> cb);
-
-	void resolveTypeDeferred(@NotNull GenType aType);
-
-	@Override
-	String expectationString();
-
-	@Nullable VariableTableEntry getSelf();
-
-	void addElement(OS_Element aElement, DeduceElement aDeduceElement);
-
-	String getFunctionName();
-
-	Dependency getDependency();
-
-	void setLiving(DefaultLivingFunction aLiving);
 
 	void addDependentFunction(FunctionInvocation aFunctionInvocation);
 
 	void addDependentType(GenType aGenType);
 
-	ProcTableEntry fi_pte();
+	void addElement(OS_Element aElement, DeduceElement aDeduceElement);
 
-	boolean deferred_calls_contains(int aPc);
+	int addIdentTableEntry(IdentExpression ident, Context context);
 
-	FunctionInvocation fi();
+	@NotNull Label addLabel();
 
-	List<ProcTableEntry> prte_list();
+	@NotNull Label addLabel(String base_name, boolean append_int);
 
-	List<VariableTableEntry> vte_list();
+	void addProcTableEntry(ProcTableEntry aPte);
 
-	List<IdentTableEntry> idte_list();
+	int addVariableTableEntry(String name, VariableTableType vtt, TypeTableEntry type, OS_Element el);
 
 	List<ConstantTableEntry> cte_list();
 
-	List<TypeTableEntry> tte_list();
-
 	@NotNull List<Integer> deferred_calls();
+
+	boolean deferred_calls_contains(int aPc);
+
+	Subject<FunctionInvocation> dependentFunctionSubject();
 
 	Subject<GenType> dependentTypesSubject();
 
-	Subject<FunctionInvocation> dependentFunctionSubject();
+	List<? extends DR_Item> drs();
+
+	Map<OS_Element, DeduceElement> elements();
+
+	@Override
+	String expectationString();
+
+	FunctionInvocation fi();
+
+	ProcTableEntry fi_pte();
+
+	@Nullable Label findLabel(int index);
+
+	@NotNull InstructionArgument get_assignment_path(@NotNull IExpression expression,
+	                                                 @NotNull GenerateFunctions generateFunctions,
+	                                                 @NotNull Context context);
 
 	@NotNull
 	default InstructionArgument get_assignment_path(@NotNull InstructionArgument prev,
@@ -269,71 +244,97 @@ public interface BaseEvaFunction extends DependencyTracker, EvaNode, DeduceTypes
 		}
 	}
 
-	static void printTables(EvaFunction gf) {
-		tripleo.elijah.util.Stupidity.println_out("VariableTable ");
-		for (final VariableTableEntry variableTableEntry : gf.vte_list) {
-			tripleo.elijah.util.Stupidity.println_out("\t" + variableTableEntry);
-		}
-		tripleo.elijah.util.Stupidity.println_out("ConstantTable ");
-		for (final ConstantTableEntry constantTableEntry : gf.cte_list) {
-			tripleo.elijah.util.Stupidity.println_out("\t" + constantTableEntry);
-		}
-		tripleo.elijah.util.Stupidity.println_out("ProcTable     ");
-		for (final ProcTableEntry procTableEntry : gf.prte_list) {
-			tripleo.elijah.util.Stupidity.println_out("\t" + procTableEntry);
-		}
-		tripleo.elijah.util.Stupidity.println_out("TypeTable     ");
-		for (final TypeTableEntry typeTableEntry : gf.tte_list) {
-			tripleo.elijah.util.Stupidity.println_out("\t" + typeTableEntry);
-		}
-		tripleo.elijah.util.Stupidity.println_out("IdentTable    ");
-		for (final IdentTableEntry identTableEntry : gf.idte_list) {
-			tripleo.elijah.util.Stupidity.println_out("\t" + identTableEntry);
-		}
-	}
+	int getCode();
 
-	static @NotNull List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
-		final LinkedList<InstructionArgument> s = new LinkedList<InstructionArgument>();
-		while (oo != null) {
-			if (oo instanceof IntegerIA) {
-				s.addFirst(oo);
-				oo = null;
-			} else if (oo instanceof IdentIA) {
-				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
-				s.addFirst(oo);
-				oo = ite1.getBacklink();
-			} else if (oo instanceof ProcIA) {
-				s.addFirst(oo);
-				oo = null;
-			} else
-				throw new IllegalStateException("Invalid InstructionArgument");
-		}
-		return s;
-	}
+	@NotNull ConstantTableEntry getConstTableEntry(int index);
 
-	void addProcTableEntry(ProcTableEntry aPte);
+	Context getContextFromPC(int pc);
 
-	void addConstantTableEntry(ConstantTableEntry aCte);
+	Dependency getDependency();
 
-	void add_vte(VariableTableEntry aVte);
+	@NotNull BaseFunctionDef getFD();
 
-	Eventual<GenType> typePromise();
+	String getFunctionName();
 
-	DR_Ident getIdent(IdentTableEntry aIdentTableEntry);
+	EvaNode getGenClass();
 
 	DR_Ident getIdent(IdentExpression aIdent, VariableTableEntry aVteBl1);
+	DR_Ident getIdent(IdentTableEntry aIdentTableEntry);
 
 	DR_Ident getIdent(VariableTableEntry aVteBl1);
 
+	String getIdentIAPathNormal(IdentIA ia2);
+
+	@NotNull IdentTableEntry getIdentTableEntry(int index);
+
+	IdentTableEntry getIdentTableEntryFor(IExpression expression);
+
+	Instruction getInstruction(int anIndex);
+
+	EvaContainerNC getParent();
+
+	@NotNull ProcTableEntry getProcTableEntry(int index);
+
+	@Nullable VariableTableEntry getSelf();
+
+	@NotNull TypeTableEntry getTypeTableEntry(int index);
+
 	DR_Variable getVar(VariableStatement aElement);
 
-	List<? extends DR_Item> drs();
+	@NotNull VariableTableEntry getVarTableEntry(int index);
 
-	IdentIaResolveable _getIdentIAResolvable(IdentIA aIdentIA);
+	@Override
+	String identityString();
+
+	List<IdentTableEntry> idte_list();
+
+	@NotNull List<Instruction> instructions();
+
+	@NotNull List<Label> labels();
+
+	@Override
+	OS_Module module();
+
+	@NotNull TypeTableEntry newTypeTableEntry(TypeTableEntry.Type type1, OS_Type type);
+
+	@NotNull TypeTableEntry newTypeTableEntry(TypeTableEntry.Type type1, OS_Type type, IExpression expression);
+
+	@NotNull TypeTableEntry newTypeTableEntry(TypeTableEntry.Type type1, OS_Type type, IExpression expression, TableEntryIV aTableEntryIV);
+
+	@NotNull TypeTableEntry newTypeTableEntry(TypeTableEntry.Type type1, OS_Type type, TableEntryIV aTableEntryIV);
+
+	int nextTemp();
+
+	/*
+	 * Hook in for EvaClass
+	 */
+	void onGenClass(OnGenClass aOnGenClass);
+
+	void onType(DoneCallback<GenType> cb);
+
+	void place(@NotNull Label label);
+
+	List<ProcTableEntry> prte_list();
 
 	Reactive reactive();
 
-	Map<OS_Element, DeduceElement> elements();
+	void resolveTypeDeferred(@NotNull GenType aType);
+
+	void setClass(@NotNull EvaNode aNode);
+
+	void setCode(int aCode);
+
+	void setLiving(DefaultLivingFunction aLiving);
 
 	void setLiving(LivingFunction aLivingFunction);
+
+	void setParent(EvaContainerNC aGeneratedContainerNC);
+
+	List<TypeTableEntry> tte_list();
+
+	Eventual<GenType> typePromise();
+
+	List<VariableTableEntry> vte_list();
+
+	@Nullable InstructionArgument vte_lookup(String text);
 }

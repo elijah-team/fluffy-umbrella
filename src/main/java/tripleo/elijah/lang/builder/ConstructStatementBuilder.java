@@ -33,13 +33,13 @@ public class ConstructStatementBuilder extends ElBuilder {
 		return new ConstructStatement(_parent, _context, q, constructorName, o);
 	}
 
+	public void setConstructorName(final String aConstructorName) {
+		constructorName = aConstructorName;
+	}
+
 	@Override
 	protected void setContext(final Context context) {
 		_context = context;
-	}
-
-	public void setConstructorName(final String aConstructorName) {
-		constructorName = aConstructorName;
 	}
 }
 

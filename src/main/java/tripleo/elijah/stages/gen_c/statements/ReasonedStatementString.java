@@ -12,12 +12,12 @@ public class ReasonedStatementString implements IReasonedString {
 	}
 
 	@Override
-	public String text() {
-		return text.getText();
+	public String reason() {
+		return reason;
 	}
 
 	@Override
-	public String reason() {
-		return reason;
+	public String text() {
+		return text.getText();
 	}
 }

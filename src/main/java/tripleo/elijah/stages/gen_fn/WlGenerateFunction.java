@@ -10,6 +10,7 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.NamespaceStatement;
 import tripleo.elijah.lang.OS_Element;
@@ -48,6 +49,15 @@ public class WlGenerateFunction implements WorkJob {
 		generateFunctions  = aCl.generatePhase().getGenerateFunctions(aModule);
 		functionInvocation = aFunctionInvocation;
 		codeRegistrar      = aCl.deducePhase().getCodeRegistrar();
+	}
+
+	public EvaFunction getResult() {
+		return result;
+	}
+
+	@Override
+	public boolean isDone() {
+		return _isDone;
 	}
 
 	@Override
@@ -104,15 +114,6 @@ public class WlGenerateFunction implements WorkJob {
 			result = (EvaFunction) functionInvocation.getGenerated();
 		}
 		_isDone = true;
-	}
-
-	@Override
-	public boolean isDone() {
-		return _isDone;
-	}
-
-	public EvaFunction getResult() {
-		return result;
 	}
 }
 

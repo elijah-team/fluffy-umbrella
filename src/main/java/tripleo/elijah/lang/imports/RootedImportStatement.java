@@ -34,27 +34,6 @@ public class RootedImportStatement extends _BaseImportStatement {
 			throw new NotImplementedException();
 	}
 
-	public Qualident getRoot() {
-		return root;
-	}
-
-	public void setRoot(final Qualident root) {
-		this.root = root;
-	}
-
-	/**
-	 * Used in from syntax
-	 *
-	 * @category from
-	 */
-	public void importRoot(final Qualident xyz) {
-		setRoot(xyz);
-	}
-
-	public QualidentList importList() {
-		return importList;
-	}
-
 	@Override
 	public Context getContext() {
 		return parent.getContext();
@@ -65,9 +44,21 @@ public class RootedImportStatement extends _BaseImportStatement {
 		return parent;
 	}
 
-	@Override
-	public void setContext(final ImportContext ctx) {
-		_ctx = ctx;
+	public Qualident getRoot() {
+		return root;
+	}
+
+	public QualidentList importList() {
+		return importList;
+	}
+
+	/**
+	 * Used in from syntax
+	 *
+	 * @category from
+	 */
+	public void importRoot(final Qualident xyz) {
+		setRoot(xyz);
 	}
 
 	@Override
@@ -87,8 +78,17 @@ public class RootedImportStatement extends _BaseImportStatement {
 		return r;
 	}
 
+	@Override
+	public void setContext(final ImportContext ctx) {
+		_ctx = ctx;
+	}
+
 	public void setImportList(final QualidentList qil) {
 		importList = qil;
+	}
+
+	public void setRoot(final Qualident root) {
+		this.root = root;
 	}
 }
 

@@ -12,19 +12,19 @@ public interface Scope extends Documentable {
 
 	void add(StatementItem aItem);
 
-	void statementWrapper(IExpression aExpr);
-
-	StatementClosure statementClosure();
-
 	BlockStatement blockStatement();
 
-	TypeAliasStatement typeAlias();
-
-	InvariantStatement invariantStatement();
+	OS_Element getElement();
 
 	OS_Element getParent();
 
-	OS_Element getElement();
+	InvariantStatement invariantStatement();
+
+	StatementClosure statementClosure();
+
+	void statementWrapper(IExpression aExpr);
+
+	TypeAliasStatement typeAlias();
 }
 
 //

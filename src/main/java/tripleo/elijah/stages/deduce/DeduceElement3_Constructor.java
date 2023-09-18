@@ -2,6 +2,7 @@ package tripleo.elijah.stages.deduce;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.NamespaceStatement;
@@ -35,46 +36,6 @@ public class DeduceElement3_Constructor implements IDeduceElement3 {
 //	public DED elementDiscriminator() {
 //		return null;
 //	}
-
-	@Override
-	public DeduceTypes2 deduceTypes2() {
-		return deduceTypes2;
-	}
-
-	@Override
-	public OS_Element getPrincipal() {
-		return evaConstructor.getFD();
-	}
-
-	@Override
-	public BaseEvaFunction generatedFunction() {
-		return evaConstructor;
-	}
-
-	@Override
-	public GenType genType() {
-		return null;
-	}
-
-	@Override
-	public void resolve(final Context aContext, final DeduceTypes2 dt2) {
-
-	}
-
-	@Override
-	public DeduceElement3_Kind kind() {
-		return null;
-	}
-
-	@Override
-	public void resolve(final IdentIA aIdentIA, final Context aContext, final FoundElement aFoundElement) {
-
-	}
-
-	@Override
-	public void mvState(final State aO, final State aCheckEvaClassVarTable) {
-		throw new NotImplementedException();
-	}
 
 	public void __post_deduce_generated_function_base(final @NotNull DeducePhase aDeducePhase) {
 		for (@NotNull IdentTableEntry identTableEntry : evaConstructor.idte_list) {
@@ -144,6 +105,11 @@ public class DeduceElement3_Constructor implements IDeduceElement3 {
 //		aDeducePhase.addFunction(aGeneratedConstructor, (FunctionDef) aGeneratedConstructor.getFD()); // TODO do we need this?
 	}
 
+	@Override
+	public DeduceTypes2 deduceTypes2() {
+		return deduceTypes2;
+	}
+
 	private void dof_uc(@NotNull VariableTableEntry aVte, @NotNull OS_Type aOSType) {
 		// we really want a ci from somewhere
 		assert aOSType.getClassOf().getGenericPart().size() == 0;
@@ -155,5 +121,40 @@ public class DeduceElement3_Constructor implements IDeduceElement3 {
 		aVte.getGenType().setCi(ci);
 
 		ci.resolvePromise().done(aVte::resolveTypeToClass);
+	}
+
+	@Override
+	public BaseEvaFunction generatedFunction() {
+		return evaConstructor;
+	}
+
+	@Override
+	public GenType genType() {
+		return null;
+	}
+
+	@Override
+	public OS_Element getPrincipal() {
+		return evaConstructor.getFD();
+	}
+
+	@Override
+	public DeduceElement3_Kind kind() {
+		return null;
+	}
+
+	@Override
+	public void mvState(final State aO, final State aCheckEvaClassVarTable) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void resolve(final Context aContext, final DeduceTypes2 dt2) {
+
+	}
+
+	@Override
+	public void resolve(final IdentIA aIdentIA, final Context aContext, final FoundElement aFoundElement) {
+
 	}
 }

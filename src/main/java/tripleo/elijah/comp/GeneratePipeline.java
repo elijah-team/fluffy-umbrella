@@ -55,27 +55,6 @@ public class GeneratePipeline implements PipelineMember/*, AccessBus.AB_LgcListe
 		aCe.waitPipelineLogic(aPl -> pipelineLogic = aPl);
 	}
 
-	@Override
-	public void run() {
-		Preconditions.checkNotNull(pipelineLogic);
-		Preconditions.checkNotNull(lgc);
-
-		assert lgc.size() > 0;
-
-		final IPipelineAccess pipelineAccess = ce.getCompilation().getCompilationEnclosure().getPipelineAccess();
-
-		// FIXME Honestly doesn't belong
-		final GN_GenerateNodesIntoSinkEnv env     = new GN_GenerateNodesIntoSinkEnv(null, null, null, null, null, this.ce.getPipelineAccess(), null);
-		final GN_GenerateNodesIntoSink    gnis    = new GN_GenerateNodesIntoSink(env);
-		final WorldModule                 mod     = (WorldModule) null;
-		final GM_GenerateModuleRequest    gmr     = new GM_GenerateModuleRequest(gnis, mod, env);
-		final GM_GenerateModule           gm      = new GM_GenerateModule(gmr);
-		final GenerateResultEnv           fileGen = new GenerateResultEnv(new DefaultGenerateResultSink(pipelineAccess), __ab.gr, new WorkManager(), new WorkList(), gm);
-
-		/*pipelineLogic.*/
-		generate(lgc, errSink, pipelineLogic.mods, pipelineLogic.getVerbosity(), fileGen);
-	}
-
 	protected void generate(final @NotNull List<EvaNode> lgc,
 	                        final @NotNull ErrSink aErrSink,
 	                        final @NotNull EIT_ModuleList mods,
@@ -95,6 +74,27 @@ public class GeneratePipeline implements PipelineMember/*, AccessBus.AB_LgcListe
 		}
 
 		__ab.resolveGenerateResult(gr);
+	}
+
+	@Override
+	public void run() {
+		Preconditions.checkNotNull(pipelineLogic);
+		Preconditions.checkNotNull(lgc);
+
+		assert lgc.size() > 0;
+
+		final IPipelineAccess pipelineAccess = ce.getCompilation().getCompilationEnclosure().getPipelineAccess();
+
+		// FIXME Honestly doesn't belong
+		final GN_GenerateNodesIntoSinkEnv env     = new GN_GenerateNodesIntoSinkEnv(null, null, null, null, null, this.ce.getPipelineAccess(), null);
+		final GN_GenerateNodesIntoSink    gnis    = new GN_GenerateNodesIntoSink(env);
+		final WorldModule                 mod     = (WorldModule) null;
+		final GM_GenerateModuleRequest    gmr     = new GM_GenerateModuleRequest(gnis, mod, env);
+		final GM_GenerateModule           gm      = new GM_GenerateModule(gmr);
+		final GenerateResultEnv           fileGen = new GenerateResultEnv(new DefaultGenerateResultSink(pipelineAccess), __ab.gr, new WorkManager(), new WorkList(), gm);
+
+		/*pipelineLogic.*/
+		generate(lgc, errSink, pipelineLogic.mods, pipelineLogic.getVerbosity(), fileGen);
 	}
 }
 

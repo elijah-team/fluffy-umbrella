@@ -1,6 +1,7 @@
 package tripleo.elijah.stages.deduce;
 
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.Context;
 

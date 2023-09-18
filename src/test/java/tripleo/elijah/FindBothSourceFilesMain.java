@@ -11,10 +11,10 @@
  */
 package tripleo.elijah;
 
+import java.io.IOException;
+
 import tripleo.elijah.comp.GenBuffer;
 import tripleo.elijah.gen.CompilerContext;
-
-import java.io.IOException;
 
 /**
  * @author tripleoacer

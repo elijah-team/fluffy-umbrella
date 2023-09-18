@@ -1,6 +1,9 @@
 package tripleo.elijah.stages.gen_generic.pipeline_impl;
 
+import java.util.Collection;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.stages.gen_c.GenerateC;
 import tripleo.elijah.stages.gen_fn.EvaClass;
@@ -9,8 +12,6 @@ import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_generic.GenerateFiles;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultEnv;
-
-import java.util.Collection;
 
 public class ProcessedNode1 implements ProcessedNode {
 
@@ -66,6 +67,14 @@ public class ProcessedNode1 implements ProcessedNode {
 	}
 
 	@Override
+	public void processContainer(final GenerateFiles ggc,
+								 final @NotNull GenerateResultEnv aFileGen) {
+		final EvaContainerNC nc = (EvaContainerNC) evaNode;
+
+		nc.generateCode(aFileGen, (GenerateC) ggc);
+	}
+
+	@Override
 	public void processFunctions(final @NotNull GenerateFiles ggc, final @NotNull GenerateResultEnv aFileGen) {
 		final EvaContainerNC nc = (EvaContainerNC) evaNode;
 
@@ -73,13 +82,5 @@ public class ProcessedNode1 implements ProcessedNode {
 		GenerateResult                     gr2 = ggc.generateCode(gn1, aFileGen);
 		aFileGen.gr().additional(gr2);
 		aFileGen.resultSink().additional(gr2);
-	}
-
-	@Override
-	public void processContainer(final GenerateFiles ggc,
-								 final @NotNull GenerateResultEnv aFileGen) {
-		final EvaContainerNC nc = (EvaContainerNC) evaNode;
-
-		nc.generateCode(aFileGen, (GenerateC) ggc);
 	}
 }

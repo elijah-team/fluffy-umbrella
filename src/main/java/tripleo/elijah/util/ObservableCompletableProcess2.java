@@ -1,9 +1,10 @@
 package tripleo.elijah.util;
 
+import org.jetbrains.annotations.NotNull;
+
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
-import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
 
 public class ObservableCompletableProcess2<T> implements Observer<T> {
@@ -14,13 +15,8 @@ public class ObservableCompletableProcess2<T> implements Observer<T> {
 	}
 
 	@Override
-	public void onSubscribe(@NonNull final Disposable d) {
-		cpt.start();
-	}
-
-	@Override
-	public void onNext(@NonNull final T aT) {
-		cpt.add(aT);
+	public void onComplete() {
+		cpt.complete();
 	}
 
 	@Override
@@ -29,15 +25,20 @@ public class ObservableCompletableProcess2<T> implements Observer<T> {
 	}
 
 	@Override
-	public void onComplete() {
-		cpt.complete();
+	public void onNext(@NonNull final T aT) {
+		cpt.add(aT);
 	}
 
-	public void subscribe(final @NotNull Observer<T> aCio) {
+	@Override
+	public void onSubscribe(@NonNull final Disposable d) {
 		cpt.start();
 	}
 
 	public void subscribe(final @NotNull CompletableProcess<T> cp) {
 //		subscribe(new ); //!!
+	}
+
+	public void subscribe(final @NotNull Observer<T> aCio) {
+		cpt.start();
 	}
 }

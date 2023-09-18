@@ -1,14 +1,15 @@
 package tripleo.elijah.stages.gen_c;
 
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.stages.gen_c.statements.ReasonedStringListStatement;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.Instruction;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.InstructionFixedList;
-
-import java.util.List;
 
 class __Pte_Dispatch_InstructionArgument_Statement extends ReasonedStringListStatement {
 	private final InstructionArgument expression_num;

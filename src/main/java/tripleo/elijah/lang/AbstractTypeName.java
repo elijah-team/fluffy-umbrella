@@ -21,12 +21,6 @@ public abstract class AbstractTypeName implements NormalTypeName {
 	private boolean isNullable = false;
 
 	@Override
-	public boolean isNull() {
-		return !pr_constant && !pr_reference && !pr_out && !pr_in
-		  && (pr_name == null);
-	}
-
-	@Override
 	public boolean equals(final Object o) {
 		if (this == o) return true;
 		if (!(o instanceof final NormalTypeName that)) return false;
@@ -45,18 +39,13 @@ public abstract class AbstractTypeName implements NormalTypeName {
 	}
 
 	@Override
-	public void setConstant(final boolean s) {
-		pr_constant = s;
+	public boolean getIn() {
+		return pr_in;
 	}
 
 	@Override
-	public boolean getReference() {
-		return pr_reference;
-	}
-
-	@Override
-	public void setReference(final boolean s) {
-		pr_reference = s;
+	public String getName() {
+		return pr_name.toString();
 	}
 
 	@Override
@@ -65,23 +54,29 @@ public abstract class AbstractTypeName implements NormalTypeName {
 	}
 
 	@Override
-	public void setOut(final boolean s) {
-		pr_out = s;
+	public boolean getReference() {
+		return pr_reference;
 	}
 
 	@Override
-	public boolean getIn() {
-		return pr_in;
+	public int hashCode() {
+		return Objects.hash(tm, pr_constant, pr_reference, pr_out, pr_in, pr_name, isNullable);
+	}
+
+	@Override
+	public boolean isNull() {
+		return !pr_constant && !pr_reference && !pr_out && !pr_in
+		  && (pr_name == null);
+	}
+
+	@Override
+	public void setConstant(final boolean s) {
+		pr_constant = s;
 	}
 
 	@Override
 	public void setIn(final boolean s) {
 		pr_in = s;
-	}
-
-	@Override
-	public String getName() {
-		return pr_name.toString();
 	}
 
 	@Override
@@ -95,8 +90,13 @@ public abstract class AbstractTypeName implements NormalTypeName {
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(tm, pr_constant, pr_reference, pr_out, pr_in, pr_name, isNullable);
+	public void setOut(final boolean s) {
+		pr_out = s;
+	}
+
+	@Override
+	public void setReference(final boolean s) {
+		pr_reference = s;
 	}
 }
 

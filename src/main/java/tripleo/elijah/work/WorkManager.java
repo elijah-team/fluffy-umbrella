@@ -8,11 +8,11 @@
  */
 package tripleo.elijah.work;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Created 4/26/21 4:22 AM
@@ -23,6 +23,14 @@ public class WorkManager {
 
 	public void addJobs(final WorkList aList) {
 		jobs.add(aList);
+	}
+
+	public void drain() {
+		while (true) {
+			@Nullable final WorkJob w = next();
+			if (w == null) break;
+			w.run(this);
+		}
 	}
 
 	@Nullable
@@ -47,14 +55,6 @@ public class WorkManager {
 				return null;
 		}
 //		return null;
-	}
-
-	public void drain() {
-		while (true) {
-			@Nullable final WorkJob w = next();
-			if (w == null) break;
-			w.run(this);
-		}
 	}
 
 	public int totalSize() {

@@ -8,12 +8,13 @@
  */
 package tripleo.elijah.stages.deduce;
 
-import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.diagnostic.Diagnostic;
-import tripleo.elijah.diagnostic.Locatable;
-
 import java.io.PrintStream;
 import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+
+import tripleo.elijah.diagnostic.Diagnostic;
+import tripleo.elijah.diagnostic.Locatable;
 
 /**
  * Created 9/9/21 6:25 AM

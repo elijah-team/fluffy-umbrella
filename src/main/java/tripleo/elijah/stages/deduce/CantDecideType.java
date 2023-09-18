@@ -8,17 +8,18 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import java.io.PrintStream;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.gen_fn.TypeTableEntry;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
-
-import java.io.PrintStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created 4/13/21 5:46 AM
@@ -37,14 +38,8 @@ public class CantDecideType implements Diagnostic {
 		return "E1001";
 	}
 
-	@Override
-	public void report(@NotNull PrintStream stream) {
-		stream.printf("---[%s]---: %s%n", code(), message());
-		// linecache.print(primary);
-		for (Locatable sec : secondary()) {
-			//linecache.print(sec)
-		}
-		stream.flush();
+	private @NotNull String message() {
+		return "Can't decide type";
 	}
 
 	@Override
@@ -53,8 +48,14 @@ public class CantDecideType implements Diagnostic {
 		return vs;
 	}
 
-	private @NotNull String message() {
-		return "Can't decide type";
+	@Override
+	public void report(@NotNull PrintStream stream) {
+		stream.printf("---[%s]---: %s%n", code(), message());
+		// linecache.print(primary);
+		for (Locatable sec : secondary()) {
+			//linecache.print(sec)
+		}
+		stream.flush();
 	}
 
 	@Override

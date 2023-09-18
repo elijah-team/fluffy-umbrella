@@ -2,29 +2,11 @@ package tripleo.elijah.stages.deduce;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 
 public interface DT_Resolvable {
-	static @NotNull DT_Resolvable from(@NotNull InstructionArgument aInstructionArgument, /*@NotNull*/ OS_Element aElement, FunctionInvocation aFunctionInvocation) {
-		return new DT_Resolvable() {
-			@Override
-			public Object deduceItem() {
-				return aFunctionInvocation;
-			}
-
-			@Override
-			public OS_Element element() {
-				return aElement;
-			}
-
-			@Override
-			public InstructionArgument instructionArgument() {
-				return aInstructionArgument;
-			}
-		};
-	}
-
 	static @NotNull DT_Resolvable from(@NotNull InstructionArgument ia) {
 		return new DT_Resolvable() {
 			@Override
@@ -44,9 +26,28 @@ public interface DT_Resolvable {
 		};
 	}
 
+	static @NotNull DT_Resolvable from(@NotNull InstructionArgument aInstructionArgument, /*@NotNull*/ OS_Element aElement, FunctionInvocation aFunctionInvocation) {
+		return new DT_Resolvable() {
+			@Override
+			public Object deduceItem() {
+				return aFunctionInvocation;
+			}
+
+			@Override
+			public OS_Element element() {
+				return aElement;
+			}
+
+			@Override
+			public InstructionArgument instructionArgument() {
+				return aInstructionArgument;
+			}
+		};
+	}
+
 	@Nullable Object deduceItem();
 
-	InstructionArgument instructionArgument();
-
 	@Nullable OS_Element element();
+
+	InstructionArgument instructionArgument();
 }

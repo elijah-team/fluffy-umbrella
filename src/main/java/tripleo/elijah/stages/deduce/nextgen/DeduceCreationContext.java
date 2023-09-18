@@ -10,11 +10,11 @@ import tripleo.elijah.util.Eventual;
 
 public interface DeduceCreationContext {
 
-	Eventual<BaseEvaFunction> makeGenerated_fi__Eventual(FunctionInvocation aFunctionInvocation);
+	@NotNull DeducePhase getDeducePhase();
 
 	DeduceTypes2 getDeduceTypes2();
 
-	@NotNull DeducePhase getDeducePhase();
-
 	@NotNull GeneratePhase getGeneratePhase();
+
+	Eventual<BaseEvaFunction> makeGenerated_fi__Eventual(FunctionInvocation aFunctionInvocation);
 }

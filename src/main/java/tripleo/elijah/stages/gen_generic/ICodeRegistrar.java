@@ -20,11 +20,11 @@ import tripleo.elijah.stages.gen_fn.EvaNamespace;
  * Created 11/28/21 4:45 PM
  */
 public interface ICodeRegistrar {
-	void registerNamespace(EvaNamespace aNamespace);
-
 	void registerClass(EvaClass aClass);
 
 	void registerFunction(BaseEvaFunction aFunction);
+
+	void registerNamespace(EvaNamespace aNamespace);
 }
 
 //

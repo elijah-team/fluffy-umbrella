@@ -3,6 +3,7 @@ package tripleo.elijah.stages.gen_c;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Element;
@@ -74,11 +75,6 @@ public class GI_VariableStatement implements GenerateC_Item {
 		return _evaNode;
 	}
 
-	@Override
-	public void setEvaNode(final EvaNode a_evaNode) {
-		_evaNode = a_evaNode;
-	}
-
 	public String getText() {
 		String text2 = variableStatement.getName();
 
@@ -139,12 +135,17 @@ public class GI_VariableStatement implements GenerateC_Item {
 		return text2;
 	}
 
+	public String getText1() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void setEvaNode(final EvaNode a_evaNode) {
+		_evaNode = a_evaNode;
+	}
+
 	public void setItem(final CR_ReferenceItem aItem) {
 
 		item = aItem;
-	}
-
-	public String getText1() {
-		throw new NotImplementedException();
 	}
 }

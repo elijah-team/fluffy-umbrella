@@ -15,24 +15,44 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import static tripleo.elijah.util.Helpers.List_of;
 
 public class CompilationBus implements ICompilationBus {
+	private static class SingleActionProcess implements CB_Process {
+		private final CB_Action action;
+
+		public SingleActionProcess(final CB_Action aAction) {
+			action = aAction;
+		}
+
+		@Override
+		public List<CB_Action> steps() {
+			final var a = new CB_Action() {
+				@Override
+				public void execute() {
+					action.execute();
+				}
+
+				@Override
+				public String name() {
+					return "Single Action Process";
+				}
+
+				@Override
+				public OutputString[] outputStrings() {
+					return new OutputString[0];
+				}
+			};
+			return List_of(a);
+		}
+	}
+	private static final Logger LOG = LoggerFactory.getLogger(CompilationBus.class);
+
+
 	@SuppressWarnings("TypeMayBeWeakened")
 	private final Queue<CB_Process> pq = new ConcurrentLinkedQueue<CB_Process>();
-	private final Compilation       c;
 
+	private final Compilation       c;
 
 	public CompilationBus(final Compilation aC) {
 		c = aC;
-	}
-
-	@Override
-	public void option(final @NotNull CompilationChange aChange) {
-		aChange.apply(c);
-	}
-
-	@Override
-	public void inst(final @NotNull ILazyCompilerInstructions aLazyCompilerInstructions) {
-		// TODO 09/15 how many times are we going to do this?
-		System.out.println("** [ci] " + aLazyCompilerInstructions.get());
 	}
 
 	public void add(final CB_Action action) {
@@ -46,7 +66,16 @@ public class CompilationBus implements ICompilationBus {
 		pq.add(aProcess);
 	}
 
-	private static final Logger LOG = LoggerFactory.getLogger(CompilationBus.class);
+	@Override
+	public void inst(final @NotNull ILazyCompilerInstructions aLazyCompilerInstructions) {
+		// TODO 09/15 how many times are we going to do this?
+		System.out.println("** [ci] " + aLazyCompilerInstructions.get());
+	}
+
+	@Override
+	public void option(final @NotNull CompilationChange aChange) {
+		aChange.apply(c);
+	}
 
 	@Override
 	public void run_all() {
@@ -82,35 +111,6 @@ public class CompilationBus implements ICompilationBus {
 			thread.stop();
 		} catch (InterruptedException aE) {
 			throw new RuntimeException(aE);
-		}
-	}
-
-	private static class SingleActionProcess implements CB_Process {
-		private final CB_Action action;
-
-		public SingleActionProcess(final CB_Action aAction) {
-			action = aAction;
-		}
-
-		@Override
-		public List<CB_Action> steps() {
-			final var a = new CB_Action() {
-				@Override
-				public String name() {
-					return "Single Action Process";
-				}
-
-				@Override
-				public void execute() {
-					action.execute();
-				}
-
-				@Override
-				public OutputString[] outputStrings() {
-					return new OutputString[0];
-				}
-			};
-			return List_of(a);
 		}
 	}
 }

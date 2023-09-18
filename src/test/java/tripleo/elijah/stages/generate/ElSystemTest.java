@@ -11,6 +11,7 @@ package tripleo.elijah.stages.generate;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
@@ -24,6 +25,14 @@ public class ElSystemTest {
 	Compilation c;
 	private AccessBus ab;
 
+	@Test
+	public void generateOutputs() {
+		final OutputStrategy os = new OutputStrategy();
+		os.per(OutputStrategy.Per.PER_CLASS);
+		sys.setOutputStrategy(os);
+		sys.generateOutputs(ab.gr);
+	}
+
 	@Before
 	public void setUp() throws Exception {
 		c  = new CompilationImpl(new StdErrSink(), new IO());
@@ -35,14 +44,6 @@ public class ElSystemTest {
 		sys.setCompilation(c);
 
 		c.feedCmdLine(Helpers.List_of(f));
-	}
-
-	@Test
-	public void generateOutputs() {
-		final OutputStrategy os = new OutputStrategy();
-		os.per(OutputStrategy.Per.PER_CLASS);
-		sys.setOutputStrategy(os);
-		sys.generateOutputs(ab.gr);
 	}
 }
 

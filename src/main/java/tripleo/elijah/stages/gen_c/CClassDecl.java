@@ -8,7 +8,10 @@
  */
 package tripleo.elijah.stages.gen_c;
 
+import java.util.ArrayList;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.AnnotationPart;
 import tripleo.elijah.lang.AnnotationWalker;
 import tripleo.elijah.lang.ClassStatement;
@@ -16,8 +19,6 @@ import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.StringExpression;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.util.Helpers;
-
-import java.util.ArrayList;
 
 /**
  * Created 12/24/20 7:42 AM

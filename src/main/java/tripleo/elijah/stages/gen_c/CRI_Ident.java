@@ -1,8 +1,12 @@
 package tripleo.elijah.stages.gen_c;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.OS_Element;
@@ -20,16 +24,13 @@ import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.util.Stupidity;
 
-import java.util.List;
-import java.util.function.Consumer;
-
 class CRI_Ident {
-	private final BaseEvaFunction generatedFunction;
-
 	@Contract(value = "_, _ -> new", pure = true)
 	public static @NotNull CRI_Ident of(final IdentTableEntry aIdte, final BaseEvaFunction aGf) {
 		return new CRI_Ident(aIdte, aGf);
 	}
+
+	private final BaseEvaFunction generatedFunction;
 
 	private final IdentTableEntry ite;
 
@@ -47,6 +48,50 @@ class CRI_Ident {
 										  final EvaNode aResolved,
 										  final String aValue, final CReference aCReference) {
 		return new CReference_getIdentIAPath_IdentIAHelper(ia_next, sl, i, sSize, resolved_element, generatedFunction, aResolved, aValue).action(this, aCReference);
+	}
+
+	private @Nullable EvaNode _re_is_PropertyStatement(final @NotNull Consumer<CReference.Reference> addRef,
+													   final Generate_Code_For_Method.@NotNull AOG aog,
+													   final int sSize,
+													   final int i,
+													   final String aValue,
+													   final @NotNull Consumer<Void> skip,
+													   final @NotNull Consumer<String> text) {
+		NotImplementedException.raise();
+		final EvaNode resolved1 = ite.getType().resolved();
+		final int     code;
+		if (resolved1 != null)
+			code = ((EvaContainerNC) resolved1).getCode();
+		else
+			code = -1;
+		short state = 0;
+		if (i < sSize - 1) {
+			state = 1;
+		} else {
+			switch (aog) {
+			case GET:
+				state = 1;
+				break;
+			case ASSIGN:
+				state = 2;
+				break;
+			}
+		}
+		switch (state) {
+		case 1:
+			addRef.accept(new CReference.Reference(String.format("ZP%d_get%s(", code, ite.getIdent().getText()), CReference.Ref.PROPERTY_GET));
+			skip.accept(null);
+			text.accept(null);
+			break;
+		case 2:
+			addRef.accept(new CReference.Reference(String.format("ZP%d_set%s(", code, ite.getIdent().getText()), CReference.Ref.PROPERTY_SET, aValue));
+			skip.accept(null);
+			text.accept(null);
+			break;
+		default:
+			throw new IllegalStateException("Unexpected value: " + state);
+		}
+		return resolved1;
 	}
 
 	public @Nullable String getIdentIAPath(int i,
@@ -201,49 +246,5 @@ class CRI_Ident {
 		}
 
 		return text[0];
-	}
-
-	private @Nullable EvaNode _re_is_PropertyStatement(final @NotNull Consumer<CReference.Reference> addRef,
-													   final Generate_Code_For_Method.@NotNull AOG aog,
-													   final int sSize,
-													   final int i,
-													   final String aValue,
-													   final @NotNull Consumer<Void> skip,
-													   final @NotNull Consumer<String> text) {
-		NotImplementedException.raise();
-		final EvaNode resolved1 = ite.getType().resolved();
-		final int     code;
-		if (resolved1 != null)
-			code = ((EvaContainerNC) resolved1).getCode();
-		else
-			code = -1;
-		short state = 0;
-		if (i < sSize - 1) {
-			state = 1;
-		} else {
-			switch (aog) {
-			case GET:
-				state = 1;
-				break;
-			case ASSIGN:
-				state = 2;
-				break;
-			}
-		}
-		switch (state) {
-		case 1:
-			addRef.accept(new CReference.Reference(String.format("ZP%d_get%s(", code, ite.getIdent().getText()), CReference.Ref.PROPERTY_GET));
-			skip.accept(null);
-			text.accept(null);
-			break;
-		case 2:
-			addRef.accept(new CReference.Reference(String.format("ZP%d_set%s(", code, ite.getIdent().getText()), CReference.Ref.PROPERTY_SET, aValue));
-			skip.accept(null);
-			text.accept(null);
-			break;
-		default:
-			throw new IllegalStateException("Unexpected value: " + state);
-		}
-		return resolved1;
 	}
 }

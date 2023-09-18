@@ -28,67 +28,6 @@ import java.util.List;
  */
 public class CaseConditional implements OS_Element, StatementItem, FunctionItem {
 
-	private final OS_Element                      parent;
-	private final HashMap<IExpression, CaseScope> scopes             = new LinkedHashMap<IExpression, CaseScope>();
-	private       IExpression                     expr;
-	private       SingleIdentContext              _ctx               = null;
-	private       CaseScope                       default_case_scope = null;
-	private       CaseContext                     __ctx              = null; // TODO look into removing this
-
-	public CaseConditional(final OS_Element parent, final Context parentContext) {
-		this.parent = parent;
-		this._ctx   = new SingleIdentContext(parentContext, this);
-	}
-
-	public void expr(final IExpression expr) {
-		this.expr = expr;
-	}
-
-	@Override
-	public void visitGen(final ElElementVisitor visit) {
-		visit.visitCaseConditional(this);
-	}
-
-	@Override
-	public Context getContext() {
-		return _ctx;
-	}
-
-	@Override
-	public OS_Element getParent() {
-		return parent;
-	}
-
-	public void setContext(final CaseContext ctx) {
-		__ctx = ctx;
-	}
-
-	public HashMap<IExpression, CaseScope> getScopes() {
-		return scopes;
-	}
-
-	public void addScopeFor(final IExpression expression, final Scope3 caseScope) {
-		addScopeFor(expression, new CaseScope(expression, caseScope));
-	}
-
-	private void addScopeFor(final IExpression expression, final CaseScope caseScope) {
-		if (scopes.containsKey(expression))
-			tripleo.elijah.util.Stupidity.println_err2("already has an expression" + expression); // TODO put in some verify step
-		scopes.put(expression, caseScope);
-	}
-
-	public void postConstruct() {
-		// nop
-	}
-
-	public IExpression getExpr() {
-		return expr;
-	}
-
-	public void scope(final Scope3 sco, final IExpression expr1) {
-		addScopeFor(expr1, new CaseScope(expr1, sco));
-	}
-
 	public class CaseScope implements OS_Container, OS_Element {
 
 		private final IExpression expr;
@@ -101,17 +40,8 @@ public class CaseConditional implements OS_Element, StatementItem, FunctionItem 
 		}
 
 		@Override
-		public List<OS_Element2> items() {
-			throw new NotImplementedException();
-		}
-
-		@Override
 		public void add(final OS_Element anElement) {
 			cscope3.add(anElement);
-		}
-
-		public List<OS_Element> getItems() {
-			return cscope3.items();
 		}
 
 		@Override
@@ -120,13 +50,12 @@ public class CaseConditional implements OS_Element, StatementItem, FunctionItem 
 		}
 
 		@Override
-		public void visitGen(final ElElementVisitor visit) {
-			visit.visitCaseScope(this);
-		}
-
-		@Override
 		public Context getContext() {
 			return getParent().getContext();
+		}
+
+		public List<OS_Element> getItems() {
+			return cscope3.items();
 		}
 
 		@Override
@@ -134,11 +63,82 @@ public class CaseConditional implements OS_Element, StatementItem, FunctionItem 
 			return CaseConditional.this;
 		}
 
+		@Override
+		public List<OS_Element2> items() {
+			throw new NotImplementedException();
+		}
+
 		public void setDefault() {
 			_isDefault         = true;
 			default_case_scope = this;
 			_ctx.carrier       = (IdentExpression) expr;
 		}
+
+		@Override
+		public void visitGen(final ElElementVisitor visit) {
+			visit.visitCaseScope(this);
+		}
+	}
+	private final OS_Element                      parent;
+	private final HashMap<IExpression, CaseScope> scopes             = new LinkedHashMap<IExpression, CaseScope>();
+	private       IExpression                     expr;
+	private       SingleIdentContext              _ctx               = null;
+	private       CaseScope                       default_case_scope = null;
+
+	private       CaseContext                     __ctx              = null; // TODO look into removing this
+
+	public CaseConditional(final OS_Element parent, final Context parentContext) {
+		this.parent = parent;
+		this._ctx   = new SingleIdentContext(parentContext, this);
+	}
+
+	private void addScopeFor(final IExpression expression, final CaseScope caseScope) {
+		if (scopes.containsKey(expression))
+			tripleo.elijah.util.Stupidity.println_err2("already has an expression" + expression); // TODO put in some verify step
+		scopes.put(expression, caseScope);
+	}
+
+	public void addScopeFor(final IExpression expression, final Scope3 caseScope) {
+		addScopeFor(expression, new CaseScope(expression, caseScope));
+	}
+
+	public void expr(final IExpression expr) {
+		this.expr = expr;
+	}
+
+	@Override
+	public Context getContext() {
+		return _ctx;
+	}
+
+	public IExpression getExpr() {
+		return expr;
+	}
+
+	@Override
+	public OS_Element getParent() {
+		return parent;
+	}
+
+	public HashMap<IExpression, CaseScope> getScopes() {
+		return scopes;
+	}
+
+	public void postConstruct() {
+		// nop
+	}
+
+	public void scope(final Scope3 sco, final IExpression expr1) {
+		addScopeFor(expr1, new CaseScope(expr1, sco));
+	}
+
+	public void setContext(final CaseContext ctx) {
+		__ctx = ctx;
+	}
+
+	@Override
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitCaseConditional(this);
 	}
 }
 

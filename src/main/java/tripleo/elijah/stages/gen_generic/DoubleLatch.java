@@ -1,9 +1,9 @@
 package tripleo.elijah.stages.gen_generic;
 
+import java.util.function.Consumer;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Consumer;
 
 public class DoubleLatch<T> {
 	private final @NotNull Consumer<T> action;
@@ -17,15 +17,15 @@ public class DoubleLatch<T> {
 		action = aAction;
 	}
 
-	public void notify(final T att) {
-		tt = att;
+	public void notify(final boolean ass) {
+		simple = ass;
 		if (simple && tt != null) {
 			action.accept(tt);
 		}
 	}
 
-	public void notify(final boolean ass) {
-		simple = ass;
+	public void notify(final T att) {
+		tt = att;
 		if (simple && tt != null) {
 			action.accept(tt);
 		}

@@ -1,6 +1,9 @@
 package tripleo.elijah.stages.gen_c;
 
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.nextgen.reactive.Reactivable;
 import tripleo.elijah.nextgen.reactive.ReactiveDimension;
@@ -8,8 +11,6 @@ import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.EvaConstructor;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.util.buffer.Buffer;
-
-import java.util.List;
 
 public class GCFC implements Reactivable {
 

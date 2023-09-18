@@ -8,15 +8,16 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import static org.junit.Assert.assertEquals;
+import static tripleo.elijah.util.Helpers.List_of;
+
 import org.junit.Test;
+
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.factory.comp.CompilationFactory;
-
-import static org.junit.Assert.assertEquals;
-import static tripleo.elijah.util.Helpers.List_of;
 
 /**
  * Created 3/5/21 4:32 AM

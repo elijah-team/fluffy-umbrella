@@ -1,9 +1,9 @@
 package tripleo.elijah.stages.gen_c;
 
+import java.util.List;
+
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
-
-import java.util.List;
 
 public class ZonePath implements ZoneMember {
 	private final IdentIA                   identIA;

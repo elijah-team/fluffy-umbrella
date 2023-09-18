@@ -27,6 +27,42 @@ import tripleo.elijah.stateful.StateRegistrationToken;
 
 //@StatefulProperty
 public class ExitGetType implements State {
+	private static class __foundElement_hasIdteType__ITE_Resolver implements ITE_Resolver {
+		@Override
+		public void check() {
+			int y = 2;
+		}
+
+		@Contract(pure = true)
+		@Override
+		public IdentTableEntry.@Nullable ITE_Resolver_Result getResult() {
+			return null;
+		}
+
+		@Override
+		public boolean isDone() {
+			return false;
+		}
+	}
+
+	public static class __foundElement_noIdteType__ITE_Resolver implements ITE_Resolver {
+		@Override
+		public void check() {
+			int y = 2;
+		}
+
+		@Contract(pure = true)
+		@Override
+		public IdentTableEntry.@Nullable ITE_Resolver_Result getResult() {
+			return null;
+		}
+
+		@Override
+		public boolean isDone() {
+			return false;
+		}
+	}
+
 	private StateRegistrationToken identity;
 
 	@Override
@@ -54,61 +90,9 @@ public class ExitGetType implements State {
 
 				final String path = generatedFunction.getIdentIAPathNormal(ident_a);
 
-				@Override
-				public void foundElement(final @NotNull OS_Element x) {
-					System.err.println("590-590 " + x);
-
-
-					if (ite.getResolvedElement() != x)
-						ite.setStatus(BaseTableEntry.Status.KNOWN, dt2._inj().new_GenericElementHolder(x));
-					if (ite.getType() != null && ite.getType().getAttached() != null) {
-						__foundElement_hasIdteType();
-					} else {
-						__foundElement_noIdteType(x);
-					}
-				}
-
 				final __foundElement_noIdteType__ITE_Resolver resolver000 = new __foundElement_noIdteType__ITE_Resolver();
+
 				final __foundElement_hasIdteType__ITE_Resolver resolver001 = new __foundElement_hasIdteType__ITE_Resolver();
-
-				private void __foundElement_noIdteType(final @NotNull OS_Element x) {
-
-					ite.addResolver(resolver000);
-
-					final int yy = 2;
-					if (!ite.hasResolvedElement()) {
-						@Nullable LookupResultList lrl = null;
-						try {
-							lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), aFunctionContext, dt2);
-							@Nullable final OS_Element best = lrl.chooseBest(null);
-							if (best != null) {
-								ite.setStatus(BaseTableEntry.Status.KNOWN, dt2._inj().new_GenericElementHolder(x));
-								if (ite.getType() != null && ite.getType().getAttached() != null) {
-									if (ite.getType().getAttached().getType() == OS_Type.Type.USER) {
-										try {
-											@NotNull final GenType xx = dt2.resolve_type(ite.getType().getAttached(), aFunctionContext);
-											ite.getType().setAttached(xx);
-										} catch (final ResolveError resolveError) { // TODO double catch
-											dt2._LOG().info("210 Can't attach type to " + ite.getIdent());
-											dt2._errSink().reportDiagnostic(resolveError);
-											//continue;
-										}
-									}
-								}
-							} else {
-								dt2._LOG().err("184 Couldn't resolve " + ite.getIdent());
-							}
-						} catch (final ResolveError aResolveError) {
-							dt2._LOG().err("184-506 Couldn't resolve " + ite.getIdent());
-							aResolveError.printStackTrace();
-							dt2._errSink().reportDiagnostic(aResolveError);
-						}
-						if (ite.getType().getAttached().getType() == OS_Type.Type.USER_CLASS) {
-							use_user_class(ite.getType().getAttached(), ite);
-						}
-					}
-				}
-
 				private void __foundElement_hasIdteType() {
 
 					ite.addResolver(resolver001);
@@ -149,6 +133,58 @@ public class ExitGetType implements State {
 					}
 				}
 
+				private void __foundElement_noIdteType(final @NotNull OS_Element x) {
+
+					ite.addResolver(resolver000);
+
+					final int yy = 2;
+					if (!ite.hasResolvedElement()) {
+						@Nullable LookupResultList lrl = null;
+						try {
+							lrl = DeduceLookupUtils.lookupExpression(ite.getIdent(), aFunctionContext, dt2);
+							@Nullable final OS_Element best = lrl.chooseBest(null);
+							if (best != null) {
+								ite.setStatus(BaseTableEntry.Status.KNOWN, dt2._inj().new_GenericElementHolder(x));
+								if (ite.getType() != null && ite.getType().getAttached() != null) {
+									if (ite.getType().getAttached().getType() == OS_Type.Type.USER) {
+										try {
+											@NotNull final GenType xx = dt2.resolve_type(ite.getType().getAttached(), aFunctionContext);
+											ite.getType().setAttached(xx);
+										} catch (final ResolveError resolveError) { // TODO double catch
+											dt2._LOG().info("210 Can't attach type to " + ite.getIdent());
+											dt2._errSink().reportDiagnostic(resolveError);
+											//continue;
+										}
+									}
+								}
+							} else {
+								dt2._LOG().err("184 Couldn't resolve " + ite.getIdent());
+							}
+						} catch (final ResolveError aResolveError) {
+							dt2._LOG().err("184-506 Couldn't resolve " + ite.getIdent());
+							aResolveError.printStackTrace();
+							dt2._errSink().reportDiagnostic(aResolveError);
+						}
+						if (ite.getType().getAttached().getType() == OS_Type.Type.USER_CLASS) {
+							use_user_class(ite.getType().getAttached(), ite);
+						}
+					}
+				}
+
+				@Override
+				public void foundElement(final @NotNull OS_Element x) {
+					System.err.println("590-590 " + x);
+
+
+					if (ite.getResolvedElement() != x)
+						ite.setStatus(BaseTableEntry.Status.KNOWN, dt2._inj().new_GenericElementHolder(x));
+					if (ite.getType() != null && ite.getType().getAttached() != null) {
+						__foundElement_hasIdteType();
+					} else {
+						__foundElement_noIdteType(x);
+					}
+				}
+
 				@Override
 				public void noFoundElement() {
 					ite.setStatus(BaseTableEntry.Status.UNKNOWN, null);
@@ -174,41 +210,5 @@ public class ExitGetType implements State {
 	@Override
 	public void setIdentity(final StateRegistrationToken aId) {
 		identity = aId;
-	}
-
-	private static class __foundElement_hasIdteType__ITE_Resolver implements ITE_Resolver {
-		@Override
-		public boolean isDone() {
-			return false;
-		}
-
-		@Override
-		public void check() {
-			int y = 2;
-		}
-
-		@Contract(pure = true)
-		@Override
-		public IdentTableEntry.@Nullable ITE_Resolver_Result getResult() {
-			return null;
-		}
-	}
-
-	public static class __foundElement_noIdteType__ITE_Resolver implements ITE_Resolver {
-		@Override
-		public boolean isDone() {
-			return false;
-		}
-
-		@Override
-		public void check() {
-			int y = 2;
-		}
-
-		@Contract(pure = true)
-		@Override
-		public IdentTableEntry.@Nullable ITE_Resolver_Result getResult() {
-			return null;
-		}
 	}
 }

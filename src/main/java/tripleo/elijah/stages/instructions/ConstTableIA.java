@@ -23,6 +23,14 @@ public class ConstTableIA implements InstructionArgument {
 		this.gf    = generatedFunction;
 	}
 
+	public ConstantTableEntry getEntry() {
+		return gf.getConstTableEntry(index);
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
 	@Override
 	public String toString() {
 		final ConstantTableEntry constantTableEntry = gf.cte_list().get(index);
@@ -31,14 +39,6 @@ public class ConstTableIA implements InstructionArgument {
 			return String.format("(ct %d) [%s=%s]", index, name, constantTableEntry.initialValue);
 		else
 			return String.format("(ct %d) [%s]", index, constantTableEntry.initialValue);
-	}
-
-	public int getIndex() {
-		return index;
-	}
-
-	public ConstantTableEntry getEntry() {
-		return gf.getConstTableEntry(index);
 	}
 }
 

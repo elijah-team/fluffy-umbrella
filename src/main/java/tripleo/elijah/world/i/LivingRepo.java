@@ -1,5 +1,8 @@
 package tripleo.elijah.world.i;
 
+import java.util.Collection;
+import java.util.List;
+
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ClassStatement;
@@ -14,49 +17,46 @@ import tripleo.elijah.world.impl.DefaultLivingClass;
 import tripleo.elijah.world.impl.DefaultLivingFunction;
 import tripleo.elijah.world.impl.DefaultLivingNamespace;
 
-import java.util.Collection;
-import java.util.List;
-
 public interface LivingRepo {
-	DefaultLivingClass addClass(EvaClass aClass, Add addFlag);
+	enum Add {MAIN_CLASS, MAIN_FUNCTION, NONE}
 
 	LivingClass addClass(ClassStatement cs);
 
-	DefaultLivingFunction addFunction(BaseEvaFunction aFunction, Add aMainFunction);
+	DefaultLivingClass addClass(EvaClass aClass, Add addFlag);
 
-	void addModule(OS_Module mod, String aFilename, final Compilation aC);
+	DefaultLivingFunction addFunction(BaseEvaFunction aFunction, Add aMainFunction);
 
 	LivingFunction addFunction(BaseFunctionDef fd);
 
-	LivingPackage addPackage(OS_Package pk);
+	void addModule(OS_Module mod, String aFilename, final Compilation aC);
 
 	//DefaultLivingClass addClass(EvaClass aClass, Add aMainClass);
-
-	DefaultLivingNamespace addNamespace(EvaNamespace aNamespace, Add aNone);
-
-	LivingNamespace getNamespace(EvaNamespace aEvaNamespace);
-
-	LivingClass getClass(EvaClass aEvaClass);
-
-	OS_Package getPackage(String aPackageName);
-
-	boolean hasPackage(String aPackageName);
-
-	LivingFunction getFunction(BaseEvaFunction aBaseEvaFunction);
-
-	Collection<WorldModule> modules();
 
 	void addModule2(WorldModule aWorldModule);
 
 	void addModuleProcess(CompletableProcess<WorldModule> wmcp);
 
-	WorldModule getModule(OS_Module aSuccess);
+	DefaultLivingNamespace addNamespace(EvaNamespace aNamespace, Add aNone);
 
-	enum Add {MAIN_CLASS, MAIN_FUNCTION, NONE}
+	LivingPackage addPackage(OS_Package pk);
 
-	OS_Package makePackage(Qualident aPkgName);
+	LivingClass getClass(EvaClass aEvaClass);
+
+	List<LivingClass> getClassesForClassNamed(String string);
 
 	List<LivingClass> getClassesForClassStatement(ClassStatement cls);
 
-	List<LivingClass> getClassesForClassNamed(String string);
+	LivingFunction getFunction(BaseEvaFunction aBaseEvaFunction);
+
+	WorldModule getModule(OS_Module aSuccess);
+
+	LivingNamespace getNamespace(EvaNamespace aEvaNamespace);
+
+	OS_Package getPackage(String aPackageName);
+
+	boolean hasPackage(String aPackageName);
+
+	OS_Package makePackage(Qualident aPkgName);
+
+	Collection<WorldModule> modules();
 }

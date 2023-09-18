@@ -67,6 +67,12 @@ public class MethHdrNode implements Node {
 		NotImplementedException.raise();
 	}
 
+	public ArgumentNode argument(final int c) {
+		// TODO Auto-generated method stub
+//		if (c>=argument_types.size()) return null;
+		return (argument_types.get(c));
+	}
+
 	public Iterable<ArgumentNode> ArgumentsIterator() {
 		// TODO Auto-generated method stub
 		return new Iterable<ArgumentNode>() {
@@ -94,14 +100,23 @@ public class MethHdrNode implements Node {
 		};
 	}
 
-	public ArgumentNode argument(final int c) {
+	public void BeginMeth(final CompilerContext cctx, final GenBuffer gbn) {
 		// TODO Auto-generated method stub
-//		if (c>=argument_types.size()) return null;
-		return (argument_types.get(c));
+
 	}
 
-	public TypeRef returnType() {
-		return returnType2;
+	public void EndMeth(final CompilerContext cctx, final GenBuffer gbn) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void GenMethHdr(final CompilerContext cctx, final GenBuffer gbn) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public String genName() {
+		return methName.genName;
 	}
 
 	@Override
@@ -113,23 +128,8 @@ public class MethHdrNode implements Node {
 		return _parent;
 	}
 
-	public String genName() {
-		return methName.genName;
-	}
-
-	public void GenMethHdr(final CompilerContext cctx, final GenBuffer gbn) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void BeginMeth(final CompilerContext cctx, final GenBuffer gbn) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void EndMeth(final CompilerContext cctx, final GenBuffer gbn) {
-		// TODO Auto-generated method stub
-
+	public TypeRef returnType() {
+		return returnType2;
 	}
 
 }

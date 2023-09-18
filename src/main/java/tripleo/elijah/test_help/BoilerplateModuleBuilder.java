@@ -1,10 +1,11 @@
 package tripleo.elijah.test_help;
 
+import java.util.function.Consumer;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Module;
-
-import java.util.function.Consumer;
 
 public class BoilerplateModuleBuilder {
 	private final OS_Module mod;

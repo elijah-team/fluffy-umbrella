@@ -9,10 +9,11 @@
  */
 package tripleo.elijah.stages.deduce;
 
-import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.lang.ClassStatement;
-
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.NotNull;
+
+import tripleo.elijah.lang.ClassStatement;
 
 /**
  * Created 1/5/22 11:27 PM

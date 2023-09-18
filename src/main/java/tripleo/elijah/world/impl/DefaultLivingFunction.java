@@ -2,6 +2,7 @@ package tripleo.elijah.world.impl;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.world.i.LivingFunction;

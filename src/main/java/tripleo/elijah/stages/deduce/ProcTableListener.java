@@ -8,8 +8,11 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.ConstructorDef;
@@ -40,93 +43,123 @@ import tripleo.elijah.stages.instructions.ProcIA;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.world.WorldGlobals;
 
-import java.util.Map;
-
 /**
  * Created 9/10/21 3:42 AM
  */
 public class ProcTableListener implements BaseTableEntry.StatusListener {
-	private final          DeduceTypes2.@NotNull DeduceClient2 dc;
-	private final          BaseEvaFunction                     generatedFunction;
-	private final @NotNull ElLog                               LOG;
-	private final          ProcTableEntry                      pte;
+	class E_Is_FunctionDef {
+		private final     FunctionDef        fd;
+		private final     OS_Element         parent;
+		private final     ProcTableEntry     pte;
+		private @Nullable FunctionInvocation fi;
+		private           GenType            genType;
 
-	public ProcTableListener(ProcTableEntry pte, BaseEvaFunction generatedFunction, DeduceTypes2.@NotNull DeduceClient2 dc) {
-		this.pte               = pte;
-		this.generatedFunction = generatedFunction;
-		this.dc                = dc;
-		//
-		LOG = dc.getLOG();
-	}
-
-	@Override
-	public void onChange(final IElementHolder eh, final BaseTableEntry.Status newStatus) {
-		@Nullable Constructable co = null;
-		if (eh instanceof final @NotNull ConstructableElementHolder constructableElementHolder) {
-			co = constructableElementHolder.getConstructable();
+		public E_Is_FunctionDef(ProcTableEntry pte, FunctionDef aFd, OS_Element aParent) {
+			this.pte = pte;
+			fd       = aFd;
+			parent   = aParent;
 		}
-		if (newStatus != BaseTableEntry.Status.UNKNOWN) { // means eh is null
-			@Nullable AbstractDependencyTracker depTracker;
-			if (co instanceof final @NotNull IdentIA identIA) {
-				depTracker = (AbstractDependencyTracker) identIA.gf;
-			} else if (co instanceof final @Nullable IntegerIA integerIA) {
-				depTracker = (AbstractDependencyTracker) integerIA.gf;
-			} else
-				depTracker = null;
 
-			set_resolved_element_pte(co, eh.getElement(), pte, depTracker);
-
-			final InstructionArgument expressionNum = pte.expression_num;
-
-			if (expressionNum instanceof IdentIA identIA) {
-				final IdentTableEntry entry = identIA.getEntry();
-				final DR_Ident        ident = generatedFunction.getIdent(entry);
-				ident.resolve(eh, pte);
-			} else {
-				System.err.println("*************************** i still refuse");
+		private void ci_null__fi_not_null(final TypeName typeName) {
+			if (parent instanceof final @NotNull ClassStatement classStatement) {
+				parentIsClass(classStatement, typeName);
+			} else if (parent instanceof final @NotNull NamespaceStatement namespaceStatement) {
+				parentIsNamespace(namespaceStatement);
 			}
 		}
-	}
 
-	void set_resolved_element_pte(final @Nullable Constructable co,
-								  final OS_Element e,
-								  final @NotNull ProcTableEntry pte,
-								  final AbstractDependencyTracker depTracker) {
-		if (e instanceof ClassStatement) {
-			resolved_element_pte_ClassStatement(co, (ClassStatement) e, pte);
-		} else if (e instanceof @NotNull final FunctionDef fd) {
-			resolved_element_pte_FunctionDef(co, pte, depTracker, fd);
-		} else {
-			LOG.err("845 Unknown element for ProcTableEntry " + e);
+		private void ci_null__fi_null(final TypeName typeName) {
+			if (parent instanceof final @NotNull NamespaceStatement namespaceStatement) {
+				parentIsNamespace(namespaceStatement);
+			} else if (parent instanceof final @NotNull ClassStatement classStatement) {
+				parentIsClass(classStatement, typeName);
+			} else if (parent instanceof FunctionDef) {
+				if (pte.expression_num == null) {
+					// TODO need the instruction to get args from FnCallArgs
+					fi = null;
+				}
+			} else
+				throw new IllegalStateException("Unknown parent");
+		}
+
+		public @Nullable FunctionInvocation getFi() {
+			return fi;
+		}
+
+		public GenType getGenType() {
+			return genType;
+		}
+
+		/**
+		 * Create genType and set ci; set fi
+		 *
+		 * @param typeName an optional typename, used for generics in {@code genCI}
+		 * @return a "function object" with genType and hopefully fi set
+		 */
+		/* @ensures genType != null && genType.ci != null; */
+		/* @ ///// ensures fi != null ; */
+		public @NotNull E_Is_FunctionDef invoke(TypeName typeName) {
+			if (pte.getClassInvocation() == null && pte.getFunctionInvocation() == null) {
+				@NotNull ClassInvocation ci;
+				ci_null__fi_null(typeName);
+				if (fi != null)
+					pte.setFunctionInvocation(fi);
+			} else if (pte.getClassInvocation() == null && pte.getFunctionInvocation() != null) {
+				ci_null__fi_not_null(typeName);
+			} else {
+				// don't create _inj().new_objects when alrady populated
+				genType = new GenType();
+				final ClassInvocation classInvocation = pte.getClassInvocation();
+				genType.setResolved(classInvocation.getKlass().getOS_Type());
+				genType.setCi(classInvocation);
+				fi = pte.getFunctionInvocation();
+			}
+			return this;
+		}
+
+		private void parentIsClass(final @NotNull ClassStatement classStatement, final TypeName typeName) {
+
+			CI_Hint hint = null;
+
+			BaseFunctionDef currentFunction = generatedFunction.getFD();
+			OS_Element      currentClass0   = currentFunction.getParent();
+
+			if (currentClass0 instanceof ClassStatement currentClass) {
+				Map<TypeName, ClassStatement> inh = currentClass.getContext().inheritance();
+				if (inh.containsValue(fd.getParent())) {
+					// the function referenced by pte.expression is an inherited method
+					// defined in genType.resolved and called in generatedFunction
+					// for whatever reason we don't have a CodePoint (gf, instruction...)
+
+					hint = new InheritedMethodCalledFromInheritee(fd, classStatement, generatedFunction);
+				}
+			}
+
+
+			genType = new GenType(classStatement);
+			//							ci = _inj().new_ClassInvocation(classStatement, null);
+			//							ci = phase.registerClassInvocation(ci);
+			//							genType.ci = ci;
+			@NotNull ClassInvocation ci = dc.genCI(genType, typeName);
+			pte.setClassInvocation(ci);
+			fi = dc.newFunctionInvocation(fd, pte, ci);
+
+			if (hint != null) {
+				ci.hint = hint;
+				fi.hint = hint;
+			}
+		}
+
+		private void parentIsNamespace(final @NotNull NamespaceStatement namespaceStatement) {
+			genType = GenType.of(namespaceStatement, () -> dc.registerNamespaceInvocation(namespaceStatement));
+			fi      = dc.newFunctionInvocation(fd, pte, genType.getCi());
 		}
 	}
+	public static class PTE_Resolution {
+		public void apply(final ProcTableEntry aProcTableEntry) {
 
-	private void resolved_element_pte_ClassStatement(final @Nullable Constructable co,
-													 final @NotNull ClassStatement e,
-													 final @NotNull ProcTableEntry pte) {
-		FunctionInvocation        fi;
-		@Nullable ClassInvocation ci;
-
-		final DG_ClassStatement dcs = dc.deduceTypes2().DG_ClassStatement(e);
-
-		ci = dcs.classInvocation();
-		ci = dc.registerClassInvocation(ci);
-		fi = dc.newFunctionInvocation(WorldGlobals.defaultVirtualCtor, pte, ci); // TODO might not be virtual ctor, so check
-		pte.setFunctionInvocation(fi);
-
-		final IdentTableEntry entry = ((IdentIA) pte.expression_num).getEntry();
-		generatedFunction.getIdent(entry).resolve(dcs);
-
-		dcs.attach(fi, pte);
-
-		if (co != null) {
-			co.setConstructable(pte);
-			ci.resolvePromise().done((EvaClass result) -> {
-				resolved_element_pte_ClassStatement_EvaClass(result, e, co, dcs);
-			});
 		}
 	}
-
 	private static void resolved_element_pte_ClassStatement_EvaClass(final EvaClass result, final @NotNull ClassStatement e, final @NotNull Constructable co, final @NotNull DG_ClassStatement dcs) {
 		//System.err.println("828282 "+((ClassStatement) e).name());
 		if ((e.name()).equals("Foo")) {
@@ -137,29 +170,20 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 
 		dcs.attachClass(result); // T168-089
 	}
+	private final          DeduceTypes2.@NotNull DeduceClient2 dc;
 
-	private void resolved_element_pte_FunctionDef(Constructable co, @NotNull ProcTableEntry pte, AbstractDependencyTracker depTracker, @NotNull FunctionDef fd) {
-		if (pte.expression_num != null) {
-			if (pte.expression_num instanceof final @NotNull IdentIA num) {
-				__resolved_element_pte_FunctionDef_IdentIA(co, pte, depTracker, fd, num);
+	private final          BaseEvaFunction                     generatedFunction;
 
-				final DR_Ident dr_ident = generatedFunction.getIdent(num.getEntry());
-				dr_ident.resolve();
+	private final @NotNull ElLog                               LOG;
 
-			} else if (pte.expression_num instanceof final @NotNull IntegerIA integerIA) {
-				final @NotNull VariableTableEntry variableTableEntry = integerIA.getEntry();
+	private final          ProcTableEntry                      pte;
 
-				VTE_TypePromises.resolved_element_pte(co, pte, depTracker, fd, variableTableEntry, this);
-
-				int y = 2;
-			}
-		} else {
-			OS_Element parent = pte.getResolvedElement(); // for dunder methods
-
-			assert parent != null;
-
-			resolved_element_pte_FunctionDef_dunder(co, depTracker, pte, fd, parent);
-		}
+	public ProcTableListener(ProcTableEntry pte, BaseEvaFunction generatedFunction, DeduceTypes2.@NotNull DeduceClient2 dc) {
+		this.pte               = pte;
+		this.generatedFunction = generatedFunction;
+		this.dc                = dc;
+		//
+		LOG = dc.getLOG();
 	}
 
 	private void __resolved_element_pte_FunctionDef_IdentIA(final Constructable co,
@@ -219,6 +243,106 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 		}
 	}
 
+	void finish(@Nullable Constructable co, @Nullable AbstractDependencyTracker depTracker, @NotNull FunctionInvocation aFi, @Nullable GenType aGenType) {
+		if (co != null && aGenType != null)
+			co.setGenType(aGenType);
+
+		if (depTracker != null) {
+			if (aGenType == null)
+				tripleo.elijah.util.Stupidity.println_err_2("247 genType is null");
+
+			if (/*aGenType == null &&*/ aFi.getFunction() instanceof ConstructorDef) {
+				final @NotNull ClassStatement c        = aFi.getClassInvocation().getKlass();
+				final @NotNull GenType        genType2 = new GenType(c);
+				depTracker.addDependentType(genType2);
+				// TODO why not add fi?
+			} else {
+				depTracker.addDependentFunction(aFi);
+				if (aGenType != null)
+					depTracker.addDependentType(aGenType);
+			}
+		}
+	}
+
+	@Override
+	public void onChange(final IElementHolder eh, final BaseTableEntry.Status newStatus) {
+		@Nullable Constructable co = null;
+		if (eh instanceof final @NotNull ConstructableElementHolder constructableElementHolder) {
+			co = constructableElementHolder.getConstructable();
+		}
+		if (newStatus != BaseTableEntry.Status.UNKNOWN) { // means eh is null
+			@Nullable AbstractDependencyTracker depTracker;
+			if (co instanceof final @NotNull IdentIA identIA) {
+				depTracker = (AbstractDependencyTracker) identIA.gf;
+			} else if (co instanceof final @Nullable IntegerIA integerIA) {
+				depTracker = (AbstractDependencyTracker) integerIA.gf;
+			} else
+				depTracker = null;
+
+			set_resolved_element_pte(co, eh.getElement(), pte, depTracker);
+
+			final InstructionArgument expressionNum = pte.expression_num;
+
+			if (expressionNum instanceof IdentIA identIA) {
+				final IdentTableEntry entry = identIA.getEntry();
+				final DR_Ident        ident = generatedFunction.getIdent(entry);
+				ident.resolve(eh, pte);
+			} else {
+				System.err.println("*************************** i still refuse");
+			}
+		}
+	}
+
+	private void resolved_element_pte_ClassStatement(final @Nullable Constructable co,
+													 final @NotNull ClassStatement e,
+													 final @NotNull ProcTableEntry pte) {
+		FunctionInvocation        fi;
+		@Nullable ClassInvocation ci;
+
+		final DG_ClassStatement dcs = dc.deduceTypes2().DG_ClassStatement(e);
+
+		ci = dcs.classInvocation();
+		ci = dc.registerClassInvocation(ci);
+		fi = dc.newFunctionInvocation(WorldGlobals.defaultVirtualCtor, pte, ci); // TODO might not be virtual ctor, so check
+		pte.setFunctionInvocation(fi);
+
+		final IdentTableEntry entry = ((IdentIA) pte.expression_num).getEntry();
+		generatedFunction.getIdent(entry).resolve(dcs);
+
+		dcs.attach(fi, pte);
+
+		if (co != null) {
+			co.setConstructable(pte);
+			ci.resolvePromise().done((EvaClass result) -> {
+				resolved_element_pte_ClassStatement_EvaClass(result, e, co, dcs);
+			});
+		}
+	}
+
+	private void resolved_element_pte_FunctionDef(Constructable co, @NotNull ProcTableEntry pte, AbstractDependencyTracker depTracker, @NotNull FunctionDef fd) {
+		if (pte.expression_num != null) {
+			if (pte.expression_num instanceof final @NotNull IdentIA num) {
+				__resolved_element_pte_FunctionDef_IdentIA(co, pte, depTracker, fd, num);
+
+				final DR_Ident dr_ident = generatedFunction.getIdent(num.getEntry());
+				dr_ident.resolve();
+
+			} else if (pte.expression_num instanceof final @NotNull IntegerIA integerIA) {
+				final @NotNull VariableTableEntry variableTableEntry = integerIA.getEntry();
+
+				VTE_TypePromises.resolved_element_pte(co, pte, depTracker, fd, variableTableEntry, this);
+
+				int y = 2;
+			}
+		} else {
+			OS_Element parent = pte.getResolvedElement(); // for dunder methods
+
+			assert parent != null;
+
+			resolved_element_pte_FunctionDef_dunder(co, depTracker, pte, fd, parent);
+		}
+	}
+
 	private void resolved_element_pte_FunctionDef_dunder(Constructable co,
 														 AbstractDependencyTracker depTracker,
 														 @NotNull ProcTableEntry pte,
@@ -261,16 +385,16 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 		}
 	}
 
-	private void resolved_element_pte_FunctionDef_IdentExpression(Constructable co, ProcTableEntry pte, AbstractDependencyTracker depTracker, @NotNull FunctionDef fd, @NotNull IdentExpression parent) {
-		@Nullable InstructionArgument vte_ia = generatedFunction.vte_lookup(parent.getText());
+	private void resolved_element_pte_FunctionDef_FormalArgListItem(Constructable co, ProcTableEntry pte, AbstractDependencyTracker depTracker, @NotNull FunctionDef fd, FormalArgListItem parent) {
+		final FormalArgListItem       fali   = parent;
+		@Nullable InstructionArgument vte_ia = generatedFunction.vte_lookup(fali.name());
 		assert vte_ia != null;
 		final @NotNull VariableTableEntry variableTableEntry = ((IntegerIA) vte_ia).getEntry();
 		VTE_TypePromises.resolved_element_pte(co, pte, depTracker, fd, variableTableEntry, this);
 	}
 
-	private void resolved_element_pte_FunctionDef_FormalArgListItem(Constructable co, ProcTableEntry pte, AbstractDependencyTracker depTracker, @NotNull FunctionDef fd, FormalArgListItem parent) {
-		final FormalArgListItem       fali   = parent;
-		@Nullable InstructionArgument vte_ia = generatedFunction.vte_lookup(fali.name());
+	private void resolved_element_pte_FunctionDef_IdentExpression(Constructable co, ProcTableEntry pte, AbstractDependencyTracker depTracker, @NotNull FunctionDef fd, @NotNull IdentExpression parent) {
+		@Nullable InstructionArgument vte_ia = generatedFunction.vte_lookup(parent.getText());
 		assert vte_ia != null;
 		final @NotNull VariableTableEntry variableTableEntry = ((IntegerIA) vte_ia).getEntry();
 		VTE_TypePromises.resolved_element_pte(co, pte, depTracker, fd, variableTableEntry, this);
@@ -309,139 +433,16 @@ public class ProcTableListener implements BaseTableEntry.StatusListener {
 		VTE_TypePromises.resolved_element_pte_VariableStatement2(co, depTracker, pte, fd, variableTableEntry, this);
 	}
 
-	void finish(@Nullable Constructable co, @Nullable AbstractDependencyTracker depTracker, @NotNull FunctionInvocation aFi, @Nullable GenType aGenType) {
-		if (co != null && aGenType != null)
-			co.setGenType(aGenType);
-
-		if (depTracker != null) {
-			if (aGenType == null)
-				tripleo.elijah.util.Stupidity.println_err_2("247 genType is null");
-
-			if (/*aGenType == null &&*/ aFi.getFunction() instanceof ConstructorDef) {
-				final @NotNull ClassStatement c        = aFi.getClassInvocation().getKlass();
-				final @NotNull GenType        genType2 = new GenType(c);
-				depTracker.addDependentType(genType2);
-				// TODO why not add fi?
-			} else {
-				depTracker.addDependentFunction(aFi);
-				if (aGenType != null)
-					depTracker.addDependentType(aGenType);
-			}
-		}
-	}
-
-	class E_Is_FunctionDef {
-		private final     FunctionDef        fd;
-		private final     OS_Element         parent;
-		private final     ProcTableEntry     pte;
-		private @Nullable FunctionInvocation fi;
-		private           GenType            genType;
-
-		public E_Is_FunctionDef(ProcTableEntry pte, FunctionDef aFd, OS_Element aParent) {
-			this.pte = pte;
-			fd       = aFd;
-			parent   = aParent;
-		}
-
-		public @Nullable FunctionInvocation getFi() {
-			return fi;
-		}
-
-		public GenType getGenType() {
-			return genType;
-		}
-
-		/**
-		 * Create genType and set ci; set fi
-		 *
-		 * @param typeName an optional typename, used for generics in {@code genCI}
-		 * @return a "function object" with genType and hopefully fi set
-		 */
-		/* @ensures genType != null && genType.ci != null; */
-		/* @ ///// ensures fi != null ; */
-		public @NotNull E_Is_FunctionDef invoke(TypeName typeName) {
-			if (pte.getClassInvocation() == null && pte.getFunctionInvocation() == null) {
-				@NotNull ClassInvocation ci;
-				ci_null__fi_null(typeName);
-				if (fi != null)
-					pte.setFunctionInvocation(fi);
-			} else if (pte.getClassInvocation() == null && pte.getFunctionInvocation() != null) {
-				ci_null__fi_not_null(typeName);
-			} else {
-				// don't create _inj().new_objects when alrady populated
-				genType = new GenType();
-				final ClassInvocation classInvocation = pte.getClassInvocation();
-				genType.setResolved(classInvocation.getKlass().getOS_Type());
-				genType.setCi(classInvocation);
-				fi = pte.getFunctionInvocation();
-			}
-			return this;
-		}
-
-		private void ci_null__fi_null(final TypeName typeName) {
-			if (parent instanceof final @NotNull NamespaceStatement namespaceStatement) {
-				parentIsNamespace(namespaceStatement);
-			} else if (parent instanceof final @NotNull ClassStatement classStatement) {
-				parentIsClass(classStatement, typeName);
-			} else if (parent instanceof FunctionDef) {
-				if (pte.expression_num == null) {
-					// TODO need the instruction to get args from FnCallArgs
-					fi = null;
-				}
-			} else
-				throw new IllegalStateException("Unknown parent");
-		}
-
-		private void ci_null__fi_not_null(final TypeName typeName) {
-			if (parent instanceof final @NotNull ClassStatement classStatement) {
-				parentIsClass(classStatement, typeName);
-			} else if (parent instanceof final @NotNull NamespaceStatement namespaceStatement) {
-				parentIsNamespace(namespaceStatement);
-			}
-		}
-
-		private void parentIsNamespace(final @NotNull NamespaceStatement namespaceStatement) {
-			genType = GenType.of(namespaceStatement, () -> dc.registerNamespaceInvocation(namespaceStatement));
-			fi      = dc.newFunctionInvocation(fd, pte, genType.getCi());
-		}
-
-		private void parentIsClass(final @NotNull ClassStatement classStatement, final TypeName typeName) {
-
-			CI_Hint hint = null;
-
-			BaseFunctionDef currentFunction = generatedFunction.getFD();
-			OS_Element      currentClass0   = currentFunction.getParent();
-
-			if (currentClass0 instanceof ClassStatement currentClass) {
-				Map<TypeName, ClassStatement> inh = currentClass.getContext().inheritance();
-				if (inh.containsValue(fd.getParent())) {
-					// the function referenced by pte.expression is an inherited method
-					// defined in genType.resolved and called in generatedFunction
-					// for whatever reason we don't have a CodePoint (gf, instruction...)
-
-					hint = new InheritedMethodCalledFromInheritee(fd, classStatement, generatedFunction);
-				}
-			}
-
-
-			genType = new GenType(classStatement);
-			//							ci = _inj().new_ClassInvocation(classStatement, null);
-			//							ci = phase.registerClassInvocation(ci);
-			//							genType.ci = ci;
-			@NotNull ClassInvocation ci = dc.genCI(genType, typeName);
-			pte.setClassInvocation(ci);
-			fi = dc.newFunctionInvocation(fd, pte, ci);
-
-			if (hint != null) {
-				ci.hint = hint;
-				fi.hint = hint;
-			}
-		}
-	}
-
-	public static class PTE_Resolution {
-		public void apply(final ProcTableEntry aProcTableEntry) {
-
+	void set_resolved_element_pte(final @Nullable Constructable co,
+								  final OS_Element e,
+								  final @NotNull ProcTableEntry pte,
+								  final AbstractDependencyTracker depTracker) {
+		if (e instanceof ClassStatement) {
+			resolved_element_pte_ClassStatement(co, (ClassStatement) e, pte);
+		} else if (e instanceof @NotNull final FunctionDef fd) {
+			resolved_element_pte_FunctionDef(co, pte, depTracker, fd);
+		} else {
+			LOG.err("845 Unknown element for ProcTableEntry " + e);
 		}
 	}
 }

@@ -1,10 +1,10 @@
 package tripleo.elijah.ut.vendor.com.stubbornjava.common.undertow;
 
+import java.nio.ByteBuffer;
+
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 import tripleo.elijah.ut.vendor.com.stubbornjava.common.Json;
-
-import java.nio.ByteBuffer;
 
 public interface JsonSender {
 

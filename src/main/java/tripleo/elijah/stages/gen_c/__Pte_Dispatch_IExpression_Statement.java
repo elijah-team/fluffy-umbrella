@@ -1,7 +1,12 @@
 package tripleo.elijah.stages.gen_c;
 
+import static tripleo.elijah.stages.gen_c.Generate_Code_For_Method.AOG.GET;
+
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.stages.gen_c.statements.ReasonedStringListStatement;
@@ -11,10 +16,6 @@ import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.InstructionFixedList;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.util.Helpers;
-
-import java.util.List;
-
-import static tripleo.elijah.stages.gen_c.Generate_Code_For_Method.AOG.GET;
 
 class __Pte_Dispatch_IExpression_Statement extends ReasonedStringListStatement {
 	private final IExpression expression;

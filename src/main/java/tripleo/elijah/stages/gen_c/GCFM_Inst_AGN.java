@@ -1,14 +1,15 @@
 package tripleo.elijah.stages.gen_c;
 
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.stages.gen_c.statements.ReasonedStringListStatement;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.Instruction;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
-
-import java.util.function.Supplier;
 
 class GCFM_Inst_AGN implements GenerateC_Statement {
 

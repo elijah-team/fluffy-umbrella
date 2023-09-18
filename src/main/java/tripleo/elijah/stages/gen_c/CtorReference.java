@@ -8,7 +8,13 @@
  */
 package tripleo.elijah.stages.gen_c;
 
+import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.gen_c.c_ast1.C_Assignment;
 import tripleo.elijah.stages.gen_c.c_ast1.C_ProcedureCall;
@@ -21,11 +27,6 @@ import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.stages.instructions.ProcIA;
 import tripleo.elijah.util.NotImplementedException;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 
 /**
  * Created 3/7/21 1:22 AM

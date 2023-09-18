@@ -9,16 +9,17 @@
 
 package tripleo.elijah.stages.deduce;
 
+import java.util.Stack;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 import tripleo.elijah.lang.DotExpression;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.util.Helpers;
-
-import java.util.Stack;
 
 public class DotExpressionToStackTest {
 

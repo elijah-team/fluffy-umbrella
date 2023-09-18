@@ -1,8 +1,14 @@
 package tripleo.elijah.stages.deduce;
 
-import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import com.google.common.collect.Lists;
+
 import tripleo.elijah.lang.ClassItem;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.ConstructorDef;
@@ -15,14 +21,24 @@ import tripleo.elijah.lang.OS_Element2;
 import tripleo.elijah.lang.ProcedureCallExpression;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 /**
  * Created 8/3/20 8:41 AM
  */
 public class DeduceUtils {
+	static class DeduceUtilsInjector {
+		public Predicate<OS_Element> new_IsConstructor() {
+			return new IsConstructor();
+		}
+
+		public Predicate<OS_Element2> new_MatchArgs(ExpressionList aExpressionList) {
+			return new MatchArgs(aExpressionList);
+		}
+
+		public Predicate<OS_Element> new_MatchFunctionArgs(final ProcedureCallExpression aPce) {
+			return new MatchFunctionArgs(aPce);
+		}
+	}
+
 	static class IsConstructor implements Predicate<OS_Element> {
 		@Override
 		public boolean test(@Nullable final OS_Element input) {
@@ -60,6 +76,14 @@ public class DeduceUtils {
 			this.pce = pce;
 		}
 
+		private DeduceUtilsInjector _inj() {
+			return __inj;
+		}
+
+		public boolean apply(@NotNull OS_Element input) {
+			return test(input);
+		}
+
 		@Override
 		public boolean test(final @NotNull OS_Element o) {
 			final ExpressionList args = pce.getArgs();
@@ -75,14 +99,6 @@ public class DeduceUtils {
 			tripleo.elijah.util.Stupidity.println_out_2(String.valueOf(o));
 			return false;
 		}
-
-		private DeduceUtilsInjector _inj() {
-			return __inj;
-		}
-
-		public boolean apply(@NotNull OS_Element input) {
-			return test(input);
-		}
 	}
 
 	static class MatchFunctionArgs implements Predicate<OS_Element> {
@@ -90,6 +106,10 @@ public class DeduceUtils {
 
 		public MatchFunctionArgs(final ProcedureCallExpression pce) {
 			this.pce = pce;
+		}
+
+		private DeduceUtilsInjector _inj() {
+			return __inj;
 		}
 
 		@Override
@@ -113,27 +133,9 @@ public class DeduceUtils {
 			}
 //			return false;
 		}
-
-		private DeduceUtilsInjector _inj() {
-			return __inj;
-		}
 	}
 
 	private final static DeduceUtilsInjector __inj = new DeduceUtilsInjector();
-
-	static class DeduceUtilsInjector {
-		public Predicate<OS_Element> new_IsConstructor() {
-			return new IsConstructor();
-		}
-
-		public Predicate<OS_Element> new_MatchFunctionArgs(final ProcedureCallExpression aPce) {
-			return new MatchFunctionArgs(aPce);
-		}
-
-		public Predicate<OS_Element2> new_MatchArgs(ExpressionList aExpressionList) {
-			return new MatchArgs(aExpressionList);
-		}
-	}
 }
 
 //

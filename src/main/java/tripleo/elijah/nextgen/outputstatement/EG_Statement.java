@@ -11,18 +11,18 @@ public interface EG_Statement {
 	static EG_Statement of(String aText, EX_Explanation aEXExplanation) {
 		return new EG_Statement() {
 			@Override
-			public String getText() {
-				return aText;
+			public EX_Explanation getExplanation() {
+				return aEXExplanation;
 			}
 
 			@Override
-			public EX_Explanation getExplanation() {
-				return aEXExplanation;
+			public String getText() {
+				return aText;
 			}
 		};
 	}
 
-	String getText();
-
 	EX_Explanation getExplanation();
+
+	String getText();
 }

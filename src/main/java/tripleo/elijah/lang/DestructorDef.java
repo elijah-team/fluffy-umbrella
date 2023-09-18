@@ -32,11 +32,6 @@ public class DestructorDef extends BaseFunctionDef {
 	}
 
 	@Override
-	public void visitGen(final ElElementVisitor visit) {
-		visit.visitDestructor(this);
-	}
-
-	@Override
 	public OS_Element getParent() {
 		return null;
 	}
@@ -44,5 +39,10 @@ public class DestructorDef extends BaseFunctionDef {
 	@Override
 	public void postConstruct() {
 
+	}
+
+	@Override
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitDestructor(this);
 	}
 }

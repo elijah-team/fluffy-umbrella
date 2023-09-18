@@ -34,47 +34,12 @@ public class FuncTypeName implements TypeName {
 		_arglist = tnl;
 	}
 
-	//	@Override
-	public void type(final TypeModifiers typeModifiers) {
-		_modifiers = typeModifiers;
-	}
-
-	public void returnValue(final TypeName rtn) {
-		_returnValue = rtn;
-	}
-
-	@Override
-	public boolean isNull() {
-		return _arglist == null && _returnValue == null;
-	}
-
-	@Override
-	public Context getContext() {
-		return _ctx;
-	}
-
-	@Override
-	public void setContext(final Context context) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public Type kindOfType() {
-		return Type.FUNCTION;
-	}
-
-	@Override
-	public int getLine() {
-		return -1;
+	public boolean argListIsGeneric() {
+		return false;
 	}
 
 	@Override
 	public int getColumn() {
-		return -1;
-	}
-
-	@Override
-	public int getLineEnd() {
 		return -1;
 	}
 
@@ -84,12 +49,47 @@ public class FuncTypeName implements TypeName {
 	}
 
 	@Override
+	public Context getContext() {
+		return _ctx;
+	}
+
+	@Override
 	public File getFile() {
 		return null;
 	}
 
-	public boolean argListIsGeneric() {
-		return false;
+	@Override
+	public int getLine() {
+		return -1;
+	}
+
+	@Override
+	public int getLineEnd() {
+		return -1;
+	}
+
+	@Override
+	public boolean isNull() {
+		return _arglist == null && _returnValue == null;
+	}
+
+	@Override
+	public Type kindOfType() {
+		return Type.FUNCTION;
+	}
+
+	public void returnValue(final TypeName rtn) {
+		_returnValue = rtn;
+	}
+
+	@Override
+	public void setContext(final Context context) {
+		throw new NotImplementedException();
+	}
+
+	//	@Override
+	public void type(final TypeModifiers typeModifiers) {
+		_modifiers = typeModifiers;
 	}
 }
 

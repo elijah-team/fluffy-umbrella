@@ -1,6 +1,7 @@
 package tripleo.elijah.world.impl;
 
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
@@ -19,8 +20,9 @@ public class DefaultWorldModule implements WorldModule {
 		setThing(mt);
 	}
 
-	public void setThing(final ModuleThing aThing) {
-		thing = aThing;
+	@Override
+	public EIT_ModuleInput input() {
+		return null;
 	}
 
 	@Override
@@ -28,9 +30,8 @@ public class DefaultWorldModule implements WorldModule {
 		return mod;
 	}
 
-	@Override
-	public EIT_ModuleInput input() {
-		return null;
+	public void setThing(final ModuleThing aThing) {
+		thing = aThing;
 	}
 
 //	@Override

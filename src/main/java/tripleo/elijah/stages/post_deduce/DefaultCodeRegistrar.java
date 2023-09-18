@@ -14,13 +14,13 @@ public class DefaultCodeRegistrar implements ICodeRegistrar {
 		compilation = aC;
 	}
 
+	private LivingRepo getLivingRepo() {
+		return compilation.world();
+	}
+
 	@Override
 	public void registerClass(final EvaClass aClass) {
 		getLivingRepo().addClass(aClass, LivingRepo.Add.MAIN_CLASS);
-	}
-
-	private LivingRepo getLivingRepo() {
-		return compilation.world();
 	}
 
 	@Override

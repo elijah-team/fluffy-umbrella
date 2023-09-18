@@ -8,13 +8,37 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.mock;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.DotExpression;
+import tripleo.elijah.lang.ExpressionBuilder;
+import tripleo.elijah.lang.ExpressionKind;
+import tripleo.elijah.lang.FormalArgList;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.IBinaryExpression;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.lang.ProcedureCallExpression;
+import tripleo.elijah.lang.Scope3;
+import tripleo.elijah.lang.StatementWrapper;
+import tripleo.elijah.lang.VariableSequence;
+import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
@@ -24,10 +48,6 @@ import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.test_help.Boilerplate;
-
-import java.util.List;
-
-import static org.easymock.EasyMock.*;
 
 /**
  * Created 3/4/21 3:53 AM

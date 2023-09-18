@@ -9,6 +9,7 @@
 package tripleo.elijah.stages.deduce;
 
 import org.jetbrains.annotations.Contract;
+
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.gen_fn.Constructable;
 import tripleo.elijah.stages.gen_fn.IElementHolder;

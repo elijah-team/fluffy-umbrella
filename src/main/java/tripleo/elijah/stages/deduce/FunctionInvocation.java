@@ -8,11 +8,16 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import static tripleo.elijah.util.Helpers.List_of;
+
+import java.util.List;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ConstructorDef;
 import tripleo.elijah.lang.OS_Element;
@@ -31,10 +36,6 @@ import tripleo.elijah.util.Eventual;
 import tripleo.elijah.util.EventualRegister;
 import tripleo.elijah.work.WorkList;
 import tripleo.elijah.world.WorldGlobals;
-
-import java.util.List;
-
-import static tripleo.elijah.util.Helpers.List_of;
 
 /**
  * Created 1/21/21 9:04 PM
@@ -92,10 +93,6 @@ public class FunctionInvocation implements IInvocation {
 		return classInvocation;
 	}
 
-	public void setClassInvocation(@NotNull ClassInvocation aClassInvocation) {
-		classInvocation = aClassInvocation;
-	}
-
 	public @Nullable BaseEvaFunction getEva() {
 		return null; // TODO 04/15
 	}
@@ -110,19 +107,6 @@ public class FunctionInvocation implements IInvocation {
 
 	public NamespaceInvocation getNamespaceInvocation() {
 		return namespaceInvocation;
-	}
-
-	public void setGenerated(BaseEvaFunction aGeneratedFunction) {
-		_generated = aGeneratedFunction;
-	}
-
-	public void setNamespaceInvocation(NamespaceInvocation aNamespaceInvocation) {
-		namespaceInvocation = aNamespaceInvocation;
-	}
-
-	@Override
-	public void setForFunctionInvocation(final FunctionInvocation aFunctionInvocation) {
-		throw new IllegalStateException("maybe this shouldn't be done?");
 	}
 
 	public Eventual<BaseEvaFunction> makeGenerated__Eventual(final @NotNull Deduce_CreationClosure cl, final EventualRegister register) {
@@ -160,6 +144,33 @@ public class FunctionInvocation implements IInvocation {
 		//}
 	}
 
+	public boolean sameAs(final FunctionInvocation aFunctionInvocation) {
+		if (this == aFunctionInvocation) return true;
+
+		if (aFunctionInvocation == null || getClass() != aFunctionInvocation.getClass()) return false;
+
+		final FunctionInvocation that = (FunctionInvocation) aFunctionInvocation;
+
+		return new EqualsBuilder().append(pte, that.pte).append(hint, that.hint).append(_generated, that._generated).append(fd, that.fd).append(generateDeferred, that.generateDeferred).append(namespaceInvocation, that.namespaceInvocation).append(classInvocation, that.classInvocation).isEquals();
+	}
+
+	public void setClassInvocation(@NotNull ClassInvocation aClassInvocation) {
+		classInvocation = aClassInvocation;
+	}
+
+	@Override
+	public void setForFunctionInvocation(final FunctionInvocation aFunctionInvocation) {
+		throw new IllegalStateException("maybe this shouldn't be done?");
+	}
+
+	public void setGenerated(BaseEvaFunction aGeneratedFunction) {
+		_generated = aGeneratedFunction;
+	}
+
+	public void setNamespaceInvocation(NamespaceInvocation aNamespaceInvocation) {
+		namespaceInvocation = aNamespaceInvocation;
+	}
+
 	@NotNull
 	private BaseEvaFunction xxx___forDefaultVirtualCtor(final Deduce_CreationClosure cl,
 														final DeduceTypes2.@NotNull DeduceTypes2Injector injector,
@@ -167,17 +178,6 @@ public class FunctionInvocation implements IInvocation {
 		@NotNull WlGenerateDefaultCtor wlgdc = injector.new_WlGenerateDefaultCtor(module, this, cl);
 		wlgdc.run(null);
 		BaseEvaFunction gf = wlgdc.getResult();
-		return gf;
-	}
-
-	@NotNull
-	private BaseEvaFunction xxxForConstructorDef(final Deduce_CreationClosure cl,
-												 final @NotNull ConstructorDef cd,
-												 final DeduceTypes2.@NotNull DeduceTypes2Injector injector,
-												 final @NotNull OS_Module module) {
-		@NotNull WlGenerateCtor wlgf = injector.new_WlGenerateCtor(module, cd.getNameNode(), this, cl);
-		wlgf.run(null);
-		BaseEvaFunction gf = wlgf.getResult();
 		return gf;
 	}
 
@@ -211,14 +211,15 @@ public class FunctionInvocation implements IInvocation {
 		return gf;
 	}
 
-	public boolean sameAs(final FunctionInvocation aFunctionInvocation) {
-		if (this == aFunctionInvocation) return true;
-
-		if (aFunctionInvocation == null || getClass() != aFunctionInvocation.getClass()) return false;
-
-		final FunctionInvocation that = (FunctionInvocation) aFunctionInvocation;
-
-		return new EqualsBuilder().append(pte, that.pte).append(hint, that.hint).append(_generated, that._generated).append(fd, that.fd).append(generateDeferred, that.generateDeferred).append(namespaceInvocation, that.namespaceInvocation).append(classInvocation, that.classInvocation).isEquals();
+	@NotNull
+	private BaseEvaFunction xxxForConstructorDef(final Deduce_CreationClosure cl,
+												 final @NotNull ConstructorDef cd,
+												 final DeduceTypes2.@NotNull DeduceTypes2Injector injector,
+												 final @NotNull OS_Module module) {
+		@NotNull WlGenerateCtor wlgf = injector.new_WlGenerateCtor(module, cd.getNameNode(), this, cl);
+		wlgf.run(null);
+		BaseEvaFunction gf = wlgf.getResult();
+		return gf;
 	}
 }
 

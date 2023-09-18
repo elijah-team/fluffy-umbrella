@@ -10,9 +10,33 @@ import tripleo.elijah.lang.TypeName;
 import tripleo.elijah.lang2.BuiltInTypes;
 
 abstract class __Abstract_OS_Type implements OS_Type {
+	protected abstract boolean _isEqual(final OS_Type aType);
+
+	@Override
+	public BuiltInTypes getBType() {
+		return null;
+	}
+
 	@Override
 	public ClassStatement getClassOf() {
 		return null;
+	}
+
+	@Override
+	public TypeName getTypeName() {
+		return null;
+	}
+
+	@Override
+	public boolean isEqual(final OS_Type aType) {
+		if (aType.getType() != getType()) return false;
+
+		return _isEqual(aType);
+	}
+
+	@Override
+	public boolean isUnitType() {
+		return false;
 	}
 
 	@Override
@@ -71,30 +95,6 @@ abstract class __Abstract_OS_Type implements OS_Type {
 			throw new IllegalStateException("can't be here.");
 		}
 	}
-
-	@Override
-	public boolean isUnitType() {
-		return false;
-	}
-
-	@Override
-	public BuiltInTypes getBType() {
-		return null;
-	}
-
-	@Override
-	public TypeName getTypeName() {
-		return null;
-	}
-
-	@Override
-	public boolean isEqual(final OS_Type aType) {
-		if (aType.getType() != getType()) return false;
-
-		return _isEqual(aType);
-	}
-
-	protected abstract boolean _isEqual(final OS_Type aType);
 
 }
 

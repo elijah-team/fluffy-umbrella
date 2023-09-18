@@ -2,6 +2,7 @@ package tripleo.elijah.stages.deduce;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.DecideElObjectType;
 import tripleo.elijah.lang.ElObjectType;
@@ -20,45 +21,6 @@ import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.util.NotImplementedException;
 
 public class __Add_Proc_Table_Listeners {
-	void add_proc_table_listeners(final @NotNull BaseEvaFunction generatedFunction, final @NotNull ProcTableEntry pte, final DeduceTypes2 aDeduceTypes2) {
-		pte.addStatusListener(aDeduceTypes2._inj().new_ProcTableListener(pte, generatedFunction, aDeduceTypes2._inj().new_DeduceClient2(aDeduceTypes2)));
-
-		InstructionArgument en = pte.expression_num;
-		if (en != null) {
-			if (en instanceof final @NotNull IdentIA identIA) {
-				@NotNull IdentTableEntry idte = identIA.getEntry();
-				idte.addStatusListener(new SL(generatedFunction, idte, pte, identIA, aDeduceTypes2));
-			} else if (en instanceof IntegerIA) {
-				// TODO this code does nothing so commented out
-/*
-				final @NotNull IntegerIA integerIA = (IntegerIA) en;
-				@NotNull VariableTableEntry vte = integerIA.getEntry();
-				vte.addStatusListener(_inj().new_BaseTableEntry.StatusListener() {
-					@Override
-					public void onChange(IElementHolder eh, BaseTableEntry.Status newStatus) {
-						if (newStatus != BaseTableEntry.Status.KNOWN)
-							return;
-
-						@NotNull VariableTableEntry vte2 = vte;
-
-						final OS_Element el = eh.getElement();
-
-						@NotNull ElObjectType type = DecideElObjectType.getElObjectType(el);
-
-						switch (type) {
-						case VAR:
-							break;
-						default:
-							throw new NotImplementedException();
-						}
-					}
-				});
-*/
-			} else
-				throw new NotImplementedException();
-		}
-	}
-
 	class SL implements BaseTableEntry.StatusListener {
 		private static final ElObjectType CLASS = null;
 		private static final ElObjectType NAMESPACE = null;
@@ -137,6 +99,45 @@ public class __Add_Proc_Table_Listeners {
 			}
 			default -> deduceTypes2.LOG.err(String.format("228 Don't know what to do %s %s", type, el));
 			}
+		}
+	}
+
+	void add_proc_table_listeners(final @NotNull BaseEvaFunction generatedFunction, final @NotNull ProcTableEntry pte, final DeduceTypes2 aDeduceTypes2) {
+		pte.addStatusListener(aDeduceTypes2._inj().new_ProcTableListener(pte, generatedFunction, aDeduceTypes2._inj().new_DeduceClient2(aDeduceTypes2)));
+
+		InstructionArgument en = pte.expression_num;
+		if (en != null) {
+			if (en instanceof final @NotNull IdentIA identIA) {
+				@NotNull IdentTableEntry idte = identIA.getEntry();
+				idte.addStatusListener(new SL(generatedFunction, idte, pte, identIA, aDeduceTypes2));
+			} else if (en instanceof IntegerIA) {
+				// TODO this code does nothing so commented out
+/*
+				final @NotNull IntegerIA integerIA = (IntegerIA) en;
+				@NotNull VariableTableEntry vte = integerIA.getEntry();
+				vte.addStatusListener(_inj().new_BaseTableEntry.StatusListener() {
+					@Override
+					public void onChange(IElementHolder eh, BaseTableEntry.Status newStatus) {
+						if (newStatus != BaseTableEntry.Status.KNOWN)
+							return;
+
+						@NotNull VariableTableEntry vte2 = vte;
+
+						final OS_Element el = eh.getElement();
+
+						@NotNull ElObjectType type = DecideElObjectType.getElObjectType(el);
+
+						switch (type) {
+						case VAR:
+							break;
+						default:
+							throw new NotImplementedException();
+						}
+					}
+				});
+*/
+			} else
+				throw new NotImplementedException();
 		}
 	}
 }

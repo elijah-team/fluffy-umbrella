@@ -9,10 +9,13 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import java.util.function.Supplier;
+
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.ConstructorDef;
@@ -44,93 +47,78 @@ import tripleo.elijah.stages.instructions.ProcIA;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.util.PromiseReadySupplier;
 
-import java.util.function.Supplier;
-
 /**
  * Created 11/18/21 12:02 PM
  */
 public class DeduceTypeResolve {
-	private final BaseTableEntry                               bte;
-	@Nullable     BaseTableEntry                               backlink;
-	private final DeferredObject2<GenType, ResolveError, Void> typeResolution = new DeferredObject2<>();
-	//private final DeduceTypes2                                 _dt2;
-	private final Supplier<DeduceTypes2>                       _dt2s;
+	public class _StatusListener__BTE_203 implements BaseTableEntry.StatusListener {
+		private void _203_backlink_is_PTE(final @NotNull GenType result, final ProcTableEntry procTableEntry, final @NotNull IElementHolder eh) {
+			// README
+			//   1. Resolve type of pte (above) to a class
+			//   2. Convert bte to ite
+			//   3. Get DeduceElement3
+			//   4. Pass it off
 
-	public DeduceTypeResolve(BaseTableEntry aBte, final Supplier<DeduceTypes2> aDt2) {
-		bte   = aBte;
-		_dt2s = aDt2;
+			// README classStatement [T310-231]
+			final ClassStatement classStatement = result.getResolved().getClassOf();
 
-		if (bte instanceof IdentTableEntry) {
-			((IdentTableEntry) bte).backlinkSet().then(new DoneCallback<InstructionArgument>() {
-				@Override
-				public void onDone(final InstructionArgument backlink0) {
-					if (backlink0 instanceof IdentIA) {
-						backlink = ((IdentIA) backlink0).getEntry();
-						setBacklinkCallback();
-					} else if (backlink0 instanceof IntegerIA) {
-						backlink = ((IntegerIA) backlink0).getEntry();
-						setBacklinkCallback();
-					} else if (backlink0 instanceof ProcIA) {
-						backlink = ((ProcIA) backlink0).getEntry();
-						setBacklinkCallback();
-					} else
-						backlink = null;
+			if (!(bte instanceof final IdentTableEntry identTableEntry_bte)) {
+				throw new AssertionError();
+			} else {
+				final DeduceElement3_IdentTableEntry de3_ite = identTableEntry_bte.getDeduceElement3();
+
+				// Just testing
+				final DeduceElement3_IdentTableEntry de3_ite2 = identTableEntry_bte._deduceTypes2()._zero_getIdent(identTableEntry_bte, identTableEntry_bte.__gf, identTableEntry_bte._deduceTypes2());
+				assert de3_ite2.principal == de3_ite.principal;
+
+				// Also testing, but not essential.
+				//assert identTableEntry_bte.getCallablePTE() != null && procTableEntry == identTableEntry_bte.getCallablePTE();
+
+				de3_ite.backlinkPte(classStatement, procTableEntry, eh);
+			}
+		}
+
+		private void _203_backlink_is_VTE(final @NotNull GenType aGenType, final IElementHolder eh, final @NotNull VariableTableEntry variableTableEntry) {
+			if (eh instanceof final Resolve_Ident_IA.@NotNull GenericElementHolderWithDC eh1) {
+				final DeduceTypes2.DeduceClient3 dc = eh1.getDC();
+				dc.genCIForGenType2(aGenType);
+			}
+			// maybe set something in ci to INHERITED, but that's what DeduceProcCall is for
+			if (eh.getElement() instanceof FunctionDef) {
+				if (aGenType.getNode() instanceof final @NotNull EvaClass evaClass) {
+					evaClass.functionMapDeferred((FunctionDef) eh.getElement(), aGenType::setNode);
 				}
-			});
-		} else if (bte instanceof VariableTableEntry) {
-			backlink = null;
-		} else if (bte instanceof ProcTableEntry) {
-			backlink = null;
-		} else
-			throw new IllegalStateException();
-
-		if (backlink != null) {
-		} else {
-			typeResolution().then(gt -> {
-				if (!bte.typeResolvePromise().isResolved()) { // TODO 07/20 everywhere where this check is is wrong, BTW
-					bte.typeResolve(gt);
-				}
-			});
-			_inj_then(inj -> {
-				bte.addStatusListener(inj.new__StatusListener__BTE_86(this));
-			});
+			}
+			variableTableEntry.getType().setAttached(aGenType);
 		}
 
-		if (bte instanceof ProcTableEntry bte_pte) {
-			typeResolution().then(x -> {
-				if (!typeResolution().isResolved()) bte_pte.typeDeferred().resolve(x);
-			});
-			typeResolution().fail(x -> bte_pte.typeDeferred().reject(x));
+		private void _203_backlink_isIDTE(final @NotNull GenType result, final @NotNull IdentTableEntry identTableEntry) {
+			if (identTableEntry.getType() == null) {
+				identTableEntry.setType(_inj().new_TypeTableEntry(999, TypeTableEntry.Type.TRANSIENT, result.getTypeName(), identTableEntry.getIdent(), null)); // FIXME 999
+			}
+
+			identTableEntry.getType().setAttached(result);
+		}
+
+		@Override
+		public void onChange(final @NotNull IElementHolder eh, final BaseTableEntry.Status newStatus) {
+			if (newStatus != BaseTableEntry.Status.KNOWN) return;
+
+			if (backlink instanceof final @NotNull IdentTableEntry identTableEntry) {
+				identTableEntry.typeResolvePromise().done(result -> _203_backlink_isIDTE(result, identTableEntry));
+			} else if (backlink instanceof final @NotNull VariableTableEntry variableTableEntry) {
+				variableTableEntry.typeResolvePromise().done(result -> _203_backlink_is_VTE(result, eh, variableTableEntry));
+			} else if (backlink instanceof final ProcTableEntry procTableEntry) {
+				procTableEntry.typeResolvePromise().done(result -> _203_backlink_is_PTE(result, procTableEntry, eh));
+			}
 		}
 	}
-
-	private void _inj_then(final DoneCallback<DeduceTypes2.DeduceTypes2Injector> i) {
-		if (_dt2s instanceof PromiseReadySupplier<DeduceTypes2> prs) {
-			prs.then(q -> i.onDone(q._inj()));
-		}
-	}
-
-	private DeduceTypes2.DeduceTypes2Injector _inj() {
-		return _dt2s.get()._inj();
-	}
-
-	protected void setBacklinkCallback() {
-		_inj_then(inj -> {
-			assert backlink != null;
-			backlink.addStatusListener(inj.new__StatusListener__BTE_203(this));
-		});
-	}
-
-	public Promise<GenType, ResolveError, Void> typeResolution() {
-		return typeResolution.promise();
-	}
-
-	public @NotNull DeferredObject2<GenType, ResolveError, Void> getDeferred() {
-		return typeResolution;
-	}
-
 	class _StatusListener__BTE_86 implements BaseTableEntry.StatusListener {
 		@NotNull GenType genType = _inj().new_GenTypeImpl();
+
+		public void logProgress(int ignoredCode, String message) {
+			tripleo.elijah.util.Stupidity.println_err_2(message);
+		}
 
 		@Override
 		public void onChange(final @NotNull IElementHolder eh, final BaseTableEntry.Status newStatus) {
@@ -234,73 +222,86 @@ public class DeduceTypeResolve {
 					typeResolution.resolve(genType);
 			}
 		}
+	}
+	private final BaseTableEntry                               bte;
+	@Nullable     BaseTableEntry                               backlink;
 
-		public void logProgress(int ignoredCode, String message) {
-			tripleo.elijah.util.Stupidity.println_err_2(message);
+	private final DeferredObject2<GenType, ResolveError, Void> typeResolution = new DeferredObject2<>();
+
+	//private final DeduceTypes2                                 _dt2;
+	private final Supplier<DeduceTypes2>                       _dt2s;
+
+	public DeduceTypeResolve(BaseTableEntry aBte, final Supplier<DeduceTypes2> aDt2) {
+		bte   = aBte;
+		_dt2s = aDt2;
+
+		if (bte instanceof IdentTableEntry) {
+			((IdentTableEntry) bte).backlinkSet().then(new DoneCallback<InstructionArgument>() {
+				@Override
+				public void onDone(final InstructionArgument backlink0) {
+					if (backlink0 instanceof IdentIA) {
+						backlink = ((IdentIA) backlink0).getEntry();
+						setBacklinkCallback();
+					} else if (backlink0 instanceof IntegerIA) {
+						backlink = ((IntegerIA) backlink0).getEntry();
+						setBacklinkCallback();
+					} else if (backlink0 instanceof ProcIA) {
+						backlink = ((ProcIA) backlink0).getEntry();
+						setBacklinkCallback();
+					} else
+						backlink = null;
+				}
+			});
+		} else if (bte instanceof VariableTableEntry) {
+			backlink = null;
+		} else if (bte instanceof ProcTableEntry) {
+			backlink = null;
+		} else
+			throw new IllegalStateException();
+
+		if (backlink != null) {
+		} else {
+			typeResolution().then(gt -> {
+				if (!bte.typeResolvePromise().isResolved()) { // TODO 07/20 everywhere where this check is is wrong, BTW
+					bte.typeResolve(gt);
+				}
+			});
+			_inj_then(inj -> {
+				bte.addStatusListener(inj.new__StatusListener__BTE_86(this));
+			});
+		}
+
+		if (bte instanceof ProcTableEntry bte_pte) {
+			typeResolution().then(x -> {
+				if (!typeResolution().isResolved()) bte_pte.typeDeferred().resolve(x);
+			});
+			typeResolution().fail(x -> bte_pte.typeDeferred().reject(x));
 		}
 	}
 
-	public class _StatusListener__BTE_203 implements BaseTableEntry.StatusListener {
-		@Override
-		public void onChange(final @NotNull IElementHolder eh, final BaseTableEntry.Status newStatus) {
-			if (newStatus != BaseTableEntry.Status.KNOWN) return;
+	private DeduceTypes2.DeduceTypes2Injector _inj() {
+		return _dt2s.get()._inj();
+	}
 
-			if (backlink instanceof final @NotNull IdentTableEntry identTableEntry) {
-				identTableEntry.typeResolvePromise().done(result -> _203_backlink_isIDTE(result, identTableEntry));
-			} else if (backlink instanceof final @NotNull VariableTableEntry variableTableEntry) {
-				variableTableEntry.typeResolvePromise().done(result -> _203_backlink_is_VTE(result, eh, variableTableEntry));
-			} else if (backlink instanceof final ProcTableEntry procTableEntry) {
-				procTableEntry.typeResolvePromise().done(result -> _203_backlink_is_PTE(result, procTableEntry, eh));
-			}
+	private void _inj_then(final DoneCallback<DeduceTypes2.DeduceTypes2Injector> i) {
+		if (_dt2s instanceof PromiseReadySupplier<DeduceTypes2> prs) {
+			prs.then(q -> i.onDone(q._inj()));
 		}
+	}
 
-		private void _203_backlink_isIDTE(final @NotNull GenType result, final @NotNull IdentTableEntry identTableEntry) {
-			if (identTableEntry.getType() == null) {
-				identTableEntry.setType(_inj().new_TypeTableEntry(999, TypeTableEntry.Type.TRANSIENT, result.getTypeName(), identTableEntry.getIdent(), null)); // FIXME 999
-			}
+	public @NotNull DeferredObject2<GenType, ResolveError, Void> getDeferred() {
+		return typeResolution;
+	}
 
-			identTableEntry.getType().setAttached(result);
-		}
+	protected void setBacklinkCallback() {
+		_inj_then(inj -> {
+			assert backlink != null;
+			backlink.addStatusListener(inj.new__StatusListener__BTE_203(this));
+		});
+	}
 
-		private void _203_backlink_is_VTE(final @NotNull GenType aGenType, final IElementHolder eh, final @NotNull VariableTableEntry variableTableEntry) {
-			if (eh instanceof final Resolve_Ident_IA.@NotNull GenericElementHolderWithDC eh1) {
-				final DeduceTypes2.DeduceClient3 dc = eh1.getDC();
-				dc.genCIForGenType2(aGenType);
-			}
-			// maybe set something in ci to INHERITED, but that's what DeduceProcCall is for
-			if (eh.getElement() instanceof FunctionDef) {
-				if (aGenType.getNode() instanceof final @NotNull EvaClass evaClass) {
-					evaClass.functionMapDeferred((FunctionDef) eh.getElement(), aGenType::setNode);
-				}
-			}
-			variableTableEntry.getType().setAttached(aGenType);
-		}
-
-		private void _203_backlink_is_PTE(final @NotNull GenType result, final ProcTableEntry procTableEntry, final @NotNull IElementHolder eh) {
-			// README
-			//   1. Resolve type of pte (above) to a class
-			//   2. Convert bte to ite
-			//   3. Get DeduceElement3
-			//   4. Pass it off
-
-			// README classStatement [T310-231]
-			final ClassStatement classStatement = result.getResolved().getClassOf();
-
-			if (!(bte instanceof final IdentTableEntry identTableEntry_bte)) {
-				throw new AssertionError();
-			} else {
-				final DeduceElement3_IdentTableEntry de3_ite = identTableEntry_bte.getDeduceElement3();
-
-				// Just testing
-				final DeduceElement3_IdentTableEntry de3_ite2 = identTableEntry_bte._deduceTypes2()._zero_getIdent(identTableEntry_bte, identTableEntry_bte.__gf, identTableEntry_bte._deduceTypes2());
-				assert de3_ite2.principal == de3_ite.principal;
-
-				// Also testing, but not essential.
-				//assert identTableEntry_bte.getCallablePTE() != null && procTableEntry == identTableEntry_bte.getCallablePTE();
-
-				de3_ite.backlinkPte(classStatement, procTableEntry, eh);
-			}
-		}
+	public Promise<GenType, ResolveError, Void> typeResolution() {
+		return typeResolution.promise();
 	}
 
 	public void typeResolve(GenType type1) {

@@ -1,6 +1,7 @@
 package tripleo.elijah.stages.gen_c;
 
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.nextgen.outputstatement.EG_CompoundStatement;
 import tripleo.elijah.nextgen.outputstatement.EG_SingleStatement;
@@ -14,6 +15,20 @@ import tripleo.elijah.stages.instructions.InstructionArgument;
 
 public enum _GF {
 	;
+
+	interface __Pte_Dispatch {
+		static EG_Statement dispatch(@NotNull final ProcTableEntry pte, final @NotNull _GF.__Pte_Dispatch xy) {
+			if (pte.expression_num == null) {
+				return xy.statementForExpression(pte.__debug_expression());
+			} else {
+				return xy.statementForExpressionNum(pte.expression_num);
+			}
+		}
+
+		EG_Statement statementForExpression(IExpression expression);
+
+		EG_Statement statementForExpressionNum(InstructionArgument expreesion_num);
+	}
 
 	private static @NotNull EG_Statement forDeduceElement3_ProcTableEntry(@NotNull final DeduceElement3_ProcTableEntry de_pte, final @NotNull GenerateC gc) {
 		final EG_SingleStatement beginning;
@@ -47,19 +62,5 @@ public enum _GF {
 
 		final EG_CompoundStatement stmt = new EG_CompoundStatement(beginning, ending, middle, indent, explanation);
 		return stmt;
-	}
-
-	interface __Pte_Dispatch {
-		static EG_Statement dispatch(@NotNull final ProcTableEntry pte, final @NotNull _GF.__Pte_Dispatch xy) {
-			if (pte.expression_num == null) {
-				return xy.statementForExpression(pte.__debug_expression());
-			} else {
-				return xy.statementForExpressionNum(pte.expression_num);
-			}
-		}
-
-		EG_Statement statementForExpression(IExpression expression);
-
-		EG_Statement statementForExpressionNum(InstructionArgument expreesion_num);
 	}
 }

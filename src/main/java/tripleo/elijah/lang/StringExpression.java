@@ -21,23 +21,9 @@ public class StringExpression extends AbstractExpression {
 		set(g.getText());
 	}
 
-	public void set(final String g) {
-		repr_ = g;
-	}
-
 	@Override
-	public boolean is_simple() {
-		return true;
-	}
-
-	@Override
-	public OS_Type getType() {
-		return _type;
-	}
-
-	@Override
-	public void setType(final OS_Type deducedExpression) {
-		_type = deducedExpression;
+	public ExpressionKind getKind() {
+		return ExpressionKind.STRING_LITERAL;
 	}
 
 	@Override
@@ -47,9 +33,18 @@ public class StringExpression extends AbstractExpression {
 		throw new NotImplementedException();
 	}
 
+	public String getText() {
+		return Helpers.remove_single_quotes_from_string(repr_); // TODO wont work with triple quoted string
+	}
+
 	@Override
-	public ExpressionKind getKind() {
-		return ExpressionKind.STRING_LITERAL;
+	public OS_Type getType() {
+		return _type;
+	}
+
+	@Override
+	public boolean is_simple() {
+		return true;
 	}
 
 	@Override
@@ -57,13 +52,18 @@ public class StringExpression extends AbstractExpression {
 		return repr_;
 	}
 
+	public void set(final String g) {
+		repr_ = g;
+	}
+
 	@Override
 	public void setLeft(final IExpression iexpression) {
 		throw new IllegalArgumentException("Should use set()");
 	}
 
-	public String getText() {
-		return Helpers.remove_single_quotes_from_string(repr_); // TODO wont work with triple quoted string
+	@Override
+	public void setType(final OS_Type deducedExpression) {
+		_type = deducedExpression;
 	}
 
 	@Override

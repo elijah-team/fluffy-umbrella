@@ -22,8 +22,51 @@ public class BufferTabbedOutputStream {
 	private boolean    do_tabs = false;
 	private boolean    _closed = false;
 
+	public void close() {
+		if (!is_connected())
+			throw new IllegalStateException("is_connected assertion failed; closing twice");
+
+//		b = null;
+		_closed = true;
+	}
+
+	public void dec_tabs() {
+		tabwidth--;
+	}
+
+	void doIndent() {
+		for (int i = 0; i < tabwidth; i++)
+		     b.append("\t");
+	}
+
+	public void flush() {
+//		b.flush();
+	}
+
 	public Buffer getBuffer() {
 		return b;
+	}
+
+	public void incr_tabs() {
+		tabwidth++;
+	}
+
+	public boolean is_connected() {
+		return !_closed;
+	}
+
+	public void put_newline() {
+		doIndent();
+	}
+
+	public void put_string(final String s) {
+		if (!is_connected())
+			throw new IllegalStateException("is_connected assertion failed");
+
+//		if (do_tabs)
+//			doIndent();
+		b.append(s);
+//		do_tabs = false;
 	}
 
 	public void put_string_ln(final String s) {
@@ -38,15 +81,6 @@ public class BufferTabbedOutputStream {
 		do_tabs = true;
 	}
 
-	public boolean is_connected() {
-		return !_closed;
-	}
-
-	void doIndent() {
-		for (int i = 0; i < tabwidth; i++)
-		     b.append("\t");
-	}
-
 	public void put_string_ln_no_tabs(final String s) {
 		if (!is_connected())
 			throw new IllegalStateException("is_connected assertion failed");
@@ -54,36 +88,6 @@ public class BufferTabbedOutputStream {
 		b.append(s);
 		b.append("\n");
 //		do_tabs = true;
-	}
-
-	public void put_string(final String s) {
-		if (!is_connected())
-			throw new IllegalStateException("is_connected assertion failed");
-
-//		if (do_tabs)
-//			doIndent();
-		b.append(s);
-//		do_tabs = false;
-	}
-
-	public void incr_tabs() {
-		tabwidth++;
-	}
-
-	public void close() {
-		if (!is_connected())
-			throw new IllegalStateException("is_connected assertion failed; closing twice");
-
-//		b = null;
-		_closed = true;
-	}
-
-	public void put_newline() {
-		doIndent();
-	}
-
-	public int t() {
-		return tabwidth;
 	}
 
 	public void quote_string(final String s) {
@@ -95,12 +99,8 @@ public class BufferTabbedOutputStream {
 		b.append("\"");
 	}
 
-	public void dec_tabs() {
-		tabwidth--;
-	}
-
-	public void flush() {
-//		b.flush();
+	public int t() {
+		return tabwidth;
 	}
 
 }

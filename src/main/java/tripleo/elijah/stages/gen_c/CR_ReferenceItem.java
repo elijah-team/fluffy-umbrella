@@ -19,15 +19,15 @@ public interface CR_ReferenceItem {
 
 	CReference.Reference getReference();
 
-	void setReference(CReference.Reference aReference);
+	Operation2<EG_Statement> getStatement();
+
+	BaseTableEntry getTableEntry();
 
 	String getText();
 
-	Operation2<EG_Statement> getStatement();
+	void setArg(String aArg);
 
 	void setConnector(CReference.Connector aConnector);
-
-	void setArg(String aArg);
 
 	void setGenerateCItem(GenerateC_Item aGenerateCItem);
 
@@ -35,9 +35,9 @@ public interface CR_ReferenceItem {
 
 	void setPrevious(Eventual<GenerateC_Item> aPrevious);
 
+	void setReference(CReference.Reference aReference);
+
 	void setStatement(Operation2<EG_Statement> aStatement);
 
 	void setText(String aText);
-
-	BaseTableEntry getTableEntry();
 }

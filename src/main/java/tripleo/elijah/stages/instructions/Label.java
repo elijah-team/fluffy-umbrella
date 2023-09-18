@@ -27,17 +27,16 @@ public class Label implements InstructionArgument {
 		this.gf = gf;
 	}
 
-	@Override
-	public String toString() {
-		return String.format("<Label %s index:%d number:%d>", getName(), getIndex(), getNumber());
+	public long getIndex() {
+		return index;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public long getIndex() {
-		return index;
+	public int getNumber() {
+		return number;
 	}
 
 	/**
@@ -49,8 +48,8 @@ public class Label implements InstructionArgument {
 		this.index = index;
 	}
 
-	public int getNumber() {
-		return number;
+	public void setName(final String name) {
+		this.name = name;
 	}
 
 	/**
@@ -62,8 +61,9 @@ public class Label implements InstructionArgument {
 		this.number = number;
 	}
 
-	public void setName(final String name) {
-		this.name = name;
+	@Override
+	public String toString() {
+		return String.format("<Label %s index:%d number:%d>", getName(), getIndex(), getNumber());
 	}
 }
 

@@ -17,76 +17,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public interface FlowK {
-	String report();
-
-	class EntryPointList_generateFromEntryPoints__eps_isEmpty implements FlowK {
-		private final OS_Module mod;
-
-		public EntryPointList_generateFromEntryPoints__eps_isEmpty(final OS_Module aModule) {
-			mod = aModule;
-		}
-
-		@Override
-		public String report() {
-			return "@@ EntryPointList::generateFromEntryPoints: eps isEmpty for " + mod.getFileName();
-		}
-	}
-
-	class EntryPointList_generateFromEntryPoints__epp_size implements FlowK {
-		private final int size;
-
-		public EntryPointList_generateFromEntryPoints__epp_size(final int aSize) {
-			size = aSize;
-		}
-
-		@Override
-		public String report() {
-			return "@@ EntryPointList::generateFromEntryPoints: epp size == "+size;
-		}
-	}
-
-	class EntryPointList_generateFromEntryPoints__epp_process__pre implements FlowK {
-		private final EntryPointProcessor epp;
-
-		public EntryPointList_generateFromEntryPoints__epp_process__pre(final EntryPointProcessor aEpp) {
-			epp = aEpp;
-		}
-
-		@Override
-		public String report() {
-			return "";//EntryPointList::generateFromEntryPoints: epp [pre: process]";
-		}
-	}
-
-	class EntryPointList_generateFromEntryPoints__epp_process__post implements FlowK {
-		private final EntryPointProcessor epp;
-
-		public EntryPointList_generateFromEntryPoints__epp_process__post(final EntryPointProcessor aEpp) {
-			epp = aEpp;
-		}
-
-		@Override
-		public String report() {
-			return "";//EntryPointList::generateFromEntryPoints: epp [post: process]";
-		}
-	}
-
-	public record DeducePhase__deduceModule(OS_Module module,
-	                                        Iterable<EvaNode> generatedNodes) implements FlowK {
-		@Override
-		public String report() {
-			final var l = new ArrayList<>();
-
-			for (final EvaNode aEvaNode : generatedNodes) {
-				l.add(aEvaNode);
-			}
-
-			return "@@ DeducePhase::deduceModule:"
-			  + " " + module.getFileName()
-			  + " " + l;
-		}
-	}
-
 	public class DeduceTypes2__deduce_generated_function_base implements FlowK {
 		private final BaseEvaFunction generatedFunction;
 		private final BaseFunctionDef fd;
@@ -104,21 +34,6 @@ public interface FlowK {
 			  .append(" ")
 			  .append(fd.getModule().getFileName())
 			  .toString();
-		}
-	}
-
-	public class DeduceTypes2__onExitFunction implements FlowK {
-		private final BaseEvaFunction generatedFunction;
-		private final BaseFunctionDef fd;
-
-		public DeduceTypes2__onExitFunction(final @NotNull BaseEvaFunction aGeneratedFunction, final BaseFunctionDef aFd) {
-			generatedFunction = aGeneratedFunction;
-			fd                = aFd;
-		}
-
-		@Override
-		public String report() {
-			return "@@ DeduceTypes2::onExitFunction: "+generatedFunction.getFunctionName();
 		}
 	}
 
@@ -164,4 +79,89 @@ public interface FlowK {
 			return s;
 		}
 	}
+
+	public class DeduceTypes2__onExitFunction implements FlowK {
+		private final BaseEvaFunction generatedFunction;
+		private final BaseFunctionDef fd;
+
+		public DeduceTypes2__onExitFunction(final @NotNull BaseEvaFunction aGeneratedFunction, final BaseFunctionDef aFd) {
+			generatedFunction = aGeneratedFunction;
+			fd                = aFd;
+		}
+
+		@Override
+		public String report() {
+			return "@@ DeduceTypes2::onExitFunction: "+generatedFunction.getFunctionName();
+		}
+	}
+
+	class EntryPointList_generateFromEntryPoints__epp_process__post implements FlowK {
+		private final EntryPointProcessor epp;
+
+		public EntryPointList_generateFromEntryPoints__epp_process__post(final EntryPointProcessor aEpp) {
+			epp = aEpp;
+		}
+
+		@Override
+		public String report() {
+			return "";//EntryPointList::generateFromEntryPoints: epp [post: process]";
+		}
+	}
+
+	class EntryPointList_generateFromEntryPoints__epp_process__pre implements FlowK {
+		private final EntryPointProcessor epp;
+
+		public EntryPointList_generateFromEntryPoints__epp_process__pre(final EntryPointProcessor aEpp) {
+			epp = aEpp;
+		}
+
+		@Override
+		public String report() {
+			return "";//EntryPointList::generateFromEntryPoints: epp [pre: process]";
+		}
+	}
+
+	class EntryPointList_generateFromEntryPoints__epp_size implements FlowK {
+		private final int size;
+
+		public EntryPointList_generateFromEntryPoints__epp_size(final int aSize) {
+			size = aSize;
+		}
+
+		@Override
+		public String report() {
+			return "@@ EntryPointList::generateFromEntryPoints: epp size == "+size;
+		}
+	}
+
+	class EntryPointList_generateFromEntryPoints__eps_isEmpty implements FlowK {
+		private final OS_Module mod;
+
+		public EntryPointList_generateFromEntryPoints__eps_isEmpty(final OS_Module aModule) {
+			mod = aModule;
+		}
+
+		@Override
+		public String report() {
+			return "@@ EntryPointList::generateFromEntryPoints: eps isEmpty for " + mod.getFileName();
+		}
+	}
+
+	public record DeducePhase__deduceModule(OS_Module module,
+	                                        Iterable<EvaNode> generatedNodes) implements FlowK {
+		@Override
+		public String report() {
+			final var l = new ArrayList<>();
+
+			for (final EvaNode aEvaNode : generatedNodes) {
+				l.add(aEvaNode);
+			}
+
+			return "@@ DeducePhase::deduceModule:"
+			  + " " + module.getFileName()
+			  + " " + l;
+		}
+	}
+
+	String report();
 }

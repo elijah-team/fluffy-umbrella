@@ -1,9 +1,12 @@
 package tripleo.elijah.comp.caches;
 
-import tripleo.elijah.ci.*;
-import tripleo.elijah.comp.specs.*;
+import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.comp.specs.EzCache;
+import tripleo.elijah.comp.specs.EzSpec;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class DefaultEzCache implements EzCache {
 	final         Map<String, CompilerInstructions> fn2ci   = new HashMap<String, CompilerInstructions>();

@@ -18,6 +18,14 @@ public class EG_SyntheticStatement implements EG_Statement {
 	private final EX_Rule   rule;
 	private       String    text;
 
+	public EG_SyntheticStatement(final EG_Naming aNaming, final ES_Symbol aSymbol, final EX_Rule aRule) {
+		naming = aNaming;
+		s      = aSymbol;
+		rule   = aRule;
+
+		doNaming(naming, s);
+	}
+
 	public EG_SyntheticStatement(final EG_Naming aNaming, final String aS, final EX_Rule aRule) {
 
 		naming = aNaming;
@@ -44,22 +52,14 @@ public class EG_SyntheticStatement implements EG_Statement {
 		}
 	}
 
-	public EG_SyntheticStatement(final EG_Naming aNaming, final ES_Symbol aSymbol, final EX_Rule aRule) {
-		naming = aNaming;
-		s      = aSymbol;
-		rule   = aRule;
-
-		doNaming(naming, s);
+	@Override
+	public EX_Explanation getExplanation() {
+		return null;
 	}
 
 	@Override
 	public String getText() {
 		return text;
-	}
-
-	@Override
-	public EX_Explanation getExplanation() {
-		return null;
 	}
 
 	public void setText(final String aS) {

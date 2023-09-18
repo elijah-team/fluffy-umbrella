@@ -13,13 +13,18 @@ public class OS_BuiltinType extends __Abstract_OS_Type {
 		_bit = (aTypes);
 	}
 
+	protected boolean _isEqual(final OS_Type aType) {
+		return aType.getType() == Type.BUILT_IN && _bit == aType.getBType();
+	}
+
+	@Override
+	public String asString() {
+		return MessageFormat.format("<OS_BuiltinType {0}>", _bit);
+	}
+
 	@Override
 	public BuiltInTypes getBType() {
 		return _bit;
-	}
-
-	protected boolean _isEqual(final OS_Type aType) {
-		return aType.getType() == Type.BUILT_IN && _bit == aType.getBType();
 	}
 
 	@Override
@@ -30,11 +35,6 @@ public class OS_BuiltinType extends __Abstract_OS_Type {
 	@Override
 	public Type getType() {
 		return Type.BUILT_IN;
-	}
-
-	@Override
-	public String asString() {
-		return MessageFormat.format("<OS_BuiltinType {0}>", _bit);
 	}
 }
 

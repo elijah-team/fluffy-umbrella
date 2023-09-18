@@ -27,6 +27,14 @@ public class PropertyStatementBuilder extends ElBuilder {
 	private boolean         _get_is_abstract = false;
 	private boolean         _set_is_abstract = false;
 
+	public void addGet() {
+		_get_is_abstract = true;
+	}
+
+	public void addSet() {
+		_set_is_abstract = true;
+	}
+
 	@Override
 	protected OS_Element build() {
 		final PropertyStatement ps = new PropertyStatement(_parent, _context);
@@ -61,6 +69,16 @@ public class PropertyStatementBuilder extends ElBuilder {
 		return ps;
 	}
 
+	public BaseScope get_scope() {
+		_get_scope = new BaseScope();
+		return _get_scope;
+	}
+
+	public BaseScope set_scope() {
+		_set_scope = new BaseScope();
+		return _set_scope;
+	}
+
 	@Override
 	protected void setContext(final Context context) {
 		_context = context;
@@ -72,24 +90,6 @@ public class PropertyStatementBuilder extends ElBuilder {
 
 	public void setTypeName(final TypeName tn) {
 		this.tn = tn;
-	}
-
-	public BaseScope get_scope() {
-		_get_scope = new BaseScope();
-		return _get_scope;
-	}
-
-	public BaseScope set_scope() {
-		_set_scope = new BaseScope();
-		return _set_scope;
-	}
-
-	public void addGet() {
-		_get_is_abstract = true;
-	}
-
-	public void addSet() {
-		_set_is_abstract = true;
 	}
 
 //	public void setParentContext(final Context ctx) {

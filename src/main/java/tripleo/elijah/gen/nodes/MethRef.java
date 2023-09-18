@@ -28,14 +28,6 @@ public class MethRef {
 		_code   = code;
 	}
 
-	public void setArgTypes(final TypeRef... types) {
-		NotImplementedException.raise();
-	}
-
-	public void setReturnType(final TypeRef return_type) {
-		NotImplementedException.raise();
-	}
-
 	public int getCode() {
 		return _code;
 	}
@@ -46,5 +38,13 @@ public class MethRef {
 
 	public String getTitle() {
 		return _title;
+	}
+
+	public void setArgTypes(final TypeRef... types) {
+		NotImplementedException.raise();
+	}
+
+	public void setReturnType(final TypeRef return_type) {
+		NotImplementedException.raise();
 	}
 }

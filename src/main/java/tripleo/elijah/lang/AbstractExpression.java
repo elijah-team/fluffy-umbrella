@@ -30,23 +30,23 @@ public abstract class AbstractExpression implements IExpression {
 	}
 
 	@Override
-	public void setKind(final ExpressionKind type1) {
-		_kind = type1;
-	}
-
-	@Override
 	public IExpression getLeft() {
 		return left;
 	}
 
 	@Override
-	public void setLeft(final IExpression aLeft) {
-		left = aLeft;
+	public String repr_() {
+		return String.format("<Expression %s %s>", left, _kind);
 	}
 
 	@Override
-	public String repr_() {
-		return String.format("<Expression %s %s>", left, _kind);
+	public void setKind(final ExpressionKind type1) {
+		_kind = type1;
+	}
+
+	@Override
+	public void setLeft(final IExpression aLeft) {
+		left = aLeft;
 	}
 }
 

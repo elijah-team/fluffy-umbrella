@@ -23,15 +23,15 @@ public class BlockStatement implements /*Statement,*/ StatementItem {
 		scope  = new AbstractStatementClosure(parent);
 	}
 
-	public StatementClosure scope() {
-		return scope;
-	}
-
 	public FormalArgList opfal() {
 		return fal;
 	}
 
 	public NormalTypeName returnType() {
 		return tn;
+	}
+
+	public StatementClosure scope() {
+		return scope;
 	}
 }

@@ -79,17 +79,17 @@ public class DeduceElement3_Function implements IDeduceElement3 {
 	}
 
 	@Override
+	public void mvState(final State aO, final State aCheckEvaClassVarTable) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public void resolve(final Context aContext, final DeduceTypes2 dt2) {
 		throw new NotImplementedException();
 	}
 
 	@Override
 	public void resolve(final IdentIA aIdentIA, final Context aContext, final FoundElement aFoundElement) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public void mvState(final State aO, final State aCheckEvaClassVarTable) {
 		throw new NotImplementedException();
 	}
 

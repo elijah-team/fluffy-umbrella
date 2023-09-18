@@ -1,12 +1,12 @@
 package tripleo.vendor.mal;
 
+import java.util.HashMap;
+
 import tripleo.vendor.mal.types.MalException;
 import tripleo.vendor.mal.types.MalList;
 import tripleo.vendor.mal.types.MalSymbol;
 import tripleo.vendor.mal.types.MalThrowable;
 import tripleo.vendor.mal.types.MalVal;
-
-import java.util.HashMap;
 
 public class env {
 	public static class Env {

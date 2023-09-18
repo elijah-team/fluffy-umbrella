@@ -13,6 +13,11 @@ public class DefaultCompilerController implements CompilerController {
 	CompilationBus cb;
 	private Compilation c;
 
+	public void _set(final Compilation aCompilation, final List<String> aArgs) {
+		c    = aCompilation;
+		args = aArgs;
+	}
+
 	@Override
 	public void printUsage() {
 		System.out.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
@@ -46,10 +51,5 @@ public class DefaultCompilerController implements CompilerController {
 
 			return Operation.failure(e);
 		}
-	}
-
-	public void _set(final Compilation aCompilation, final List<String> aArgs) {
-		c    = aCompilation;
-		args = aArgs;
 	}
 }

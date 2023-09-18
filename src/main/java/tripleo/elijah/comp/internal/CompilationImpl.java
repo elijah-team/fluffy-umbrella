@@ -33,8 +33,13 @@ public class CompilationImpl extends Compilation {
 		_fluffyComp = new FluffyCompImpl(this);
 	}
 
-	public void testMapHooks(final List<IFunctionMapHook> aMapHooks) {
-		throw new NotImplementedException();
+	public ICompilationAccess _access() {
+		return new DefaultCompilationAccess(this);
+	}
+
+	@Override
+	public @NotNull FluffyComp getFluffy() {
+		return _fluffyComp;
 	}
 
 	@Override
@@ -48,13 +53,8 @@ public class CompilationImpl extends Compilation {
 		return _output_tree;
 	}
 
-	@Override
-	public @NotNull FluffyComp getFluffy() {
-		return _fluffyComp;
-	}
-
-	public ICompilationAccess _access() {
-		return new DefaultCompilationAccess(this);
+	public void testMapHooks(final List<IFunctionMapHook> aMapHooks) {
+		throw new NotImplementedException();
 	}
 }
 

@@ -5,14 +5,6 @@ import io.undertow.server.handlers.SetHeaderHandler;
 
 // {{start:handler}}
 public class ReferrerPolicyHandlers {
-	private static final String REFERRER_POLICY_STRING = "Referrer-Policy";
-
-	public static HttpHandler policy(HttpHandler next, ReferrerPolicy policy) {
-		return new SetHeaderHandler(next, REFERRER_POLICY_STRING, policy.getValue());
-	}
-
-	;
-
 	// See https://scotthelme.co.uk/a-new-security-header-referrer-policy/
 	public enum ReferrerPolicy {
 		EMPTY(""),
@@ -34,6 +26,14 @@ public class ReferrerPolicyHandlers {
 		public String getValue() {
 			return value;
 		}
+	}
+
+	private static final String REFERRER_POLICY_STRING = "Referrer-Policy";
+
+	;
+
+	public static HttpHandler policy(HttpHandler next, ReferrerPolicy policy) {
+		return new SetHeaderHandler(next, REFERRER_POLICY_STRING, policy.getValue());
 	}
 }
 // {{end:handler}}

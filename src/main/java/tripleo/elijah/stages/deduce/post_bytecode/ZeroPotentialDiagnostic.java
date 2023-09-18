@@ -1,13 +1,14 @@
 package tripleo.elijah.stages.deduce.post_bytecode;
 
+import java.io.PrintStream;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.util.NotImplementedException;
-
-import java.io.PrintStream;
-import java.util.List;
 
 public class ZeroPotentialDiagnostic implements Diagnostic {
 	@Override

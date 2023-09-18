@@ -1,12 +1,13 @@
 package tripleo.elijah.stages.gen_c;
 
+import java.io.PrintStream;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.lang.TypeName;
 import tripleo.elijah.stages.deduce.post_bytecode.GCFM_Diagnostic;
-
-import java.io.PrintStream;
-import java.util.List;
 
 class Diagnostic_8887 implements GCFM_Diagnostic {
 	final         int      _code = 8887;
@@ -14,6 +15,11 @@ class Diagnostic_8887 implements GCFM_Diagnostic {
 
 	Diagnostic_8887(final TypeName aY) {
 		y = aY;
+	}
+
+	@Override
+	public String _message() {
+		return String.format("%d VARIABLE WASN'T FULLY DEDUCED YET: %s", _code, y.getClass().getName());
 	}
 
 	@Override
@@ -29,11 +35,6 @@ class Diagnostic_8887 implements GCFM_Diagnostic {
 	@Override
 	public void report(final @NotNull PrintStream stream) {
 		stream.println(_message());
-	}
-
-	@Override
-	public String _message() {
-		return String.format("%d VARIABLE WASN'T FULLY DEDUCED YET: %s", _code, y.getClass().getName());
 	}
 
 	@Override

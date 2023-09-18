@@ -19,7 +19,16 @@ import tripleo.elijah.lang.nextgen.names.i.EN_Understanding;
  *
  */
 public class ENU_PackageElement implements EN_Understanding {
-	interface PER {
+	class Item implements PER {
+		private final OS_Element _item;
+
+		Item(final OS_Element aItem) {
+			_item = aItem;
+		}
+
+		public OS_Element getItem() {
+			return this._item;
+		}
 	}
 
 	class Package implements PER {
@@ -34,16 +43,7 @@ public class ENU_PackageElement implements EN_Understanding {
 		}
 	}
 
-	class Item implements PER {
-		private final OS_Element _item;
-
-		Item(final OS_Element aItem) {
-			_item = aItem;
-		}
-
-		public OS_Element getItem() {
-			return this._item;
-		}
+	interface PER {
 	}
 
 	@NotNull DeferredObject<PER, Void, Void> resolved = new DeferredObject<>();

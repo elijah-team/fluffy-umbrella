@@ -1,6 +1,7 @@
 package tripleo.elijah.stages.gen_c;
 
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.nextgen.outputstatement.EG_Statement;

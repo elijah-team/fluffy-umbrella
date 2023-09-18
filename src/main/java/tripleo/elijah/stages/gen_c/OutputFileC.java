@@ -8,17 +8,18 @@
  */
 package tripleo.elijah.stages.gen_c;
 
-import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.stages.gen_generic.Dependency;
-import tripleo.elijah.stages.gen_generic.DependencyRef;
-import tripleo.elijah.stages.gen_generic.IOutputFile;
-import tripleo.util.buffer.Buffer;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
+
+import tripleo.elijah.stages.gen_generic.Dependency;
+import tripleo.elijah.stages.gen_generic.DependencyRef;
+import tripleo.elijah.stages.gen_generic.IOutputFile;
+import tripleo.util.buffer.Buffer;
 
 /**
  * Created 9/13/21 10:50 PM

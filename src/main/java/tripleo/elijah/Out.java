@@ -9,6 +9,7 @@
 package tripleo.elijah;
 
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.ParserClosure;
@@ -18,7 +19,9 @@ public class Out {
 //	private final Compilation compilation;
 //	private boolean do_out = false;
 
-	private final ParserClosure pc;
+	public static void println(final String s) {
+		tripleo.elijah.util.Stupidity.println2(s);
+	}
 
 /*
 	private static TabbedOutputStream getTOSLog() throws FileNotFoundException {
@@ -28,14 +31,16 @@ public class Out {
 	}
 */
 
+	private final ParserClosure pc;
+
 	public Out(final String fn, final Compilation compilation, final boolean do_out) {
 		pc = new ParserClosure(fn, compilation);
 //		this.compilation = compilation;
 //		this.do_out = do_out;
 	}
 
-	public static void println(final String s) {
-		tripleo.elijah.util.Stupidity.println2(s);
+	public ParserClosure closure() {
+		return pc;
 	}
 
 	//@edu.umd.cs.findbugs.annotations.SuppressFBWarnings("NM_METHOD_NAMING_CONVENTION")
@@ -65,10 +70,6 @@ public class Out {
 			println("&& IOException");
 		}
 */
-	}
-
-	public ParserClosure closure() {
-		return pc;
 	}
 
 	public @NotNull OS_Module module() {

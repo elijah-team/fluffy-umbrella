@@ -8,7 +8,11 @@
  */
 package tripleo.elijah.stages.generate;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_fn.EvaConstructor;
@@ -17,9 +21,6 @@ import tripleo.elijah.stages.gen_fn.EvaNamespace;
 import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created 1/8/21 11:02 PM
@@ -75,12 +76,12 @@ public class ElSystem {
 		return s;
 	}
 
-	public void setOutputStrategy(final OutputStrategy outputStrategy) {
-		this.outputStrategy = outputStrategy;
-	}
-
 	public void setCompilation(final Compilation compilation) {
 		this.compilation = compilation;
+	}
+
+	public void setOutputStrategy(final OutputStrategy outputStrategy) {
+		this.outputStrategy = outputStrategy;
 	}
 }
 

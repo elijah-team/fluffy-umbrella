@@ -26,9 +26,10 @@ public abstract class AbstractScope2 implements Scope {
 	}
 
 	@Override
-	public void statementWrapper(final IExpression aExpr) {
-		// TODO is getParent.getContext right?
-		add(new StatementWrapper(aExpr, getParent().getContext(), getParent()));
+	public void addDocString(final Token s1) {
+		if (docstrings == null)
+			docstrings = new ArrayList<String>();
+		docstrings.add(s1.getText());
 	}
 
 //	@Override
@@ -41,13 +42,8 @@ public abstract class AbstractScope2 implements Scope {
 	}
 
 	@Override
-	public TypeAliasStatement typeAlias() {
-		return new TypeAliasStatement(getParent());
-	}
-
-	@Override
-	public InvariantStatement invariantStatement() {
-		return new InvariantStatement();
+	public OS_Element getElement() {
+		return _Parent;
 	}
 
 	@Override
@@ -56,15 +52,19 @@ public abstract class AbstractScope2 implements Scope {
 	}
 
 	@Override
-	public OS_Element getElement() {
-		return _Parent;
+	public InvariantStatement invariantStatement() {
+		return new InvariantStatement();
 	}
 
 	@Override
-	public void addDocString(final Token s1) {
-		if (docstrings == null)
-			docstrings = new ArrayList<String>();
-		docstrings.add(s1.getText());
+	public void statementWrapper(final IExpression aExpr) {
+		// TODO is getParent.getContext right?
+		add(new StatementWrapper(aExpr, getParent().getContext(), getParent()));
+	}
+
+	@Override
+	public TypeAliasStatement typeAlias() {
+		return new TypeAliasStatement(getParent());
 	}
 }
 

@@ -2,6 +2,7 @@ package tripleo.elijah.stages.gen_c;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.ConstructorDef;
 import tripleo.elijah.lang.DecideElObjectType;
 import tripleo.elijah.lang.OS_Element;

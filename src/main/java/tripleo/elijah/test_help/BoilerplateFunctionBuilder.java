@@ -1,5 +1,8 @@
 package tripleo.elijah.test_help;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
@@ -13,61 +16,10 @@ import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.deduce.DeduceTypeWatcher;
 import tripleo.elijah.util.Helpers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class BoilerplateFunctionBuilder {
-	final private List<BFB_Child> children = new ArrayList<>();
-	private       OS_Element      parent;
-	private       String          functionNameString;
-
-	public void parent(final OS_Element aParent) {
-		parent = aParent;
-	}
-
-	public FunctionDef build() {
-		final ClassStatement cs = (ClassStatement) parent;
-
-		final FunctionDef fd = cs.funcDef();
-		fd.setName(Helpers.string_to_ident(functionNameString));
-		final Scope3 scope3 = new Scope3(fd);
-
-		final BFB_State s = new BFB_State(fd, scope3);
-
-		for (final BFB_Child child : children) {
-			child.process(s);
-		}
-
-		fd.scope(scope3);
-//		fd.postConstruct();
-		return fd;
-	}
-
-	public void name(final String aFunctionNameString) {
-		functionNameString = aFunctionNameString;
-	}
-
-	public void vars(final String aVariableNameString, final String aVariableTypeString) {
-		vars(aVariableNameString, aVariableTypeString, null);
-	}
-
-	public void vars(final String aVariableNameString, final String aVariableTypeString, final DeduceTypeWatcher aDtw) {
-		final BFCH_Vars vars = new BFCH_Vars(aVariableNameString, aVariableTypeString, aDtw);
-		children.add(vars);
-	}
-
-	interface IBFB_State {
-		Scope3 getScope();
-
-		FunctionDef getFD();
-
-		FunctionContext getContext();
-	}
-
 	interface BFB_Child {
 		void process(IBFB_State s);
 	}
-
 	class BFB_State implements IBFB_State {
 
 		private final FunctionDef fd;
@@ -79,8 +31,8 @@ public class BoilerplateFunctionBuilder {
 		}
 
 		@Override
-		public Scope3 getScope() {
-			return scope3;
+		public FunctionContext getContext() {
+			return (FunctionContext) fd.getContext();
 		}
 
 		@Override
@@ -89,11 +41,10 @@ public class BoilerplateFunctionBuilder {
 		}
 
 		@Override
-		public FunctionContext getContext() {
-			return (FunctionContext) fd.getContext();
+		public Scope3 getScope() {
+			return scope3;
 		}
 	}
-
 	class BFCH_Vars implements BFB_Child {
 		private final String            variableNameString;
 		private final String            variableTypeString;
@@ -126,5 +77,54 @@ public class BoilerplateFunctionBuilder {
 				vs.dtw.element(vs);
 			}
 		}
+	}
+
+	interface IBFB_State {
+		FunctionContext getContext();
+
+		FunctionDef getFD();
+
+		Scope3 getScope();
+	}
+
+	final private List<BFB_Child> children = new ArrayList<>();
+
+	private       OS_Element      parent;
+
+	private       String          functionNameString;
+
+	public FunctionDef build() {
+		final ClassStatement cs = (ClassStatement) parent;
+
+		final FunctionDef fd = cs.funcDef();
+		fd.setName(Helpers.string_to_ident(functionNameString));
+		final Scope3 scope3 = new Scope3(fd);
+
+		final BFB_State s = new BFB_State(fd, scope3);
+
+		for (final BFB_Child child : children) {
+			child.process(s);
+		}
+
+		fd.scope(scope3);
+//		fd.postConstruct();
+		return fd;
+	}
+
+	public void name(final String aFunctionNameString) {
+		functionNameString = aFunctionNameString;
+	}
+
+	public void parent(final OS_Element aParent) {
+		parent = aParent;
+	}
+
+	public void vars(final String aVariableNameString, final String aVariableTypeString) {
+		vars(aVariableNameString, aVariableTypeString, null);
+	}
+
+	public void vars(final String aVariableNameString, final String aVariableTypeString, final DeduceTypeWatcher aDtw) {
+		final BFCH_Vars vars = new BFCH_Vars(aVariableNameString, aVariableTypeString, aDtw);
+		children.add(vars);
 	}
 }

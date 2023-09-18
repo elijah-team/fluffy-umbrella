@@ -18,6 +18,10 @@ import java.util.List;
  * Created 12/26/20 5:31 AM
  */
 public interface Diagnostic {
+	enum Severity {
+		INFO, LINT, WARN, ERROR
+	}
+
 	static Diagnostic withMessage(String aNumber, String aMessage, Severity aSeverity) {
 		return new Diagnostic() {
 			@Override
@@ -26,13 +30,13 @@ public interface Diagnostic {
 			}
 
 			@Override
-			public Severity severity() {
-				return aSeverity;
+			public @NotNull Locatable primary() {
+				return null;
 			}
 
 			@Override
-			public @NotNull Locatable primary() {
-				return null;
+			public void report(final PrintStream stream) {
+				stream.println(""+code()+" "+aMessage);
 			}
 
 			@Override
@@ -41,29 +45,25 @@ public interface Diagnostic {
 			}
 
 			@Override
-			public void report(final PrintStream stream) {
-				stream.println(""+code()+" "+aMessage);
+			public Severity severity() {
+				return aSeverity;
 			}
 		};
 	}
 
 	String code();
 
-	Severity severity();
+	default Object get() {return null;}
 
 	@NotNull
 	Locatable primary();
 
+	void report(PrintStream stream);
+
 	@NotNull
 	List<Locatable> secondary();
 
-	void report(PrintStream stream);
-
-	default Object get() {return null;}
-
-	enum Severity {
-		INFO, LINT, WARN, ERROR
-	}
+	Severity severity();
 }
 
 //

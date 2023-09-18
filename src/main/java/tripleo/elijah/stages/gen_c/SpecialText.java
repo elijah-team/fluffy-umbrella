@@ -1,28 +1,28 @@
 package tripleo.elijah.stages.gen_c;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+import static tripleo.elijah.util.Helpers.String_join;
 
 import java.util.List;
 
-import static tripleo.elijah.util.Helpers.String_join;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * (Unrealized) Intent: provide annotations in output code to show what generated text is generated from
  */
 class SpecialText {
-	private final String text;
-
-	public String getText() {
-		return text;
+	@Contract("_ -> new")
+	public static @NotNull SpecialText compose(final List<String> aStringList) {
+		return new SpecialText(String_join(".", aStringList));
 	}
+
+	private final String text;
 
 	public SpecialText(final String aText) {
 		text = aText;
 	}
 
-	@Contract("_ -> new")
-	public static @NotNull SpecialText compose(final List<String> aStringList) {
-		return new SpecialText(String_join(".", aStringList));
+	public String getText() {
+		return text;
 	}
 }

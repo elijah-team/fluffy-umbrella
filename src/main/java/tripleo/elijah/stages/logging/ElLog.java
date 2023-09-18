@@ -8,19 +8,23 @@
  */
 package tripleo.elijah.stages.logging;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static tripleo.elijah.util.Stupidity.println2;
 import static tripleo.elijah.util.Stupidity.println_err3;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created 8/3/21 3:46 AM
  */
 public class ElLog {
+	public enum Verbosity {
+		SILENT, VERBOSE
+	}
 	private final String         fileName;
 	private final Verbosity      verbose;
 	private final String         phase;
+
 	private final List<LogEntry> entries = new ArrayList<>();
 
 	public ElLog(final String aFileName, final Verbosity aVerbose, final String aPhase) {
@@ -36,27 +40,23 @@ public class ElLog {
 			println_err3(aMessage);
 	}
 
-	public void info(final String aMessage) {
-		final long time = System.currentTimeMillis();
-		entries.add(new LogEntry(time, LogEntry.Level.INFO, aMessage));
-		if (verbose == Verbosity.VERBOSE)
-			println2(aMessage);
+	public List<LogEntry> getEntries() {
+		return entries;
 	}
 
 	public String getFileName() {
 		return fileName;
 	}
 
-	public List<LogEntry> getEntries() {
-		return entries;
-	}
-
 	public String getPhase() {
 		return phase;
 	}
 
-	public enum Verbosity {
-		SILENT, VERBOSE
+	public void info(final String aMessage) {
+		final long time = System.currentTimeMillis();
+		entries.add(new LogEntry(time, LogEntry.Level.INFO, aMessage));
+		if (verbose == Verbosity.VERBOSE)
+			println2(aMessage);
 	}
 }
 

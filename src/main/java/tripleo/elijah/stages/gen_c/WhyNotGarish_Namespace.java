@@ -1,7 +1,10 @@
 package tripleo.elijah.stages.gen_c;
 
+import static tripleo.elijah.util.DebugFlags.MANUAL_DISABLED;
+
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.nextgen.reactive.Reactivable;
 import tripleo.elijah.nextgen.reactive.ReactiveDimension;
 import tripleo.elijah.stages.gen_fn.EvaNamespace;
@@ -10,11 +13,23 @@ import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.world.i.LivingNamespace;
 
-import static tripleo.elijah.util.DebugFlags.MANUAL_DISABLED;
-
 public class WhyNotGarish_Namespace implements WhyNotGarish_Item {
+	public class GCFN implements Reactivable {
+
+		@Override
+		public void respondTo(final ReactiveDimension aDimension) {
+			if (aDimension instanceof GenerateC generateC) {
+				fileGenPromise.then(fileGen -> {
+					final LivingNamespace livingNamespace = generateC._ce().getCompilation().world().getNamespace(en);
+
+					livingNamespace.getGarish().garish(generateC, fileGen.gr(), fileGen.resultSink());
+				});
+			}
+		}
+	}
 	private final EvaNamespace                             en;
 	private final GenerateC                                generateC;
+
 	private final DeferredObject<GenerateResultEnv, Void, Void> fileGenPromise = new DeferredObject<>();
 
 	private final GCFN gcfn = new GCFN();
@@ -32,6 +47,11 @@ public class WhyNotGarish_Namespace implements WhyNotGarish_Item {
 
 	public String getTypeNameString() {
 		return GenerateC.GetTypeName.forGenNamespace(en);
+	}
+
+	@Override
+	public boolean hasFileGen() {
+		return fileGenPromise.isResolved();
 	}
 
 	private void onFileGen(final @NotNull GenerateResultEnv aFileGen) {
@@ -53,26 +73,7 @@ public class WhyNotGarish_Namespace implements WhyNotGarish_Item {
 	}
 
 	@Override
-	public boolean hasFileGen() {
-		return fileGenPromise.isResolved();
-	}
-
-	@Override
 	public void provideFileGen(final GenerateResultEnv fg) {
 		fileGenPromise.resolve(fg);
-	}
-
-	public class GCFN implements Reactivable {
-
-		@Override
-		public void respondTo(final ReactiveDimension aDimension) {
-			if (aDimension instanceof GenerateC generateC) {
-				fileGenPromise.then(fileGen -> {
-					final LivingNamespace livingNamespace = generateC._ce().getCompilation().world().getNamespace(en);
-
-					livingNamespace.getGarish().garish(generateC, fileGen.gr(), fileGen.resultSink());
-				});
-			}
-		}
 	}
 }

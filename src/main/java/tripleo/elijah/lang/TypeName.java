@@ -14,24 +14,24 @@ import tripleo.elijah.diagnostic.Locatable;
  * Created 8/16/20 2:16 AM
  */
 public interface TypeName extends Locatable {
-	boolean isNull();
-
-	Context getContext();
-
-	void setContext(Context context);
-
-	Type kindOfType();
-
-	@Override
-	boolean equals(Object o);
+	enum Nullability {
+		NOT_SPECIFIED, NEVER_NULL, NULLABLE
+	}
 
 	enum Type {
 		NORMAL, GENERIC, TYPE_OF, FUNCTION
 	}
 
-	enum Nullability {
-		NOT_SPECIFIED, NEVER_NULL, NULLABLE
-	}
+	@Override
+	boolean equals(Object o);
+
+	Context getContext();
+
+	boolean isNull();
+
+	Type kindOfType();
+
+	void setContext(Context context);
 }
 
 //

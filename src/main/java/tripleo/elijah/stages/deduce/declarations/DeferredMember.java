@@ -22,17 +22,34 @@ import tripleo.elijah.stages.gen_fn.GenType;
  * Created 6/27/21 1:41 AM
  */
 public class DeferredMember {
-	private final     DeferredObject<GenType, Diagnostic, Void> typePromise = new DeferredObject<>();
-	private final     DeferredObject<EvaNode, Void, Void>       externalRef = new DeferredObject<>();
+	public static class DeferredMemberInjector {
 
+		public DeferredObject<EvaNode, java.lang.Void, java.lang.Void> new_DeferredObject__EvaNode() {
+			return new DeferredObject<EvaNode, Void, Void>();
+		}
+
+		public DeferredObject<GenType, Diagnostic, Void> new_DeferredObject__GenType() {
+			return new DeferredObject<GenType, Diagnostic, Void>();
+		}
+	}
+	private final     DeferredObject<GenType, Diagnostic, Void> typePromise = new DeferredObject<>();
+
+	private final     DeferredObject<EvaNode, Void, Void>       externalRef = new DeferredObject<>();
 	/*@Getter*/ private final IInvocation                               invocation;
 	/*@Getter*/ private final DeduceElementWrapper parent;
+
 	/*@Getter*/ private final VariableStatement    variableStatement;
+
+	private final DeferredMemberInjector __inj = new DeferredMemberInjector();
 
 	public DeferredMember(DeduceElementWrapper aParent, IInvocation aInvocation, VariableStatement aVariableStatement) {
 		parent            = aParent;
 		invocation        = aInvocation;
 		variableStatement = aVariableStatement;
+	}
+
+	public DeferredMemberInjector _inj() {
+		return __inj;
 	}
 
 	public Promise<EvaNode, Void, Void> externalRef() {
@@ -41,6 +58,18 @@ public class DeferredMember {
 
 	public @NotNull DeferredObject<EvaNode, Void, Void> externalRefDeferred() {
 		return externalRef;
+	}
+
+	public IInvocation getInvocation() {
+		return invocation;
+	}
+
+	public DeduceElementWrapper getParent() {
+		return parent;
+	}
+
+	public VariableStatement getVariableStatement() {
+		return variableStatement;
 	}
 
 	@Override
@@ -58,35 +87,6 @@ public class DeferredMember {
 	// for DeducePhase
 	public @NotNull DeferredObject<GenType, Diagnostic, Void> typeResolved() {
 		return typePromise;
-	}
-
-	private final DeferredMemberInjector __inj = new DeferredMemberInjector();
-
-	public DeferredMemberInjector _inj() {
-		return __inj;
-	}
-
-	public IInvocation getInvocation() {
-		return invocation;
-	}
-
-	public DeduceElementWrapper getParent() {
-		return parent;
-	}
-
-	public VariableStatement getVariableStatement() {
-		return variableStatement;
-	}
-
-	public static class DeferredMemberInjector {
-
-		public DeferredObject<EvaNode, java.lang.Void, java.lang.Void> new_DeferredObject__EvaNode() {
-			return new DeferredObject<EvaNode, Void, Void>();
-		}
-
-		public DeferredObject<GenType, Diagnostic, Void> new_DeferredObject__GenType() {
-			return new DeferredObject<GenType, Diagnostic, Void>();
-		}
 	}
 }
 

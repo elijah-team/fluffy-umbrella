@@ -24,15 +24,31 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public interface IPipelineAccess {
-	void _setAccessBus(AccessBus ab);
+	void _send_GeneratedClass(EvaNode aClass);
 
 //	void addFunctionStatement(EvaPipeline.FunctionStatement aFunctionStatement);
 
-	void addLog(ElLog aLOG);
+	void _setAccessBus(AccessBus ab);
 
 //	void addOutput(NG_OutputItem aO);
 
+	void activeClass(EvaClass aEvaClass);
+
+	void activeFunction(BaseEvaFunction aEvaFunction);
+
+	void activeNamespace(EvaNamespace aEvaNamespace);
+
+	void addLog(ElLog aLOG);
+
 	AccessBus getAccessBus();
+
+	List<EvaClass> getActiveClasses();
+
+	//List<NG_OutputItem> getOutputs();
+
+	List<BaseEvaFunction> getActiveFunctions();
+
+	List<EvaNamespace> getActiveNamespaces();
 
 	Compilation getCompilation();
 
@@ -40,11 +56,9 @@ public interface IPipelineAccess {
 
 	List<CompilerInput> getCompilerInput();
 
-	void setCompilerInput(List<CompilerInput> aInputs);
-
 	GenerateResultSink getGenerateResultSink();
 
-	//List<NG_OutputItem> getOutputs();
+//	void setEvaPipeline(@NotNull EvaPipeline agp);
 
 	DeferredObject/* Promise */<PipelineLogic, Void, Void> getPipelineLogicPromise();
 
@@ -52,13 +66,21 @@ public interface IPipelineAccess {
 
 	WritePipeline getWitePipeline();
 
+	void install_notate(Provenance aProvenance, Class<? extends GN_Notable> aRunClass, Class<? extends GN_Env> aEnvClass);
+
+	void notate(Provenance aProvenance, GN_Env aPlRun2);
+
 	void notate(Provenance provenance, GN_Notable aNotable);
 
 	PipelineLogic pipelineLogic();
 
 	void registerNodeList(DoneCallback<List<EvaNode>> done);
 
-//	void setEvaPipeline(@NotNull EvaPipeline agp);
+	void resolvePipelinePromise(PipelineLogic aPipelineLogic);
+
+	void resolveWaitGenC(OS_Module mod, GenerateC gc);
+
+	void setCompilerInput(List<CompilerInput> aInputs);
 
 	void setGenerateResultSink(GenerateResultSink aGenerateResultSink);
 
@@ -66,27 +88,5 @@ public interface IPipelineAccess {
 
 	void setWritePipeline(WritePipeline aWritePipeline);
 
-	void activeFunction(BaseEvaFunction aEvaFunction);
-
-	void activeClass(EvaClass aEvaClass);
-
-	void activeNamespace(EvaNamespace aEvaNamespace);
-
-	List<EvaNamespace> getActiveNamespaces();
-
-	List<BaseEvaFunction> getActiveFunctions();
-
-	List<EvaClass> getActiveClasses();
-
-	void _send_GeneratedClass(EvaNode aClass);
-
 	void waitGenC(OS_Module mod, Consumer<GenerateC> aCb);
-
-	void resolveWaitGenC(OS_Module mod, GenerateC gc);
-
-	void install_notate(Provenance aProvenance, Class<? extends GN_Notable> aRunClass, Class<? extends GN_Env> aEnvClass);
-
-	void notate(Provenance aProvenance, GN_Env aPlRun2);
-
-	void resolvePipelinePromise(PipelineLogic aPipelineLogic);
 }

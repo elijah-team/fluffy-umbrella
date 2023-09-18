@@ -1,11 +1,13 @@
 package tripleo.elijah.stateful;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 public abstract class _RegistrationTarget {
+	private final List<State> registeredStates = new ArrayList<>();
+
 	public State registerState(final @NotNull State aState) {
 		if (!(registeredStates.contains(aState))) {
 			registeredStates.add(aState);
@@ -18,6 +20,4 @@ public abstract class _RegistrationTarget {
 
 		return aState;
 	}
-
-	private final List<State> registeredStates = new ArrayList<>();
 }

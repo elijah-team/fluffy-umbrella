@@ -21,16 +21,16 @@ public class IndexingStatement {
 	private ExpressionList exprs;
 	private OS_Module      parent;
 
-	public void setName(final Token i1) {
-		name = i1;
-	}
-
 	public void setExprs(final ExpressionList el) {
 		exprs = el;
 	}
 
 	public void setModule(final OS_Module module) {
 		parent = module;
+	}
+
+	public void setName(final Token i1) {
+		name = i1;
 	}
 }
 

@@ -10,6 +10,7 @@ package tripleo.elijah.stages.gen_c;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.stages.gen_generic.DependencyRef;
 
 /**

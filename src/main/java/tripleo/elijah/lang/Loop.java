@@ -43,25 +43,25 @@ public class Loop implements StatementItem, FunctionItem, OS_Element {
 		_a.setContext(new LoopContext(ctx, this));
 	}
 
-	public void type(final LoopTypes aType) {
-		type = aType;
-	}
-
 	public void expr(final IExpression aExpr) {
 		expr = aExpr;
-	}
-
-	public void topart(final IExpression aExpr) {
-		topart = aExpr;
 	}
 
 	public void frompart(final IExpression aExpr) {
 		frompart = aExpr;
 	}
 
-	public void iterName(final IdentExpression s) {
-//		assert type == ITER_TYPE;
-		iterName = s;
+	@Override
+	public Context getContext() {
+		return _a.getContext();
+	}
+
+	public IExpression getExpr() {
+		return expr;
+	}
+
+	public IExpression getFromPart() {
+		return frompart;
 	}
 
 	public List<StatementItem> getItems() {
@@ -74,18 +74,12 @@ public class Loop implements StatementItem, FunctionItem, OS_Element {
 //		return items;
 	}
 
-	@Override // OS_Element
-	public void visitGen(final ElElementVisitor visit) {
-		visit.visitLoop(this);
+	public String getIterName() {
+		return iterName.getText();
 	}
 
-	@Override
-	public Context getContext() {
-		return _a.getContext();
-	}
-
-	public void setContext(final LoopContext ctx) {
-		_a.setContext(ctx);
+	public IdentExpression getIterNameToken() {
+		return iterName;
 	}
 
 	@Override
@@ -93,32 +87,38 @@ public class Loop implements StatementItem, FunctionItem, OS_Element {
 		return parent;
 	}
 
-	public String getIterName() {
-		return iterName.getText();
+	public IExpression getToPart() {
+		return topart;
 	}
 
 	public LoopTypes getType() {
 		return type;
 	}
 
-	public IExpression getToPart() {
-		return topart;
-	}
-
-	public IExpression getExpr() {
-		return expr;
-	}
-
-	public IExpression getFromPart() {
-		return frompart;
-	}
-
-	public IdentExpression getIterNameToken() {
-		return iterName;
+	public void iterName(final IdentExpression s) {
+//		assert type == ITER_TYPE;
+		iterName = s;
 	}
 
 	public void scope(final Scope3 sco) {
 		scope3 = sco;
+	}
+
+	public void setContext(final LoopContext ctx) {
+		_a.setContext(ctx);
+	}
+
+	public void topart(final IExpression aExpr) {
+		topart = aExpr;
+	}
+
+	public void type(final LoopTypes aType) {
+		type = aType;
+	}
+
+	@Override // OS_Element
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitLoop(this);
 	}
 
 }

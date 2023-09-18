@@ -1,7 +1,10 @@
 package tripleo.elijah.stages.garish;
 
+import java.util.Map;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang.TypeName;
@@ -16,8 +19,6 @@ import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 import tripleo.elijah.util.BufferTabbedOutputStream;
 import tripleo.elijah.world.i.LivingClass;
 
-import java.util.Map;
-
 public class GarishClass {
 	private final LivingClass _lc;
 
@@ -25,6 +26,34 @@ public class GarishClass {
 	public GarishClass(final LivingClass aLivingClass) {
 		_lc = aLivingClass;
 		//_lc.setGarish(this);
+	}
+
+	public @NotNull String finalizedGenericPrintable(final @NotNull EvaClass evaClass) {
+		final ClassStatement                 klass = evaClass.getKlass();
+		final ClassInvocation.CI_GenericPart x     = evaClass.ci.genericPart();
+
+		final String        name = klass.getName();
+		final StringBuilder sb   = new StringBuilder();
+		sb.append(name);
+
+		sb.append('[');
+
+		if (x != null) {
+			for (Map.Entry<TypeName, OS_Type> entry : x.entrySet()) {
+				final OS_Type y = entry.getValue();
+
+				if (y instanceof OS_UnknownType unk) {
+				} else {
+					if (y instanceof OS_UserClassType uct) {
+						sb.append("%s,".formatted(uct.getClassOf().getName()));
+					}
+				}
+			}
+		}
+
+		sb.append(']');
+
+		return sb.toString();
 	}
 
 	public void garish(final GenerateC aGenerateC, final GenerateResult gr, final @NotNull GenerateResultSink aResultSink) {
@@ -35,18 +64,6 @@ public class GarishClass {
 		if (!xg.generatedAlready()) {
 			xg.provide(aResultSink, this, gr, aGenerateC);
 		}
-	}
-
-	public @NotNull BufferTabbedOutputStream getClassBuffer(final @NotNull GenerateC aGenerateC) {
-		final EvaClass evaClass = getLiving().evaNode();
-
-		final CClassDecl decl = new CClassDecl(evaClass);
-		decl.evaluatePrimitive();
-
-		final String class_name = aGenerateC.getTypeName(evaClass);
-		final int    class_code = evaClass.getCode();
-
-		return getClassBuffer(evaClass, decl, class_name, class_code);
 	}
 
 	public @NotNull BufferTabbedOutputStream getClassBuffer(final @NotNull EvaClass x,
@@ -84,6 +101,18 @@ public class GarishClass {
 
 		tos.close();
 		return tos;
+	}
+
+	public @NotNull BufferTabbedOutputStream getClassBuffer(final @NotNull GenerateC aGenerateC) {
+		final EvaClass evaClass = getLiving().evaNode();
+
+		final CClassDecl decl = new CClassDecl(evaClass);
+		decl.evaluatePrimitive();
+
+		final String class_name = aGenerateC.getTypeName(evaClass);
+		final int    class_code = evaClass.getCode();
+
+		return getClassBuffer(evaClass, decl, class_name, class_code);
 	}
 
 	public @NotNull BufferTabbedOutputStream getHeaderBuffer(final @NotNull GenerateC aGenerateC) {
@@ -131,34 +160,6 @@ public class GarishClass {
 		tosHdr.flush();
 		tosHdr.close();
 		return tosHdr;
-	}
-
-	public @NotNull String finalizedGenericPrintable(final @NotNull EvaClass evaClass) {
-		final ClassStatement                 klass = evaClass.getKlass();
-		final ClassInvocation.CI_GenericPart x     = evaClass.ci.genericPart();
-
-		final String        name = klass.getName();
-		final StringBuilder sb   = new StringBuilder();
-		sb.append(name);
-
-		sb.append('[');
-
-		if (x != null) {
-			for (Map.Entry<TypeName, OS_Type> entry : x.entrySet()) {
-				final OS_Type y = entry.getValue();
-
-				if (y instanceof OS_UnknownType unk) {
-				} else {
-					if (y instanceof OS_UserClassType uct) {
-						sb.append("%s,".formatted(uct.getClassOf().getName()));
-					}
-				}
-			}
-		}
-
-		sb.append(']');
-
-		return sb.toString();
 	}
 
 	public LivingClass getLiving() {

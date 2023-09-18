@@ -1,16 +1,17 @@
 package tripleo.elijah.stages.gen_c;
 
-import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
-import tripleo.elijah.stages.gen_fn.VariableTableEntry;
-import tripleo.elijah.stages.instructions.IdentIA;
-import tripleo.elijah.stages.instructions.InstructionArgument;
+import static tripleo.elijah.stages.gen_c.CReference._getIdentIAPathList;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static tripleo.elijah.stages.gen_c.CReference._getIdentIAPathList;
+import org.jetbrains.annotations.NotNull;
+
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
+import tripleo.elijah.stages.gen_fn.VariableTableEntry;
+import tripleo.elijah.stages.instructions.IdentIA;
+import tripleo.elijah.stages.instructions.InstructionArgument;
 
 class Zone {
 	private final Map<Object, ZoneMember> members = new HashMap<Object, ZoneMember>();

@@ -18,17 +18,17 @@ import java.io.File;
  * Created 8/11/21 5:50 AM
  */
 public interface ProcessLogEntryBehavior {
-	void processLogEntry(LogEntry aLogEntry);
-
-	void initialize(File aLogFile, String aElLogFileName, ErrSink aErrSink);
-
-	void start();
+	void donePhase();
 
 	void finish();
 
+	void initialize(File aLogFile, String aElLogFileName, ErrSink aErrSink);
+
+	void processLogEntry(LogEntry aLogEntry);
+
 	void processPhase(String aPhase);
 
-	void donePhase();
+	void start();
 }
 
 //

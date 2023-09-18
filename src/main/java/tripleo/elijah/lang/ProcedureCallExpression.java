@@ -52,13 +52,9 @@ public class ProcedureCallExpression implements IExpression {
 		return args;
 	}
 
-	/**
-	 * change then argument list all at once
-	 *
-	 * @param ael the new value
-	 */
-	public void setArgs(final ExpressionList ael) {
-		args = ael;
+	@Override
+	public ExpressionKind getKind() {
+		return ExpressionKind.PROCEDURE_CALL;
 	}
 
 	// endregion
@@ -66,38 +62,12 @@ public class ProcedureCallExpression implements IExpression {
 	// region left-side
 
 	@Override
-	public ExpressionKind getKind() {
-		return ExpressionKind.PROCEDURE_CALL;
-	}
-
-	@Override
-	public void setKind(final ExpressionKind aIncrement) {
-		throw new IllegalArgumentException();
-	}
-
-	@Override
 	public IExpression getLeft() {
 		return _left;
 	}
 
-	/**
-	 * @see #identifier(Qualident)
-	 */
-	@Override
-	public void setLeft(final IExpression iexpression) {
-		_left = iexpression;
-	}
-
-	@Override
-	public String repr_() {
-		return toString();
-	}
-
-	// endregion
-
-	@Override
-	public boolean is_simple() {
-		return false; // TODO is this correct?
+	public String getReturnTypeString() {
+		return "int"; // TODO hardcoded
 	}
 
 	@Override
@@ -105,22 +75,13 @@ public class ProcedureCallExpression implements IExpression {
 		return _type;
 	}
 
-/*
-	public OS_Element getParent() {
-		return null;
-	}
-*/
-
-	// region representation
-
-	@Override
-	public void setType(final OS_Type deducedExpression) {
-		_type = deducedExpression;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("ProcedureCallExpression{%s %s}", getLeft(), args != null ? args.toString() : "()");
+	/**
+	 * Set  the left hand side of the procedure call expression, ie the method name
+	 *
+	 * @param xyz a method name might come as DotExpression or IdentExpression
+	 */
+	public void identifier(final IExpression xyz) {
+		setLeft(xyz);
 	}
 
 	/**
@@ -134,23 +95,62 @@ public class ProcedureCallExpression implements IExpression {
 
 	// endregion
 
-	// region type (to remove)
-
-	/**
-	 * Set  the left hand side of the procedure call expression, ie the method name
-	 *
-	 * @param xyz a method name might come as DotExpression or IdentExpression
-	 */
-	public void identifier(final IExpression xyz) {
-		setLeft(xyz);
-	}
-
-	public String getReturnTypeString() {
-		return "int"; // TODO hardcoded
+	@Override
+	public boolean is_simple() {
+		return false; // TODO is this correct?
 	}
 
 	public String printableString() {
 		return String.format("%s%s", getLeft(), args != null ? args.toString() : "()");
+	}
+
+/*
+	public OS_Element getParent() {
+		return null;
+	}
+*/
+
+	// region representation
+
+	@Override
+	public String repr_() {
+		return toString();
+	}
+
+	/**
+	 * change then argument list all at once
+	 *
+	 * @param ael the new value
+	 */
+	public void setArgs(final ExpressionList ael) {
+		args = ael;
+	}
+
+	@Override
+	public void setKind(final ExpressionKind aIncrement) {
+		throw new IllegalArgumentException();
+	}
+
+	// endregion
+
+	// region type (to remove)
+
+	/**
+	 * @see #identifier(Qualident)
+	 */
+	@Override
+	public void setLeft(final IExpression iexpression) {
+		_left = iexpression;
+	}
+
+	@Override
+	public void setType(final OS_Type deducedExpression) {
+		_type = deducedExpression;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("ProcedureCallExpression{%s %s}", getLeft(), args != null ? args.toString() : "()");
 	}
 
 	// endregion

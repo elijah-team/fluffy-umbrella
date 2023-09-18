@@ -8,10 +8,17 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
@@ -21,99 +28,10 @@ import tripleo.elijah.lang.types.OS_UserClassType;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_fn.EvaContainer;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
-
 /**
  * Created 3/5/21 3:51 AM
  */
 public class ClassInvocation implements IInvocation {
-	private final @NotNull ClassStatement                       cls;
-	private final @NotNull Supplier<DeduceTypes2>               _dt2s;
-	private final          String                               constructorName;
-	private final          DeferredObject<EvaClass, Void, Void> resolvePromise = new DeferredObject<EvaClass, Void, Void>();
-	private final ClassStatement classOf;
-	public boolean        genericPart;
-	public CI_GenericPart genericPart_;
-	public CI_Hint        hint;
-
-	public ClassInvocation(final ClassStatement aClassOf, final String aConstructorName) {
-		classOf         = aClassOf;
-		constructorName = aConstructorName;
-		cls             = null;
-		_dt2s           = new NULL_DeduceTypes2();
-	}
-
-	public ClassInvocation(final @NotNull ClassStatement aClassStatement,
-	                       final String aConstructorName,
-	                       final @NotNull Supplier<DeduceTypes2> aDeduceTypes2) {
-		this._dt2s      = aDeduceTypes2;
-		cls             = aClassStatement;
-		constructorName = aConstructorName;
-		classOf         = null;
-	}
-
-	public CI_GenericPart genericPart() {
-		if (_dt2s instanceof NULL_DeduceTypes2) {
-			return null;
-		}
-
-		if (genericPart_ == null) {
-			genericPart_ = _inj().new_CI_GenericPart(cls.getGenericPart(), this);
-		}
-		return genericPart_;
-	}
-
-	public String getConstructorName() {
-		return constructorName;
-	}
-
-	public @NotNull ClassStatement getKlass() {
-		return cls;
-	}
-
-	public @NotNull Promise<EvaClass, Void, Void> resolvePromise() {
-		return resolvePromise.promise();
-	}
-
-	public @NotNull DeferredObject<EvaClass, Void, Void> resolveDeferred() {
-		return resolvePromise;
-	}
-
-	public @NotNull String finalizedGenericPrintable() {
-		final String        name = getKlass().getName();
-		final StringBuilder sb   = new StringBuilder();
-
-		sb.append(name);
-		sb.append('[');
-
-		final CI_GenericPart ciGenericPart = genericPart();
-		if (ciGenericPart != null) {
-			for (Map.Entry<TypeName, OS_Type> entry : ciGenericPart.entrySet()) {
-				var y = entry.getValue();
-
-				if (y instanceof OS_UnknownType unk) {
-				} else {
-					if (y instanceof OS_UserClassType uct) {
-						assert uct.getClassOf() != null;
-						sb.append("%s,".formatted(uct.getClassOf().getName()));
-					}
-				}
-			}
-		}
-
-		sb.append(']');
-
-		return sb.toString();
-	}
-
-	private DeduceTypes2.DeduceTypes2Injector _inj() {
-		return _dt2s.get()._inj();
-	}
-
 	public class CI_GenericPart {
 		private final @NotNull Map<TypeName, OS_Type> genericPart;
 		private final          boolean                isEmpty;
@@ -129,6 +47,13 @@ public class ClassInvocation implements IInvocation {
 				genericPart  = Collections.emptyMap();
 				this.isEmpty = true;
 			}
+		}
+
+		public @NotNull Iterable<? extends Map.Entry<TypeName, OS_Type>> entrySet() {
+			//if (isEmpty) {
+			//	return new HashMap<TypeName, OS_Type>().entrySet();
+			//}
+			return genericPart.entrySet();
 		}
 
 		public OS_Type get(final TypeName aTypeName) {
@@ -163,13 +88,89 @@ public class ClassInvocation implements IInvocation {
 			}
 			return realType;
 		}
+	}
+	private final @NotNull ClassStatement                       cls;
+	private final @NotNull Supplier<DeduceTypes2>               _dt2s;
+	private final          String                               constructorName;
+	private final          DeferredObject<EvaClass, Void, Void> resolvePromise = new DeferredObject<EvaClass, Void, Void>();
+	private final ClassStatement classOf;
+	public boolean        genericPart;
+	public CI_GenericPart genericPart_;
 
-		public @NotNull Iterable<? extends Map.Entry<TypeName, OS_Type>> entrySet() {
-			//if (isEmpty) {
-			//	return new HashMap<TypeName, OS_Type>().entrySet();
-			//}
-			return genericPart.entrySet();
+	public CI_Hint        hint;
+
+	public ClassInvocation(final ClassStatement aClassOf, final String aConstructorName) {
+		classOf         = aClassOf;
+		constructorName = aConstructorName;
+		cls             = null;
+		_dt2s           = new NULL_DeduceTypes2();
+	}
+
+	public ClassInvocation(final @NotNull ClassStatement aClassStatement,
+	                       final String aConstructorName,
+	                       final @NotNull Supplier<DeduceTypes2> aDeduceTypes2) {
+		this._dt2s      = aDeduceTypes2;
+		cls             = aClassStatement;
+		constructorName = aConstructorName;
+		classOf         = null;
+	}
+
+	private DeduceTypes2.DeduceTypes2Injector _inj() {
+		return _dt2s.get()._inj();
+	}
+
+	public @NotNull String finalizedGenericPrintable() {
+		final String        name = getKlass().getName();
+		final StringBuilder sb   = new StringBuilder();
+
+		sb.append(name);
+		sb.append('[');
+
+		final CI_GenericPart ciGenericPart = genericPart();
+		if (ciGenericPart != null) {
+			for (Map.Entry<TypeName, OS_Type> entry : ciGenericPart.entrySet()) {
+				var y = entry.getValue();
+
+				if (y instanceof OS_UnknownType unk) {
+				} else {
+					if (y instanceof OS_UserClassType uct) {
+						assert uct.getClassOf() != null;
+						sb.append("%s,".formatted(uct.getClassOf().getName()));
+					}
+				}
+			}
 		}
+
+		sb.append(']');
+
+		return sb.toString();
+	}
+
+	public CI_GenericPart genericPart() {
+		if (_dt2s instanceof NULL_DeduceTypes2) {
+			return null;
+		}
+
+		if (genericPart_ == null) {
+			genericPart_ = _inj().new_CI_GenericPart(cls.getGenericPart(), this);
+		}
+		return genericPart_;
+	}
+
+	public String getConstructorName() {
+		return constructorName;
+	}
+
+	public @NotNull ClassStatement getKlass() {
+		return cls;
+	}
+
+	public @NotNull DeferredObject<EvaClass, Void, Void> resolveDeferred() {
+		return resolvePromise;
+	}
+
+	public @NotNull Promise<EvaClass, Void, Void> resolvePromise() {
+		return resolvePromise.promise();
 	}
 
 	public void set(int aIndex, TypeName aTypeName, @NotNull OS_Type aType) {

@@ -10,15 +10,15 @@ class ActionWrapper implements ICompilationBus.CB_Action {
 	}
 
 	@Override
-	public String name() {
-		return a.name();
-	}
-
-	@Override
 	public void execute() {
 		crState.cur = this;
 		a.execute(crState);
 		crState.cur = null;
+	}
+
+	@Override
+	public String name() {
+		return a.name();
 	}
 
 	@Override

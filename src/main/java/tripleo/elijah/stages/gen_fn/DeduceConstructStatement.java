@@ -1,13 +1,13 @@
 package tripleo.elijah.stages.gen_fn;
 
+import java.util.List;
+
 import tripleo.elijah.lang.ConstructStatement;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.deduce.DeclAnchor;
 import tripleo.elijah.stages.deduce.DeduceElement;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.ProcIA;
-
-import java.util.List;
 
 public class DeduceConstructStatement implements DeduceElement {
 	public InstructionArgument       target;

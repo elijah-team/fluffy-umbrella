@@ -51,7 +51,62 @@ public class WriteMesonPipeline implements PipelineMember {
 		ce.getAccessBusPromise().then(wab -> wab.subscribePipelineLogic(this::pl_slot));
 	}
 
+	@NotNull
+	private Path getPath(final String aName) {
+		return FileSystems.getDefault().getPath("COMP",
+		  c.getCompilationNumberString(),
+		  aName);
+	}
+
 	private void pl_slot(final PipelineLogic pll) {
+	}
+
+	private @Nullable String pullFileName(final String aFilename) {
+		//return aFilename.substring(aFilename.lastIndexOf('/')+1);
+		final Matcher x = pullPat.matcher(aFilename);
+		try {
+			if (x.matches())
+				return x.group(1);
+		} catch (final IllegalStateException aE) {
+		}
+		return null;
+	}
+
+	@Override
+	public void run() throws Exception {
+		write_makefiles();
+	}
+
+	private void write_lsp(@NotNull final Multimap<CompilerInstructions, String> lsp_outputs, final CompilerInstructions compilerInstructions, final String aSub_dir) throws IOException {
+		final Path path = FileSystems.getDefault().getPath("COMP",
+		  c.getCompilationNumberString(),
+		  aSub_dir,
+		  "meson.build");
+		final CharSink sub_file = c.getIO().openWrite(path);
+		try {
+			final int                yy     = 2;
+			final Collection<String> files_ = lsp_outputs.get(compilerInstructions);
+			final Set<String> files = files_.stream()
+			                                .filter(x -> x.endsWith(".c"))
+			                                .map(x -> String.format("\t'%s',", pullFileName(x)))
+			                                .collect(Collectors.toSet()); // TODO .toUnmodifiableSet -- language level 10
+			sub_file.accept(String.format("%s_sources = files(\n%s\n)", aSub_dir, String_join("\n", files)));
+			sub_file.accept("\n");
+			sub_file.accept(String.format("%s = static_library('%s', %s_sources, install: false,)", aSub_dir, aSub_dir, aSub_dir)); // include_directories, dependencies: [],
+			sub_file.accept("\n");
+			sub_file.accept("\n");
+			sub_file.accept(String.format("%s_dep = declare_dependency( link_with: %s )", aSub_dir, aSub_dir)); // include_directories
+			sub_file.accept("\n");
+		} finally {
+			((FileCharSink) sub_file).close();
+		}
+	}
+
+	private void write_makefiles() {
+		//Multimap<CompilerInstructions, String> lsp_outputs = writePipeline.getLspOutputs(); // TODO move this
+
+		//write_makefiles_latch.notify(lsp_outputs);
+		write_makefiles_latch.notify(true);
 	}
 
 	private void write_makefiles_action(final Multimap<CompilerInstructions, String> lsp_outputs) {
@@ -76,6 +131,31 @@ public class WriteMesonPipeline implements PipelineMember {
 			throw new RuntimeException(aE);
 		}
 
+	}
+
+	private void write_prelude() throws IOException {
+		final Path ppath1 = getPath("Prelude");
+		final Path ppath  = ppath1.resolve("meson.build"); // Java is wierd
+
+		ppath.getParent().toFile().mkdirs(); // README just in case -- but should be unnecessary at this point
+
+		final CharSink prel_file = c.getIO().openWrite(ppath);
+		try {
+//			Collection<String> files_ = lsp_outputs.get(compilerInstructions);
+			final List<String> files = List_of("'Prelude.c'")/*files_.stream()
+					.filter(x -> x.endsWith(".c"))
+					.map(x -> String.format("\t'%s',", x))
+					.collect(Collectors.toList())*/;
+			prel_file.accept(String.format("Prelude_sources = files(\n%s\n)", String_join("\n", files)));
+			prel_file.accept("\n");
+			prel_file.accept("Prelude = static_library('Prelude', Prelude_sources, install: false,)"); // include_directories, dependencies: [],
+			prel_file.accept("\n");
+			prel_file.accept("\n");
+			prel_file.accept(String.format("%s_dep = declare_dependency( link_with: %s )", "Prelude", "Prelude")); // include_directories
+			prel_file.accept("\n");
+		} finally {
+			((FileCharSink) prel_file).close();
+		}
 	}
 
 	private void write_root(@NotNull final Multimap<CompilerInstructions, String> lsp_outputs, final List<String> aDep_dirs) throws IOException {
@@ -109,86 +189,6 @@ public class WriteMesonPipeline implements PipelineMember {
 		} finally {
 			((FileCharSink) root_file).close();
 		}
-	}
-
-	@NotNull
-	private Path getPath(final String aName) {
-		return FileSystems.getDefault().getPath("COMP",
-		  c.getCompilationNumberString(),
-		  aName);
-	}
-
-	private void write_lsp(@NotNull final Multimap<CompilerInstructions, String> lsp_outputs, final CompilerInstructions compilerInstructions, final String aSub_dir) throws IOException {
-		final Path path = FileSystems.getDefault().getPath("COMP",
-		  c.getCompilationNumberString(),
-		  aSub_dir,
-		  "meson.build");
-		final CharSink sub_file = c.getIO().openWrite(path);
-		try {
-			final int                yy     = 2;
-			final Collection<String> files_ = lsp_outputs.get(compilerInstructions);
-			final Set<String> files = files_.stream()
-			                                .filter(x -> x.endsWith(".c"))
-			                                .map(x -> String.format("\t'%s',", pullFileName(x)))
-			                                .collect(Collectors.toSet()); // TODO .toUnmodifiableSet -- language level 10
-			sub_file.accept(String.format("%s_sources = files(\n%s\n)", aSub_dir, String_join("\n", files)));
-			sub_file.accept("\n");
-			sub_file.accept(String.format("%s = static_library('%s', %s_sources, install: false,)", aSub_dir, aSub_dir, aSub_dir)); // include_directories, dependencies: [],
-			sub_file.accept("\n");
-			sub_file.accept("\n");
-			sub_file.accept(String.format("%s_dep = declare_dependency( link_with: %s )", aSub_dir, aSub_dir)); // include_directories
-			sub_file.accept("\n");
-		} finally {
-			((FileCharSink) sub_file).close();
-		}
-	}
-
-	private void write_prelude() throws IOException {
-		final Path ppath1 = getPath("Prelude");
-		final Path ppath  = ppath1.resolve("meson.build"); // Java is wierd
-
-		ppath.getParent().toFile().mkdirs(); // README just in case -- but should be unnecessary at this point
-
-		final CharSink prel_file = c.getIO().openWrite(ppath);
-		try {
-//			Collection<String> files_ = lsp_outputs.get(compilerInstructions);
-			final List<String> files = List_of("'Prelude.c'")/*files_.stream()
-					.filter(x -> x.endsWith(".c"))
-					.map(x -> String.format("\t'%s',", x))
-					.collect(Collectors.toList())*/;
-			prel_file.accept(String.format("Prelude_sources = files(\n%s\n)", String_join("\n", files)));
-			prel_file.accept("\n");
-			prel_file.accept("Prelude = static_library('Prelude', Prelude_sources, install: false,)"); // include_directories, dependencies: [],
-			prel_file.accept("\n");
-			prel_file.accept("\n");
-			prel_file.accept(String.format("%s_dep = declare_dependency( link_with: %s )", "Prelude", "Prelude")); // include_directories
-			prel_file.accept("\n");
-		} finally {
-			((FileCharSink) prel_file).close();
-		}
-	}
-
-	private @Nullable String pullFileName(final String aFilename) {
-		//return aFilename.substring(aFilename.lastIndexOf('/')+1);
-		final Matcher x = pullPat.matcher(aFilename);
-		try {
-			if (x.matches())
-				return x.group(1);
-		} catch (final IllegalStateException aE) {
-		}
-		return null;
-	}
-
-	@Override
-	public void run() throws Exception {
-		write_makefiles();
-	}
-
-	private void write_makefiles() {
-		//Multimap<CompilerInstructions, String> lsp_outputs = writePipeline.getLspOutputs(); // TODO move this
-
-		//write_makefiles_latch.notify(lsp_outputs);
-		write_makefiles_latch.notify(true);
 	}
 }
 

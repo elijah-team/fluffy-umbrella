@@ -10,12 +10,12 @@ public class InstructionFixedList implements IFixedList<InstructionArgument> {
 	}
 
 	@Override
-	public int size() {
-		return instruction.getArgsSize();
+	public InstructionArgument get(final int at) {
+		return instruction.getArg(at);
 	}
 
 	@Override
-	public InstructionArgument get(final int at) {
-		return instruction.getArg(at);
+	public int size() {
+		return instruction.getArgsSize();
 	}
 }

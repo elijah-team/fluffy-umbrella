@@ -38,27 +38,6 @@ public class NamespaceStatement extends _CommonNC implements Documentable, Modul
 		setContext(new NamespaceContext(context, this));
 	}
 
-	public StatementClosure statementClosure() {
-		return new AbstractStatementClosure(new AbstractScope2(this) {
-			@Override
-			public void statementWrapper(final IExpression aExpr) {
-				throw new NotImplementedException();
-			}
-
-			@Override
-			public void add(final StatementItem aItem) {
-				NamespaceStatement.this.add((OS_Element) aItem);
-			}
-
-			@Override
-			public StatementClosure statementClosure() {
-				throw new NotImplementedException();
-//				return null;
-			}
-
-		});
-	}
-
 	@Override // OS_Container
 	public void add(final OS_Element anElement) {
 		if (anElement instanceof ClassItem)
@@ -67,26 +46,8 @@ public class NamespaceStatement extends _CommonNC implements Documentable, Modul
 			System.err.printf("[NamespaceStatement#add] not a ClassItem: %s%n", anElement);
 	}
 
-	public TypeAliasStatement typeAlias() {
-		throw new NotImplementedException();
-	}
-
-	public InvariantStatement invariantStatement() {
-		throw new NotImplementedException();
-	}
-
 	public FunctionDef funcDef() {
 		return new FunctionDef(this, getContext());
-	}
-
-	public ProgramClosure XXX() {
-		return new ProgramClosure() {
-		};
-	}
-
-	@Override // OS_Element
-	public void visitGen(final @NotNull ElElementVisitor visit) {
-		visit.visitNamespaceStatement(this);
 	}
 
 	@Override // OS_Element
@@ -94,8 +55,13 @@ public class NamespaceStatement extends _CommonNC implements Documentable, Modul
 		return _a.getContext();
 	}
 
-	public void setContext(final NamespaceContext ctx) {
-		_a.setContext(ctx);
+	public NamespaceTypes getKind() {
+		return _kind;
+	}
+
+	public OS_Type getOS_Type() {
+//		return new OS_Type(OS_Type.Type.);
+		return null; // TODO
 	}
 
 	@Override // OS_Element
@@ -103,13 +69,8 @@ public class NamespaceStatement extends _CommonNC implements Documentable, Modul
 		return parent;
 	}
 
-	public NamespaceTypes getKind() {
-		return _kind;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("<Namespace %d %s `%s'>", _a.getCode(), getPackageName()._name, getName());
+	public InvariantStatement invariantStatement() {
+		throw new NotImplementedException();
 	}
 
 	public void postConstruct() {
@@ -124,13 +85,52 @@ public class NamespaceStatement extends _CommonNC implements Documentable, Modul
 		}
 	}
 
+	public void setContext(final NamespaceContext ctx) {
+		_a.setContext(ctx);
+	}
+
 	public void setType(final NamespaceTypes aType) {
 		_kind = aType;
 	}
 
-	public OS_Type getOS_Type() {
-//		return new OS_Type(OS_Type.Type.);
-		return null; // TODO
+	public StatementClosure statementClosure() {
+		return new AbstractStatementClosure(new AbstractScope2(this) {
+			@Override
+			public void add(final StatementItem aItem) {
+				NamespaceStatement.this.add((OS_Element) aItem);
+			}
+
+			@Override
+			public StatementClosure statementClosure() {
+				throw new NotImplementedException();
+//				return null;
+			}
+
+			@Override
+			public void statementWrapper(final IExpression aExpr) {
+				throw new NotImplementedException();
+			}
+
+		});
+	}
+
+	@Override
+	public String toString() {
+		return String.format("<Namespace %d %s `%s'>", _a.getCode(), getPackageName()._name, getName());
+	}
+
+	public TypeAliasStatement typeAlias() {
+		throw new NotImplementedException();
+	}
+
+	@Override // OS_Element
+	public void visitGen(final @NotNull ElElementVisitor visit) {
+		visit.visitNamespaceStatement(this);
+	}
+
+	public ProgramClosure XXX() {
+		return new ProgramClosure() {
+		};
 	}
 
 	// region ClassItem

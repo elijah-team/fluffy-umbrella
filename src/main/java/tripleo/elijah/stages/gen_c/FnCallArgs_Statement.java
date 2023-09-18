@@ -1,6 +1,9 @@
 package tripleo.elijah.stages.gen_c;
 
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.nextgen.outputstatement.EG_Statement;
 import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
@@ -9,8 +12,6 @@ import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
 import tripleo.elijah.stages.instructions.Instruction;
 import tripleo.elijah.util.Helpers;
-
-import java.util.List;
 
 class FnCallArgs_Statement implements EG_Statement {
 	private final GenerateC                    generateC;

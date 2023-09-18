@@ -8,10 +8,10 @@
  */
 package tripleo.elijah.stages.instructions;
 
+import java.util.List;
+
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.stages.deduce.DeduceElement;
-
-import java.util.List;
 
 /**
  * Created 9/10/20 3:16 PM
@@ -23,24 +23,40 @@ public class Instruction {
 	private int             index = -1;
 	private Context context;
 
-	public void setArgs(final List<InstructionArgument> args_) {
-		args = args_;
+	public InstructionArgument getArg(final int i) {
+		return args.get(i);
 	}
 
-	public InstructionName getName() {
-		return name;
+	public int getArgsSize() {
+		return args.size();
 	}
 
-	public void setName(final InstructionName aName) {
-		name = aName;
+	public Context getContext() {
+		return context;
 	}
 
 	public int getIndex() {
 		return index;
 	}
 
+	public InstructionName getName() {
+		return name;
+	}
+
+	public void setArgs(final List<InstructionArgument> args_) {
+		args = args_;
+	}
+
+	public void setContext(final Context context) {
+		this.context = context;
+	}
+
 	public void setIndex(final int l) {
 		index = l;
+	}
+
+	public void setName(final InstructionName aName) {
+		name = aName;
 	}
 
 	@Override
@@ -50,22 +66,6 @@ public class Instruction {
 		  ", index=" + index +
 		  ", args=" + args +
 		  '}';
-	}
-
-	public InstructionArgument getArg(final int i) {
-		return args.get(i);
-	}
-
-	public Context getContext() {
-		return context;
-	}
-
-	public void setContext(final Context context) {
-		this.context = context;
-	}
-
-	public int getArgsSize() {
-		return args.size();
 	}
 
 //	public List<InstructionArgument> getArgs() {

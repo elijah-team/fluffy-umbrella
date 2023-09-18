@@ -22,6 +22,28 @@ public class Coder {
 		codeRegistrar = aCodeRegistrar;
 	}
 
+	public void codeNode(final EvaNode aEvaNode) {
+		if (aEvaNode instanceof final EvaFunction generatedFunction) {
+			this.codeNodeFunction(generatedFunction);
+		} else if (aEvaNode instanceof final EvaClass generatedClass) {
+			this.codeNodeClass(generatedClass);
+		} else if (aEvaNode instanceof final EvaNamespace generatedNamespace) {
+			this.codeNodeNamespace(generatedNamespace);
+		}
+	}
+
+	private void codeNodeClass(@NotNull final EvaClass generatedClass) {
+		codeRegistrar.registerClass(generatedClass);
+	}
+
+	public void codeNodeFunction(@NotNull final BaseEvaFunction generatedFunction) {
+		codeRegistrar.registerFunction(generatedFunction);
+	}
+
+	public void codeNodeNamespace(@NotNull final EvaNamespace generatedNamespace) {
+		codeRegistrar.registerNamespace(generatedNamespace);
+	}
+
 	public void codeNodes(final List<EvaNode> resolved_nodes, final EvaNode aEvaNode) {
 		if (aEvaNode instanceof final EvaFunction generatedFunction) {
 			codeNodeFunction(generatedFunction);
@@ -44,32 +66,6 @@ public class Coder {
 		}
 	}
 
-	public void codeNodeFunction(@NotNull final BaseEvaFunction generatedFunction) {
-		codeRegistrar.registerFunction(generatedFunction);
-	}
-
-	private void codeNodeClass(@NotNull final EvaClass generatedClass) {
-		codeRegistrar.registerClass(generatedClass);
-	}
-
-	private void setClassmapNodeCodes(@NotNull final Map<ClassStatement, EvaClass> aClassMap) {
-		aClassMap.values().forEach(this::codeNodeClass);
-	}
-
-	public void codeNodeNamespace(@NotNull final EvaNamespace generatedNamespace) {
-		codeRegistrar.registerNamespace(generatedNamespace);
-	}
-
-	public void codeNode(final EvaNode aEvaNode) {
-		if (aEvaNode instanceof final EvaFunction generatedFunction) {
-			this.codeNodeFunction(generatedFunction);
-		} else if (aEvaNode instanceof final EvaClass generatedClass) {
-			this.codeNodeClass(generatedClass);
-		} else if (aEvaNode instanceof final EvaNamespace generatedNamespace) {
-			this.codeNodeNamespace(generatedNamespace);
-		}
-	}
-
 	private void extractNodes_toResolvedNodes(final Collection<EvaFunction> aValues, final List<EvaNode> resolved_nodes) {
 		aValues.stream().map(generatedFunction -> (generatedFunction.idte_list)
 		         .stream()
@@ -77,5 +73,9 @@ public class Coder {
 		         .map(IdentTableEntry::resolvedType)
 		         .collect(Collectors.toList()))
 		       .forEach(resolved_nodes::addAll);
+	}
+
+	private void setClassmapNodeCodes(@NotNull final Map<ClassStatement, EvaClass> aClassMap) {
+		aClassMap.values().forEach(this::codeNodeClass);
 	}
 }

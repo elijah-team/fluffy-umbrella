@@ -34,29 +34,25 @@ public class OS_Package {
 		_name = aName;
 	}
 
-	public Context getContext() {
-		return _ctx;
+	public void addElement(final OS_Element element) {
+		elements.add(element);
 	}
 
 	//
 	// ELEMENTS
 	//
 
-	public void setContext(final PackageContext cur) {
-		_ctx = cur;
+	public Context getContext() {
+		return _ctx;
 	}
 
-	public void addElement(final OS_Element element) {
-		elements.add(element);
+	public List<OS_Element> getElements() {
+		return elements;
 	}
 
 	//
 	// NAME
 	//
-
-	public List<OS_Element> getElements() {
-		return elements;
-	}
 
 	public String getName() {
 		if (_name == null) {
@@ -64,6 +60,10 @@ public class OS_Package {
 			return "";
 		}
 		return _name.toString();
+	}
+
+	public void setContext(final PackageContext cur) {
+		_ctx = cur;
 	}
 }
 

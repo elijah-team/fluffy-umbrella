@@ -23,36 +23,72 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class EIT_ModuleList {
+	public static class _ProcessParams {
+		private final          OS_Module         mod;
+		private final          PipelineLogic     pipelineLogic;
+		private final          GenerateFunctions gfm;
+
+		private final          DeducePhase    deducePhase;
+
+		private final @NotNull EntryPointList epl;
+		//private final @NotNull ElLog.Verbosity   verbosity;
+		private _ProcessParams(@NotNull final OS_Module aModule,
+		                       @NotNull final PipelineLogic aPipelineLogic,
+		                       @NotNull final GenerateFunctions aGenerateFunctions,
+		                       @NotNull final EntryPointList aEntryPointList,
+		                       @NotNull final DeducePhase aDeducePhase) {
+			mod           = aModule;
+			pipelineLogic = aPipelineLogic;
+			gfm           = aGenerateFunctions;
+			epl           = aEntryPointList;
+			deducePhase   = aDeducePhase;
+//			verbosity = mod.getCompilation().pipelineLogic.getVerbosity();
+		}
+
+		public void deduceModule() {
+			var wm = new DefaultWorldModule(mod, null);
+			deducePhase.deduceModule(wm, getLgc(), getVerbosity());
+		}
+
+		public void generate() {
+			epl.generate(gfm, deducePhase, getWorkManagerSupplier());
+		}
+
+		public DeducePhase getDeducePhase() {
+			return deducePhase;
+		}
+
+		@Contract(pure = true)
+		public DeducePhase.GeneratedClasses getLgc() {
+			return deducePhase.generatedClasses;
+		}
+
+		//
+		//
+		//
+
+		@Contract(pure = true)
+		public OS_Module getMod() {
+			return mod;
+		}
+
+		@Contract(pure = true)
+		public ElLog.@NotNull Verbosity getVerbosity() {
+			return pipelineLogic.getVerbosity();
+		}
+
+		@Contract(pure = true)
+		public @NotNull Supplier<WorkManager> getWorkManagerSupplier() {
+			return () -> pipelineLogic.generatePhase.wm;
+		}
+	}
+
 	private final List<OS_Module> mods;
 //	private PipelineLogic __pl;
 
 	@Contract(pure = true)
 	public EIT_ModuleList(final List<OS_Module> aMods) {
 		mods = aMods;
-	}
-
-	public List<OS_Module> getMods() {
-		return mods;
-	}
-
-	public void process__PL(final Function<OS_Module, GenerateFunctions> ggf, final PipelineLogic pipelineLogic) {
-		for (final OS_Module mod : mods) {
-			final @NotNull EntryPointList epl = mod.entryPoints;
-
-			if (epl.size() == 0) {
-				continue;
-			}
-
-
-			final GenerateFunctions gfm = ggf.apply(mod);
-
-			final DeducePhase deducePhase = pipelineLogic.dp;
-			//final DeducePhase.@NotNull GeneratedClasses lgc            = deducePhase.generatedClasses;
-
-			final _ProcessParams plp = new _ProcessParams(mod, pipelineLogic, gfm, epl, deducePhase);
-
-			__process__PL__each(plp);
-		}
 	}
 
 	private void __process__PL__each(final @NotNull _ProcessParams plp) {
@@ -101,16 +137,16 @@ public class EIT_ModuleList {
 //			}
 	}
 
+	public void add(final OS_Module m) {
+		mods.add(m);
+	}
+
 //	public void _set_PL(final PipelineLogic aPipelineLogic) {
 //		__pl = aPipelineLogic;
 //	}
 
-	public Stream<OS_Module> stream() {
-		return mods.stream();
-	}
-
-	public void add(final OS_Module m) {
-		mods.add(m);
+	public List<OS_Module> getMods() {
+		return mods;
 	}
 
 	public List<WorldModule> getMods2() {
@@ -119,63 +155,27 @@ public class EIT_ModuleList {
 		  .collect(Collectors.toList());
 	}
 
-	public static class _ProcessParams {
-		private final          OS_Module         mod;
-		private final          PipelineLogic     pipelineLogic;
-		private final          GenerateFunctions gfm;
+	public void process__PL(final Function<OS_Module, GenerateFunctions> ggf, final PipelineLogic pipelineLogic) {
+		for (final OS_Module mod : mods) {
+			final @NotNull EntryPointList epl = mod.entryPoints;
 
-		private final          DeducePhase    deducePhase;
+			if (epl.size() == 0) {
+				continue;
+			}
 
-		private final @NotNull EntryPointList epl;
-		//private final @NotNull ElLog.Verbosity   verbosity;
-		private _ProcessParams(@NotNull final OS_Module aModule,
-		                       @NotNull final PipelineLogic aPipelineLogic,
-		                       @NotNull final GenerateFunctions aGenerateFunctions,
-		                       @NotNull final EntryPointList aEntryPointList,
-		                       @NotNull final DeducePhase aDeducePhase) {
-			mod           = aModule;
-			pipelineLogic = aPipelineLogic;
-			gfm           = aGenerateFunctions;
-			epl           = aEntryPointList;
-			deducePhase   = aDeducePhase;
-//			verbosity = mod.getCompilation().pipelineLogic.getVerbosity();
+
+			final GenerateFunctions gfm = ggf.apply(mod);
+
+			final DeducePhase deducePhase = pipelineLogic.dp;
+			//final DeducePhase.@NotNull GeneratedClasses lgc            = deducePhase.generatedClasses;
+
+			final _ProcessParams plp = new _ProcessParams(mod, pipelineLogic, gfm, epl, deducePhase);
+
+			__process__PL__each(plp);
 		}
+	}
 
-		@Contract(pure = true)
-		public OS_Module getMod() {
-			return mod;
-		}
-
-		public void generate() {
-			epl.generate(gfm, deducePhase, getWorkManagerSupplier());
-		}
-
-		@Contract(pure = true)
-		public @NotNull Supplier<WorkManager> getWorkManagerSupplier() {
-			return () -> pipelineLogic.generatePhase.wm;
-		}
-
-		public void deduceModule() {
-			var wm = new DefaultWorldModule(mod, null);
-			deducePhase.deduceModule(wm, getLgc(), getVerbosity());
-		}
-
-		//
-		//
-		//
-
-		@Contract(pure = true)
-		public DeducePhase.GeneratedClasses getLgc() {
-			return deducePhase.generatedClasses;
-		}
-
-		@Contract(pure = true)
-		public ElLog.@NotNull Verbosity getVerbosity() {
-			return pipelineLogic.getVerbosity();
-		}
-
-		public DeducePhase getDeducePhase() {
-			return deducePhase;
-		}
+	public Stream<OS_Module> stream() {
+		return mods.stream();
 	}
 }

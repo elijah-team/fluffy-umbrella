@@ -1,6 +1,7 @@
 package tripleo.elijah.stages.garish;
 
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.stages.gen_c.GenerateC;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
@@ -12,6 +13,10 @@ public class GarishClass_Generator {
 
 	public GarishClass_Generator(final EvaClass aEvaClass) {
 		carrier = aEvaClass;
+	}
+
+	public boolean generatedAlready() {
+		return generatedAlready;
 	}
 
 	public void provide(final @NotNull GenerateResultSink aResultSink,
@@ -33,9 +38,5 @@ public class GarishClass_Generator {
 		//aResultSink.addClass_0(this, tos.getBuffer(), tosHdr.getBuffer());
 		aResultSink.addClass_1(aGarishClass, aGr, aGenerateC);
 		generatedAlready = true;
-	}
-
-	public boolean generatedAlready() {
-		return generatedAlready;
 	}
 }

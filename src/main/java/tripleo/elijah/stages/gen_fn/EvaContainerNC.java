@@ -8,9 +8,17 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.AccessNotation;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
@@ -26,12 +34,6 @@ import tripleo.elijah.stages.gen_generic.GenerateResultEnv;
 import tripleo.elijah.stages.gen_generic.IDependencyReferent;
 import tripleo.elijah.util.Maybe;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created 3/16/21 10:45 AM
  */
@@ -43,26 +45,6 @@ public abstract class EvaContainerNC extends AbstractDependencyTracker implement
 	private final Multimap<FunctionDef, FunctionMapDeferred> functionMapDeferreds = ArrayListMultimap.create();
 	public        boolean                                    generatedAlready     = false;
 	private       int                                        code                 = 0;
-
-	public void addVarTableEntry(final AccessNotation an, final VariableStatement vs) {
-		// TODO dont ignore AccessNotation
-		varTable.add(new VarTableEntry(vs, vs.getNameToken(), vs.initialValue(), vs.typeName(), vs.getParent().getParent()));
-	}
-
-	@Override
-	public OS_Element getElement() {
-		return null;
-	}
-
-	@Override
-	@NotNull
-	public Maybe<VarTableEntry> getVariable(final String aVarName) {
-		for (final VarTableEntry varTableEntry : varTable) {
-			if (varTableEntry.nameToken.getText().equals(aVarName))
-				return Maybe.of(varTableEntry);
-		}
-		return Maybe.empty();
-	}
 
 	public void addClass(final ClassStatement aClassStatement, final EvaClass aGeneratedClass) {
 		classMap.put(aClassStatement, aGeneratedClass);
@@ -80,6 +62,32 @@ public abstract class EvaContainerNC extends AbstractDependencyTracker implement
 		}
 	}
 
+	public void addVarTableEntry(final AccessNotation an, final VariableStatement vs) {
+		// TODO dont ignore AccessNotation
+		varTable.add(new VarTableEntry(vs, vs.getNameToken(), vs.initialValue(), vs.typeName(), vs.getParent().getParent()));
+	}
+
+	public void functionMapDeferred(final FunctionDef aFunctionDef, final FunctionMapDeferred aFunctionMapDeferred) {
+		functionMapDeferreds.put(aFunctionDef, aFunctionMapDeferred);
+	}
+
+	public abstract void generateCode(CodeGenerator aGgc, GenerateResult aGr);
+
+	public abstract void generateCode(GenerateResultEnv aFileGen, CodeGenerator aGgc);
+
+	public int getCode() {
+		return code;
+	}
+
+	public Dependency getDependency() {
+		return dependency;
+	}
+
+	@Override
+	public OS_Element getElement() {
+		return null;
+	}
+
 	/**
 	 * Get a {@link EvaFunction}
 	 *
@@ -90,22 +98,14 @@ public abstract class EvaContainerNC extends AbstractDependencyTracker implement
 		return functionMap.get(fd);
 	}
 
-	public int getCode() {
-		return code;
-	}
-
-	public void setCode(final int aCode) {
-		code = aCode;
-	}
-
-	public abstract void generateCode(CodeGenerator aGgc, GenerateResult aGr);
-
-	public void functionMapDeferred(final FunctionDef aFunctionDef, final FunctionMapDeferred aFunctionMapDeferred) {
-		functionMapDeferreds.put(aFunctionDef, aFunctionMapDeferred);
-	}
-
-	public Dependency getDependency() {
-		return dependency;
+	@Override
+	@NotNull
+	public Maybe<VarTableEntry> getVariable(final String aVarName) {
+		for (final VarTableEntry varTableEntry : varTable) {
+			if (varTableEntry.nameToken.getText().equals(aVarName))
+				return Maybe.of(varTableEntry);
+		}
+		return Maybe.empty();
 	}
 
 	@Override
@@ -118,9 +118,11 @@ public abstract class EvaContainerNC extends AbstractDependencyTracker implement
 		return null;
 	}
 
-	public abstract void generateCode(GenerateResultEnv aFileGen, CodeGenerator aGgc);
-
 	public abstract Reactive reactive();
+
+	public void setCode(final int aCode) {
+		code = aCode;
+	}
 }
 
 //

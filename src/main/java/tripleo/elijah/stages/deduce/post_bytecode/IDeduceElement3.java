@@ -36,27 +36,6 @@ import tripleo.elijah.stateful.State;
 public interface IDeduceElement3 {
 //	DED elementDiscriminator();
 
-	DeduceTypes2 deduceTypes2();
-
-	OS_Element getPrincipal();
-
-	BaseEvaFunction generatedFunction();
-
-	GenType genType();
-
-	void resolve(Context aContext, final DeduceTypes2 dt2);
-
-	/**
-	 * how is this different from {@link DED.Kind} ??
-	 *
-	 * @return
-	 */
-	DeduceElement3_Kind kind();
-
-	void resolve(IdentIA aIdentIA, Context aContext, FoundElement aFoundElement);
-
-	void mvState(State aO, State aCheckEvaClassVarTable);
-
 	enum DeduceElement3_Kind {
 		CLASS,
 		FUNCTION,
@@ -67,4 +46,25 @@ public interface IDeduceElement3 {
 		// ...,
 		GEN_FN__VTE, NAMESPACE
 	}
+
+	DeduceTypes2 deduceTypes2();
+
+	BaseEvaFunction generatedFunction();
+
+	GenType genType();
+
+	OS_Element getPrincipal();
+
+	/**
+	 * how is this different from {@link DED.Kind} ??
+	 *
+	 * @return
+	 */
+	DeduceElement3_Kind kind();
+
+	void mvState(State aO, State aCheckEvaClassVarTable);
+
+	void resolve(Context aContext, final DeduceTypes2 dt2);
+
+	void resolve(IdentIA aIdentIA, Context aContext, FoundElement aFoundElement);
 }

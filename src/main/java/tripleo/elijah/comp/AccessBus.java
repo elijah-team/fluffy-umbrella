@@ -17,36 +17,27 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class AccessBus {
+	public interface AB_GenerateResultListener {
+		void gr_slot(GenerateResult gr);
+	}
+	public interface AB_LgcListener {
+		void lgc_slot(List<EvaNode> lgc);
+	}
+	public interface AB_ModuleListListener {
+		void mods_slot(final EIT_ModuleList aModuleList);
+	}
 	public final  GenerateResult                             gr                    = new GenerateResult();
 	final         DeferredObject<GenerateResult, Void, Void> generateResultPromise = new DeferredObject<>();
 	private final Compilation                                _c;
+
 	private final DeferredObject<List<EvaNode>, Void, Void>  lgcPromise            = new DeferredObject<>();
+
 	private final DeferredObject<EIT_ModuleList, Void, Void> moduleListPromise     = new DeferredObject<>();
+
 	private final Map<String, ProcessRecord.PipelinePlugin>  pipelinePlugins       = new HashMap<>();
 
 	public AccessBus(final Compilation aC, final IPipelineAccess aPa0) {
 		_c = aC;
-	}
-
-	public void subscribePipelineLogic(final DoneCallback<PipelineLogic> aPipelineLogicDoneCallback) {
-		_c.getCompilationEnclosure().waitPipelineLogic(aPipelineLogicDoneCallback::onDone);
-	}
-
-	@Deprecated
-	public void resolveModuleList(final List<OS_Module> aModuleList) {
-		resolveModuleList(new EIT_ModuleList(aModuleList)); // TODO
-	}
-
-	public void resolveModuleList(final EIT_ModuleList aModuleList) {
-		moduleListPromise.resolve(aModuleList);
-	}
-
-	public void resolveGenerateResult(final GenerateResult aGenerateResult) {
-		generateResultPromise.resolve(aGenerateResult);
-	}
-
-	public void resolveLgc(final List<EvaNode> lgc) {
-		lgcPromise.resolve(lgc);
 	}
 
 	public void add(final @NotNull Function<AccessBus, PipelineMember> aCr) {
@@ -61,16 +52,26 @@ public class AccessBus {
 		ce.providePipelineLogic(pipelineLogic);
 	}
 
-	public void subscribe_lgc(@NotNull final AB_LgcListener aLgcListener) {
-		lgcPromise.then(aLgcListener::lgc_slot);
+	public void addPipelinePlugin(final ProcessRecord.PipelinePlugin aPlugin) {
+		pipelinePlugins.put(aPlugin.name(), aPlugin);
 	}
 
-	public void subscribe_moduleList(@NotNull final AB_ModuleListListener aModuleListListener) {
-		moduleListPromise.then(aModuleListListener::mods_slot);
+	public @NotNull Compilation getCompilation() {
+		return _c;
 	}
 
-	public void subscribe_GenerateResult(@NotNull final AB_GenerateResultListener aGenerateResultListener) {
-		generateResultPromise.then(aGenerateResultListener::gr_slot);
+	public ProcessRecord.PipelinePlugin getPipelinePlugin(final String aPipelineName) {
+		if (!(pipelinePlugins.containsKey(aPipelineName))) return null;
+
+		return pipelinePlugins.get(aPipelineName);
+	}
+
+	public void resolveGenerateResult(final GenerateResult aGenerateResult) {
+		generateResultPromise.resolve(aGenerateResult);
+	}
+
+	public void resolveLgc(final List<EvaNode> lgc) {
+		lgcPromise.resolve(lgc);
 	}
 
 /*
@@ -116,35 +117,34 @@ public class AccessBus {
 	}
 */
 
+	public void resolveModuleList(final EIT_ModuleList aModuleList) {
+		moduleListPromise.resolve(aModuleList);
+	}
+
+	@Deprecated
+	public void resolveModuleList(final List<OS_Module> aModuleList) {
+		resolveModuleList(new EIT_ModuleList(aModuleList)); // TODO
+	}
+
+	public void subscribe_GenerateResult(@NotNull final AB_GenerateResultListener aGenerateResultListener) {
+		generateResultPromise.then(aGenerateResultListener::gr_slot);
+	}
+
+	public void subscribe_lgc(@NotNull final AB_LgcListener aLgcListener) {
+		lgcPromise.then(aLgcListener::lgc_slot);
+	}
+
+	public void subscribe_moduleList(@NotNull final AB_ModuleListListener aModuleListListener) {
+		moduleListPromise.then(aModuleListListener::mods_slot);
+	}
+
+	public void subscribePipelineLogic(final DoneCallback<PipelineLogic> aPipelineLogicDoneCallback) {
+		_c.getCompilationEnclosure().waitPipelineLogic(aPipelineLogicDoneCallback::onDone);
+	}
+
 	public void writeLogs() {
 		@NotNull final Compilation comp = getCompilation(); // this._c
 
 		comp.writeLogs(comp.cfg.silent, comp.elLogs);
-	}
-
-	public @NotNull Compilation getCompilation() {
-		return _c;
-	}
-
-	public void addPipelinePlugin(final ProcessRecord.PipelinePlugin aPlugin) {
-		pipelinePlugins.put(aPlugin.name(), aPlugin);
-	}
-
-	public ProcessRecord.PipelinePlugin getPipelinePlugin(final String aPipelineName) {
-		if (!(pipelinePlugins.containsKey(aPipelineName))) return null;
-
-		return pipelinePlugins.get(aPipelineName);
-	}
-
-	public interface AB_ModuleListListener {
-		void mods_slot(final EIT_ModuleList aModuleList);
-	}
-
-	public interface AB_LgcListener {
-		void lgc_slot(List<EvaNode> lgc);
-	}
-
-	public interface AB_GenerateResultListener {
-		void gr_slot(GenerateResult gr);
 	}
 }

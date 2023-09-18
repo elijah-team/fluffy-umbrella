@@ -19,6 +19,13 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class FluffyModuleImpl implements FluffyModule {
+	static class FluffyModuleImplInjector {
+
+		public MainClassEntryPoint new_MainClassEntryPoint(ClassStatement x) {
+			return new MainClassEntryPoint(x);
+		}
+	}
+
 	/**
 	 * If classStatement is a "main class", send to consumer
 	 *
@@ -55,6 +62,10 @@ public class FluffyModuleImpl implements FluffyModule {
 		compilation = aCompilation;
 	}
 
+	private FluffyModuleImplInjector _inj() {
+		return this.__inj;
+	}
+
 	@Override
 	public void find_all_entry_points() {
 		//
@@ -66,10 +77,6 @@ public class FluffyModuleImpl implements FluffyModule {
 				.filter(item -> item instanceof ClassStatement)
 				.filter(classStatement -> MainClassEntryPoint.isMainClass((ClassStatement) classStatement))
 				.forEach(classStatement -> faep_002((ClassStatement) classStatement, ccs));
-	}
-
-	private FluffyModuleImplInjector _inj() {
-		return this.__inj;
 	}
 
 	@Override
@@ -90,12 +97,5 @@ public class FluffyModuleImpl implements FluffyModule {
 	@Override
 	public @Nullable String name() {
 		return null;
-	}
-
-	static class FluffyModuleImplInjector {
-
-		public MainClassEntryPoint new_MainClassEntryPoint(ClassStatement x) {
-			return new MainClassEntryPoint(x);
-		}
 	}
 }

@@ -22,37 +22,6 @@ public abstract class Context {
 
 //	private OS_Container attached;
 
-	public Context() {
-	}
-
-//	public Context(OS_Container attached) {
-//		this.attached = attached;
-//	}
-
-	public LookupResultList lookup(@NotNull final String name) {
-		final LookupResultList Result = new LookupResultList();
-		return lookup(name, 0, Result, new ArrayList<Context>(), false);
-	}
-
-	public abstract LookupResultList lookup(String name, int level, LookupResultList Result, List<Context> alreadySearched, boolean one);
-
-	public @NotNull Compilation compilation() {
-		final OS_Module module = module();
-		return module.parent;
-	}
-
-	public @NotNull OS_Module module() {
-		Context ctx = this;//getParent();
-		while (!(ctx instanceof ModuleContext)) {
-			ctx = ctx.getParent();
-		}
-		return ((ModuleContext) ctx).getCarrier();
-	}
-
-	public abstract @Nullable Context getParent();
-
-//	public abstract @Nullable LookupResultList lookup(String name, int level, LookupResultList Result, SearchList alreadySearched, boolean one);
-
 	public static class SearchList {
 		@NotNull List<Context> alreadySearched = new ArrayList<>();
 
@@ -69,8 +38,39 @@ public abstract class Context {
 		}
 	}
 
+//	public Context(OS_Container attached) {
+//		this.attached = attached;
+//	}
+
+	public Context() {
+	}
+
+	public @NotNull Compilation compilation() {
+		final OS_Module module = module();
+		return module.parent;
+	}
+
+	public abstract @Nullable Context getParent();
+
+	public LookupResultList lookup(@NotNull final String name) {
+		final LookupResultList Result = new LookupResultList();
+		return lookup(name, 0, Result, new ArrayList<Context>(), false);
+	}
+
+	public abstract LookupResultList lookup(String name, int level, LookupResultList Result, List<Context> alreadySearched, boolean one);
+
+//	public abstract @Nullable LookupResultList lookup(String name, int level, LookupResultList Result, SearchList alreadySearched, boolean one);
+
 	public @Nullable LookupResultList lookup(final String name, final int level, final LookupResultList Result, final SearchList alreadySearched, final boolean one) {
 		return lookup(name, level, Result, new ArrayList<>(), one);
+	}
+
+	public @NotNull OS_Module module() {
+		Context ctx = this;//getParent();
+		while (!(ctx instanceof ModuleContext)) {
+			ctx = ctx.getParent();
+		}
+		return ((ModuleContext) ctx).getCarrier();
 	}
 }
 

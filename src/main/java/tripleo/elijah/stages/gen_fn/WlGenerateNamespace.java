@@ -12,6 +12,7 @@ import org.jdeferred2.DoneCallback;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.NamespaceStatement;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.NamespaceInvocation;
@@ -43,6 +44,15 @@ public class WlGenerateNamespace implements WorkJob {
 		codeRegistrar       = aCodeRegistrar;
 	}
 
+	public EvaNode getResult() {
+		return Result;
+	}
+
+	@Override
+	public boolean isDone() {
+		return _isDone;
+	}
+
 	@Override
 	public void run(final WorkManager aWorkManager) {
 		final DeferredObject<EvaNamespace, Void, Void> resolvePromise = namespaceInvocation.resolveDeferred();
@@ -69,15 +79,6 @@ public class WlGenerateNamespace implements WorkJob {
 		}
 		_isDone = true;
 //		tripleo.elijah.util.Stupidity.println2(String.format("** GenerateNamespace %s at %s", namespaceInvocation.getNamespace().getName(), this));
-	}
-
-	@Override
-	public boolean isDone() {
-		return _isDone;
-	}
-
-	public EvaNode getResult() {
-		return Result;
 	}
 }
 

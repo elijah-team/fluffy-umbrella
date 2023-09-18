@@ -8,13 +8,13 @@
  */
 package tripleo.elijah.lang.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import antlr.Token;
 import tripleo.elijah.lang.Documentable;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.util.NotImplementedException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 //
@@ -37,12 +37,12 @@ public class ConstructorDefScope extends BaseFunctionDefScope implements Documen
 	}
 
 	@Override
-	public void continue_statement() {
+	public void break_statement() {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public void break_statement() {
+	public void continue_statement() {
 		throw new NotImplementedException();
 	}
 
