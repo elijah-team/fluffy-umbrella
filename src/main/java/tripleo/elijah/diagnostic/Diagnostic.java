@@ -18,6 +18,35 @@ import java.util.List;
  * Created 12/26/20 5:31 AM
  */
 public interface Diagnostic {
+	static Diagnostic withMessage(String aNumber, String aMessage, Severity aSeverity) {
+		return new Diagnostic() {
+			@Override
+			public String code() {
+				return aNumber;
+			}
+
+			@Override
+			public Severity severity() {
+				return aSeverity;
+			}
+
+			@Override
+			public @NotNull Locatable primary() {
+				return null;
+			}
+
+			@Override
+			public @NotNull List<Locatable> secondary() {
+				return null;
+			}
+
+			@Override
+			public void report(final PrintStream stream) {
+				stream.println(""+code()+" "+aMessage);
+			}
+		};
+	}
+
 	String code();
 
 	Severity severity();

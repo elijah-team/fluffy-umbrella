@@ -19,11 +19,11 @@ import tripleo.elijah.lang.NamespaceTypes;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_fn.EvaClass;
+import tripleo.elijah.stages.gen_fn.EvaConstructor;
+import tripleo.elijah.stages.gen_fn.EvaFunction;
+import tripleo.elijah.stages.gen_fn.EvaNamespace;
+import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 
 import java.io.File;
@@ -38,17 +38,17 @@ public class OutputStrategyC {
 		this.outputStrategy = outputStrategy;
 	}
 
-	public String nameForFunction(final @NotNull GeneratedFunction generatedFunction, final GenerateResult.TY aTy) {
-		GeneratedNode c = generatedFunction.getGenClass();
+	public String nameForFunction(final @NotNull EvaFunction generatedFunction, final GenerateResult.TY aTy) {
+		EvaNode c = generatedFunction.getGenClass();
 		if (c == null) c = generatedFunction.getParent(); // TODO fixme
-		if (c instanceof GeneratedClass)
-			return nameForClass((GeneratedClass) c, aTy);
-		else if (c instanceof GeneratedNamespace)
-			return nameForNamespace((GeneratedNamespace) c, aTy);
+		if (c instanceof EvaClass)
+			return nameForClass((EvaClass) c, aTy);
+		else if (c instanceof EvaNamespace)
+			return nameForNamespace((EvaNamespace) c, aTy);
 		return null;
 	}
 
-	public @NotNull String nameForClass(final GeneratedClass generatedClass, final GenerateResult.TY aTy) {
+	public @NotNull String nameForClass(final EvaClass generatedClass, final GenerateResult.TY aTy) {
 		if (generatedClass.module().isPrelude()) {
 			// We are dealing with the Prelude
 			final @NotNull StringBuilder sb = new StringBuilder();
@@ -117,7 +117,7 @@ public class OutputStrategyC {
 		return sb.toString();
 	}
 
-	public String nameForNamespace(final GeneratedNamespace generatedNamespace, final GenerateResult.TY aTy) {
+	public String nameForNamespace(final EvaNamespace generatedNamespace, final GenerateResult.TY aTy) {
 		if (generatedNamespace.module().isPrelude()) {
 			// We are dealing with the Prelude
 			final StringBuilder sb = new StringBuilder();
@@ -203,13 +203,13 @@ public class OutputStrategyC {
 		return aFilename;
 	}
 
-	public String nameForConstructor(final GeneratedConstructor generatedConstructor, final GenerateResult.@NotNull TY aTy) {
-		GeneratedNode c = generatedConstructor.getGenClass();
-		if (c == null) c = generatedConstructor.getParent(); // TODO fixme
-		if (c instanceof GeneratedClass)
-			return nameForClass((GeneratedClass) c, aTy);
-		else if (c instanceof GeneratedNamespace)
-			return nameForNamespace((GeneratedNamespace) c, aTy);
+	public String nameForConstructor(final EvaConstructor aEvaConstructor, final GenerateResult.@NotNull TY aTy) {
+		EvaNode c = aEvaConstructor.getGenClass();
+		if (c == null) c = aEvaConstructor.getParent(); // TODO fixme
+		if (c instanceof EvaClass)
+			return nameForClass((EvaClass) c, aTy);
+		else if (c instanceof EvaNamespace)
+			return nameForNamespace((EvaNamespace) c, aTy);
 		return null;
 	}
 }

@@ -2,28 +2,30 @@ package tripleo.elijah.stages.deduce.post_bytecode;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.DeduceTypes2.DeduceTypes2Injector;
 import tripleo.elijah.stages.deduce.FoundElement;
-import tripleo.elijah.stages.deduce.post_bytecode.DED.DED_CTE;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.ConstantTableEntry;
 import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.instructions.IdentIA;
+import tripleo.elijah.stateful.State;
 import tripleo.elijah.util.NotImplementedException;
 
 public class DeduceElement3_ConstantTableEntry implements IDeduceElement3 {
 
-	private final ConstantTableEntry    principal;
-	public        BaseGeneratedFunction generatedFunction;
-	public        DeduceTypes2          deduceTypes2;
-	public        IDeduceElement3       deduceElement3;
-	public        OS_Type               osType;
-	public        Diagnostic            diagnostic;
-	private       GenType               genType;
+	private final    ConstantTableEntry principal;
+	public           DeduceTypes2       deduceTypes2;
+	public           Diagnostic         diagnostic;
+	public           IDeduceElement3    deduceElement3;
+	private          GenType            genType;
+	public           BaseEvaFunction    generatedFunction;
+	public @Nullable OS_Type            osType;
 
 	@Contract(pure = true)
 	public DeduceElement3_ConstantTableEntry(final ConstantTableEntry aConstantTableEntry) {
@@ -31,9 +33,37 @@ public class DeduceElement3_ConstantTableEntry implements IDeduceElement3 {
 	}
 
 	@Override
-	public void resolve(final IdentIA aIdentIA, final Context aContext, final FoundElement aFoundElement) {
-		// FoundElement is the "disease"
-		deduceTypes2.resolveIdentIA_(aContext, aIdentIA, generatedFunction, aFoundElement);
+	public DeduceTypes2 deduceTypes2() {
+		return deduceTypes2;
+	}
+
+//	@Override
+//	public @NotNull DED elementDiscriminator() {
+//		return new DED_CTE(principal);
+//	}
+
+	private DeduceTypes2Injector _inj() {
+		return deduceTypes2()._inj();
+	}
+
+	@Override
+	public BaseEvaFunction generatedFunction() {
+		return generatedFunction;
+	}
+
+	@Override
+	public GenType genType() {
+		return genType;
+	}
+
+	@Override
+	public OS_Element getPrincipal() {
+		return principal.getDeduceElement3().getPrincipal();
+	}
+
+	@Override
+	public @NotNull DeduceElement3_Kind kind() {
+		return DeduceElement3_Kind.GEN_FN__CTE;
 	}
 
 	@Override
@@ -45,33 +75,14 @@ public class DeduceElement3_ConstantTableEntry implements IDeduceElement3 {
 	}
 
 	@Override
-	public OS_Element getPrincipal() {
-		return principal.getDeduceElement3().getPrincipal();
+	public void resolve(final @NotNull IdentIA aIdentIA, final @NotNull Context aContext, final @NotNull FoundElement aFoundElement) {
+		// FoundElement is the "disease"
+		deduceTypes2.resolveIdentIA_(aContext, aIdentIA, generatedFunction, aFoundElement);
 	}
 
 	@Override
-	public DED elementDiscriminator() {
-		return new DED_CTE(principal);
-	}
+	public void mvState(final State aO, final State aCheckEvaClassVarTable) {
 
-	@Override
-	public DeduceTypes2 deduceTypes2() {
-		return deduceTypes2;
-	}
-
-	@Override
-	public BaseGeneratedFunction generatedFunction() {
-		return generatedFunction;
-	}
-
-	@Override
-	public GenType genType() {
-		return genType;
-	}
-
-	@Override
-	public @NotNull DeduceElement3_Kind kind() {
-		return DeduceElement3_Kind.GEN_FN__CTE;
 	}
 
 }

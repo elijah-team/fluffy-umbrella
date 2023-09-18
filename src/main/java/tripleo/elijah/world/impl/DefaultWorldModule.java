@@ -1,11 +1,11 @@
 package tripleo.elijah.world.impl;
 
-import tripleo.elijah.*;
-import tripleo.elijah.comp.*;
-import tripleo.elijah.lang.*;
-import tripleo.elijah.nextgen.inputtree.*;
-import tripleo.elijah.stages.deduce.*;
-import tripleo.elijah.world.i.*;
+import tripleo.elijah.comp.i.CompilationEnclosure;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
+import tripleo.elijah.stages.deduce.DeducePhase;
+import tripleo.elijah.util.Eventual;
+import tripleo.elijah.world.i.WorldModule;
 
 public class DefaultWorldModule implements WorldModule {
 	final Eventual<DeducePhase.GeneratedClasses> _p_GeneratedClasses = new Eventual<>();
@@ -18,6 +18,7 @@ public class DefaultWorldModule implements WorldModule {
 	public DefaultWorldModule(final OS_Module aMod, final CompilationEnclosure aCe) {
 		mod = aMod;
 	}
+
 
 //	public DefaultWorldModule(final OS_Module aMod, final GN_PL_Run2.GenerateFunctionsRequest aRq) {
 //		mod = aMod;

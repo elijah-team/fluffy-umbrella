@@ -10,12 +10,17 @@ package tripleo.elijah.comp;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.i.IPipelineAccess;
+import tripleo.elijah.comp.notation.GM_GenerateModule;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
+import tripleo.elijah.stages.gen_generic.GenerateResultEnv;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.DefaultGenerateResultSink;
 import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.work.WorkList;
 import tripleo.elijah.work.WorkManager;
 
 import java.util.List;
@@ -28,8 +33,8 @@ public class GeneratePipeline implements PipelineMember/*, AccessBus.AB_LgcListe
 	private final ErrSink             errSink;
 	private final AccessBus           __ab;
 	//	private final DeducePipeline dpl;
-	private       PipelineLogic       pipelineLogic;
-	private       List<GeneratedNode> lgc;
+	private       PipelineLogic pipelineLogic;
+	private       List<EvaNode> lgc;
 
 	public GeneratePipeline(@NotNull final AccessBus ab) {
 		errSink = ab.getCompilation().getErrSink();
@@ -47,24 +52,32 @@ public class GeneratePipeline implements PipelineMember/*, AccessBus.AB_LgcListe
 
 		assert lgc.size() > 0;
 
+		final IPipelineAccess pipelineAccess = __ab.getCompilation().getCompilationEnclosure().getPipelineAccess();
+
+		var gm = new GM_GenerateModule(null); // !!
+
+		var fileGen = new GenerateResultEnv(new DefaultGenerateResultSink(pipelineAccess), __ab.gr, new WorkManager(), new WorkList(), gm);
+
 		/*pipelineLogic.*/
-		generate(lgc, errSink, pipelineLogic.mods, pipelineLogic.getVerbosity());
+		generate(lgc, errSink, pipelineLogic.mods, pipelineLogic.getVerbosity(), fileGen);
 	}
 
-	protected void generate(final @NotNull List<GeneratedNode> lgc,
+	protected void generate(final @NotNull List<EvaNode> lgc,
 	                        final @NotNull ErrSink aErrSink,
 	                        final @NotNull EIT_ModuleList mods,
-	                        final @NotNull ElLog.Verbosity verbosity) {
+	                        final @NotNull ElLog.Verbosity verbosity,
+	                        final @NotNull GenerateResultEnv aFileGen) {
 		final WorkManager    wm   = new WorkManager();
 		final GenerateResult gr   = __ab.gr;
 		final Compilation    comp = __ab.getCompilation();
 
 		for (final @NotNull OS_Module mod : mods.getMods()) {
-			final List<GeneratedNode> nodes = lgc.stream()
-			                                     .filter(aGeneratedNode -> aGeneratedNode.module() == mod)
-			                                     .collect(Collectors.toList());
+			final List<EvaNode> nodes = lgc.stream()
+			                               .filter(aGeneratedNode -> aGeneratedNode.module() == mod)
+			                               .collect(Collectors.toList());
 
-			new EIT_ModuleInput(mod, comp).doGenerate(nodes, aErrSink, verbosity, pipelineLogic, wm, (gr2) -> gr.additional(gr2));
+			var ce = comp.getCompilationEnclosure();
+			new EIT_ModuleInput(mod, comp).doGenerate(nodes, aErrSink, verbosity, pipelineLogic, wm, (gr2) -> gr.additional(gr2), ce, aFileGen);
 		}
 
 		__ab.resolveGenerateResult(gr);

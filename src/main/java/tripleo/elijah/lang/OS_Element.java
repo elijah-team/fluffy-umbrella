@@ -18,6 +18,8 @@ public interface OS_Element {
 	@Contract(pure = true)
 	Context getContext();
 
+//	void serializeTo(SmallWriter sw);
+
 	@Contract(pure = true)
 	@Nullable
 	OS_Element getParent();

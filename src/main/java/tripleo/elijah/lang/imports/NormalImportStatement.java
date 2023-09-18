@@ -50,6 +50,9 @@ public class NormalImportStatement extends _BaseImportStatement {
 		return importList.parts;
 	}
 
+	public Context myContext() {
+		throw new NotImplementedException();
+	}
 }
 
 //

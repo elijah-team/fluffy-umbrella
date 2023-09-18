@@ -1,8 +1,8 @@
 package tripleo.elijah.comp;
 
-import tripleo.elijah.stages.deduce.post_bytecode.*;
+import tripleo.elijah.util.Maybe;
 
-import java.io.*;
+import java.io.File;
 
 public class CompilerInput {
 	private final String                           inp;

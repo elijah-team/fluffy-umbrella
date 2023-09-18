@@ -25,6 +25,7 @@ import tripleo.elijah.lang.VariableSequence;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.lang2.ElElementVisitor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,6 +111,11 @@ public class ClassContext extends Context {
 	@Override
 	public Context getParent() {
 		return _parent;
+	}
+
+	@Override
+	public @Nullable LookupResultList lookup(final String name, final int level, final LookupResultList Result, final SearchList alreadySearched, final boolean one) {
+		return lookup(name, level, Result, new ArrayList<>(), one);
 	}
 
 	public Map<TypeName, ClassStatement> inheritance() {

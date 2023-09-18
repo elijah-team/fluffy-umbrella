@@ -30,7 +30,7 @@ public class WlGenerateNamespace implements WorkJob {
 	private final DeducePhase.@Nullable GeneratedClasses coll;
 	private final ICodeRegistrar                         codeRegistrar;
 	private       boolean                                _isDone = false;
-	private       GeneratedNamespace                     Result;
+	private       EvaNamespace                     Result;
 
 	public WlGenerateNamespace(@NotNull final GenerateFunctions aGenerateFunctions,
 	                           @NotNull final NamespaceInvocation aNamespaceInvocation,
@@ -45,10 +45,10 @@ public class WlGenerateNamespace implements WorkJob {
 
 	@Override
 	public void run(final WorkManager aWorkManager) {
-		final DeferredObject<GeneratedNamespace, Void, Void> resolvePromise = namespaceInvocation.resolveDeferred();
+		final DeferredObject<EvaNamespace, Void, Void> resolvePromise = namespaceInvocation.resolveDeferred();
 		switch (resolvePromise.state()) {
 		case PENDING:
-			@NotNull final GeneratedNamespace ns = generateFunctions.generateNamespace(namespaceStatement);
+			@NotNull final EvaNamespace ns = generateFunctions.generateNamespace(namespaceStatement);
 			codeRegistrar.registerNamespace(ns);
 			if (coll != null)
 				coll.add(ns);
@@ -57,9 +57,9 @@ public class WlGenerateNamespace implements WorkJob {
 			Result = ns;
 			break;
 		case RESOLVED:
-			resolvePromise.then(new DoneCallback<GeneratedNamespace>() {
+			resolvePromise.then(new DoneCallback<EvaNamespace>() {
 				@Override
-				public void onDone(final GeneratedNamespace result) {
+				public void onDone(final EvaNamespace result) {
 					Result = result;
 				}
 			});
@@ -76,7 +76,7 @@ public class WlGenerateNamespace implements WorkJob {
 		return _isDone;
 	}
 
-	public GeneratedNode getResult() {
+	public EvaNode getResult() {
 		return Result;
 	}
 }

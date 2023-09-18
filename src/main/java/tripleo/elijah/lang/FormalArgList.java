@@ -35,6 +35,13 @@ public class FormalArgList {
 	public Collection<FormalArgListItem> items() {
 		return falis;
 	}
+
+	public List<ClassItem> falis() {
+		// TODO Auto-generated method stub
+		return falis.stream()
+				.map(x->(ClassItem)x)
+				.toList();
+	}
 }
 
 //

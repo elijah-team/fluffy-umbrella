@@ -19,13 +19,12 @@ import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.lang.types.OS_BuiltinType;
 import tripleo.elijah.lang.types.OS_UserClassType;
 import tripleo.elijah.lang2.BuiltInTypes;
+import tripleo.elijah.stages.gen_fn.EvaFunction;
 import tripleo.elijah.stages.gen_fn.GeneratePhase;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
 import tripleo.elijah.stages.gen_fn.TypeTableEntry;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
 import tripleo.elijah.stages.instructions.VariableTableType;
-import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
 
 import java.util.List;
@@ -51,14 +50,14 @@ public class DoAssignCall_ArgsIdent1_Test {
 
 		final PipelineLogic pipelineLogic = new PipelineLogic(new AccessBus(c));
 		final GeneratePhase generatePhase = new GeneratePhase(VERBOSE, pipelineLogic, c);
-		final DeducePhase   phase         = new DeducePhase(generatePhase, pipelineLogic, ElLog.Verbosity.VERBOSE, c);
+		final DeducePhase   phase         = new DeducePhase(c.getCompilationEnclosure());//generatePhase, pipelineLogic, ElLog.Verbosity.VERBOSE, c);
 
 		final DeduceTypes2 d = new DeduceTypes2(mod, phase);
 
 		final FunctionDef fd = new FunctionDef(mod, new FunctionContext(null, null));
 		fd.setName(Helpers.string_to_ident("no_function_name"));
 
-		final GeneratedFunction generatedFunction = new GeneratedFunction(fd);
+		final EvaFunction generatedFunction = new EvaFunction(fd);
 
 		final TypeTableEntry self_type    = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, new OS_UserClassType(mock(ClassStatement.class)));
 		final int            index_self   = generatedFunction.addVariableTableEntry("self", VariableTableType.SELF, self_type, null);

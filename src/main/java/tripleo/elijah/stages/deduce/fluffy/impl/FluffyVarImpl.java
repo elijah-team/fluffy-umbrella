@@ -8,7 +8,12 @@ import tripleo.elijah.stages.deduce.fluffy.i.FluffyVarTarget;
 
 public class FluffyVarImpl implements FluffyVar {
 	@Override
-	public String name() {
+	public @Nullable String name() {
+		return null;
+	}
+
+	@Override
+	public @Nullable IComposable nameComposable() {
 		return null;
 	}
 
@@ -18,12 +23,7 @@ public class FluffyVarImpl implements FluffyVar {
 	}
 
 	@Override
-	public IComposable nameComposable() {
-		return null;
-	}
-
-	@Override
-	public FluffyVarTarget target() {
+	public @Nullable FluffyVarTarget target() {
 		return null;
 	}
 }

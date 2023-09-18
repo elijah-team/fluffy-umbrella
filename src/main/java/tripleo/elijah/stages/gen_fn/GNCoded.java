@@ -10,6 +10,8 @@
 
 package tripleo.elijah.stages.gen_fn;
 
+import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
+
 /**
  * Created 11/19/21 9:08 PM
  */
@@ -19,6 +21,8 @@ public interface GNCoded {
 	void setCode(int aCode);
 
 	Role getRole();
+
+	void register(ICodeRegistrar aCr);
 
 	enum Role {
 		FUNCTION, CLASS, NAMESPACE

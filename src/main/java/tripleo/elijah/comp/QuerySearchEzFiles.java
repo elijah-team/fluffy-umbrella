@@ -1,13 +1,18 @@
 package tripleo.elijah.comp;
 
-import org.jetbrains.annotations.*;
-import tripleo.elijah.ci.*;
-import tripleo.elijah.comp.specs.*;
-import tripleo.elijah.nextgen.query.*;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.comp.specs.EzSpec;
+import tripleo.elijah.util.Operation;
+import tripleo.elijah.util.Operation2;
 
-import java.io.*;
-import java.util.*;
-import java.util.regex.*;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 class QuerySearchEzFiles {
 	private final Compilation       c;

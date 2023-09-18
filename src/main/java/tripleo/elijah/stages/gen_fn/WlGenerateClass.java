@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeducePhase;
+import tripleo.elijah.stages.deduce.RegisterClassInvocation_env;
 import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 import tripleo.elijah.util.Holder;
 import tripleo.elijah.util.NotImplementedException;
@@ -30,7 +31,7 @@ public class WlGenerateClass implements WorkJob {
 	private final DeducePhase.GeneratedClasses coll;
 	private final ICodeRegistrar               codeRegistrar;
 	private       boolean                      _isDone = false;
-	private       GeneratedClass               Result;
+	private       EvaClass               Result;
 
 	public WlGenerateClass(final GenerateFunctions aGenerateFunctions,
 	                       final ClassInvocation aClassInvocation,
@@ -43,12 +44,16 @@ public class WlGenerateClass implements WorkJob {
 		codeRegistrar     = aCodeRegistrar;
 	}
 
+	public WlGenerateClass(final GenerateFunctions aGenerateFunctions, final ClassInvocation aClassInvocation, final DeducePhase.GeneratedClasses aGeneratedClasses, final ICodeRegistrar aCodeRegistrar, final RegisterClassInvocation_env aEnv) {
+		throw new NotImplementedException();
+	}
+
 	@Override
 	public void run(final WorkManager aWorkManager) {
-		final DeferredObject<GeneratedClass, Void, Void> resolvePromise = classInvocation.resolveDeferred();
+		final DeferredObject<EvaClass, Void, Void> resolvePromise = classInvocation.resolveDeferred();
 		switch (resolvePromise.state()) {
 		case PENDING:
-			@NotNull final GeneratedClass kl = generateFunctions.generateClass(classStatement, classInvocation);
+			@NotNull final EvaClass kl = generateFunctions.generateClass(classStatement, classInvocation);
 			codeRegistrar.registerClass(kl);
 			if (coll != null)
 				coll.add(kl);
@@ -57,10 +62,10 @@ public class WlGenerateClass implements WorkJob {
 			Result = kl;
 			break;
 		case RESOLVED:
-			final Holder<GeneratedClass> hgc = new Holder<GeneratedClass>();
-			resolvePromise.then(new DoneCallback<GeneratedClass>() {
+			final Holder<EvaClass> hgc = new Holder<EvaClass>();
+			resolvePromise.then(new DoneCallback<EvaClass>() {
 				@Override
-				public void onDone(final GeneratedClass result) {
+				public void onDone(final EvaClass result) {
 //					assert result == kl;
 					hgc.set(result);
 				}
@@ -78,7 +83,7 @@ public class WlGenerateClass implements WorkJob {
 		return _isDone;
 	}
 
-	public GeneratedClass getResult() {
+	public EvaClass getResult() {
 		return Result;
 	}
 }

@@ -13,10 +13,13 @@ import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.util.Stupidity;
 import tripleo.elijah.work.WorkManager;
+import tripleo.elijah.world.i.WorldModule;
+import tripleo.elijah.world.impl.DefaultWorldModule;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class EIT_ModuleList {
@@ -87,12 +90,12 @@ public class EIT_ModuleList {
 		PipelineLogic.resolveCheck(lgc);
 
 //			for (final GeneratedNode gn : lgf) {
-//				if (gn instanceof GeneratedFunction) {
-//					GeneratedFunction gf = (GeneratedFunction) gn;
+//				if (gn instanceof EvaFunction) {
+//					EvaFunction gf = (EvaFunction) gn;
 //					tripleo.elijah.util.Stupidity.println2("----------------------------------------------------------");
 //					tripleo.elijah.util.Stupidity.println2(gf.name());
 //					tripleo.elijah.util.Stupidity.println2("----------------------------------------------------------");
-//					GeneratedFunction.printTables(gf);
+//					EvaFunction.printTables(gf);
 //					tripleo.elijah.util.Stupidity.println2("----------------------------------------------------------");
 //				}
 //			}
@@ -108,6 +111,12 @@ public class EIT_ModuleList {
 
 	public void add(final OS_Module m) {
 		mods.add(m);
+	}
+
+	public List<WorldModule> getMods2() {
+		return this.mods.stream()
+		  .map(mod -> new DefaultWorldModule(mod, null))
+		  .collect(Collectors.toList());
 	}
 
 	public static class _ProcessParams {
@@ -147,7 +156,8 @@ public class EIT_ModuleList {
 		}
 
 		public void deduceModule() {
-			deducePhase.deduceModule(mod, getLgc(), getVerbosity());
+			var wm = new DefaultWorldModule(mod, null);
+			deducePhase.deduceModule(wm, getLgc(), getVerbosity());
 		}
 
 		//

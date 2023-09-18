@@ -6,7 +6,7 @@ import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.comp.i.IProgressSink;
 import tripleo.elijah.comp.i.ProgressSinkComponent;
 import tripleo.elijah.comp.internal.DefaultProgressSink;
-import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
+import tripleo.elijah.util.Maybe;
 
 class CCI {
 	//private final @NotNull Compilation compilation;

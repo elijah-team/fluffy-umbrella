@@ -11,11 +11,11 @@ package tripleo.elijah.stages.instructions;
 import org.jdeferred2.Promise;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.Context;
-import tripleo.elijah.stages.deduce.nextgen.DN_Resolver;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.deduce.foo.DN_Resolver;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.Constructable;
+import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
 
@@ -23,7 +23,7 @@ import tripleo.elijah.stages.gen_fn.ProcTableEntry;
  * Created 10/2/20 2:36 PM
  */
 public class IdentIA implements InstructionArgument, Constructable {
-	public final  BaseGeneratedFunction gf;
+	public final  BaseEvaFunction gf;
 	private final int                   id;
 //	private InstructionArgument prev;
 
@@ -34,7 +34,7 @@ public class IdentIA implements InstructionArgument, Constructable {
 	}
 */
 
-	public IdentIA(final int ite, final BaseGeneratedFunction generatedFunction) {
+	public IdentIA(final int ite, final BaseEvaFunction generatedFunction) {
 		this.gf = generatedFunction;
 		this.id = ite;
 	}
@@ -66,7 +66,7 @@ public class IdentIA implements InstructionArgument, Constructable {
 	}
 
 	@Override
-	public void resolveTypeToClass(final GeneratedNode aNode) {
+	public void resolveTypeToClass(final EvaNode aNode) {
 		getEntry().resolveTypeToClass(aNode);
 	}
 
@@ -80,7 +80,7 @@ public class IdentIA implements InstructionArgument, Constructable {
 		return getEntry().constructablePromise();
 	}
 
-	public DN_Resolver newResolver(final Context aCtx, final BaseGeneratedFunction aGeneratedFunction) {
+	public DN_Resolver newResolver(final Context aCtx, final BaseEvaFunction aGeneratedFunction) {
 		return getEntry().newResolver(aCtx, aGeneratedFunction);
 	}
 }

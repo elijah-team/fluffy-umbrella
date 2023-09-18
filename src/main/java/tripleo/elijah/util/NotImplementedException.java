@@ -17,5 +17,9 @@ public class NotImplementedException extends RuntimeException {
 	public static void raise() {
 		final int y = 2;
 	}
+
+	public static void raise_stop() {
+		int y=2;
+	}
 }
 

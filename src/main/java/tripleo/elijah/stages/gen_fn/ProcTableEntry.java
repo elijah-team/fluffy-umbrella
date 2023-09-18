@@ -23,6 +23,7 @@ import tripleo.elijah.stages.deduce.DeduceProcCall;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.deduce.ProcTableListener;
+import tripleo.elijah.stages.deduce.ResolveError;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_ProcTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.deduce.zero.PTE_Zero;
@@ -46,7 +47,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	}
 
 	public IExpression expression() {
-		return expression;
+		return expression.getExpression();
 	}
 
 	public InstructionArgument expression_num() {
@@ -62,12 +63,12 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	 * <br/>
 	 * Or for synthetic methods
 	 */
-	public final  IExpression                                     expression;
-	public final  InstructionArgument                             expression_num;
-	public final  DeduceProcCall                                  dpc                   = new DeduceProcCall(this);
-	private final DeferredObject<ProcTableEntry, Void, Void>      completeDeferred      = new DeferredObject<>();
+	public final  EvaExpression<IExpression>                                     expression;
+	public final  InstructionArgument                        expression_num;
+	public        DeduceProcCall                             dpc              = new DeduceProcCall(this);
+	private final DeferredObject<ProcTableEntry, Void, Void> completeDeferred = new DeferredObject<>();
 	private final DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<>();
-	private final DeferredObject<GenType, Void, Void>             typeDeferred          = new DeferredObject<>();
+	private final DeferredObject<GenType, ResolveError, Void>             typeDeferred          = new DeferredObject<>();
 	private       ClassInvocation                                 classInvocation;
 	private       FunctionInvocation                              functionInvocation;
 	private       DeduceElement3_ProcTableEntry                   _de3;
@@ -75,7 +76,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 
 	public ProcTableEntry(final int aIndex, final IExpression aExpression, final InstructionArgument aExpressionNum, final List<TypeTableEntry> aArgs) {
 		index          = aIndex;
-		expression     = aExpression;
+		expression     = new EvaExpression<>(aExpression, this);
 		expression_num = aExpressionNum;
 		args           = aArgs;
 
@@ -181,11 +182,11 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		onFunctionInvocations.then(callback);
 	}
 
-	public DeferredObject<GenType, Void, Void> typeDeferred() {
+	public DeferredObject<GenType, ResolveError, Void> typeDeferred() {
 		return typeDeferred;
 	}
 
-	public Promise<GenType, Void, Void> typePromise() {
+	public Promise<GenType, ResolveError, Void> typePromise() {
 		return typeDeferred.promise();
 	}
 
@@ -212,7 +213,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	@NotNull
 	public String getLoggingString(final @Nullable DeduceTypes2 aDeduceTypes2, final ElLog LOG) {
 		final String                pte_string;
-		@NotNull final List<String> l = new ArrayList<String>();
+		@NotNull final List<String> l = new ArrayList<>();
 
 		for (@NotNull final TypeTableEntry typeTableEntry : getArgs()) {
 			final OS_Type attached = typeTableEntry.getAttached();
@@ -241,7 +242,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		return args;
 	}
 
-	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseGeneratedFunction aGeneratedFunction, final ErrSink aErrSink) {
+	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseEvaFunction aGeneratedFunction, final ErrSink aErrSink) {
 		dpc.setDeduceTypes2(aDeduceTypes2, aContext, aGeneratedFunction, aErrSink);
 	}
 
@@ -251,7 +252,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		return getDeduceElement3(dpc._deduceTypes2(), dpc._generatedFunction());
 	}
 
-	public IDeduceElement3 getDeduceElement3(final DeduceTypes2 aDeduceTypes2, final BaseGeneratedFunction aGeneratedFunction) {
+	public IDeduceElement3 getDeduceElement3(final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aGeneratedFunction) {
 		if (_de3 == null) {
 			_de3 = new DeduceElement3_ProcTableEntry(this, aDeduceTypes2, aGeneratedFunction);
 //			_de3.
@@ -269,12 +270,28 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 
 	@Override
 	public IExpression _expression() {
-		return expression;
+		return expression.getExpression();
 	}
 
 	public void resolveWith(final ProcTableListener.PTE_Resolution aReso) {
 		aReso.apply(this);
 //		throw new NotImplementedException();
+	}
+
+	public IExpression __debug_expression() {
+		return expression.getExpression();
+	}
+
+	public <T extends IExpression> EvaExpression<T> getEvaExpression() {
+		return null;
+	}
+
+	public String getLoggingString(final DeduceTypes2 aDeduceTypes2) {
+		throw new NotImplementedException();
+	}
+
+	public void resolveType(final GenType aResult) {
+		throw new NotImplementedException();
 	}
 }
 

@@ -1,9 +1,9 @@
 package tripleo.elijah.world.i;
 
-import tripleo.elijah.*;
-import tripleo.elijah.lang.*;
-import tripleo.elijah.nextgen.inputtree.*;
-import tripleo.elijah.stages.deduce.*;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
+import tripleo.elijah.stages.deduce.DeducePhase;
+import tripleo.elijah.util.Eventual;
 
 public interface WorldModule {
 	OS_Module module();

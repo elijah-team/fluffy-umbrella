@@ -27,9 +27,9 @@ import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.lang.VariableTypeName;
 import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.test_help.Boilerplate;
 import tripleo.elijah.util.Helpers;
+import tripleo.elijah.world.impl.DefaultWorldModule;
 
 public class DeduceTypesTest2 {
 
@@ -64,18 +64,17 @@ public class DeduceTypesTest2 {
 		mod.postConstruct();
 
 		//
-		//
-		//
-		final ElLog.Verbosity verbosity1 = Compilation.gitlabCIVerbosity();
-		final AccessBus       ab         = new AccessBus(c);
-		final PipelineLogic   pl         = new PipelineLogic(ab);
-		final DeducePhase     dp         = pl.dp;
-		final DeduceTypes2    d          = dp.deduceModule(mod, verbosity1);
-//		final DeduceTypes d = new DeduceTypes(mod);
+
+		final AccessBus          ab         = new AccessBus(c);
+		final PipelineLogic      pl         = new PipelineLogic(ab);
+		final DeducePhase        dp         = pl.dp;
+		final DefaultWorldModule wm         = new DefaultWorldModule(mod, c.getCompilationEnclosure());
+		final DeduceTypes2       d          = dp.deduceModule(wm);
+
 		final GenType x = DeduceLookupUtils.deduceExpression(d, x1, fc);
+
 		System.out.println(x);
-//		Assert.assertEquals(new OS_Type(BuiltInTypes.SystemInteger).getBType(), x.getBType());
-//		final RegularTypeName tn = new RegularTypeName();
+
 		final VariableTypeName tn  = new VariableTypeName();
 		final Qualident        tnq = new Qualident();
 		tnq.append(Helpers.string_to_ident("SystemInteger"));

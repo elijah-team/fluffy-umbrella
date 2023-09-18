@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.nextgen.composable.IComposable;
 import tripleo.elijah.stages.deduce.ClassInvocation;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
+import tripleo.elijah.stages.gen_fn.EvaClass;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,7 +25,7 @@ public class ClassDefinition {
 	final ClassStatement      primary;
 	final Set<ClassStatement> extended = new HashSet<ClassStatement>();
 	ClassInvocation invocation;
-	GeneratedClass  node;
+	EvaClass  node;
 	IComposable     composable;
 
 	public ClassDefinition(final ClassStatement aPrimary) {
@@ -53,11 +53,11 @@ public class ClassDefinition {
 		invocation = aInvocation;
 	}
 
-	public GeneratedClass getNode() {
+	public EvaClass getNode() {
 		return node;
 	}
 
-	public void setNode(final GeneratedClass aNode) {
+	public void setNode(final EvaClass aNode) {
 		node = aNode;
 	}
 

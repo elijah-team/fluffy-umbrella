@@ -72,7 +72,6 @@ public class WithContext extends Context {
 	public Context getParent() {
 		return _parent;
 	}
-
 }
 
 //

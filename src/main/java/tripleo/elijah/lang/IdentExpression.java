@@ -15,6 +15,7 @@ import antlr.Token;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.diagnostic.Locatable;
+import tripleo.elijah.lang.nextgen.names.i.EN_Name;
 import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
@@ -174,6 +175,12 @@ public class IdentExpression implements IExpression, OS_Element, Resolvable, Loc
 		if (filename == null)
 			return null;
 		return new File(filename);
+	}
+
+	EN_Name _name = EN_Name.create("dsmamjkdnasjdsajkldnsajkl");
+
+	public EN_Name getName() {
+		return _name;
 	}
 
 	// endregion

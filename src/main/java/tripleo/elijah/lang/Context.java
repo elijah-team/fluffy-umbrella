@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang;
 
+import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.Compilation;
@@ -40,41 +41,37 @@ public abstract class Context {
 		return module.parent;
 	}
 
-//	@Deprecated public void add(OS_Element element, String name) {
-//		add(element, new IdentExpression(Helpers.makeToken(name)));
-//	}
-//
-//	@Deprecated public void add(OS_Element element, String name, OS_Type dtype) {
-//		add(element, new IdentExpression(Helpers.makeToken(name)), dtype);
-//	}
-//
-//	public void add(OS_Element element, IExpression name) {
-//		tripleo.elijah.util.Stupidity.println2(String.format("104 Context.add: %s %s %s", this, element, name));
-//		members.put(name, element);
-//	}
-
-//
-//	Map<IExpression, OS_Element> members = new HashMap<IExpression, OS_Element>();
-//	private NameTable nameTable = new NameTable();
-//
-//	public void add(OS_Element element, IExpression name, OS_Type dtype) {
-//		tripleo.elijah.util.Stupidity.println2(String.format("105 Context.add: %s %s %s %s", this, element, name, dtype));
-////		element.setType(dtype);
-//		members.put(name, element);
-//	}
-//
-//	public NameTable nameTable() {
-//		return this.nameTable ;
-//	}
-
 	public @NotNull OS_Module module() {
 		Context ctx = this;//getParent();
-		while (!(ctx instanceof ModuleContext))
+		while (!(ctx instanceof ModuleContext)) {
 			ctx = ctx.getParent();
+		}
 		return ((ModuleContext) ctx).getCarrier();
 	}
 
 	public abstract @Nullable Context getParent();
+
+//	public abstract @Nullable LookupResultList lookup(String name, int level, LookupResultList Result, SearchList alreadySearched, boolean one);
+
+	public static class SearchList {
+		@NotNull List<Context> alreadySearched = new ArrayList<>();
+
+		public void add(Context c) {
+			alreadySearched.add(c);
+		}
+
+		public boolean contains(Context context) {
+			return alreadySearched.contains(context);
+		}
+
+		public @NotNull ImmutableList<Context> getList() {
+			return ImmutableList.copyOf(alreadySearched);
+		}
+	}
+
+	public @Nullable LookupResultList lookup(final String name, final int level, final LookupResultList Result, final SearchList alreadySearched, final boolean one) {
+		return lookup(name, level, Result, new ArrayList<>(), one);
+	}
 }
 
 //

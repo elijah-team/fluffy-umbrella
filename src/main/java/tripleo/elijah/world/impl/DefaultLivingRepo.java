@@ -6,15 +6,19 @@ import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.OS_Package;
 import tripleo.elijah.lang.Qualident;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
+import tripleo.elijah.stages.gen_fn.EvaClass;
+import tripleo.elijah.stages.gen_fn.EvaNamespace;
+import tripleo.elijah.util.CompletableProcess;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.world.i.LivingClass;
 import tripleo.elijah.world.i.LivingFunction;
+import tripleo.elijah.world.i.LivingNamespace;
 import tripleo.elijah.world.i.LivingPackage;
 import tripleo.elijah.world.i.LivingRepo;
+import tripleo.elijah.world.i.WorldModule;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,7 +67,7 @@ public class DefaultLivingRepo implements LivingRepo {
 	}
 
 	@Override
-	public DefaultLivingFunction addFunction(final BaseGeneratedFunction aFunction, final Add addFlag) {
+	public DefaultLivingFunction addFunction(final BaseEvaFunction aFunction, final Add addFlag) {
 		switch (addFlag) {
 		case NONE -> {
 			aFunction.setCode(nextFunctionCode());
@@ -93,7 +97,7 @@ public class DefaultLivingRepo implements LivingRepo {
 	}
 
 	@Override
-	public DefaultLivingClass addClass(final GeneratedClass aClass, final Add addFlag) {
+	public DefaultLivingClass addClass(final EvaClass aClass, final Add addFlag) {
 		switch (addFlag) {
 		case NONE -> {
 			aClass.setCode(nextClassCode());
@@ -121,7 +125,32 @@ public class DefaultLivingRepo implements LivingRepo {
 	}
 
 	@Override
-	public void addNamespace(final GeneratedNamespace aNamespace, final Add aNone) {
+	public void addNamespace(final EvaNamespace aNamespace, final Add aNone) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void addModuleProcess(final CompletableProcess<WorldModule> aCompletableProcess) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Collection<WorldModule> modules() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public LivingNamespace getNamespace(final EvaNamespace aEvaNamespace) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public LivingClass getClass(final EvaClass aEvaClass) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public LivingFunction getFunction(final BaseEvaFunction aEvaNode) {
 		throw new NotImplementedException();
 	}
 }

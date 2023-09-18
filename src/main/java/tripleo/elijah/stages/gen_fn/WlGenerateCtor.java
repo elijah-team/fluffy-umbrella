@@ -8,7 +8,6 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
-import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,12 +21,15 @@ import tripleo.elijah.lang.FunctionItem;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.Scope3;
 import tripleo.elijah.lang.StatementWrapper;
 import tripleo.elijah.stages.deduce.ClassInvocation;
+import tripleo.elijah.stages.deduce.Deduce_CreationClosure;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 import tripleo.elijah.util.Holder;
+import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkJob;
 import tripleo.elijah.work.WorkManager;
 
@@ -43,8 +45,8 @@ public class WlGenerateCtor implements WorkJob {
 	private final FunctionInvocation   functionInvocation;
 	private final IdentExpression      constructorName;
 	private final ICodeRegistrar       codeRegistrar;
-	private       boolean              _isDone = false;
-	private       GeneratedConstructor result;
+	private boolean        _isDone = false;
+	private EvaConstructor result;
 
 	@Contract(pure = true)
 	public WlGenerateCtor(@NotNull final GenerateFunctions aGenerateFunctions,
@@ -56,18 +58,17 @@ public class WlGenerateCtor implements WorkJob {
 		codeRegistrar      = aCodeRegistrar;
 	}
 
+	public WlGenerateCtor(final OS_Module aModule, final IdentExpression aNameNode, final FunctionInvocation aFunctionInvocation, final Deduce_CreationClosure aCl) {
+		throw new NotImplementedException();
+	}
+
 	@Override
 	public void run(final WorkManager aWorkManager) {
 		if (functionInvocation.generateDeferred().isPending()) {
 			final ClassStatement                  klass     = functionInvocation.getClassInvocation().getKlass();
-			final @NotNull Holder<GeneratedClass> hGenClass = new Holder<>();
-			functionInvocation.getClassInvocation().resolvePromise().then(new DoneCallback<GeneratedClass>() {
-				@Override
-				public void onDone(final GeneratedClass result) {
-					hGenClass.set(result);
-				}
-			});
-			final GeneratedClass genClass = hGenClass.get();
+			final @NotNull Holder<EvaClass> hGenClass = new Holder<>();
+			functionInvocation.getClassInvocation().resolvePromise().then(hGenClass::set);
+			final EvaClass genClass = hGenClass.get();
 			assert genClass != null;
 
 			ConstructorDef ccc = null;
@@ -86,7 +87,7 @@ public class WlGenerateCtor implements WorkJob {
 				cd = new ConstructorDef(constructorName, klass, klass.getContext());
 				final @NotNull Scope3 scope3 = new Scope3(cd);
 				cd.scope(scope3);
-				for (final GeneratedContainer.VarTableEntry varTableEntry : genClass.varTable) {
+				for (final EvaContainer.VarTableEntry varTableEntry : genClass.varTable) {
 					if (varTableEntry.initialValue != IExpression.UNASSIGNED) {
 						final IExpression left  = varTableEntry.nameToken;
 						final IExpression right = varTableEntry.initialValue;
@@ -123,7 +124,7 @@ public class WlGenerateCtor implements WorkJob {
 				for (final ConstructorDef cc : cs) {
 					final Collection<FormalArgListItem> cc_args = cc.getArgs();
 					if (cc_args.size() == args.size()) {
-						if (args.size() == 0) {
+						if (args.isEmpty()) {
 							c = cc;
 							break;
 						}
@@ -154,17 +155,14 @@ public class WlGenerateCtor implements WorkJob {
 				}
 			}
 
-			@NotNull final GeneratedConstructor gf = generateFunctions.generateConstructor(cd, (ClassStatement) classStatement_, functionInvocation);
+			@NotNull final EvaConstructor gf = generateFunctions.generateConstructor(cd, (ClassStatement) classStatement_, functionInvocation);
 //		lgf.add(gf);
 
 			final ClassInvocation ci = functionInvocation.getClassInvocation();
-			ci.resolvePromise().done(new DoneCallback<GeneratedClass>() {
-				@Override
-				public void onDone(final GeneratedClass result) {
-					codeRegistrar.registerFunction(gf);
-					gf.setClass(result);
-					result.constructors.put(cd, gf);
-				}
+			ci.resolvePromise().done(result -> {
+				codeRegistrar.registerFunction(gf);
+				gf.setClass(result);
+				result.constructors.put(cd, gf);
 			});
 
 			functionInvocation.generateDeferred().resolve(gf);
@@ -185,7 +183,7 @@ public class WlGenerateCtor implements WorkJob {
 		return false;
 	}
 
-	public GeneratedConstructor getResult() {
+	public EvaConstructor getResult() {
 		return result;
 	}
 }

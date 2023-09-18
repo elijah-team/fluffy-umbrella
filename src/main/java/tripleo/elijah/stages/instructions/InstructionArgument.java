@@ -13,6 +13,7 @@ package tripleo.elijah.stages.instructions;
  * Created 9/10/20 3:33 PM
  */
 public interface InstructionArgument {
+	public enum t {VARIABLE, IDENT, PROC}
 }
 
 //

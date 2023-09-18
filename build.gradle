@@ -35,6 +35,8 @@ dependencies {
     testImplementation 'org.junit.platform:junit-platform-launcher:1.10.0'
 
 
+//    api 'org.projectlombok:lombok:1.18.28'
+
     api 'com.squareup.okhttp3:okhttp:4.10.0'
     api 'com.codahale.metrics:metrics-healthchecks:3.0.2'
     api 'com.codahale.metrics:metrics-core:3.0.2'

@@ -43,14 +43,14 @@ import static tripleo.elijah.util.Helpers.List_of;
 
 public class GetIdentIAPathTest_ForC {
 
-	GeneratedFunction gf;
+	EvaFunction gf;
 	OS_Module         mod;
 
 	@Before
 	public void setUp() throws Exception {
 		mod = mock(OS_Module.class);
 		final FunctionDef fd = mock(FunctionDef.class);
-		gf = new GeneratedFunction(fd);
+		gf = new EvaFunction(fd);
 
 		Emit.emitting = false;
 	}
@@ -77,8 +77,8 @@ public class GetIdentIAPathTest_ForC {
 		Assert.assertEquals("vvx->vmfoo", x);
 	}
 
-	String getIdentIAPath(final IdentIA ia2, final GeneratedFunction generatedFunction) {
-		final CReference reference = new CReference();
+	String getIdentIAPath(final IdentIA ia2, final EvaFunction generatedFunction) {
+		final CReference reference = new CReference(null, null);
 		reference.getIdentIAPath(ia2, Generate_Code_For_Method.AOG.GET, null); // TODO is null correct?
 		return reference.build();
 	}

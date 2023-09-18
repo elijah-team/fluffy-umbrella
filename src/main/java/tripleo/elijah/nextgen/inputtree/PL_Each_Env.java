@@ -14,7 +14,7 @@ public class PL_Each_Env {
 
 	public ICodeRegistrar codeRegistrar() {
 		if (codeRegistrar == null) {
-			codeRegistrar = processParams.getDeducePhase().codeRegistrar;
+			codeRegistrar = processParams.getDeducePhase().getCodeRegistrar();
 		}
 		return codeRegistrar;
 	}

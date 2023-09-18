@@ -13,9 +13,9 @@ import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang.TypeName;
 import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.gen_fn.EvaConstructor;
 import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.gen_fn.GenerateFunctions.S1toG_GC_Processor;
-import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
 import tripleo.elijah.stages.gen_fn.TypeTableEntry;
 import tripleo.elijah.stages.instructions.InstructionName;
 import tripleo.elijah.stages.instructions.IntegerIA;
@@ -31,8 +31,8 @@ import static tripleo.elijah.util.Helpers.List_of;
  */
 public class S1_Constructor {
 
-	private GeneratedConstructor gf;
-	private ConstructorDef       source;
+	private EvaConstructor gf;
+	private ConstructorDef source;
 	private FunctionInvocation   invocation;
 
 	public S1_Constructor(final ConstructorDef aConstructorDef, final ClassStatement parent,
@@ -45,7 +45,7 @@ public class S1_Constructor {
 
 	public void setSource(final ConstructorDef aConstructorDef) {
 		source = aConstructorDef;
-		gf     = new GeneratedConstructor(source);
+		gf     = new EvaConstructor(source);
 	}
 
 	public void setInvocation(final FunctionInvocation aFunctionInvocation) {
@@ -100,7 +100,7 @@ public class S1_Constructor {
 		}
 	}
 
-	public GeneratedConstructor getGenerated() {
+	public EvaConstructor getGenerated() {
 		return gf;
 	}
 
@@ -125,6 +125,6 @@ public class S1_Constructor {
 //		for (Instruction instruction : gf.instructionsList) {
 //			LOG.info(instruction);
 //		}
-//		GeneratedFunction.printTables(gf);
+//		EvaFunction.printTables(gf);
 	}
 }

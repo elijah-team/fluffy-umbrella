@@ -1,19 +1,19 @@
 package tripleo.elijah.world.impl;
 
 import tripleo.elijah.lang.BaseFunctionDef;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.world.i.LivingFunction;
 
 public class DefaultLivingFunction implements LivingFunction {
 	private final BaseFunctionDef       _element;
-	private final BaseGeneratedFunction _gf;
+	private final BaseEvaFunction _gf;
 
 	public DefaultLivingFunction(final BaseFunctionDef aElement) {
 		_element = aElement;
 		_gf      = null;
 	}
 
-	public DefaultLivingFunction(final BaseGeneratedFunction aFunction) {
+	public DefaultLivingFunction(final BaseEvaFunction aFunction) {
 		_element = aFunction.getFD();
 		_gf      = aFunction;
 	}

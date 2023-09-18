@@ -8,17 +8,17 @@
  */
 package tripleo.elijah.stages.instructions;
 
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.ConstantTableEntry;
 
 /**
  * Created 9/10/20 3:35 PM
  */
 public class ConstTableIA implements InstructionArgument {
-	private final BaseGeneratedFunction gf;
+	private final BaseEvaFunction gf;
 	private final int                   index;
 
-	public ConstTableIA(final int index, final BaseGeneratedFunction generatedFunction) {
+	public ConstTableIA(final int index, final BaseEvaFunction generatedFunction) {
 		this.index = index;
 		this.gf    = generatedFunction;
 	}

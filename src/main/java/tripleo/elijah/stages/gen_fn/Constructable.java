@@ -17,7 +17,7 @@ import org.jdeferred2.Promise;
 public interface Constructable {
 	void setConstructable(ProcTableEntry aPte);
 
-	void resolveTypeToClass(GeneratedNode aNode);
+	void resolveTypeToClass(EvaNode aNode);
 
 	void setGenType(GenType aGenType);
 

@@ -14,8 +14,9 @@ import tripleo.elijah.comp.specs.EzCache;
 import tripleo.elijah.comp.specs.EzSpec;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.nextgen.query.Mode;
-import tripleo.elijah.nextgen.query.Operation2;
-import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
+import tripleo.elijah.util.Maybe;
+import tripleo.elijah.util.Operation;
+import tripleo.elijah.util.Operation2;
 
 import java.io.File;
 import java.io.IOException;

@@ -9,18 +9,22 @@
 package tripleo.elijah.comp;
 
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.deduce.DeducePhase;
+import tripleo.elijah.stages.gen_fn.EvaClass;
+import tripleo.elijah.stages.gen_fn.EvaFunction;
+import tripleo.elijah.stages.gen_fn.EvaNamespace;
+import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_fn.GenerateFunctions;
 import tripleo.elijah.stages.gen_fn.GeneratePhase;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.util.CompletableProcess;
+import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.world.i.WorldModule;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -46,7 +50,13 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 
 		verbosity     = sil ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
 		generatePhase = new GeneratePhase(verbosity, this, __ab.getCompilation());
-		dp            = new DeducePhase(generatePhase, this, verbosity, __ab.getCompilation());
+
+
+		var ce = iab.getCompilation().getCompilationEnclosure();
+		var ca = ce.getCompilationAccess();
+		var pa = ce.getPipelineAccess();
+
+		dp            = new DeducePhase(ca,pa,this);
 
 		// FIXME examine if this is necessary and possibly or actually elsewhere
 		//  and/or just another section
@@ -82,12 +92,12 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	}
 
 	public static void resolveCheck(final DeducePhase.@NotNull GeneratedClasses lgc) {
-		for (final GeneratedNode generatedNode : lgc) {
-			if (generatedNode instanceof GeneratedFunction) {
+		for (final EvaNode evaNode : lgc) {
+			if (evaNode instanceof EvaFunction) {
 
-			} else if (generatedNode instanceof GeneratedClass) {
-//				final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-//				for (GeneratedFunction generatedFunction : generatedClass.functionMap.values()) {
+			} else if (evaNode instanceof EvaClass) {
+//				final EvaClass generatedClass = (EvaClass) generatedNode;
+//				for (EvaFunction generatedFunction : generatedClass.functionMap.values()) {
 //					for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
 //						final IdentIA ia2 = new IdentIA(identTableEntry.getIndex(), generatedFunction);
 //						final String s = generatedFunction.getIdentIAPathNormal(ia2);
@@ -102,10 +112,10 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 //						}
 //					}
 //				}
-			} else if (generatedNode instanceof GeneratedNamespace) {
-//				final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
+			} else if (evaNode instanceof EvaNamespace) {
+//				final EvaNamespace generatedNamespace = (EvaNamespace) generatedNode;
 //				NamespaceStatement namespaceStatement = generatedNamespace.getNamespaceStatement();
-//				for (GeneratedFunction generatedFunction : generatedNamespace.functionMap.values()) {
+//				for (EvaFunction generatedFunction : generatedNamespace.functionMap.values()) {
 //					for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
 //						if (identTableEntry.isResolved()) {
 //							GeneratedNode node = identTableEntry.resolved();
@@ -117,8 +127,8 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 		}
 	}
 
-	public void addModule(final OS_Module m) {
-		mods.add(m);
+	public void addModule(final WorldModule m) {
+		mods.add(m.module());
 	}
 
 	public ElLog.Verbosity getVerbosity() {
@@ -144,8 +154,53 @@ public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 		return __ab.gr;
 	}
 
-	public List<GeneratedNode> generatedClassesCopy() {
+	public List<EvaNode> generatedClassesCopy() {
 		return dp.generatedClasses.copy();
+	}
+
+	public void addModule(OS_Module aOSModule) {
+		mods.add(aOSModule);
+	}
+
+	public ModuleCompletableProcess _mcp() {
+		return new ModuleCompletableProcess();
+	}
+
+	public Compilation _pa() {
+//		return this.
+		throw new NotImplementedException();
+	}
+
+	public class ModuleCompletableProcess implements CompletableProcess<WorldModule> {
+		@Override
+		public void add(final WorldModule item) {
+			throw new NotImplementedException();
+
+		}
+
+		@Override
+		public void complete() {
+			throw new NotImplementedException();
+
+		}
+
+		@Override
+		public void error(final Diagnostic d) {
+			throw new NotImplementedException();
+
+		}
+
+		@Override
+		public void preComplete() {
+			throw new NotImplementedException();
+
+		}
+
+		@Override
+		public void start() {
+			throw new NotImplementedException();
+
+		}
 	}
 }
 

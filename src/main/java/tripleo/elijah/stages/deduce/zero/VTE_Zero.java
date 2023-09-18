@@ -1,6 +1,5 @@
 package tripleo.elijah.stages.deduce.zero;
 
-import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.ErrSink;
@@ -17,7 +16,6 @@ import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.ResolveError;
 import tripleo.elijah.stages.gen_fn.BaseTableEntry;
 import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
 import tripleo.elijah.stages.gen_fn.GenericElementHolder;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.gen_fn.TypeTableEntry;
@@ -86,13 +84,8 @@ public class VTE_Zero {
 			final @NotNull GenType          genType  = new GenType(klass);
 			final TypeName                  typeName = vte.type.genType.nonGenericTypeName;
 			final @Nullable ClassInvocation ci       = genType.genCI(typeName, deduceTypes2, errSink, phase);
-//							resolve_vte_for_class(vte, klass);
-			ci.resolvePromise().done(new DoneCallback<GeneratedClass>() {
-				@Override
-				public void onDone(final GeneratedClass result) {
-					vte.resolveTypeToClass(result);
-				}
-			});
+			//resolve_vte_for_class(vte, klass);
+			ci.resolvePromise().done(vte::resolveTypeToClass);
 		} catch (final ResolveError aResolveError) {
 			errSink.reportDiagnostic(aResolveError);
 		}

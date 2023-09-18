@@ -16,6 +16,7 @@ import tripleo.elijah.stages.gen_generic.GenerateFiles;
 import tripleo.elijah.stages.gen_generic.OutputFileFactory;
 import tripleo.elijah.stages.gen_generic.OutputFileFactoryParams;
 import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.world.impl.DefaultWorldModule;
 
 public class Boilerplate {
 	public Compilation        comp;
@@ -45,7 +46,9 @@ public class Boilerplate {
 		  new OutputFileFactoryParams(mod,
 			comp.getErrSink(),
 			aca.testSilence(),
-			pipelineLogic));
+			pipelineLogic,
+		    mod.getCompilation().getCompilationEnclosure()),
+		  null);
 	}
 
 	public OS_Module defaultMod() {
@@ -81,7 +84,9 @@ public class Boilerplate {
 //		final PipelineLogic pl = new PipelineLogic(new AccessBus(module.getCompilation()));
 //		final DeduceTypes2  d  = pl.dp.deduceModule(module, verbosity);
 
-		final DeduceTypes2 d = getDeducePhase().deduceModule(module, verbosity);
+		var wm = new DefaultWorldModule(module, null);
+
+		final DeduceTypes2 d = getDeducePhase().deduceModule(wm/*module, verbosity*/);
 
 //		d.processWachers();
 		return d;

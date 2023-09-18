@@ -23,7 +23,7 @@ import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang.VariableStatement;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
+import tripleo.elijah.stages.gen_fn.EvaFunction;
 import tripleo.elijah.stages.gen_fn.TypeTableEntry;
 import tripleo.elijah.stages.gen_generic.OutputFileFactoryParams;
 import tripleo.elijah.stages.instructions.IdentIA;
@@ -36,14 +36,14 @@ import static org.easymock.EasyMock.mock;
 
 public class GetRealTargetNameTest {
 
-	GeneratedFunction gf;
+	EvaFunction gf;
 	OS_Module         mod;
 
 	@Before
 	public void setUp() throws Exception {
 		mod = mock(OS_Module.class);
 		final FunctionDef fd = mock(FunctionDef.class);
-		gf = new GeneratedFunction(fd);
+		gf = new EvaFunction(fd);
 	}
 
 	@Test
@@ -65,8 +65,8 @@ public class GetRealTargetNameTest {
 		//
 		final AccessBus               ab = new AccessBus(new CompilationImpl(new StdErrSink(), new IO()));
 		final PipelineLogic           pl = new PipelineLogic(ab);
-		final OutputFileFactoryParams p  = new OutputFileFactoryParams(mod, new StdErrSink(), ElLog.Verbosity.SILENT, pl);  // TODO do we want silent?
-		final GenerateC               c  = new GenerateC(p);
+		final OutputFileFactoryParams p  = new OutputFileFactoryParams(mod, new StdErrSink(), ElLog.Verbosity.SILENT, pl, null);  // TODO do we want silent?
+		final GenerateC               c  = new GenerateC(p, null);
 		//
 		Emit.emitting = false;
 		final String x = c.getRealTargetName(gf, ident_ia, Generate_Code_For_Method.AOG.GET, null); // TODO is null correct?

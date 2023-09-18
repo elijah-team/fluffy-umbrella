@@ -15,9 +15,10 @@ import tripleo.elijah.entrypoints.EntryPointList;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.deduce.DeducePhase;
+import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_fn.GenerateFunctions;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
+import tripleo.elijah.world.impl.DefaultWorldModule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,11 +63,11 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 		                                                         .map(PL_Run2::run2)
 		                                                         .collect(Collectors.toList());
 
-		final List<GeneratedNode> lgc3 = new ArrayList<>();
+		final List<EvaNode> lgc3 = new ArrayList<>();
 
 		// TODO how to do this with streams
 		for (final DeducePhase.GeneratedClasses generatedClasses : lgc2) {
-			for (final GeneratedNode generatedClass : generatedClasses) {
+			for (final EvaNode generatedClass : generatedClasses) {
 				lgc3.add(generatedClass);
 			}
 		}
@@ -113,26 +114,26 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 				gfm.generateFromEntryPoints(epl, deducePhase);
 			}
 
-			final List<GeneratedNode> lgc = pipelineLogic.generatedClassesCopy();
+			final List<EvaNode> lgc = pipelineLogic.generatedClassesCopy();
 
-			final ICodeRegistrar codeRegistrar  = deducePhase.codeRegistrar;
+			final ICodeRegistrar codeRegistrar  = deducePhase.getCodeRegistrar();
 			final ResolvedNodes  resolved_nodes = new ResolvedNodes();
 
 			resolved_nodes.initial_feed(mod, lgc, codeRegistrar);
 			resolved_nodes.code_resolved();
 
-
-			deducePhase.deduceModule(mod, lgc, true, pipelineLogic.getVerbosity());
+			var wm = new DefaultWorldModule(mod, null);
+			deducePhase.deduceModule(wm/*, lgc, true, pipelineLogic.getVerbosity()*/);
 
 //			PipelineLogic.resolveCheck(lgc);
 
 //		for (final GeneratedNode gn : lgf) {
-//			if (gn instanceof GeneratedFunction) {
-//				GeneratedFunction gf = (GeneratedFunction) gn;
+//			if (gn instanceof EvaFunction) {
+//				EvaFunction gf = (EvaFunction) gn;
 //				tripleo.elijah.util.Stupidity.println2("----------------------------------------------------------");
 //				tripleo.elijah.util.Stupidity.println2(gf.name());
 //				tripleo.elijah.util.Stupidity.println2("----------------------------------------------------------");
-//				GeneratedFunction.printTables(gf);
+//				EvaFunction.printTables(gf);
 //				tripleo.elijah.util.Stupidity.println2("----------------------------------------------------------");
 //			}
 //		}
@@ -143,18 +144,18 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 
 	public static class ResolvedNodes {
 		private       tripleo.elijah.comp.Coder coder;
-		private final List<GeneratedNode>       resolved_nodes = new ArrayList<GeneratedNode>();
-		private       OS_Module           mod;
+		private final List<EvaNode>             resolved_nodes = new ArrayList<EvaNode>();
+		private       OS_Module                 mod;
 
-		public void addAll(final List<GeneratedNode> aGeneratedNodes) {
-			resolved_nodes.addAll(aGeneratedNodes);
+		public void addAll(final List<EvaNode> aEvaNodes) {
+			resolved_nodes.addAll(aEvaNodes);
 		}
 
-		public void forEach(final Consumer<GeneratedNode> cgn) {
+		public void forEach(final Consumer<EvaNode> cgn) {
 			resolved_nodes.forEach(cgn);
 		}
 
-		public tripleo.elijah.comp.Coder initial_feed(final OS_Module aMod, final List<GeneratedNode> lgc, final ICodeRegistrar codeRegistrar) {
+		public tripleo.elijah.comp.Coder initial_feed(final OS_Module aMod, final List<EvaNode> lgc, final ICodeRegistrar codeRegistrar) {
 			coder = new Coder(codeRegistrar);
 			mod   = aMod;
 
@@ -167,7 +168,7 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 			resolved_nodes.forEach(generatedNode -> coder.codeNode(generatedNode, mod));
 		}
 
-		public List<GeneratedNode> _nodeList() {
+		public List<EvaNode> _nodeList() {
 			return this.resolved_nodes;
 		}
 	}

@@ -66,7 +66,7 @@ public class OS_FuncType extends __Abstract_OS_Type {
 		@NotNull final List<TypeName> gp = best.getGenericPart();
 		@Nullable ClassInvocation     clsinv;
 		if (genType.ci == null) {
-			clsinv = DeduceTypes2.ClassInvocationMake.withGenericPart(best, constructorName, (NormalTypeName) aGenericTypeName, deduceTypes2, errSink);
+			clsinv = DeduceTypes2.ClassInvocationMake.withGenericPart(best, constructorName, (NormalTypeName) aGenericTypeName, deduceTypes2).success();
 			if (clsinv == null) return null;
 			clsinv     = phase.registerClassInvocation(clsinv);
 			genType.ci = clsinv;

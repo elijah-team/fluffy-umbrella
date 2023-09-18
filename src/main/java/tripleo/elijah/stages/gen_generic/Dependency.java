@@ -12,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.gen_fn.AbstractDependencyTracker;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
+import tripleo.elijah.stages.gen_fn.EvaContainerNC;
 import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedContainerNC;
 
 import java.util.HashSet;
 import java.util.List;
@@ -46,14 +46,14 @@ public class Dependency {
 	                             final List<FunctionInvocation> aDependentFunctions,
 	                             final List<GenType> aDependentTypes) {
 		for (final FunctionInvocation dependentFunction : aDependentFunctions) {
-			final BaseGeneratedFunction generatedFunction = dependentFunction.getGenerated();
+			final BaseEvaFunction generatedFunction = dependentFunction.getGenerated();
 			if (generatedFunction != null)
 				deps.add(generatedFunction.getDependency());
 			else
 				tripleo.elijah.util.Stupidity.println_err2("52 false FunctionInvocation " + dependentFunction);
 		}
 		for (final GenType dependentType : aDependentTypes) {
-			final GeneratedContainerNC node = (GeneratedContainerNC) dependentType.node;
+			final EvaContainerNC node = (EvaContainerNC) dependentType.node;
 			if (node != null)
 				deps.add(node.getDependency());
 			else {

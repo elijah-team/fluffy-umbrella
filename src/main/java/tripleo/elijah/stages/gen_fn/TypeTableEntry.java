@@ -15,6 +15,7 @@ import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang.TypeName;
 import tripleo.elijah.stages.deduce.ClassInvocation;
+import tripleo.elijah.stages.deduce.DeduceTypes2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class TypeTableEntry {
 	private final List<OnSetAttached> osacbs  = new ArrayList<OnSetAttached>();
 	@Nullable
 	private       OS_Type             attached;
+	private BaseEvaFunction __gf;
 
 	public TypeTableEntry(final int index,
 	                      @NotNull final Type lifetime,
@@ -104,11 +106,11 @@ public class TypeTableEntry {
 		return index;
 	}
 
-	public void resolve(final GeneratedNode aResolved) {
+	public void resolve(final EvaNode aResolved) {
 		genType.node = aResolved;
 	}
 
-	public GeneratedNode resolved() {
+	public EvaNode resolved() {
 		return genType.node;
 	}
 
@@ -147,6 +149,17 @@ public class TypeTableEntry {
 	public void genTypeCI(final ClassInvocation aClsinv) {
 		genType.ci = aClsinv;
 	}
+
+	public IExpression __debug_expression() {
+		return expression;
+	}
+
+	public void _fix_table(final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aEvaFunction) {
+		this.__dt2 = aDeduceTypes2;
+		__gf = aEvaFunction;
+	}
+
+	DeduceTypes2 __dt2;
 
 	public enum Type {
 		SPECIFIED, TRANSIENT

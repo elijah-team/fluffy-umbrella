@@ -9,7 +9,10 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.ClassStatement;
+
+import java.util.function.Supplier;
 
 /**
  * Created 1/5/22 11:27 PM
@@ -17,18 +20,18 @@ import tripleo.elijah.lang.ClassStatement;
 class DerivedClassInvocation extends ClassInvocation {
 	private final ClassInvocation derivation;
 
-	public DerivedClassInvocation(final ClassStatement aClassStatement, final ClassInvocation aClassInvocation) {
-		super(aClassStatement, null);
+	public DerivedClassInvocation(final @NotNull ClassStatement aClassStatement, final ClassInvocation aClassInvocation, final Supplier<DeduceTypes2> aDeduceTypes2) {
+		super(aClassStatement, null, aDeduceTypes2);
 		derivation = aClassInvocation;
-	}
-
-	@Override
-	public void setForFunctionInvocation(final FunctionInvocation aFunctionInvocation) {
-		aFunctionInvocation.setClassInvocation(this);
 	}
 
 	public ClassInvocation getDerivation() {
 		return derivation;
+	}
+
+	@Override
+	public void setForFunctionInvocation(final @NotNull FunctionInvocation aFunctionInvocation) {
+		aFunctionInvocation.setClassInvocation(this);
 	}
 }
 

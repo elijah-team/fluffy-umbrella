@@ -15,6 +15,7 @@ import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.deduce.DeduceTypeResolve;
+import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.ResolveError;
 import tripleo.elijah.stages.deduce.ResolveUnknown;
 
@@ -31,8 +32,11 @@ public abstract class BaseTableEntry {
 	private final List<StatusListener> statusListenerList = new ArrayList<StatusListener>();
 	protected OS_Element resolved_element;
 	// region status
-	protected     Status               status             = Status.UNCHECKED;
+	protected Status     status = Status.UNCHECKED;
 	DeduceTypeResolve typeResolve;
+
+	public DeduceTypes2 __dt2;
+	public BaseEvaFunction __gf;
 
 	// endregion resolved_element
 
@@ -86,7 +90,19 @@ public abstract class BaseTableEntry {
 	// endregion status
 
 	protected void setupResolve() {
-		typeResolve = new DeduceTypeResolve(this);
+		typeResolve = new DeduceTypeResolve(this, ()->__dt2);
+	}
+
+	public void _fix_table(final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aEvaFunction) {
+		__dt2 = aDeduceTypes2;
+		__gf = aEvaFunction;
+	}
+
+	public void typeResolve(final GenType aGt) {
+	}
+
+	public DeduceTypes2 _deduceTypes2() {
+		return __dt2;
 	}
 
 	public enum Status {

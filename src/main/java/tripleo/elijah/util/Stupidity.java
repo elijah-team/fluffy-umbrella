@@ -20,4 +20,12 @@ public class Stupidity {
 	public static void println_err3(final Object aS) {
 		System.err.println("Stupidity::println_err3: "+aS);
 	}
+
+	public static void println_err_2(final String aS) {
+//		System.err.println(""+aS);
+	}
+
+	public static void println_out_2(final String aS) {
+//		System.out.println(aS);
+	}
 }

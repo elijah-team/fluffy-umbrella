@@ -20,49 +20,57 @@ import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
-import tripleo.elijah.stages.deduce.DeduceElementIdent;
+import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.deduce.DeducePath;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.IDeduceResolvable;
+import tripleo.elijah.stages.deduce.ITE_Resolver;
 import tripleo.elijah.stages.deduce.OnType;
-import tripleo.elijah.stages.deduce.nextgen.DN_Resolver;
-import tripleo.elijah.stages.deduce.nextgen.DN_ResolverRejection;
-import tripleo.elijah.stages.deduce.nextgen.DN_ResolverResolution;
+import tripleo.elijah.stages.deduce.PromiseExpectation;
+import tripleo.elijah.stages.deduce.ResolveError;
+import tripleo.elijah.stages.deduce.Resolve_Ident_IA;
+import tripleo.elijah.stages.deduce.foo.DN_Resolver;
+import tripleo.elijah.stages.deduce.foo.DN_ResolverRejection;
+import tripleo.elijah.stages.deduce.foo.DN_ResolverResolution;
+import tripleo.elijah.stages.deduce.nextgen.DR_Ident;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
-import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.deduce.zero.ITE_Zero;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.util.Holder;
+import tripleo.elijah.util.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Created 9/12/20 10:27 PM
  */
-public class IdentTableEntry extends BaseTableEntry1 implements Constructable, TableEntryIV, DeduceTypes2.ExpectationBase {
+public class IdentTableEntry extends BaseTableEntry1 implements Constructable, TableEntryIV, DeduceTypes2.ExpectationBase, IDeduceResolvable {
 	private final @NotNull Map<Integer, TypeTableEntry>                    potentialTypes = new HashMap<>();
 	protected final        DeferredObject<InstructionArgument, Void, Void> backlinkSet    = new DeferredObject<>();
 	final                 DeferredObject<ProcTableEntry, Void, Void>      constructableDeferred = new DeferredObject<>();
 	private final         int                                             index;
 	private final         IdentExpression                                 ident;
-	private final         Context                                         pc;
-	private final         DeduceElementIdent                              dei                   = new DeduceElementIdent(this);
-	private final          DeferredObject<GenType, Void, Void>             fefiDone       = new DeferredObject<>();
+	private final Context                             pc;
+	private final Resolve_Ident_IA.DeduceElementIdent dei      = new Resolve_Ident_IA.DeduceElementIdent(this);
+	private final DeferredObject<GenType, Void, Void> fefiDone = new DeferredObject<>();
+	public VariableStatement _cheat_variableStatement;
 	private                boolean                                         preUpdateStatusListenerAdded;
-	private                TypeTableEntry                                  type;
-	private                GeneratedNode                                   externalRef;
-	private                boolean                                         fefi           = false;
-	private                ProcTableEntry                                  constructable_pte;
-	private                DeduceTypes2.PromiseExpectation<String>         resolveExpectation;
+	private TypeTableEntry type;
+	private EvaNode        externalRef;
+	private boolean        fefi           = false;
+	private ProcTableEntry             constructable_pte;
+	private PromiseExpectation<String> resolveExpectation;
 	InstructionArgument backlink;
 	boolean             insideGetResolvedElement = false;
-	private GeneratedNode                  resolvedType;
+	private EvaNode                        resolvedType;
 	private DeduceElement3_IdentTableEntry _de3;
 	private ITE_Zero                       _zero;
 
@@ -79,6 +87,11 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 			}
 		});
 		setupResolve();
+	}
+
+	public IdentTableEntry(int aI, IdentExpression aIdentExpression, Context aContext,
+			BaseEvaFunction aGeneratedFunction) {
+		this(aI, aIdentExpression, aContext);
 	}
 
 	@Override
@@ -116,7 +129,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		return resolvedType != null;
 	}
 
-	public GeneratedNode resolvedType() {
+	public EvaNode resolvedType() {
 		return resolvedType;
 	}
 
@@ -156,7 +169,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	// region constructable
 
 	@Override
-	public void resolveTypeToClass(final GeneratedNode gn) {
+	public void resolveTypeToClass(final EvaNode gn) {
 		resolvedType = gn;
 		if (type != null) // TODO maybe find a more robust solution to this, like another Promise? or just setType? or onPossiblesResolve?
 			type.resolve(gn); // TODO maybe this obviates the above?
@@ -177,7 +190,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		return constructableDeferred.promise();
 	}
 
-	public void setGenType(final GenType genType, final BaseGeneratedFunction gf) {
+	public void setGenType(final GenType genType, final BaseEvaFunction gf) {
 		if (type == null) {
 			makeType(gf, TypeTableEntry.Type.SPECIFIED, genType.resolved);
 		}
@@ -187,7 +200,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 
 	// endregion constructable
 
-	public void makeType(final BaseGeneratedFunction aGeneratedFunction, final TypeTableEntry.Type aType, final OS_Type aOS_Type) {
+	public void makeType(final BaseEvaFunction aGeneratedFunction, final TypeTableEntry.Type aType, final OS_Type aOS_Type) {
 		type = aGeneratedFunction.newTypeTableEntry(aType, aOS_Type, getIdent(), this);
 	}
 
@@ -195,12 +208,12 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		return ident;
 	}
 
-	public void setDeduceTypes2(final @NotNull DeduceTypes2 aDeduceTypes2, final Context aContext, final @NotNull BaseGeneratedFunction aGeneratedFunction) {
+	public void setDeduceTypes2(final @NotNull DeduceTypes2 aDeduceTypes2, final Context aContext, final @NotNull BaseEvaFunction aGeneratedFunction) {
 		dei.setDeduceTypes2(aDeduceTypes2, aContext, aGeneratedFunction);
 	}
 
-	public DeducePath buildDeducePath(final BaseGeneratedFunction generatedFunction) {
-		@NotNull final List<InstructionArgument> x = BaseGeneratedFunction._getIdentIAPathList(new IdentIA(index, generatedFunction));
+	public DeducePath buildDeducePath(final BaseEvaFunction generatedFunction) {
+		@NotNull final List<InstructionArgument> x = BaseEvaFunction._getIdentIAPathList(new IdentIA(index, generatedFunction));
 		return new DeducePath(this, x);
 	}
 
@@ -239,11 +252,11 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		backlinkSet.resolve(backlink);
 	}
 
-	public void makeType(final BaseGeneratedFunction aGeneratedFunction, final TypeTableEntry.Type aType, final IExpression aExpression) {
+	public void makeType(final BaseEvaFunction aGeneratedFunction, final TypeTableEntry.Type aType, final IExpression aExpression) {
 		type = aGeneratedFunction.newTypeTableEntry(aType, null, aExpression, this);
 	}
 
-	public IDeduceElement3 getDeduceElement3(final DeduceTypes2 aDeduceTypes2, final BaseGeneratedFunction aGeneratedFunction) {
+	public DeduceElement3_IdentTableEntry getDeduceElement3(final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aGeneratedFunction) {
 		if (_de3 == null) {
 			_de3                   = new DeduceElement3_IdentTableEntry(this);
 			_de3.deduceTypes2      = aDeduceTypes2;
@@ -260,9 +273,10 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	}
 
 	private final List<DN_Resolver> resolvers = new ArrayList<>();
+	public DeferredObject<OS_Element, ResolveError, Void> _p_resolvedElementPromise = new DeferredObject<OS_Element, ResolveError, Void>();
 
-	public DN_Resolver newResolver(final Context aCtx, final BaseGeneratedFunction aGeneratedFunction) {
-		ITE_DefaultResolver x = new ITE_DefaultResolver(aCtx, aGeneratedFunction);
+	public DN_Resolver newResolver(final Context aCtx, final BaseEvaFunction aGeneratedFunction) {
+		ITE_DefaultResolver x = new ITE_DefaultResolver(aCtx, aGeneratedFunction, this);
 		resolvers.add(x);
 		return x;
 	}
@@ -292,11 +306,11 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		type = aType;
 	}
 
-	public GeneratedNode getExternalRef() {
+	public EvaNode getExternalRef() {
 		return externalRef;
 	}
 
-	public void setExternalRef(GeneratedNode aExternalRef) {
+	public void setExternalRef(EvaNode aExternalRef) {
 		externalRef = aExternalRef;
 	}
 
@@ -316,22 +330,71 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		constructable_pte = aConstructable_pte;
 	}
 
-	public DeduceTypes2.PromiseExpectation<String> getResolveExpectation() {
+	public PromiseExpectation<String> getResolveExpectation() {
 		return resolveExpectation;
 	}
 
-	public void setResolveExpectation(DeduceTypes2.PromiseExpectation<String> aResolveExpectation) {
+	public void setResolveExpectation(PromiseExpectation<String> aResolveExpectation) {
 		resolveExpectation = aResolveExpectation;
+	}
+
+	public DeduceTypes2 _deduceTypes2() {
+		return this._deduceTypes2;
+	}
+
+	public DeduceElement3_IdentTableEntry getDeduceElement3() {
+		return _de3;
+	}
+
+	public void addResolver(final ITE_Resolver aResolver000) {
+		throw new NotImplementedException();
+	}
+
+	public DR_Ident get_ident() {
+		return null;
+	}
+
+	public Resolve_Ident_IA.DeduceElementIdent getDeduceElement() {
+//		return _de3;
+		throw new NotImplementedException();
+
+	}
+
+	public void onResolvedElement(final Consumer<OS_Element> ce) {
+		throw new NotImplementedException();
+	}
+
+	public Object getDefinedIdent() {
+		throw new NotImplementedException();
+	}
+
+	public void resolvers_round() {
+		throw new NotImplementedException();
+	}
+
+	public Object externalRef() {
+		throw new NotImplementedException();
+	}
+
+	public void onExternalRef(final Consumer<EvaNode> a) {
+		throw new NotImplementedException();
+	}
+
+	public void calculateResolvedElement() {
+		throw new NotImplementedException();
+
 	}
 
 	class ITE_DefaultResolver implements DN_Resolver {
 
 		private final Context ctx;
-		private final BaseGeneratedFunction generatedFunction;
+		private final BaseEvaFunction generatedFunction;
+		private final BaseTableEntry bb;
 
-		public ITE_DefaultResolver(final Context aCtx, final BaseGeneratedFunction aGeneratedFunction) {
+		public ITE_DefaultResolver(final Context aCtx, final BaseEvaFunction aGeneratedFunction, final BaseTableEntry aBb) {
 			ctx = aCtx;
 			generatedFunction = aGeneratedFunction;
+			bb = aBb;
 		}
 
 		@Override
@@ -342,8 +405,11 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 
 		@Override
 		public void reject(final DN_ResolverRejection aRejection) {
-			aRejection.print_message(this, IdentTableEntry.this);
+			aRejection.print_message(bb, IdentTableEntry.this);
 		}
+	}
+
+	public record ITE_Resolver_Result(OS_Element element) {
 	}
 
 //	private final DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();

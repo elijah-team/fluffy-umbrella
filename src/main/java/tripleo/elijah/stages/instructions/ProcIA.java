@@ -9,7 +9,7 @@
 package tripleo.elijah.stages.instructions;
 
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
 
 /**
@@ -17,9 +17,9 @@ import tripleo.elijah.stages.gen_fn.ProcTableEntry;
  */
 public class ProcIA implements InstructionArgument {
 	private final int                   index;
-	private final BaseGeneratedFunction gf;
+	private final BaseEvaFunction gf;
 
-	public ProcIA(final int i, final BaseGeneratedFunction generatedFunction) {
+	public ProcIA(final int i, final BaseEvaFunction generatedFunction) {
 		this.index = i;
 		this.gf    = generatedFunction;
 	}
@@ -38,6 +38,14 @@ public class ProcIA implements InstructionArgument {
 
 	public @NotNull ProcTableEntry getEntry() {
 		return gf.getProcTableEntry(index);
+	}
+
+	public int index() {
+		return getIndex();
+	}
+
+	public BaseEvaFunction generatedFunction() {
+		return gf;
 	}
 }
 

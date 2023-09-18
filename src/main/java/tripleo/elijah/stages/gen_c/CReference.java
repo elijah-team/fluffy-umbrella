@@ -10,19 +10,12 @@
 package tripleo.elijah.stages.gen_c;
 
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.lang.ConstructorDef;
-import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.lang.RegularTypeName;
-import tripleo.elijah.lang.types.OS_FuncType;
-import tripleo.elijah.lang.types.OS_UserType;
-import tripleo.elijah.stages.deduce.ClassInvocation;
-import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
-import tripleo.elijah.stages.gen_fn.GeneratedContainerNC;
+import org.jetbrains.annotations.Nullable;
+import tripleo.elijah.comp.i.CompilationEnclosure;
+import tripleo.elijah.nextgen.outputstatement.EG_Statement;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
+import tripleo.elijah.stages.gen_fn.BaseTableEntry;
+import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
@@ -30,156 +23,51 @@ import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.stages.instructions.ProcIA;
-import tripleo.elijah.util.Helpers;
+import tripleo.elijah.util.Eventual;
 import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.util.Operation2;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
+import static tripleo.elijah.util.Helpers.String_join;
 
 /**
  * Created 1/9/21 7:12 AM
  */
 public class CReference {
-	private final GI_Repo _repo = new GI_Repo();
+	private final GI_Repo                      _repo/* = new GI_Repo()*/;
 	//
 	//
-	GeneratedClass _cheat = null;
-	private String          rtext = null;
-	private List<String>    args;
-	private List<Reference> refs;
+	public        String                       __cheat_ret;
+	private       List<String>                 args;
+	private       ArrayList<CR_ReferenceItem1> items;
 	//
 	//
+	@Nullable     EvaClass                     _cheat = null;
 
-	public String getIdentIAPath(final @NotNull IdentIA ia2, final Generate_Code_For_Method.AOG aog, final String aValue) {
-		final BaseGeneratedFunction     generatedFunction = ia2.gf;
-		final List<InstructionArgument> s                 = _getIdentIAPathList(ia2);
-		refs = new ArrayList<Reference>(s.size());
-
-		//
-		// TODO NOT LOOKING UP THINGS, IE PROPERTIES, MEMBERS
-		//
-		String             text = "";
-		final List<String> sl   = new ArrayList<String>();
-		for (int i = 0, sSize = s.size(); i < sSize; i++) {
-			final InstructionArgument ia = s.get(i);
-			if (ia instanceof IntegerIA) {
-				// should only be the first element if at all
-				assert i == 0;
-				final VariableTableEntry vte = generatedFunction.getVarTableEntry(to_int(ia));
-
-				if (vte.getName().equals("a1")) {
-					final GenType        gt1 = vte.genType;
-					final GenType        gt2 = vte.type.genType;
-					final GeneratedClass gc1 = (GeneratedClass) vte.genType.node;
-
-					_cheat = gc1;
-
-					// only gt1.node is not null
-
-					assert gc1.getCode() == 106;
-					assert gc1.getName().equals("ConstString");
-
-					// gt2
-
-					assert gt2.resolvedn == null;
-					assert gt2.typeName instanceof OS_UserType;
-					assert gt2.nonGenericTypeName instanceof RegularTypeName;
-					assert gt2.resolved instanceof OS_FuncType; // wrong: should be usertype: GeneratedClass
-					assert ((ClassInvocation) gt2.ci).resolvePromise().isResolved();
-
-					((ClassInvocation) gt2.ci).resolvePromise().then(gc -> { // wrong: should be ConstString
-						assert gc.getCode() == 102;
-						assert gc.getKlass().getName().equals("Arguments");
-					});
-
-					assert gt2.functionInvocation == null;
-
-					final int y = 2;
-				}
-
-				text = "vv" + vte.getName();
-				addRef(vte.getName(), Ref.LOCAL);
-			} else if (ia instanceof IdentIA) {
-				final IdentTableEntry idte = ((IdentIA) ia).getEntry();
-				text = CRI_Ident.of(idte, ((IdentIA) ia).gf).getIdentIAPath(i, sSize, aog, sl, aValue, refs::add, s, ia2, this);
-			} else if (ia instanceof ProcIA) {
-				final ProcTableEntry prte = generatedFunction.getProcTableEntry(to_int(ia));
-				text = getIdentIAPath_Proc(prte);
-			} else {
-				throw new NotImplementedException();
-			}
-			if (text != null)
-				sl.add(text);
-		}
-		rtext = Helpers.String_join(".", sl);
-		return rtext;
+	public GI_Repo _repo() {
+		return _repo;
 	}
 
-	@NotNull
-	static List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
-		final List<InstructionArgument> s = new LinkedList<InstructionArgument>();
-		while (oo != null) {
-			if (oo instanceof IntegerIA) {
-				s.add(0, oo);
-				oo = null;
-			} else if (oo instanceof IdentIA) {
-				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
-				s.add(0, oo);
-				oo = ite1.getBacklink();
-			} else if (oo instanceof ProcIA) {
-//				final ProcTableEntry prte = ((ProcIA)oo).getEntry();
-				s.add(0, oo);
-				oo = null;
-			} else
-				throw new IllegalStateException("Invalid InstructionArgument");
-		}
-		return s;
+	public void addRef(final Reference aR) {
+		refs.add(aR);
 	}
 
 	void addRef(final String text, final Ref type) {
 		refs.add(new Reference(text, type));
 	}
 
-	public String getIdentIAPath_Proc(final @NotNull ProcTableEntry aPrte) {
-		final String[]              text      = new String[1];
-		final BaseGeneratedFunction generated = aPrte.getFunctionInvocation().getGenerated();
-		final IDeduceElement3       de_pte    = aPrte.getDeduceElement3();
+	private SpecialText rtext = null;
 
-		if (generated == null)
-			throw new IllegalStateException();
-
-		if (generated instanceof GeneratedConstructor) {
-			NotImplementedException.raise();
-			generated.onGenClass(genClass -> {
-				final IdentExpression constructorName = generated.getFD().getNameNode();
-				final String          constructorNameText;
-				if (constructorName == ConstructorDef.emptyConstructorName) {
-					constructorNameText = "";
-				} else {
-					constructorNameText = constructorName.getText();
-				}
-				text[0] = String.format("ZC%d%s", genClass.getCode(), constructorNameText);
-				addRef(text[0], Ref.CONSTRUCTOR);
-			});
-			final GeneratedContainerNC genClass = (GeneratedContainerNC) generated.getGenClass();
-			if (genClass == null) {
-				final int y = 2;
-				//generated.setClass(genClass);
-			}
-		} else {
-			generated.onGenClass(genClass -> {
-				text[0] = String.format("Z%d%s", genClass.getCode(), generated.getFD().getNameNode().getText());
-				addRef(text[0], Ref.FUNCTION);
-			});
-		}
-
-		return text[0];
-	}
+	//void addRef(final String text, final Ref type, final String aValue) {
+	//	refs.add(new Reference(text, type, aValue));
+	//}
 
 	/**
 	 * Call before you call build
@@ -221,7 +109,7 @@ public class CReference {
 
 		if (st.open) {
 			if (args != null) {
-				sb.append(Helpers.String_join(", ", args));
+				sb.append(String_join(", ", args));
 			}
 			sb.append(")");
 		}
@@ -229,8 +117,384 @@ public class CReference {
 		return sb.toString();
 	}
 
-	void addRef(final String text, final Ref type, final String aValue) {
-		refs.add(new Reference(text, type, aValue));
+	List<Reference> refs;
+
+	public void debugPath(final @NotNull IdentIA identIA, final @NotNull String aPath) {
+		@NotNull final List<InstructionArgument> pl = _getIdentIAPathList(identIA);
+
+		if (false) {
+			System.out.println("\\ 172-172-172-172-172 ---------------------------------------------");
+			for (InstructionArgument instructionArgument : pl) {
+				if (instructionArgument instanceof final @NotNull ProcIA procIA) {
+					System.out.println(procIA.getEntry().__debug_expression());
+				} else if (instructionArgument instanceof final @NotNull IdentIA argument) {
+					System.out.println(argument.getEntry().getIdent().getText());
+				} else if (instructionArgument instanceof final @NotNull IntegerIA integerIA) {
+					System.out.println(integerIA.getEntry().getName());
+				}
+			}
+			System.out.println("- 172-172-172-172-172 ---------------------------------------------");
+			System.out.printf("[%d][%s]%n", aPath.length(), aPath);
+			System.out.println("/ 172-172-172-172-172 ---------------------------------------------");
+		}
+	}
+
+	public CReference(final GI_Repo aRepo, final CompilationEnclosure aCe) {
+		_repo = aRepo;
+	}
+
+	@NotNull
+	static List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
+		final List<InstructionArgument> s = new LinkedList<InstructionArgument>();
+		while (oo != null) {
+			if (oo instanceof IntegerIA) {
+				s.add(0, oo);
+				oo = null;
+			} else if (oo instanceof IdentIA) {
+				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
+				s.add(0, oo);
+				oo = ite1.getBacklink();
+			} else if (oo instanceof ProcIA) {
+//				final ProcTableEntry prte = ((ProcIA)oo).getEntry();
+				s.add(0, oo);
+				oo = null;
+			} else
+				throw new IllegalStateException("Invalid InstructionArgument");
+		}
+		return s;
+	}
+
+	public @NotNull String getIdentIAPath2(final @NotNull IdentIA ia2, final Generate_Code_For_Method.AOG aog, final String aValue) {
+		final BaseEvaFunction           generatedFunction = ia2.gf;
+		final List<InstructionArgument> s                 = _getIdentIAPathList(ia2);
+
+
+		final List<String> texts = new ArrayList<>();
+
+		for (InstructionArgument instructionArgument : s) {
+			if (instructionArgument instanceof IntegerIA) {
+				IntegerIA                         integerIA = (IntegerIA) instructionArgument;
+				@NotNull final VariableTableEntry entry     = integerIA.getEntry();
+				texts.add("vv" + entry.getName());
+			} else if (instructionArgument instanceof IdentIA) {
+				IdentIA                        identIA = (IdentIA) instructionArgument;
+				@NotNull final IdentTableEntry entry   = identIA.getEntry();
+				texts.add("vm" + entry.getIdent().getText());
+			} else if (instructionArgument instanceof ProcIA) {
+				ProcIA                        procIA = (ProcIA) instructionArgument;
+				@NotNull final ProcTableEntry entry  = procIA.getEntry();
+				texts.add("" + entry.getResolvedElement());
+			}
+		}
+
+		return String_join("->", texts);
+	}
+
+	enum Connector {
+		DBL_COLON, DOT, INVALID,
+		POINTER, UNKNOWN
+	}
+
+	public SpecialText getIdentIAPath(final @NotNull IdentIA ia2, final Generate_Code_For_Method.@NotNull AOG aog, final String aValue) {
+		final BaseEvaFunction           generatedFunction = ia2.gf;
+		final List<InstructionArgument> s                 = _getIdentIAPathList(ia2);
+		refs = new ArrayList<Reference>(s.size());
+
+		//
+		//
+		//
+		//
+		//
+		//
+		items = new ArrayList<CR_ReferenceItem1>(s.size());
+		//
+		//
+		//
+		//
+		//
+		//
+		//
+
+		//
+		// TODO NOT LOOKING UP THINGS, IE PROPERTIES, MEMBERS
+		//
+		String             text = "";
+		final List<String> sl   = new ArrayList<String>();
+		for (int i = 0, sSize = s.size(); i < sSize; i++) {
+
+			//
+			//
+			//
+			//
+			final CR_ReferenceItem1 item = new CR_ReferenceItem1();
+			//
+			//
+			//
+			//
+
+
+			final InstructionArgument ia = s.get(i);
+
+			item.setInstructionArgument(ia);
+
+			if (ia instanceof IntegerIA) {
+				text = getIdentIAPath__IntegerIA(generatedFunction, i, item, ia);
+			} else if (ia instanceof final @NotNull IdentIA identIA) {
+				text = getIdentIAPath__IdentIA(ia2, aog, aValue, s, sl, i, sSize, item, identIA);
+			} else if (ia instanceof ProcIA) {
+				text = getIdentIAPath__ProcIA(item, (ProcIA) ia);
+			} else {
+				throw new NotImplementedException();
+			}
+			if (text != null)
+				sl.add(text);
+
+
+			//
+			//
+			//
+			//
+			//
+			//
+			items.add(item);
+			//
+			//
+			//
+			//
+			//
+			//
+		}
+		if (false) {//|| true || sl.size() < items.size()) {
+			final List<String> itms = items.stream()
+					.map(itm -> {
+						var bs = new BuildState();
+						itm.getReference().type.buildHelper(itm.getReference(), bs);
+						return bs.sb.toString();
+					})
+					.collect(Collectors.toList());
+			System.err.println("219219 " + items);
+			rtext = SpecialText.compose(itms);
+		} else {
+			rtext = SpecialText.compose(sl);
+		}
+		return rtext;
+	}
+
+	@NotNull
+	private String getIdentIAPath__IntegerIA(final @NotNull BaseEvaFunction generatedFunction, final int i, final @NotNull CR_ReferenceItem1 item, final @NotNull InstructionArgument ia) {
+		String text;
+		item.setType(InstructionArgument.t.VARIABLE);
+
+		// should only be the first element if at all
+		assert i == 0;
+		final VariableTableEntry vte = generatedFunction.getVarTableEntry(to_int(ia));
+
+/*
+		if (vte.getName().equals("a1")) {
+			final GenType     gt1 = vte.getGenType();
+			final GenType gt2 = vte.getType().genType;
+			final EvaClass    gc1 = (EvaClass) gt1.getNode();
+
+			_cheat = gc1;
+
+
+			// only gt1.node is not null
+
+			//assert gc1.getCode() == 106 || gc1.getCode() == 105 || gc1.getCode() == 103;
+			assert gc1.getName().equals("ConstString");
+
+			// gt2
+
+			assert gt2.getResolvedn() == null;
+			assert gt2.getTypeName() instanceof OS_UserType;
+			assert gt2.getNonGenericTypeName() instanceof RegularTypeName;
+			if (gc1.getCode() == 106) {
+				assert gt2.getResolved() instanceof OS_FuncType; // wrong: should be usertype: EvaClass
+			} else if (gc1.getCode() == 105) {
+				assert gt2.getResolved() instanceof OS_UserClassType; // now good ?? :):)
+			}
+			assert ((ClassInvocation) gt2.getCi()).resolvePromise().isResolved();
+
+			((ClassInvocation) gt2.getCi()).resolvePromise().then(gc -> { // wrong: should be ConstString
+				if (gc1.getCode() == 106) {
+					assert gc.getCode() == 102;
+					assert gc.getKlass().getName().equals("Arguments");
+				} else if (gc1.getCode() == 105) {
+					assert gc.getCode() == 105;
+					assert gc.getKlass().getName().equals("ConstString");
+				}
+			});
+
+			assert gt2.getFunctionInvocation() == null;
+
+			final int y = 2;
+		}
+*/
+
+		text = "vv" + vte.getName();
+		addRef(vte.getName(), Ref.LOCAL);
+
+		item.setReference(new Reference(vte.getName(), Ref.LOCAL));
+		return text;
+	}
+
+	static class CR_ReferenceItem1 implements CR_ReferenceItem {
+		private String                   arg;
+		private Connector                connector;
+		private GenerateC_Item           generateCItem;
+		private InstructionArgument      instructionArgument;
+		private Eventual<GenerateC_Item> previous;
+
+		private Reference reference;
+
+		private Operation2<EG_Statement> statement;
+
+		private String                text;
+		private InstructionArgument.t type;
+		private BaseTableEntry        tableEntry;
+
+		@Override
+		public String getArg() {
+			return arg;
+		}
+
+		@Override
+		public Connector getConnector() {
+			return connector;
+		}
+
+		@Override
+		public GenerateC_Item getGenerateCItem() {
+			return generateCItem;
+		}
+
+		@Override
+		public InstructionArgument getInstructionArgument() {
+			return instructionArgument;
+		}
+
+		@Override
+		public Eventual<GenerateC_Item> getPrevious() {
+			return previous;
+		}
+
+		@Override
+		public Reference getReference() {
+			return reference;
+		}
+
+		@Override
+		public void setReference(Reference aReference) {
+			reference = aReference;
+		}
+
+		@Override
+		public String getText() {
+			return text;
+		}
+
+		@Override
+		public Operation2<EG_Statement> getStatement() {
+			return statement;
+		}
+
+		@Override
+		public void setStatement(Operation2<EG_Statement> aStatement) {
+			statement = aStatement;
+		}
+
+		@Override
+		public void setText(String aText) {
+			text = aText;
+		}
+
+		@Override
+		public void setPrevious(Eventual<GenerateC_Item> aPrevious) {
+			previous = aPrevious;
+		}
+
+		@Override
+		public void setInstructionArgument(InstructionArgument aInstructionArgument) {
+			instructionArgument = aInstructionArgument;
+			if (instructionArgument instanceof IdentIA identIA) {
+				tableEntry = identIA.getEntry();
+			}
+		}
+
+		@Override
+		public void setGenerateCItem(GenerateC_Item aGenerateCItem) {
+			generateCItem = aGenerateCItem;
+		}
+
+		@Override
+		public void setConnector(Connector aConnector) {
+			connector = aConnector;
+		}
+
+		@Override
+		public void setArg(String aArg) {
+			arg = aArg;
+		}
+
+		public InstructionArgument.t getType() {
+			return type;
+		}
+
+		public void setType(final InstructionArgument.t aType) {
+			type = aType;
+		}
+
+		@Override
+		public BaseTableEntry getTableEntry() {
+			return tableEntry;
+		}
+	}
+
+	@NotNull
+	private String getIdentIAPath__IdentIA(final @NotNull IdentIA ia2,
+										   final Generate_Code_For_Method.@NotNull AOG aog,
+										   final String aValue,
+										   final @NotNull List<InstructionArgument> s,
+										   final @NotNull List<String> sl,
+										   final int i,
+										   final int sSize,
+										   final @NotNull CR_ReferenceItem1 item,
+										   final @NotNull IdentIA identIA) {
+		String text;
+		item.setType(InstructionArgument.t.IDENT);
+
+		final IdentTableEntry idte = identIA.getEntry();
+		final BaseEvaFunction gf   = identIA.gf;
+
+		if (idte._deduceTypes2() == null) {
+			System.err.println("169169 ");
+			//throw new AssertionError();
+		}
+
+		final Consumer<Reference> referenceConsumer = e -> {
+			//refs.add(e);
+			item.setReference(e);
+		};
+		final CRI_Ident criIdent = CRI_Ident.of(idte, gf);
+		text = criIdent.getIdentIAPath(i, sSize, aog, sl, aValue, referenceConsumer, s, ia2, this, item);
+
+		//System.err.println("181181 " + text + " " + item.getText());
+		//assert text != null;
+		if (text == null) return "<<null 181>>";
+		return text;
+	}
+
+	private String getIdentIAPath__ProcIA(final @NotNull CR_ReferenceItem1 item, final ProcIA ia) {
+		String text;
+		item.setType(InstructionArgument.t.PROC);
+
+		final GI_ProcIA pia = _repo.itemFor(ia);
+		text = pia.getIdentIAPath(p -> {
+			String e = p.getLeft();
+			addRef(e, p.getRight());
+			item.setReference(new Reference(e, p.getRight()));
+		});
+		return text;
 	}
 
 	enum Ref {
@@ -240,65 +504,9 @@ public class CReference {
 		//	}
 
 
-		// https://www.baeldung.com/a-guide-to-java-enums
-		LOCAL {
-			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
-				final String text = "vv" + ref.text;
-				sb.appendText(text, false);
-			}
-		},
-		MEMBER {
-			@Override
-			public void buildHelper(final Reference ref, final @NotNull BuildState sb) {
-				final String text = "->vm" + ref.text;
-
-				final StringBuilder sb1 = new StringBuilder();
-
-				sb1.append(text);
-				if (ref.value != null) {
-					sb1.append(" = ");
-					sb1.append(ref.value);
-					sb1.append(";");
-				}
-
-				sb.appendText(sb1.toString(), false);
-			}
-		},
-		PROPERTY_GET {
-			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
-				final String text;
-				final String s = sb.toString();
-				text    = String.format("%s%s)", ref.text, s);
-				sb.open = false;
-//				if (!s.equals(""))
-				sb.needs_comma = false;
-				sb.appendText(text, true);
-			}
-		},
-		PROPERTY_SET {
-			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
-				final String text;
-				final String s = sb.toString();
-				text    = String.format("%s%s, %s);", ref.text, s, ref.value);
-				sb.open = false;
-//				if (!s.equals(""))
-				sb.needs_comma = false;
-				sb.appendText(text, true);
-			}
-		},
-		INLINE_MEMBER {
-			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
-				final String text = Emit.emit("/*219*/") + ".vm" + ref.text;
-				sb.appendText(text, false);
-			}
-		},
 		CONSTRUCTOR {
 			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
+			public void buildHelper(final @NotNull Reference ref, final @NotNull BuildState sb) {
 				final String          text;
 				final @NotNull String s = sb.toString();
 				text    = String.format("%s(%s", ref.text, s);
@@ -309,7 +517,7 @@ public class CReference {
 		},
 		DIRECT_MEMBER {
 			@Override
-			public void buildHelper(final Reference ref, final @NotNull BuildState sb) {
+			public void buildHelper(final @NotNull Reference ref, final @NotNull BuildState sb) {
 				final String text;
 				text = Emit.emit("/*124*/") + "vsc->vm" + ref.text;
 
@@ -325,16 +533,9 @@ public class CReference {
 				sb.appendText(sb1.toString(), false);
 			}
 		},
-		LITERAL {
-			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
-				final String text = ref.text;
-				sb.appendText(text, false);
-			}
-		},
 		FUNCTION {
 			@Override
-			public void buildHelper(final Reference ref, final BuildState sb) {
+			public void buildHelper(final @NotNull Reference ref, final @NotNull BuildState sb) {
 				final String text;
 				final String s = sb.toString();
 				text    = String.format("%s(%s", ref.text, s);
@@ -342,50 +543,105 @@ public class CReference {
 				if (!s.equals("")) sb.needs_comma = true;
 				sb.appendText(text, true);
 			}
+		},
+		INLINE_MEMBER {
+			@Override
+			public void buildHelper(final @NotNull Reference ref, final @NotNull BuildState sb) {
+				final String text = Emit.emit("/*219*/") + ".vm" + ref.text;
+				sb.appendText(text, false);
+			}
+		},
+		LITERAL {
+			@Override
+			public void buildHelper(final @NotNull Reference ref, final @NotNull BuildState sb) {
+				final String text = ref.text;
+				sb.appendText(text, false);
+			}
+		},
+		// https://www.baeldung.com/a-guide-to-java-enums
+		LOCAL {
+			@Override
+			public void buildHelper(final @NotNull Reference ref, final @NotNull BuildState sb) {
+				final String text = "vv" + ref.text;
+				sb.appendText(text, false);
+			}
+		},
+		MEMBER {
+			class Text implements GenerateC_Statement {
+				private final Supplier<Boolean> sb;
+				private final Supplier<String>  ss;
+				private final String            text;
+
+				public Text(String atext, Supplier<Boolean> asb, Supplier<String> ass) {
+					text = atext;
+					sb   = asb;
+					ss   = ass;
+				}
+
+				@Override
+				public String getText() {
+					final StringBuilder sb1 = new StringBuilder();
+
+					sb1.append("->vm" + text);
+
+					if (sb.get()) {
+						sb1.append(" = ");
+						sb1.append(ss.get());
+						sb1.append(";");
+					}
+
+					return text;
+				}
+
+				@Override
+				public @NotNull GCR_Rule rule() {
+					return new GCR_Rule() {
+						@Override
+						public @NotNull String text() {
+							return "Ref MEMBER Text";
+						}
+					};
+				}
+			}
+
+			@Override
+			public void buildHelper(final @NotNull Reference ref, final @NotNull BuildState sb) {
+				final Text t = new Text(ref.text, () -> ref.value != null, () -> ref.value);
+
+				sb.appendText(t.getText(), false);
+			}
+		},
+		PROPERTY_GET {
+			@Override
+			public void buildHelper(final @NotNull Reference ref, final @NotNull BuildState sb) {
+				final String text;
+				final String s = sb.toString();
+				text    = String.format("%s%s)", ref.text, s);
+				sb.open = false;
+//				if (!s.equals(""))
+				sb.needs_comma = false;
+				sb.appendText(text, true);
+			}
+		},
+		PROPERTY_SET {
+			@Override
+			public void buildHelper(final @NotNull Reference ref, final @NotNull BuildState sb) {
+				final String text;
+				final String s = sb.toString();
+				text    = String.format("%s%s, %s);", ref.text, s, ref.value);
+				sb.open = false;
+//				if (!s.equals(""))
+				sb.needs_comma = false;
+				sb.appendText(text, true);
+			}
 		};
 
 		public abstract void buildHelper(final Reference ref, final BuildState sb);
 	}
 
-	interface GenerateC_Statement {
-		String getText();
-
-		GCR_Rule rule();
-	}
-
-	interface GCR_Rule {
-		String text();
-	}
-
-	interface GenerateC_Item {
-
-	}
-
-	static class Reference {
-		final String text;
-		final Ref    type;
-		final String value;
-
-		public Reference(final String aText, final Ref aType, final String aValue) {
-			text  = aText;
-			type  = aType;
-			value = aValue;
-		}
-
-		public Reference(final String aText, final Ref aType) {
-			text  = aText;
-			type  = aType;
-			value = null;
-		}
-
-		public void buildHelper(final BuildState st) {
-			type.buildHelper(this, st);
-		}
-	}
-
 	private final static class BuildState {
-		StringBuilder sb   = new StringBuilder();
-		boolean       open = false, needs_comma = false;
+		boolean open = false, needs_comma = false;
+		@NotNull StringBuilder sb = new StringBuilder();
 
 		public void appendText(final String text, final boolean erase) {
 			if (erase)
@@ -395,40 +651,31 @@ public class CReference {
 		}
 
 		@Override
-		public String toString() {
+		public @NotNull String toString() {
 			return sb.toString();
 		}
 		//ABOVE 3a
 	}
 
-	class GI_ProcIA implements GenerateC_Item {
-		private final ProcIA carrier;
+	static class Reference {
+		final           String text;
+		final           Ref    type;
+		final @Nullable String value;
 
-		public GI_ProcIA(final ProcIA aProcIA) {
-			carrier = aProcIA;
+		public Reference(final String aText, final Ref aType) {
+			text  = aText;
+			type  = aType;
+			value = null;
 		}
-	}
 
-	private class GI_Module {
-		private final OS_Module carrier;
-
-		GI_Module(final OS_Module aCarrier) {
-			carrier = aCarrier;
+		public Reference(final String aText, final Ref aType, final String aValue) {
+			text  = aText;
+			type  = aType;
+			value = aValue;
 		}
-	}
 
-	private class GI_Repo {
-		private final Map<Object, GenerateC_Item> items = new HashMap<>();
-
-		public GenerateC_Item itemFor(final ProcIA aProcIA) {
-			final GI_ProcIA gi_proc;
-			if (items.containsKey(aProcIA)) {
-				gi_proc = (GI_ProcIA) items.get(aProcIA);
-			} else {
-				gi_proc = new GI_ProcIA(aProcIA);
-				items.put(aProcIA, gi_proc);
-			}
-			return gi_proc;
+		public void buildHelper(final BuildState st) {
+			type.buildHelper(this, st);
 		}
 	}
 }

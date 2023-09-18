@@ -51,6 +51,10 @@ public class GeneratePhase {
 	public ElLog.Verbosity getVerbosity() {
 		return verbosity;
 	}
+
+	public WorkManager getWm() {
+		return wm;
+	}
 }
 
 //

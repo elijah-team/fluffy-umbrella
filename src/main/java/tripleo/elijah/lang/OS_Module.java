@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.contexts.ModuleContext;
+import tripleo.elijah.entrypoints.EntryPoint;
 import tripleo.elijah.entrypoints.EntryPointList;
 import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
@@ -228,6 +229,14 @@ public class OS_Module implements OS_Element, OS_Container {
 
 	public void setLsp(final @NotNull LibraryStatementPart aLsp) {
 		lsp = aLsp;
+	}
+
+	public OS_Module prelude() {
+		throw new NotImplementedException();
+	}
+
+	public List<EntryPoint> entryPoints() {
+		throw new NotImplementedException();
 	}
 }
 

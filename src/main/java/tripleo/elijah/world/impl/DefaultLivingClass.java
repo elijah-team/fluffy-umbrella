@@ -2,19 +2,21 @@ package tripleo.elijah.world.impl;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
+import tripleo.elijah.stages.garish.GarishClass;
+import tripleo.elijah.stages.gen_fn.EvaClass;
+import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.world.i.LivingClass;
 
 public class DefaultLivingClass implements LivingClass {
 	private final ClassStatement _element;
-	private final GeneratedClass _gc;
+	private final EvaClass _gc;
 
 	public DefaultLivingClass(final ClassStatement aElement) {
 		_element = aElement;
 		_gc      = null;
 	}
 
-	public DefaultLivingClass(final @NotNull GeneratedClass aClass) {
+	public DefaultLivingClass(final @NotNull EvaClass aClass) {
 		_element = aClass.getKlass();
 		_gc      = aClass;
 	}
@@ -27,5 +29,10 @@ public class DefaultLivingClass implements LivingClass {
 	@Override
 	public int getCode() {
 		return _gc.getCode();
+	}
+
+	@Override
+	public GarishClass getGarish() {
+		throw new NotImplementedException();
 	}
 }

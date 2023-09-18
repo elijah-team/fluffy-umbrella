@@ -9,9 +9,9 @@ import java.io.File;
  */
 public class FuncTypeName implements TypeName {
 	private final Context       _ctx;
-	private       TypeModifiers _modifiers;
-	private       TypeNameList  _arglist     = null/*new TypeNameList()*/;
-	private       TypeName      _returnValue = null /*new RegularTypeName()*/; // TODO warning
+	private TypeModifiers _modifiers;
+	public  TypeNameList  _arglist     = null/*new TypeNameList()*/;
+	private TypeName      _returnValue = null /*new RegularTypeName()*/; // TODO warning
 
 	public FuncTypeName(final Context cur) {
 		_ctx = cur;
@@ -86,6 +86,10 @@ public class FuncTypeName implements TypeName {
 	@Override
 	public File getFile() {
 		return null;
+	}
+
+	public boolean argListIsGeneric() {
+		return false;
 	}
 }
 

@@ -15,6 +15,7 @@ package tripleo.elijah.lang;
  */
 public interface ModuleItem extends OS_Element {
 
+	default String name() {return null;}
 }
 
 //

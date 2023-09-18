@@ -1,13 +1,19 @@
 package tripleo.elijah.comp;
 
-import antlr.*;
-import tripleo.elijah.*;
-import tripleo.elijah.comp.specs.*;
-import tripleo.elijah.lang.*;
-import tripleo.elijah.nextgen.query.*;
-import tripleo.elijjah.*;
+import antlr.RecognitionException;
+import antlr.TokenStreamException;
+import tripleo.elijah.Out;
+import tripleo.elijah.comp.specs.ElijahCache;
+import tripleo.elijah.comp.specs.ElijahSpec;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.nextgen.query.Mode;
+import tripleo.elijah.util.Operation;
+import tripleo.elijjah.ElijjahLexer;
+import tripleo.elijjah.ElijjahParser;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class CX_ParseElijahFile {
 

@@ -15,22 +15,24 @@ import tripleo.elijah.lang.OS_Element;
  * Created 1/12/21 2:10 AM
  */
 public abstract class FoundElement {
-	private boolean _didntFind;
 	private boolean _called;
+	private boolean _didntFind;
 
-	public FoundElement(@NotNull final DeducePhase aPhase) {
+	public FoundElement(@NotNull DeducePhase aPhase) {
 		aPhase.registerFound(this);
 	}
 
-	public void doFoundElement(final OS_Element e) {
+	public boolean didntFind() {
+		return _didntFind;
+	}
+
+	public void doFoundElement(OS_Element e) {
 		if (_called) return;
 
 		_didntFind = false;
 		_called    = true;
 		foundElement(e);
 	}
-
-	public abstract void foundElement(OS_Element e);
 
 	public void doNoFoundElement() {
 		if (_called) return;
@@ -40,11 +42,9 @@ public abstract class FoundElement {
 		noFoundElement();
 	}
 
-	public abstract void noFoundElement();
+	public abstract void foundElement(OS_Element e);
 
-	public boolean didntFind() {
-		return _didntFind;
-	}
+	public abstract void noFoundElement();
 }
 
 //

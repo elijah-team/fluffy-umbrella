@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import kotlin.NotImplementedError;
 import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -22,25 +23,31 @@ import tripleo.elijah.lang.types.OS_FuncExprType;
 import tripleo.elijah.lang.types.OS_FuncType;
 import tripleo.elijah.lang.types.OS_UserClassType;
 import tripleo.elijah.stages.deduce.ClassInvocation;
+import tripleo.elijah.stages.deduce.ClassInvocation.CI_GenericPart;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.deduce.IInvocation;
 import tripleo.elijah.stages.deduce.NamespaceInvocation;
+import tripleo.elijah.stages.deduce.nextgen.DR_Type;
 import tripleo.elijah.stages.deduce.zero.Zero_FuncExprType;
+import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.util.Stupidity;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Created 5/31/21 1:32 PM
  */
 public class GenType {
 	public NamespaceStatement resolvedn;
-	public OS_Type            typeName; // TODO or just TypeName ??
-	public TypeName           nonGenericTypeName;
-	public OS_Type            resolved;
+	public OS_Type  typeName; // TODO or just TypeName ??
+	public TypeName nonGenericTypeName;
+	public OS_Type  resolved;
 	public IInvocation        ci;
-	public GeneratedNode      node;
+	public EvaNode            node;
 	public FunctionInvocation functionInvocation;
 
 	@Contract(pure = true)
@@ -64,6 +71,16 @@ public class GenType {
 		if (aB) {
 			ci = genCI(aTypeName, deduceTypes2, errSink, phase);
 		}
+	}
+
+	public static GenType of(final NamespaceStatement aNamespaceStatement, final Supplier<NamespaceInvocation> aNamespaceInvocationSupplier) {
+		final GenType genType = new GenType(aNamespaceStatement);
+		genType.ci = aNamespaceInvocationSupplier.get();
+		return genType;
+	}
+
+	public static GenType genCIFrom(final ClassStatement aBest, final DeduceTypes2 aDeduceTypes2) {
+		throw new NotImplementedException();
 	}
 
 	public ClassInvocation genCI(final TypeName aGenericTypeName,
@@ -128,7 +145,7 @@ public class GenType {
 			resolved = aType;
 			break;
 		default:
-			tripleo.elijah.util.Stupidity.println_err2("48 Unknown in set: " + aType);
+			Stupidity.println_err2("48 Unknown in set: " + aType);
 		}
 	}
 
@@ -154,16 +171,16 @@ public class GenType {
 		genCI(nonGenericTypeName, aDeduceTypes2, aDeduceTypes2._errSink(), aDeduceTypes2._phase());
 		final IInvocation invocation = ci;
 		if (invocation instanceof final NamespaceInvocation namespaceInvocation) {
-			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
+			namespaceInvocation.resolveDeferred().then(new DoneCallback<>() {
 				@Override
-				public void onDone(final GeneratedNamespace result) {
+				public void onDone(final EvaNamespace result) {
 					node = result;
 				}
 			});
 		} else if (invocation instanceof final ClassInvocation classInvocation) {
-			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
+			classInvocation.resolvePromise().then(new DoneCallback<EvaClass>() {
 				@Override
-				public void onDone(final GeneratedClass result) {
+				public void onDone(final EvaClass result) {
 					node = result;
 				}
 			});
@@ -189,21 +206,90 @@ public class GenType {
 		final IInvocation invocation = ci;
 
 		if (invocation instanceof final NamespaceInvocation namespaceInvocation) {
-			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
+			namespaceInvocation.resolveDeferred().then(new DoneCallback<EvaNamespace>() {
 				@Override
-				public void onDone(final GeneratedNamespace result) {
+				public void onDone(final EvaNamespace result) {
 					node = result;
 				}
 			});
 		} else if (invocation instanceof final ClassInvocation classInvocation) {
-			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
+			classInvocation.resolvePromise().then(new DoneCallback<EvaClass>() {
 				@Override
-				public void onDone(final GeneratedClass result) {
+				public void onDone(final EvaClass result) {
 					node = result;
 				}
 			});
 		} else
 			throw new IllegalStateException("invalid invocation");
+	}
+
+	public OS_Type getTypeName() {
+		return typeName;
+	}
+
+	public void setTypeName(final OS_Type aTypeName) {
+		typeName = aTypeName;
+	}
+
+	public void setCi(final IInvocation aCi) {
+		ci = aCi;
+	}
+
+	public void setNode(final EvaClass aEvaClass) {
+		node = aEvaClass;
+	}
+
+	public void setResolved(final OS_Type aA) {
+		resolved = aA;
+	}
+
+	public EvaNode getNode() {
+		return node;
+	}
+
+	public void setNode(final EvaNode aEvaNode) {
+		node = aEvaNode;
+	}
+
+	public OS_Type getResolved() {
+		return resolved;
+	}
+
+	public IInvocation getCi() {
+		return ci;
+	}
+
+	public void setFunctionInvocation(final FunctionInvocation aFunctionInvocation) {
+		functionInvocation = aFunctionInvocation;
+	}
+
+	public void setResolvedn(final NamespaceStatement aNamespace) {
+		resolvedn = aNamespace;
+	}
+
+	public TypeName getNonGenericTypeName() {
+		return nonGenericTypeName;
+	}
+
+	public void setNonGenericTypeName(final TypeName aNormalTypeName) {
+		nonGenericTypeName = aNormalTypeName;
+	}
+
+	public FunctionInvocation getFunctionInvocation() {
+		return functionInvocation;
+	}
+
+	public NamespaceStatement getResolvedn() {
+		return resolvedn;
+	}
+
+	public void set(final GenType aVarType) {
+		throw new NotImplementedException();
+	}
+
+	public void setDrType(final DR_Type aDrType) {
+		throw new NotImplementedException();
+
 	}
 
 	static class SetGenCI {
@@ -240,7 +326,7 @@ public class GenType {
 			case USER_CLASS:
 				final @NotNull ClassStatement best = genType.resolved.getClassOf();
 				//
-				ClassInvocation clsinv2 = DeduceTypes2.ClassInvocationMake.withGenericPart(best, constructorName, aTyn1, deduceTypes2, errSink);
+				ClassInvocation clsinv2 = DeduceTypes2.ClassInvocationMake.withGenericPart(best, constructorName, aTyn1, deduceTypes2).success();
 				clsinv2 = phase.registerClassInvocation(clsinv2);
 				genType.ci = clsinv2;
 				return clsinv2;
@@ -249,6 +335,18 @@ public class GenType {
 			}
 		}
 
+	}
+
+	public void genCIForGenType2__(DeduceTypes2 deduceTypes2) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedError();
+	}
+
+	public static GenType makeFromOSType(OS_Type vt, CI_GenericPart genericPart, DeduceTypes2 deduceTypes2,
+			@NotNull DeducePhase phase, @NotNull ElLog lOG, ErrSink errSink) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedError();
+//		return null;
 	}
 }
 

@@ -20,21 +20,23 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.functionality.f202.F202;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
 import tripleo.elijah.lang.Qualident;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
-import tripleo.elijah.nextgen.query.Operation2;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.FunctionMapHook;
 import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.ut.UT_Controller;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.util.Operation2;
+import tripleo.elijah.world.i.LivingRepo;
 import tripleo.elijah.world.i.WorldModule;
 import tripleo.elijah.world.impl.DefaultLivingRepo;
 import tripleo.elijah.world.impl.DefaultWorldModule;
@@ -98,8 +100,9 @@ public abstract class Compilation {
 
 	private final Finally      _f;
 	private final Finally.Flow _flow;
+	private       LivingRepo _world;
 
-	private CompilationEnclosure getCompilationEnclosure() {
+	public CompilationEnclosure getCompilationEnclosure() {
 		throw new NotImplementedException();
 	}
 
@@ -290,7 +293,7 @@ public abstract class Compilation {
 
 	public abstract @NotNull FluffyComp getFluffy();
 
-	public @NotNull List<GeneratedNode> getLGC() {
+	public @NotNull List<EvaNode> getLGC() {
 		return getDeducePhase().generatedClasses.copy();
 	}
 
@@ -312,6 +315,12 @@ public abstract class Compilation {
 
 	public Finally.Flow flow() {
 		return _flow;
+	}
+
+	public LivingRepo world() {
+		if (_world == null)
+			_world = new DefaultLivingRepo();
+		return _world;
 	}
 
 	static class MOD {

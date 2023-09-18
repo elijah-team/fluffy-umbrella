@@ -11,6 +11,7 @@ package tripleo.elijah.lang;
 import antlr.Token;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.FunctionContext;
+import tripleo.elijah.util.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -200,6 +201,10 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 			m = m.getParent();
 		}
 		return (OS_Module) m;
+	}
+
+	public TypeName returnType() {
+		throw new NotImplementedException();
 	}
 
 	public enum Species {

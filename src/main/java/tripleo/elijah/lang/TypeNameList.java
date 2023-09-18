@@ -44,6 +44,10 @@ public class TypeNameList {
 			}
 		}));
 	}
+
+	public List<TypeName> p() {
+		return p;
+	}
 }
 
 //

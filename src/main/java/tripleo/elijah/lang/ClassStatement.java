@@ -22,6 +22,7 @@ import tripleo.elijah.util.NotImplementedException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents a "class"
@@ -106,15 +107,12 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 		return new DestructorDef(this, getContext());
 	}
 
-	public Collection<ClassItem> findFunction(final String name) {
-		return Collections2.filter(items, new Predicate<ClassItem>() {
-			@Override
-			public boolean apply(@Nullable final ClassItem item) {
-				if (item instanceof FunctionDef && !(item instanceof ConstructorDef))
-					return ((FunctionDef) item).name().equals(name);
-				return false;
-			}
-		});
+	public List<ClassItem> findFunction(final String name) {
+		return items.stream().filter((Predicate<ClassItem>) item -> {
+			if (item instanceof FunctionDef && !(item instanceof ConstructorDef))
+				return ((FunctionDef) item).name().equals(name);
+			return false;
+		}).collect(Collectors.toList());
 	}
 
 	public ClassTypes getType() {

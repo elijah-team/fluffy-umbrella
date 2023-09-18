@@ -3,7 +3,7 @@ package tripleo.elijah.comp;
 import tripleo.elijah.contexts.ModuleContext;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.query.Mode;
-import tripleo.elijah.nextgen.query.Operation2;
+import tripleo.elijah.util.Operation2;
 
 public class ModuleBuilder {
 	//		private final Compilation compilation;

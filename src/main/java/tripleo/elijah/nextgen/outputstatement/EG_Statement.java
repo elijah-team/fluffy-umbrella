@@ -8,6 +8,20 @@ package tripleo.elijah.nextgen.outputstatement;
  * @author Tripleo Nova
  */
 public interface EG_Statement {
+	static EG_Statement of(String aText, EX_Explanation aEXExplanation) {
+		return new EG_Statement() {
+			@Override
+			public String getText() {
+				return aText;
+			}
+
+			@Override
+			public EX_Explanation getExplanation() {
+				return aEXExplanation;
+			}
+		};
+	}
+
 	String getText();
 
 	EX_Explanation getExplanation();

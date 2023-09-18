@@ -15,6 +15,7 @@ package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.FunctionContext;
+import tripleo.elijah.lang.nextgen.names.i.EN_Name;
 import tripleo.elijah.lang.types.OS_FuncType;
 import tripleo.elijah.lang2.ElElementVisitor;
 
@@ -31,6 +32,7 @@ public class FunctionDef extends BaseFunctionDef implements Documentable, ClassI
 
 	// region modifiers
 	private boolean _isAbstract;
+	private EN_Name _name;
 
 	public FunctionDef(final OS_Element element, final Context context) {
 		parent = element;
@@ -103,6 +105,10 @@ public class FunctionDef extends BaseFunctionDef implements Documentable, ClassI
 		if (osType == null)
 			osType = new OS_FuncType(this);
 		return osType;
+	}
+
+	public EN_Name getEnName() {
+		return _name;
 	}
 
 }

@@ -12,6 +12,8 @@ import io.reactivex.rxjava3.subjects.ReplaySubject;
 import io.reactivex.rxjava3.subjects.Subject;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.gen_generic.Dependency;
+import tripleo.elijah.util.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +67,10 @@ public abstract class AbstractDependencyTracker implements DependencyTracker {
 
 	public Subject<FunctionInvocation> dependentFunctionSubject() {
 		return dependentFunctionsSubject;
+	}
+
+	public void noteDependencies(final Dependency aDependency) {
+		throw new NotImplementedException();
 	}
 }
 
