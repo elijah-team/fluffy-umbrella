@@ -11,6 +11,8 @@ public interface ICompilationBus {
 
 	void add(CB_Process aProcess);
 
+	void run_all();
+
 	interface CB_Action {
 		String name();
 

@@ -6,8 +6,14 @@ import tripleo.elijah.comp.CompilationChange;
 import tripleo.elijah.comp.ICompilationBus;
 import tripleo.elijah.comp.ILazyCompilerInstructions;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static tripleo.elijah.util.Helpers.List_of;
+
 public class CompilationBus implements ICompilationBus {
-	private final Compilation c;
+	private final Compilation      c;
+	private final List<CB_Process> processes = new ArrayList<>();
 
 	public CompilationBus(final Compilation aC) {
 		c = aC;
@@ -25,19 +31,41 @@ public class CompilationBus implements ICompilationBus {
 	}
 
 	public void add(final CB_Action action) {
-		action.execute();
+		processes.add(new CB_Process() {
+			@Override
+			public List<CB_Action> steps() {
+				var a = new CB_Action() {
+					@Override
+					public String name() {
+						return "Single Action Process";
+					}
+
+					@Override
+					public void execute() {
+						action.execute();
+					}
+
+					@Override
+					public OutputString[] outputStrings() {
+						return new OutputString[0];
+					}
+				};
+				return List_of(a);
+			}
+		});
 	}
 
 	@Override
 	public void add(final CB_Process aProcess) {
-//		throw new NotImplementedException();
-
-		aProcess.steps().stream()
-		        .forEach(action -> {
-			        action.execute();
-		        });
+		processes.add(aProcess);
 	}
 
+	@Override
+	public void run_all() {
+		for (final CB_Process process : processes) {
+			for (final CB_Action action : process.steps()) {
+				action.execute();
+			}
+		}
+	}
 }
-
-

@@ -34,6 +34,8 @@ public class DefaultCompilerController implements CompilerController {
 		try {
 			c.__cr = new CompilationRunner(c, c._cis, cb);
 			c.__cr.doFindCIs(args2, cb);
+
+			cb.run_all();
 		} catch (final Exception e) {
 			c.getErrSink().exception(e);
 			throw new RuntimeException(e);
