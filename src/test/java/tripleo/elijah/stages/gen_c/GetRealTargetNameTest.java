@@ -63,7 +63,8 @@ public class GetRealTargetNameTest {
 		final IdentIA        ident_ia  = new IdentIA(ite_index, gf);
 		ident_ia.setPrev(new IntegerIA(int_index, gf));
 		//
-		final AccessBus               ab = new AccessBus(new CompilationImpl(new StdErrSink(), new IO()));
+		final CompilationImpl         c1 = new CompilationImpl(new StdErrSink(), new IO());
+		final AccessBus               ab = new AccessBus(c1, c1.getCompilationEnclosure().getPipelineAccess());
 		final PipelineLogic           pl = new PipelineLogic(ab);
 		final OutputFileFactoryParams p  = new OutputFileFactoryParams(mod, new StdErrSink(), ElLog.Verbosity.SILENT, pl, null);  // TODO do we want silent?
 		final GenerateC               c  = new GenerateC(p, null);

@@ -4,6 +4,7 @@ import org.jdeferred2.DoneCallback;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.i.CompilationEnclosure;
+import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
@@ -16,22 +17,19 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class AccessBus {
-	public final  GenerateResult                                  gr                    = new GenerateResult();
-	final         DeferredObject<GenerateResult, Void, Void>      generateResultPromise = new DeferredObject<>();
-	private final Compilation                                     _c;
-	private final DeferredObject<PipelineLogic, Void, Void>  pipeLineLogicPromise = new DeferredObject<>();
-	private final DeferredObject<List<EvaNode>, Void, Void>  lgcPromise           = new DeferredObject<>();
-	private final DeferredObject<EIT_ModuleList, Void, Void> moduleListPromise    = new DeferredObject<>();
-	private final Map<String, ProcessRecord.PipelinePlugin>       pipelinePlugins       = new HashMap<>();
-	private       PipelineLogic                                   ____pl;
+	public final  GenerateResult                             gr                    = new GenerateResult();
+	final         DeferredObject<GenerateResult, Void, Void> generateResultPromise = new DeferredObject<>();
+	private final Compilation                                _c;
+	private final DeferredObject<List<EvaNode>, Void, Void>  lgcPromise            = new DeferredObject<>();
+	private final DeferredObject<EIT_ModuleList, Void, Void> moduleListPromise     = new DeferredObject<>();
+	private final Map<String, ProcessRecord.PipelinePlugin>  pipelinePlugins       = new HashMap<>();
 
-
-	public AccessBus(final Compilation aC) {
+	public AccessBus(final Compilation aC, final IPipelineAccess aPa0) {
 		_c = aC;
 	}
 
 	public void subscribePipelineLogic(final DoneCallback<PipelineLogic> aPipelineLogicDoneCallback) {
-		pipeLineLogicPromise.then(aPipelineLogicDoneCallback);
+		_c.getCompilationEnclosure().waitPipelineLogic(aPipelineLogicDoneCallback::onDone);
 	}
 
 	@Deprecated
@@ -61,8 +59,6 @@ public class AccessBus {
 		final CompilationEnclosure ce            = _c.getCompilationEnclosure();
 
 		ce.providePipelineLogic(pipelineLogic);
-
-		____pl = pipelineLogic;
 	}
 
 	public void subscribe_lgc(@NotNull final AB_LgcListener aLgcListener) {

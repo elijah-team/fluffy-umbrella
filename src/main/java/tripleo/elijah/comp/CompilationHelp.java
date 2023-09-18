@@ -11,6 +11,7 @@ package tripleo.elijah.comp;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.vendor.mal.stepA_mal;
 import tripleo.vendor.mal.types;
@@ -24,14 +25,15 @@ interface RuntimeProcess {
 }
 
 class StageToRuntime {
-	@Contract("_, _, _ -> new")
+	@Contract("_, _, _, _ -> new")
 	@NotNull
 	public static RuntimeProcesses get(final @NotNull Stages stage,
 	                                   final @NotNull ICompilationAccess ca,
-	                                   final @NotNull ProcessRecord aPr) {
+	                                   final @NotNull ProcessRecord aPr,
+	                                   final CompilationEnclosure aCe) {
 		final RuntimeProcesses r = new RuntimeProcesses(ca, aPr);
 
-		r.add(stage.getProcess(ca, aPr));
+		r.add(stage.getProcess(ca, aPr, aCe));
 
 		return r;
 	}
@@ -133,14 +135,14 @@ class OStageProcess implements RuntimeProcess {
 	private final ProcessRecord     pr;
 	private final ICompilationAccess ca;
 
-	OStageProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
+	OStageProcess(final ICompilationAccess aCa, final ProcessRecord aPr, final CompilationEnclosure aCe) {
 		ca = aCa;
 		pr = aPr;
 
 		env = new stepA_mal.MalEnv2(null); // TODO what does null mean?
 
 		Preconditions.checkNotNull(pr.ab);
-		env.set(new types.MalSymbol("add-pipeline"), new _AddPipeline__MAL(pr.ab));
+		env.set(new types.MalSymbol("add-pipeline"), new _AddPipeline__MAL(pr.ab, aCe));
 	}
 
 	@Override
@@ -189,9 +191,11 @@ class OStageProcess implements RuntimeProcess {
 
 	private static class _AddPipeline__MAL extends types.MalFunction {
 		private final AccessBus ab;
+		private final CompilationEnclosure ce;
 
-		public _AddPipeline__MAL(final AccessBus aAb) {
+		public _AddPipeline__MAL(final AccessBus aAb, final CompilationEnclosure aCe) {
 			ab = aAb;
+			ce = aCe;
 		}
 
 		public types.MalVal apply(final types.MalList args) {
@@ -207,7 +211,7 @@ class OStageProcess implements RuntimeProcess {
 					return types.False;
 
 				// 2. produce effect
-				ab.add(pipelinePlugin::instance);
+				ab.add(ab0 -> pipelinePlugin.instance(ce));
 				return types.True;
 			} else {
 				// TODO exception? errSink??

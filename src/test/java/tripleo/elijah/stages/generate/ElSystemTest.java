@@ -27,7 +27,7 @@ public class ElSystemTest {
 	@Before
 	public void setUp() throws Exception {
 		c  = new CompilationImpl(new StdErrSink(), new IO());
-		ab = new AccessBus(c);
+		ab = new AccessBus(c, c.getCompilationEnclosure().getPipelineAccess());
 
 		final String f = "test/basic1/backlink3";
 

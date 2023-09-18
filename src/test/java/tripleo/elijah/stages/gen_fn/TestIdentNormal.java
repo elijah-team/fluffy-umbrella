@@ -13,10 +13,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.StdErrSink;
-import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeducePhase;
@@ -50,7 +47,7 @@ public class TestIdentNormal {
 		final Context     ctx2 = mock(Context.class);
 
 		final ElLog.Verbosity verbosity1    = Compilation.gitlabCIVerbosity();
-		final AccessBus       ab            = new AccessBus(comp);
+		final AccessBus       ab            = new AccessBus(comp, comp.getCompilationEnclosure().getPipelineAccess());
 		final PipelineLogic   pl            = new PipelineLogic(ab);
 		final GeneratePhase   generatePhase = pl.generatePhase;
 //		GenerateFunctions generateFunctions = new GenerateFunctions(generatePhase, mod, pl);
@@ -109,11 +106,9 @@ public class TestIdentNormal {
 		final Compilation comp = b.comp;
 		final OS_Module   mod  = b.defaultMod();
 
-//		FunctionDef fd = mock(FunctionDef.class);
 		final Context ctx2 = mock(Context.class);
 
-		final ElLog.Verbosity verbosity1    = new CompilationImpl(new StdErrSink(), new IO()).gitlabCIVerbosity();
-		final AccessBus       ab            = new AccessBus(comp);
+		final AccessBus       ab            = new AccessBus(comp, comp.getCompilationEnclosure().getPipelineAccess());
 		final PipelineLogic   pl            = new PipelineLogic(ab);
 		final GeneratePhase   generatePhase = pl.generatePhase;
 		final DeducePhase     phase         = pl.dp;

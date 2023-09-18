@@ -28,7 +28,7 @@ public class SX_NodeTest extends TestCase {
 		final StdErrSink      errSink       = new StdErrSink();
 		final IO              io            = new IO();
 		final CompilationImpl comp          = new CompilationImpl(errSink, io);
-		final AccessBus       ab            = new AccessBus(comp);
+		final AccessBus       ab            = new AccessBus(comp, comp.getCompilationEnclosure().getPipelineAccess());
 		final PipelineLogic   pipelineLogic = new PipelineLogic(ab);
 		final OS_Module mod = comp.moduleBuilder()
 		                          .withFileName("filename.elijah")

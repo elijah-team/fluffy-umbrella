@@ -9,12 +9,13 @@ import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.PipelineMember;
 import tripleo.elijah.comp.WriteMesonPipeline;
 import tripleo.elijah.comp.WritePipeline;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 
 public class ProcessRecord {
 	public final AccessBus ab;
 
 	public ProcessRecord(final @NotNull ICompilationAccess ca0) {
-		ab = new AccessBus(ca0.getCompilation());
+		ab = new AccessBus(ca0.getCompilation(), ca0.getCompilation().getCompilationEnclosure().getPipelineAccess());
 
 		ab.addPipelinePlugin(new GeneratePipelinePlugin());
 		ab.addPipelinePlugin(new DeducePipelinePlugin());
@@ -33,7 +34,7 @@ public class ProcessRecord {
 	public interface PipelinePlugin {
 		String name();
 
-		PipelineMember instance(final @NotNull AccessBus ab0);
+		PipelineMember instance(final CompilationEnclosure ce);
 	}
 
 	class GeneratePipelinePlugin implements PipelinePlugin {
@@ -44,8 +45,8 @@ public class ProcessRecord {
 		}
 
 		@Override
-		public PipelineMember instance(final @NotNull AccessBus ab0) {
-			return new GeneratePipeline(ab0);
+		public PipelineMember instance(final CompilationEnclosure ce) {
+			return new GeneratePipeline(ce);
 		}
 	}
 
@@ -57,8 +58,8 @@ public class ProcessRecord {
 		}
 
 		@Override
-		public PipelineMember instance(final @NotNull AccessBus ab0) {
-			return new DeducePipeline(ab0);
+		public PipelineMember instance(final CompilationEnclosure ce) {
+			return new DeducePipeline(ce);
 		}
 	}
 
@@ -69,8 +70,8 @@ public class ProcessRecord {
 		}
 
 		@Override
-		public PipelineMember instance(final @NotNull AccessBus ab0) {
-			return new WritePipeline(ab0);
+		public PipelineMember instance(final CompilationEnclosure ce) {
+			return new WritePipeline(ce);
 		}
 	}
 
@@ -81,8 +82,8 @@ public class ProcessRecord {
 		}
 
 		@Override
-		public PipelineMember instance(final @NotNull AccessBus ab0) {
-			return new WriteMesonPipeline(ab0);
+		public PipelineMember instance(final CompilationEnclosure ce) {
+			return new WriteMesonPipeline(ce);
 		}
 	}
 

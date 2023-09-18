@@ -10,6 +10,7 @@
 package tripleo.elijah.comp;
 
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.entrypoints.EntryPoint;
 import tripleo.elijah.entrypoints.EntryPointList;
 import tripleo.elijah.lang.OS_Module;
@@ -31,14 +32,19 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("SimplifyStreamApiCallChains")
 public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListListener {
-	private final AccessBus       __ab;
-	private       PipelineLogic   pipelineLogic;
-	private       List<OS_Module> ms;
+	private       AccessBus            __ab;
+	private       PipelineLogic        pipelineLogic;
+	private       List<OS_Module>      ms;
+	private final CompilationEnclosure ce;
 
-	public DeducePipeline(final @NotNull AccessBus ab) {
-		__ab = ab;
+	public DeducePipeline(final CompilationEnclosure aCe) {
+		ce = aCe;
 
-		ab.subscribePipelineLogic(result -> pipelineLogic = result);
+		ce.getAccessBusPromise().then(wab -> {
+			__ab = wab;
+		});
+
+		ce.waitPipelineLogic(result -> pipelineLogic = result);
 	}
 
 	@Override
@@ -51,7 +57,7 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 
 		final Function<OS_Module, PL_Run2> pl_run2_er = mod -> {
 			final List<EntryPoint> entryPoints = mod.entryPoints._getMods();
-			final PL_Run2          pl_run2     = new PL_Run2(mod, entryPoints, pipelineLogic::getGenerateFunctions, pipelineLogic);
+			final PL_Run2          pl_run2     = new PL_Run2(mod, entryPoints, pipelineLogic::getGenerateFunctions, pipelineLogic, ce);
 			return pl_run2;
 		};
 
@@ -91,15 +97,18 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 		private final List<EntryPoint>                       entryPoints;
 		private final Function<OS_Module, GenerateFunctions> mapper;
 		private final PipelineLogic                          pipelineLogic;
+		private final CompilationEnclosure                   ce;
 
 		public PL_Run2(final OS_Module mod,
 		               final List<EntryPoint> entryPoints,
 		               final Function<OS_Module, GenerateFunctions> mapper,
-		               final PipelineLogic pipelineLogic) {
+		               final PipelineLogic pipelineLogic,
+		               final CompilationEnclosure aCe) {
 			this.mod           = mod;
 			this.entryPoints   = entryPoints;
 			this.mapper        = mapper;
 			this.pipelineLogic = pipelineLogic;
+			ce                 = aCe;
 		}
 
 		protected DeducePhase.@NotNull GeneratedClasses run2() {
@@ -122,7 +131,7 @@ public class DeducePipeline implements PipelineMember, AccessBus.AB_ModuleListLi
 			resolved_nodes.initial_feed(mod, lgc, codeRegistrar);
 			resolved_nodes.code_resolved();
 
-			var wm = new DefaultWorldModule(mod, null);
+			var wm = new DefaultWorldModule(mod, this.ce);
 			deducePhase.deduceModule(wm/*, lgc, true, pipelineLogic.getVerbosity()*/);
 
 //			PipelineLogic.resolveCheck(lgc);

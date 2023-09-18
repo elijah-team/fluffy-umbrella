@@ -45,6 +45,7 @@ import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry
 import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.stages.post_deduce.DefaultCodeRegistrar;
 import tripleo.elijah.stateful.State;
 import tripleo.elijah.stateful._RegistrationTarget;
 import tripleo.elijah.testing.comp.IFunctionMapHook;
