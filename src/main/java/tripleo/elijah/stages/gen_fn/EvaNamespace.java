@@ -25,6 +25,7 @@ import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.world.impl.DefaultLivingNamespace;
 
 /**
  * Created 12/22/20 5:39 PM
@@ -32,6 +33,8 @@ import tripleo.elijah.util.NotImplementedException;
 public class EvaNamespace extends EvaContainerNC implements GNCoded {
 	private final OS_Module          module;
 	private final NamespaceStatement namespaceStatement;
+	private DefaultLivingNamespace _living;
+
 	public EvaNamespace(final NamespaceStatement namespace1, final OS_Module module) {
 		this.namespaceStatement = namespace1;
 		this.module             = module;
@@ -103,6 +106,11 @@ public class EvaNamespace extends EvaContainerNC implements GNCoded {
 	public void register(final ICodeRegistrar aCr) {
 		throw new NotImplementedException();
 
+	}
+
+	public void setLiving(final DefaultLivingNamespace aLiving) {
+
+		_living = aLiving;
 	}
 }
 

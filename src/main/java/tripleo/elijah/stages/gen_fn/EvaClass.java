@@ -335,6 +335,10 @@ public class EvaClass extends EvaContainerNC implements GNCoded {
 		}
 		return Helpers.String_join(", ", ls);
 	}
+
+	public LivingClass getLiving() {
+		return _living;
+	}
 }
 
 //

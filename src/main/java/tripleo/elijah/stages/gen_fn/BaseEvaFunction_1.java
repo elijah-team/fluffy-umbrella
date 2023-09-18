@@ -562,6 +562,11 @@ public abstract class BaseEvaFunction_1 extends AbstractDependencyTracker implem
 	}
 
 	@Override
+	public void setLiving(final LivingFunction aLivingFunction) {
+		_living = aLivingFunction;
+	}
+
+	@Override
 	public List<IdentTableEntry> idte_list() {
 		return idte_list;
 	}

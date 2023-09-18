@@ -11,12 +11,12 @@ public class DefaultLivingPackage implements LivingPackage {
 	}
 
 	@Override
-	public OS_Package getElement() {
-		return _element;
+	public int getCode() {
+		return 0;
 	}
 
 	@Override
-	public int getCode() {
-		return 0;
+	public OS_Package getElement() {
+		return _element;
 	}
 }

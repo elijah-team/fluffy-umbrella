@@ -42,6 +42,7 @@ import tripleo.elijah.stages.instructions.ProcIA;
 import tripleo.elijah.stages.instructions.VariableTableType;
 import tripleo.elijah.util.Eventual;
 import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.world.i.LivingFunction;
 import tripleo.elijah.world.impl.DefaultLivingFunction;
 import tripleo.util.range.Range;
 
@@ -275,4 +276,6 @@ public interface BaseEvaFunction extends DependencyTracker, EvaNode, DeduceTypes
 	Reactive reactive();
 
 	Map<OS_Element, DeduceElement> elements();
+
+	void setLiving(LivingFunction aLivingFunction);
 }

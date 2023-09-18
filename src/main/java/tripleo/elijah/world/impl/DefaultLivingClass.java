@@ -1,24 +1,41 @@
 package tripleo.elijah.world.impl;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.stages.garish.GarishClass;
 import tripleo.elijah.stages.gen_fn.EvaClass;
-import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.world.i.LivingClass;
 
 public class DefaultLivingClass implements LivingClass {
-	private final ClassStatement _element;
-	private final EvaClass _gc;
+	private final           ClassStatement _element;
+	private final @Nullable EvaClass       _gc;
+	private @Nullable       GarishClass    _garish;
 
+	private int _code;
+
+	@Contract(pure = true)
 	public DefaultLivingClass(final ClassStatement aElement) {
 		_element = aElement;
 		_gc      = null;
+		_garish  = null;
 	}
 
 	public DefaultLivingClass(final @NotNull EvaClass aClass) {
 		_element = aClass.getKlass();
 		_gc      = aClass;
+		_garish  = null;
+	}
+
+	@Override
+	public EvaClass evaNode() {
+		return _gc;
+	}
+
+	@Override
+	public int getCode() {
+		return _code;
 	}
 
 	@Override
@@ -27,12 +44,16 @@ public class DefaultLivingClass implements LivingClass {
 	}
 
 	@Override
-	public int getCode() {
-		return _gc.getCode();
+	@Contract(mutates = "this")
+	public @NotNull GarishClass getGarish() {
+		if (_garish == null) {
+			_garish = new GarishClass(/*this*/);
+		}
+
+		return _garish;
 	}
 
-	@Override
-	public GarishClass getGarish() {
-		throw new NotImplementedException();
+	@Override public void setCode(final int aCode) {
+		_code = aCode;
 	}
 }
