@@ -76,7 +76,7 @@ public class Boilerplate {
 	public DeduceTypes2 simpleDeduceModule2(final OS_Module mod, final @NotNull String aS, final ElLog.Verbosity aVerbosity) {
 		final Compilation c = mod.getCompilation();
 
-		mod.prelude = c.findPrelude(aS).success();
+		mod.setPrelude(c.findPrelude(aS).success());
 
 		return simpleDeduceModule(aVerbosity);
 	}

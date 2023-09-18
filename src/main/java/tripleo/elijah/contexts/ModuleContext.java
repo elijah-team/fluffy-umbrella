@@ -82,11 +82,11 @@ public class ModuleContext extends Context {
 			}
 		}*/
 //		tripleo.elijah.util.Stupidity.println_err2("2003 "+carrier.getItems());
-		if (carrier.prelude != null && alreadySearched.contains(carrier.prelude.getContext()))
+		if (carrier.prelude() != null && alreadySearched.contains(carrier.prelude().getContext()))
 			return Result;
-		if (carrier.prelude == null || one)
+		if (carrier.prelude() == null || one)
 			return Result;
-		return carrier.prelude.getContext().lookup(name, level + 1, Result, alreadySearched, false);
+		return carrier.prelude().getContext().lookup(name, level + 1, Result, alreadySearched, false);
 	}
 
 	@Override

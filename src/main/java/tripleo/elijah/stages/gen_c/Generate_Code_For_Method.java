@@ -442,7 +442,7 @@ public class Generate_Code_For_Method {
 		BaseEvaFunction                           gf1 = null;
 		boolean                                   qqq = false;
 		{
-			List<DR_Item> x = gf.getGf().drs();
+			List<? extends DR_Item> x = gf.getGf().drs();
 
 			if (!x.isEmpty()) {
 				if (x.get(0) instanceof final DR_Ident ident) {

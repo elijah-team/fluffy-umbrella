@@ -458,7 +458,8 @@ public class Resolve_Ident_IA {
 				idte.getResolveExpectation().satisfy(normal_path);
 
 			el   = idte.getResolvedElement();
-			ectx = el.getContext();
+			if (el != null)
+				ectx = el.getContext();
 		}
 		return RIA_STATE.NEXT;
 	}

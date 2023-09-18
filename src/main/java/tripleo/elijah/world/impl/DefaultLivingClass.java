@@ -47,7 +47,7 @@ public class DefaultLivingClass implements LivingClass {
 	@Contract(mutates = "this")
 	public @NotNull GarishClass getGarish() {
 		if (_garish == null) {
-			_garish = new GarishClass(/*this*/);
+			_garish = new GarishClass(this);
 		}
 
 		return _garish;

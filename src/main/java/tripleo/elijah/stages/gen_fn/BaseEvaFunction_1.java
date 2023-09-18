@@ -22,13 +22,14 @@ import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang.ProcedureCallExpression;
 import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.stages.deduce.DT_Resolvable;
+import tripleo.elijah.stages.deduce.DT_Resolvabley;
 import tripleo.elijah.stages.deduce.DeduceElement;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FoundElement;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.deduce.OnGenClass;
 import tripleo.elijah.stages.deduce.nextgen.DR_Ident;
-import tripleo.elijah.stages.deduce.nextgen.DR_Item;
 import tripleo.elijah.stages.deduce.nextgen.DR_Variable;
 import tripleo.elijah.stages.gen_generic.Dependency;
 import tripleo.elijah.stages.instructions.ConstTableIA;
@@ -52,6 +53,7 @@ import tripleo.util.range.Range;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -93,6 +95,7 @@ public abstract class BaseEvaFunction_1 extends AbstractDependencyTracker implem
 	// region INSTRUCTIONS
 	//
 	private EvaNode genClass;
+	private List<DR_Ident> drs = new ArrayList<>();
 
 	/**
 	 * Returns a string that represents the path encoded by ia2.
@@ -550,15 +553,76 @@ public abstract class BaseEvaFunction_1 extends AbstractDependencyTracker implem
 		vte_list.add(aVte);
 	}
 
-	@Override
-	public IdentIaResolveable _getIdentIAResolvable(final IdentIA aIdentIA) {
-		throw new NotImplementedException();
+	public @NotNull DT_Resolvabley _getIdentIAResolvable(final @NotNull IdentIA aIdentIA) {
+		var x = _getIdentIAResolvableList(aIdentIA);
+
+		return new DT_Resolvabley(x);
 	}
 
-	@Override
-	public Map<OS_Element, DeduceElement> elements() {
-		throw new NotImplementedException();
+	public static @NotNull List<DT_Resolvable> _getIdentIAResolvableList(@NotNull InstructionArgument oo) {
+		LinkedList<DT_Resolvable> R = new LinkedList<>();
+		while (oo != null) {
+			if (oo instanceof IntegerIA integerIA) {
+				var vte = integerIA.getEntry();
 
+				if (vte._vs == null) {
+					final OS_Element[] el = {null};
+					vte._p_elementPromise.then(el1 -> el[0] = el1);
+
+					assert el[0] != null;
+
+					R.addFirst(DT_Resolvable.from(oo, el[0], null));
+				} else {
+					R.addFirst(DT_Resolvable.from(oo, vte._vs, null));
+				}
+				oo = null;
+			} else if (oo instanceof final IdentIA identIA) {
+				final IdentTableEntry ite1 = identIA.getEntry();
+
+				final OS_Element[] el = {null};
+				ite1._p_resolvedElementPromise.then(el1 -> el[0] = el1);
+
+				//assert el[0] != null;
+
+				FunctionInvocation cfi = null;
+				if (ite1._callable_pte() != null) {
+					var cpte = ite1._callable_pte();
+					if (cpte.getFunctionInvocation() != null) {
+						cfi = cpte.getFunctionInvocation();
+					}
+				}
+
+				//assert cfi != null;
+				// ^^ fails for folders.forEach
+
+				R.addFirst(DT_Resolvable.from(oo, el[0], cfi));
+				oo = ite1.getBacklink();
+			} else if (oo instanceof ProcIA procIA) {
+				var pte = procIA.getEntry();
+				assert pte != null;
+
+				final OS_Element[] el = {null};
+				pte._p_elementPromise.then(el1 -> el[0] = el1);
+
+				assert el[0] != null;
+
+				FunctionInvocation cfi = null;
+				if (pte.getFunctionInvocation() != null) {
+					cfi = pte.getFunctionInvocation();
+				}
+
+				assert cfi != null;
+
+				R.addFirst(DT_Resolvable.from(oo, el[0], cfi));
+				oo = null;
+			} else
+				throw new IllegalStateException("Invalid InstructionArgument");
+		}
+		return R;
+	}
+
+	public Map<OS_Element, DeduceElement> elements() {
+		return elements;
 	}
 
 	@Override
@@ -583,27 +647,30 @@ public abstract class BaseEvaFunction_1 extends AbstractDependencyTracker implem
 
 
 
+	private final Eventual<GenType> _p_assignGenType  = new Eventual<>();
 
 
 	@Override
 	public Eventual<GenType> typePromise() {
-		throw new NotImplementedException();
-
+		return _p_assignGenType;
 	}
 
-	@Override
-	public DR_Ident getIdent(final IdentTableEntry aIdentTableEntry) {
-		throw new NotImplementedException();
+	public @NotNull DR_Ident getIdent(final IdentExpression aIdent, final VariableTableEntry aVteBl1) {
+		final DR_Ident e = DR_Ident.create(aIdent, aVteBl1, this);
+		drs.add(e);
+		return e;
 	}
 
-	@Override
-	public DR_Ident getIdent(final IdentExpression aIdent, final VariableTableEntry aVteBl1) {
-		throw new NotImplementedException();
+	public @NotNull DR_Ident getIdent(final @NotNull IdentTableEntry aIdentTableEntry) {
+		final DR_Ident e = DR_Ident.create(aIdentTableEntry, this);
+		drs.add(e);
+		return e;
 	}
 
-	@Override
-	public DR_Ident getIdent(final VariableTableEntry aVteBl1) {
-		throw new NotImplementedException();
+	public @NotNull DR_Ident getIdent(final VariableTableEntry aVteBl1) {
+		final DR_Ident e = DR_Ident.create(aVteBl1, this);
+		drs.add(e);
+		return e;
 	}
 
 	@Override
@@ -612,8 +679,8 @@ public abstract class BaseEvaFunction_1 extends AbstractDependencyTracker implem
 	}
 
 	@Override
-	public List<DR_Item> drs() {
-		throw new NotImplementedException();
+	public List<DR_Ident> drs() {
+		return drs;
 	}
 
 }

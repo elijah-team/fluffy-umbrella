@@ -80,7 +80,7 @@ public enum ResolveType {
 		case SystemInteger: {
 			@NotNull String typeName = type.getBType().name();
 			assert typeName.equals("SystemInteger");
-			OS_Module prelude = module.prelude();
+			OS_Module prelude = module.getPrelude();
 			if (prelude == null) // README Assume `module' IS prelude
 				prelude = module;
 			final LookupResultList lrl  = prelude.getContext().lookup(typeName);

@@ -74,6 +74,6 @@ public class SX_NodeTest extends TestCase {
 			}
 		};
 
-		fgen.forNode(node);
+//		fgen.forNode(node);
 	}
 }

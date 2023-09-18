@@ -7,6 +7,7 @@ import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.deduce.NULL_DeduceTypes2;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_fn.EvaNamespace;
@@ -47,7 +48,7 @@ public interface EntryPointProcessor {
 		public void process() {
 			final @NotNull ClassStatement cs = mcep.getKlass();
 			final @NotNull FunctionDef    f  = mcep.getMainFunction();
-			final ClassInvocation         ci = deducePhase.registerClassInvocation(cs, null, ()->null);
+			final ClassInvocation         ci = deducePhase.registerClassInvocation(cs, null, new NULL_DeduceTypes2());
 
 			assert ci != null; // TODO use eventual with registrar this
 

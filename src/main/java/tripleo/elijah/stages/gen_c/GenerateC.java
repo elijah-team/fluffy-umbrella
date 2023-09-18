@@ -15,7 +15,6 @@ import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_FuncExprType;
 import tripleo.elijah.lang2.BuiltInTypes;
-import tripleo.elijah.nextgen.model.SM_Node;
 import tripleo.elijah.nextgen.reactive.ReactiveDimension;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
@@ -87,7 +86,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles, ReactiveDimensio
 	public                 GenerateResultSink              resultSink;
 
 	public GenerateC(final @NotNull OutputFileFactoryParams aParams,
-					 final @NotNull GenerateResultEnv aFileGen) {
+	                 final @NotNull GenerateResultEnv aFileGen) {
 		_fileGen = aFileGen;
 
 		errSink = aParams.getErrSink();
@@ -99,9 +98,9 @@ public class GenerateC implements CodeGenerator, GenerateFiles, ReactiveDimensio
 
 		ce = aParams.getCompilationEnclosure();
 		ce.getAccessBusPromise()
-				.then(ab -> {
-					ab.subscribePipelineLogic(pl -> pl.addLog(LOG));
-				});
+		  .then(ab -> {
+			  ab.subscribePipelineLogic(pl -> pl.addLog(LOG));
+		  });
 
 		ce.addReactiveDimension(this);
 
@@ -161,9 +160,11 @@ public class GenerateC implements CodeGenerator, GenerateFiles, ReactiveDimensio
 					// which will have a container which will be either be a function,
 					// statement (semantic block, loop, match, etc) or a EvaContainerNC
 					int     y  = 2;
-					EvaNode er = identTableEntry.getExternalRef(); // FIXME move to onExternalRef
+					EvaNode er = identTableEntry.externalRef(); // FIXME move to onExternalRef
 					if (er instanceof final @NotNull EvaContainerNC nc) {
-						if (!(nc instanceof EvaNamespace ns)) { throw new AssertionError(); } else {
+						if (!(nc instanceof EvaNamespace ns)) {
+							throw new AssertionError();
+						} else {
 							//if (ns.isInstance()) {}
 							state = 1;
 							code  = nc.getCode();
@@ -224,7 +225,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles, ReactiveDimensio
 		return ce;
 	}
 
-//	@Override
+	//	@Override
 	public ElLog elLog() {
 		return this.LOG;
 	}
@@ -430,40 +431,18 @@ public class GenerateC implements CodeGenerator, GenerateFiles, ReactiveDimensio
 	}
 
 	@Override
-	public GenerateResult generateCode(final @NotNull Collection<EvaNode> aNodeCollection, final @NotNull WorkManager aWorkManager) {
-		throw new NotImplementedException();
-
-	}
-
-	@Override
-	public void forNode(final SM_Node aNode) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public GenerateResult resultsFromNodes(final List<EvaNode> aNodes, final WorkManager aWm) {
-		return resultsFromNodes(aNodes, aWm, null, null);
-	}
-
-	//	@Override
 	public void generate_function(@NotNull EvaFunction aEvaFunction, GenerateResult gr, @NotNull WorkList wl, final GenerateResultSink aResultSink) {
 		generateCodeForMethod(_fileGen, aEvaFunction);
 		_post_generate_function(aEvaFunction, wl, _fileGen);
 	}
 
-//	@Override
+	@Override
 	public void generate_constructor(@NotNull EvaConstructor aEvaConstructor, GenerateResult gr, @NotNull WorkList wl, final GenerateResultSink aResultSink, final WorkManager aWorkManager, final @NotNull GenerateResultEnv aFileGen) {
 		generateCodeForConstructor(aEvaConstructor, gr, wl, aFileGen);
 		postGenerateCodeForConstructor(aEvaConstructor, wl, aFileGen);
 	}
 
 	@Override
-	public void finishUp(final Old_GenerateResult aGr, final WorkManager aWm, final WorkList aWl) {
-		throw new NotImplementedException();
-
-	}
-
-//	@Override
 	public void finishUp(final GenerateResult aGenerateResult, final WorkManager wm, final WorkList aWorkList) {
 		assert _fileGen != null;
 
@@ -473,13 +452,13 @@ public class GenerateC implements CodeGenerator, GenerateFiles, ReactiveDimensio
 		}
 	}
 
-//	@Override
+	@Override
 	public void generate_namespace(final @NotNull EvaNamespace x, final GenerateResult gr, final @NotNull GenerateResultSink aResultSink) {
 		final LivingNamespace ln = aResultSink.getLivingNamespaceForEva(x); // TODO could also add _living property
 		ln.garish(this, gr, aResultSink);
 	}
 
-//	@Override
+	@Override
 	public GenerateResultEnv getFileGen() {
 		return _fileGen;
 	}
@@ -511,7 +490,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles, ReactiveDimensio
 		return gr2;
 	}
 
-//	@Override
+	//	@Override
 	public @NotNull GenerateResult generateCode(final @NotNull Collection<EvaNode> lgn, final @NotNull GenerateResultEnv aFileGen) {
 		GenerateResult gr = new Old_GenerateResult();
 		WorkList       wl = new WorkList();
@@ -536,12 +515,13 @@ public class GenerateC implements CodeGenerator, GenerateFiles, ReactiveDimensio
 		return gr;
 	}
 
-		public void generateCodeForMethod(final GenerateResultEnv aFileGen, final BaseEvaFunction aEvaFunction) {
+	public void generateCodeForMethod(final GenerateResultEnv aFileGen, final BaseEvaFunction aEvaFunction) {
 		final WhyNotGarish_Function cf = this.a_lookup(aEvaFunction);
 
 		cf.resolveFileGenPromise(aFileGen);
 	}
-private void _post_generate_function(final @NotNull EvaFunction aEvaFunction, final @NotNull WorkList wl, final @NotNull GenerateResultEnv fileGen) {
+
+	private void _post_generate_function(final @NotNull EvaFunction aEvaFunction, final @NotNull WorkList wl, final @NotNull GenerateResultEnv fileGen) {
 		for (IdentTableEntry identTableEntry : aEvaFunction.idte_list) {
 			if (identTableEntry.isResolved()) {
 				EvaNode x = identTableEntry.resolvedType();
@@ -610,7 +590,7 @@ private void _post_generate_function(final @NotNull EvaFunction aEvaFunction, fi
 		return ncf;
 	}
 
-//	@Override
+	//	@Override
 	public void generate_class(@NotNull GenerateResultEnv aFileGen, EvaClass x) {
 		var gr          = aFileGen.gr();
 		var aResultSink = aFileGen.resultSink();
@@ -623,7 +603,7 @@ private void _post_generate_function(final @NotNull EvaFunction aEvaFunction, fi
 	private void generateIdent(@NotNull IdentTableEntry identTableEntry) {
 		assert identTableEntry.isResolved();
 
-		final @NotNull EvaNode   x           = identTableEntry.resolvedType();
+		final @NotNull EvaNode x = identTableEntry.resolvedType();
 
 		final GenerateResult     gr          = _fileGen.gr();
 		final GenerateResultSink resultSink1 = _fileGen.resultSink();
@@ -811,7 +791,7 @@ private void _post_generate_function(final @NotNull EvaFunction aEvaFunction, fi
 		}
 	}
 
-/*static*/  class GetAssignmentValue {
+	/*static*/  class GetAssignmentValue {
 
 		public String ConstTableIA(@NotNull ConstTableIA constTableIA, @NotNull BaseEvaFunction gf) {
 			final ConstantTableEntry cte = gf.getConstTableEntry(constTableIA.getIndex());
@@ -834,8 +814,8 @@ private void _post_generate_function(final @NotNull EvaFunction aEvaFunction, fi
 
 		String const_to_string(final IExpression expression) {
 			final GCX_ConstantString cs = new GCX_ConstantString(GenerateC.this,
-																 GetAssignmentValue.this,
-																 expression);
+			  GetAssignmentValue.this,
+			  expression);
 
 			return cs.getText();
 		}
@@ -883,7 +863,7 @@ private void _post_generate_function(final @NotNull EvaFunction aEvaFunction, fi
 					final IdentIA ia2 = (IdentIA) pte.expression_num;
 					reference.getIdentIAPath(ia2, Generate_Code_For_Method.AOG.GET, null);
 					final GetAssignmentValueArgsStatement ava = getAssignmentValueArgs(inst, gf, LOG);
-					final List<String>                    sll                 = ava.stringList();
+					final List<String>                    sll = ava.stringList();
 					reference.args(sll);
 					String path = reference.build();
 					sb.append(Emit.emit("/*807*/") + path);
@@ -928,7 +908,7 @@ private void _post_generate_function(final @NotNull EvaFunction aEvaFunction, fi
 		GetAssignmentValueArgsStatement getAssignmentValueArgs(final @NotNull Instruction inst, final @NotNull BaseEvaFunction gf, @NotNull ElLog LOG) {
 			var gavas = new GetAssignmentValueArgsStatement(inst);
 
-			final int          args_size = inst.getArgsSize();
+			final int args_size = inst.getArgsSize();
 
 			for (int i = 1; i < args_size; i++) {
 				final InstructionArgument ia = inst.getArg(i);

@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created 9/10/20 4:51 PM
@@ -48,9 +49,10 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	public                TypeTableEntry                             type;
 	public                int                                        tempNum               = -1;
 	public                ProcTableEntry                             constructable_pte;
-	public                GenType                                    genType               = new GenType();
+	public    GenType    genType               = new GenType();
+	public    OS_Element _vs;
 	// endregion constructable
-	@Nullable             GenType                                    _resolveTypeCalled    = null;
+	@Nullable GenType    _resolveTypeCalled    = null;
 
 	private EvaNode                           _resolvedType;
 	private DeduceElement3_VariableTableEntry _de3;
@@ -63,6 +65,8 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		this.type  = aTTE;
 		this.setResolvedElement(el);
 		setupResolve();
+
+		_vs = el;
 	}
 
 	public String getName() {
@@ -303,7 +307,9 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	}
 
 	public List<OS_Type> getPotentialTypes() {
-		return null;
+		return potentialTypes.values().stream()
+		  .map(TypeTableEntry::getAttached)
+		  .collect(Collectors.toList());
 	}
 
 	public DeduceLocalVariable getDlv() {
@@ -311,16 +317,19 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	}
 
 	public DeduceTypeResolve typeResolve() {
-		throw new NotImplementedException();
+		return typeResolve;
 	}
 
 	public DeduceElement3_VariableTableEntry getDeduceElement3(final DeduceTypes2 aDt2, final BaseEvaFunction aGf1) {
 		return getDeduceElement3();
 	}
 
-	public String getTempNum() {
-		throw new NotImplementedException();
+	public int getTempNum() {
+		return tempNum;
+	}
 
+	public void setTempNum(int num) {
+		tempNum = num;
 	}
 
 //	public Promise<GenType, Void, Void> typeResolvePromise() {

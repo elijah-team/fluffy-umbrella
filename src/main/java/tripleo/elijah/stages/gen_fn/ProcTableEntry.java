@@ -67,7 +67,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	public final  InstructionArgument                             expression_num;
 	public        DeduceProcCall                                  dpc                   = new DeduceProcCall(this);
 	private final DeferredObject<ProcTableEntry, Void, Void>      completeDeferred      = new DeferredObject<>();
-	private final DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<>();
+	private final DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations;
 	private final DeferredObject<GenType, ResolveError, Void>     typeDeferred          = new DeferredObject<>();
 	private       ClassInvocation                                 classInvocation;
 	private       FunctionInvocation                              functionInvocation;
@@ -80,25 +80,19 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		expression_num = aExpressionNum;
 		args           = aArgs;
 
-		addStatusListener(new StatusListener() {
-			@Override
-			public void onChange(final IElementHolder eh, final Status newStatus) {
-				if (newStatus == Status.KNOWN) {
-					setResolvedElement(eh.getElement());
-				}
+		addStatusListener((eh, newStatus) -> {
+			if (newStatus == Status.KNOWN) {
+				setResolvedElement(eh.getElement());
 			}
 		});
 
 		for (final TypeTableEntry tte : args) {
-			tte.addSetAttached(new TypeTableEntry.OnSetAttached() {
-				@Override
-				public void onSetAttached(final TypeTableEntry aTypeTableEntry) {
-					ProcTableEntry.this.onSetAttached();
-				}
-			});
+			tte.addSetAttached(aTypeTableEntry -> ProcTableEntry.this.onSetAttached());
 		}
 
 		setupResolve();
+		onFunctionInvocations = new DeferredObject2<>();
+		dpc.__mk();
 	}
 
 	public void onSetAttached() {
@@ -285,8 +279,32 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		return null;
 	}
 
-	public String getLoggingString(final DeduceTypes2 aDeduceTypes2) {
-		throw new NotImplementedException();
+	@NotNull
+	public String getLoggingString(final @Nullable DeduceTypes2 aDeduceTypes2) {
+		final String          pte_string;
+		@NotNull List<String> l = new ArrayList<String>();
+
+		for (@NotNull TypeTableEntry typeTableEntry : getArgs()) {
+			OS_Type attached = typeTableEntry.getAttached();
+
+			if (attached != null)
+				l.add(attached.toString());
+			else {
+				if (aDeduceTypes2 != null)
+					aDeduceTypes2.LOG.err("267 attached == null for " + typeTableEntry);
+
+				if (typeTableEntry.__debug_expression() != null)
+					l.add(String.format("<Unknown expression: %s>", typeTableEntry.__debug_expression()));
+				else
+					l.add("<Unknkown>");
+			}
+		}
+
+		final String sb2 = "[" +
+		  Helpers.String_join(", ", l) +
+		  "]";
+		pte_string = sb2;
+		return pte_string;
 	}
 
 	public void resolveType(final GenType aResult) {

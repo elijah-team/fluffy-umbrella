@@ -3,6 +3,7 @@ package tripleo.elijah.stages.gen_c;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.nextgen.outputstatement.EG_CompoundStatement;
 import tripleo.elijah.nextgen.outputstatement.EG_SingleStatement;
@@ -50,31 +51,34 @@ public class GCX_FunctionCall implements EG_Statement {
 
 		if (pte.expression_num() != null) {
 			// FIME 07/20 why are we using expression in exp_num
-			final IdentExpression               ptex = (IdentExpression) pte.__debug_expression();
-			final String                        text = ptex.getText();
-			final @Nullable InstructionArgument xx   = gf.vte_lookup(text);
+			final IExpression debugExpression = pte.__debug_expression();
 
-			assert xx != null;
+			if (debugExpression instanceof IdentExpression ptex) {
+				final String                        text = ptex.getText();
+				final @Nullable InstructionArgument xx   = gf.vte_lookup(text);
 
-			final String realTargetName = gc.getRealTargetName(gf, (IntegerIA) xx, Generate_Code_For_Method.AOG.GET);
+				assert xx != null;
 
-			sb.append(Emit.emit("/*424*/") + realTargetName);
-			sb.append('(');
-			final List<String> sl3 = gc.getArgumentStrings(gf, instruction);
-			sb.append(Helpers.String_join(", ", sl3));
-			sb.append(");");
+				final String realTargetName = gc.getRealTargetName(gf, (IntegerIA) xx, Generate_Code_For_Method.AOG.GET);
 
-			final EG_SingleStatement beg = new EG_SingleStatement("(", null);
-			final EG_SingleStatement mid = new EG_SingleStatement(Helpers.String_join(", ", sl3), null);
-			final EG_SingleStatement end = new EG_SingleStatement(");", null);
-			final boolean            ind = false;
-			final EX_Explanation     exp = EX_Explanation.withMessage("GCX_FunctionCall exp_num");
+				sb.append(Emit.emit("/*424*/") + realTargetName);
+				sb.append('(');
+				final List<String> sl3 = gc.getArgumentStrings(gf, instruction);
+				sb.append(Helpers.String_join(", ", sl3));
+				sb.append(");");
 
-			final EG_CompoundStatement est = new EG_CompoundStatement(beg, mid, end, ind, exp);
+				final EG_SingleStatement beg = new EG_SingleStatement("(", null);
+				final EG_SingleStatement mid = new EG_SingleStatement(Helpers.String_join(", ", sl3), null);
+				final EG_SingleStatement end = new EG_SingleStatement(");", null);
+				final boolean            ind = false;
+				final EX_Explanation     exp = EX_Explanation.withMessage("GCX_FunctionCall exp_num");
 
-			final String ss = est.getText();
+				final EG_CompoundStatement est = new EG_CompoundStatement(beg, mid, end, ind, exp);
 
-			System.out.println(ss);
+				final String ss = est.getText();
+
+				System.out.println(ss);
+			}
 		} else if (pte.expression() != null) {
 			final CReference reference = new CReference(gc.repo(), gc.ce);
 			final IdentIA    ia2       = (IdentIA) pte.expression_num;

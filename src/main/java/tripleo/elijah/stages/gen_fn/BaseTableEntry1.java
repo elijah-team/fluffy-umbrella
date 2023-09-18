@@ -10,7 +10,6 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.nextgen.reactive.Reactive;
-import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.util.NotImplementedException;
 
 /**
@@ -18,8 +17,6 @@ import tripleo.elijah.util.NotImplementedException;
  */
 public abstract class BaseTableEntry1 extends BaseTableEntry {
 
-	public BaseEvaFunction __gf;
-	protected DeduceTypes2 _deduceTypes2;
 	private ProcTableEntry callable_pte;
 
 	public @Nullable ProcTableEntry getCallablePTE() {
@@ -36,7 +33,10 @@ public abstract class BaseTableEntry1 extends BaseTableEntry {
 
 	public Reactive reactive() {
 		throw new NotImplementedException();
+	}
 
+	public ProcTableEntry _callable_pte() {
+		return callable_pte;
 	}
 }
 

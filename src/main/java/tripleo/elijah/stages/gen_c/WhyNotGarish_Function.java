@@ -4,6 +4,7 @@ import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.notation.GM_GenerateModule;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
@@ -26,7 +27,9 @@ public class WhyNotGarish_Function extends WhyNotGarish_BaseFunction implements 
 		gf        = aGf;
 		generateC = aGenerateC;
 
-		fileGenPromise.then(this::onFileGen);
+		var compilationEnclosure = aGenerateC._ce();
+		assert compilationEnclosure != null;
+		fileGenPromise.then(fileGen -> onFileGen(fileGen, compilationEnclosure));
 	}
 
 	public void resolveFileGenPromise(final GenerateResultEnv aFileGen) {
@@ -36,16 +39,17 @@ public class WhyNotGarish_Function extends WhyNotGarish_BaseFunction implements 
 			System.out.println("twice for " + generateC);
 	}
 
-	public void onFileGen(final @NotNull GenerateResultEnv aFileGen) {
+	public void onFileGen(final @NotNull GenerateResultEnv aFileGen, final CompilationEnclosure compilationEnclosure) {
 		if (gf.getFD() == null) assert false; //return; // FIXME why? when?
 		Generate_Code_For_Method gcfm = new Generate_Code_For_Method(generateC, generateC.LOG);
-		gcfm.generateCodeForMethod(deduced(gf), aFileGen);
+		gcfm.generateCodeForMethod(deduced(gf, compilationEnclosure), aFileGen);
 	}
 
 	@Contract(pure = true)
-	private @Nullable BaseEvaFunction deduced(final @NotNull BaseEvaFunction aEvaFunction) {
-		final GM_GenerateModule generateModule = generateC.getFileGen().gmgm();
-		final DeducePhase       deducePhase    = generateModule.gmr().env().pa().getCompilationEnclosure().getPipelineLogic().dp;
+	private @Nullable BaseEvaFunction deduced(final @NotNull BaseEvaFunction aEvaFunction, final CompilationEnclosure compilationEnclosure) {
+		final GM_GenerateModule    generateModule       = generateC.getFileGen().gmgm();
+//		final CompilationEnclosure compilationEnclosure = generateModule.gmr().env().pa().getCompilationEnclosure();
+		final DeducePhase          deducePhase          = compilationEnclosure.getPipelineLogic().dp;
 
 		final DeduceTypes2 dt2 = deducePhase._inj().new_DeduceTypes2(aEvaFunction.module(), deducePhase, ElLog.Verbosity.VERBOSE);
 		dt2.deduceOneFunction((EvaFunction) aEvaFunction, deducePhase);

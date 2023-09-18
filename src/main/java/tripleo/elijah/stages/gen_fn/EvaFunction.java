@@ -12,13 +12,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.nextgen.reactive.Reactive;
+import tripleo.elijah.nextgen.reactive.DefaultReactive;
 import tripleo.elijah.stages.deduce.nextgen.DR_Ident;
 import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 import tripleo.elijah.util.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created 6/27/21 9:40 AM
@@ -26,6 +27,7 @@ import java.util.List;
 public class EvaFunction extends BaseEvaFunction_1 implements GNCoded {
 	public final GF_Delegate    GF_Delegate;
 	public final List<DR_Ident> _idents = new ArrayList<>();
+	private __Reactive _reactive;
 
 	public EvaFunction(final @Nullable FunctionDef functionDef) {
 		GF_Delegate    = new GF_Delegate(this, functionDef);
@@ -67,12 +69,23 @@ public class EvaFunction extends BaseEvaFunction_1 implements GNCoded {
 		return GF_Delegate.getSelf();
 	}
 
-	@Override
-	public Reactive reactive() {
-		throw new NotImplementedException();
-
+	public @NotNull __Reactive reactive() {
+		if (_reactive == null)
+			_reactive = new __Reactive();
+		return _reactive;
 	}
 
+	public static class __Reactive extends DefaultReactive {
+		@Override
+		public <T> void addListener(final Consumer<T> t) {
+			int y = 2;
+		}
+
+		@Override
+		public <T> void addResolveListener(final Consumer<T> aO) {
+			throw new NotImplementedException();
+		}
+	}
 
 	@Override
 	public Role getRole() {

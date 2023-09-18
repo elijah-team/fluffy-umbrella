@@ -52,7 +52,9 @@ public class DeduceProcCall {
 	@Contract(pure = true)
 	public DeduceProcCall(final @NotNull ProcTableEntry aProcTableEntry) {
 		procTableEntry = aProcTableEntry;
+	}
 
+	public void __mk() {
 		procTableEntry.onFunctionInvocation((final @NotNull FunctionInvocation functionInvocation) -> {
 			functionInvocation.generatePromise().then((BaseEvaFunction evaFunction) -> {
 				final @NotNull BaseFunctionDef best = evaFunction.getFD();

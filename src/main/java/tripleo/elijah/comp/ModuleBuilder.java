@@ -36,7 +36,7 @@ public class ModuleBuilder {
 
 		assert p.mode() == Mode.SUCCESS;
 
-		mod.prelude = p.success();
+		mod.setPrelude(p.success());
 
 		return this;
 	}

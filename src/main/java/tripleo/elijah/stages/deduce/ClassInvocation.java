@@ -41,11 +41,19 @@ public class ClassInvocation implements IInvocation {
 	public CI_Hint        hint;
 
 	public ClassInvocation(final ClassStatement aClassOf, final String aConstructorName) {
-		classOf = aClassOf;
+		classOf         = aClassOf;
 		constructorName = aConstructorName;
+		cls             = null;
+		_dt2s           = new NULL_DeduceTypes2();
+	}
 
-		cls = null;
-		_dt2s = null;
+	public ClassInvocation(final @NotNull ClassStatement aClassStatement,
+	                       final String aConstructorName,
+	                       final @NotNull Supplier<DeduceTypes2> aDeduceTypes2) {
+		this._dt2s      = aDeduceTypes2;
+		cls             = aClassStatement;
+		constructorName = aConstructorName;
+		classOf         = null;
 	}
 
 	public CI_GenericPart genericPart() {
@@ -57,15 +65,6 @@ public class ClassInvocation implements IInvocation {
 			genericPart_ = _inj().new_CI_GenericPart(cls.getGenericPart(), this);
 		}
 		return genericPart_;
-	}
-
-	public ClassInvocation(@NotNull ClassStatement aClassStatement, String aConstructorName, final @NotNull Supplier<DeduceTypes2> aDeduceTypes2) {
-		this._dt2s = aDeduceTypes2;
-
-		cls = aClassStatement;
-
-		constructorName = aConstructorName;
-		classOf         = null;
 	}
 
 	public String getConstructorName() {

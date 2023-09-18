@@ -9,7 +9,6 @@ import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
 import tripleo.elijah.lang.Qualident;
@@ -65,10 +64,11 @@ public class DefaultLivingRepo implements LivingRepo {
 		}
 		case MAIN_CLASS -> {
 			final boolean isMainClass = MainClassEntryPoint.isMainClass(aClass.getKlass());
-			if (!isMainClass) {
-				throw new IllegalArgumentException("not a main class");
-			}
-			aClass.setCode(100);
+//			if (!isMainClass) {
+//				throw new IllegalArgumentException("not a main class");
+//			}
+//			aClass.setCode(100);
+			aClass.setCode(nextClassCode());
 		}
 		}
 
@@ -92,13 +92,14 @@ public class DefaultLivingRepo implements LivingRepo {
 			aFunction.setCode(nextFunctionCode());
 		}
 		case MAIN_FUNCTION -> {
-			if (aFunction.getFD() instanceof FunctionDef &&
-					MainClassEntryPoint.is_main_function_with_no_args((FunctionDef) aFunction.getFD())) {
-				aFunction.setCode(1000);
+//			if (aFunction.getFD() instanceof FunctionDef &&
+//					MainClassEntryPoint.is_main_function_with_no_args((FunctionDef) aFunction.getFD())) {
+//				aFunction.setCode(1000);
+				aFunction.setCode(nextFunctionCode()); // FIXME hmm
 				//compilation.notifyFunction(code, aFunction);
-			} else {
-				throw new IllegalArgumentException("not a main function");
-			}
+//			} else {
+//				throw new IllegalArgumentException("not a main function");
+//			}
 		}
 		case MAIN_CLASS -> {
 			throw new IllegalArgumentException("not a class");

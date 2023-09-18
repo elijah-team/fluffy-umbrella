@@ -103,6 +103,8 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 	}
 
 	public void setName(final @NotNull IdentExpression aText) {
+//		_name = EN_Name.create(funName.getText());
+
 		funName = aText;
 	}
 

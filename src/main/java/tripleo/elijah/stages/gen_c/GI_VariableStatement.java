@@ -4,11 +4,14 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.BaseFunctionDef;
+import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.VariableSequence;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.EvaNode;
+import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.util.NotImplementedException;
 
 public class GI_VariableStatement implements GenerateC_Item {
@@ -76,7 +79,7 @@ public class GI_VariableStatement implements GenerateC_Item {
 		_evaNode = a_evaNode;
 	}
 
-	/*public String getText() {
+	public String getText() {
 		String text2 = variableStatement.getName();
 
 
@@ -134,14 +137,14 @@ public class GI_VariableStatement implements GenerateC_Item {
 		// TODO ExitSuccess, ExitCode
 
 		return text2;
-	}*/
+	}
 
 	public void setItem(final CR_ReferenceItem aItem) {
 
 		item = aItem;
 	}
 
-	public String getText() {
+	public String getText1() {
 		throw new NotImplementedException();
 	}
 }

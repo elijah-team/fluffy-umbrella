@@ -13,6 +13,9 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.i.IPipelineAccess;
 import tripleo.elijah.comp.notation.GM_GenerateModule;
+import tripleo.elijah.comp.notation.GM_GenerateModuleRequest;
+import tripleo.elijah.comp.notation.GN_GenerateNodesIntoSink;
+import tripleo.elijah.comp.notation.GN_GenerateNodesIntoSinkEnv;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
 import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
@@ -23,6 +26,7 @@ import tripleo.elijah.stages.gen_generic.pipeline_impl.DefaultGenerateResultSink
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.work.WorkList;
 import tripleo.elijah.work.WorkManager;
+import tripleo.elijah.world.i.WorldModule;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,12 +35,12 @@ import java.util.stream.Collectors;
  * Created 8/21/21 10:16 PM
  */
 public class GeneratePipeline implements PipelineMember/*, AccessBus.AB_LgcListener*/ {
-	private final ErrSink   errSink;
+	private final ErrSink              errSink;
 	private final CompilationEnclosure ce;
-	private       AccessBus __ab;
+	private       AccessBus            __ab;
 	//	private final DeducePipeline dpl;
-	private       PipelineLogic pipelineLogic;
-	private       List<EvaNode> lgc;
+	private       PipelineLogic        pipelineLogic;
+	private       List<EvaNode>        lgc;
 
 	public GeneratePipeline(final CompilationEnclosure aCe) {
 		this.ce = aCe;
@@ -59,8 +63,14 @@ public class GeneratePipeline implements PipelineMember/*, AccessBus.AB_LgcListe
 		assert lgc.size() > 0;
 
 		final IPipelineAccess pipelineAccess = ce.getCompilation().getCompilationEnclosure().getPipelineAccess();
-		final GM_GenerateModule gm = new GM_GenerateModule(null); // !!
-		final GenerateResultEnv fileGen = new GenerateResultEnv(new DefaultGenerateResultSink(pipelineAccess), __ab.gr, new WorkManager(), new WorkList(), gm);
+
+		// FIXME Honestly doesn't belong
+		final GN_GenerateNodesIntoSinkEnv env     = new GN_GenerateNodesIntoSinkEnv(null, null, null, null, null, this.ce.getPipelineAccess(), null);
+		final GN_GenerateNodesIntoSink    gnis    = new GN_GenerateNodesIntoSink(env);
+		final WorldModule                 mod     = (WorldModule) null;
+		final GM_GenerateModuleRequest    gmr     = new GM_GenerateModuleRequest(gnis, mod, env);
+		final GM_GenerateModule           gm      = new GM_GenerateModule(gmr);
+		final GenerateResultEnv           fileGen = new GenerateResultEnv(new DefaultGenerateResultSink(pipelineAccess), __ab.gr, new WorkManager(), new WorkList(), gm);
 
 		/*pipelineLogic.*/
 		generate(lgc, errSink, pipelineLogic.mods, pipelineLogic.getVerbosity(), fileGen);
@@ -80,7 +90,7 @@ public class GeneratePipeline implements PipelineMember/*, AccessBus.AB_LgcListe
 			                               .filter(aGeneratedNode -> aGeneratedNode.module() == mod)
 			                               .collect(Collectors.toList());
 
-			var ce = comp.getCompilationEnclosure();
+			final var ce = comp.getCompilationEnclosure();
 			new EIT_ModuleInput(mod, comp).doGenerate(nodes, aErrSink, verbosity, pipelineLogic, wm, (gr2) -> gr.additional(gr2), ce, aFileGen);
 		}
 

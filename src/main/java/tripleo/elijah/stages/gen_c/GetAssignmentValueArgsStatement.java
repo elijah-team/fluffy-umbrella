@@ -25,8 +25,8 @@ public class GetAssignmentValueArgsStatement implements EG_Statement {
 
 	@Override
 	public @Nullable String getText() {
-		throw new UnintendedUseException();
-		//return null;
+//		throw new UnintendedUseException();
+		return null; // TODO hmm
 	}
 
 	public void add_string(final String aS) {

@@ -365,12 +365,14 @@ public class DeduceElement3_ProcTableEntry implements IDeduceElement3 {
 							final ClassInvocation ci = aDeduceTypes2.phase.registerClassInvocation(classStatement);
 							pte.setClassInvocation(ci);
 						} else if (e instanceof final @NotNull FunctionDef functionDef) {
-
-
-							ClassStatement classStatement = (ClassStatement) e.getParent();
-
-							final ClassInvocation ci = aDeduceTypes2.phase.registerClassInvocation(classStatement);
-							pte.setClassInvocation(ci);
+							final OS_Element parent         = e.getParent();
+							if (parent instanceof ClassStatement classParent) {
+								final ClassInvocation ci = aDeduceTypes2.phase.registerClassInvocation(classParent);
+								pte.setClassInvocation(ci);
+							} else if (parent instanceof NamespaceStatement nsParent) {
+								final NamespaceInvocation ni = aDeduceTypes2.phase.registerNamespaceInvocation(nsParent);
+//								pte.setClassInvocation(ni); // TODO !!
+							}
 						} else
 							throw new NotImplementedException();
 					}

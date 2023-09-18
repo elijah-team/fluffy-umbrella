@@ -39,9 +39,10 @@ public class OS_Module implements OS_Element, OS_Container {
 	public final @NotNull                      List<ModuleItem>     items          = new ArrayList<ModuleItem>();
 	public final @NotNull                      Attached             _a             = new Attached();
 	public final @NotNull                      EntryPointList       entryPoints    = new EntryPointList(this);
-	private final                              Stack<Qualident>     packageNames_q = new Stack<Qualident>();
-	public @org.jetbrains.annotations.Nullable OS_Module            prelude;
-	public                                     Compilation          parent;
+	private final Stack<Qualident> packageNames_q = new Stack<Qualident>();
+	@org.jetbrains.annotations.Nullable
+	private       OS_Module        prelude;
+	public        Compilation      parent;
 	private                                    LibraryStatementPart lsp;
 	private                                    String               _fileName;
 	private                                    IndexingStatement    indexingStatement;
@@ -231,12 +232,20 @@ public class OS_Module implements OS_Element, OS_Container {
 		lsp = aLsp;
 	}
 
-	public OS_Module prelude() {
-		throw new NotImplementedException();
-	}
-
 	public List<EntryPoint> entryPoints() {
 		return entryPoints._getMods();
+	}
+
+	public void setPrelude(OS_Module aPrelude) {
+		prelude = aPrelude;
+	}
+
+	public OS_Module getPrelude() {
+		return prelude;
+	}
+
+	public OS_Module prelude() {
+		return prelude;
 	}
 }
 

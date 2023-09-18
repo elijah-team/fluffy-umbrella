@@ -171,7 +171,7 @@ class USE {
 					assert pl.mode() == Mode.SUCCESS;
 
 					mm.setLsp(lsp);
-					mm.prelude = pl.success();
+					mm.setPrelude(pl.success());
 				}
 				return Operation2.success(mm);
 			}

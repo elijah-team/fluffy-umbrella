@@ -8,9 +8,12 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import org.jdeferred2.Deferred;
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.FailCallback;
 import org.jdeferred2.Promise;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.lang.OS_Element;
@@ -18,6 +21,7 @@ import tripleo.elijah.stages.deduce.DeduceTypeResolve;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.ResolveError;
 import tripleo.elijah.stages.deduce.ResolveUnknown;
+import tripleo.elijah.util.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +30,24 @@ import java.util.List;
  * Created 2/4/21 10:11 PM
  */
 public abstract class BaseTableEntry {
-	// region resolved_element
+	protected final DeferredObject2<OS_Element, Diagnostic, Void> _p_elementPromise  = new DeferredObject2<OS_Element, Diagnostic, Void>() {
+		@Override
+		public Deferred<OS_Element, Diagnostic, Void> resolve(final @Nullable OS_Element resolve) {
+			if (resolve == null) {
+				if (BaseTableEntry.this instanceof VariableTableEntry vte) {
+					switch (vte.getVtt()) {
+					case SELF, TEMP, RESULT -> {
+						return super.resolve(resolve);
+					}
+					}
+				}
+				NotImplementedException.raise();
+			}
+			return super.resolve(resolve);
+		}
+	};
 
-	private final DeferredObject2<OS_Element, Diagnostic, Void> elementPromise = new DeferredObject2<OS_Element, Diagnostic, Void>();
+//	private final DeferredObject2<OS_Element, Diagnostic, Void> elementPromise = new DeferredObject2<OS_Element, Diagnostic, Void>();
 	private final List<StatusListener> statusListenerList = new ArrayList<StatusListener>();
 	protected OS_Element resolved_element;
 	// region status
@@ -38,13 +57,11 @@ public abstract class BaseTableEntry {
 	public DeduceTypes2 __dt2;
 	public BaseEvaFunction __gf;
 
-	// endregion resolved_element
-
 	public void elementPromise(final DoneCallback<OS_Element> dc, final FailCallback<Diagnostic> fc) {
 		if (dc != null)
-			elementPromise.then(dc);
+			_p_elementPromise.then(dc);
 		if (fc != null)
-			elementPromise.fail(fc);
+			_p_elementPromise.fail(fc);
 	}
 
 	public OS_Element getResolvedElement() {
@@ -52,16 +69,16 @@ public abstract class BaseTableEntry {
 	}
 
 	public void setResolvedElement(final OS_Element aResolved_element) {
-		if (elementPromise.isResolved()) {
+		if (_p_elementPromise.isResolved()) {
 			if (resolved_element instanceof AliasStatement) {
-				elementPromise.reset();
+				_p_elementPromise.reset();
 			} else {
 				assert resolved_element == aResolved_element;
 				return;
 			}
 		}
 		resolved_element = aResolved_element;
-		elementPromise.resolve(resolved_element);
+		_p_elementPromise.resolve(resolved_element);
 	}
 
 	public Status getStatus() {
@@ -75,8 +92,8 @@ public abstract class BaseTableEntry {
 			statusListener.onChange(eh, newStatus);
 		}
 		if (newStatus == Status.UNKNOWN)
-			if (!elementPromise.isRejected())
-				elementPromise.reject(new ResolveUnknown());
+			if (!_p_elementPromise.isRejected())
+				_p_elementPromise.reject(new ResolveUnknown());
 	}
 
 	public void addStatusListener(final StatusListener sl) {
@@ -93,12 +110,8 @@ public abstract class BaseTableEntry {
 		typeResolve = new DeduceTypeResolve(this, ()->__dt2);
 	}
 
-	public void _fix_table(final DeduceTypes2 aDeduceTypes2, final BaseEvaFunction aEvaFunction) {
-		__dt2 = aDeduceTypes2;
-		__gf = aEvaFunction;
-	}
-
 	public void typeResolve(final GenType aGt) {
+		throw new NotImplementedException();
 	}
 
 	public DeduceTypes2 _deduceTypes2() {
@@ -113,6 +126,10 @@ public abstract class BaseTableEntry {
 		void onChange(IElementHolder eh, Status newStatus);
 	}
 
+	public void _fix_table(final DeduceTypes2 aDeduceTypes2, final @NotNull BaseEvaFunction aEvaFunction) {
+		__dt2 = aDeduceTypes2;
+		__gf  = aEvaFunction;
+	}
 
 }
 

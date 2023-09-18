@@ -163,6 +163,8 @@ public class CompilationEnclosure {
 			}
 		});
 
+		waitPipelineLogic(wpl -> pipelineLogic = wpl);
+
 		providePipelineAccess(new IPipelineAccess() {
 			@Override
 			public void _setAccessBus(final AccessBus ab) {

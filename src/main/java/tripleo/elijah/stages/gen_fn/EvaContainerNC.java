@@ -19,14 +19,12 @@ import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.nextgen.reactive.Reactive;
 import tripleo.elijah.stages.deduce.FunctionMapDeferred;
-import tripleo.elijah.stages.gen_c.GenerateC;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.Dependency;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultEnv;
 import tripleo.elijah.stages.gen_generic.IDependencyReferent;
 import tripleo.elijah.util.Maybe;
-import tripleo.elijah.util.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -120,14 +118,9 @@ public abstract class EvaContainerNC extends AbstractDependencyTracker implement
 		return null;
 	}
 
-	public void generateCode(final GenerateResultEnv aFileGen, final GenerateC aGenerateC) {
-		throw new NotImplementedException();
-	}
+	public abstract void generateCode(GenerateResultEnv aFileGen, CodeGenerator aGgc);
 
-	public Reactive reactive() {
-		throw new NotImplementedException();
-
-	}
+	public abstract Reactive reactive();
 }
 
 //

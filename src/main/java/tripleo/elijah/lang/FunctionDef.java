@@ -43,6 +43,7 @@ public class FunctionDef extends BaseFunctionDef implements Documentable, ClassI
 		} else {
 			throw new IllegalStateException("adding FunctionDef to " + element.getClass().getName());
 		}
+		_name = EN_Name.create(name());
 		_a.setContext(new FunctionContext(context, this));
 	}
 

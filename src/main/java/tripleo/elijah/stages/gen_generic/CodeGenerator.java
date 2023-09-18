@@ -10,6 +10,7 @@ package tripleo.elijah.stages.gen_generic;
 
 import tripleo.elijah.stages.gen_fn.EvaClass;
 import tripleo.elijah.stages.gen_fn.EvaNamespace;
+import tripleo.elijah.stages.gen_generic.pipeline_impl.GenerateResultSink;
 
 /**
  * Created 4/26/21 11:22 PM
@@ -18,6 +19,11 @@ public interface CodeGenerator {
 	void generate_namespace(EvaNamespace aGeneratedNamespace, GenerateResult aGenerateResult);
 
 	void generate_class(EvaClass aGeneratedClass, GenerateResult aGenerateResult);
+
+	void generate_class(GenerateResultEnv aFileGen, EvaClass x);
+
+	void generate_namespace(EvaNamespace aGeneratedNamespace, GenerateResult aGenerateResult, final GenerateResultSink aResultSink);
+
 }
 
 //

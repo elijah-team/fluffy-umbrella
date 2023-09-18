@@ -52,7 +52,8 @@ public class EIT_ModuleInput implements EIT_Input {
 		final GenerateFiles           generateFiles = OutputFileFactory.create(lang, p, aFileGen);
 
 		// 2. query results
-		final GenerateResult gr2 = generateFiles.resultsFromNodes(nodes, wm);
+		var grs = aFileGen.resultSink();
+		final GenerateResult gr2 = generateFiles.resultsFromNodes(nodes, wm, grs, aFileGen);
 
 		// 3. #drain workManager -> README part of workflow. may change later as appropriate
 		wm.drain();

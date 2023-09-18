@@ -51,8 +51,66 @@ import java.util.List;
 import java.util.Map;
 
 public interface BaseEvaFunction extends DependencyTracker, EvaNode, DeduceTypes2.ExpectationBase, IDependencyReferent {
-	static List<DT_Resolvable> _getIdentIAResolvableList(IdentIA aIdentIA) {
-		throw new NotImplementedException();
+	public static @NotNull List<DT_Resolvable> _getIdentIAResolvableList(@NotNull InstructionArgument oo) {
+		LinkedList<DT_Resolvable> R = new LinkedList<>();
+		while (oo != null) {
+			if (oo instanceof IntegerIA integerIA) {
+				var vte = integerIA.getEntry();
+
+				if (vte._vs == null) {
+					final OS_Element[] el = {null};
+					vte._p_elementPromise.then(el1 -> el[0] = el1);
+
+					assert el[0] != null;
+
+					R.addFirst(DT_Resolvable.from(oo, el[0], null));
+				} else {
+					R.addFirst(DT_Resolvable.from(oo, vte._vs, null));
+				}
+				oo = null;
+			} else if (oo instanceof final IdentIA identIA) {
+				final IdentTableEntry ite1 = identIA.getEntry();
+
+				final OS_Element[] el = {null};
+				ite1._p_resolvedElementPromise.then(el1 -> el[0] = el1);
+
+				//assert el[0] != null;
+
+				FunctionInvocation cfi = null;
+				if (ite1._callable_pte() != null) {
+					var cpte = ite1._callable_pte();
+					if (cpte.getFunctionInvocation() != null) {
+						cfi = cpte.getFunctionInvocation();
+					}
+				}
+
+				//assert cfi != null;
+				// ^^ fails for folders.forEach
+
+				R.addFirst(DT_Resolvable.from(oo, el[0], cfi));
+				oo = ite1.getBacklink();
+			} else if (oo instanceof ProcIA procIA) {
+				var pte = procIA.getEntry();
+				assert pte != null;
+
+				final OS_Element[] el = {null};
+				pte._p_elementPromise.then(el1 -> el[0] = el1);
+
+				assert el[0] != null;
+
+				FunctionInvocation cfi = null;
+				if (pte.getFunctionInvocation() != null) {
+					cfi = pte.getFunctionInvocation();
+				}
+
+				assert cfi != null;
+
+				R.addFirst(DT_Resolvable.from(oo, el[0], cfi));
+				oo = null;
+			} else
+				throw new IllegalStateException("Invalid InstructionArgument");
+		}
+		return R;
 	}
 
 	String getIdentIAPathNormal(IdentIA ia2);
@@ -269,7 +327,7 @@ public interface BaseEvaFunction extends DependencyTracker, EvaNode, DeduceTypes
 
 	DR_Variable getVar(VariableStatement aElement);
 
-	List<DR_Item> drs();
+	List<? extends DR_Item> drs();
 
 	IdentIaResolveable _getIdentIAResolvable(IdentIA aIdentIA);
 

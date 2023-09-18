@@ -39,6 +39,7 @@ import tripleo.elijah.stages.deduce.zero.ITE_Zero;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
+import tripleo.elijah.util.Eventual;
 import tripleo.elijah.util.Holder;
 import tripleo.elijah.util.NotImplementedException;
 
@@ -47,7 +48,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * Created 9/12/20 10:27 PM
@@ -306,14 +306,6 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		type = aType;
 	}
 
-	public EvaNode getExternalRef() {
-		return externalRef;
-	}
-
-	public void setExternalRef(EvaNode aExternalRef) {
-		externalRef = aExternalRef;
-	}
-
 	public boolean isFefi() {
 		return fefi;
 	}
@@ -339,7 +331,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	}
 
 	public DeduceTypes2 _deduceTypes2() {
-		return this._deduceTypes2;
+		return this.__dt2;
 	}
 
 	public DeduceElement3_IdentTableEntry getDeduceElement3() {
@@ -347,7 +339,7 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	}
 
 	public void addResolver(final ITE_Resolver aResolver000) {
-		throw new NotImplementedException();
+//		throw new NotImplementedException();
 	}
 
 	public DR_Ident get_ident() {
@@ -355,13 +347,11 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	}
 
 	public Resolve_Ident_IA.DeduceElementIdent getDeduceElement() {
-//		return _de3;
-		throw new NotImplementedException();
-
+		return dei;
 	}
 
-	public void onResolvedElement(final Consumer<OS_Element> ce) {
-		throw new NotImplementedException();
+	public void onResolvedElement(final DoneCallback<OS_Element> cb) {
+		_p_resolvedElementPromise.then((cb));
 	}
 
 	public Object getDefinedIdent() {
@@ -369,16 +359,23 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	}
 
 	public void resolvers_round() {
-		throw new NotImplementedException();
+//		throw new NotImplementedException();
 	}
 
-	public Object externalRef() {
-		throw new NotImplementedException();
+	public void setExternalRef(final EvaNode aResult) {
+		externalRef = aResult;
+		_onExternalRef.resolve(aResult);
 	}
 
-	public void onExternalRef(final Consumer<EvaNode> a) {
-		throw new NotImplementedException();
+	public EvaNode externalRef() {
+		return externalRef;
 	}
+
+	public void onExternalRef(final DoneCallback<EvaNode> cb) {
+		_onExternalRef.then(cb);
+	}
+
+	private final Eventual<EvaNode> _onExternalRef = new Eventual<>();
 
 	public void calculateResolvedElement() {
 		throw new NotImplementedException();

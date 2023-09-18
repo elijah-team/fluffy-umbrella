@@ -1,5 +1,6 @@
 package tripleo.elijah.lang.imports;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.ImportContext;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Container;
@@ -50,8 +51,9 @@ public class NormalImportStatement extends _BaseImportStatement {
 		return importList.parts;
 	}
 
-	public Context myContext() {
-		throw new NotImplementedException();
+	public @NotNull Context myContext() {
+		assert _ctx != null;
+		return _ctx;
 	}
 }
 

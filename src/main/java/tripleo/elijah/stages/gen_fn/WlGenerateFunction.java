@@ -19,7 +19,6 @@ import tripleo.elijah.stages.deduce.Deduce_CreationClosure;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
 import tripleo.elijah.stages.deduce.NamespaceInvocation;
 import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
-import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.util.Stupidity;
 import tripleo.elijah.work.WorkJob;
 import tripleo.elijah.work.WorkManager;
@@ -42,9 +41,13 @@ public class WlGenerateFunction implements WorkJob {
 		codeRegistrar      = aCodeRegistrar;
 	}
 
-	public WlGenerateFunction(final OS_Module aModule, final FunctionInvocation aDependentFunction, final Deduce_CreationClosure aCl) {
-		throw new NotImplementedException();
-
+	public WlGenerateFunction(final OS_Module aModule,
+	                          final FunctionInvocation aFunctionInvocation,
+	                          final Deduce_CreationClosure aCl) {
+		functionDef        = (FunctionDef) aFunctionInvocation.getFunction();
+		generateFunctions  = aCl.generatePhase().getGenerateFunctions(aModule);
+		functionInvocation = aFunctionInvocation;
+		codeRegistrar      = aCl.deducePhase().getCodeRegistrar();
 	}
 
 	@Override
