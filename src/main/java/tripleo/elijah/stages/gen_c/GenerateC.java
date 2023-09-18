@@ -8,37 +8,11 @@
  */
 package tripleo.elijah.stages.gen_c;
 
-import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.NotNull;
-
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.i.CompilationEnclosure;
-import tripleo.elijah.lang.AnnotationPart;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.ConstructorDef;
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.IExpression;
-import tripleo.elijah.lang.IdentExpression;
-import tripleo.elijah.lang.NormalTypeName;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.lang.OS_Type;
-import tripleo.elijah.lang.ProcedureCallExpression;
-import tripleo.elijah.lang.PropertyStatement;
-import tripleo.elijah.lang.RegularTypeName;
-import tripleo.elijah.lang.TypeName;
-import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_FuncExprType;
 import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.nextgen.reactive.ReactiveDimension;
@@ -84,6 +58,17 @@ import tripleo.elijah.work.WorkManager;
 import tripleo.elijah.world.i.LivingClass;
 import tripleo.elijah.world.i.LivingNamespace;
 import tripleo.util.buffer.Buffer;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 
 /**
  * Created 10/8/20 7:13 AM
@@ -137,84 +122,88 @@ public class GenerateC implements CodeGenerator, GenerateFiles, ReactiveDimensio
 			final StringBuilder sb   = new StringBuilder();
 			final Instruction   inst = fca.getExpression();
 //			LOG.err("9000 "+inst.getName());
-			final InstructionArgument x = inst.getArg(0);
-			assert x instanceof ProcIA;
-			final ProcTableEntry pte = gf.getProcTableEntry(to_int(x));
-//			LOG.err("9000-2 "+pte);
-			switch (inst.getName()) {
-			case CALL: {
-				if (pte.expression_num == null) {
-//					assert false; // TODO synthetic methods
-					final FnCallArgs_Statement statement = new FnCallArgs_Statement(GenerateC.this, this, pte, inst, gf);
+			if (inst.getArgsSize() > 0) {
+				final InstructionArgument x = inst.getArg(0);
+				assert x instanceof ProcIA;
+				final ProcTableEntry pte = gf.getProcTableEntry(to_int(x));
+//			    LOG.err("9000-2 "+pte);
+				switch (inst.getName()) {
+				case CALL: {
+					if (pte.expression_num == null) {
+						//assert false; // TODO synthetic methods
+						final FnCallArgs_Statement statement = new FnCallArgs_Statement(GenerateC.this, this, pte, inst, gf);
 
-					sb.append(statement.getText());
-				} else {
-					final FnCallArgs_Statement2 statement = new FnCallArgs_Statement2(GenerateC.this, gf, LOG, inst, pte, this);
+						sb.append(statement.getText());
+					} else {
+						final FnCallArgs_Statement2 statement = new FnCallArgs_Statement2(GenerateC.this, gf, LOG, inst, pte, this);
 
-					sb.append(statement.getText());
+						sb.append(statement.getText());
+					}
+					return sb.toString();
 				}
-				return sb.toString();
-			}
-			case CALLS: {
-				CReference reference = null;
-				if (pte.expression_num == null) {
-					final int             y    = 2;
-					final IdentExpression ptex = (IdentExpression) pte.__debug_expression();
-					sb.append(Emit.emit("/*684*/"));
-					sb.append(ptex.getText());
+				case CALLS: {
+					CReference reference = null;
+					if (pte.expression_num == null) {
+						final int             y    = 2;
+						final IdentExpression ptex = (IdentExpression) pte.__debug_expression();
+						sb.append(Emit.emit("/*684*/"));
+						sb.append(ptex.getText());
 
-					final DeduceElement3_ProcTableEntry pte_de3 = (DeduceElement3_ProcTableEntry) pte.getDeduceElement3(pte._deduceTypes2(), pte.__gf);
-					var                                 s       = pte_de3.toString();
+						final DeduceElement3_ProcTableEntry pte_de3 = (DeduceElement3_ProcTableEntry) pte.getDeduceElement3(pte._deduceTypes2(), pte.__gf);
+						var                                 s       = pte_de3.toString();
 
-					//final DR_Ident id = pte.__gf.getIdent((IdentExpression) pte.expression);
-					//id.resolve();
+						//final DR_Ident id = pte.__gf.getIdent((IdentExpression) pte.expression);
+						//id.resolve();
 
-					int yy = 2;
-				} else {
-					// TODO Why not expression_num?
-					reference = new CReference(_repo, ce);
-					final IdentIA ia2 = (IdentIA) pte.expression_num;
-					reference.getIdentIAPath(ia2, Generate_Code_For_Method.AOG.GET, null);
-					final GetAssignmentValueArgsStatement ava = getAssignmentValueArgs(inst, gf, LOG);
-					final List<String>                    sll = ava.stringList();
-					reference.args(sll);
-					String path = reference.build();
-					sb.append(Emit.emit("/*807*/") + path);
+						int yy = 2;
+					} else {
+						// TODO Why not expression_num?
+						reference = new CReference(_repo, ce);
+						final IdentIA ia2 = (IdentIA) pte.expression_num;
+						reference.getIdentIAPath(ia2, Generate_Code_For_Method.AOG.GET, null);
+						final GetAssignmentValueArgsStatement ava = getAssignmentValueArgs(inst, gf, LOG);
+						final List<String>                    sll = ava.stringList();
+						reference.args(sll);
+						String path = reference.build();
+						sb.append(Emit.emit("/*807*/") + path);
 
-					final IExpression ptex = pte.__debug_expression();
-					if (ptex instanceof IdentExpression aIdentExpression) {
+						final IExpression ptex = pte.__debug_expression();
+						if (ptex instanceof IdentExpression aIdentExpression) {
+							var z = new ReasonedStringListStatement();
+
+							z.append(Emit.emit("/*803*/"), "emit-code");
+							z.append(aIdentExpression.getText(), "ptex");
+
+							sb.append(z.getText());
+						} else if (ptex instanceof ProcedureCallExpression) {
+							var z = new ReasonedStringListStatement();
+
+							z.append(Emit.emit("/*806*/"), "emit-code");
+							z.append(ptex.getLeft().toString()/*FIXME 09/07*/, "ptex"); // TODO Qualident, IdentExpression, DotExpression
+
+							sb.append(z.getText());
+						}
+					}
+					if (true /*reference == null*/) {
 						var z = new ReasonedStringListStatement();
 
-						z.append(Emit.emit("/*803*/"), "emit-code");
-						z.append(aIdentExpression.getText(), "ptex");
+						final GetAssignmentValueArgsStatement ava = getAssignmentValueArgs(inst, gf, LOG);
+						final List<String>                    sll = ava.stringList();
 
-						sb.append(z.getText());
-					} else if (ptex instanceof ProcedureCallExpression) {
-						var z = new ReasonedStringListStatement();
-
-						z.append(Emit.emit("/*806*/"), "emit-code");
-						z.append(ptex.getLeft().toString()/*FIXME 09/07*/, "ptex"); // TODO Qualident, IdentExpression, DotExpression
+						z.append(Emit.emit("/*810*/"), "emit-code");
+						z.append("(", "open-brace");
+						z.append(ava, "GetAssignmentValueArgsStatement");
+						z.append(");", "close-brace");
 
 						sb.append(z.getText());
 					}
+					return sb.toString();
 				}
-				if (true /*reference == null*/) {
-					var z = new ReasonedStringListStatement();
-
-					final GetAssignmentValueArgsStatement ava = getAssignmentValueArgs(inst, gf, LOG);
-					final List<String>                    sll = ava.stringList();
-
-					z.append(Emit.emit("/*810*/"), "emit-code");
-					z.append("(", "open-brace");
-					z.append(ava, "GetAssignmentValueArgsStatement");
-					z.append(");", "close-brace");
-
-					sb.append(z.getText());
+				default:
+					throw new IllegalStateException("Unexpected value: " + inst.getName());
 				}
-				return sb.toString();
-			}
-			default:
-				throw new IllegalStateException("Unexpected value: " + inst.getName());
+			} else {
+				return "glop";
 			}
 		}
 
