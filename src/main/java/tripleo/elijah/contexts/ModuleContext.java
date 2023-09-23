@@ -33,6 +33,15 @@ public class ModuleContext extends Context {
 		this.carrier = module;
 	}
 
+	public OS_Module getCarrier() {
+		return carrier;
+	}
+
+	@Override
+	public Context getParent() {
+		return null;
+	}
+
 	@Override
 	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
@@ -82,20 +91,11 @@ public class ModuleContext extends Context {
 			}
 		}*/
 //		tripleo.elijah.util.Stupidity.println_err2("2003 "+carrier.getItems());
-		if (carrier.prelude != null && alreadySearched.contains(carrier.prelude.getContext()))
+		if (carrier.prelude() != null && alreadySearched.contains(carrier.prelude().getContext()))
 			return Result;
-		if (carrier.prelude == null || one)
+		if (carrier.prelude() == null || one)
 			return Result;
-		return carrier.prelude.getContext().lookup(name, level + 1, Result, alreadySearched, false);
-	}
-
-	@Override
-	public Context getParent() {
-		return null;
-	}
-
-	public OS_Module getCarrier() {
-		return carrier;
+		return carrier.prelude().getContext().lookup(name, level + 1, Result, alreadySearched, false);
 	}
 
 	public void setCarrier(final OS_Module aCarrier) {

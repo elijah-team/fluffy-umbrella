@@ -1,24 +1,17 @@
 package tripleo.elijah.comp;
 
-import org.jetbrains.annotations.*;
-import tripleo.elijah.ci.*;
-import tripleo.elijah.lang.*;
-import tripleo.elijah.nextgen.inputtree.*;
-import tripleo.elijah.nextgen.query.*;
-import tripleo.elijah.world.i.*;
+import org.jetbrains.annotations.Nullable;
+import tripleo.elijah.ci.LibraryStatementPart;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.lang.Qualident;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
+import tripleo.elijah.util.Operation2;
+import tripleo.elijah.world.i.WorldModule;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.List;
 
 public interface CompFactory {
-
-	EIT_ModuleInput createModuleInput(OS_Module aModule);
-
-	Qualident createQualident(List<String> sl);
-
-	InputRequest createInputRequest(File aFile, final boolean aDo_out, final @Nullable LibraryStatementPart aLsp);
-
-	WorldModule createWorldModule(OS_Module aM);
 
 	class InputRequest {
 		private final File                    _file;
@@ -32,12 +25,12 @@ public interface CompFactory {
 			lsp     = aLsp;
 		}
 
-		public File file() {
-			return _file;
-		}
-
 		public boolean do_out() {
 			return _do_out;
+		}
+
+		public File file() {
+			return _file;
 		}
 
 		public LibraryStatementPart lsp() {
@@ -48,4 +41,12 @@ public interface CompFactory {
 			op = aOwm;
 		}
 	}
+
+	InputRequest createInputRequest(File aFile, final boolean aDo_out, final @Nullable LibraryStatementPart aLsp);
+
+	EIT_ModuleInput createModuleInput(OS_Module aModule);
+
+	Qualident createQualident(List<String> sl);
+
+	WorldModule createWorldModule(OS_Module aM);
 }

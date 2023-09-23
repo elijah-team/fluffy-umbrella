@@ -1,13 +1,13 @@
 package tripleo.elijah.cef;
 
-import me.friwi.jcefmaven.EnumPlatform;
-import me.friwi.jcefmaven.UnsupportedPlatformException;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Locale;
+
+import me.friwi.jcefmaven.EnumPlatform;
+import me.friwi.jcefmaven.UnsupportedPlatformException;
 
 /**
  * Just a small class that assists users in generating test reports.

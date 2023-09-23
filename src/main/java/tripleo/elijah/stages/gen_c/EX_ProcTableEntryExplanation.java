@@ -1,8 +1,10 @@
 package tripleo.elijah.stages.gen_c;
 
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.nextgen.outputstatement.EX_Explanation;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_ProcTableEntry;
+import tripleo.elijah.util.NotImplementedException;
 
 public class EX_ProcTableEntryExplanation implements EX_Explanation {
 	private final @NotNull DeduceElement3_ProcTableEntry pte;
@@ -11,8 +13,13 @@ public class EX_ProcTableEntryExplanation implements EX_Explanation {
 		pte = aPte;
 	}
 
-	@Override
+@Override
 	public String getText() {
-		return "EX_ProcTableEntryExplanation "+pte.toString();
+		throw new NotImplementedException();
+	}
+
+	//	@Override
+	public @NotNull String message() {
+		return "EX_ProcTableEntryExplanation";
 	}
 }

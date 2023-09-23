@@ -13,6 +13,7 @@ import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.functionality.f203.F203;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.nextgen.outputstatement.EG_CompoundStatement;
 import tripleo.elijah.nextgen.outputstatement.EG_SingleStatement;
@@ -59,8 +60,8 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 	private final File           file_prefix;
 	private       GenerateResult gr;
 
-	public WritePipeline(@NotNull final AccessBus ab) {
-		c = ab.getCompilation();
+	public WritePipeline(final CompilationEnclosure ce) {
+		c = ce.getCompilation();
 
 		file_prefix = new File("COMP", c.getCompilationNumberString());
 
@@ -72,58 +73,7 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 		sys.setCompilation(c);
 		sys.setOutputStrategy(os);
 
-		ab.subscribe_GenerateResult(this);
-	}
-
-	@Override
-	public void run() throws Exception {
-		sys.generateOutputs(gr);
-
-		write_files();
-		// TODO flag?
-		write_buffers();
-	}
-
-	public void write_files() throws IOException {
-		final Multimap<String, Buffer> mb = ArrayListMultimap.create();
-
-		for (final GenerateResultItem ab : gr.results()) {
-			mb.put(ab.output, ab.buffer);
-		}
-
-		final Map<String, OS_Module> modmap = new HashMap<String, OS_Module>();
-		for (final GenerateResultItem ab : gr.results()) {
-			modmap.put(ab.output, ab.node.module());
-		}
-
-		final List<EOT_OutputFile> leof = new ArrayList<>();
-
-		for (final String s : mb.keySet()) {
-			final Collection<Buffer> vs = mb.get(s);
-
-			final EOT_OutputFile eof = EOT_OutputFile.bufferSetToOutputFile(s, vs, c, modmap.get(s));
-			leof.add(eof);
-		}
-
-		c.getOutputTree().set(leof);
-
-		final File fn1 = choose_dir_name();
-
-		__rest(mb, fn1, leof);
-	}
-
-	public void write_buffers() throws FileNotFoundException {
-		file_prefix.mkdirs();
-
-		final PrintStream db_stream = new PrintStream(new File(file_prefix, "buffers.txt"));
-		PipelineLogic.debug_buffers(gr, db_stream);
-	}
-
-	private @NotNull File choose_dir_name() {
-		final File fn00 = new F203(c.getErrSink(), c).chooseDirectory();
-		final File fn01 = new File(fn00, "code");
-
-		return fn01;
+		ce.getAccessBusPromise().then(wab -> wab.subscribe_GenerateResult(this));
 	}
 
 	private void __rest(final @NotNull Multimap<String, Buffer> mb, final @NotNull File aFile_prefix, final List<EOT_OutputFile> leof) throws IOException {
@@ -166,6 +116,71 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 		}
 	}
 
+	private void append_hash(final TextBuffer aBuf, final String aFilename, final ErrSink errSink) throws IOException {
+		@Nullable final String hh = Helpers.getHashForFilename(aFilename, errSink);
+		if (hh != null) {
+			aBuf.append(hh);
+			aBuf.append(" ");
+			aBuf.append_ln(aFilename);
+		}
+	}
+
+	private @NotNull File choose_dir_name() {
+		final File fn00 = new F203(c.getErrSink(), c).chooseDirectory();
+		final File fn01 = new File(fn00, "code");
+
+		return fn01;
+	}
+
+	@Override
+	public void gr_slot(final GenerateResult gr) {
+		this.gr = gr;
+	}
+
+	@Override
+	public void run() throws Exception {
+		sys.generateOutputs(gr);
+
+		write_files();
+		// TODO flag?
+		write_buffers();
+	}
+
+	public void write_buffers() throws FileNotFoundException {
+		file_prefix.mkdirs();
+
+		final PrintStream db_stream = new PrintStream(new File(file_prefix, "buffers.txt"));
+		PipelineLogic.debug_buffers(gr, db_stream);
+	}
+
+	public void write_files() throws IOException {
+		final Multimap<String, Buffer> mb = ArrayListMultimap.create();
+
+		for (final GenerateResultItem ab : gr.results()) {
+			mb.put(ab.output, ab.buffer);
+		}
+
+		final Map<String, OS_Module> modmap = new HashMap<String, OS_Module>();
+		for (final GenerateResultItem ab : gr.results()) {
+			modmap.put(ab.output, ab.node.module());
+		}
+
+		final List<EOT_OutputFile> leof = new ArrayList<>();
+
+		for (final String s : mb.keySet()) {
+			final Collection<Buffer> vs = mb.get(s);
+
+			final EOT_OutputFile eof = EOT_OutputFile.bufferSetToOutputFile(s, vs, c, modmap.get(s));
+			leof.add(eof);
+		}
+
+		c.getOutputTree().set(leof);
+
+		final File fn1 = choose_dir_name();
+
+		__rest(mb, fn1, leof);
+	}
+
 	private void write_inputs(final File file_prefix) throws IOException {
 		final DefaultBuffer buf = new DefaultBuffer("");
 //			FileBackedBuffer buf = new FileBackedBuffer(fn1);
@@ -197,20 +212,6 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 		try (final Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn1, true)))) {
 			w.write(s);
 		}
-	}
-
-	private void append_hash(final TextBuffer aBuf, final String aFilename, final ErrSink errSink) throws IOException {
-		@Nullable final String hh = Helpers.getHashForFilename(aFilename, errSink);
-		if (hh != null) {
-			aBuf.append(hh);
-			aBuf.append(" ");
-			aBuf.append_ln(aFilename);
-		}
-	}
-
-	@Override
-	public void gr_slot(final GenerateResult gr) {
-		this.gr = gr;
 	}
 }
 

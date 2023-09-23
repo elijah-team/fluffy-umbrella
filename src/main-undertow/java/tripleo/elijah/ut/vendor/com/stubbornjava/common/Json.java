@@ -1,5 +1,13 @@
 package tripleo.elijah.ut.vendor.com.stubbornjava.common;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+//import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -7,15 +15,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-//import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class Json {
+	public static class JsonException extends RuntimeException {
+		private JsonException(Exception ex) {
+			super(ex);
+		}
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(Json.class);
 
 	// {{start:setup}}
@@ -43,10 +50,14 @@ public class Json {
 		DEFAULT_SERIALIZER = new Json(mapper);
 	}
 	// {{end:setup}}
-
+	public static Json serializer() {
+		return DEFAULT_SERIALIZER;
+	}
 	private final ObjectMapper mapper;
 	private final ObjectWriter writer;
+
 	private final ObjectWriter prettyWriter;
+
 	// Only let this be called statically. Hide the constructor
 	private Json(ObjectMapper mapper) {
 		this.mapper       = mapper;
@@ -54,21 +65,15 @@ public class Json {
 		this.prettyWriter = mapper.writerWithDefaultPrettyPrinter();
 	}
 
-	public static Json serializer() {
-		return DEFAULT_SERIALIZER;
+	// {{start:fromInputStream}}
+	public <T> T fromInputStream(InputStream is, TypeReference<T> typeRef) {
+		try {
+			return mapper.readValue(is, typeRef);
+		} catch (IOException e) {
+			throw new JsonException(e);
+		}
 	}
-
-	public ObjectMapper mapper() {
-		return mapper;
-	}
-
-	public ObjectWriter writer() {
-		return writer;
-	}
-
-	public ObjectWriter prettyWriter() {
-		return prettyWriter;
-	}
+	// {{end:writeJson}}
 
 	// {{start:fromBytes}}
 	public <T> T fromJson(byte[] bytes, TypeReference<T> typeRef) {
@@ -108,46 +113,6 @@ public class Json {
 		}
 	}
 
-	// {{start:writeJson}}
-	public String toString(Object obj) {
-		try {
-			return writer.writeValueAsString(obj);
-		} catch (IOException e) {
-			throw new JsonException(e);
-		}
-	}
-	// {{end:fromInputStream}}
-
-	// {{start:fromInputStream}}
-	public <T> T fromInputStream(InputStream is, TypeReference<T> typeRef) {
-		try {
-			return mapper.readValue(is, typeRef);
-		} catch (IOException e) {
-			throw new JsonException(e);
-		}
-	}
-	// {{end:writeJson}}
-
-	// {{start:toPrettyString}}
-	public String toPrettyString(Object obj) {
-		try {
-			return prettyWriter.writeValueAsString(obj);
-		} catch (IOException e) {
-			throw new JsonException(e);
-		}
-	}
-	// {{end:toPrettyString}}
-
-	// {{start:toByteArray}}
-	public byte[] toByteArray(Object obj) {
-		try {
-			return prettyWriter.writeValueAsBytes(obj);
-		} catch (IOException e) {
-			throw new JsonException(e);
-		}
-	}
-	// {{end:toByteArray}}
-
 	public Map<String, Object> mapFromJson(byte[] bytes) {
 		try {
 			return mapper.readValue(bytes, new TypeReference<Map<String, Object>>() {
@@ -164,6 +129,10 @@ public class Json {
 		} catch (IOException e) {
 			throw new JsonException(e);
 		}
+	}
+
+	public ObjectMapper mapper() {
+		return mapper;
 	}
 
 	// {{start:jsonNode}}
@@ -184,9 +153,41 @@ public class Json {
 		}
 	}
 
-	public static class JsonException extends RuntimeException {
-		private JsonException(Exception ex) {
-			super(ex);
+	public ObjectWriter prettyWriter() {
+		return prettyWriter;
+	}
+
+	// {{start:toByteArray}}
+	public byte[] toByteArray(Object obj) {
+		try {
+			return prettyWriter.writeValueAsBytes(obj);
+		} catch (IOException e) {
+			throw new JsonException(e);
 		}
+	}
+	// {{end:toByteArray}}
+
+	// {{start:toPrettyString}}
+	public String toPrettyString(Object obj) {
+		try {
+			return prettyWriter.writeValueAsString(obj);
+		} catch (IOException e) {
+			throw new JsonException(e);
+		}
+	}
+	// {{end:toPrettyString}}
+
+	// {{start:writeJson}}
+	public String toString(Object obj) {
+		try {
+			return writer.writeValueAsString(obj);
+		} catch (IOException e) {
+			throw new JsonException(e);
+		}
+	}
+	// {{end:fromInputStream}}
+
+	public ObjectWriter writer() {
+		return writer;
 	}
 }

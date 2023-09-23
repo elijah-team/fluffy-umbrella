@@ -40,10 +40,25 @@ public class DefFunctionDef extends BaseFunctionDef {
 		setSpecies(Species.DEF_FUN);
 	}
 
-	public void setReturnType(final TypeName tn) {
-		this._returnType = tn;
+	@Override
+	public List<FunctionItem> getItems() {
+		return _items; // TODO what about scope?
 	}
-//	private FormalArgList fal;
+
+	@Override
+	public OS_Element getParent() {
+		return parent;
+	}
+
+	/**
+	 * see {@link #_expr} for why getItems().size should be 0, or
+	 */
+	@Override
+	public void postConstruct() {
+//		super.postConstruct();
+		if (getItems().size() != 1)
+			throw new IllegalStateException("Too many items"); // TODO convert to diagnostic?
+	}
 
 	/**
 	 * Can be {@code null} under the following circumstances:<br/><br/>
@@ -64,29 +79,14 @@ public class DefFunctionDef extends BaseFunctionDef {
 		_items.add(new StatementWrapper(_expr, getContext(), this));
 	}
 
+	public void setReturnType(final TypeName tn) {
+		this._returnType = tn;
+	}
+//	private FormalArgList fal;
+
 	@Override
 	public void visitGen(final ElElementVisitor visit) {
 		visit.visitDefFunction(this);
-	}
-
-	@Override
-	public OS_Element getParent() {
-		return parent;
-	}
-
-	@Override
-	public List<FunctionItem> getItems() {
-		return _items; // TODO what about scope?
-	}
-
-	/**
-	 * see {@link #_expr} for why getItems().size should be 0, or
-	 */
-	@Override
-	public void postConstruct() {
-//		super.postConstruct();
-		if (getItems().size() != 1)
-			throw new IllegalStateException("Too many items"); // TODO convert to diagnostic?
 	}
 }
 

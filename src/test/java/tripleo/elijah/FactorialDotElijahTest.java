@@ -8,8 +8,11 @@
  */
 package tripleo.elijah;
 
+import static tripleo.elijah.util.Helpers.List_of;
+
 import org.junit.Assert;
 import org.junit.Test;
+
 import tripleo.elijah.comp.GenBuffer;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.gen.ModuleRef;
@@ -24,25 +27,7 @@ import tripleo.elijah.gen.nodes.MethRef;
 import tripleo.elijah.gen.nodes.TmpSSACtxNode;
 import tripleo.util.buffer.TextBuffer;
 
-import static tripleo.elijah.util.Helpers.List_of;
-
 public class FactorialDotElijahTest {
-
-	@Test
-	public void testGenMethName() {
-		final ModuleRef prelude = new ModuleRef(null, -1);
-		final TypeRef   u64     = new TypeRef(prelude, prelude, "u64", 81);
-		final ModuleRef main_m  = new ModuleRef("fact.elijah", -2);
-		final TypeRef   main_k  = new TypeRef(main_m, main_m, "Main", 100);
-
-
-		final ArgumentNode argumentNode = new ArgumentNode("i", u64);
-		Assert.assertEquals("vai", argumentNode.getGenName());
-
-		final MethHdrNode mhn = new MethHdrNode(u64, main_k, "factorial_r",
-		  List_of(argumentNode), 1000);
-		Assert.assertEquals("z100factorial_r", mhn.genName());
-	}
 
 	@Test
 	public void nMinusOne() {
@@ -74,6 +59,22 @@ public class FactorialDotElijahTest {
 		final String s2 = (lamn.getRight().genText(cctx));
 		Assert.assertEquals("vtn - 1", s2); // TODO no idea if this is right
 
+	}
+
+	@Test
+	public void testGenMethName() {
+		final ModuleRef prelude = new ModuleRef(null, -1);
+		final TypeRef   u64     = new TypeRef(prelude, prelude, "u64", 81);
+		final ModuleRef main_m  = new ModuleRef("fact.elijah", -2);
+		final TypeRef   main_k  = new TypeRef(main_m, main_m, "Main", 100);
+
+
+		final ArgumentNode argumentNode = new ArgumentNode("i", u64);
+		Assert.assertEquals("vai", argumentNode.getGenName());
+
+		final MethHdrNode mhn = new MethHdrNode(u64, main_k, "factorial_r",
+		  List_of(argumentNode), 1000);
+		Assert.assertEquals("z100factorial_r", mhn.genName());
 	}
 
 	@Test

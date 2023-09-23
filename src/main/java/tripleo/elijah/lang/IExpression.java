@@ -37,11 +37,11 @@ public interface IExpression {
 	@Contract(pure = true)
 	ExpressionKind getKind();
 
-	void setKind(ExpressionKind aKind);
-
 	IExpression getLeft();
 
-	void setLeft(IExpression iexpression);
+	OS_Type getType();
+
+	boolean is_simple();
 
 	@Deprecated
 	String repr_();
@@ -58,9 +58,9 @@ public interface IExpression {
 //		}
 //	}
 
-	boolean is_simple();
+	void setKind(ExpressionKind aKind);
 
-	OS_Type getType();
+	void setLeft(IExpression iexpression);
 
 	void setType(OS_Type deducedExpression);
 }

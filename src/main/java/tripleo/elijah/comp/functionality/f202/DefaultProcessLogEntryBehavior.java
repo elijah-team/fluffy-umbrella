@@ -23,9 +23,13 @@ public class DefaultProcessLogEntryBehavior implements ProcessLogEntryBehavior {
 	private String      s1;
 
 	@Override
-	public void processLogEntry(final LogEntry entry) {
-		final String logentry = String.format("[%s] [%tD %tT] %s %s", s1, entry.time, entry.time, entry.level, entry.message);
-		ps.println(logentry);
+	public void donePhase() {
+		ps.println();
+	}
+
+	@Override
+	public void finish() {
+
 	}
 
 	@Override
@@ -39,13 +43,9 @@ public class DefaultProcessLogEntryBehavior implements ProcessLogEntryBehavior {
 	}
 
 	@Override
-	public void start() {
-
-	}
-
-	@Override
-	public void finish() {
-
+	public void processLogEntry(final LogEntry entry) {
+		final String logentry = String.format("[%s] [%tD %tT] %s %s", s1, entry.time, entry.time, entry.level, entry.message);
+		ps.println(logentry);
 	}
 
 	@Override
@@ -59,8 +59,8 @@ public class DefaultProcessLogEntryBehavior implements ProcessLogEntryBehavior {
 	}
 
 	@Override
-	public void donePhase() {
-		ps.println();
+	public void start() {
+
 	}
 }
 

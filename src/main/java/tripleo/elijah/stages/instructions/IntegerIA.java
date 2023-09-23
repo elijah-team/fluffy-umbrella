@@ -10,10 +10,11 @@ package tripleo.elijah.stages.instructions;
 
 import org.jdeferred2.Promise;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.stages.gen_fn.Constructable;
+import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
 
@@ -22,19 +23,21 @@ import tripleo.elijah.stages.gen_fn.VariableTableEntry;
  */
 public class IntegerIA implements InstructionArgument, Constructable {
 
-	public final BaseGeneratedFunction gf;
+	public final BaseEvaFunction gf;
 	private final int index;
 
-	public IntegerIA(final int anIndex, final BaseGeneratedFunction aGeneratedFunction) {
+	public IntegerIA(final int anIndex, final BaseEvaFunction aGeneratedFunction) {
 		index = anIndex;
 		gf    = aGeneratedFunction;
 	}
 
 	@Override
-	public String toString() {
-		return "IntegerIA{" +
-		  "index=" + index +
-		  '}';
+	public Promise<ProcTableEntry, Void, Void> constructablePromise() {
+		return getEntry().constructablePromise();
+	}
+
+	public @NotNull VariableTableEntry getEntry() {
+		return gf.getVarTableEntry(index);
 	}
 
 	public int getIndex() {
@@ -42,17 +45,13 @@ public class IntegerIA implements InstructionArgument, Constructable {
 	}
 
 	@Override
-	public void setConstructable(final ProcTableEntry aPte) {
-		getEntry().setConstructable(aPte);
-	}
-
-	public @NotNull VariableTableEntry getEntry() {
-		return gf.getVarTableEntry(index);
+	public void resolveTypeToClass(final EvaNode aNode) {
+		getEntry().resolveTypeToClass(aNode);
 	}
 
 	@Override
-	public void resolveTypeToClass(final GeneratedNode aNode) {
-		getEntry().resolveTypeToClass(aNode);
+	public void setConstructable(final ProcTableEntry aPte) {
+		getEntry().setConstructable(aPte);
 	}
 
 	@Override
@@ -61,8 +60,10 @@ public class IntegerIA implements InstructionArgument, Constructable {
 	}
 
 	@Override
-	public Promise<ProcTableEntry, Void, Void> constructablePromise() {
-		return getEntry().constructablePromise();
+	public String toString() {
+		return "IntegerIA{" +
+		  "index=" + index +
+		  '}';
 	}
 }
 

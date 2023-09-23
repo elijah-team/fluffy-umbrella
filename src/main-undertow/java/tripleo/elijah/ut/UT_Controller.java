@@ -1,5 +1,7 @@
 package tripleo.elijah.ut;
 
+import java.util.List;
+
 import tripleo.elijah.comp.ApacheOptionsProcessor;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.CompilationRunner;
@@ -9,8 +11,8 @@ import tripleo.elijah.comp.ICompilationBus;
 import tripleo.elijah.comp.OptionsProcessor;
 import tripleo.elijah.comp.i.IProgressSink;
 import tripleo.elijah.comp.i.ProgressSinkComponent;
-
-import java.util.List;
+import tripleo.elijah.util.Ok;
+import tripleo.elijah.util.Operation;
 
 public class UT_Controller implements CompilerController {
 	private final UT_Root     utr;
@@ -21,6 +23,19 @@ public class UT_Controller implements CompilerController {
 
 	public UT_Controller(final UT_Root aUtr) {
 		utr = aUtr;
+	}
+
+	public void _set(final Compilation aCompilation, final List<String> aArgs) {
+		c    = aCompilation;
+		args = aArgs;
+	}
+
+	public List<ICompilationBus.CB_Action> actions() {
+		return ((UT_CompilationBus) cb).actions;
+	}
+
+	public UT_CompilationBus cb() {
+		return (UT_CompilationBus) cb;
 	}
 
 	@Override
@@ -43,7 +58,7 @@ public class UT_Controller implements CompilerController {
 	}
 
 	@Override
-	public void runner() {
+	public Operation<Ok> runner() {
 		try {
 			c.__cr = new CompilationRunner(c, c._cis, cb, new IProgressSink() {
 				@Override
@@ -59,18 +74,6 @@ public class UT_Controller implements CompilerController {
 			c.getErrSink().exception(e);
 			throw new RuntimeException(e);
 		}
-	}
-
-	public void _set(final Compilation aCompilation, final List<String> aArgs) {
-		c    = aCompilation;
-		args = aArgs;
-	}
-
-	public List<ICompilationBus.CB_Action> actions() {
-		return ((UT_CompilationBus) cb).actions;
-	}
-
-	public UT_CompilationBus cb() {
-		return (UT_CompilationBus) cb;
+		return null;
 	}
 }

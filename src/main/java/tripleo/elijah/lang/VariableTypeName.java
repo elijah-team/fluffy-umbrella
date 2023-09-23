@@ -35,6 +35,92 @@ public class VariableTypeName extends AbstractTypeName implements NormalTypeName
 		genericPart = tn2;
 	}
 
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) return true;
+		if (!super.equals(o)) return false;
+		if (!(o instanceof final NormalTypeName that)) return false;
+		return Objects.equals(genericPart, that.getGenericPart());
+	}
+
+	@Override
+	public int getColumn() {
+		return pr_name.parts().get(0).getColumn();
+	}
+
+	@Override
+	public int getColumnEnd() {
+		return pr_name.parts().get(pr_name.parts().size()).getColumnEnd();
+	}
+
+	@Override
+	public Context getContext() {
+		return _ctx;
+	}
+
+	@Override
+	public File getFile() {
+		return pr_name.parts().get(0).getFile();
+	}
+
+	@Override
+	public TypeNameList getGenericPart() {
+		return genericPart;
+	}
+
+	@Override
+	public int getLine() {
+		return pr_name.parts().get(0).getLine();
+	}
+
+	@Override
+	public int getLineEnd() {
+		return pr_name.parts().get(pr_name.parts().size()).getLineEnd();
+	}
+
+	@Override
+	@NotNull
+	public Collection<TypeModifiers> getModifiers() {
+		return (tm != null ? List_of(tm) : new ArrayList<TypeModifiers>());
+	}
+
+	@Override
+	public Qualident getRealName() {
+		return pr_name;
+	}
+
+	@Override
+	public OS_Element getResolvedElement() {
+		return _resolvedElement;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), genericPart);
+	}
+
+	// region Locatable
+
+	@Override
+	public boolean hasResolvedElement() {
+		return _resolvedElement != null;
+	}
+
+	@Override
+	public Type kindOfType() {
+		return Type.NORMAL;
+	}
+
+	@Override
+	public void setContext(final Context ctx) {
+		_ctx = ctx;
+	}
+
+	@Override
+	public void setResolvedElement(final OS_Element element) {
+		_resolvedElement = element;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -53,92 +139,6 @@ public class VariableTypeName extends AbstractTypeName implements NormalTypeName
 			result = "<VariableTypeName null>";
 		}
 		return result;
-	}
-
-	@Override
-	public Context getContext() {
-		return _ctx;
-	}
-
-	@Override
-	public Type kindOfType() {
-		return Type.NORMAL;
-	}
-
-	@Override
-	public void setContext(final Context ctx) {
-		_ctx = ctx;
-	}
-
-	@Override
-	@NotNull
-	public Collection<TypeModifiers> getModifiers() {
-		return (tm != null ? List_of(tm) : new ArrayList<TypeModifiers>());
-	}
-
-	@Override
-	public TypeNameList getGenericPart() {
-		return genericPart;
-	}
-
-	@Override
-	public Qualident getRealName() {
-		return pr_name;
-	}
-
-	@Override
-	public boolean hasResolvedElement() {
-		return _resolvedElement != null;
-	}
-
-	@Override
-	public OS_Element getResolvedElement() {
-		return _resolvedElement;
-	}
-
-	@Override
-	public void setResolvedElement(final OS_Element element) {
-		_resolvedElement = element;
-	}
-
-	@Override
-	public boolean equals(final Object o) {
-		if (this == o) return true;
-		if (!super.equals(o)) return false;
-		if (!(o instanceof final NormalTypeName that)) return false;
-		return Objects.equals(genericPart, that.getGenericPart());
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(super.hashCode(), genericPart);
-	}
-
-	// region Locatable
-
-	@Override
-	public int getLine() {
-		return pr_name.parts().get(0).getLine();
-	}
-
-	@Override
-	public int getColumn() {
-		return pr_name.parts().get(0).getColumn();
-	}
-
-	@Override
-	public int getLineEnd() {
-		return pr_name.parts().get(pr_name.parts().size()).getLineEnd();
-	}
-
-	@Override
-	public int getColumnEnd() {
-		return pr_name.parts().get(pr_name.parts().size()).getColumnEnd();
-	}
-
-	@Override
-	public File getFile() {
-		return pr_name.parts().get(0).getFile();
 	}
 
 	// endregion

@@ -26,12 +26,6 @@ public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 	private       Context             _ctx;
 	private       Scope3              scope3;
 
-	public IfConditional(final OS_Element _parent) {
-		this._parent = _parent;
-		this._ctx    = null;
-//		this.sibling = null;
-	}
-
 	public IfConditional(final IfConditional ifExpression) {
 //		this.sibling = ifExpression;
 		//
@@ -39,27 +33,15 @@ public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 		this._parent = ifExpression._parent;
 	}
 
-	@Override
-	public void visitGen(final ElElementVisitor visit) {
-		visit.visitIfConditional(this);
+	public IfConditional(final OS_Element _parent) {
+		this._parent = _parent;
+		this._ctx    = null;
+//		this.sibling = null;
 	}
 
-	@Override
-	public Context getContext() {
-		return _ctx;
-	}
-
-	@Override
-	public OS_Element getParent() {
-		return _parent;
-	}
-
-	public void setContext(final IfConditionalContext ifConditionalContext) {
-		_ctx = ifConditionalContext;
-	}
-
-	public IExpression getExpr() {
-		return expr;
+	private void add(final StatementItem aItem) {
+		scope3.add((OS_Element) aItem);
+		//_items.add((OS_Element) aItem);
 	}
 
 	public IfConditional else_() {
@@ -83,9 +65,23 @@ public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 		this.expr = expr;
 	}
 
+	@Override
+	public Context getContext() {
+		return _ctx;
+	}
+
+	public IExpression getExpr() {
+		return expr;
+	}
+
 	public List<OS_Element> getItems() {
 		return scope3.items();
 //		return _items;
+	}
+
+	@Override
+	public OS_Element getParent() {
+		return _parent;
 	}
 
 	public List<IfConditional> getParts() {
@@ -94,6 +90,10 @@ public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 
 	public void scope(final Scope3 sco) {
 		scope3 = sco;
+	}
+
+	public void setContext(final IfConditionalContext ifConditionalContext) {
+		_ctx = ifConditionalContext;
 	}
 
 	/*private class IfConditionalScope extends AbstractScope2 {
@@ -129,9 +129,9 @@ public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 		}
 	}*/
 
-	private void add(final StatementItem aItem) {
-		scope3.add((OS_Element) aItem);
-		//_items.add((OS_Element) aItem);
+	@Override
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitIfConditional(this);
 	}
 
 }

@@ -1,10 +1,20 @@
 package tripleo.elijah.stages.deduce;
 
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.mock;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static tripleo.elijah.util.Helpers.List_of;
+
+import java.util.List;
+
 import org.junit.Test;
+
 import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.lang.ClassStatement;
@@ -19,20 +29,13 @@ import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.lang.types.OS_BuiltinType;
 import tripleo.elijah.lang.types.OS_UserClassType;
 import tripleo.elijah.lang2.BuiltInTypes;
+import tripleo.elijah.stages.gen_fn.EvaFunction;
 import tripleo.elijah.stages.gen_fn.GeneratePhase;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
 import tripleo.elijah.stages.gen_fn.TypeTableEntry;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
 import tripleo.elijah.stages.instructions.VariableTableType;
-import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
-
-import java.util.List;
-
-import static org.easymock.EasyMock.*;
-import static tripleo.elijah.stages.logging.ElLog.Verbosity.VERBOSE;
-import static tripleo.elijah.util.Helpers.List_of;
 
 public class DoAssignCall_ArgsIdent1_Test {
 	/*
@@ -49,16 +52,23 @@ public class DoAssignCall_ArgsIdent1_Test {
 		mod.setParent(c);
 		mod.setFileName("foo.elijah");
 
-		final PipelineLogic pipelineLogic = new PipelineLogic(new AccessBus(c));
-		final GeneratePhase generatePhase = new GeneratePhase(VERBOSE, pipelineLogic, c);
-		final DeducePhase   phase         = new DeducePhase(generatePhase, pipelineLogic, ElLog.Verbosity.VERBOSE, c);
+		CompilationEnclosure ce = c.getCompilationEnclosure();
+
+		final AccessBus     accessBus           = new AccessBus(c, c.getCompilationEnclosure().getPipelineAccess());
+//		ce.provideAccessBus(accessBus);
+
+		final PipelineLogic pipelineLogic = new PipelineLogic(accessBus);
+		ce.providePipelineLogic(pipelineLogic);
+
+		final GeneratePhase generatePhase = new GeneratePhase(ce, pipelineLogic);
+		final DeducePhase   phase         = new DeducePhase(ce);
 
 		final DeduceTypes2 d = new DeduceTypes2(mod, phase);
 
 		final FunctionDef fd = new FunctionDef(mod, new FunctionContext(null, null));
 		fd.setName(Helpers.string_to_ident("no_function_name"));
 
-		final GeneratedFunction generatedFunction = new GeneratedFunction(fd);
+		final EvaFunction generatedFunction = new EvaFunction(fd);
 
 		final TypeTableEntry self_type    = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, new OS_UserClassType(mock(ClassStatement.class)));
 		final int            index_self   = generatedFunction.addVariableTableEntry("self", VariableTableType.SELF, self_type, null);

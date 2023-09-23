@@ -20,8 +20,8 @@ public class ExceptionDiagnostic implements Diagnostic {
 	}
 
 	@Override
-	public Severity severity() {
-		return Severity.ERROR;
+	public Object get() {
+		return e;
 	}
 
 	@Override
@@ -30,12 +30,17 @@ public class ExceptionDiagnostic implements Diagnostic {
 	}
 
 	@Override
+	public void report(final PrintStream stream) {
+		stream.println(code() + " Some exception " + e);
+	}
+
+	@Override
 	public @NotNull List<Locatable> secondary() {
 		return null;
 	}
 
 	@Override
-	public void report(final PrintStream stream) {
-		stream.println(code() + " Some exception " + e);
+	public Severity severity() {
+		return Severity.ERROR;
 	}
 }

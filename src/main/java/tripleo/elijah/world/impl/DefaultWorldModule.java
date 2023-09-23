@@ -1,32 +1,23 @@
 package tripleo.elijah.world.impl;
 
-import tripleo.elijah.*;
-import tripleo.elijah.comp.*;
-import tripleo.elijah.lang.*;
-import tripleo.elijah.nextgen.inputtree.*;
-import tripleo.elijah.stages.deduce.*;
-import tripleo.elijah.world.i.*;
+import org.jetbrains.annotations.NotNull;
+
+import tripleo.elijah.comp.i.CompilationEnclosure;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleInput;
+import tripleo.elijah.stages.inter.ModuleThing;
+import tripleo.elijah.world.i.WorldModule;
 
 public class DefaultWorldModule implements WorldModule {
-	final Eventual<DeducePhase.GeneratedClasses> _p_GeneratedClasses = new Eventual<>();
-//	private       ModuleThing thing;
-
-//	@Getter
-//	private GN_PL_Run2.GenerateFunctionsRequest rq;
 	private final OS_Module   mod;
+	private       ModuleThing thing;
 
-	public DefaultWorldModule(final OS_Module aMod, final CompilationEnclosure aCe) {
+//	private GN_PL_Run2.GenerateFunctionsRequest rq;
+
+	public DefaultWorldModule(final OS_Module aMod, final @NotNull CompilationEnclosure ce) {
 		mod = aMod;
-	}
-
-//	public DefaultWorldModule(final OS_Module aMod, final GN_PL_Run2.GenerateFunctionsRequest aRq) {
-//		mod = aMod;
-//		rq  = aRq;
-//	}
-
-	@Override
-	public OS_Module module() {
-		return mod;
+		final ModuleThing mt = ce.addModuleThing(mod);
+		setThing(mt);
 	}
 
 	@Override
@@ -34,31 +25,32 @@ public class DefaultWorldModule implements WorldModule {
 		return null;
 	}
 
+	@Override
+	public OS_Module module() {
+		return mod;
+	}
+
+	public void setThing(final ModuleThing aThing) {
+		thing = aThing;
+	}
+
 //	@Override
 //	public GN_PL_Run2.GenerateFunctionsRequest rq() {
 //		return rq;
+		// //throw new NotImplementedException("Unexpected");
 //	}
 
-//	public DefaultWorldModule(final OS_Module aMod, final @NotNull CompilationEnclosure ce) {
-//		mod = aMod;
-//		final ModuleThing mt = ce.addModuleThing(mod);
-//		setThing(mt);
-//	}
-
-	@Override
-	public Eventual<DeducePhase.GeneratedClasses> getEventual() {
-		return _p_GeneratedClasses;
+	public ModuleThing thing() {
+		return thing;
 	}
 
 //	public void setRq(final GN_PL_Run2.GenerateFunctionsRequest aRq) {
 //		rq = aRq;
+//		//throw new NotImplementedException("Unexpected");
 //	}
 
-//	public ModuleThing thing() {
-//		return thing;
-//	}
-
-//	public void setThing(final ModuleThing aThing) {
-//		thing = aThing;
-//	}
+	@Override
+	public String toString() {
+		return "DefaultWorldModule{%s}".formatted(mod.getFileName());
+	}
 }

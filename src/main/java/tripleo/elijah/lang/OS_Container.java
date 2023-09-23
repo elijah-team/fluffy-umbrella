@@ -12,9 +12,9 @@ import java.util.List;
  */
 public interface OS_Container extends Documentable {
 
-	List<OS_Element2> items();
-
 	void add(OS_Element anElement);
+
+	List<OS_Element2> items();
 }
 
 //

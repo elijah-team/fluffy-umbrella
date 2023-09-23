@@ -28,6 +28,11 @@ public class DefFunctionContext extends Context {
 		carrier = functionDef;
 	}
 
+	@Override
+	public @Nullable Context getParent() {
+		return null;
+	}
+
 	/**
 	 * By definition should have nothing to lookup
 	 *
@@ -41,11 +46,6 @@ public class DefFunctionContext extends Context {
 //		final LookupResultList Result = new LookupResultList();
 		alreadySearched.add(carrier.getContext());
 		return getParent().lookup(name, level, Result, alreadySearched, one);
-	}
-
-	@Override
-	public @Nullable Context getParent() {
-		return null;
 	}
 
 }

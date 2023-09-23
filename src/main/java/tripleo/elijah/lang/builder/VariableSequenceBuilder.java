@@ -8,6 +8,9 @@
  */
 package tripleo.elijah.lang.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.IdentExpression;
@@ -16,35 +19,28 @@ import tripleo.elijah.lang.TypeName;
 import tripleo.elijah.lang.VariableSequence;
 import tripleo.elijah.lang.VariableStatement;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created 12/22/20 11:48 PM
  */
 public class VariableSequenceBuilder extends ElBuilder {
+	static class Triple {
+		IExpression     _initial;
+		IdentExpression _name;
+		TypeName        _tn;
+
+		public Triple(final IExpression _initial, final IdentExpression _name, final TypeName _tn) {
+			this._initial = _initial;
+			this._name    = _name;
+			this._tn      = _tn;
+		}
+	}
 	List<Triple> triples = new ArrayList<Triple>();
 	private IExpression     _initial;
 	private IdentExpression _name;
 	private TypeName        _tn;
 	private TypeModifiers   def = null;
+
 	private Context _context;
-
-	public void defaultModifiers(final TypeModifiers modifiers) {
-		def = modifiers;
-	}
-
-	public void setName(final IdentExpression i) {
-		_name = i;
-	}
-
-	public void setTypeName(final TypeName tn) {
-		_tn = tn;
-	}
-
-	public void setInitial(final IExpression expr) {
-		_initial = expr;
-	}
 
 	@Override
 	protected VariableSequence build() {
@@ -66,6 +62,10 @@ public class VariableSequenceBuilder extends ElBuilder {
 		return variableSequence;
 	}
 
+	public void defaultModifiers(final TypeModifiers modifiers) {
+		def = modifiers;
+	}
+
 	public void next() {
 		if (_initial == null) _initial = IExpression.UNASSIGNED;
 		triples.add(new Triple(_initial, _name, _tn));
@@ -79,16 +79,16 @@ public class VariableSequenceBuilder extends ElBuilder {
 		_context = context;
 	}
 
-	static class Triple {
-		IExpression     _initial;
-		IdentExpression _name;
-		TypeName        _tn;
+	public void setInitial(final IExpression expr) {
+		_initial = expr;
+	}
 
-		public Triple(final IExpression _initial, final IdentExpression _name, final TypeName _tn) {
-			this._initial = _initial;
-			this._name    = _name;
-			this._tn      = _tn;
-		}
+	public void setName(final IdentExpression i) {
+		_name = i;
+	}
+
+	public void setTypeName(final TypeName tn) {
+		_tn = tn;
 	}
 }
 

@@ -21,13 +21,13 @@ public class FileNotFoundDiagnostic implements Diagnostic {
 	}
 
 	@Override
-	public Severity severity() {
-		return Severity.INFO;
+	public @NotNull Locatable primary() {
+		return null;
 	}
 
 	@Override
-	public @NotNull Locatable primary() {
-		return null;
+	public void report(final PrintStream stream) {
+		stream.println(code() + " File not found " + f.toString());
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class FileNotFoundDiagnostic implements Diagnostic {
 	}
 
 	@Override
-	public void report(final PrintStream stream) {
-		stream.println(code() + " File not found " + f.toString());
+	public Severity severity() {
+		return Severity.INFO;
 	}
 }

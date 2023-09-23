@@ -23,22 +23,6 @@ public class AliasStatementBuilder extends ElBuilder {
 	private Qualident       oldElement;
 	private IdentExpression newAlias;
 
-	public IdentExpression getIdent() {
-		return newAlias;
-	}
-
-	public void setIdent(final IdentExpression newAlias) {
-		this.newAlias = newAlias;
-	}
-
-	public Qualident getBecomes() {
-		return oldElement;
-	}
-
-	public void setBecomes(final Qualident oldElement) {
-		this.oldElement = oldElement;
-	}
-
 	@Override
 	public AliasStatement build() {
 		final AliasStatement aliasStatement = new AliasStatement(_parent);
@@ -48,17 +32,33 @@ public class AliasStatementBuilder extends ElBuilder {
 		return aliasStatement;
 	}
 
+	public Qualident getBecomes() {
+		return oldElement;
+	}
+
+	public IdentExpression getIdent() {
+		return newAlias;
+	}
+
+	public void setBecomes(final Qualident oldElement) {
+		this.oldElement = oldElement;
+	}
+
 	@Override
 	protected void setContext(final Context context) {
 		_context = context;
 	}
 
-	public void setName(final IdentExpression i1) {
-		newAlias = i1;
-	}
-
 	public void setExpression(final Qualident xy) {
 		oldElement = xy;
+	}
+
+	public void setIdent(final IdentExpression newAlias) {
+		this.newAlias = newAlias;
+	}
+
+	public void setName(final IdentExpression i1) {
+		newAlias = i1;
 	}
 }
 

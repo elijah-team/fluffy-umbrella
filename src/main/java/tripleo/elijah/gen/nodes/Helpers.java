@@ -18,18 +18,6 @@ import java.util.List;
  */
 public class Helpers {
 	@NotNull
-	static ExpressionList LocalAgnTmpNodeToListVarRef(final List<LocalAgnTmpNode> of) {
-		final ExpressionList expl = new ExpressionList();
-		for (final LocalAgnTmpNode node : of) {
-			final VariableReference vr = new VariableReference();
-			vr.setMain(node.genName());
-			expl.add(vr);
-//			NotImplementedException.raise();
-		}
-		return expl;
-	}
-
-	@NotNull
 	static ExpressionKind ExpressionOperatorToExpressionType(final ExpressionOperators middle) {
 		final ExpressionKind middle1;
 		switch (middle) {
@@ -71,6 +59,18 @@ public class Helpers {
 		sb.append(tripleo.elijah.util.Helpers.String_join(", ", ls));
 		sb.append(")");
 		return sb.toString();
+	}
+
+	@NotNull
+	static ExpressionList LocalAgnTmpNodeToListVarRef(final List<LocalAgnTmpNode> of) {
+		final ExpressionList expl = new ExpressionList();
+		for (final LocalAgnTmpNode node : of) {
+			final VariableReference vr = new VariableReference();
+			vr.setMain(node.genName());
+			expl.add(vr);
+//			NotImplementedException.raise();
+		}
+		return expl;
 	}
 
 	//	public static List<String> List_of(String string, String string2, String string3) {

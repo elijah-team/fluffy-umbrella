@@ -8,6 +8,9 @@
  */
 package tripleo.elijah.lang.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import antlr.Token;
 import tripleo.elijah.lang.Documentable;
 import tripleo.elijah.lang.ExpressionList;
@@ -15,19 +18,12 @@ import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.Qualident;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created 12/23/20 12:49 AM
  */
 public class BaseScope implements Documentable {
 	protected final List<ElBuilder> bs = new ArrayList<ElBuilder>();
 	private final List<Token> _docstrings = new ArrayList<Token>();
-
-	public void return_expression(final IExpression expr) {
-		throw new NotImplementedException();
-	}
 
 	public void add(final ElBuilder b) {
 		bs.add(b);
@@ -38,15 +34,15 @@ public class BaseScope implements Documentable {
 		_docstrings.add(s1);
 	}
 
-	public void continue_statement() {
-		throw new NotImplementedException();
-	}
-
 	public void break_statement() {
 		throw new NotImplementedException();
 	}
 
-	public void statementWrapper(final IExpression expr) {
+	public void constructExpression(final Qualident q, final ExpressionList o) {
+		throw new NotImplementedException();
+	}
+
+	public void continue_statement() {
 		throw new NotImplementedException();
 	}
 
@@ -54,7 +50,11 @@ public class BaseScope implements Documentable {
 		return bs;
 	}
 
-	public void constructExpression(final Qualident q, final ExpressionList o) {
+	public void return_expression(final IExpression expr) {
+		throw new NotImplementedException();
+	}
+
+	public void statementWrapper(final IExpression expr) {
 		throw new NotImplementedException();
 	}
 

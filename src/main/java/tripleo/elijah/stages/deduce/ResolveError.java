@@ -8,10 +8,12 @@
  */
 package tripleo.elijah.stages.deduce;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
+import java.io.PrintStream;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.lang.IdentExpression;
@@ -19,29 +21,24 @@ import tripleo.elijah.lang.LookupResult;
 import tripleo.elijah.lang.LookupResultList;
 import tripleo.elijah.lang.TypeName;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 /**
  * Created 12/26/20 5:08 AM
  */
 public class ResolveError extends Exception implements Diagnostic {
-	final @org.jetbrains.annotations.Nullable         IdentExpression  ident;
-	private final @org.jetbrains.annotations.Nullable TypeName         typeName;
+	private final @org.jetbrains.annotations.Nullable IdentExpression  ident;
 	private final                                     LookupResultList lrl;
+	private final @org.jetbrains.annotations.Nullable TypeName         typeName;
 
-	public ResolveError(final TypeName typeName, final LookupResultList lrl) {
-		this.typeName = typeName;
-		this.lrl      = lrl;
-		this.ident    = null;
-	}
-
-	public ResolveError(final IdentExpression aIdent, final LookupResultList aLrl) {
+	public ResolveError(IdentExpression aIdent, LookupResultList aLrl) {
 		ident    = aIdent;
 		lrl      = aLrl;
 		typeName = null;
+	}
+
+	public ResolveError(TypeName typeName, LookupResultList lrl) {
+		this.typeName = typeName;
+		this.lrl      = lrl;
+		this.ident    = null;
 	}
 
 	@Override
@@ -49,9 +46,11 @@ public class ResolveError extends Exception implements Diagnostic {
 		return "S1000";
 	}
 
-	@Override
-	public @NotNull Severity severity() {
-		return Severity.ERROR;
+	private @NotNull String message() {
+		if (resultsList().size() > 1)
+			return "Can't choose between alternatives";
+		else
+			return "Can't resolve";
 	}
 
 	@Override
@@ -63,40 +62,30 @@ public class ResolveError extends Exception implements Diagnostic {
 	}
 
 	@Override
-	public @NotNull List<Locatable> secondary() {
-		@NotNull final Collection<Locatable> x = Collections2.transform(resultsList(), new Function<LookupResult, Locatable>() {
-			@Nullable
-			@Override
-			public Locatable apply(@Nullable final LookupResult input) {
-				if (input.getElement() instanceof Locatable) {
-					return (Locatable) input.getElement();
-				}
-				return null;
-			}
-		});
-		return new ArrayList<Locatable>();
-	}
-
-	@Override
-	public void report(@NotNull final PrintStream stream) {
+	public void report(@NotNull PrintStream stream) {
 		stream.printf("---[%s]---: %s%n", code(), message());
 		// linecache.print(primary);
-		for (final Locatable sec : secondary()) {
+		for (Locatable sec : secondary()) {
 			//linecache.print(sec)
 		}
 		stream.flush();
 	}
 
-	private @NotNull String message() {
-		if (resultsList().size() > 1)
-			return "Can't choose between alternatives";
-		else
-			return "Can't resolve";
-	}
-
 	@NotNull
 	public List<LookupResult> resultsList() {
 		return lrl.results();
+	}
+
+	@Override
+	public @NotNull List<Locatable> secondary() {
+		return resultsList().stream()
+				.map(e -> (Locatable) e.getElement())
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public @NotNull Severity severity() {
+		return Severity.ERROR;
 	}
 }
 

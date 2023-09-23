@@ -1,5 +1,8 @@
 package tripleo.elijah.lang.imports;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import tripleo.elijah.contexts.ImportContext;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.IdentExpression;
@@ -8,15 +11,28 @@ import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.Qualident;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created 8/7/20 2:09 AM
  */
 public class AssigningImportStatement extends _BaseImportStatement {
+	public static class Part { // public for ImportStatementBuilder
+		final IdentExpression name;
+		final Qualident       value;
+
+		public Part(final IdentExpression i1, final Qualident q1) {
+			name  = i1;
+			value = q1;
+		}
+	}
+	private static Qualident identToQualident(final IdentExpression identExpression) {
+		final Qualident r = new Qualident();
+		r.append(identExpression);
+		return r;
+	}
 	final         OS_Element parent;
+
 	private final List<Part> _parts = new ArrayList<Part>();
+
 	private       Context    _ctx;
 
 	public AssigningImportStatement(final OS_Element aParent) {
@@ -49,11 +65,6 @@ public class AssigningImportStatement extends _BaseImportStatement {
 	}
 
 	@Override
-	public void setContext(final ImportContext ctx) {
-		_ctx = ctx;
-	}
-
-	@Override
 	public List<Qualident> parts() {
 		final List<Qualident> r = new ArrayList<Qualident>();
 		for (final Part part : _parts) {
@@ -62,20 +73,9 @@ public class AssigningImportStatement extends _BaseImportStatement {
 		return r;
 	}
 
-	private static Qualident identToQualident(final IdentExpression identExpression) {
-		final Qualident r = new Qualident();
-		r.append(identExpression);
-		return r;
-	}
-
-	public static class Part { // public for ImportStatementBuilder
-		final IdentExpression name;
-		final Qualident       value;
-
-		public Part(final IdentExpression i1, final Qualident q1) {
-			name  = i1;
-			value = q1;
-		}
+	@Override
+	public void setContext(final ImportContext ctx) {
+		_ctx = ctx;
 	}
 
 }

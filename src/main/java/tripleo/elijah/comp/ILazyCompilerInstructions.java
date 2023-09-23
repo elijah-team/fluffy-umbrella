@@ -1,10 +1,12 @@
 package tripleo.elijah.comp;
 
-import org.jetbrains.annotations.*;
-import tripleo.elijah.ci.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.util.Operation;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.Objects;
 
 public interface ILazyCompilerInstructions {
 	@Contract(value = "_ -> new", pure = true)

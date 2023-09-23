@@ -8,7 +8,12 @@
  */
 package tripleo.elijah.stages.generate;
 
+import java.io.File;
+
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.lang.ClassStatement;
@@ -19,161 +24,241 @@ import tripleo.elijah.lang.NamespaceTypes;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.nextgen.outputtree.EOT_OutputFile;
+import tripleo.elijah.stages.gen_fn.EvaClass;
+import tripleo.elijah.stages.gen_fn.EvaConstructor;
+import tripleo.elijah.stages.gen_fn.EvaFunction;
+import tripleo.elijah.stages.gen_fn.EvaNamespace;
+import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
-
-import java.io.File;
+import tripleo.elijah.stages.gen_generic.Old_GenerateResult;
 
 /**
  * Created 1/13/21 5:54 AM
  */
 public class OutputStrategyC {
+	public class OSC_NFC implements EOT_OutputFile.FileNameProvider {
+		String lsp;
+
+		String dir;
+		String extension;
+		String basename;
+		public OSC_NFC(String string, String string2, String string3, String extension0) {
+			lsp       = string;
+			dir       = string2;
+			basename  = string3;
+			extension = extension0;
+		}
+
+		@Override
+		public @NotNull String getFilename() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("/");
+			sb.append(lsp);
+			if (dir != null && !dir.isEmpty()) {
+				sb.append("/");
+				sb.append(dir);
+			}
+			if (!basename.isEmpty()) {
+				sb.append("/");
+				sb.append(basename);
+			}
+			sb.append(extension);
+			return sb.toString();
+		}
+
+		@Override
+		public String toString() {
+			return "OSC_NFC{" +
+			  "lsp='" + lsp + '\'' +
+			  ", dir='" + dir + '\'' +
+			  ", extension='" + extension + '\'' +
+			  ", basename='" + basename + '\'' +
+			  '}';
+		}
+	}
+
+	public class OSC_NFCo implements EOT_OutputFile.FileNameProvider {
+		private final String s;
+
+		public OSC_NFCo(final String aS) {
+			s = aS;
+		}
+
+		@Override
+		public String getFilename() {
+			return s;
+		}
+	}
+
+	public class OSC_NFF implements EOT_OutputFile.FileNameProvider {
+		private final String s;
+
+		public OSC_NFF(final String aS) {
+			s = aS;
+		}
+
+		@Override
+		public String getFilename() {
+			return s;
+		}
+
+	}
+
+	public class OSC_NFN implements EOT_OutputFile.FileNameProvider {
+		private final @Nullable String s;
+		private final @Nullable String lsp0;
+		private final @Nullable String name0;
+		private final @Nullable String filename;
+		private final @Nullable String extension0;
+
+		public OSC_NFN(final String aLsp0, final String aName0, final String aFilename, final String aExtension0) {
+			s          = null;
+			lsp0       = aLsp0;
+			name0      = aName0;
+			filename   = aFilename;
+			extension0 = aExtension0;
+		}
+
+		@Override
+		public @NotNull String getFilename() {
+			if (s == null) {
+				final String sb = lsp0 +
+				  "/" +
+				  name0 +
+				  "/" +
+				  filename +
+				  extension0;
+				return sb;
+			}
+			return s;
+		}
+	}
+
+	public class OSC_NFN_ implements EOT_OutputFile.FileNameProvider {
+		private final @Nullable String s;
+
+		public OSC_NFN_(final EvaNamespace aX, final GenerateResult.TY aTy) {
+			s = nameForNamespace(aX, aTy);
+		}
+
+		@Override
+		public @NotNull String getFilename() {
+			return s;
+		}
+	}
+
+	@Contract(pure = true)
+	private static String a_lsp(final @Nullable LibraryStatementPart lsp) {
+		final String lsp0;
+		if (lsp == null) {
+			//sb.append("______________");
+			lsp0 = "";
+		} else {
+//			sb.append(generatedClass.module.lsp.getName());
+			lsp0 = lsp.getInstructions().getName();
+		}
+		return lsp0;
+	}
+
+	private static String n_lsp(final @NotNull EvaNamespace generatedNamespace) {
+		final String               lsp0;
+		final LibraryStatementPart lsp = generatedNamespace.module().getLsp();
+		if (lsp == null) {
+			//sb.append("___________________");
+			lsp0 = "";
+		} else {
+			lsp0 = lsp.getInstructions().getName();
+		}
+		return lsp0;
+	}
+
 	private final OutputStrategy outputStrategy;
 
-	public OutputStrategyC(final OutputStrategy outputStrategy) {
+	public OutputStrategyC(OutputStrategy outputStrategy) {
 		this.outputStrategy = outputStrategy;
 	}
 
-	public String nameForFunction(final @NotNull GeneratedFunction generatedFunction, final GenerateResult.TY aTy) {
-		GeneratedNode c = generatedFunction.getGenClass();
-		if (c == null) c = generatedFunction.getParent(); // TODO fixme
-		if (c instanceof GeneratedClass)
-			return nameForClass((GeneratedClass) c, aTy);
-		else if (c instanceof GeneratedNamespace)
-			return nameForNamespace((GeneratedNamespace) c, aTy);
-		return null;
-	}
+	private @NotNull String a_name(final @NotNull EvaClass aEvaClass, final @NotNull LibraryStatementPart lsp) {
+		String name0;
 
-	public @NotNull String nameForClass(final GeneratedClass generatedClass, final GenerateResult.TY aTy) {
-		if (generatedClass.module().isPrelude()) {
-			// We are dealing with the Prelude
-			final @NotNull StringBuilder sb = new StringBuilder();
-			sb.append("/Prelude/");
-			sb.append("Prelude");
-			appendExtension(aTy, sb);
-			return sb.toString();
-		}
-		final StringBuilder sb = new StringBuilder();
-		sb.append("/");
-		final LibraryStatementPart lsp = generatedClass.module().getLsp();
-		if (lsp == null)
-			sb.append("______________");
-		else
-//			sb.append(generatedClass.module.lsp.getName());
-			sb.append(lsp.getInstructions().getName());
-		sb.append("/");
-		OS_Package pkg = generatedClass.getKlass().getPackageName();
-		if (pkg != OS_Package.default_package) {
-			if (pkg == null)
-				pkg = findPackage(generatedClass.getKlass());
-			sb.append(pkg.getName());
-			sb.append("/");
-		}
 		switch (outputStrategy.per()) {
-		case PER_CLASS: {
-			if (generatedClass.isGeneric())
-				sb.append(generatedClass.getNumberedName());
+		case PER_CLASS -> {
+			if (aEvaClass.isGeneric())
+				name0 = (aEvaClass.getNumberedName());
 			else
-				sb.append(generatedClass.getName());
+				name0 = (aEvaClass.getName());
 		}
-		break;
-		case PER_MODULE: {
-//					mod = generatedClass.getKlass().getContext().module();
-			final OS_Module mod = generatedClass.module();
-			final File      f   = new File(mod.getFileName());
-			String          ff  = f.getName();
-			final int       y   = 2;
-			ff = strip_elijah_extension(ff);
-			sb.append(ff);
-//					sb.append('/');
+		case PER_MODULE -> {
+			OS_Module mod = aEvaClass.module();
+			File      f   = new File(mod.getFileName());
+			String    ff  = f.getName();
+			name0 = strip_elijah_extension(ff);
 		}
-		break;
-		case PER_PACKAGE: {
-			final OS_Package pkg2 = generatedClass.getKlass().getPackageName();
-			final String     pkgName;
-			if (pkg2 != OS_Package.default_package) {
-				pkgName = "$default_package";
-			} else
+		case PER_PACKAGE -> {
+			final OS_Package pkg2 = aEvaClass.getKlass().getPackageName();
+			String           pkgName;
+			if (pkg2 != OS_Package.default_package) { // FIXME ??
+				pkgName = "__default_package-224";
+			} else {
 				pkgName = pkg2.getName();
-			sb.append(pkgName);
-//					sb.append('/');
+			}
+			name0 = pkgName;
 		}
-		break;
-		case PER_PROGRAM: {
-			final CompilerInstructions xx = lsp.getInstructions();
-			final String               n  = xx.getName();
-			sb.append(n);
-//					sb.append('/');
+		case PER_PROGRAM -> {
+			CompilerInstructions xx = lsp.getInstructions();
+			String               n  = xx.getName();
+			name0 = n;
 		}
-		break;
-		default:
-			throw new IllegalStateException("Unexpected value: " + outputStrategy.per());
+		default -> throw new IllegalStateException("Unexpected value: " + outputStrategy.per());
 		}
-		appendExtension(aTy, sb);
-		return sb.toString();
+		return name0;
 	}
 
-	public String nameForNamespace(final GeneratedNamespace generatedNamespace, final GenerateResult.TY aTy) {
-		if (generatedNamespace.module().isPrelude()) {
-			// We are dealing with the Prelude
-			final StringBuilder sb = new StringBuilder();
-			sb.append("/Prelude/");
-			sb.append("Prelude");
-			appendExtension(aTy, sb);
-			return sb.toString();
+	@Contract(pure = true)
+	private @NotNull String a_pkg(final @NotNull EvaClass aEvaClass) {
+		final OS_Package pkg0 = aEvaClass.getKlass().getPackageName();
+		final OS_Package pkg;
+
+		final String dir0;
+		if (pkg0 != OS_Package.default_package) {
+			if (pkg0 == null) {
+				pkg = findPackage(aEvaClass.getKlass());
+			} else {
+				pkg = pkg0;
+			}
+
+			dir0 = (pkg.getName());
+		} else {
+			dir0 = "";//_default_package-255";
 		}
-		String filename;
-		if (generatedNamespace.getNamespaceStatement().getKind() == NamespaceTypes.MODULE) {
-			final String moduleFileName = generatedNamespace.module().getFileName();
-			final File   moduleFile     = new File(moduleFileName);
-			filename = moduleFile.getName();
-			filename = strip_elijah_extension(filename);
-		} else
-			filename = generatedNamespace.getName();
-		final StringBuilder sb = new StringBuilder();
-		sb.append("/");
-		final LibraryStatementPart lsp = generatedNamespace.module().getLsp();
-		if (lsp == null)
-			sb.append("___________________");
-		else
-			sb.append(lsp.getInstructions().getName());
-		sb.append("/");
-		OS_Package pkg = generatedNamespace.getNamespaceStatement().getPackageName();
-		if (pkg != OS_Package.default_package) {
-			if (pkg == null)
-				pkg = findPackage(generatedNamespace.getNamespaceStatement());
-			sb.append(pkg.getName());
-			sb.append("/");
-		}
-		sb.append(filename);
-		appendExtension(aTy, sb);
-		return sb.toString();
+
+		return dir0;
 	}
 
-	public void appendExtension(final GenerateResult.TY aTy, final StringBuilder aSb) {
+	@Contract(pure = true)
+	public @NotNull String Extension0(Old_GenerateResult.@NotNull TY aTy) {
 		switch (aTy) {
 		case IMPL:
-			aSb.append(".c");
-			break;
+			return (".c");
 		case PRIVATE_HEADER:
-			aSb.append("_Priv.h");
+			return ("_Priv.h");
 		case HEADER:
-			aSb.append(".h");
-			break;
+			return (".h");
+		default:
+			throw new IllegalStateException("Unexpected value: " + aTy);
 		}
 	}
 
-	private OS_Package findPackage(OS_Element e) {
+	@Contract(pure = true)
+	private @Nullable OS_Package findPackage(OS_Element ee) {
+		var e = ee;
 		while (e != null) {
 			e = e.getParent();
 			if (e.getContext().getParent() == e.getContext())
 				e = null;
 			else {
-				@NotNull final ElObjectType t = DecideElObjectType.getElObjectType(e);
+				@NotNull ElObjectType t = DecideElObjectType.getElObjectType(e);
 				switch (t) {
 				case NAMESPACE:
 					if (((NamespaceStatement) e).getPackageName() != null)
@@ -194,23 +279,120 @@ public class OutputStrategyC {
 		return null;
 	}
 
-	String strip_elijah_extension(String aFilename) {
+	private String n_pkg(final @NotNull EvaNamespace generatedNamespace, @Nullable OS_Package pkg) {
+		final String name0;
+		if (pkg != OS_Package.default_package) {
+			if (pkg == null)
+				pkg = findPackage(generatedNamespace.getNamespaceStatement());
+			name0 = pkg.getName();
+		} else {
+			name0 = "#default_package-349";
+		}
+		return name0;
+	}
+
+	public String nameForClass(final @NotNull EvaClass aX, final GenerateResult.@NotNull TY aTy) {
+		return nameForClass1(aX, aTy).getFilename();
+	}
+
+	public @NotNull OSC_NFC nameForClass1(@NotNull EvaClass aEvaClass, GenerateResult.@NotNull TY aTy) {
+		if (aEvaClass.module().isPrelude()) {
+			// We are dealing with the Prelude
+			return new OSC_NFC("Prelude", "Prelude", "", Extension0(aTy));
+		}
+
+		final String lsp0, dir0, name0, extension0;
+
+		final LibraryStatementPart lsp = aEvaClass.module().getLsp();
+		lsp0 = a_lsp(lsp);
+
+		dir0       = a_pkg(aEvaClass);
+		name0      = a_name(aEvaClass, lsp);
+		extension0 = Extension0(aTy);
+
+		return new OSC_NFC(lsp0, dir0, name0, extension0);
+	}
+
+	@Contract(pure = true)
+	public @Nullable String nameForConstructor(@NotNull EvaConstructor aEvaConstructor, Old_GenerateResult.@NotNull TY aTy) {
+		EvaNode c = aEvaConstructor.getGenClass();
+		if (c == null) c = aEvaConstructor.getParent(); // TODO fixme
+		if (c instanceof EvaClass)
+			return nameForClass((EvaClass) c, aTy);
+		else if (c instanceof EvaNamespace)
+			return nameForNamespace((EvaNamespace) c, aTy);
+		return null;
+	}
+
+	public @NotNull OSC_NFCo nameForConstructor1(final @NotNull EvaConstructor aGf, final GenerateResult.@NotNull TY aTy) {
+		return new OSC_NFCo(nameForConstructor(aGf, aTy));
+	}
+
+	@Contract(pure = true)
+	public String nameForFunction(@NotNull EvaFunction generatedFunction, Old_GenerateResult.@NotNull TY aTy) {
+		EvaNode c = generatedFunction.getGenClass();
+		if (c == null) {
+			assert false;
+			c = generatedFunction.getParent(); // TODO fixme
+		}
+		if (c instanceof EvaClass)
+			return nameForClass((EvaClass) c, aTy);
+		else if (c instanceof EvaNamespace)
+			return nameForNamespace((EvaNamespace) c, aTy);
+		assert false;
+		return null;
+	}
+
+	public @NotNull EOT_OutputFile.FileNameProvider nameForFunction1(final @NotNull EvaFunction aGf, final GenerateResult.@NotNull TY aTy) {
+		return new OSC_NFF(nameForFunction(aGf, aTy));
+	}
+
+	public String nameForNamespace(@NotNull EvaNamespace generatedNamespace, Old_GenerateResult.@NotNull TY aTy) {
+		if (generatedNamespace.module().isPrelude()) {
+			// We are dealing with the Prelude
+			var          lsp0       = ("/Prelude/");
+			var          name0      = ("Prelude");
+			var          filename   = "";
+			final String extension0 = Extension0(aTy);
+			return new OSC_NFN(lsp0, name0, filename, extension0).getFilename();
+		}
+		String filename;
+		if (generatedNamespace.getNamespaceStatement().getKind() == NamespaceTypes.MODULE) {
+			final String moduleFileName = generatedNamespace.module().getFileName();
+			File         moduleFile     = new File(moduleFileName);
+			filename = moduleFile.getName();
+			filename = strip_elijah_extension(filename);
+
+			if (generatedNamespace.getCode() != 0) {
+				filename = "elns-%d-%s".formatted(generatedNamespace.getCode(), filename); // hoohoo
+			}
+
+		} else {
+			filename = generatedNamespace.getName();
+		}
+
+		final String lsp0 = n_lsp(generatedNamespace);
+
+		OS_Package   pkg = generatedNamespace.getNamespaceStatement().getPackageName();
+		final String name0;
+		name0 = n_pkg(generatedNamespace, pkg);
+
+		final String extension0 = Extension0(aTy);
+
+		return new OSC_NFN(lsp0, name0, filename, extension0).getFilename();
+	}
+
+	public EOT_OutputFile.FileNameProvider nameForNamespace1(final @NotNull EvaNamespace aX, final GenerateResult.@NotNull TY aTy) {
+		return new OSC_NFN_(aX, aTy);
+	}
+
+	@NotNull String strip_elijah_extension(@NotNull String aFilename) {
 		if (aFilename.endsWith(".elijah")) {
 			aFilename = aFilename.substring(0, aFilename.length() - 7);
 		} else if (aFilename.endsWith(".elijjah")) {
 			aFilename = aFilename.substring(0, aFilename.length() - 8);
 		}
 		return aFilename;
-	}
-
-	public String nameForConstructor(final GeneratedConstructor generatedConstructor, final GenerateResult.@NotNull TY aTy) {
-		GeneratedNode c = generatedConstructor.getGenClass();
-		if (c == null) c = generatedConstructor.getParent(); // TODO fixme
-		if (c instanceof GeneratedClass)
-			return nameForClass((GeneratedClass) c, aTy);
-		else if (c instanceof GeneratedNamespace)
-			return nameForNamespace((GeneratedNamespace) c, aTy);
-		return null;
 	}
 }
 

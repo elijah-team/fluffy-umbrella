@@ -12,6 +12,11 @@ import java.util.List;
 
 public class CompilationFactory {
 
+	@Contract("_, _ -> new")
+	public static @NotNull CompilationImpl mkCompilation(final ErrSink eee, final IO io) {
+		return new CompilationImpl(eee, io);
+	}
+
 	public static CompilationImpl mkCompilation2(final List<IFunctionMapHook> aMapHooks) {
 		final StdErrSink errSink = new StdErrSink();
 		final IO         io      = new IO();
@@ -21,10 +26,5 @@ public class CompilationFactory {
 		c.testMapHooks(aMapHooks);
 
 		return c;
-	}
-
-	@Contract("_, _ -> new")
-	public static @NotNull CompilationImpl mkCompilation(final ErrSink eee, final IO io) {
-		return new CompilationImpl(eee, io);
 	}
 }

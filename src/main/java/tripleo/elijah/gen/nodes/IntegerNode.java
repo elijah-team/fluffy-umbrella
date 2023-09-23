@@ -29,28 +29,8 @@ public class IntegerNode implements IExpressionNode {
 	}
 
 	@Override
-	public IExpression getExpr() {
-		return _expr;
-	}
-
-	@Override
-	public boolean is_const_expr() {
-		return true;
-	}
-
-	@Override
-	public boolean is_underscore() {
-		return false;
-	}
-
-	@Override
-	public boolean is_var_ref() {
-		return false;
-	}
-
-	@Override
-	public boolean is_simple() {
-		return true;
+	public String genText() {
+		return Integer.toString(((NumericExpression) _expr).getValue());
 	}
 
 	@Override
@@ -64,12 +44,32 @@ public class IntegerNode implements IExpressionNode {
 	}
 
 	@Override
-	public String genText() {
-		return Integer.toString(((NumericExpression) _expr).getValue());
+	public IExpression getExpr() {
+		return _expr;
 	}
 
 	@Override
 	public TypeRef getType() {
 		return _type;
+	}
+
+	@Override
+	public boolean is_const_expr() {
+		return true;
+	}
+
+	@Override
+	public boolean is_simple() {
+		return true;
+	}
+
+	@Override
+	public boolean is_underscore() {
+		return false;
+	}
+
+	@Override
+	public boolean is_var_ref() {
+		return false;
 	}
 }

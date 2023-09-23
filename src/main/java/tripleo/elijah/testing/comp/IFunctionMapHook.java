@@ -1,12 +1,12 @@
 package tripleo.elijah.testing.comp;
 
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
-
 import java.util.Collection;
 
-public interface IFunctionMapHook {
-	boolean matches(FunctionDef aFunctionDef);
+import tripleo.elijah.lang.BaseFunctionDef;
+import tripleo.elijah.stages.gen_fn.EvaFunction;
 
-	void apply(Collection<GeneratedFunction> aGeneratedFunctions);
+public interface IFunctionMapHook {
+	void apply(Collection<EvaFunction> aGeneratedFunctions);
+
+	boolean matches(BaseFunctionDef aFunctionDef);
 }

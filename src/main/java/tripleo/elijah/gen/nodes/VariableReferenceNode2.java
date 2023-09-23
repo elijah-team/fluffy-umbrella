@@ -28,6 +28,13 @@ public class VariableReferenceNode2 extends ExpressionNode {
 	}
 
 	@Override
+	public String genText() {
+		if (_perm) return _declared;
+		NotImplementedException.raise();
+		return "vtn"; // TODO hardcoded
+	}
+
+	@Override
 	public String genText(final CompilerContext cctx) {
 		if (getExpr()/*iex*/ == null) {
 			return _declared;
@@ -36,13 +43,6 @@ public class VariableReferenceNode2 extends ExpressionNode {
 //			return super.genText(cctx);
 		}
 		return super.genText(cctx);
-	}
-
-	@Override
-	public String genText() {
-		if (_perm) return _declared;
-		NotImplementedException.raise();
-		return "vtn"; // TODO hardcoded
 	}
 
 //	public TypeNameNode getType() {

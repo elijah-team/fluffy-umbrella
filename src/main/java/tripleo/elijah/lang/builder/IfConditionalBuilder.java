@@ -8,29 +8,41 @@
  */
 package tripleo.elijah.lang.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import tripleo.elijah.contexts.IfConditionalContext;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.IfConditional;
 import tripleo.elijah.lang.Scope3;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created 12/23/20 1:40 AM
  */
 public class IfConditionalBuilder extends ElBuilder {
+	public static class Doublet {
+		IExpression        expr;
+		List<ElBuilder>    items  = new ArrayList<ElBuilder>();
+		IfConditionalScope _scope = new IfConditionalScope();
+
+		public void expr(final IExpression expr) {
+			this.expr = expr;
+		}
+
+		public BaseScope scope() {
+			return _scope;
+		}
+	}
+	public static class IfConditionalScope extends BaseScope2 {
+
+	}
 	public Doublet base_expr = new Doublet();
 	public Doublet else_part = new Doublet();
-	List<Doublet> doubles = new ArrayList<Doublet>();
-	private Context _context;
 
-	public Doublet new_expr() {
-		final Doublet doublet = new Doublet();
-		doubles.add(doublet);
-		return doublet;
-	}
+	List<Doublet> doubles = new ArrayList<Doublet>();
+
+	private Context _context;
 
 	@Override
 	protected IfConditional build() {
@@ -59,27 +71,15 @@ public class IfConditionalBuilder extends ElBuilder {
 		return ifConditional;
 	}
 
+	public Doublet new_expr() {
+		final Doublet doublet = new Doublet();
+		doubles.add(doublet);
+		return doublet;
+	}
+
 	@Override
 	protected void setContext(final Context context) {
 		_context = context;
-	}
-
-	public static class IfConditionalScope extends BaseScope2 {
-
-	}
-
-	public static class Doublet {
-		IExpression        expr;
-		List<ElBuilder>    items  = new ArrayList<ElBuilder>();
-		IfConditionalScope _scope = new IfConditionalScope();
-
-		public void expr(final IExpression expr) {
-			this.expr = expr;
-		}
-
-		public BaseScope scope() {
-			return _scope;
-		}
 	}
 }
 

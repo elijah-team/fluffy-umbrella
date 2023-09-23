@@ -1,14 +1,40 @@
 package tripleo.elijah.gen;
 
 import tripleo.elijah.contexts.ClassContext;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.AccessNotation;
+import tripleo.elijah.lang.AliasStatement;
+import tripleo.elijah.lang.CaseConditional;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.ConstructStatement;
+import tripleo.elijah.lang.ConstructorDef;
+import tripleo.elijah.lang.DefFunctionDef;
+import tripleo.elijah.lang.DestructorDef;
+import tripleo.elijah.lang.FormalArgListItem;
+import tripleo.elijah.lang.FuncExpr;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.FunctionItem;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.IfConditional;
+import tripleo.elijah.lang.ImportStatement;
+import tripleo.elijah.lang.Loop;
+import tripleo.elijah.lang.MatchConditional;
+import tripleo.elijah.lang.NamespaceStatement;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.lang.PropertyStatement;
+import tripleo.elijah.lang.StatementWrapper;
+import tripleo.elijah.lang.SyntacticBlock;
+import tripleo.elijah.lang.TypeAliasStatement;
+import tripleo.elijah.lang.VariableSequence;
+import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.lang.WithStatement;
+import tripleo.elijah.lang.YieldExpression;
 
 public interface ICodeGen {
 
 
 	void addClass(ClassStatement klass);
 
-	void addModule(OS_Module module);
+	void addFunctionItem(FunctionItem element);
 
 //	private void addModuleItem(ModuleItem element) ;
 
@@ -16,19 +42,23 @@ public interface ICodeGen {
 
 //	private void addClassItem(ClassItem element) ;
 
-	void addFunctionItem(FunctionItem element);
-
-	void visitAliasStatement(AliasStatement aAliasStatement);
+	void addModule(OS_Module module);
 
 	void visitAccessNotation(AccessNotation aAccessNotation);
+
+	void visitAliasStatement(AliasStatement aAliasStatement);
 
 	void visitCaseConditional(CaseConditional aCaseConditional);
 
 	void visitCaseScope(CaseConditional.CaseScope aCaseScope);
 
-	void visitTypeNameElement(ClassContext.OS_TypeNameElement aOS_typeNameElement);
+	void visitConstructorDef(ConstructorDef aConstructorDef);
 
 	void visitConstructStatement(ConstructStatement aConstructExpression);
+
+	void visitDefFunction(DefFunctionDef aDefFunctionDef);
+
+	void visitDestructor(DestructorDef aDestructorDef);
 
 	void visitFormalArgListItem(FormalArgListItem aFormalArgListItem);
 
@@ -40,9 +70,9 @@ public interface ICodeGen {
 
 	void visitIfConditional(IfConditional aIfConditional);
 
-	void visitLoop(Loop aLoop);
-
 	void visitImportStatment(ImportStatement aImportStatement);
+
+	void visitLoop(Loop aLoop);
 
 	void visitMatchConditional(MatchConditional aMatchConditional);
 
@@ -58,19 +88,15 @@ public interface ICodeGen {
 
 	void visitTypeAlias(TypeAliasStatement aTypeAliasStatement);
 
-	void visitVariableSequence(VariableSequence aVariableSequence);
+	void visitTypeNameElement(ClassContext.OS_TypeNameElement aOS_typeNameElement);
 
-	void visitWithStatement(WithStatement aWithStatement);
+	void visitVariableSequence(VariableSequence aVariableSequence);
 
 	void visitVariableStatement(VariableStatement aVariableStatement);
 
+	void visitWithStatement(WithStatement aWithStatement);
+
 	void visitYield(YieldExpression aYieldExpression);
-
-	void visitConstructorDef(ConstructorDef aConstructorDef);
-
-	void visitDefFunction(DefFunctionDef aDefFunctionDef);
-
-	void visitDestructor(DestructorDef aDestructorDef);
 
 	// return, continue, next
 }

@@ -28,16 +28,51 @@ abstract class _CommonNC {
 	private AccessNotation access_note;
 	private El_Category    category;
 
-	public OS_Package getPackageName() {
-		return _packageName;
+	public void addAccess(final AccessNotation acs) {
+		accesses.add(acs);
 	}
 
-	public void setPackageName(final OS_Package aPackageName) {
-		_packageName = aPackageName;
+	public void addAnnotation(final AnnotationClause a) {
+		if (annotations == null)
+			annotations = new ArrayList<AnnotationClause>();
+		annotations.add(a);
+	}
+
+	public void addAnnotations(final List<AnnotationClause> as) {
+		if (as == null) return;
+		for (final AnnotationClause annotationClause : as) {
+			addAnnotation(annotationClause);
+		}
 	}
 
 	public void addDocString(final Token aText) {
 		mDocs.add(aText.getText());
+	}
+
+	public AccessNotation getAccess() {
+		return access_note;
+	}
+
+	public El_Category getCategory() {
+		return category;
+	}
+
+	public List<ClassItem> getItems() {
+		return items;
+	}
+
+	public String getName() {
+		if (nameToken == null) return "";
+		return nameToken.getText();
+	}
+
+	public OS_Package getPackageName() {
+		return _packageName;
+	}
+
+	public boolean hasItem(final OS_Element element) {
+		if (!(element instanceof ClassItem)) return false;
+		return items.contains(element);
 	}
 
 	// OS_Container
@@ -50,26 +85,25 @@ abstract class _CommonNC {
 		return a;
 	}
 
-	public List<ClassItem> getItems() {
-		return items;
-	}
-
 	// OS_Element2
 	public String name() {
 		return getName();
 	}
 
-	public String getName() {
-		if (nameToken == null) return "";
-		return nameToken.getText();
+	public void setAccess(final AccessNotation aNotation) {
+		access_note = aNotation;
+	}
+
+	public void setCategory(final El_Category aCategory) {
+		category = aCategory;
 	}
 
 	public void setName(final IdentExpression i1) {
 		nameToken = i1;
 	}
 
-	public void addAccess(final AccessNotation acs) {
-		accesses.add(acs);
+	public void setPackageName(final OS_Package aPackageName) {
+		_packageName = aPackageName;
 	}
 
 	public void walkAnnotations(final AnnotationWalker annotationWalker) {
@@ -79,40 +113,6 @@ abstract class _CommonNC {
 				annotationWalker.annotation(annotationPart);
 			}
 		}
-	}
-
-	public boolean hasItem(final OS_Element element) {
-		if (!(element instanceof ClassItem)) return false;
-		return items.contains(element);
-	}
-
-	public void addAnnotations(final List<AnnotationClause> as) {
-		if (as == null) return;
-		for (final AnnotationClause annotationClause : as) {
-			addAnnotation(annotationClause);
-		}
-	}
-
-	public void addAnnotation(final AnnotationClause a) {
-		if (annotations == null)
-			annotations = new ArrayList<AnnotationClause>();
-		annotations.add(a);
-	}
-
-	public El_Category getCategory() {
-		return category;
-	}
-
-	public void setCategory(final El_Category aCategory) {
-		category = aCategory;
-	}
-
-	public AccessNotation getAccess() {
-		return access_note;
-	}
-
-	public void setAccess(final AccessNotation aNotation) {
-		access_note = aNotation;
 	}
 
 	// endregion

@@ -1,24 +1,22 @@
 package tripleo.elijah.comp;
 
-import tripleo.elijah.stages.deduce.FunctionMapHook;
 import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.testing.comp.IFunctionMapHook;
 
 import java.util.List;
 
 public interface ICompilationAccess {
-	void setPipelineLogic(final PipelineLogic pl);
-
 //	void addPipeline(final PipelineMember pl);
 
-	ElLog.Verbosity testSilence();
+	List<IFunctionMapHook> functionMapHooks();
 
 	Compilation getCompilation();
 
-	void writeLogs();
+	Stages getStage();
 
-	List<FunctionMapHook> functionMapHooks();
+	ElLog.Verbosity testSilence();
 
 //	Pipeline pipelines();
 
-	Stages getStage();
+	void writeLogs();
 }

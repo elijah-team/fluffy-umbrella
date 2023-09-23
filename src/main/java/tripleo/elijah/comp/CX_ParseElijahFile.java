@@ -1,13 +1,19 @@
 package tripleo.elijah.comp;
 
-import antlr.*;
-import tripleo.elijah.*;
-import tripleo.elijah.comp.specs.*;
-import tripleo.elijah.lang.*;
-import tripleo.elijah.nextgen.query.*;
-import tripleo.elijjah.*;
+import antlr.RecognitionException;
+import antlr.TokenStreamException;
+import tripleo.elijah.Out;
+import tripleo.elijah.comp.specs.ElijahCache;
+import tripleo.elijah.comp.specs.ElijahSpec;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.nextgen.query.Mode;
+import tripleo.elijah.util.Operation;
+import tripleo.elijjah.ElijjahLexer;
+import tripleo.elijjah.ElijjahParser;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class CX_ParseElijahFile {
 
@@ -24,6 +30,29 @@ public class CX_ParseElijahFile {
 		}
 
 		return calm;
+	}
+
+	private static Operation<OS_Module> parseElijahFile(final ElijahSpec spec, final Compilation compilation) {
+		final var absolutePath = new File(spec.f()).getAbsolutePath(); // !!
+		return parseElijahFile(spec.f(), spec.s(), spec.do_out(), compilation, absolutePath);
+	}
+
+	public static Operation<OS_Module> parseElijahFile(final String f, final InputStream s, final boolean do_out, final Compilation compilation, final String absolutePath) {
+		final ElijjahLexer lexer = new ElijjahLexer(s);
+		lexer.setFilename(f);
+		final ElijjahParser parser = new ElijjahParser(lexer);
+		parser.out = new Out(f, compilation, do_out);
+		parser.setFilename(f);
+		try {
+			parser.program();
+		} catch (final RecognitionException | TokenStreamException aE) {
+			return Operation.failure(aE);
+		}
+		final OS_Module module = parser.out.module();
+		parser.out = null;
+
+		module.setFileName(absolutePath);
+		return Operation.success(module);
 	}
 
 	private static Operation<OS_Module> parseElijahFile_(final ElijahSpec spec,
@@ -55,28 +84,5 @@ public class CX_ParseElijahFile {
 			R = om.success();
 		}
 		return Operation.success(R);
-	}
-
-	public static Operation<OS_Module> parseElijahFile(final String f, final InputStream s, final boolean do_out, final Compilation compilation, final String absolutePath) {
-		final ElijjahLexer lexer = new ElijjahLexer(s);
-		lexer.setFilename(f);
-		final ElijjahParser parser = new ElijjahParser(lexer);
-		parser.out = new Out(f, compilation, do_out);
-		parser.setFilename(f);
-		try {
-			parser.program();
-		} catch (final RecognitionException | TokenStreamException aE) {
-			return Operation.failure(aE);
-		}
-		final OS_Module module = parser.out.module();
-		parser.out = null;
-
-		module.setFileName(absolutePath);
-		return Operation.success(module);
-	}
-
-	private static Operation<OS_Module> parseElijahFile(final ElijahSpec spec, final Compilation compilation) {
-		final var absolutePath = new File(spec.f()).getAbsolutePath(); // !!
-		return parseElijahFile(spec.f(), spec.s(), spec.do_out(), compilation, absolutePath);
 	}
 }

@@ -14,9 +14,17 @@ public class PL_Each_Env {
 
 	public ICodeRegistrar codeRegistrar() {
 		if (codeRegistrar == null) {
-			codeRegistrar = processParams.getDeducePhase().codeRegistrar;
+			codeRegistrar = processParams.getDeducePhase().getCodeRegistrar();
 		}
 		return codeRegistrar;
+	}
+
+	public ICodeRegistrar getCodeRegistrar() {
+		return codeRegistrar();
+	}
+
+	public EIT_ModuleList._ProcessParams getProcessParams() {
+		return processParams;
 	}
 
 	public ResolvedNodes getResolvedNodes() {
@@ -24,13 +32,5 @@ public class PL_Each_Env {
 			resolvedNodes = new ResolvedNodes();
 		}
 		return resolvedNodes;
-	}
-
-	public EIT_ModuleList._ProcessParams getProcessParams() {
-		return processParams;
-	}
-
-	public ICodeRegistrar getCodeRegistrar() {
-		return codeRegistrar();
 	}
 }

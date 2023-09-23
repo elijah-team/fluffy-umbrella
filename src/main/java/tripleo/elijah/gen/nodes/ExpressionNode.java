@@ -26,11 +26,16 @@ import tripleo.elijah.util.NotImplementedException;
  */
 public class ExpressionNode implements IExpressionNode {
 
+	static String getStringPCE(final ProcedureCallExpression expr) {
+		final int code = 1000; // TODO hardcoded
+		return Helpers.getFunctionName(code, expr.getLeft().toString(), expr.exprList());
+	}
 	public String genName;  // TODO since when does expression have a name?
 	public String genText;
-	public String genType;
 
+	public String genType;
 	public boolean    _is_const_expr;
+
 	public OS_Element ref_;
 
 	private IExpression iex;
@@ -68,35 +73,8 @@ public class ExpressionNode implements IExpressionNode {
 	}
 
 	@Override
-	public IExpression getExpr() {
-		return iex;
-	}
-
-	@Override
-	public boolean is_const_expr() {
-		return _is_const_expr;
-	}
-
-	@Override
-	public boolean is_underscore() {
-		// TODO Auto-generated method stub
-		if (iex != null && iex instanceof VariableReference) {
-			return ((VariableReference) iex).getName().equals("_");
-		}
-		return false;
-	}
-
-	@Override
-	public boolean is_var_ref() {
-		return (iex != null && iex instanceof VariableReference);
-	}
-
-	@Override
-	public boolean is_simple() {
-		if (iex != null && iex instanceof VariableReference) {
-			return iex.is_simple();
-		}
-		return is_const_expr() || is_underscore();
+	public String genText() {
+		return genText(null);
 	}
 
 	@Override
@@ -156,18 +134,40 @@ public class ExpressionNode implements IExpressionNode {
 	}
 
 	@Override
-	public String genText() {
-		return genText(null);
-	}
-
-	static String getStringPCE(final ProcedureCallExpression expr) {
-		final int code = 1000; // TODO hardcoded
-		return Helpers.getFunctionName(code, expr.getLeft().toString(), expr.exprList());
+	public IExpression getExpr() {
+		return iex;
 	}
 
 	@Override
 	public TypeRef getType() {
 		return null;
+	}
+
+	@Override
+	public boolean is_const_expr() {
+		return _is_const_expr;
+	}
+
+	@Override
+	public boolean is_simple() {
+		if (iex != null && iex instanceof VariableReference) {
+			return iex.is_simple();
+		}
+		return is_const_expr() || is_underscore();
+	}
+
+	@Override
+	public boolean is_underscore() {
+		// TODO Auto-generated method stub
+		if (iex != null && iex instanceof VariableReference) {
+			return ((VariableReference) iex).getName().equals("_");
+		}
+		return false;
+	}
+
+	@Override
+	public boolean is_var_ref() {
+		return (iex != null && iex instanceof VariableReference);
 	}
 }
 

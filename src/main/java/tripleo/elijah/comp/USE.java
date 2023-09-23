@@ -16,8 +16,9 @@ import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.StringExpression;
 import tripleo.elijah.nextgen.query.Mode;
-import tripleo.elijah.nextgen.query.Operation2;
 import tripleo.elijah.util.Helpers;
+import tripleo.elijah.util.Operation;
+import tripleo.elijah.util.Operation2;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -28,20 +29,46 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("UnnecessaryLocalVariable")
 class USE {
-	private final Compilation c;
-	private final ErrSink     errSink;
-
-	private static final FilenameFilter accept_source_files = (directory, file_name) -> {
-		final boolean matches = Pattern.matches(".+\\.elijah$", file_name)
-		  || Pattern.matches(".+\\.elijjah$", file_name);
-		return matches;
-	};
-
+	private final @NotNull Compilation c;
+	private final @NotNull ErrSink     errSink;
+	private final @NotNull ElijahCache elijahCache = new DefaultElijahCache();
 
 	@Contract(pure = true)
-	public USE(final Compilation aCompilation) {
+	public USE(final @NotNull Compilation aCompilation) {
 		c       = aCompilation;
 		errSink = c.getErrSink();
+	}
+
+	public Operation2<OS_Module> findPrelude(final String prelude_name) {
+		return new CY_FindPrelude(errSink, this).findPrelude(prelude_name);
+	}
+
+	public Operation<OS_Module> realParseElijjahFile(final ElijahSpec spec) {
+		final File file = spec.file();
+
+		final String absolutePath;
+		try {
+			absolutePath = file.getCanonicalFile().toString();
+		} catch (final IOException aE) {
+			return Operation.failure(aE);
+		}
+
+		final Optional<OS_Module> early = elijahCache.get(absolutePath);
+
+		if (early.isPresent()) {
+			return Operation.success(early.get());
+		}
+
+		final var calm = CX_ParseElijahFile.parseAndCache(spec, elijahCache, absolutePath, c);
+
+		return calm;
+	}
+
+	public Operation2<OS_Module> realParseElijjahFile(final String f, final @NotNull File file, final boolean do_out) throws Exception {
+		try (final InputStream s = c.getIO().readFile(file)) {
+			final ElijahSpec spec = new ElijahSpec(f, file, s, do_out);
+			return Operation2.convert(realParseElijjahFile(spec));
+		}
 	}
 
 	public void use(final @NotNull CompilerInstructions compilerInstructions, final boolean do_out) throws Exception {
@@ -67,10 +94,89 @@ class USE {
 		use_internal(instruction_dir, do_out, lsp);
 	}
 
-	private final ElijahCache elijahCache = new DefaultElijahCache();
+	private void use_internal(final @NotNull File dir, final boolean do_out, final LibraryStatementPart lsp) {
+		if (!dir.isDirectory()) {
+			errSink.reportError("9997 Not a directory " + dir);
+			return;
+		}
+		//
+		final File[] files = dir.listFiles(accept_source_files);
+		if (files != null) {
+			for (final File file : files) {
+//				final CompFactory.InputRequest inp = c.con().createInputRequest(file, do_out, lsp);
+
+				final String                file_name = file.toString();
+				final Operation2<OS_Module> om        = parseElijjahFile(file, file_name, do_out, lsp);
+
+				if (om.mode() == Mode.FAILURE) {
+					System.err.println("204 " + om.failure());
+
+					var d = om.failure().get();
+					if (d instanceof Exception e) {
+						// help!!
+						e.printStackTrace();
+					}
+					System.err.println(d.getClass().getName());
+				}
+
+//				c.reports().addInput(inp, Finally.Out2.ELIJAH);
+				c.reports().addInput(() -> file_name, Finally.Out2.ELIJAH);
+			}
+		}
+	}
+
+	private Operation2<OS_Module> parseElijjahFile(final @NotNull File f,
+	                                               final @NotNull String file_name,
+	                                               final boolean do_out,
+	                                               final @NotNull LibraryStatementPart lsp) {
+		System.out.printf("   %s%n", f.getAbsolutePath());
+
+		if (!f.exists()) {
+			final Diagnostic e = new FileNotFoundDiagnostic(f);
+
+			return Operation2.failure(e);
+		}
+
+		Operation2<OS_Module> om;
+
+		try {
+			om = realParseElijjahFile(file_name, f, do_out);
+
+			switch (om.mode()) {
+			case SUCCESS -> {
+				final OS_Module mm = om.success();
+
+				//assert mm.getLsp() == null;
+				//assert mm.prelude == null;
+
+				if (mm.getLsp() == null) {
+					// TODO we don't know which prelude to find yet
+					final Operation2<OS_Module> pl = findPrelude(Compilation.CompilationAlways.defaultPrelude());
+
+					// NOTE Go. infectious. tedious. also slightly lazy
+					assert pl.mode() == Mode.SUCCESS;
+
+					mm.setLsp(lsp);
+					mm.setPrelude(pl.success());
+				}
+				return Operation2.success(mm);
+			}
+			default -> {
+				return om;
+			}
+			}
+		} catch (final Exception aE) {
+			return Operation2.failure(new ExceptionDiagnostic(aE));
+		}
+	}
 
 	static class CY_FindPrelude {
+		@NotNull
+		private static File local_prelude_file(final String prelude_name) {
+			return new File("lib_elijjah/lib-" + prelude_name + "/Prelude.elijjah");
+		}
 		private final ErrSink errSink;
+
 		private final USE     x;
 
 		CY_FindPrelude(final ErrSink aErrSink1, final USE aX) {
@@ -127,109 +233,10 @@ class USE {
 
 			return om;
 		}
-
-		@NotNull
-		private static File local_prelude_file(final String prelude_name) {
-			return new File("lib_elijjah/lib-" + prelude_name + "/Prelude.elijjah");
-		}
 	}
-
-	public Operation2<OS_Module> findPrelude(final String prelude_name) {
-		return new CY_FindPrelude(errSink, this).findPrelude(prelude_name);
-	}
-
-	private Operation2<OS_Module> parseElijjahFile(final @NotNull File f,
-	                                               final @NotNull String file_name,
-	                                               final boolean do_out,
-	                                               final @NotNull LibraryStatementPart lsp) {
-		System.out.printf("   %s%n", f.getAbsolutePath());
-
-		if (!f.exists()) {
-			final Diagnostic e = new FileNotFoundDiagnostic(f);
-
-			return Operation2.failure(e);
-		}
-
-		Operation2<OS_Module> om;
-
-		try {
-			om = realParseElijjahFile(file_name, f, do_out);
-
-			switch (om.mode()) {
-			case SUCCESS -> {
-				final OS_Module mm = om.success();
-
-				//assert mm.getLsp() == null;
-				//assert mm.prelude == null;
-
-				if (mm.getLsp() == null) {
-					// TODO we don't know which prelude to find yet
-					final Operation2<OS_Module> pl = findPrelude(Compilation.CompilationAlways.defaultPrelude());
-
-					// NOTE Go. infectious. tedious. also slightly lazy
-					assert pl.mode() == Mode.SUCCESS;
-
-					mm.setLsp(lsp);
-					mm.prelude = pl.success();
-				}
-				return Operation2.success(mm);
-			}
-			default -> {
-				return om;
-			}
-			}
-		} catch (final Exception aE) {
-			return Operation2.failure(new ExceptionDiagnostic(aE));
-		}
-	}
-
-	private void use_internal(final @NotNull File dir, final boolean do_out, final LibraryStatementPart lsp) {
-		if (!dir.isDirectory()) {
-			errSink.reportError("9997 Not a directory " + dir);
-			return;
-		}
-		//
-		final File[] files = dir.listFiles(accept_source_files);
-		if (files != null) {
-			for (final File file : files) {
-//				final CompFactory.InputRequest inp = c.con().createInputRequest(file, do_out, lsp);
-
-				final String file_name = file.toString();
-				var          om        = parseElijjahFile(file, file_name, do_out, lsp);
-
-				assert om.mode() == Mode.SUCCESS;
-
-//				c.reports().addInput(inp, Finally.Out2.ELIJAH);
-				c.reports().addInput(() -> file_name, Finally.Out2.ELIJAH);
-			}
-		}
-	}
-
-	public Operation2<OS_Module> realParseElijjahFile(final String f, final @NotNull File file, final boolean do_out) throws Exception {
-		try (final InputStream s = c.getIO().readFile(file)) {
-			final ElijahSpec spec = new ElijahSpec(f, file, s, do_out);
-			return Operation2.convert(realParseElijjahFile(spec));
-		}
-	}
-
-	public Operation<OS_Module> realParseElijjahFile(final ElijahSpec spec) {
-		final File file = spec.file();
-
-		final String absolutePath;
-		try {
-			absolutePath = file.getCanonicalFile().toString();
-		} catch (final IOException aE) {
-			return Operation.failure(aE);
-		}
-
-		final Optional<OS_Module> early = elijahCache.get(absolutePath);
-
-		if (early.isPresent()) {
-			return Operation.success(early.get());
-		}
-
-		final var calm = CX_ParseElijahFile.parseAndCache(spec, elijahCache, absolutePath, c);
-
-		return calm;
-	}
+	private static final FilenameFilter accept_source_files = (directory, file_name) -> {
+		final boolean matches = Pattern.matches(".+\\.elijah$", file_name)
+		  || Pattern.matches(".+\\.elijjah$", file_name);
+		return matches;
+	};
 }

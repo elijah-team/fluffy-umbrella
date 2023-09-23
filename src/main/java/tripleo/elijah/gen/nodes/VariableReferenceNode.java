@@ -22,14 +22,14 @@ public class VariableReferenceNode {
 		this._varref = varref;
 	}
 
-	public TypeNameNode getType() {
-		NotImplementedException.raise();
-		return null;
-	}
-
 	public String genText() {
 		NotImplementedException.raise();
 		return "vtn"; // TODO hardcoded
+	}
+
+	public TypeNameNode getType() {
+		NotImplementedException.raise();
+		return null;
 	}
 }
 

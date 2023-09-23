@@ -8,6 +8,9 @@
  */
 package tripleo.elijah.lang.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import tripleo.elijah.lang.AnnotationClause;
 import tripleo.elijah.lang.ClassInheritance;
 import tripleo.elijah.lang.ClassStatement;
@@ -16,9 +19,6 @@ import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.TypeNameList;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created 12/22/20 7:59 PM
@@ -33,8 +33,15 @@ public class ClassBuilder {
 	private       IdentExpression        _name;
 	private       TypeNameList           genericPart;
 
-	public void setType(final ClassTypes classTypes) {
-		_type = classTypes;
+	public void annotation_clause(final AnnotationClause a) {
+		if (a == null) return;
+		annotations.add(a);
+	}
+
+	public void annotations(final List<AnnotationClause> as) {
+		for (final AnnotationClause annotationClause : as) {
+			annotation_clause(annotationClause);
+		}
 	}
 
 	public ClassStatement build() {
@@ -65,6 +72,18 @@ public class ClassBuilder {
 		return cs;
 	}
 
+	public ClassInheritance classInheritance() {
+		return _inh;
+	}
+
+	public ClassScope getScope() {
+		return _scope;
+	}
+
+	public void setGenericPart(final TypeNameList tnl) {
+		genericPart = tnl;
+	}
+
 	public void setName(final IdentExpression identExpression) {
 		_name = identExpression;
 	}
@@ -77,27 +96,8 @@ public class ClassBuilder {
 		_parent_context = o;
 	}
 
-	public ClassScope getScope() {
-		return _scope;
-	}
-
-	public ClassInheritance classInheritance() {
-		return _inh;
-	}
-
-	public void annotations(final List<AnnotationClause> as) {
-		for (final AnnotationClause annotationClause : as) {
-			annotation_clause(annotationClause);
-		}
-	}
-
-	public void annotation_clause(final AnnotationClause a) {
-		if (a == null) return;
-		annotations.add(a);
-	}
-
-	public void setGenericPart(final TypeNameList tnl) {
-		genericPart = tnl;
+	public void setType(final ClassTypes classTypes) {
+		_type = classTypes;
 	}
 }
 

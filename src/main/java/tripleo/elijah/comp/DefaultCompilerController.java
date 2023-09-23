@@ -1,6 +1,9 @@
 package tripleo.elijah.comp;
 
 import tripleo.elijah.comp.internal.CompilationBus;
+import tripleo.elijah.comp.internal.DefaultProgressSink;
+import tripleo.elijah.util.Ok;
+import tripleo.elijah.util.Operation;
 
 import java.util.List;
 
@@ -10,6 +13,11 @@ public class DefaultCompilerController implements CompilerController {
 	CompilationBus cb;
 	private Compilation c;
 
+	public void _set(final Compilation aCompilation, final List<String> aArgs) {
+		c    = aCompilation;
+		args = aArgs;
+	}
+
 	@Override
 	public void printUsage() {
 		System.out.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
@@ -18,7 +26,10 @@ public class DefaultCompilerController implements CompilerController {
 	@Override
 	public void processOptions() {
 		final OptionsProcessor             op  = new ApacheOptionsProcessor();
-		final CompilerInstructionsObserver cio = new CompilerInstructionsObserver(c, op, c._cis);
+
+		c._cis.subscribe(c.id);
+
+//		final CompilerInstructionsObserver cio = new CompilerInstructionsObserver(c, op, c._cis);
 		cb = new CompilationBus(c);
 
 		try {
@@ -30,18 +41,18 @@ public class DefaultCompilerController implements CompilerController {
 	}
 
 	@Override
-	public void runner() {
+	public Operation<Ok> runner() {
 		try {
-			c.__cr = new CompilationRunner(c, c._cis, cb);
+			c.__cr = new CompilationRunner(c, c._cis, cb, new DefaultProgressSink());
 			c.__cr.doFindCIs(args2, cb);
+
+			cb.run_all();
+
+			return Operation.success(Ok.instance());
 		} catch (final Exception e) {
 			c.getErrSink().exception(e);
-			throw new RuntimeException(e);
-		}
-	}
 
-	public void _set(final Compilation aCompilation, final List<String> aArgs) {
-		c    = aCompilation;
-		args = aArgs;
+			return Operation.failure(e);
+		}
 	}
 }

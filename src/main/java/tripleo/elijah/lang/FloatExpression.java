@@ -34,34 +34,8 @@ public class FloatExpression implements IExpression {
 	}
 
 	@Override
-	public void setKind(final ExpressionKind aType) {
-		// log and ignore
-		tripleo.elijah.util.Stupidity.println_err2("Trying to set ExpressionType of FloatExpression to " + aType.toString());
-	}
-
-	@Override
 	public IExpression getLeft() {
 		return this;
-	}
-
-	@Override
-	public void setLeft(final IExpression aLeft) {
-		throw new NotImplementedException(); // TODO
-	}
-
-	@Override
-	public String repr_() {
-		return toString();
-	}
-
-	@Override
-	public String toString() {
-		return String.format("FloatExpression (%f)", carrier);
-	}
-
-	@Override
-	public boolean is_simple() {
-		return true;
 	}
 
 	@Override
@@ -70,8 +44,34 @@ public class FloatExpression implements IExpression {
 	}
 
 	@Override
+	public boolean is_simple() {
+		return true;
+	}
+
+	@Override
+	public String repr_() {
+		return toString();
+	}
+
+	@Override
+	public void setKind(final ExpressionKind aType) {
+		// log and ignore
+		tripleo.elijah.util.Stupidity.println_err2("Trying to set ExpressionType of FloatExpression to " + aType.toString());
+	}
+
+	@Override
+	public void setLeft(final IExpression aLeft) {
+		throw new NotImplementedException(); // TODO
+	}
+
+	@Override
 	public void setType(final OS_Type deducedExpression) {
 		_type = deducedExpression;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("FloatExpression (%f)", carrier);
 	}
 
 }

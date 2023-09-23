@@ -36,15 +36,6 @@ public class CharLitExpression implements IExpression {
 	}
 
 	/* (non-Javadoc)
-	 * @see tripleo.elijah.lang.IExpression#set(tripleo.elijah.lang.ExpressionType)
-	 */
-	@Override
-	public void setKind(final ExpressionKind aIncrement) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
 	 * @see tripleo.elijah.lang.IExpression#getLeft()
 	 */
 	@Override
@@ -53,13 +44,14 @@ public class CharLitExpression implements IExpression {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see tripleo.elijah.lang.IExpression#setLeft(tripleo.elijah.lang.IExpression)
-	 */
 	@Override
-	public void setLeft(final IExpression iexpression) {
-		// TODO Auto-generated method stub
+	public OS_Type getType() {
+		return _type;
+	}
 
+	@Override
+	public boolean is_simple() {
+		return true;
 	}
 
 	/* (non-Javadoc)
@@ -70,14 +62,22 @@ public class CharLitExpression implements IExpression {
 		return String.format("<CharLitExpression %s>", char_lit_raw);
 	}
 
+	/* (non-Javadoc)
+	 * @see tripleo.elijah.lang.IExpression#set(tripleo.elijah.lang.ExpressionType)
+	 */
 	@Override
-	public boolean is_simple() {
-		return true;
+	public void setKind(final ExpressionKind aIncrement) {
+		// TODO Auto-generated method stub
+
 	}
 
+	/* (non-Javadoc)
+	 * @see tripleo.elijah.lang.IExpression#setLeft(tripleo.elijah.lang.IExpression)
+	 */
 	@Override
-	public OS_Type getType() {
-		return _type;
+	public void setLeft(final IExpression iexpression) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override

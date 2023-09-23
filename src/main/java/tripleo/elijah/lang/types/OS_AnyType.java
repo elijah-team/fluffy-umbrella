@@ -24,21 +24,13 @@ public class OS_AnyType extends __Abstract_OS_Type {
 	public OS_AnyType() {
 	}
 
-	@Override
-	public ClassStatement getClassOf() {
-		// TODO Auto-generated method stub
-		return null;
+	protected boolean _isEqual(final @NotNull OS_Type aType) {
+		return aType.getType() == Type.ANY;
 	}
 
 	@Override
-	public OS_Type resolve(final Context ctx) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isUnitType() {
-		return false;
+	public String asString() {
+		return "<OS_AnyType>";
 	}
 
 	@Override
@@ -48,13 +40,9 @@ public class OS_AnyType extends __Abstract_OS_Type {
 	}
 
 	@Override
-	public TypeName getTypeName() {
+	public ClassStatement getClassOf() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	protected boolean _isEqual(final @NotNull OS_Type aType) {
-		return aType.getType() == Type.ANY;
 	}
 
 	@Override
@@ -69,8 +57,20 @@ public class OS_AnyType extends __Abstract_OS_Type {
 	}
 
 	@Override
-	public String asString() {
-		return "<OS_AnyType>";
+	public TypeName getTypeName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isUnitType() {
+		return false;
+	}
+
+	@Override
+	public OS_Type resolve(final Context ctx) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
 

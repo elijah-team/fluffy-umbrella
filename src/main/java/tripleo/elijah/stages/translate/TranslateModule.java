@@ -1,40 +1,74 @@
 package tripleo.elijah.stages.translate;
 
-import tripleo.elijah.lang.*;
-import tripleo.elijah.lang2.BuiltInTypes;
-import tripleo.elijah.util.TabbedOutputStream;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import tripleo.elijah.lang.AliasStatement;
+import tripleo.elijah.lang.CaseConditional;
+import tripleo.elijah.lang.ClassItem;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.FormalArgList;
+import tripleo.elijah.lang.FormalArgListItem;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.FunctionItem;
+import tripleo.elijah.lang.IfConditional;
+import tripleo.elijah.lang.Loop;
+import tripleo.elijah.lang.MatchConditional;
+import tripleo.elijah.lang.ModuleItem;
+import tripleo.elijah.lang.NamespaceStatement;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.StatementWrapper;
+import tripleo.elijah.lang.SyntacticBlock;
+import tripleo.elijah.lang.VariableSequence;
+import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.lang.WithStatement;
+import tripleo.elijah.lang2.BuiltInTypes;
+import tripleo.elijah.util.TabbedOutputStream;
+
 /**
  * Created 9/3/20 12:38 PM
  */
 public class TranslateModule {
+	private static TabbedOutputStream stream_for(final String packageName, final String name) throws FileNotFoundException {
+		String packageDirName = packageName.replace('.', '/');
+		if (packageDirName.equals(""))
+			packageDirName = ".";
+		final File dir = new File("output", packageDirName);
+		dir.mkdirs();
+		final File               file = new File(dir, name + ".java");
+		final FileOutputStream   os   = new FileOutputStream(file);
+		final TabbedOutputStream R    = new TabbedOutputStream(os);
+		return R;
+	}
+
 	private final OS_Module module;
 
 	public TranslateModule(final OS_Module module_) {
 		module = module_;
 	}
 
-	public void translate() {
-//		TabbedOutputStream w = null;
-		//			w = getFile();
-
-		for (final ModuleItem item : module.getItems()) {
-			try {
-				if (item instanceof ClassStatement) {
-					put_class_statement((ClassStatement) item);
-				} else if (item instanceof NamespaceStatement) {
-					put_namespace_statement((NamespaceStatement) item);
-				} else
-					tripleo.elijah.util.Stupidity.println2("8000 " + item);
-			} catch (final IOException e) {
-				module.parent.getErrSink().exception(e);
-			}
+	private String getTypeString(final OS_Type type) {
+		switch (type.getType()) {
+		case BUILT_IN:
+			final BuiltInTypes bt = type.getBType();
+			return bt.name();
+//				if (type.resolve())
+//					return type.getClassOf().getName();
+//				else
+//					return "Unknown";
+		case USER:
+			return type.getTypeName().toString();
+		case USER_CLASS:
+			return type.getClassOf().getName();
+		case FUNCTION:
+			return "Function<>";
+		default:
+			throw new IllegalStateException("cant be here");
 		}
+//		return type.toString();
 	}
 
 	private void put_class_statement(final ClassStatement item) throws IOException {
@@ -59,56 +93,6 @@ public class TranslateModule {
 		}
 	}
 
-	private void put_namespace_statement(final NamespaceStatement item) throws IOException {
-		final StringBuilder ns_name_sb = new StringBuilder("NS_");
-		switch (item.getKind()) {
-		case NAMED:
-			ns_name_sb.append(item.name());
-			break;
-		case PRIVATE:
-			ns_name_sb.append("__private__");
-			break;
-		case MODULE:
-			ns_name_sb.append("__module__");
-			// TODO get a number for this, even if its %n_%n
-			break;
-		case PACKAGE:
-			ns_name_sb.append("__package__");
-			break;
-		}
-		final String             ns_name = ns_name_sb.toString();
-		final TabbedOutputStream w       = stream_for(item.getPackageName().getName(), ns_name);
-		try {
-			{
-				final String packageName = item.getPackageName().getName();
-				if (!packageName.equals("")) {
-					final String pkg_decl = "package " + packageName + ";";
-					w.put_string_ln(pkg_decl);
-					w.put_string_ln("");
-				}
-			}
-			w.put_string_ln("class " + ns_name + " {");
-			w.incr_tabs();
-			put_namespace_statement_internal(item, w);
-			w.dec_tabs();
-			w.put_string_ln("}");
-		} finally {
-			w.close();
-		}
-	}
-
-	private static TabbedOutputStream stream_for(final String packageName, final String name) throws FileNotFoundException {
-		String packageDirName = packageName.replace('.', '/');
-		if (packageDirName.equals(""))
-			packageDirName = ".";
-		final File dir = new File("output", packageDirName);
-		dir.mkdirs();
-		final File               file = new File(dir, name + ".java");
-		final FileOutputStream   os   = new FileOutputStream(file);
-		final TabbedOutputStream R    = new TabbedOutputStream(os);
-		return R;
-	}
-
 	private void put_class_statement_internal(final ClassStatement classStatement, final TabbedOutputStream w) throws IOException {
 		for (final ClassItem item : classStatement.getItems()) {
 			if (item instanceof FunctionDef) {
@@ -121,12 +105,6 @@ public class TranslateModule {
 				w.put_string_ln("}");
 			} else
 				tripleo.elijah.util.Stupidity.println2("8001 " + item);
-		}
-	}
-
-	private void put_namespace_statement_internal(final NamespaceStatement namespaceStatement, final TabbedOutputStream w) {
-		for (final ClassItem item : namespaceStatement.getItems()) {
-			tripleo.elijah.util.Stupidity.println2("8002 " + item);
 		}
 	}
 
@@ -177,25 +155,66 @@ public class TranslateModule {
 		}
 	}
 
-	private String getTypeString(final OS_Type type) {
-		switch (type.getType()) {
-		case BUILT_IN:
-			final BuiltInTypes bt = type.getBType();
-			return bt.name();
-//				if (type.resolve())
-//					return type.getClassOf().getName();
-//				else
-//					return "Unknown";
-		case USER:
-			return type.getTypeName().toString();
-		case USER_CLASS:
-			return type.getClassOf().getName();
-		case FUNCTION:
-			return "Function<>";
-		default:
-			throw new IllegalStateException("cant be here");
+	private void put_namespace_statement(final NamespaceStatement item) throws IOException {
+		final StringBuilder ns_name_sb = new StringBuilder("NS_");
+		switch (item.getKind()) {
+		case NAMED:
+			ns_name_sb.append(item.name());
+			break;
+		case PRIVATE:
+			ns_name_sb.append("__private__");
+			break;
+		case MODULE:
+			ns_name_sb.append("__module__");
+			// TODO get a number for this, even if its %n_%n
+			break;
+		case PACKAGE:
+			ns_name_sb.append("__package__");
+			break;
 		}
-//		return type.toString();
+		final String             ns_name = ns_name_sb.toString();
+		final TabbedOutputStream w       = stream_for(item.getPackageName().getName(), ns_name);
+		try {
+			{
+				final String packageName = item.getPackageName().getName();
+				if (!packageName.equals("")) {
+					final String pkg_decl = "package " + packageName + ";";
+					w.put_string_ln(pkg_decl);
+					w.put_string_ln("");
+				}
+			}
+			w.put_string_ln("class " + ns_name + " {");
+			w.incr_tabs();
+			put_namespace_statement_internal(item, w);
+			w.dec_tabs();
+			w.put_string_ln("}");
+		} finally {
+			w.close();
+		}
+	}
+
+	private void put_namespace_statement_internal(final NamespaceStatement namespaceStatement, final TabbedOutputStream w) {
+		for (final ClassItem item : namespaceStatement.getItems()) {
+			tripleo.elijah.util.Stupidity.println2("8002 " + item);
+		}
+	}
+
+	public void translate() {
+//		TabbedOutputStream w = null;
+		//			w = getFile();
+
+		for (final ModuleItem item : module.getItems()) {
+			try {
+				if (item instanceof ClassStatement) {
+					put_class_statement((ClassStatement) item);
+				} else if (item instanceof NamespaceStatement) {
+					put_namespace_statement((NamespaceStatement) item);
+				} else
+					tripleo.elijah.util.Stupidity.println2("8000 " + item);
+			} catch (final IOException e) {
+				module.parent.getErrSink().exception(e);
+			}
+		}
 	}
 
 	/*private TabbedOutputStream getFile() {

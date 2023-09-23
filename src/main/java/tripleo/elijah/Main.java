@@ -8,14 +8,14 @@
  */
 package tripleo.elijah;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class Main {
 

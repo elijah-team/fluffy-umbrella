@@ -2,52 +2,53 @@ package tripleo.elijah.comp;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.comp.i.CompilationEnclosure;
 import tripleo.elijah.comp.internal.ProcessRecord;
 import tripleo.elijah.util.NotImplementedException;
 
 public enum Stages {
 	E("E") {
 		@Override
-		public void writeLogs(final ICompilationAccess aCompilationAccess) {
-			NotImplementedException.raise();
+		public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr, final CompilationEnclosure aCe) {
+			return new EmptyProcess(aCa, aPr);
 		}
 
 		@Override
-		public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
-			return new EmptyProcess(aCa, aPr);
+		public void writeLogs(final ICompilationAccess aCompilationAccess) {
+			NotImplementedException.raise();
 		}
 	},
 	D("D") {
 		@Override
-		public void writeLogs(final ICompilationAccess aCompilationAccess) {
-			aCompilationAccess.writeLogs();
+		public @NotNull RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr, final CompilationEnclosure aCe) {
+			return new DStageProcess(aCa, aPr);
 		}
 
 		@Override
-		public @NotNull RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
-			return new DStageProcess(aCa, aPr);
+		public void writeLogs(final ICompilationAccess aCompilationAccess) {
+			aCompilationAccess.writeLogs();
 		}
 	},
 	S("S") {
 		@Override
-		public void writeLogs(final ICompilationAccess aCompilationAccess) {
-			aCompilationAccess.writeLogs();
+		public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr, final CompilationEnclosure aCe) {
+			throw new NotImplementedException();
 		}
 
 		@Override
-		public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
-			throw new NotImplementedException();
+		public void writeLogs(final ICompilationAccess aCompilationAccess) {
+			aCompilationAccess.writeLogs();
 		}
 	},  // ??
 	O("O") {
 		@Override
-		public void writeLogs(final ICompilationAccess aCompilationAccess) {
-			aCompilationAccess.writeLogs();
+		public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr, final CompilationEnclosure aCe) {
+			return new OStageProcess(aCa, aPr, aCe);
 		}
 
 		@Override
-		public RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
-			return new OStageProcess(aCa, aPr);
+		public void writeLogs(final ICompilationAccess aCompilationAccess) {
+			aCompilationAccess.writeLogs();
 		}
 	}  // Output
 	;
@@ -59,7 +60,7 @@ public enum Stages {
 		s = aO;
 	}
 
-	public abstract void writeLogs(final ICompilationAccess aCompilationAccess);
+	public abstract RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr, final CompilationEnclosure aCe);
 
-	public abstract RuntimeProcess getProcess(final ICompilationAccess aCa, final ProcessRecord aPr);
+	public abstract void writeLogs(final ICompilationAccess aCompilationAccess);
 }

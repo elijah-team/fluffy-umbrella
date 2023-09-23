@@ -12,63 +12,81 @@ import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.diagnostic.Diagnostic;
-import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.stages.deduce.DeduceElementWrapper;
 import tripleo.elijah.stages.deduce.IInvocation;
+import tripleo.elijah.stages.gen_fn.EvaNode;
 import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
 
 /**
  * Created 6/27/21 1:41 AM
  */
 public class DeferredMember {
-	private final OS_Element                                parent;
-	private final IInvocation                               invocation;
-	private final VariableStatement                         variableStatement;
-	private final DeferredObject<GenType, Diagnostic, Void> typePromise = new DeferredObject<GenType, Diagnostic, Void>();
-	private final DeferredObject<GeneratedNode, Void, Void> externalRef = new DeferredObject<GeneratedNode, Void, Void>();
+	public static class DeferredMemberInjector {
 
-	public DeferredMember(final OS_Element aParent, final IInvocation aInvocation, final VariableStatement aVariableStatement) {
+		public DeferredObject<EvaNode, java.lang.Void, java.lang.Void> new_DeferredObject__EvaNode() {
+			return new DeferredObject<EvaNode, Void, Void>();
+		}
+
+		public DeferredObject<GenType, Diagnostic, Void> new_DeferredObject__GenType() {
+			return new DeferredObject<GenType, Diagnostic, Void>();
+		}
+	}
+	private final     DeferredObject<GenType, Diagnostic, Void> typePromise = new DeferredObject<>();
+
+	private final     DeferredObject<EvaNode, Void, Void>       externalRef = new DeferredObject<>();
+	/*@Getter*/ private final IInvocation                               invocation;
+	/*@Getter*/ private final DeduceElementWrapper parent;
+
+	/*@Getter*/ private final VariableStatement    variableStatement;
+
+	private final DeferredMemberInjector __inj = new DeferredMemberInjector();
+
+	public DeferredMember(DeduceElementWrapper aParent, IInvocation aInvocation, VariableStatement aVariableStatement) {
 		parent            = aParent;
 		invocation        = aInvocation;
 		variableStatement = aVariableStatement;
 	}
 
-	public @NotNull Promise<GenType, Diagnostic, Void> typePromise() {
-		return typePromise;
+	public DeferredMemberInjector _inj() {
+		return __inj;
 	}
 
-	public OS_Element getParent() {
-		return parent;
+	public Promise<EvaNode, Void, Void> externalRef() {
+		return externalRef.promise();
+	}
+
+	public @NotNull DeferredObject<EvaNode, Void, Void> externalRefDeferred() {
+		return externalRef;
 	}
 
 	public IInvocation getInvocation() {
 		return invocation;
 	}
 
+	public DeduceElementWrapper getParent() {
+		return parent;
+	}
+
 	public VariableStatement getVariableStatement() {
 		return variableStatement;
-	}
-
-	// for DeducePhase
-	public @NotNull DeferredObject<GenType, Diagnostic, Void> typeResolved() {
-		return typePromise;
-	}
-
-	public Promise<GeneratedNode, Void, Void> externalRef() {
-		return externalRef.promise();
-	}
-
-	public @NotNull DeferredObject<GeneratedNode, Void, Void> externalRefDeferred() {
-		return externalRef;
 	}
 
 	@Override
 	public @NotNull String toString() {
 		return "DeferredMember{" +
-		  "parent=" + parent +
-		  ", variableName=" + variableStatement.getName() +
-		  '}';
+				"parent=" + parent +
+				", variableName=" + variableStatement.getName() +
+				'}';
+	}
+
+	public @NotNull Promise<GenType, Diagnostic, Void> typePromise() {
+		return typePromise;
+	}
+
+	// for DeducePhase
+	public @NotNull DeferredObject<GenType, Diagnostic, Void> typeResolved() {
+		return typePromise;
 	}
 }
 

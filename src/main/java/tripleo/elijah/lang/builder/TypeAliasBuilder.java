@@ -23,27 +23,23 @@ public class TypeAliasBuilder extends ElBuilder {
 	private Qualident       oldElement;
 	private IdentExpression newAlias;
 
-	public IdentExpression getIdent() {
-		return newAlias;
-	}
-
-	public void setIdent(final IdentExpression newAlias) {
-		this.newAlias = newAlias;
+	@Override
+	public TypeAliasStatement build() {
+		final TypeAliasStatement typeAliasStatement = new TypeAliasStatement(_parent);
+		typeAliasStatement.make(newAlias, oldElement);
+		return typeAliasStatement;
 	}
 
 	public Qualident getBecomes() {
 		return oldElement;
 	}
 
-	public void setBecomes(final Qualident oldElement) {
-		this.oldElement = oldElement;
+	public IdentExpression getIdent() {
+		return newAlias;
 	}
 
-	@Override
-	public TypeAliasStatement build() {
-		final TypeAliasStatement typeAliasStatement = new TypeAliasStatement(_parent);
-		typeAliasStatement.make(newAlias, oldElement);
-		return typeAliasStatement;
+	public void setBecomes(final Qualident oldElement) {
+		this.oldElement = oldElement;
 	}
 
 	@Override
@@ -53,6 +49,10 @@ public class TypeAliasBuilder extends ElBuilder {
 		//  where ident's may not be getting the right context
 		//  because of non-use of Parser.cur in the Builders
 		newAlias.setContext(context);
+	}
+
+	public void setIdent(final IdentExpression newAlias) {
+		this.newAlias = newAlias;
 	}
 }
 

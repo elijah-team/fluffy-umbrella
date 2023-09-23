@@ -1,8 +1,8 @@
 package tripleo.elijah.ut.vendor.com.stubbornjava.common;
 
-import okhttp3.HttpUrl;
-
 import java.util.List;
+
+import okhttp3.HttpUrl;
 
 public class HttpUrls {
 

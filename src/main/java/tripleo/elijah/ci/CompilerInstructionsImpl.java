@@ -30,14 +30,6 @@ public class CompilerInstructionsImpl implements CompilerInstructions {
 	private String                     name;
 
 	@Override
-	public IndexingStatement indexingStatement() {
-		if (_idx == null)
-			_idx = new IndexingStatement(this);
-
-		return _idx;
-	}
-
-	@Override
 	public void add(final GenerateStatement generateStatement) {
 		assert gen == null;
 		gen = generateStatement;
@@ -47,16 +39,6 @@ public class CompilerInstructionsImpl implements CompilerInstructions {
 	public void add(final LibraryStatementPartImpl libraryStatementPart) {
 		libraryStatementPart.setInstructions(this);
 		lsps.add(libraryStatementPart);
-	}
-
-	@Override
-	public String getFilename() {
-		return filename;
-	}
-
-	@Override
-	public void setFilename(final String filename) {
-		this.filename = filename;
 	}
 
 	@Override
@@ -76,8 +58,31 @@ public class CompilerInstructionsImpl implements CompilerInstructions {
 	}
 
 	@Override
+	public String getFilename() {
+		return filename;
+	}
+
+	@Override
+	public List<LibraryStatementPart> getLibraryStatementParts() {
+		return lsps;
+	}
+
+	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public IndexingStatement indexingStatement() {
+		if (_idx == null)
+			_idx = new IndexingStatement(this);
+
+		return _idx;
+	}
+
+	@Override
+	public void setFilename(final String filename) {
+		this.filename = filename;
 	}
 
 	@Override
@@ -91,8 +96,11 @@ public class CompilerInstructionsImpl implements CompilerInstructions {
 	}
 
 	@Override
-	public List<LibraryStatementPart> getLibraryStatementParts() {
-		return lsps;
+	public String toString() {
+		return "CompilerInstructionsImpl{" +
+		  "name='" + name + '\'' +
+		  ", filename='" + filename + '\'' +
+		  '}';
 	}
 }
 

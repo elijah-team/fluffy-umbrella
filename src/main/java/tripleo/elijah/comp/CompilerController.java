@@ -1,9 +1,12 @@
 package tripleo.elijah.comp;
 
+import tripleo.elijah.util.Ok;
+import tripleo.elijah.util.Operation;
+
 public interface CompilerController {
 	void printUsage();
 
 	void processOptions();
 
-	void runner();
+	Operation<Ok> runner();
 }

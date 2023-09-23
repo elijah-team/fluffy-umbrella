@@ -8,6 +8,9 @@
  */
 package tripleo.elijah.lang.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import tripleo.elijah.contexts.ImportContext;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.IdentExpression;
@@ -20,13 +23,13 @@ import tripleo.elijah.lang.imports.NormalImportStatement;
 import tripleo.elijah.lang.imports.QualifiedImportStatement;
 import tripleo.elijah.lang.imports.RootedImportStatement;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created 12/23/20 2:59 AM
  */
 public class ImportStatementBuilder extends ElBuilder {
+	enum State {
+		ASSIGNING, SELECTIVE, NORMAL, ROOTED
+	}
 	// ASSIGNING
 	List<AssigningImportStatement.Part> aparts = new ArrayList<AssigningImportStatement.Part>();
 	// SELECTIVE/QUALIFIED
@@ -37,25 +40,26 @@ public class ImportStatementBuilder extends ElBuilder {
 	private State   state;
 	// ROOTED
 	private Qualident     xy;
-	private QualidentList qil;
 
 	//
 	//
 	//
+
+	private QualidentList qil;
 
 	public void addAssigningPart(final IdentExpression i1, final Qualident q1) {
 		aparts.add(new AssigningImportStatement.Part(i1, q1));
 		this.state = State.ASSIGNING;
 	}
 
-	public void addSelectivePart(final Qualident q3, final IdentList il) {
-		sparts.add(new QualifiedImportStatement.Part(q3, il));
-		this.state = State.SELECTIVE;
-	}
-
 	public void addNormalPart(final Qualident q2) {
 		nparts.add(q2);
 		this.state = State.NORMAL;
+	}
+
+	public void addSelectivePart(final Qualident q3, final IdentList il) {
+		sparts.add(new QualifiedImportStatement.Part(q3, il));
+		this.state = State.SELECTIVE;
 	}
 
 	@Override
@@ -89,19 +93,15 @@ public class ImportStatementBuilder extends ElBuilder {
 		throw new IllegalStateException();
 	}
 
-	@Override
-	protected void setContext(final Context context) {
-		_context = context;
-	}
-
 	public void rooted(final Qualident xy, final QualidentList qil) {
 		this.xy    = xy;
 		this.qil   = qil;
 		this.state = State.ROOTED;
 	}
 
-	enum State {
-		ASSIGNING, SELECTIVE, NORMAL, ROOTED
+	@Override
+	protected void setContext(final Context context) {
+		_context = context;
 	}
 }
 

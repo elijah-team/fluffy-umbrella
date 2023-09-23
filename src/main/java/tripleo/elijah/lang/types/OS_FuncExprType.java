@@ -25,6 +25,15 @@ public class OS_FuncExprType extends __Abstract_OS_Type {
 		this.func_expr = funcExpr;
 	}
 
+	protected boolean _isEqual(final OS_Type aType) {
+		return aType.getType() == Type.FUNC_EXPR && func_expr.equals(aType.getElement());
+	}
+
+	@Override
+	public String asString() {
+		return MessageFormat.format("<OS_FuncExprType {0}>", func_expr);
+	}
+
 	@Override
 	public OS_Element getElement() {
 		return func_expr;
@@ -35,21 +44,12 @@ public class OS_FuncExprType extends __Abstract_OS_Type {
 		return Type.FUNC_EXPR;
 	}
 
-	@Override
-	public String asString() {
-		return MessageFormat.format("<OS_FuncExprType {0}>", func_expr);
-	}
-
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return String.format("<OS_FuncExprType %s>", func_expr);
-	}
-
-	protected boolean _isEqual(final OS_Type aType) {
-		return aType.getType() == Type.FUNC_EXPR && func_expr.equals(aType.getElement());
 	}
 }
 

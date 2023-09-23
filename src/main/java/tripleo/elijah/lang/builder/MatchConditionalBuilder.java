@@ -8,70 +8,28 @@
  */
 package tripleo.elijah.lang.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.lang.MatchConditional;
 import tripleo.elijah.lang.TypeName;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created 12/23/20 4:46 AM
  */
 public class MatchConditionalBuilder extends ElBuilder {
-	List<FakeMC1> parts = new ArrayList<FakeMC1>();
-	private Context     _context;
-	private IExpression expr;
-
-	@Override
-	protected MatchConditional build() {
-		final MatchConditional matchConditional = new MatchConditional(_parent, _context);
-		matchConditional.expr(expr);
-
-		matchConditional.postConstruct();
-		return matchConditional;
-	}
-
-	@Override
-	protected void setContext(final Context context) {
-		_context = context;
-	}
-
-	public void expr(final IExpression expr) {
-		this.expr = expr;
-	}
-
-	public BaseScope normalscope(final IExpression expr) {
-		final Normal typeMatch = new Normal(expr);
-		parts.add(typeMatch);
-		return typeMatch.scope();
-	}
-
-	public BaseScope valNormalscope(final IdentExpression i1) {
-		final ValNormal typeMatch = new ValNormal(i1);
-		parts.add(typeMatch);
-		return typeMatch.scope();
-	}
-
-	public BaseScope typeMatchscope(final IdentExpression i1, final TypeName tn) {
-		final TypeMatch typeMatch = new TypeMatch(i1, tn);
-		parts.add(typeMatch);
-		return typeMatch.scope();
-	}
-
 	interface FakeMC1 {
 	}
+	class Normal implements FakeMC1 {
 
-	class TypeMatch implements FakeMC1 {
-		private final TypeName        typeName;
-		private final IdentExpression matchName;
-		private       BaseScope       baseScope;
+		private final IExpression expr;
+		private       BaseScope   baseScope;
 
-		public TypeMatch(final IdentExpression i1, final TypeName tn) {
-			this.matchName = i1;
-			this.typeName  = tn;
+		public Normal(final IExpression expr) {
+			this.expr = expr;
 		}
 
 		public BaseScope scope() {
@@ -81,14 +39,14 @@ public class MatchConditionalBuilder extends ElBuilder {
 			return baseScope;
 		}
 	}
+	class TypeMatch implements FakeMC1 {
+		private final TypeName        typeName;
+		private final IdentExpression matchName;
+		private       BaseScope       baseScope;
 
-	class Normal implements FakeMC1 {
-
-		private final IExpression expr;
-		private       BaseScope   baseScope;
-
-		public Normal(final IExpression expr) {
-			this.expr = expr;
+		public TypeMatch(final IdentExpression i1, final TypeName tn) {
+			this.matchName = i1;
+			this.typeName  = tn;
 		}
 
 		public BaseScope scope() {
@@ -114,6 +72,48 @@ public class MatchConditionalBuilder extends ElBuilder {
 			this.baseScope = baseScope;
 			return baseScope;
 		}
+	}
+
+	List<FakeMC1> parts = new ArrayList<FakeMC1>();
+
+	private Context     _context;
+
+	private IExpression expr;
+
+	@Override
+	protected MatchConditional build() {
+		final MatchConditional matchConditional = new MatchConditional(_parent, _context);
+		matchConditional.expr(expr);
+
+		matchConditional.postConstruct();
+		return matchConditional;
+	}
+
+	public void expr(final IExpression expr) {
+		this.expr = expr;
+	}
+
+	public BaseScope normalscope(final IExpression expr) {
+		final Normal typeMatch = new Normal(expr);
+		parts.add(typeMatch);
+		return typeMatch.scope();
+	}
+
+	@Override
+	protected void setContext(final Context context) {
+		_context = context;
+	}
+
+	public BaseScope typeMatchscope(final IdentExpression i1, final TypeName tn) {
+		final TypeMatch typeMatch = new TypeMatch(i1, tn);
+		parts.add(typeMatch);
+		return typeMatch.scope();
+	}
+
+	public BaseScope valNormalscope(final IdentExpression i1) {
+		final ValNormal typeMatch = new ValNormal(i1);
+		parts.add(typeMatch);
+		return typeMatch.scope();
 	}
 }
 

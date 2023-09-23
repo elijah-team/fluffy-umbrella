@@ -1,13 +1,14 @@
 package tripleo.elijah.ut.vendor.com.stubbornjava.common.undertow;
 
-import io.undertow.Undertow;
-import io.undertow.Undertow.ListenerInfo;
-import io.undertow.server.HttpHandler;
+import java.net.InetSocketAddress;
+import java.util.function.Consumer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetSocketAddress;
-import java.util.function.Consumer;
+import io.undertow.Undertow;
+import io.undertow.Undertow.ListenerInfo;
+import io.undertow.server.HttpHandler;
 
 public class UndertowUtil {
 	private static final Logger logger = LoggerFactory.getLogger(UndertowUtil.class);

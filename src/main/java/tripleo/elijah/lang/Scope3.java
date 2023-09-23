@@ -19,93 +19,7 @@ import java.util.List;
  * Created 1/4/21 3:10 AM
  */
 public class Scope3 implements Documentable {
-	private final OS_Element             parent;
-	private final Scope3StatementClosure asc         = new Scope3StatementClosure();
-	private final List<OS_Element>       _items      = new ArrayList<OS_Element>();
-	private final List<Token>            _docstrings = new ArrayList<Token>();
-
-	public Scope3(final OS_Element aParent) {
-		parent = aParent;
-	}
-
-	public List<OS_Element> items() {
-		return _items;
-	}
-
-	public Iterable<? extends Token> docstrings() {
-		return _docstrings;
-	}
-
-	@Override
-	public void addDocString(final Token aText) {
-		_docstrings.add(aText);
-	}
-
-	public OS_Element getParent() {
-		return parent;
-	}
-
-	public StatementClosure statementClosure() {
-		return asc;
-	}
-
-	public void statementWrapper(final IExpression expr) {
-		add(new StatementWrapper(expr, parent.getContext(), parent)); // TODO is this right?
-	}
-
-	public void add(final OS_Element element) {
-		_items.add(element);
-	}
-
-	public VariableSequence varSeq() {
-		return asc.varSeq(asc.getParent().getContext());
-	}
-
 	private class Scope3StatementClosure implements StatementClosure {
-		@Override
-		public VariableSequence varSeq(final Context ctx) {
-			final VariableSequence vsq = new VariableSequence(ctx);
-			vsq.setParent(parent); // TODO look at this
-			assert ctx == parent.getContext();
-			vsq.setContext(ctx);
-			add(vsq);
-			return vsq;
-		}
-
-		@Override
-		public ProcedureCallExpression procedureCallExpression() {
-			final ProcedureCallExpression pce = new ProcedureCallExpression();
-			add(new StatementWrapper(pce, getParent().getContext(), getParent()));
-			return pce;
-		}
-
-		@Override
-		public Loop loop() {
-			final Loop loop = new Loop(parent, parent.getContext());
-			add(loop);
-			return loop;
-		}
-
-		@Override
-		public void constructExpression(final @NotNull IExpression aExpr, final ExpressionList aO) {
-			final ConstructStatement constructExpression = new ConstructStatement(parent, parent.getContext(), aExpr, null, aO); // TODO provide for name
-			add(constructExpression);
-		}
-
-		@Override
-		public void yield(final IExpression aExpr) {
-			final YieldExpression yiex = new YieldExpression(aExpr);
-			add(yiex);
-		}
-
-		@Override
-		public IfConditional ifConditional(final OS_Element aParent, final Context cur) {
-			final IfConditional ifex = new IfConditional(aParent);
-			ifex.setContext(new IfConditionalContext(cur, ifex));
-			add(ifex);
-			return ifex;
-		}
-
 		@Override
 		public BlockStatement blockClosure() {
 			final BlockStatement bs = new BlockStatement(null);
@@ -121,10 +35,42 @@ public class Scope3 implements Documentable {
 		}
 
 		@Override
+		public void constructExpression(final @NotNull IExpression aExpr, final ExpressionList aO) {
+			final ConstructStatement constructExpression = new ConstructStatement(parent, parent.getContext(), aExpr, null, aO); // TODO provide for name
+			add(constructExpression);
+		}
+
+		private OS_Element getParent() {
+			return parent;
+		}
+
+		@Override
+		public IfConditional ifConditional(final OS_Element aParent, final Context cur) {
+			final IfConditional ifex = new IfConditional(aParent);
+			ifex.setContext(new IfConditionalContext(cur, ifex));
+			add(ifex);
+			return ifex;
+		}
+
+		@Override
+		public Loop loop() {
+			final Loop loop = new Loop(parent, parent.getContext());
+			add(loop);
+			return loop;
+		}
+
+		@Override
 		public MatchConditional matchConditional(final Context parentContext) {
 			final MatchConditional matchConditional = new MatchConditional(getParent(), parentContext);
 			add(matchConditional);
 			return matchConditional;
+		}
+
+		@Override
+		public ProcedureCallExpression procedureCallExpression() {
+			final ProcedureCallExpression pce = new ProcedureCallExpression();
+			add(new StatementWrapper(pce, getParent().getContext(), getParent()));
+			return pce;
 		}
 
 		@Override
@@ -133,9 +79,63 @@ public class Scope3 implements Documentable {
 			add(new StatementWrapper(expr, parent.getContext(), parent)); // TODO is this right?
 		}
 
-		private OS_Element getParent() {
-			return parent;
+		@Override
+		public VariableSequence varSeq(final Context ctx) {
+			final VariableSequence vsq = new VariableSequence(ctx);
+			vsq.setParent(parent); // TODO look at this
+			assert ctx == parent.getContext();
+			vsq.setContext(ctx);
+			add(vsq);
+			return vsq;
 		}
+
+		@Override
+		public void yield(final IExpression aExpr) {
+			final YieldExpression yiex = new YieldExpression(aExpr);
+			add(yiex);
+		}
+	}
+	private final OS_Element             parent;
+	private final Scope3StatementClosure asc         = new Scope3StatementClosure();
+	private final List<OS_Element>       _items      = new ArrayList<OS_Element>();
+
+	private final List<Token>            _docstrings = new ArrayList<Token>();
+
+	public Scope3(final OS_Element aParent) {
+		parent = aParent;
+	}
+
+	public void add(final OS_Element element) {
+		_items.add(element);
+	}
+
+	@Override
+	public void addDocString(final Token aText) {
+		_docstrings.add(aText);
+	}
+
+	public Iterable<? extends Token> docstrings() {
+		return _docstrings;
+	}
+
+	public OS_Element getParent() {
+		return parent;
+	}
+
+	public List<OS_Element> items() {
+		return _items;
+	}
+
+	public StatementClosure statementClosure() {
+		return asc;
+	}
+
+	public void statementWrapper(final IExpression expr) {
+		add(new StatementWrapper(expr, parent.getContext(), parent)); // TODO is this right?
+	}
+
+	public VariableSequence varSeq() {
+		return asc.varSeq(asc.getParent().getContext());
 	}
 }
 

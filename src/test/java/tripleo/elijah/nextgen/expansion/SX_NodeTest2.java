@@ -1,7 +1,13 @@
 package tripleo.elijah.nextgen.expansion;
 
-import junit.framework.TestCase;
+import static tripleo.elijah.util.Helpers.List_of;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
+
+import junit.framework.TestCase;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
@@ -20,11 +26,6 @@ import tripleo.elijah.nextgen.outputtree.EOT_OutputFile;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 import tripleo.elijah.nextgen.small.ES_Symbol;
 import tripleo.elijah.util.Helpers;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static tripleo.elijah.util.Helpers.List_of;
 
 public class SX_NodeTest2 extends TestCase {
 
@@ -53,18 +54,8 @@ public class SX_NodeTest2 extends TestCase {
 
 		final SM_ClassDeclaration node = new SM_ClassDeclaration() {
 			@Override
-			public SM_Name name() {
-				return new SM_Name() {
-					@Override
-					public String getText() {
-						return "Main";
-					}
-				};
-			}
-
-			@Override
-			public SM_ClassSubtype subType() {
-				return SM_ClassSubtype.NORMAL;
+			public SM_ClassBody classBody() {
+				return null;
 			}
 
 			@Override
@@ -83,8 +74,18 @@ public class SX_NodeTest2 extends TestCase {
 			}
 
 			@Override
-			public SM_ClassBody classBody() {
-				return null;
+			public SM_Name name() {
+				return new SM_Name() {
+					@Override
+					public String getText() {
+						return "Main";
+					}
+				};
+			}
+
+			@Override
+			public SM_ClassSubtype subType() {
+				return SM_ClassSubtype.NORMAL;
 			}
 		};
 

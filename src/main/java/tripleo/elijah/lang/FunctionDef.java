@@ -15,6 +15,7 @@ package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.FunctionContext;
+import tripleo.elijah.lang.nextgen.names.i.EN_Name;
 import tripleo.elijah.lang.types.OS_FuncType;
 import tripleo.elijah.lang2.ElElementVisitor;
 
@@ -31,6 +32,7 @@ public class FunctionDef extends BaseFunctionDef implements Documentable, ClassI
 
 	// region modifiers
 	private boolean _isAbstract;
+	private EN_Name _name;
 
 	public FunctionDef(final OS_Element element, final Context context) {
 		parent = element;
@@ -41,6 +43,7 @@ public class FunctionDef extends BaseFunctionDef implements Documentable, ClassI
 		} else {
 			throw new IllegalStateException("adding FunctionDef to " + element.getClass().getName());
 		}
+		_name = EN_Name.create(name());
 		_a.setContext(new FunctionContext(context, this));
 	}
 
@@ -48,19 +51,27 @@ public class FunctionDef extends BaseFunctionDef implements Documentable, ClassI
 
 	// region abstract
 
-	public void setAbstract(final boolean b) {
-		_isAbstract = b;
-		if (b) {
-			this.set(FunctionModifiers.ABSTRACT);
-		}
+	public EN_Name getEnName() {
+		return _name;
 	}
 
-	public void set(final FunctionModifiers mod) {
-		assert _mod == null;
-		_mod = mod;
+	public OS_FuncType getOS_Type() {
+		if (osType == null)
+			osType = new OS_FuncType(this);
+		return osType;
 	}
 
 	// endregion
+
+	@Override // OS_Element
+	public OS_Element getParent() {
+		return parent;
+	}
+
+	@Override
+	public void postConstruct() { // TODO
+
+	}
 
 	/**
 	 * Can be {@code null} under the following circumstances:<br/><br/>
@@ -75,18 +86,20 @@ public class FunctionDef extends BaseFunctionDef implements Documentable, ClassI
 		return _returnType;
 	}
 
+	public void set(final FunctionModifiers mod) {
+		assert _mod == null;
+		_mod = mod;
+	}
+
+	public void setAbstract(final boolean b) {
+		_isAbstract = b;
+		if (b) {
+			this.set(FunctionModifiers.ABSTRACT);
+		}
+	}
+
 	public void setReturnType(final TypeName tn) {
 		this._returnType = tn;
-	}
-
-	@Override // OS_Element
-	public OS_Element getParent() {
-		return parent;
-	}
-
-	@Override
-	public void postConstruct() { // TODO
-
 	}
 
 	@Override
@@ -97,12 +110,6 @@ public class FunctionDef extends BaseFunctionDef implements Documentable, ClassI
 	@Override
 	public void visitGen(final ElElementVisitor visit) {
 		visit.visitFunctionDef(this);
-	}
-
-	public OS_FuncType getOS_Type() {
-		if (osType == null)
-			osType = new OS_FuncType(this);
-		return osType;
 	}
 
 }

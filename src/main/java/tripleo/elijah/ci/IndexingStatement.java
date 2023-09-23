@@ -27,12 +27,12 @@ public class IndexingStatement {
 		this.parent = module;
 	}
 
-	public void setName(final Token i1) {
-		this.name = i1;
-	}
-
 	public void setExprs(final ExpressionList el) {
 		this.exprs = el;
+	}
+
+	public void setName(final Token i1) {
+		this.name = i1;
 	}
 
 }

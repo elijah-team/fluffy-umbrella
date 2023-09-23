@@ -20,14 +20,6 @@ class _WP_FileNameProvider implements EOT_OutputFile.FileNameProvider {
 		path1       = FileSystems.getDefault().getPath(prefix1, key1);
 	}
 
-	public String getPrefix1() {
-		return prefix1;
-	}
-
-	public String getKey1() {
-		return key1;
-	}
-
 	public File getFile_prefix() {
 		return file_prefix;
 	}
@@ -37,7 +29,15 @@ class _WP_FileNameProvider implements EOT_OutputFile.FileNameProvider {
 		return path1.toString();
 	}
 
+	public String getKey1() {
+		return key1;
+	}
+
 	public Path getPath() {
 		return path1;
+	}
+
+	public String getPrefix1() {
+		return prefix1;
 	}
 }

@@ -23,14 +23,13 @@ public class SubExpression extends AbstractExpression {
 		carrier = ee;
 	}
 
-	@Override
-	public ExpressionKind getKind() {
-		return ExpressionKind.SUBEXPRESSION;
+	public IExpression getExpression() {
+		return carrier;
 	}
 
 	@Override
-	public boolean is_simple() {
-		return true;
+	public ExpressionKind getKind() {
+		return ExpressionKind.SUBEXPRESSION;
 	}
 
 	@Override
@@ -39,12 +38,13 @@ public class SubExpression extends AbstractExpression {
 	}
 
 	@Override
-	public void setType(final OS_Type deducedExpression) {
-		throw new IllegalStateException("Cant set this type");
+	public boolean is_simple() {
+		return true;
 	}
 
-	public IExpression getExpression() {
-		return carrier;
+	@Override
+	public void setType(final OS_Type deducedExpression) {
+		throw new IllegalStateException("Cant set this type");
 	}
 }
 

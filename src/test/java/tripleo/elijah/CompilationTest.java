@@ -8,18 +8,19 @@
  */
 package tripleo.elijah;
 
+import static tripleo.elijah.util.Helpers.List_of;
+
+import java.io.File;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
+
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
-
-import java.io.File;
-import java.util.List;
-
-import static tripleo.elijah.util.Helpers.List_of;
 
 /**
  * @author Tripleo(envy)

@@ -23,15 +23,31 @@ public class RegularTypeName extends AbstractTypeName2 implements NormalTypeName
 	//	private OS_Type _resolved;
 	private OS_Element   _resolvedElement;
 
+	@Deprecated
+	public RegularTypeName() { // TODO remove this
+		super();
+		_ctx = null;
+	}
+
 	public RegularTypeName(final Context cur) {
 		super();
 		_ctx = cur;
 	}
 
-	@Deprecated
-	public RegularTypeName() { // TODO remove this
-		super();
-		_ctx = null;
+	@Override
+	public void addGenericPart(final TypeNameList tn2) {
+		genericPart = tn2;
+	}
+
+	@Override
+	public int getColumn() {
+		return getRealName().parts().get(0).getColumn();
+	}
+
+	// TODO what about generic part
+	@Override
+	public int getColumnEnd() {
+		return getRealName().parts().get(getRealName().parts().size()).getColumnEnd();
 	}
 
 	@Override
@@ -40,8 +56,8 @@ public class RegularTypeName extends AbstractTypeName2 implements NormalTypeName
 	}
 
 	@Override
-	public void setContext(final Context ctx) {
-		_ctx = ctx;
+	public File getFile() {
+		return getRealName().parts().get(0).getFile();
 	}
 
 	@Override
@@ -50,13 +66,30 @@ public class RegularTypeName extends AbstractTypeName2 implements NormalTypeName
 	}
 
 	@Override
+	public int getLine() {
+		return getRealName().parts().get(0).getLine();
+	}
+
+	// TODO what about generic part
+	@Override
+	public int getLineEnd() {
+		return getRealName().parts().get(getRealName().parts().size()).getLineEnd();
+	}
+
+	@Override
+	public String getName() {
+		if (typeName == null) return null;
+		return this.typeName.asSimpleString();
+	}
+
+	@Override
 	public Qualident getRealName() {
 		return typeName;
 	}
 
 	@Override
-	public Type kindOfType() {
-		return Type.NORMAL;
+	public OS_Element getResolvedElement() {
+		return _resolvedElement;
 	}
 
 	@Override
@@ -64,9 +97,21 @@ public class RegularTypeName extends AbstractTypeName2 implements NormalTypeName
 		return _resolvedElement != null;
 	}
 
+	// region Locatable
+
 	@Override
-	public OS_Element getResolvedElement() {
-		return _resolvedElement;
+	public Type kindOfType() {
+		return Type.NORMAL;
+	}
+
+	@Override
+	public void setContext(final Context ctx) {
+		_ctx = ctx;
+	}
+
+	@Override
+	public void setName(final Qualident aS) {
+		this.typeName = aS;
 	}
 
 	@Override
@@ -135,51 +180,6 @@ public class RegularTypeName extends AbstractTypeName2 implements NormalTypeName
 		} else
 			sb.append("<RegularTypeName empty>");
 		return sb.toString();
-	}
-
-	@Override
-	public String getName() {
-		if (typeName == null) return null;
-		return this.typeName.asSimpleString();
-	}
-
-	@Override
-	public void setName(final Qualident aS) {
-		this.typeName = aS;
-	}
-
-	@Override
-	public void addGenericPart(final TypeNameList tn2) {
-		genericPart = tn2;
-	}
-
-	// region Locatable
-
-	@Override
-	public int getLine() {
-		return getRealName().parts().get(0).getLine();
-	}
-
-	@Override
-	public int getColumn() {
-		return getRealName().parts().get(0).getColumn();
-	}
-
-	// TODO what about generic part
-	@Override
-	public int getLineEnd() {
-		return getRealName().parts().get(getRealName().parts().size()).getLineEnd();
-	}
-
-	// TODO what about generic part
-	@Override
-	public int getColumnEnd() {
-		return getRealName().parts().get(getRealName().parts().size()).getColumnEnd();
-	}
-
-	@Override
-	public File getFile() {
-		return getRealName().parts().get(0).getFile();
 	}
 
 	// endregion

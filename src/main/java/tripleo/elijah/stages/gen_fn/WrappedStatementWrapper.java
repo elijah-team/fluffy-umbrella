@@ -22,23 +22,6 @@ import tripleo.elijah.lang.VariableStatement;
  * Created 9/18/21 4:03 AM
  */
 public class WrappedStatementWrapper extends StatementWrapper {
-	private final Wrapped           wrapped;
-	private final VariableStatement vs;
-
-	public WrappedStatementWrapper(final IExpression aExpression, final Context aContext, final OS_Element aParent, final VariableStatement aVs) {
-		super(aExpression, aContext, aParent);
-		vs      = aVs;
-		wrapped = new Wrapped(aVs, aExpression);
-	}
-
-	public Wrapped getWrapped() {
-		return wrapped;
-	}
-
-	public VariableStatement getVariableStatement() {
-		return vs;
-	}
-
 	class Wrapped extends AbstractExpression {
 
 		private final VariableStatement variableStatement;
@@ -50,19 +33,36 @@ public class WrappedStatementWrapper extends StatementWrapper {
 		}
 
 		@Override
-		public boolean is_simple() {
-			return expression.is_simple();
+		public OS_Type getType() {
+			return null;
 		}
 
 		@Override
-		public OS_Type getType() {
-			return null;
+		public boolean is_simple() {
+			return expression.is_simple();
 		}
 
 		@Override
 		public void setType(final OS_Type deducedExpression) {
 
 		}
+	}
+	private final Wrapped           wrapped;
+
+	private final VariableStatement vs;
+
+	public WrappedStatementWrapper(final IExpression aExpression, final Context aContext, final OS_Element aParent, final VariableStatement aVs) {
+		super(aExpression, aContext, aParent);
+		vs      = aVs;
+		wrapped = new Wrapped(aVs, aExpression);
+	}
+
+	public VariableStatement getVariableStatement() {
+		return vs;
+	}
+
+	public Wrapped getWrapped() {
+		return wrapped;
 	}
 }
 

@@ -9,8 +9,11 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import java.util.function.Consumer;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.contexts.ClassContext;
 import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.lang.ClassStatement;
@@ -26,6 +29,7 @@ import tripleo.elijah.lang.TypeName;
 import tripleo.elijah.lang.TypeOfTypeName;
 import tripleo.elijah.lang.types.OS_AnyType;
 import tripleo.elijah.lang.types.OS_GenericTypeNameType;
+import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
@@ -33,45 +37,18 @@ import tripleo.elijah.util.NotImplementedException;
 /**
  * Created 11/18/21 10:51 PM
  */
-public class ResolveType {
-	static @NotNull GenType resolve_type(final OS_Module module,
-	                                     final @NotNull OS_Type type,
-	                                     final Context ctx,
-	                                     final ElLog LOG,
-	                                     final @NotNull DeduceTypes2 dt2) throws ResolveError {
-		@NotNull final GenType R = new GenType();
-		if (type.getType() != OS_Type.Type.USER_CLASS)
-			R.typeName = type;
+public enum ResolveType {
+	;
 
-		switch (type.getType()) {
-
-		case BUILT_IN:
-			resolve_built_in(module, type, dt2, R);
-			break;
-		case USER:
-			resolve_user(type, LOG, dt2, R);
-			break;
-		case USER_CLASS:
-			R.resolved = type;
-			break;
-		case FUNCTION:
-			break;
-		case FUNC_EXPR:
-			R.resolved = type;//((OS_FuncExprType)type).getElement();
-			break;
-		default:
-			throw new IllegalStateException("565 Unexpected value: " + type.getType());
-		}
-
-		return R;
+	static class ResolveTypeInjector {
 	}
 
-	private static void resolve_built_in(final OS_Module module, final @NotNull OS_Type type, final DeduceTypes2 dt2, final @NotNull GenType aR) throws ResolveError {
+	private static void resolve_built_in(final @NotNull OS_Module module, final @NotNull OS_Type type, final @NotNull DeduceTypes2 dt2, final @NotNull GenType aR) throws ResolveError {
 		switch (type.getBType()) {
 		case SystemInteger: {
-			@NotNull final String typeName = type.getBType().name();
+			@NotNull String typeName = type.getBType().name();
 			assert typeName.equals("SystemInteger");
-			OS_Module prelude = module.prelude;
+			OS_Module prelude = module.getPrelude();
 			if (prelude == null) // README Assume `module' IS prelude
 				prelude = module;
 			final LookupResultList lrl  = prelude.getContext().lookup(typeName);
@@ -87,13 +64,13 @@ public class ResolveType {
 			if (best == null) {
 				throw new ResolveError(IdentExpression.forString(typeName), lrl);
 			}
-			aR.resolved = ((ClassStatement) best).getOS_Type();
+			aR.setResolved(((ClassStatement) best).getOS_Type());
 			break;
 		}
 		case String_: {
-			@NotNull final String typeName = type.getBType().name();
+			@NotNull String typeName = type.getBType().name();
 			assert typeName.equals("String_");
-			OS_Module prelude = module.prelude;
+			OS_Module prelude = module.prelude();
 			if (prelude == null) // README Assume `module' IS prelude
 				prelude = module;
 			final LookupResultList lrl  = prelude.getContext().lookup("ConstString"); // TODO not sure about String
@@ -109,13 +86,13 @@ public class ResolveType {
 			if (best == null) {
 				throw new ResolveError(IdentExpression.forString(typeName), lrl);
 			}
-			aR.resolved = (((ClassStatement) best).getOS_Type());
+			aR.setResolved((((ClassStatement) best).getOS_Type()));
 			break;
 		}
 		case SystemCharacter: {
-			@NotNull final String typeName = type.getBType().name();
+			@NotNull String typeName = type.getBType().name();
 			assert typeName.equals("SystemCharacter");
-			OS_Module prelude = module.prelude;
+			OS_Module prelude = module.prelude();
 			if (prelude == null) // README Assume `module' IS prelude
 				prelude = module;
 			final LookupResultList lrl  = prelude.getContext().lookup("SystemCharacter");
@@ -131,16 +108,16 @@ public class ResolveType {
 			if (best == null) {
 				throw new ResolveError(IdentExpression.forString(typeName), lrl);
 			}
-			aR.resolved = ((ClassStatement) best).getOS_Type();
+			aR.setResolved(((ClassStatement) best).getOS_Type());
 			break;
 		}
 		case Boolean: {
-			OS_Module prelude = module.prelude;
+			OS_Module prelude = module.prelude();
 			if (prelude == null) // README Assume `module' IS prelude
 				prelude = module;
 			final LookupResultList     lrl  = prelude.getContext().lookup("Boolean");
 			final @Nullable OS_Element best = lrl.chooseBest(null);
-			aR.resolved = ((ClassStatement) best).getOS_Type(); // TODO might change to Type
+			aR.setResolved(((ClassStatement) best).getOS_Type()); // TODO might change to Type
 			break;
 		}
 		default:
@@ -148,28 +125,86 @@ public class ResolveType {
 		}
 	}
 
-	private static void resolve_user(final @NotNull OS_Type type, final ElLog LOG, final DeduceTypes2 dt2, final @NotNull GenType aR) throws ResolveError {
+	public static @NotNull GenType resolve_type(final @NotNull OS_Module module,
+												final @NotNull OS_Type type,
+												final Context ctx,
+												final @NotNull ElLog LOG,
+												final @NotNull DeduceTypes2 dt2) throws ResolveError {
+		@NotNull GenType R = new GenType();
+		if (type.getType() != OS_Type.Type.USER_CLASS)
+			R.setTypeName(type);
+
+		switch (type.getType()) {
+
+		case BUILT_IN:
+			resolve_built_in(module, type, dt2, R);
+			break;
+		case USER:
+			resolve_user2(type, LOG, dt2, R::copy);
+			break;
+		case USER_CLASS:
+			R.setResolved(type);
+			break;
+		case FUNCTION:
+			break;
+		case FUNC_EXPR:
+			R.setResolved(type);//((OS_FuncExprType)type).getElement();
+			break;
+		default:
+			throw new IllegalStateException("565 Unexpected value: " + type.getType());
+		}
+
+		return R;
+	}
+
+	private static void resolve_user(final @NotNull IDeduceElement3 aDeduceElement3,
+									 final @NotNull OS_Type type1,
+									 final @NotNull ElLog LOG,
+									 final @NotNull Consumer<GenType> cgt) throws ResolveError {
+		final @NotNull OS_Type type = aDeduceElement3.genType().getResolved();
+		assert type1 == type;
+
+		//final @NotNull ElLog LOG;
+		final @NotNull DeduceTypes2 dt2 = aDeduceElement3.deduceTypes2();
+
+		resolve_user(type, LOG, dt2, cgt);
+	}
+
+	private static void resolve_user(final @NotNull OS_Type type,
+									 final @NotNull ElLog LOG,
+									 final @NotNull DeduceTypes2 dt2,
+									 final @NotNull Consumer<GenType> cgt) throws ResolveError {
+		final GenType ggg = new GenType();
+
 		final TypeName tn1 = type.getTypeName();
 		switch (tn1.kindOfType()) {
 		case NORMAL: {
 			final Qualident tn = ((NormalTypeName) tn1).getRealName();
-			LOG.info("799 [resolving USER type named] " + tn);
-			final LookupResultList lrl  = DeduceLookupUtils.lookupExpression(tn, tn1.getContext(), dt2);
-			@Nullable OS_Element   best = lrl.chooseBest(null);
-			while (best instanceof AliasStatement) {
-				best = DeduceLookupUtils._resolveAlias2((AliasStatement) best, dt2);
-			}
-			if (best == null) {
-				if (tn.asSimpleString().equals("Any"))
-					/*return*/ aR.resolved = new OS_AnyType(); // TODO not a class
-				throw new ResolveError(tn1, lrl);
-			}
 
-			if (best instanceof ClassContext.OS_TypeNameElement) {
-				/*return*/
-				aR.resolved = new OS_GenericTypeNameType((ClassContext.OS_TypeNameElement) best); // TODO not a class
-			} else
-				aR.resolved = ((ClassStatement) best).getOS_Type();
+			LOG.info("799 [resolving USER type named] " + tn);
+
+			if (tn != null) {
+				final LookupResultList lrl = DeduceLookupUtils.lookupExpression(tn, tn1.getContext(), dt2);
+
+				@Nullable OS_Element best = lrl.chooseBest(null);
+				while (best instanceof AliasStatement) {
+					best = DeduceLookupUtils._resolveAlias2((AliasStatement) best, dt2);
+				}
+
+				if (best == null) {
+					if (tn.asSimpleString().equals("Any")) {
+						/*return*/
+						ggg.setResolved(new OS_AnyType()); // TODO not a class
+					}
+					throw new ResolveError(tn1, lrl);
+				}
+
+				if (best instanceof ClassContext.OS_TypeNameElement) {
+					/*return*/
+					ggg.setResolved(new OS_GenericTypeNameType((ClassContext.OS_TypeNameElement) best)); // TODO not a class
+				} else
+					ggg.setResolved(((ClassStatement) best).getOS_Type());
+			}
 			break;
 		}
 		case FUNCTION:
@@ -180,9 +215,9 @@ public class ResolveType {
 			final Qualident      q       = type_of.typeOf();
 			if (q.parts().size() == 1 && q.parts().get(0).getText().equals("self")) {
 				assert type_of.getContext() instanceof ClassContext;
-				aR.resolved = ((ClassContext) type_of.getContext()).getCarrier().getOS_Type();
+				ggg.setResolved(((ClassContext) type_of.getContext()).getCarrier().getOS_Type());
 			}
-			final int y = 2;
+			int y = 2;
 
 		}
 //				throw new NotImplementedException();
@@ -190,6 +225,21 @@ public class ResolveType {
 		default:
 			throw new IllegalStateException("414 Unexpected value: " + tn1.kindOfType());
 		}
+
+		cgt.accept(ggg);
+	}
+
+	private static void resolve_user2(final @NotNull OS_Type type,
+									  final @NotNull ElLog LOG,
+									  final @NotNull DeduceTypes2 dt2,
+									  final @NotNull Consumer<GenType> cgt) throws ResolveError {
+		resolve_user(type, LOG, dt2, cgt);
+	}
+
+	private final ResolveTypeInjector __inj = new ResolveTypeInjector();
+
+	ResolveTypeInjector _inj() {
+		return __inj;
 	}
 }
 

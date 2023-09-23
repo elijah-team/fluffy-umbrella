@@ -32,14 +32,16 @@ public class WithStatement implements OS_Element, OS_Container, FunctionItem, St
 	}
 
 	@Override
-	public void addDocString(final Token aText) {
-		scope3.addDocString(aText);
-//		mDocs.add(aText.getText());
+	public void add(final OS_Element anElement) {
+		if (!(anElement instanceof FunctionItem))
+			return;
+		_items.add((FunctionItem) anElement);
 	}
 
 	@Override
-	public void visitGen(final ElElementVisitor visit) {
-		visit.visitWithStatement(this);
+	public void addDocString(final Token aText) {
+		scope3.addDocString(aText);
+//		mDocs.add(aText.getText());
 	}
 
 	@Override
@@ -47,21 +49,22 @@ public class WithStatement implements OS_Element, OS_Container, FunctionItem, St
 		return null;
 	}
 
+	public List<FunctionItem> getItems() {
+		return _items;
+	}
+
 	@Override
 	public OS_Element getParent() {
 		return _parent;
 	}
 
-	public void setContext(final WithContext ctx) {
-		this.ctx = ctx;
-	}
-
-	public List<FunctionItem> getItems() {
-		return _items;
-	}
-
 	public Collection<VariableStatement> getVarItems() {
 		return hidden_seq.items();
+	}
+
+	@Override
+	public List<OS_Element2> items() {
+		return null;
 	}
 
 	public VariableStatement nextVarStmt() {
@@ -71,20 +74,17 @@ public class WithStatement implements OS_Element, OS_Container, FunctionItem, St
 	public void postConstruct() {
 	}
 
-	@Override
-	public List<OS_Element2> items() {
-		return null;
-	}
-
-	@Override
-	public void add(final OS_Element anElement) {
-		if (!(anElement instanceof FunctionItem))
-			return;
-		_items.add((FunctionItem) anElement);
-	}
-
 	public void scope(final Scope3 sco) {
 		scope3 = sco;
+	}
+
+	public void setContext(final WithContext ctx) {
+		this.ctx = ctx;
+	}
+
+	@Override
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitWithStatement(this);
 	}
 
 }

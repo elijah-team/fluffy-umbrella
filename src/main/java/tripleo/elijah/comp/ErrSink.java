@@ -12,22 +12,22 @@ import tripleo.elijah.diagnostic.Diagnostic;
 
 public interface ErrSink {
 
-	void exception(Exception exception);
-
-	/*@ ensures errorCount() == \old errorCount + 1*/
-	void reportError(String s);
-
-	void reportWarning(String s);
+	enum Errors {
+		ERROR, WARNING, INFO
+	}
 
 	int errorCount();
+
+	void exception(Exception exception);
 
 	void info(String format);
 
 	void reportDiagnostic(Diagnostic diagnostic);
 
-	enum Errors {
-		ERROR, WARNING, INFO
-	}
+	/*@ ensures errorCount() == \old errorCount + 1*/
+	void reportError(String s);
+
+	void reportWarning(String s);
 }
 
 //

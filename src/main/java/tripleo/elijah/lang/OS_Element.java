@@ -13,14 +13,16 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang2.ElElementVisitor;
 
 public interface OS_Element {
-	void visitGen(ElElementVisitor visit);
-
 	@Contract(pure = true)
 	Context getContext();
 
 	@Contract(pure = true)
 	@Nullable
 	OS_Element getParent();
+
+//	void serializeTo(SmallWriter sw);
+
+	void visitGen(ElElementVisitor visit);
 }
 
 //

@@ -15,21 +15,21 @@ import tripleo.elijah.lang.IExpression;
 public interface IExpressionNode {
 //	String getStringPCE(ProcedureCallExpression expr);
 
-	IExpression getExpr();
-
-	boolean is_const_expr();
-
-	boolean is_underscore();
-
-	boolean is_var_ref();
-
-	boolean is_simple();
+	String genText();
 
 	String genText(CompilerContext cctx);
 
 	String genType();
 
-	String genText();
+	IExpression getExpr();
 
 	TypeRef getType();
+
+	boolean is_const_expr();
+
+	boolean is_simple();
+
+	boolean is_underscore();
+
+	boolean is_var_ref();
 }

@@ -22,13 +22,8 @@ public abstract class _BaseImportStatement implements ImportStatement {
 	private El_Category    category;
 
 	@Override
-	public void setCategory(final El_Category aCategory) {
-		category = aCategory;
-	}
-
-	@Override
-	public void setAccess(final AccessNotation aNotation) {
-		access_note = aNotation;
+	public AccessNotation getAccess() {
+		return access_note;
 	}
 
 	@Override
@@ -37,8 +32,13 @@ public abstract class _BaseImportStatement implements ImportStatement {
 	}
 
 	@Override
-	public AccessNotation getAccess() {
-		return access_note;
+	public void setAccess(final AccessNotation aNotation) {
+		access_note = aNotation;
+	}
+
+	@Override
+	public void setCategory(final El_Category aCategory) {
+		category = aCategory;
 	}
 
 	// endregion

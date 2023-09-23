@@ -1,30 +1,33 @@
 package tripleo.elijah.world.impl;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.BaseFunctionDef;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
 import tripleo.elijah.world.i.LivingFunction;
 
 public class DefaultLivingFunction implements LivingFunction {
-	private final BaseFunctionDef       _element;
-	private final BaseGeneratedFunction _gf;
+	private final @NotNull BaseFunctionDef _element;
+	private final @Nullable BaseEvaFunction _gf;
+
+	public DefaultLivingFunction(final @NotNull BaseEvaFunction aFunction) {
+		_element = aFunction.getFD();
+		_gf      = aFunction;
+	}
 
 	public DefaultLivingFunction(final BaseFunctionDef aElement) {
 		_element = aElement;
 		_gf      = null;
 	}
 
-	public DefaultLivingFunction(final BaseGeneratedFunction aFunction) {
-		_element = aFunction.getFD();
-		_gf      = aFunction;
+	@Override
+	public int getCode() {
+		return _gf.getCode();
 	}
 
 	@Override
 	public BaseFunctionDef getElement() {
 		return _element;
-	}
-
-	@Override
-	public int getCode() {
-		return _gf.getCode();
 	}
 }

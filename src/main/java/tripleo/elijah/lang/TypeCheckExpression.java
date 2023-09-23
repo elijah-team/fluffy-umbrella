@@ -26,13 +26,13 @@ public class TypeCheckExpression extends AbstractExpression implements IExpressi
 	}
 
 	@Override
-	public boolean is_simple() {
-		return true; // TODO is not const tho
+	public OS_Type getType() {
+		return new OS_BuiltinType(BuiltInTypes.Boolean);
 	}
 
 	@Override
-	public OS_Type getType() {
-		return new OS_BuiltinType(BuiltInTypes.Boolean);
+	public boolean is_simple() {
+		return true; // TODO is not const tho
 	}
 
 	@Override

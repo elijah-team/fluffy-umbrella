@@ -22,6 +22,26 @@ public class AccessNotation implements OS_Element {
 	private Token        shorthand;
 	private TypeNameList tnl;
 
+	public Token getCategory() {
+		return category;
+	}
+
+	@Override
+	public Context getContext() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public OS_Element getParent() {
+		throw new NotImplementedException();
+	}
+
+	public void setCategory(final Token category) {
+		if (category == null) return;
+		assert category.getType() == ElijjahTokenTypes.STRING_LITERAL;
+		this.category = category;
+	}
+
 	public void setShortHand(final Token shorthand) {
 		if (shorthand == null) return;
 		assert shorthand.getType() == ElijjahTokenTypes.IDENT;
@@ -35,26 +55,6 @@ public class AccessNotation implements OS_Element {
 	@Override
 	public void visitGen(final ElElementVisitor visit) {
 		visit.visitAccessNotation(this);
-	}
-
-	@Override
-	public Context getContext() {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public OS_Element getParent() {
-		throw new NotImplementedException();
-	}
-
-	public Token getCategory() {
-		return category;
-	}
-
-	public void setCategory(final Token category) {
-		if (category == null) return;
-		assert category.getType() == ElijjahTokenTypes.STRING_LITERAL;
-		this.category = category;
 	}
 }
 

@@ -27,20 +27,14 @@ public class VariableReference extends AbstractExpression implements OS_Expressi
 		setKind(ExpressionKind.VARREF);
 	}
 
-	public void setMain(final String s) {
-		main = s;
-		tripleo.elijah.util.Stupidity.println2(repr_());
+	public String getName() {
+//		if (parts.size() >0) throw new IllegalStateException();
+		return main;
 	}
 
 	@Override
-	public String repr_() {
-		return String.format("VariableReference (%s)", main);
-	}
-
-	public void setMain(final Token t) {
-		final String s = t.getText();
-		main = s;
-		tripleo.elijah.util.Stupidity.println2(repr_());
+	public OS_Type getType() {
+		return _type;
 	}
 
 	/**
@@ -56,8 +50,19 @@ public class VariableReference extends AbstractExpression implements OS_Expressi
 	}
 
 	@Override
-	public OS_Type getType() {
-		return _type;
+	public String repr_() {
+		return String.format("VariableReference (%s)", main);
+	}
+
+	public void setMain(final String s) {
+		main = s;
+		tripleo.elijah.util.Stupidity.println2(repr_());
+	}
+
+	public void setMain(final Token t) {
+		final String s = t.getText();
+		main = s;
+		tripleo.elijah.util.Stupidity.println2(repr_());
 	}
 
 	@Override
@@ -68,11 +73,6 @@ public class VariableReference extends AbstractExpression implements OS_Expressi
 	@Override
 	public String toString() {
 		return repr_();
-	}
-
-	public String getName() {
-//		if (parts.size() >0) throw new IllegalStateException();
-		return main;
 	}
 
 //	interface VR_Parts {

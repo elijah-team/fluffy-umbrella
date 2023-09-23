@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.lang.OS_Module;
-import tripleo.elijah.nextgen.query.Operation2;
+import tripleo.elijah.util.Operation2;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -22,13 +22,13 @@ class UnknownExceptionDiagnostic implements Diagnostic {
 	}
 
 	@Override
-	public Severity severity() {
-		return Severity.ERROR;
+	public @NotNull Locatable primary() {
+		return null;
 	}
 
 	@Override
-	public @NotNull Locatable primary() {
-		return null;
+	public void report(final PrintStream stream) {
+		stream.printf("%s Some error %s%n", code(), m.failure());
 	}
 
 	@Override
@@ -37,7 +37,7 @@ class UnknownExceptionDiagnostic implements Diagnostic {
 	}
 
 	@Override
-	public void report(final PrintStream stream) {
-		stream.printf("%s Some error %s%n", code(), m.failure());
+	public Severity severity() {
+		return Severity.ERROR;
 	}
 }

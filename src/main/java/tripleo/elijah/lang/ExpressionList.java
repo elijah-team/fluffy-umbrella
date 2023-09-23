@@ -23,22 +23,8 @@ public class ExpressionList implements Iterable<IExpression> {
 
 	private final List<IExpression> exprs = new ArrayList<IExpression>();
 
-	public IExpression next(final IExpression aExpr) {
-//		assert aExpr != null;
-		if (aExpr == null) throw new IllegalArgumentException("expression cannot be null");
-		//
-		/*exprs.*/
-		add(aExpr);
-		return aExpr;
-	}
-
 	public void add(final IExpression aExpr) {
 		exprs.add(aExpr);
-	}
-
-	@Override
-	public String toString() {
-		return exprs.toString();
 	}
 
 	public Collection<IExpression> expressions() {
@@ -50,8 +36,22 @@ public class ExpressionList implements Iterable<IExpression> {
 		return exprs.iterator();
 	}
 
+	public IExpression next(final IExpression aExpr) {
+//		assert aExpr != null;
+		if (aExpr == null) throw new IllegalArgumentException("expression cannot be null");
+		//
+		/*exprs.*/
+		add(aExpr);
+		return aExpr;
+	}
+
 	public int size() {
 		return exprs.size();
+	}
+
+	@Override
+	public String toString() {
+		return exprs.toString();
 	}
 }
 

@@ -15,13 +15,13 @@ import org.jdeferred2.Promise;
  * Created 4/13/21 11:43 AM
  */
 public interface Constructable {
+	Promise<ProcTableEntry, Void, Void> constructablePromise();
+
+	void resolveTypeToClass(EvaNode aNode);
+
 	void setConstructable(ProcTableEntry aPte);
 
-	void resolveTypeToClass(GeneratedNode aNode);
-
 	void setGenType(GenType aGenType);
-
-	Promise<ProcTableEntry, Void, Void> constructablePromise();
 }
 
 //

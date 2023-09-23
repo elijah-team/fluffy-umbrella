@@ -1,12 +1,12 @@
 package tripleo.elijah.ut;
 
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.Headers;
-
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.List;
+
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Headers;
 
 public class CompilationsListHandler implements HttpHandler {
 

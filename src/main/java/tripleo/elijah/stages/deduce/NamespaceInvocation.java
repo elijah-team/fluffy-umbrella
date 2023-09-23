@@ -11,35 +11,36 @@ package tripleo.elijah.stages.deduce;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.NamespaceStatement;
-import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
+import tripleo.elijah.stages.gen_fn.EvaNamespace;
 
 /**
  * Created 5/31/21 12:00 PM
  */
 public class NamespaceInvocation implements IInvocation {
 
-	private final DeferredObject<GeneratedNamespace, Void, Void> resolveDeferred = new DeferredObject<GeneratedNamespace, Void, Void>();
-	private final NamespaceStatement                             namespaceStatement;
+	private final NamespaceStatement                       namespaceStatement;
+	private final DeferredObject<EvaNamespace, Void, Void> resolveDeferred = new DeferredObject<EvaNamespace, Void, Void>();
 
-	public NamespaceInvocation(final NamespaceStatement aNamespaceStatement) {
+	public NamespaceInvocation(NamespaceStatement aNamespaceStatement) {
 		namespaceStatement = aNamespaceStatement;
-	}
-
-	public @NotNull DeferredObject<GeneratedNamespace, Void, Void> resolveDeferred() {
-		return resolveDeferred;
-	}
-
-	public @NotNull Promise<GeneratedNamespace, Void, Void> resolvePromise() {
-		return resolveDeferred.promise();
 	}
 
 	public NamespaceStatement getNamespace() {
 		return namespaceStatement;
 	}
 
+	public @NotNull DeferredObject<EvaNamespace, Void, Void> resolveDeferred() {
+		return resolveDeferred;
+	}
+
+	public @NotNull Promise<EvaNamespace, Void, Void> resolvePromise() {
+		return resolveDeferred.promise();
+	}
+
 	@Override
-	public void setForFunctionInvocation(@NotNull final FunctionInvocation aFunctionInvocation) {
+	public void setForFunctionInvocation(@NotNull FunctionInvocation aFunctionInvocation) {
 		aFunctionInvocation.setNamespaceInvocation(this);
 	}
 }

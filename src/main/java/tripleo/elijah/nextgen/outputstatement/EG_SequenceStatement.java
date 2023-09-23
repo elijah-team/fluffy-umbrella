@@ -32,6 +32,15 @@ public class EG_SequenceStatement implements EG_Statement {
 		naming    = null;
 	}
 
+	public List<EG_Statement> _list() {
+		return list;
+	}
+
+	@Override
+	public EX_Explanation getExplanation() {
+		return null;
+	}
+
 	@Override
 	public String getText() {
 		final String ltext = Helpers.String_join(" ", list.stream().map(st -> st.getText()).collect(Collectors.toList()));
@@ -40,14 +49,5 @@ public class EG_SequenceStatement implements EG_Statement {
 		} else {
 			return String.format("%s", ltext);
 		}
-	}
-
-	@Override
-	public EX_Explanation getExplanation() {
-		return null;
-	}
-
-	public List<EG_Statement> _list() {
-		return list;
 	}
 }

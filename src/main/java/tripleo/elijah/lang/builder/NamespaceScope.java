@@ -8,14 +8,14 @@
  */
 package tripleo.elijah.lang.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import antlr.Token;
 import tripleo.elijah.lang.AccessNotation;
 import tripleo.elijah.lang.Documentable;
 import tripleo.elijah.lang.InvariantStatement;
 import tripleo.elijah.lang.OS_Element;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created 12/23/20 2:47 AM
@@ -33,17 +33,13 @@ public class NamespaceScope extends ClassOrNamespaceScope implements Documentabl
 
 	private final List<OS_Element> _items = new ArrayList<OS_Element>();
 
-	@Override
-	public void addDocString(final Token s1) {
-		_docstrings.add(s1);
-	}
-
 	public void addAccess(final AccessNotation acs) {
 		// _items.add(acs);
 	}
 
-	public TypeAliasBuilder typeAlias() {
-		return new TypeAliasBuilder();
+	@Override
+	public void addDocString(final Token s1) {
+		_docstrings.add(s1);
 	}
 
 	public FunctionDefBuilder funcDef() {
@@ -52,6 +48,10 @@ public class NamespaceScope extends ClassOrNamespaceScope implements Documentabl
 
 	public InvariantStatement invariantStatement() {
 		return new InvariantStatement();
+	}
+
+	public TypeAliasBuilder typeAlias() {
+		return new TypeAliasBuilder();
 	}
 
 //	@Override

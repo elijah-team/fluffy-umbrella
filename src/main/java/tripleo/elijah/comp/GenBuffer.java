@@ -32,11 +32,34 @@ public class GenBuffer {
 
 	}
 
+	public void GenLocalAgn(final CompilerContext cctx, final LocalDeclAgnNode ldan_f1) {
+		// TODO Auto-generated method stub
+		NotImplementedException.raise();
+	}
+
+	public void GenLocalDeclAgn(final CompilerContext cctx, final LocalDeclAgnNode ldan1) {
+		// TODO Auto-generated method stub
+		NotImplementedException.raise();
+	}
+
 	public void InitMod(final CompilerContext cctx, final String string) {
 		// TODO Auto-generated method stub
 		NotImplementedException.raise();
 
 	}
+
+//	public CodeGen getCodeGen() {
+//		// TODO Auto-generated method stub
+//		return new CodeGen() {
+//
+//			@Override
+//			public void appendHeader(String module, String build) {
+//				// TODO Auto-generated method stub
+//				super.appendHeader(module, build);
+//			}
+//
+//		};
+//	}
 
 	public TextBuffer moduleBufHdr(final String module) {
 //		NotImplementedException.raise();
@@ -61,19 +84,6 @@ public class GenBuffer {
 		}
 	}
 
-//	public CodeGen getCodeGen() {
-//		// TODO Auto-generated method stub
-//		return new CodeGen() {
-//
-//			@Override
-//			public void appendHeader(String module, String build) {
-//				// TODO Auto-generated method stub
-//				super.appendHeader(module, build);
-//			}
-//
-//		};
-//	}
-
 	public void writeBuffers() throws IOException {
 		for (final Map.Entry<String, TextBuffer> entry : reg_bufs.entrySet()) {
 			final String     module = entry.getKey();
@@ -86,16 +96,6 @@ public class GenBuffer {
 			fileOutputStream.close();
 
 		}
-	}
-
-	public void GenLocalDeclAgn(final CompilerContext cctx, final LocalDeclAgnNode ldan1) {
-		// TODO Auto-generated method stub
-		NotImplementedException.raise();
-	}
-
-	public void GenLocalAgn(final CompilerContext cctx, final LocalDeclAgnNode ldan_f1) {
-		// TODO Auto-generated method stub
-		NotImplementedException.raise();
 	}
 }
 

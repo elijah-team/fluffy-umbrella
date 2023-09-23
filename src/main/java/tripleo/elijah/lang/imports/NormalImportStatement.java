@@ -1,5 +1,9 @@
 package tripleo.elijah.lang.imports;
 
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.contexts.ImportContext;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.OS_Container;
@@ -7,8 +11,6 @@ import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.Qualident;
 import tripleo.elijah.lang.QualidentList;
 import tripleo.elijah.util.NotImplementedException;
-
-import java.util.List;
 
 /**
  * Created 8/7/20 2:10 AM
@@ -40,9 +42,9 @@ public class NormalImportStatement extends _BaseImportStatement {
 		return parent;
 	}
 
-	@Override
-	public void setContext(final ImportContext ctx) {
-		_ctx = ctx;
+	public @NotNull Context myContext() {
+		assert _ctx != null;
+		return _ctx;
 	}
 
 	@Override
@@ -50,6 +52,10 @@ public class NormalImportStatement extends _BaseImportStatement {
 		return importList.parts;
 	}
 
+	@Override
+	public void setContext(final ImportContext ctx) {
+		_ctx = ctx;
+	}
 }
 
 //

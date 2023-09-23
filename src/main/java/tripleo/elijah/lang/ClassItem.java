@@ -18,13 +18,13 @@ package tripleo.elijah.lang;
  */
 public interface ClassItem extends OS_Element {
 
-	El_Category getCategory();
-
-	void setCategory(El_Category aCategory);
-
 	AccessNotation getAccess();
 
+	El_Category getCategory();
+
 	void setAccess(AccessNotation aNotation);
+
+	void setCategory(El_Category aCategory);
 
 }
 

@@ -15,14 +15,14 @@ import java.util.List;
 
 public interface ImportStatement extends ModuleItem, ClassItem, StatementItem {
 
+	List<Qualident> parts();
+
+	void setContext(ImportContext ctx);
+
 	@Override
 	default void visitGen(final ElElementVisitor visit) {
 		visit.visitImportStatment(this);
 	}
-
-	List<Qualident> parts();
-
-	void setContext(ImportContext ctx);
 }
 
 //

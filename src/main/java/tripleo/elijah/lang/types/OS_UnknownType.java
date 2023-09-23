@@ -21,6 +21,15 @@ public class OS_UnknownType extends __Abstract_OS_Type {
 		_element = aElement;
 	}
 
+	protected boolean _isEqual(final OS_Type aType) {
+		return aType.getType() == Type.UNKNOWN;
+	}
+
+	@Override
+	public String asString() {
+		return ("<OS_UnknownType>");
+	}
+
 	@Override
 	public OS_Element getElement() {
 		return _element; // !!
@@ -29,15 +38,6 @@ public class OS_UnknownType extends __Abstract_OS_Type {
 	@Override
 	public Type getType() {
 		return Type.UNKNOWN;
-	}
-
-	@Override
-	public String asString() {
-		return ("<OS_UnknownType>");
-	}
-
-	protected boolean _isEqual(final OS_Type aType) {
-		return aType.getType() == Type.UNKNOWN;
 	}
 }
 

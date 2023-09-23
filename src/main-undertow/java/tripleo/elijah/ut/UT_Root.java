@@ -1,6 +1,6 @@
 package tripleo.elijah.ut;
 
-import tripleo.elijah.comp.ICompilationBus;
+import static tripleo.elijah.util.Helpers.List_of;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,10 +12,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static tripleo.elijah.util.Helpers.List_of;
+import tripleo.elijah.comp.ICompilationBus;
 
 class UT_Root {
+	public static List<Path> listFiles(final Path path) throws IOException {
+		final List<Path> result;
+		try (final Stream<Path> walk = Files.walk(path)) {
+			result = walk.filter(Files::isRegularFile)
+			             .filter(x -> x.toFile().getName().endsWith(".ez"))
+			             .collect(Collectors.toList());
+		}
+		return result;
+	}
 	private final Map<String, ICompilationBus.CB_Action> dcs = new HashMap<>();
+
 	List<Path> paths = List_of();
 
 	public UT_Root() {
@@ -32,21 +42,11 @@ class UT_Root {
 		paths.forEach(x -> System.out.println("3232 "+x));
 	}
 
-	public static List<Path> listFiles(final Path path) throws IOException {
-		final List<Path> result;
-		try (final Stream<Path> walk = Files.walk(path)) {
-			result = walk.filter(Files::isRegularFile)
-			             .filter(x -> x.toFile().getName().endsWith(".ez"))
-			             .collect(Collectors.toList());
-		}
-		return result;
+	public ICompilationBus.CB_Action dcs(final String aF) {
+		return dcs.get(aF);
 	}
 
 	public void dcs(final String aF, final ICompilationBus.CB_Action aAction) {
 		dcs.put(aF, aAction);
-	}
-
-	public ICompilationBus.CB_Action dcs(final String aF) {
-		return dcs.get(aF);
 	}
 }

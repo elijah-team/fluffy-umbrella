@@ -22,10 +22,6 @@ public class ConstructorDefBuilder extends BaseFunctionDefBuilder {
 	private final ConstructorDefScope _scope = new ConstructorDefScope();
 	private       Context             _context;
 
-	public ConstructorDefScope scope() {
-		return _scope;
-	}
-
 	@Override
 	public ConstructorDef build() {
 		assert _parent instanceof ClassStatement;
@@ -47,6 +43,10 @@ public class ConstructorDefBuilder extends BaseFunctionDefBuilder {
 		cd.setSpecies(FunctionDef.Species.CTOR);
 		cd.postConstruct();
 		return cd;
+	}
+
+	public ConstructorDefScope scope() {
+		return _scope;
 	}
 
 	@Override

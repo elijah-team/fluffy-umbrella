@@ -21,6 +21,17 @@ public class FormalArgList {
 
 	public final List<FormalArgListItem> falis = new ArrayList<FormalArgListItem>();
 
+	public List<ClassItem> falis() {
+		// TODO Auto-generated method stub
+		return falis.stream()
+				.map(x->(ClassItem)x)
+				.toList();
+	}
+
+	public Collection<FormalArgListItem> items() {
+		return falis;
+	}
+
 	public FormalArgListItem next() {
 		final @NotNull FormalArgListItem fali = new FormalArgListItem();
 		falis.add(fali);
@@ -30,10 +41,6 @@ public class FormalArgList {
 	@Override
 	public String toString() {
 		return falis.toString();
-	}
-
-	public Collection<FormalArgListItem> items() {
-		return falis;
 	}
 }
 

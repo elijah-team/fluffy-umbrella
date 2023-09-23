@@ -8,28 +8,20 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import static org.junit.Assert.assertEquals;
+import static tripleo.elijah.util.Helpers.List_of;
+
 import org.junit.Test;
+
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
 
-import static org.junit.Assert.assertEquals;
-import static tripleo.elijah.util.Helpers.List_of;
-
 /**
  * Created 9/9/21 4:16 AM
  */
 public class Feb2021Test {
-
-	@Test
-	public void testProperty() {
-		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
-
-		c.feedCmdLine(List_of("test/feb2021/property/"));
-
-		assertEquals(0, c.errorCount());
-	}
 
 	@Test
 	public void testFunction() {
@@ -45,6 +37,15 @@ public class Feb2021Test {
 		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/hier/"));
+
+		assertEquals(0, c.errorCount());
+	}
+
+	@Test
+	public void testProperty() {
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
+
+		c.feedCmdLine(List_of("test/feb2021/property/"));
 
 		assertEquals(0, c.errorCount());
 	}

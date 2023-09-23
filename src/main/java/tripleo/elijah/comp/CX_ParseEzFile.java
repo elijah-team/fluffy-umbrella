@@ -1,29 +1,21 @@
 package tripleo.elijah.comp;
 
-import antlr.*;
-import org.jetbrains.annotations.*;
-import tripleo.elijah.ci.*;
-import tripleo.elijah.comp.specs.*;
-import tripleo.elijah.nextgen.query.*;
-import tripleo.elijjah.*;
+import antlr.RecognitionException;
+import antlr.TokenStreamException;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.comp.specs.EzCache;
+import tripleo.elijah.comp.specs.EzSpec;
+import tripleo.elijah.nextgen.query.Mode;
+import tripleo.elijah.util.Operation;
+import tripleo.elijjah.EzLexer;
+import tripleo.elijjah.EzParser;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 class CX_ParseEzFile {
-	public static Operation<CompilerInstructions> parseAndCache(final EzSpec aSpec, final EzCache aEzCache, final String absolutePath) {
-		final Operation<CompilerInstructions> cio = parseEzFile_(aSpec);
-
-		if (cio.mode() == Mode.SUCCESS) {
-			aEzCache.put(aSpec, absolutePath, cio.success());
-		}
-
-		return cio;
-	}
-
-	public static Operation<CompilerInstructions> parseEzFile_(final EzSpec spec) {
-		return calculate(spec.f(), spec.s());
-	}
-
 	private static Operation<CompilerInstructions> calculate(final String aAbsolutePath, final InputStream aReadFile) {
 		final EzLexer lexer = new EzLexer(aReadFile);
 		lexer.setFilename(aAbsolutePath);
@@ -39,13 +31,14 @@ class CX_ParseEzFile {
 		return Operation.success(instructions);
 	}
 
-	public static Operation<CompilerInstructions> parseEzFile(final @NotNull File aFile, final Compilation aCompilation) {
-		try (final InputStream readFile = aCompilation.getIO().readFile(aFile)) {
-			final Operation<CompilerInstructions> cio = calculate(aFile.getAbsolutePath(), readFile);
-			return cio;
-		} catch (final IOException aE) {
-			return Operation.failure(aE);
+	public static Operation<CompilerInstructions> parseAndCache(final EzSpec aSpec, final EzCache aEzCache, final String absolutePath) {
+		final Operation<CompilerInstructions> cio = parseEzFile_(aSpec);
+
+		if (cio.mode() == Mode.SUCCESS) {
+			aEzCache.put(aSpec, absolutePath, cio.success());
 		}
+
+		return cio;
 	}
 
 	public static Operation<CompilerInstructions> parseAndCache(final @NotNull File aFile, final Compilation aCompilation, final EzCache aEzCache) {
@@ -62,5 +55,18 @@ class CX_ParseEzFile {
 		} catch (final IOException aE) {
 			return Operation.failure(aE);
 		}
+	}
+
+	public static Operation<CompilerInstructions> parseEzFile(final @NotNull File aFile, final Compilation aCompilation) {
+		try (final InputStream readFile = aCompilation.getIO().readFile(aFile)) {
+			final Operation<CompilerInstructions> cio = calculate(aFile.getAbsolutePath(), readFile);
+			return cio;
+		} catch (final IOException aE) {
+			return Operation.failure(aE);
+		}
+	}
+
+	public static Operation<CompilerInstructions> parseEzFile_(final EzSpec spec) {
+		return calculate(spec.f(), spec.s());
 	}
 }

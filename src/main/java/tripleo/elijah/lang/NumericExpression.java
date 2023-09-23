@@ -36,81 +36,6 @@ public class NumericExpression implements IExpression, Locatable {
 		carrier = Integer.parseInt(n.getText());
 	}
 
-	@Override  // IExpression
-	public ExpressionKind getKind() {
-		return ExpressionKind.NUMERIC; // TODO
-	}
-
-	// region kind
-
-	@Override  // IExpression
-	public void setKind(final ExpressionKind aType) {
-		// log and ignore
-		tripleo.elijah.util.Stupidity.println_err2("Trying to set ExpressionType of NumericExpression to " + aType.toString());
-	}
-
-	@Override
-	public IExpression getLeft() {
-		return this;
-	}
-
-	// endregion
-
-	// region representation
-
-	@Override
-	public void setLeft(final IExpression aLeft) {
-		throw new NotImplementedException(); // TODO
-	}
-
-	@Override
-	public String repr_() {
-		return toString();
-	}
-
-	//endregion
-
-	@Override
-	public String toString() {
-		return String.format("NumericExpression (%d)", carrier);
-	}
-
-	// region type
-
-	@Override
-	public boolean is_simple() {
-		return true;
-	}
-
-	@Override  // IExpression
-	public OS_Type getType() {
-		return _type;
-	}
-
-	@Override  // IExpression
-	public void setType(final OS_Type deducedExpression) {
-		_type = deducedExpression;
-	}
-
-	// endregion
-
-	public int getValue() {
-		return carrier;
-	}
-
-	// region Locatable
-
-	@Override
-	public int getLine() {
-		if (token() != null)
-			return token().getLine();
-		return 0;
-	}
-
-	private Token token() {
-		return n;
-	}
-
 	@Override
 	public int getColumn() {
 		if (token() != null)
@@ -118,12 +43,7 @@ public class NumericExpression implements IExpression, Locatable {
 		return 0;
 	}
 
-	@Override
-	public int getLineEnd() {
-		if (token() != null)
-			return token().getLine();
-		return 0;
-	}
+	// region kind
 
 	@Override
 	public int getColumnEnd() {
@@ -140,6 +60,86 @@ public class NumericExpression implements IExpression, Locatable {
 				return new File(filename);
 		}
 		return null;
+	}
+
+	// endregion
+
+	// region representation
+
+	@Override  // IExpression
+	public ExpressionKind getKind() {
+		return ExpressionKind.NUMERIC; // TODO
+	}
+
+	@Override
+	public IExpression getLeft() {
+		return this;
+	}
+
+	//endregion
+
+	@Override
+	public int getLine() {
+		if (token() != null)
+			return token().getLine();
+		return 0;
+	}
+
+	// region type
+
+	@Override
+	public int getLineEnd() {
+		if (token() != null)
+			return token().getLine();
+		return 0;
+	}
+
+	@Override  // IExpression
+	public OS_Type getType() {
+		return _type;
+	}
+
+	public int getValue() {
+		return carrier;
+	}
+
+	// endregion
+
+	@Override
+	public boolean is_simple() {
+		return true;
+	}
+
+	// region Locatable
+
+	@Override
+	public String repr_() {
+		return toString();
+	}
+
+	@Override  // IExpression
+	public void setKind(final ExpressionKind aType) {
+		// log and ignore
+		tripleo.elijah.util.Stupidity.println_err2("Trying to set ExpressionType of NumericExpression to " + aType.toString());
+	}
+
+	@Override
+	public void setLeft(final IExpression aLeft) {
+		throw new NotImplementedException(); // TODO
+	}
+
+	@Override  // IExpression
+	public void setType(final OS_Type deducedExpression) {
+		_type = deducedExpression;
+	}
+
+	private Token token() {
+		return n;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("NumericExpression (%d)", carrier);
 	}
 
 	// endregion

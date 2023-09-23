@@ -37,30 +37,24 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 		_ctx  = aContext;
 	}
 
-	public VariableStatement next() {
-		final VariableStatement st = new VariableStatement(this);
-		st.set(def);
-		stmts.add(st);
-		return st;
+	public void addAnnotation(final AnnotationClause a) {
+		if (annotations == null)
+			annotations = new ArrayList<AnnotationClause>();
+		annotations.add(a);
 	}
 
-	public Collection<VariableStatement> items() {
-		return stmts;
-	}
-
-	@Override
-	public String toString() {
-		final List<String> r = new ArrayList<String>();
-		for (final VariableStatement stmt : stmts) {
-			r.add(stmt.getName());
-		}
-		return r.toString();
-//		return (stmts.stream().map(n -> n.getName()).collect(Collectors.toList())).toString();
+	public void defaultModifiers(final TypeModifiers aModifiers) {
+		def = aModifiers;
 	}
 
 	@Override
-	public void visitGen(final ElElementVisitor visit) {
-		visit.visitVariableSequence(this);
+	public AccessNotation getAccess() {
+		return access_note;
+	}
+
+	@Override
+	public El_Category getCategory() {
+		return category;
 	}
 
 	@Override
@@ -73,29 +67,22 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 		return this.parent;
 	}
 
-	public void setParent(final OS_Element parent) {
-		this.parent = parent;
+	public Collection<VariableStatement> items() {
+		return stmts;
 	}
 
-	public void setContext(final Context ctx) {
-		_ctx = ctx;
+	public VariableStatement next() {
+		final VariableStatement st = new VariableStatement(this);
+		st.set(def);
+		stmts.add(st);
+		return st;
 	}
 
 	// region ClassItem
 
-	public void addAnnotation(final AnnotationClause a) {
-		if (annotations == null)
-			annotations = new ArrayList<AnnotationClause>();
-		annotations.add(a);
-	}
-
-	public void defaultModifiers(final TypeModifiers aModifiers) {
-		def = aModifiers;
-	}
-
 	@Override
-	public El_Category getCategory() {
-		return category;
+	public void setAccess(final AccessNotation aNotation) {
+		access_note = aNotation;
 	}
 
 	@Override
@@ -103,22 +90,35 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 		category = aCategory;
 	}
 
-	@Override
-	public AccessNotation getAccess() {
-		return access_note;
+	public void setContext(final Context ctx) {
+		_ctx = ctx;
 	}
 
-	@Override
-	public void setAccess(final AccessNotation aNotation) {
-		access_note = aNotation;
+	public void setParent(final OS_Element parent) {
+		this.parent = parent;
 	}
-
-	// endregion
 
 	public void setTypeName(final TypeName aTypeName) {
 		for (final VariableStatement vs : stmts) {
 			vs.setTypeName(aTypeName);
 		}
+	}
+
+	@Override
+	public String toString() {
+		final List<String> r = new ArrayList<String>();
+		for (final VariableStatement stmt : stmts) {
+			r.add(stmt.getName());
+		}
+		return r.toString();
+//		return (stmts.stream().map(n -> n.getName()).collect(Collectors.toList())).toString();
+	}
+
+	// endregion
+
+	@Override
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitVariableSequence(this);
 	}
 
 }

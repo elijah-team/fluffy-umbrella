@@ -18,38 +18,38 @@ public interface NormalTypeName extends TypeName, Resolvable {
 //	@Override
 //	boolean isNull();
 
+	void addGenericPart(TypeNameList tn2);
+
 	boolean getConstant();
 
-	void setConstant(boolean flag);
-
-	boolean getReference();
-
-	void setReference(boolean flag);
-
-	boolean getOut();
-
-	void setOut(boolean flag);
+	TypeNameList getGenericPart();
 
 	boolean getIn();
 
-	void setIn(boolean flag);
+	Collection<TypeModifiers> getModifiers();
 
 	String getName();
 
-	void setName(Qualident s);
+	boolean getOut();
 
-	void addGenericPart(TypeNameList tn2);
+	Qualident getRealName();
 
-	void setNullable();
+	boolean getReference();
+
+	void setConstant(boolean flag);
 
 	@Override
 	void setContext(Context cur);
 
-	Collection<TypeModifiers> getModifiers();
+	void setIn(boolean flag);
 
-	TypeNameList getGenericPart();
+	void setName(Qualident s);
 
-	Qualident getRealName();
+	void setNullable();
+
+	void setOut(boolean flag);
+
+	void setReference(boolean flag);
 }
 
 //

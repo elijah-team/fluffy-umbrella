@@ -8,6 +8,9 @@
  */
 package tripleo.elijah.lang.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import antlr.Token;
 import tripleo.elijah.lang.AnnotationClause;
 import tripleo.elijah.lang.Context;
@@ -16,9 +19,6 @@ import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.lang.NamespaceStatement;
 import tripleo.elijah.lang.NamespaceTypes;
 import tripleo.elijah.lang.OS_Element;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created 12/23/20 2:38 AM
@@ -33,8 +33,13 @@ public class NamespaceStatementBuilder extends ElBuilder implements Documentable
 	private       IdentExpression        _name;
 	private       Context                _context;
 
-	public void setType(final NamespaceTypes namespaceTypes) {
-		_type = namespaceTypes;
+	@Override
+	public void addDocString(final Token s1) {
+		_docstrings.add(s1);
+	}
+
+	public void annotations(final AnnotationClause a) {
+		annotations.add(a);
 	}
 
 	@Override
@@ -62,39 +67,34 @@ public class NamespaceStatementBuilder extends ElBuilder implements Documentable
 		return cs;
 	}
 
-	@Override
-	protected void setContext(final Context context) {
-		_context = context;
-	}
-
-	public void annotations(final AnnotationClause a) {
-		annotations.add(a);
+	public NamespaceScope scope() {
+		return _scope;
 	}
 
 //	public void setParent(OS_Element o) {
 //		_parent = o;
 //	}
 
-	public void setName(final IdentExpression identExpression) {
-		_name = identExpression;
+	@Override
+	protected void setContext(final Context context) {
+		_context = context;
 	}
 
 //	public ClassScope getScope() {
 //		return _scope;
 //	}
 
+	public void setName(final IdentExpression identExpression) {
+		_name = identExpression;
+	}
+
 	public void setParentContext(final Context o) {
 		_parent_context = o;
 	}
 
-	@Override
-	public void addDocString(final Token s1) {
-		_docstrings.add(s1);
-	}
 
-
-	public NamespaceScope scope() {
-		return _scope;
+	public void setType(final NamespaceTypes namespaceTypes) {
+		_type = namespaceTypes;
 	}
 }
 

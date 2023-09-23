@@ -30,21 +30,19 @@ public class IO {
 	public final List<File> recordedreads  = new ArrayList<File>();
 	final        List<File> recordedwrites = new ArrayList<File>();
 
-	public boolean recordedRead(final File file) {
-		return recordedreads.contains(file);
-	}
-
-	public boolean recordedWrite(final File file) {
-		return recordedwrites.contains(file);
-	}
-
 	public CharSource openRead(final Path p) {
 		record(FileOption.READ, p);
 		return null;
 	}
 
-	private void record(final FileOption read, @NotNull final Path p) {
-		record(read, p.toFile());
+	public CharSink openWrite(final Path p) throws IOException {
+		record(FileOption.WRITE, p);
+		return new FileCharSink(Files.newOutputStream(p));
+	}
+
+	public InputStream readFile(final File f) throws FileNotFoundException {
+		record(FileOption.READ, f);
+		return new FileInputStream(f);
 	}
 
 	private void record(@NotNull final FileOption read, @NotNull final File file) {
@@ -60,14 +58,16 @@ public class IO {
 		}
 	}
 
-	public CharSink openWrite(final Path p) throws IOException {
-		record(FileOption.WRITE, p);
-		return new FileCharSink(Files.newOutputStream(p));
+	private void record(final FileOption read, @NotNull final Path p) {
+		record(read, p.toFile());
 	}
 
-	public InputStream readFile(final File f) throws FileNotFoundException {
-		record(FileOption.READ, f);
-		return new FileInputStream(f);
+	public boolean recordedRead(final File file) {
+		return recordedreads.contains(file);
+	}
+
+	public boolean recordedWrite(final File file) {
+		return recordedwrites.contains(file);
 	}
 }
 

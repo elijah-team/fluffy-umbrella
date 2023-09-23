@@ -28,22 +28,6 @@ public class LoopBuilder extends ElBuilder {
 	private       Context         _context;
 	private       IExpression     expr;
 
-	public void type(final LoopTypes type) {
-		_type = type;
-	}
-
-	public void frompart(final IExpression expr) {
-		_frompart = expr;
-	}
-
-	public void topart(final IExpression expr) {
-		_topart = expr;
-	}
-
-	public void iterName(final IdentExpression i1) {
-		_iterName = i1;
-	}
-
 	@Override
 	public Loop build() {
 		final Loop loop = new Loop(_parent);
@@ -63,17 +47,33 @@ public class LoopBuilder extends ElBuilder {
 		return loop;
 	}
 
-	@Override
-	protected void setContext(final Context context) {
-		_context = context;
+	public void expr(final IExpression expr) {
+		this.expr = expr;
+	}
+
+	public void frompart(final IExpression expr) {
+		_frompart = expr;
+	}
+
+	public void iterName(final IdentExpression i1) {
+		_iterName = i1;
 	}
 
 	public LoopScope scope() {
 		return _scope;
 	}
 
-	public void expr(final IExpression expr) {
-		this.expr = expr;
+	@Override
+	protected void setContext(final Context context) {
+		_context = context;
+	}
+
+	public void topart(final IExpression expr) {
+		_topart = expr;
+	}
+
+	public void type(final LoopTypes type) {
+		_type = type;
 	}
 }
 

@@ -1,81 +1,107 @@
 package tripleo.elijah.world.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
+import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
 import tripleo.elijah.lang.Qualident;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
-import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
+import tripleo.elijah.stages.gen_fn.EvaClass;
+import tripleo.elijah.stages.gen_fn.EvaNamespace;
+import tripleo.elijah.util.CompletableProcess;
+import tripleo.elijah.util.ObservableCompletableProcess;
 import tripleo.elijah.world.i.LivingClass;
 import tripleo.elijah.world.i.LivingFunction;
+import tripleo.elijah.world.i.LivingNamespace;
+import tripleo.elijah.world.i.LivingNode;
 import tripleo.elijah.world.i.LivingPackage;
 import tripleo.elijah.world.i.LivingRepo;
-
-import java.util.HashMap;
-import java.util.Map;
+import tripleo.elijah.world.i.WorldModule;
 
 public class DefaultLivingRepo implements LivingRepo {
-	private final Map<String, OS_Package> _packages     = new HashMap<String, OS_Package>();
-	private       int                     _packageCode  = 1;
-	private       int                     _classCode    = 101;
-	private       int                     _functionCode = 1001;
 
-	public OS_Package makePackage(final Qualident pkg_name) {
-		final String pkg_name_s = pkg_name.toString();
-		if (!isPackage(pkg_name_s)) {
-			final OS_Package newPackage = new OS_Package(pkg_name, nextPackageCode());
-			_packages.put(pkg_name_s, newPackage);
-			return newPackage;
-		} else
-			return _packages.get(pkg_name_s);
-	}
+	private final @NotNull ObservableCompletableProcess<WorldModule> wmo = new ObservableCompletableProcess<>();
 
-	public boolean isPackage(final String pkg) {
-		return _packages.containsKey(pkg);
-	}
+	private final          Map<String, OS_Package> _packages = new HashMap<String, OS_Package>();
+	private final          Set<WorldModule>        _modules  = new HashSet<>();
+	private final @NotNull List<LivingNode>                                 repo        = new ArrayList<>();
+	private final @NotNull Multimap<BaseEvaFunction, DefaultLivingFunction> functionMap = ArrayListMultimap.create();
 
-	private int nextPackageCode() {
-		return _packageCode++;
-	}
+	private       int                                              _classCode    = 101;
+	private       int                                              _functionCode = 1001;
+	private       int                                              _packageCode  = 1;
 
 	@Override
-	public LivingClass addClass(final ClassStatement cs) {
+	public @Nullable LivingClass addClass(final ClassStatement cs) {
 		return null;
 	}
 
 	@Override
-	public LivingFunction addFunction(final BaseFunctionDef fd) {
-		return null;
+	public @NotNull DefaultLivingClass addClass(final @NotNull EvaClass aClass, final @NotNull Add addFlag) {
+		switch (addFlag) {
+		case NONE -> {
+			if (aClass.getLiving().getCode() == 0) {
+				aClass.getLiving().setCode(nextClassCode());
+			} else {
+				if (2 == 3) {
+					assert true;
+				}
+			}
+		}
+		case MAIN_FUNCTION -> {
+			throw new IllegalArgumentException("not a function");
+		}
+		case MAIN_CLASS -> {
+			final boolean isMainClass = MainClassEntryPoint.isMainClass(aClass.getKlass());
+//			if (!isMainClass) {
+//				throw new IllegalArgumentException("not a main class");
+//			}
+//			aClass.setCode(100);
+			aClass.setCode(nextClassCode());
+		}
+		}
+
+		final DefaultLivingClass living = new DefaultLivingClass(aClass);
+		aClass._living = living;
+
+		repo.add(living);
+
+		return living;
 	}
 
 	@Override
-	public LivingPackage addPackage(final OS_Package pk) {
-		return null;
-	}
-
-	@Override
-	public OS_Package getPackage(final String aPackageName) {
-		return _packages.get(aPackageName);
-	}
-
-	@Override
-	public DefaultLivingFunction addFunction(final BaseGeneratedFunction aFunction, final Add addFlag) {
+	public @NotNull DefaultLivingFunction addFunction(final @NotNull BaseEvaFunction aFunction, final @NotNull Add addFlag) {
 		switch (addFlag) {
 		case NONE -> {
 			aFunction.setCode(nextFunctionCode());
 		}
 		case MAIN_FUNCTION -> {
-			if (aFunction.getFD() instanceof FunctionDef &&
-			  MainClassEntryPoint.is_main_function_with_no_args((FunctionDef) aFunction.getFD())) {
-				aFunction.setCode(1000);
+//			if (aFunction.getFD() instanceof FunctionDef &&
+//					MainClassEntryPoint.is_main_function_with_no_args((FunctionDef) aFunction.getFD())) {
+//				aFunction.setCode(1000);
+				aFunction.setCode(nextFunctionCode()); // FIXME hmm
 				//compilation.notifyFunction(code, aFunction);
-			} else {
-				throw new IllegalArgumentException("not a main function");
-			}
+//			} else {
+//				throw new IllegalArgumentException("not a main function");
+//			}
 		}
 		case MAIN_CLASS -> {
 			throw new IllegalArgumentException("not a class");
@@ -85,43 +111,190 @@ public class DefaultLivingRepo implements LivingRepo {
 		final DefaultLivingFunction living = new DefaultLivingFunction(aFunction);
 		aFunction.setLiving(living);
 
+		functionMap.put(aFunction, living);
+
 		return living;
 	}
 
-	public int nextFunctionCode() {
-		return _functionCode++;
+	@Override
+	public @Nullable LivingFunction addFunction(final BaseFunctionDef fd) {
+		return null;
 	}
 
 	@Override
-	public DefaultLivingClass addClass(final GeneratedClass aClass, final Add addFlag) {
+	public void addModule(final @NotNull OS_Module mod, final @NotNull String aFilename, final @NotNull Compilation aC) {
+		System.out.println("LivingRepo::addModule >> " + aFilename);
+		//addModule2();
+	}
+
+	@Override
+	public void addModule2(final WorldModule aWorldModule) {
+		_modules.add(aWorldModule);
+
+		wmo.onNext(aWorldModule);
+	}
+
+	@Override
+	public void addModuleProcess(CompletableProcess<WorldModule> wmcp) {
+		wmo.subscribe(wmcp);
+	}
+
+	@Override
+	public @NotNull DefaultLivingNamespace addNamespace(final @NotNull EvaNamespace aNamespace, final @NotNull Add addFlag) {
 		switch (addFlag) {
 		case NONE -> {
-			aClass.setCode(nextClassCode());
+			aNamespace.setCode(nextClassCode());
 		}
 		case MAIN_FUNCTION -> {
 			throw new IllegalArgumentException("not a function");
 		}
 		case MAIN_CLASS -> {
-			final boolean isMainClass = MainClassEntryPoint.isMainClass(aClass.getKlass());
-			if (!isMainClass) {
-				throw new IllegalArgumentException("not a main class");
-			}
-			aClass.setCode(100);
+			throw new IllegalArgumentException("not a main class");
 		}
 		}
 
-		final DefaultLivingClass living = new DefaultLivingClass(aClass);
-		aClass._living = living;
+		final DefaultLivingNamespace living = new DefaultLivingNamespace(aNamespace);
+		aNamespace.setLiving ( living);
+
+		repo.add(living);
 
 		return living;
 	}
 
-	public int nextClassCode() {
-		return _classCode++;
+	@Override
+	public @Nullable LivingPackage addPackage(final OS_Package pk) {
+		return null;
 	}
 
 	@Override
-	public void addNamespace(final GeneratedNamespace aNamespace, final Add aNone) {
-		throw new NotImplementedException();
+	public @NotNull LivingClass getClass(final @NotNull EvaClass aEvaClass) {
+		for (LivingNode livingNode : repo) {
+			if (livingNode instanceof final @NotNull LivingClass livingClass) {
+				if (livingClass.evaNode().equals(aEvaClass))
+					return livingClass;
+			}
+		}
+
+		final DefaultLivingClass living = new DefaultLivingClass(aEvaClass);
+		//klass._living = living;
+
+		repo.add(living);
+
+		return living;
+	}
+
+	@Override
+	public @NotNull List<LivingClass> getClassesForClassNamed(final String className) {
+		List<LivingClass> lcs = new LinkedList<>();
+
+		for (LivingNode livingNode : repo) {
+			if (livingNode instanceof final @NotNull LivingClass livingClass) {
+				if (livingClass.getElement().name().equals(className))
+					lcs.add(livingClass);
+			}
+		}
+
+		return lcs;
+	}
+
+	@Override
+	public @NotNull List<LivingClass> getClassesForClassStatement(ClassStatement cls) {
+		List<LivingClass> lcs = new LinkedList<>();
+
+		for (LivingNode livingNode : repo) {
+			if (livingNode instanceof final @NotNull LivingClass livingClass) {
+				if (livingClass.getElement().equals(cls))
+					lcs.add(livingClass);
+			}
+		}
+
+		return lcs;
+	}
+
+	@Override
+	public @Nullable LivingFunction getFunction(final BaseEvaFunction aBaseEvaFunction) {
+		var c = functionMap.get(aBaseEvaFunction);
+
+		if (c.size() > 0)
+			return c.iterator().next();
+
+		return null;
+	}
+
+	@Override
+	public @Nullable WorldModule getModule(final OS_Module aModule) {
+		return _modules.stream()
+				.filter(module -> module.module() == aModule)
+				.findFirst()
+				.orElse(null);
+	}
+
+	@Override
+	public @NotNull LivingNamespace getNamespace(final EvaNamespace aEvaNamespace) {
+		for (LivingNode livingNode : repo) {
+			if (livingNode instanceof final @NotNull LivingNamespace livingNamespace) {
+				if (livingNamespace.evaNode().equals(aEvaNamespace))
+					return livingNamespace;
+			}
+		}
+
+		final DefaultLivingNamespace living = new DefaultLivingNamespace(aEvaNamespace);
+		//klass._living = living;
+
+		repo.add(living);
+
+		return living;
+	}
+
+	@Override
+	public OS_Package getPackage(final String aPackageName) {
+		return _packages.get(aPackageName);
+	}
+
+	@Override
+	public boolean hasPackage(final @NotNull String aPackageName) {
+		if (aPackageName.equals("C")) {
+			int y = 2;
+		}
+		return _packages.containsKey(aPackageName);
+	}
+
+	public boolean isPackage(final String pkg) {
+		return _packages.containsKey(pkg);
+	}
+
+	@Override
+	public OS_Package makePackage(final @NotNull Qualident pkg_name) {
+		final String pkg_name_s = pkg_name.toString();
+		if (!isPackage(pkg_name_s)) {
+			final OS_Package newPackage = new OS_Package(pkg_name, nextPackageCode());
+			_packages.put(pkg_name_s, newPackage);
+			return newPackage;
+		} else
+			return _packages.get(pkg_name_s);
+	}
+
+	@Override
+	public Collection<WorldModule> modules() {
+		return _modules;
+	}
+
+	public int nextClassCode() {
+		int i = _classCode;
+		_classCode++;
+		return i;
+	}
+
+	public int nextFunctionCode() {
+		int i = _functionCode;
+		_functionCode++;
+		return i;
+	}
+
+	@Contract(mutates = "this")
+	private int nextPackageCode() {
+		int i = _packageCode;
+		_packageCode++;
+		return i;
 	}
 }

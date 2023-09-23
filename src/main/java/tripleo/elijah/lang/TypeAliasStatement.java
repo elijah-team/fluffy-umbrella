@@ -28,24 +28,6 @@ public class TypeAliasStatement implements OS_Element {
 		this.parent = aParent;
 	}
 
-	public void make(final IdentExpression x, final Qualident y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	public void setIdent(final IdentExpression aToken) {
-		x = aToken;
-	}
-
-	public void setBecomes(final Qualident qq) {
-		y = qq;
-	}
-
-	@Override
-	public void visitGen(final ElElementVisitor visit) {
-		visit.visitTypeAlias(this);
-	}
-
 	@Override
 	public Context getContext() {
 		throw new NotImplementedException();
@@ -54,6 +36,24 @@ public class TypeAliasStatement implements OS_Element {
 	@Override
 	public OS_Element getParent() {
 		return parent;
+	}
+
+	public void make(final IdentExpression x, final Qualident y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	public void setBecomes(final Qualident qq) {
+		y = qq;
+	}
+
+	public void setIdent(final IdentExpression aToken) {
+		x = aToken;
+	}
+
+	@Override
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitTypeAlias(this);
 	}
 }
 

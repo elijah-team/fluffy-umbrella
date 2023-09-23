@@ -45,6 +45,11 @@ public class NamespaceContext extends Context {
 	}
 
 	@Override
+	public Context getParent() {
+		return _parent;
+	}
+
+	@Override
 	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 		for (final ClassItem item : carrier.getItems()) {
@@ -75,10 +80,5 @@ public class NamespaceContext extends Context {
 		}
 		return Result;
 
-	}
-
-	@Override
-	public Context getParent() {
-		return _parent;
 	}
 }

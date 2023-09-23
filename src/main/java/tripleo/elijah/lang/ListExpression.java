@@ -23,53 +23,28 @@ import java.util.List;
  */
 public class ListExpression extends AbstractExpression implements Locatable {
 
+	public class Syntax {
+		final List<Token> commas = new ArrayList<Token>();
+		Token startToken;
+		Token endToken;
+
+		public void comma(final Token t) {
+			commas.add(t);
+		}
+
+		public void start_and_end(final Token startToken, final Token endToken) {
+			this.startToken = startToken;
+			this.endToken   = endToken;
+		}
+	}
 	public final Syntax syntax = new Syntax();
+
 	ExpressionList contents;
-
-	public void setContents(final ExpressionList aList) {
-		contents = aList;
-	}
-
-	@Override
-	public boolean is_simple() {
-		return false;
-	}
-
-	@Override
-	public OS_Type getType() {
-		return null;
-	}
-
-	@Override
-	public void setType(final OS_Type deducedExpression) {
-
-	}
-
-	@Override
-	public int getLine() {
-		if (syntax.startToken != null)
-			return syntax.startToken.getLine();
-		return 0;
-	}
-
-	// region Syntax
-
-
-	// endregion
-
-	// region Locatable
 
 	@Override
 	public int getColumn() {
 		if (syntax.startToken != null)
 			return syntax.startToken.getColumn();
-		return 0;
-	}
-
-	@Override
-	public int getLineEnd() {
-		if (syntax.endToken != null)
-			return syntax.endToken.getLine();
 		return 0;
 	}
 
@@ -90,19 +65,44 @@ public class ListExpression extends AbstractExpression implements Locatable {
 		return null;
 	}
 
-	public class Syntax {
-		final List<Token> commas = new ArrayList<Token>();
-		Token startToken;
-		Token endToken;
+	@Override
+	public int getLine() {
+		if (syntax.startToken != null)
+			return syntax.startToken.getLine();
+		return 0;
+	}
 
-		public void start_and_end(final Token startToken, final Token endToken) {
-			this.startToken = startToken;
-			this.endToken   = endToken;
-		}
+	// region Syntax
 
-		public void comma(final Token t) {
-			commas.add(t);
-		}
+
+	// endregion
+
+	// region Locatable
+
+	@Override
+	public int getLineEnd() {
+		if (syntax.endToken != null)
+			return syntax.endToken.getLine();
+		return 0;
+	}
+
+	@Override
+	public OS_Type getType() {
+		return null;
+	}
+
+	@Override
+	public boolean is_simple() {
+		return false;
+	}
+
+	public void setContents(final ExpressionList aList) {
+		contents = aList;
+	}
+
+	@Override
+	public void setType(final OS_Type deducedExpression) {
+
 	}
 
 	// endregion

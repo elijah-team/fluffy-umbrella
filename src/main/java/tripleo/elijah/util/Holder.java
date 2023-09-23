@@ -15,12 +15,12 @@ package tripleo.elijah.util;
 public class Holder<T> {
 	private T el;
 
-	public void set(final T el) {
-		this.el = el;
-	}
-
 	public T get() {
 		return el;
+	}
+
+	public void set(final T el) {
+		this.el = el;
 	}
 }
 

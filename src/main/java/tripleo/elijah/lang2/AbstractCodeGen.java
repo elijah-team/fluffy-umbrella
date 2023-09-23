@@ -22,23 +22,27 @@ public class AbstractCodeGen implements ElElementVisitor {
 	}
 
 	@Override
-	public void addModule(final OS_Module module) {
-		defaultAction(module);
-	}
-
-	@Override
 	public void addFunctionItem(final FunctionItem element) {
 		defaultAction(element);
 	}
 
 	@Override
-	public void visitAliasStatement(final AliasStatement aAliasStatement) {
-		defaultAction(aAliasStatement);
+	public void addModule(final OS_Module module) {
+		defaultAction(module);
+	}
+
+	public void defaultAction(final OS_Element anElement) {
+
 	}
 
 	@Override
 	public void visitAccessNotation(final AccessNotation aAccessNotation) {
 		defaultAction(aAccessNotation);
+	}
+
+	@Override
+	public void visitAliasStatement(final AliasStatement aAliasStatement) {
+		defaultAction(aAliasStatement);
 	}
 
 	@Override
@@ -52,13 +56,23 @@ public class AbstractCodeGen implements ElElementVisitor {
 	}
 
 	@Override
-	public void visitTypeNameElement(final ClassContext.OS_TypeNameElement aOS_typeNameElement) {
-		defaultAction(aOS_typeNameElement);
+	public void visitConstructorDef(final ConstructorDef aConstructorDef) {
+		defaultAction(aConstructorDef);
 	}
 
 	@Override
 	public void visitConstructStatement(final ConstructStatement aConstructExpression) {
 		defaultAction(aConstructExpression);
+	}
+
+	@Override
+	public void visitDefFunction(final DefFunctionDef aDefFunctionDef) {
+		defaultAction(aDefFunctionDef);
+	}
+
+	@Override
+	public void visitDestructor(final DestructorDef aDestructorDef) {
+		defaultAction(aDestructorDef);
 	}
 
 	@Override
@@ -87,13 +101,13 @@ public class AbstractCodeGen implements ElElementVisitor {
 	}
 
 	@Override
-	public void visitLoop(final Loop aLoop) {
-		defaultAction(aLoop);
+	public void visitImportStatment(final ImportStatement aImportStatement) {
+		defaultAction(aImportStatement);
 	}
 
 	@Override
-	public void visitImportStatment(final ImportStatement aImportStatement) {
-		defaultAction(aImportStatement);
+	public void visitLoop(final Loop aLoop) {
+		defaultAction(aLoop);
 	}
 
 	@Override
@@ -132,13 +146,13 @@ public class AbstractCodeGen implements ElElementVisitor {
 	}
 
 	@Override
-	public void visitVariableSequence(final VariableSequence aVariableSequence) {
-		defaultAction(aVariableSequence);
+	public void visitTypeNameElement(final ClassContext.OS_TypeNameElement aOS_typeNameElement) {
+		defaultAction(aOS_typeNameElement);
 	}
 
 	@Override
-	public void visitWithStatement(final WithStatement aWithStatement) {
-		defaultAction(aWithStatement);
+	public void visitVariableSequence(final VariableSequence aVariableSequence) {
+		defaultAction(aVariableSequence);
 	}
 
 	@Override
@@ -147,27 +161,13 @@ public class AbstractCodeGen implements ElElementVisitor {
 	}
 
 	@Override
+	public void visitWithStatement(final WithStatement aWithStatement) {
+		defaultAction(aWithStatement);
+	}
+
+	@Override
 	public void visitYield(final YieldExpression aYieldExpression) {
 		defaultAction(aYieldExpression);
-	}
-
-	@Override
-	public void visitConstructorDef(final ConstructorDef aConstructorDef) {
-		defaultAction(aConstructorDef);
-	}
-
-	@Override
-	public void visitDefFunction(final DefFunctionDef aDefFunctionDef) {
-		defaultAction(aDefFunctionDef);
-	}
-
-	@Override
-	public void visitDestructor(final DestructorDef aDestructorDef) {
-		defaultAction(aDestructorDef);
-	}
-
-	public void defaultAction(final OS_Element anElement) {
-
 	}
 }
 

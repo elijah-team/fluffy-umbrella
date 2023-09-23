@@ -36,6 +36,11 @@ public class ImportContext extends Context {
 	}
 
 	@Override
+	public Context getParent() {
+		return _parent;
+	}
+
+	@Override
 	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(this);
 //		tripleo.elijah.util.Stupidity.println_err2("2002 " + this.carrier.importList());
@@ -101,11 +106,6 @@ public class ImportContext extends Context {
 				return context.lookup(name, level + 1, Result, alreadySearched, false);
 		}
 		return Result;
-	}
-
-	@Override
-	public Context getParent() {
-		return _parent;
 	}
 }
 

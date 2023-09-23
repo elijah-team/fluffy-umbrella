@@ -8,30 +8,33 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeduceLocalVariable;
+import tripleo.elijah.stages.deduce.DeduceTypeResolve;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
-import tripleo.elijah.stages.deduce.nextgen.DN_Resolver2;
+import tripleo.elijah.stages.deduce.foo.DN_Resolver2;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VariableTableEntry;
-import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.deduce.post_bytecode.PostBC_Processor;
 import tripleo.elijah.stages.deduce.zero.VTE_Zero;
 import tripleo.elijah.stages.instructions.VariableTableType;
 import tripleo.elijah.util.NotImplementedException;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import tripleo.elijah.util.Stupidity;
 
 /**
  * Created 9/10/20 4:51 PM
@@ -47,13 +50,16 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	public                TypeTableEntry                             type;
 	public                int                                        tempNum               = -1;
 	public                ProcTableEntry                             constructable_pte;
-	public                GenType                                    genType               = new GenType();
+	public    GenType    genType               = new GenType();
+	public    OS_Element _vs;
 	// endregion constructable
-	@Nullable             GenType                                    _resolveTypeCalled    = null;
+	@Nullable GenType    _resolveTypeCalled    = null;
 
-	private GeneratedNode _resolvedType;
+	private EvaNode                           _resolvedType;
 	private DeduceElement3_VariableTableEntry _de3;
 	private VTE_Zero _zero;
+
+	private final List<DN_Resolver2> resolvers = new ArrayList<>();
 
 	public VariableTableEntry(final int aIndex, final VariableTableType aVtt, final String aName, final TypeTableEntry aTTE, final OS_Element el) {
 		this.index = aIndex;
@@ -62,48 +68,29 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		this.type  = aTTE;
 		this.setResolvedElement(el);
 		setupResolve();
+
+		_vs = el;
 	}
 
-	public String getName() {
-		return name;
+	public DeduceTypes2 _deduceTypes2() {
+		return __dt2;
 	}
 
-	public @NotNull Collection<TypeTableEntry> potentialTypes() {
-		return potentialTypes.values();
-	}
-
-	public int getIndex() {
-		return index;
+	@Override
+	public IExpression _expression() {
+		NotImplementedException.raise();
+		return null;
+		//this.getResolvedElement();
 	}
 
 //	public DeferredObject<GenType, Void, Void> typeDeferred() {
 //		return typeDeferred;
 //	}
 
-	@Override
-	public @NotNull String toString() {
-		return "VariableTableEntry{" +
-		  "index=" + index +
-		  ", name='" + name + '\'' +
-		  ", status=" + status +
-		  ", type=" + type.index +
-		  ", vtt=" + vtt +
-		  ", potentialTypes=" + potentialTypes +
-		  '}';
-	}
-
-	public Promise<GenType, Void, Void> typePromise() {
-		return typeDeferred.promise();
-	}
-
-	public boolean typeDeferred_isPending() {
-		return typeDeferred.isPending();
-	}
-
 	public void addPotentialType(final int instructionIndex, final TypeTableEntry tte) {
 		// TODO 09/14 DR_PossibleType here
 		if (!typeDeferred.isPending()) {
-			tripleo.elijah.util.Stupidity.println_err2("62 addPotentialType while typeDeferred is already resolved " + this);//throw new AssertionError();
+			Stupidity.println_err2("62 addPotentialType while typeDeferred is already resolved " + this);//throw new AssertionError();
 			return;
 		}
 		//
@@ -129,7 +116,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 				//
 //				tripleo.elijah.util.Stupidity.println_err2("v.attached: " + v.attached);
 //				tripleo.elijah.util.Stupidity.println_err2("tte.attached: " + tte.attached);
-				tripleo.elijah.util.Stupidity.println2("72 WARNING two types at the same location.");
+				Stupidity.println2("72 WARNING two types at the same location.");
 				if ((tte.getAttached() != null && tte.getAttached().getType() != OS_Type.Type.USER) || v.getAttached().getType() != OS_Type.Type.USER_CLASS) {
 					// TODO prefer USER_CLASS as we are assuming it is a resolved version of the other one
 					if (tte.getAttached() == null)
@@ -141,36 +128,96 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		}
 	}
 
-	public GeneratedNode resolvedType() {
-		return _resolvedType;
+	public DN_Resolver2 addResolver() {
+		var delegate = new DN_Resolver2() { // TODO ResolverRunner
+			@Override
+			public void resolve(final DN_Resolver2 aResolver2) {
+				throw new NotImplementedException();
+			}
+		};
+		resolvers.add(delegate);
+		return delegate;
 	}
 
 	@Override
-	public void setConstructable(final ProcTableEntry aPte) {
-		if (constructable_pte != aPte) {
-			constructable_pte = aPte;
-			constructableDeferred.resolve(constructable_pte);
+	public Promise<ProcTableEntry, Void, Void> constructablePromise() {
+		return constructableDeferred.promise();
+	}
+
+	@Override
+	public @NotNull String expectationString() {
+		return "VariableTableEntry{" +
+		  "index=" + index +
+		  ", name='" + name + '\'' +
+		  "}";
+	}
+
+	public ProcTableEntry getConstructable_pte() {
+		return constructable_pte;
+	}
+
+	public DeduceElement3_VariableTableEntry getDeduceElement3() {
+		if (_de3 == null) {
+			_de3 = new DeduceElement3_VariableTableEntry(this);
+//			_de3.
 		}
+		return _de3;
 	}
 
 	// region constructable
 
-	@Override
-//	public void setConstructable(final ProcTableEntry aPte) {
-//		constructable_pte = aPte;
-//	}
-
-//	@Override
-	public void resolveTypeToClass(final GeneratedNode aNode) {
-		_resolvedType = aNode;
-		genType.node  = aNode;
-		type.resolve(aNode); // TODO maybe this obviates above
+	public DeduceElement3_VariableTableEntry getDeduceElement3(final DeduceTypes2 aDt2, final BaseEvaFunction aGf1) {
+		return getDeduceElement3();
 	}
 
-	@Override
-	public void setGenType(final GenType aGenType) {
-		genType.copy(aGenType);
-		resolveType(aGenType);
+	public DeduceLocalVariable getDlv() {
+		return dlv;
+	}
+
+	public GenType getGenType() {
+		return genType;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public PostBC_Processor getPostBC_Processor(final Context aFd_ctx, final DeduceTypes2.DeduceClient1 aDeduceClient1) {
+		return PostBC_Processor.make_VTE(this, aFd_ctx, aDeduceClient1);
+	}
+
+	public List<OS_Type> getPotentialTypes() {
+		return potentialTypes.values().stream()
+		  .map(TypeTableEntry::getAttached)
+		  .collect(Collectors.toList());
+	}
+
+	public int getTempNum() {
+		return tempNum;
+	}
+
+	public TypeTableEntry getType() {
+		return type;
+	}
+
+	public VariableTableType getVtt() {
+		return vtt;
+	}
+
+	public @NotNull Collection<TypeTableEntry> potentialTypes() {
+		return potentialTypes.values();
+	}
+
+	public void resolve_var_table_entry_for_exit_function() {
+		dlv.resolve_var_table_entry_for_exit_function();
+	}
+
+	public EvaNode resolvedType() {
+		return _resolvedType;
 	}
 
 	public void resolveType(final @NotNull GenType aGenType) {
@@ -188,54 +235,40 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 			return;
 		}
 		if (typeDeferred.isResolved()) {
-			tripleo.elijah.util.Stupidity.println_err2("126 typeDeferred is resolved " + this);
+			Stupidity.println_err2("126 typeDeferred is resolved " + this);
 		}
 		_resolveTypeCalled = aGenType;
 		typeDeferred.resolve(aGenType);
 	}
 
 	@Override
-	public Promise<ProcTableEntry, Void, Void> constructablePromise() {
-		return constructableDeferred.promise();
+//	public void setConstructable(final ProcTableEntry aPte) {
+//		constructable_pte = aPte;
+//	}
+
+//	@Override
+	public void resolveTypeToClass(final EvaNode aNode) {
+		_resolvedType = aNode;
+		genType.node  = aNode;
+		type.resolve(aNode); // TODO maybe this obviates above
 	}
 
 	@Override
-	public @NotNull String expectationString() {
-		return "VariableTableEntry{" +
-		  "index=" + index +
-		  ", name='" + name + '\'' +
-		  "}";
+	public void setConstructable(final ProcTableEntry aPte) {
+		if (constructable_pte != aPte) {
+			constructable_pte = aPte;
+			constructableDeferred.resolve(constructable_pte);
+		}
 	}
 
-	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseGeneratedFunction aGeneratedFunction) {
+	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2, final Context aContext, final BaseEvaFunction aGeneratedFunction) {
 		dlv.setDeduceTypes2(aDeduceTypes2, aContext, aGeneratedFunction);
 	}
 
-	public void resolve_var_table_entry_for_exit_function() {
-		dlv.resolve_var_table_entry_for_exit_function();
-	}
-
-	public boolean typeDeferred_isResolved() {
-		return typeDeferred.isResolved();
-	}
-
-	public PostBC_Processor getPostBC_Processor(final Context aFd_ctx, final DeduceTypes2.DeduceClient1 aDeduceClient1) {
-		return PostBC_Processor.make_VTE(this, aFd_ctx, aDeduceClient1);
-	}
-
-	public IDeduceElement3 getDeduceElement3() {
-		if (_de3 == null) {
-			_de3 = new DeduceElement3_VariableTableEntry(this);
-//			_de3.
-		}
-		return _de3;
-	}
-
-	public VTE_Zero zero() {
-		if (_zero == null) {
-			_zero = new VTE_Zero(this);
-		}
-		return _zero;
+	@Override
+	public void setGenType(final GenType aGenType) {
+		genType.copy(aGenType);
+		resolveType(aGenType);
 	}
 
 	public void setLikelyType(final GenType aGenType) {
@@ -253,28 +286,51 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 
 	}
 
-	private final List<DN_Resolver2> resolvers = new ArrayList<>();
+	public void setTempNum(int num) {
+		tempNum = num;
+	}
 
-	public DN_Resolver2 addResolver() {
-		var delegate = new DN_Resolver2() { // TODO ResolverRunner
-			@Override
-			public void resolve(final DN_Resolver2 aResolver2) {
-				throw new NotImplementedException();
-			}
-		};
-		resolvers.add(delegate);
-		return delegate;
+	public void setType(@NotNull TypeTableEntry tte1) {
+		type = tte1;
 	}
 
 	@Override
-	public IExpression _expression() {
-		NotImplementedException.raise();
-		return null;
-		//this.getResolvedElement();
+	public @NotNull String toString() {
+		return "VariableTableEntry{" +
+		  "index=" + index +
+		  ", name='" + name + '\'' +
+		  ", status=" + status +
+		  ", type=" + type.index +
+		  ", vtt=" + vtt +
+		  ", potentialTypes=" + potentialTypes +
+		  '}';
+	}
+
+	public boolean typeDeferred_isPending() {
+		return typeDeferred.isPending();
+	}
+
+	public boolean typeDeferred_isResolved() {
+		return typeDeferred.isResolved();
+	}
+
+	public Promise<GenType, Void, Void> typePromise() {
+		return typeDeferred.promise();
+	}
+
+	public DeduceTypeResolve typeResolve() {
+		return typeResolve;
 	}
 
 	public VariableTableType vtt() {
 		return vtt;
+	}
+
+	public VTE_Zero zero() {
+		if (_zero == null) {
+			_zero = new VTE_Zero(this);
+		}
+		return _zero;
 	}
 
 //	public Promise<GenType, Void, Void> typeResolvePromise() {

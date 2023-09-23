@@ -17,12 +17,12 @@ public class EG_DottedStatement implements EG_Statement {
 	}
 
 	@Override
-	public @NotNull String getText() {
-		return Helpers.String_join(separator, stringList);
+	public EX_Explanation getExplanation() {
+		return explanation;
 	}
 
 	@Override
-	public EX_Explanation getExplanation() {
-		return explanation;
+	public @NotNull String getText() {
+		return Helpers.String_join(separator, stringList);
 	}
 }

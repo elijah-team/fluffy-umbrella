@@ -40,13 +40,13 @@ public class DestructorDefBuilder extends BaseFunctionDefBuilder {
 		return destructorDef;
 	}
 
+	public DestructorDefScope scope() {
+		return _scope;
+	}
+
 	@Override
 	protected void setContext(final Context context) {
 		_context = context;
-	}
-
-	public DestructorDefScope scope() {
-		return _scope;
 	}
 }
 

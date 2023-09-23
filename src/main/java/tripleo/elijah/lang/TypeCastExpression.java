@@ -10,7 +10,7 @@ package tripleo.elijah.lang;
 
 
 /**
- * @author olu
+ * @author tripleo
  * <p>
  * Created 	Apr 16, 2020 at 8:42:54 AM
  */
@@ -19,13 +19,17 @@ public class TypeCastExpression extends AbstractExpression implements IExpressio
 	TypeName tn;
 
 	@Override
-	public boolean is_simple() {
-		return false;
+	public OS_Type getType() {
+		return null;
+	}
+
+	public TypeName getTypeName() {
+		return tn;
 	}
 
 	@Override
-	public OS_Type getType() {
-		return null;
+	public boolean is_simple() {
+		return false;
 	}
 
 	@Override
@@ -33,16 +37,12 @@ public class TypeCastExpression extends AbstractExpression implements IExpressio
 
 	}
 
-	public TypeName typeName() {
-		return tn;
-	}
-
-	public TypeName getTypeName() {
-		return tn;
-	}
-
 	public void setTypeName(final TypeName typeName) {
 		tn = typeName;
+	}
+
+	public TypeName typeName() {
+		return tn;
 	}
 }
 

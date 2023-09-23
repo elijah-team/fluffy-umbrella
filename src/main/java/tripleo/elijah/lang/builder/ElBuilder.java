@@ -17,13 +17,13 @@ import tripleo.elijah.lang.OS_Element;
 public abstract class ElBuilder {
 	protected OS_Element _parent;
 
-	public void setParent(final OS_Element element) {
-		_parent = element;
-	}
-
 	protected abstract OS_Element build();
 
 	protected abstract void setContext(Context context);
+
+	public void setParent(final OS_Element element) {
+		_parent = element;
+	}
 
 }
 

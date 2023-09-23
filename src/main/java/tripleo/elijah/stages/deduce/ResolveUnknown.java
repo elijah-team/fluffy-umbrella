@@ -8,12 +8,13 @@
  */
 package tripleo.elijah.stages.deduce;
 
-import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.diagnostic.Diagnostic;
-import tripleo.elijah.diagnostic.Locatable;
-
 import java.io.PrintStream;
 import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+
+import tripleo.elijah.diagnostic.Diagnostic;
+import tripleo.elijah.diagnostic.Locatable;
 
 /**
  * Created 9/9/21 6:25 AM
@@ -24,9 +25,8 @@ public class ResolveUnknown implements Diagnostic {
 		return "E1003";
 	}
 
-	@Override
-	public @NotNull Severity severity() {
-		return Severity.ERROR;
+	private @NotNull String message() {
+		return "Can't resolve variable";
 	}
 
 	@Override
@@ -35,22 +35,23 @@ public class ResolveUnknown implements Diagnostic {
 	}
 
 	@Override
-	public @NotNull List<Locatable> secondary() {
-		return null;
-	}
-
-	@Override
-	public void report(@NotNull final PrintStream stream) {
+	public void report(@NotNull PrintStream stream) {
 		stream.printf("---[%s]---: %s%n", code(), message());
 		// linecache.print(primary);
-		for (final Locatable sec : secondary()) {
+		for (Locatable sec : secondary()) {
 			//linecache.print(sec)
 		}
 		stream.flush();
 	}
 
-	private @NotNull String message() {
-		return "Can't resolve variable";
+	@Override
+	public @NotNull List<Locatable> secondary() {
+		return null;
+	}
+
+	@Override
+	public @NotNull Severity severity() {
+		return Severity.ERROR;
 	}
 }
 

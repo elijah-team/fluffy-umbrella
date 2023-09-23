@@ -38,13 +38,13 @@ public class SyntacticBlockBuilder extends ElBuilder {
 		return syntacticBlock;
 	}
 
+	public BaseScope scope() {
+		return _scope;
+	}
+
 	@Override
 	protected void setContext(final Context context) {
 		_context = context;
-	}
-
-	public BaseScope scope() {
-		return _scope;
 	}
 }
 

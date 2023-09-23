@@ -23,11 +23,6 @@ public class ChooseHashDirectoryNameBehavior implements ChooseDirectoryNameBehav
 		localDateTime = aLocalDateTime;
 	}
 
-	@Override
-	public File chooseDirectory() {
-		return choose_dir_name();
-	}
-
 	private @NotNull File choose_dir_name() {
 		final List<File> recordedreads = c.getIO().recordedreads;
 		final List<String> recordedread_filenames = recordedreads.stream()
@@ -78,5 +73,10 @@ public class ChooseHashDirectoryNameBehavior implements ChooseDirectoryNameBehav
 		final String fn1 = new File(fn0, "inputs.txt").toString();
 //		final String fn1 = new File(file_prefix, "inputs.txt").toString();
 		return fn0;
+	}
+
+	@Override
+	public File chooseDirectory() {
+		return choose_dir_name();
 	}
 }

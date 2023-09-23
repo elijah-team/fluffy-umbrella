@@ -9,166 +9,170 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import org.jdeferred2.Promise;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.comp.ErrSink;
+import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.Context;
-import tripleo.elijah.lang.FormalArgListItem;
-import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.LookupResultList;
 import tripleo.elijah.lang.NormalTypeName;
 import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang.VariableStatement;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
-import tripleo.elijah.stages.gen_fn.IdentTableEntry;
+import tripleo.elijah.nextgen.query.Mode;
+import tripleo.elijah.stages.deduce.nextgen.DR_Variable;
+import tripleo.elijah.stages.deduce.tastic.FCA_Stop;
+import tripleo.elijah.stages.gen_fn.BaseEvaFunction;
+import tripleo.elijah.stages.gen_fn.DeferredObject2;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
-import tripleo.elijah.stages.gen_fn.VariableTableEntry;
-import tripleo.elijah.stages.instructions.IdentIA;
-import tripleo.elijah.stages.instructions.InstructionArgument;
-import tripleo.elijah.stages.instructions.IntegerIA;
-import tripleo.elijah.stages.instructions.VariableTableType;
 import tripleo.elijah.util.NotImplementedException;
-
-import java.util.stream.Collectors;
+import tripleo.elijah.util.Operation;
+import tripleo.elijah.util.ReadySupplier_1;
 
 /**
  * Created 11/30/21 11:56 PM
  */
 public class DeduceProcCall {
-	private final ProcTableEntry procTableEntry;
-	DeduceElement target;
-	private DeduceTypes2          deduceTypes2;
-	private Context               context;
-	private BaseGeneratedFunction generatedFunction;
-	private ErrSink               errSink;
+	public class DeclTarget implements DeduceElement {
+		private @NotNull
+		final DeclAnchor anchor;
+		private @NotNull
+		final OS_Element element;
+
+		public DeclTarget(final FunctionDef aBest, final OS_Element aDeclAnchor, final DeclAnchor.AnchorType aAnchorType, final DeduceTypes2.DeduceTypes2Injector aDeduceTypes2Injector) {
+			throw new NotImplementedException();
+		}
+
+		/**
+		 * $element(FunctionDef Directory.listFiles) is a $anchorType(MEMBER) of anchorElement(ClassSt std.io::Directory)
+		 * and invocation just happens to be around (invocation.pte is the call site (MainLogic::main))
+		 * <p>
+		 * {@link file:///./Screenshot-from-2023-08-13 12-25-11.png}
+		 */
+		public DeclTarget(final @NotNull OS_Element aBest,
+		                  final @NotNull OS_Element aDeclAnchor,
+		                  final @NotNull DeclAnchor.AnchorType aAnchorType, final DeduceProcCall aDeduceProcCall) throws FCA_Stop {
+			element = aBest;
+			anchor  = _g_deduceTypes2._inj().new_DeclAnchor(aDeclAnchor, aAnchorType);
+			final IInvocation invocation;
+			switch (aAnchorType) {
+			case VAR -> {
+				DR_Variable v = _g_generatedFunction.getVar((VariableStatement) element);
+				if (v.declaredTypeIsEmpty()) {
+					System.err.println("8787 declaredTypeIsEmpty for " + ((VariableStatement) element).getName());
+					throw new FCA_Stop();
+				} else {
+					final NormalTypeName   normalTypeName = (NormalTypeName) ((VariableStatement) element).typeName();
+					final LookupResultList           lrl            = normalTypeName.getContext().lookup(normalTypeName.getName());
+					final ClassStatement             classStatement = (ClassStatement) lrl.chooseBest(null);
+					final Operation<ClassInvocation> oi             = DeduceTypes2.ClassInvocationMake.withGenericPart(classStatement, null, normalTypeName, _g_deduceTypes2);
+
+					assert oi.mode() == Mode.SUCCESS;
+					invocation = oi.success();
+				}
+			}
+			default -> {
+				if (element instanceof FunctionDef fd) {
+					invocation = _g_generatedFunction.fi();
+				} else {
+					IInvocation declaredInvocation = _g_generatedFunction.fi().getClassInvocation();
+					if (declaredInvocation == null) {
+						declaredInvocation = _g_generatedFunction.fi().getNamespaceInvocation();
+					}
+					if (aAnchorType == DeclAnchor.AnchorType.INHERITED) {
+						assert declaredInvocation instanceof ClassInvocation;
+						invocation = _g_deduceTypes2._inj().new_DerivedClassInvocation((ClassStatement) aDeclAnchor, (ClassInvocation) declaredInvocation, new ReadySupplier_1<>(_g_deduceTypes2));
+					} else {
+						invocation = declaredInvocation;
+					}
+				}
+			}
+			}
+			anchor.setInvocation(invocation);
+		}
+
+		@Contract(pure = true)
+		@Override
+		public @NotNull DeclAnchor declAnchor() {
+			return anchor;
+		}
+
+		@Contract(pure = true)
+		@Override
+		public @NotNull OS_Element element() {
+			return element;
+		}
+	}
+	private final @NotNull ProcTableEntry                                 procTableEntry;
+	private final          DT_Resolvable11<DeduceElement>                 _pr_target  = new DT_Resolvable11<>();
+	private final          DeferredObject2<DeduceElement, FCA_Stop, Void> _p_targetP2 = new DeferredObject2<>();
+	private                Context                                        _g_context;
+	private                DeduceTypes2                                   _g_deduceTypes2;
+	private                ErrSink                                        _g_errSink;
+	private                BaseEvaFunction                                _g_generatedFunction;
+
+	private                DeduceElement                                  target;
 
 	@Contract(pure = true)
 	public DeduceProcCall(final @NotNull ProcTableEntry aProcTableEntry) {
 		procTableEntry = aProcTableEntry;
 	}
 
-	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2,
-	                            final Context aContext,
-	                            final BaseGeneratedFunction aGeneratedFunction,
-	                            final ErrSink aErrSink) {
-		deduceTypes2      = aDeduceTypes2;
-		context           = aContext;
-		generatedFunction = aGeneratedFunction;
-		errSink           = aErrSink;
-	}
+	public void __mk() {
+		procTableEntry.onFunctionInvocation((final @NotNull FunctionInvocation functionInvocation) -> {
+			functionInvocation.generatePromise().then((BaseEvaFunction evaFunction) -> {
+				final @NotNull BaseFunctionDef best = evaFunction.getFD();
 
-	public @Nullable DeduceElement target() {
-		if (target != null) return target;
-
-		final @NotNull IdentTableEntry t = ((IdentIA) procTableEntry.expression_num).getEntry();
-		if (t.getBacklink() == null) {
-			try {
-				final LookupResultList     lrl  = DeduceLookupUtils.lookupExpression(t.getIdent(), context, deduceTypes2);
-				final @Nullable OS_Element best = lrl.chooseBest(null);
-				assert best != null;
-				final OS_Type attached = generatedFunction.vte_list().stream().
-				                                                   filter(x -> x.vtt() == VariableTableType.SELF).
-				                                                   collect(Collectors.toList()).
-				                                                   get(0).
-				  type.getAttached();
-				assert attached != null;
-				final ClassStatement        self     = attached.getClassOf();
-				final ClassStatement        inherits = DeduceLocalVariable.class_inherits(self, best.getParent());
-				final DeclAnchor.AnchorType anchorType;
-				final OS_Element            declAnchor;
-				if (inherits != null) {
-					anchorType = DeclAnchor.AnchorType.INHERITED;
-					declAnchor = inherits;
-				} else {
-					anchorType = DeclAnchor.AnchorType.MEMBER;
-					declAnchor = self;
+				final DeclAnchor.AnchorType anchorType = DeclAnchor.AnchorType.MEMBER;
+				final OS_Element            declAnchor = best.getParent();
+				try {
+					setTarget(new DeclTarget(best, declAnchor, anchorType, this));
+					_pr_target.resolve(getTarget());
+					_p_targetP2.resolve(getTarget());
+				} catch (FCA_Stop aE) {
+					_p_targetP2.reject(aE);
 				}
-				target = new DeclTarget(best, declAnchor, anchorType, errSink);
-			} catch (final ResolveError aResolveError) {
-				return null; // TODO
-			}
-		} else {
-			final InstructionArgument bl_ = t.getBacklink();
-			if (bl_ instanceof IntegerIA) {
-				final @NotNull VariableTableEntry bl               = ((IntegerIA) bl_).getEntry();
-				final OS_Element                  resolved_element = bl.getResolvedElement();
-				if (resolved_element instanceof FormalArgListItem) {
-					target = new DeclTarget(resolved_element, generatedFunction.getFD(), DeclAnchor.AnchorType.PARAMS, errSink);
-				} else {
-					if (resolved_element instanceof VariableStatement) {
-						final OS_Element parent = resolved_element.getParent().getParent();
-						if (parent == generatedFunction.getFD()) {
-							target = new DeclTarget(resolved_element, parent, DeclAnchor.AnchorType.VAR, errSink);
-						} else
-							throw new NotImplementedException();
-					} else {
-						if (resolved_element instanceof IdentExpression)
-							target = new DeclTarget(resolved_element, resolved_element, DeclAnchor.AnchorType.MEMBER, errSink);
-						else
-							target = new DeclTarget(resolved_element, resolved_element.getParent(), DeclAnchor.AnchorType.MEMBER, errSink);
-					}
-				}
-			}
-			final int y = 2;
-		}
-		return target;
+			});
+		});
 	}
 
 	public DeduceTypes2 _deduceTypes2() {
-		return deduceTypes2;
+		return this._g_deduceTypes2;
 	}
 
-	public BaseGeneratedFunction _generatedFunction() {
-		return generatedFunction;
+	public BaseEvaFunction _generatedFunction() {
+		return _g_generatedFunction;
 	}
 
-	private class DeclTarget implements DeduceElement {
-		private @NotNull
-		final OS_Element element;
-		private @NotNull
-		final DeclAnchor anchor;
-
-		public DeclTarget(final @NotNull OS_Element aBest,
-		                  final @NotNull OS_Element aDeclAnchor,
-		                  final @NotNull DeclAnchor.AnchorType aAnchorType,
-		                  final @NotNull ErrSink errSink) {
-			element = aBest;
-			anchor  = new DeclAnchor(aDeclAnchor, aAnchorType);
-			final IInvocation invocation;
-			if (aAnchorType != DeclAnchor.AnchorType.VAR) {
-				IInvocation declaredInvocation = generatedFunction.fi().getClassInvocation();
-				if (declaredInvocation == null) {
-					declaredInvocation = generatedFunction.fi().getNamespaceInvocation();
-				}
-				if (aAnchorType == DeclAnchor.AnchorType.INHERITED) {
-					assert declaredInvocation instanceof ClassInvocation;
-					invocation = new DerivedClassInvocation((ClassStatement) aDeclAnchor, (ClassInvocation) declaredInvocation);
-				} else {
-					invocation = declaredInvocation;
-				}
-			} else {
-				final NormalTypeName   normalTypeName = (NormalTypeName) ((VariableStatement) element).typeName();
-				final LookupResultList lrl            = normalTypeName.getContext().lookup(normalTypeName.getName());
-				final ClassStatement   classStatement = (ClassStatement) lrl.chooseBest(null);
-				invocation = DeduceTypes2.ClassInvocationMake.withGenericPart(classStatement, null, normalTypeName, deduceTypes2, errSink);
-			}
-			anchor.setInvocation(invocation);
-		}
-
-		@Override
-		public OS_Element element() {
-			return element;
-		}
-
-		@Override
-		public DeclAnchor declAnchor() {
-			return anchor;
-		}
+	public DeduceElement getTarget() {
+		return target;
 	}
 
+	public void setDeduceTypes2(final DeduceTypes2 aDeduceTypes2,
+								final Context aContext,
+								final BaseEvaFunction aGeneratedFunction,
+								final ErrSink aErrSink) {
+		_g_deduceTypes2      = aDeduceTypes2;
+		_g_context           = aContext;
+		_g_generatedFunction = aGeneratedFunction;
+		_g_errSink           = aErrSink;
+	}
+
+	public void setTarget(DeduceElement aTarget) {
+		target = aTarget;
+	}
+
+	public @Nullable DT_Resolvable11<DeduceElement> targetP() {
+		return _pr_target;
+	}
+
+	public @Nullable Promise<DeduceElement, FCA_Stop, Void> targetP2() {
+		return _p_targetP2;
+	}
 }
 
 //

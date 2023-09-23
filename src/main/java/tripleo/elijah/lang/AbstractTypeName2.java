@@ -24,13 +24,6 @@ public abstract class AbstractTypeName2 implements NormalTypeName {
 	protected       Qualident                 typeName;
 
 	@Override
-	public boolean isNull() {
-		//return tm == null && (typeName == null /*|| typeName.isNull()*/);
-		if (typeName == null) return false;
-		return _ltm.isEmpty() && typeName == null; // TODO check for correctness
-	}
-
-	@Override
 	public boolean equals(final Object o) {
 		if (this == o) return true;
 		if (!(o instanceof final NormalTypeName that)) return false;
@@ -49,18 +42,13 @@ public abstract class AbstractTypeName2 implements NormalTypeName {
 	}
 
 	@Override
-	public void setConstant(final boolean aFlag) {
-		_ltm.add(TypeModifiers.CONST);
+	public boolean getIn() {
+		return _ltm.contains(TypeModifiers.INPAR);
 	}
 
 	@Override
-	public boolean getReference() {
-		return _ltm.contains(TypeModifiers.REFPAR);
-	}
-
-	@Override
-	public void setReference(final boolean aFlag) {
-		_ltm.add(TypeModifiers.REFPAR);
+	public Collection<TypeModifiers> getModifiers() {
+		return _ltm;
 	}
 
 	@Override
@@ -69,13 +57,20 @@ public abstract class AbstractTypeName2 implements NormalTypeName {
 	}
 
 	@Override
-	public void setOut(final boolean aFlag) {
-		_ltm.add(TypeModifiers.OUTPAR);
+	public boolean getReference() {
+		return _ltm.contains(TypeModifiers.REFPAR);
 	}
 
 	@Override
-	public boolean getIn() {
-		return _ltm.contains(TypeModifiers.INPAR);
+	public boolean isNull() {
+		//return tm == null && (typeName == null /*|| typeName.isNull()*/);
+		if (typeName == null) return false;
+		return _ltm.isEmpty() && typeName == null; // TODO check for correctness
+	}
+
+	@Override
+	public void setConstant(final boolean aFlag) {
+		_ltm.add(TypeModifiers.CONST);
 	}
 
 	@Override
@@ -89,8 +84,13 @@ public abstract class AbstractTypeName2 implements NormalTypeName {
 	}
 
 	@Override
-	public Collection<TypeModifiers> getModifiers() {
-		return _ltm;
+	public void setOut(final boolean aFlag) {
+		_ltm.add(TypeModifiers.OUTPAR);
+	}
+
+	@Override
+	public void setReference(final boolean aFlag) {
+		_ltm.add(TypeModifiers.REFPAR);
 	}
 }
 

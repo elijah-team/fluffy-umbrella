@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.nextgen.composable.IComposable;
 import tripleo.elijah.stages.deduce.ClassInvocation;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
+import tripleo.elijah.stages.gen_fn.EvaClass;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,20 +25,20 @@ public class ClassDefinition {
 	final ClassStatement      primary;
 	final Set<ClassStatement> extended = new HashSet<ClassStatement>();
 	ClassInvocation invocation;
-	GeneratedClass  node;
+	EvaClass  node;
 	IComposable     composable;
-
-	public ClassDefinition(final ClassStatement aPrimary) {
-		primary = aPrimary;
-	}
 
 	public ClassDefinition(final @NotNull ClassInvocation aClassInvocation) {
 		primary    = aClassInvocation.getKlass();
 		invocation = aClassInvocation;
 	}
 
-	public ClassStatement getPrimary() {
-		return primary;
+	public ClassDefinition(final ClassStatement aPrimary) {
+		primary = aPrimary;
+	}
+
+	public IComposable getComposable() {
+		return composable;
 	}
 
 	public Set<ClassStatement> getExtended() {
@@ -49,24 +49,24 @@ public class ClassDefinition {
 		return invocation;
 	}
 
-	public void setInvocation(final ClassInvocation aInvocation) {
-		invocation = aInvocation;
-	}
-
-	public GeneratedClass getNode() {
+	public EvaClass getNode() {
 		return node;
 	}
 
-	public void setNode(final GeneratedClass aNode) {
-		node = aNode;
-	}
-
-	public IComposable getComposable() {
-		return composable;
+	public ClassStatement getPrimary() {
+		return primary;
 	}
 
 	public void setComposable(final IComposable aComposable) {
 		composable = aComposable;
+	}
+
+	public void setInvocation(final ClassInvocation aInvocation) {
+		invocation = aInvocation;
+	}
+
+	public void setNode(final EvaClass aNode) {
+		node = aNode;
 	}
 }
 

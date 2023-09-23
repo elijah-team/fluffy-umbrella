@@ -9,14 +9,21 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.lang.OS_Element;
 
 /**
  * Created 1/3/22 10:31 PM
  */
 public class DeclAnchor {
-	final   AnchorType  anchorType;
-	final   OS_Element  element;
+	public enum AnchorType {
+		CLOSURE, FOREIGN /*(esp NS, DT/enum)*/, INHERITED, MEMBER, PARAMS, VAR
+	}
+
+	AnchorType anchorType;
+
+	OS_Element element;
 	private IInvocation invocation;
 
 	public DeclAnchor(final OS_Element aElement, final AnchorType aAnchorType) {
@@ -29,12 +36,13 @@ public class DeclAnchor {
 	}
 
 	public void setInvocation(final IInvocation aInvocation) {
-		assert aInvocation != null;
+		//assert aInvocation != null; //FIXME/TODO 06/19
 		invocation = aInvocation;
 	}
 
-	public enum AnchorType {
-		MEMBER, INHERITED, FOREIGN /*(esp NS, DT/enum)*/, VAR, CLOSURE, PARAMS
+	@Override
+	public @NotNull String toString() {
+		return "DeclAnchor [anchorType=" + anchorType + ", element=" + element + ", invocation=" + invocation + "]";
 	}
 }
 
