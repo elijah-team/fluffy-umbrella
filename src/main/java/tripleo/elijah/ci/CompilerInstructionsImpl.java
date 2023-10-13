@@ -44,7 +44,7 @@ public class CompilerInstructionsImpl implements CompilerInstructions {
 	}
 
 	@Override
-	public void add(final LibraryStatementPartImpl libraryStatementPart) {
+	public void add(final LibraryStatementPart libraryStatementPart) {
 		libraryStatementPart.setInstructions(this);
 		lsps.add(libraryStatementPart);
 	}
