@@ -9,7 +9,7 @@ import tripleo.elijah.nextgen.outputstatement.EG_Statement;
 import java.util.List;
 
 /**
- * @author olu
+ * @author tripleo
  */
 public class EOT_OutputTree {
 	public List<EOT_OutputFile> list;

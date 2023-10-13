@@ -253,7 +253,7 @@ public class DeduceTypeResolve {
 //		procTableEntry.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(classStatement));  // infinite recursion
 		final ProcTableEntry callablePTE = ((IdentTableEntry) bte).getCallablePTE();
 		if (callablePTE != null && e != null) {
-			assert e instanceof BaseFunctionDef;  // sholud fail for constructor and destructor
+			assert e instanceof BaseFunctionDef;  // should fail for constructor and destructor
 			callablePTE.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(e));
 		}
 	}

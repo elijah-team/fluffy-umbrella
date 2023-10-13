@@ -10,7 +10,7 @@ package tripleo.elijah.lang;
 
 
 /**
- * @author olu
+ * @author tripleo
  * <p>
  * Created 	Apr 16, 2020 at 8:42:54 AM
  */
