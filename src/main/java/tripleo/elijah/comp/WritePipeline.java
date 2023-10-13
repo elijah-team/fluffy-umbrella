@@ -126,18 +126,18 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 		return fn01;
 	}
 
-	private void __rest(final @NotNull Multimap<String, Buffer> mb, final @NotNull File aFile_prefix, final List<EOT_OutputFile> leof) throws IOException {
-		aFile_prefix.mkdirs();
-		final String prefix = aFile_prefix.toString();
+	private void __rest(final @NotNull Multimap<String, Buffer> mb, final @NotNull File aFilePrefix, final List<EOT_OutputFile> ignoredOutputFileList) throws IOException {
+		aFilePrefix.mkdirs();
+		final String prefix = aFilePrefix.toString();
 
 		// TODO flag?
-		write_inputs(aFile_prefix);
+		write_inputs(aFilePrefix);
 
 		for (final Map.Entry<String, Collection<Buffer>> entry : mb.asMap().entrySet()) {
 			final String key  = entry.getKey();
 			final Path   path = FileSystems.getDefault().getPath(prefix, key);
 
-			var fnp = new _WP_FileNameProvider(key, aFile_prefix);
+			var fnp = new _WP_FileNameProvider(key, aFilePrefix);
 
 //			BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
 

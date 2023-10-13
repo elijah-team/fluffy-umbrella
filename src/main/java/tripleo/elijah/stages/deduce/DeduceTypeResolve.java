@@ -37,7 +37,7 @@ import tripleo.elijah.util.Stupidity;
  */
 public class DeduceTypeResolve {
 	private final BaseTableEntry                              bte;
-	private final DeferredObject<GenType, ResolveError, Void> typeResolution = new DeferredObject<GenType, ResolveError, Void>();
+	private final DeferredObject<GenType, ResolveError, Void> typeResolution = new DeferredObject<>();
 	BaseTableEntry backlink;
 
 	public DeduceTypeResolve(final BaseTableEntry aBte) {
