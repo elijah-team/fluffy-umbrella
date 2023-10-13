@@ -39,11 +39,11 @@ public class TestBasic_fact1_Verification2 {
 
 	@Test
 	public void testOutputs_code_prelude_Prelude_Arguments_c() {
-		assertTrue(c.reports().containsCodeOutput("/prelude/Prelude/Arguments[].c"));
+		assertTrue(c.reports().containsCodeOutput("/prelude/Prelude/Arguments.c"));
 	}
 	@Test
 	public void testOutputs_code_prelude_Prelude_Arguments_h() {
-		assertTrue(c.reports().containsCodeOutput("/prelude/Prelude/Arguments[].h"));
+		assertTrue(c.reports().containsCodeOutput("/prelude/Prelude/Arguments.h"));
 	}
 	@Test
 	public void testOutputs_main2_Main_h() {
@@ -54,7 +54,6 @@ public class TestBasic_fact1_Verification2 {
 	public void testOutputs_code2_main2_Main_c() {
 		assertTrue(c.reports().containsCodeOutput("/main2/Main.c"));
 	}
-
     /*
 401b Writing path: COMP/2408d3e32dc3f2d0d6254141917fa7629c71352a506a0edd17a007d1e3baa781/<date>/sww/modules-sw-writer
 401b Writing path: COMP/2408d3e32dc3f2d0d6254141917fa7629c71352a506a0edd17a007d1e3baa781/<date>/
