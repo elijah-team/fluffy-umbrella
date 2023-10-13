@@ -1,19 +1,17 @@
 package tripleo.elijah.comp;
 
-import antlr.ANTLRException;
-import antlr.RecognitionException;
-import antlr.TokenStreamException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.comp.caches.DefaultEzCache;
 import tripleo.elijah.comp.diagnostic.TooManyEz_ActuallyNone;
 import tripleo.elijah.comp.diagnostic.TooManyEz_BeSpecific;
 import tripleo.elijah.comp.i.IProgressSink;
 import tripleo.elijah.comp.i.ProgressSinkComponent;
 import tripleo.elijah.comp.internal.DefaultProgressSink;
 import tripleo.elijah.comp.internal.ProcessRecord;
-import tripleo.elijah.comp.queries.QueryEzFileToModule;
-import tripleo.elijah.comp.queries.QueryEzFileToModuleParams;
+import tripleo.elijah.comp.specs.EzCache;
+import tripleo.elijah.comp.specs.EzSpec;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.nextgen.query.Mode;
 import tripleo.elijah.nextgen.query.Operation2;
@@ -23,19 +21,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
 public class CompilationRunner {
-	final         Map<String, CompilerInstructions> fn2ci = new HashMap<String, CompilerInstructions>();
 	private final Compilation                       compilation;
 	private final Compilation.CIS                   cis;
 	private final CCI                               cci;
 	private final ICompilationBus                   cb;
+	private final EzCache                           ezCache = new DefaultEzCache();
 
 	@Contract(pure = true)
 	public CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis, final ICompilationBus aCb, final IProgressSink ps1) {
@@ -47,12 +44,13 @@ public class CompilationRunner {
 	}
 
 	@Contract(pure = true)
-	public CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis, final ICompilationBus aCb) {
+	public CompilationRunner(final Compilation aCompilation, final Compilation.CIS a_cis, final ICompilationBus aCompilationBus) {
+		final DefaultProgressSink ps1 = new DefaultProgressSink();
+
 		compilation = aCompilation;
 		cis         = a_cis;
-		final DefaultProgressSink ps1 = new DefaultProgressSink();
-		cci = new CCI(compilation, a_cis, ps1);
-		cb  = aCb;
+		cci         = new CCI(compilation, a_cis, ps1);
+		cb          = aCompilationBus;
 	}
 
 	void start(final CompilerInstructions ci, final boolean do_out) throws Exception {
@@ -129,7 +127,7 @@ public class CompilationRunner {
 	private void logProgress(final int number, final String text) {
 		if (number == 130) return;
 
-		System.err.println(MessageFormat.format("{0} {1}", number, text));
+		System.err.println(MessageFormat.format("CompilationRunner::logProgress: {0} {1}", number, text));
 	}
 
 	public void doFindCIs(final String[] args2, final ICompilationBus cb) {
@@ -186,26 +184,18 @@ public class CompilationRunner {
 
 	}
 
-	/*
-	 * Design question:
-	 *   - why push and return?
-	 *     we only want to check error
-	 *     utilize exceptions --> only one usage
-	 *     or inline (esp use of Compilation)
-	 */
 	private @NotNull Operation<CompilerInstructions> findStdLib(final String prelude_name, final @NotNull Compilation c) {
 		final ErrSink errSink = c.getErrSink();
 		final IO      io      = c.getIO();
 
-		// TODO stdlib path here
+		// TODO CP_Paths.stdlib(...)
 		final File local_stdlib = new File("lib_elijjah/lib-" + prelude_name + "/stdlib.ez");
 		if (local_stdlib.exists()) {
-			try {
-				final Operation<CompilerInstructions> oci = realParseEzFile(local_stdlib.getName(), io.readFile(local_stdlib), local_stdlib, c);
-				if (oci.mode() == Mode.SUCCESS) {
-					c.pushItem(oci.success());
-					return oci;
-				}
+			final EzSpec spec;
+			try (final InputStream s = io.readFile(local_stdlib)) {
+				spec = new EzSpec(local_stdlib.getName(), s, local_stdlib);
+				final Operation<CompilerInstructions> oci = realParseEzFile(spec, ezCache());
+				return oci;
 			} catch (final Exception e) {
 				return Operation.failure(e);
 			}
@@ -218,60 +208,40 @@ public class CompilationRunner {
 		});
 	}
 
-	public Operation<CompilerInstructions> realParseEzFile(final String f,
-	                                                       final InputStream s,
-	                                                       final @NotNull File file,
-	                                                       final Compilation c) {
+	/**
+	 * - I don't remember what absolutePath is for
+	 * - Cache doesn't add to QueryDB
+	 * <p>
+	 * STEPS
+	 * ------
+	 * <p>
+	 * 1. Get absolutePath
+	 * 2. Check cache, return early
+	 * 3. Parse (Query is incorrect I think)
+	 * 4. Cache new result
+	 *
+	 * @param spec
+	 * @param cache
+	 * @return
+	 */
+	public Operation<CompilerInstructions> realParseEzFile(final EzSpec spec, final EzCache cache) {
+		final @NotNull File file = spec.file();
+
 		final String absolutePath;
 		try {
 			absolutePath = file.getCanonicalFile().toString();
 		} catch (final IOException aE) {
-			//throw new RuntimeException(aE);
 			return Operation.failure(aE);
 		}
 
-		if (fn2ci.containsKey(absolutePath)) { // don't parse twice
-			return Operation.success(fn2ci.get(absolutePath));
+		final Optional<CompilerInstructions> early = cache.get(absolutePath);
+
+		if (early.isPresent()) {
+			return Operation.success(early.get());
 		}
 
-		try {
-			try {
-				final Operation<CompilerInstructions> cio = parseEzFile_(f, s);
-
-				if (cio.mode() == Mode.FAILURE) {
-					final Exception e = cio.failure();
-					assert e != null;
-
-					tripleo.elijah.util.Stupidity.println_err2(("parser exception: " + e));
-					e.printStackTrace(System.err);
-					//s.close();
-					return cio;
-				}
-
-				final CompilerInstructions R = cio.success();
-				R.setFilename(file.toString());
-				fn2ci.put(absolutePath, R);
-				return cio;
-			} catch (final ANTLRException e) {
-				tripleo.elijah.util.Stupidity.println_err2(("parser exception: " + e));
-				e.printStackTrace(System.err);
-				return Operation.failure(e);
-			}
-		} finally {
-			if (s != null) {
-				try {
-					s.close();
-				} catch (final IOException aE) {
-					// TODO return inside finally: is this ok??
-					return new Operation<>(null, aE, Mode.FAILURE);
-				}
-			}
-		}
-	}
-
-	private Operation<CompilerInstructions> parseEzFile_(final String f, final InputStream s) throws RecognitionException, TokenStreamException {
-		final QueryEzFileToModuleParams qp = new QueryEzFileToModuleParams(f, s);
-		return new QueryEzFileToModule(qp).calculate();
+		final Operation<CompilerInstructions> cio = CX_ParseEzFile.parseAndCache(spec, ezCache(), absolutePath);
+		return cio;
 	}
 
 	private @NotNull List<CompilerInstructions> searchEzFiles(final @NotNull File directory, final ErrSink errSink, final IO io, final Compilation c) {
@@ -284,6 +254,10 @@ public class CompilationRunner {
 
 		errSink.reportDiagnostic(olci.failure());
 		return List_of();
+	}
+
+	public EzCache ezCache() {
+		return ezCache;
 	}
 
 	interface CR_Process {
@@ -442,12 +416,16 @@ public class CompilationRunner {
 
 		@Override
 		public void execute(final CR_State st) {
-			final Operation<CompilerInstructions> x = findStdLib(Compilation.CompilationAlways.defaultPrelude(), compilation);
-			if (x.mode() == Mode.FAILURE) {
-				compilation.getErrSink().exception(x.failure());
+			final Operation<CompilerInstructions> oci = findStdLib(Compilation.CompilationAlways.defaultPrelude(), compilation);
+			switch (oci.mode()) {
+			case SUCCESS -> compilation.pushItem(oci.success()); // caught twice!!
+			case FAILURE -> {
+				compilation.getErrSink().exception(oci.failure());
 				return;
 			}
-			logProgress(130, "GEN_LANG: " + x.success().genLang());
+			default -> throw new IllegalStateException("Unexpected value: " + oci.mode());
+			}
+			logProgress(130, "GEN_LANG: " + oci.success().genLang());
 		}
 
 		@Override

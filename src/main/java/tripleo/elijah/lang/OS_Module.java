@@ -37,7 +37,7 @@ public class OS_Module implements OS_Element, OS_Container {
 
 	public final @NotNull                      List<ModuleItem>     items          = new ArrayList<ModuleItem>();
 	public final @NotNull                      Attached             _a             = new Attached();
-	public final @NotNull                      EntryPointList       entryPoints    = new EntryPointList();
+	public final @NotNull                      EntryPointList       entryPoints    = new EntryPointList(this);
 	private final                              Stack<Qualident>     packageNames_q = new Stack<Qualident>();
 	public @org.jetbrains.annotations.Nullable OS_Module            prelude;
 	public                                     Compilation          parent;

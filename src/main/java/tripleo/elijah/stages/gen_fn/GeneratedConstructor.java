@@ -20,7 +20,7 @@ import tripleo.elijah.stages.deduce.NamespaceInvocation;
 /**
  * Created 6/27/21 9:45 AM
  */
-public class GeneratedConstructor extends BaseGeneratedFunction {
+public class GeneratedConstructor extends BaseGeneratedFunction_1 {
 	public final @Nullable ConstructorDef cd;
 
 	public GeneratedConstructor(final @Nullable ConstructorDef aConstructorDef) {

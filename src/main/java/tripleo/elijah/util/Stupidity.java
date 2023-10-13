@@ -16,4 +16,8 @@ public class Stupidity {
 	public static void println_err2(final Object aS) {
 //		System.err.println(""+aS);
 	}
+
+	public static void println_err3(final Object aS) {
+		System.err.println("Stupidity::println_err3: "+aS);
+	}
 }

@@ -194,6 +194,14 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 		access_note = aNotation;
 	}
 
+	public OS_Module getModule() {
+		var m = getParent();
+		while (m != null && !(m instanceof OS_Module)) {
+			m = m.getParent();
+		}
+		return (OS_Module) m;
+	}
+
 	public enum Species {
 		REG_FUN,
 		DEF_FUN,

@@ -315,7 +315,7 @@
                         <configuration>
                             <sources>
                                 <source>src/main/java-compiler-gen/</source>
-                                <source>src/main-mal/mal/</source>
+                                <source>src/main-mal/</source>
                                 <source>src/main-undertow/java/</source>
                             </sources>
                         </configuration>

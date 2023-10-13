@@ -18,6 +18,7 @@ import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.FlowK;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.ClassStatement;
@@ -250,13 +251,14 @@ public class DeducePhase {
 
 	public @NotNull DeduceTypes2 deduceModule(@NotNull final OS_Module m, @NotNull final Iterable<GeneratedNode> lgf, final ElLog.Verbosity verbosity) {
 		final @NotNull DeduceTypes2 deduceTypes2 = new DeduceTypes2(m, this, verbosity);
-		LOG.err("196 DeduceTypes " + deduceTypes2.getFileName());
+		LOG.info("196 DeduceTypes " + deduceTypes2.getFileName());
 		{
 			final ArrayList<GeneratedNode> p = new ArrayList<GeneratedNode>();
 			Iterables.addAll(p, lgf);
 			LOG.info("197 lgf.size " + p.size());
 		}
 
+		// TODO 09/14 flow here???
 		deduceTypes2.deduceFunctions(lgf);
 
 		final List<GeneratedClass> matching_class_list = generatedClasses.filterClassesByModule(m);
@@ -318,6 +320,11 @@ public class DeducePhase {
 	 * @param verbosity
 	 */
 	public void deduceModule(@NotNull final OS_Module m, @NotNull final Iterable<GeneratedNode> lgc, final boolean _unused, final ElLog.Verbosity verbosity) {
+		// flow
+		m.getCompilation().reports().flow().report(new FlowK.DeducePhase__deduceModule(m, lgc));
+		// flow
+
+
 		final @NotNull List<GeneratedNode> lgf = new ArrayList<GeneratedNode>();
 
 		for (@NotNull final GeneratedNode lgci : lgc) {
@@ -423,9 +430,9 @@ public class DeducePhase {
 		}
 		for (final Map.@NotNull Entry<IdentTableEntry, OnType> entry : idte_type_callbacks.entrySet()) {
 			final IdentTableEntry idte = entry.getKey();
-			if (idte.type != null && // TODO make a stage where this gets set (resolvePotentialTypes)
-			  idte.type.getAttached() != null)
-				entry.getValue().typeDeduced(idte.type.getAttached());
+			if (idte.getType() != null && // TODO make a stage where this gets set (resolvePotentialTypes)
+			  idte.getType().getAttached() != null)
+				entry.getValue().typeDeduced(idte.getType().getAttached());
 			else
 				entry.getValue().noTypeFound();
 		}
@@ -464,7 +471,7 @@ public class DeducePhase {
 				for (@NotNull final ResolvedVariables resolvedVariables : x) {
 					final GeneratedContainer.VarTableEntry variable = generatedContainer.getVariable(resolvedVariables.varName);
 					assert variable != null;
-					final TypeTableEntry type = resolvedVariables.identTableEntry.type;
+					final TypeTableEntry type = resolvedVariables.identTableEntry.getType();
 					if (type != null)
 						variable.addPotentialTypes(List_of(type));
 					variable.addPotentialTypes(resolvedVariables.identTableEntry.potentialTypes());
@@ -599,7 +606,7 @@ public class DeducePhase {
 					break;
 				case KNOWN:
 					assert identTableEntry.getResolvedElement() != null;
-					if (identTableEntry.type == null) {
+					if (identTableEntry.getType() == null) {
 						LOG.err(String.format("258 null type in KNOWN idte %s in %s", identTableEntry, generatedFunction));
 					}
 					break;
@@ -614,6 +621,10 @@ public class DeducePhase {
 				}
 			}
 		}
+	}
+
+	public void finish_default() {
+		this.finish(this.generatedClasses);
 	}
 
 	static class ResolvedVariables {

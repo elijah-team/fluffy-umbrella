@@ -9,10 +9,13 @@
 
 package tripleo.elijah.stages.gen_fn;
 
+import tripleo.elijah.lang.IExpression;
+
 /**
  * Created 4/17/21 7:14 AM
  */
 public interface TableEntryIV {
+	IExpression _expression();
 }
 
 //

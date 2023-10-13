@@ -18,7 +18,7 @@ public interface LivingRepo {
 
 	OS_Package getPackage(String aPackageName);
 
-	DefaultLivingFunction addFunction(BaseGeneratedFunction aFunction, Add aMainFunction);
+	DefaultLivingFunction addFunction(BaseGeneratedFunction aFunction, Add addFlag);
 
 	DefaultLivingClass addClass(GeneratedClass aClass, Add aMainClass);
 

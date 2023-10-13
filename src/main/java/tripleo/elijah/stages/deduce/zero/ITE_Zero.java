@@ -85,7 +85,7 @@ public class ITE_Zero {
 //			y.preUpdateStatusListenerAdded = true;
 
 //			assert el2 != eh.getElement();
-			ite.resolveExpectation.satisfy(normal_path);
+			ite.getResolveExpectation().satisfy(normal_path);
 //			dc.found_element_for_ite(generatedFunction, y, eh.getElement(), null); // No context
 //			LOG.info("1424 Found for " + normal_path);
 			foundElement.doFoundElement(eh.getElement());

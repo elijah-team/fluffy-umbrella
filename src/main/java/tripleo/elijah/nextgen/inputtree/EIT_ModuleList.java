@@ -2,19 +2,18 @@ package tripleo.elijah.nextgen.inputtree;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.comp.Coder;
+import tripleo.elijah.comp.DeducePipeline;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.entrypoints.EntryPointList;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.gen_fn.GenerateFunctions;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.util.Stupidity;
 import tripleo.elijah.work.WorkManager;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -54,14 +53,21 @@ public class EIT_ModuleList {
 	}
 
 	private void __process__PL__each(final @NotNull _ProcessParams plp) {
-		final List<GeneratedNode> resolved_nodes = new ArrayList<GeneratedNode>();
+		var env = new PL_Each_Env(plp);
+		__process__PL__each(env);
+	}
 
-		final OS_Module                    mod = plp.getMod();
-		final DeducePhase.GeneratedClasses lgc = plp.getLgc();
+	private void __process__PL__each(final @NotNull PL_Each_Env env) {
+		final _ProcessParams               plp            = env.getProcessParams();
+
+		final DeducePipeline.ResolvedNodes resolved_nodes = env.getResolvedNodes();
+
+		final OS_Module                    mod            = plp.getMod();
+
+		final DeducePhase.GeneratedClasses lgc            = plp.getLgc();
+		final int                          size           = lgc.size();
 
 		// assert lgc.size() == 0;
-
-		final int size = lgc.size();
 
 		if (size != 0) {
 			NotImplementedException.raise();
@@ -72,13 +78,9 @@ public class EIT_ModuleList {
 
 		//assert lgc.size() == epl.size(); //hmm
 
-		final Coder coder = new Coder(plp.deducePhase.codeRegistrar);
+		final ICodeRegistrar codeRegistrar = env.getCodeRegistrar();
 
-		for (final GeneratedNode generatedNode : lgc) {
-			coder.codeNodes(mod, resolved_nodes, generatedNode);
-		}
-
-		resolved_nodes.forEach(generatedNode -> coder.codeNode(generatedNode, mod));
+		resolved_nodes.initial_feed(mod, lgc.copy(), codeRegistrar);
 
 		plp.deduceModule();
 
@@ -108,16 +110,15 @@ public class EIT_ModuleList {
 		mods.add(m);
 	}
 
-	private static class _ProcessParams {
-		private final OS_Module         mod;
-		private final PipelineLogic     pipelineLogic;
-		private final GenerateFunctions gfm;
-		@NotNull
-		private final EntryPointList    epl;
-		private final DeducePhase       deducePhase;
-//		@NotNull
-//		private final ElLog.Verbosity                         verbosity;
+	public static class _ProcessParams {
+		private final          OS_Module         mod;
+		private final          PipelineLogic     pipelineLogic;
+		private final          GenerateFunctions gfm;
 
+		private final          DeducePhase    deducePhase;
+
+		private final @NotNull EntryPointList epl;
+		//private final @NotNull ElLog.Verbosity   verbosity;
 		private _ProcessParams(@NotNull final OS_Module aModule,
 		                       @NotNull final PipelineLogic aPipelineLogic,
 		                       @NotNull final GenerateFunctions aGenerateFunctions,
@@ -163,5 +164,8 @@ public class EIT_ModuleList {
 			return pipelineLogic.getVerbosity();
 		}
 
+		public DeducePhase getDeducePhase() {
+			return deducePhase;
+		}
 	}
 }

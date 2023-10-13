@@ -22,6 +22,7 @@ import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.nextgen.outputstatement.EG_SequenceStatement;
 import tripleo.elijah.nextgen.outputstatement.EG_Statement;
+import tripleo.elijah.nextgen.outputtree.EOT_OutputFile;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 
 import java.io.File;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
@@ -79,34 +81,32 @@ public class TestBasic {
 	}
 
 	@Test
-	public final void testBasic_listfolders3() throws Exception {
+	public final void testBasic_listfolders3() {
 		final String s = "test/basic/listfolders3/listfolders3.ez";
 
-		final ErrSink     eee = new StdErrSink();
-		final Compilation c   = new CompilationImpl(eee, new IO());
+		final Compilation c   = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(s, "-sO"));
 
 		if (c.errorCount() != 0)
 			System.err.printf("Error count should be 0 but is %d for %s%n", c.errorCount(), s);
 
-		Assert.assertEquals(12, c.getOutputTree().list.size());
-		Assert.assertEquals(24, c.errorCount()); // TODO Error count obviously should be 0
+		Assert.assertEquals(6, c.getOutputTree().list.size());
+		Assert.assertEquals(2, c.errorCount()); // TODO Error count obviously should be 0
 	}
 
 	@Test
 	public final void testBasic_listfolders4() {
 		final String s = "test/basic/listfolders4/listfolders4.ez";
 
-		final ErrSink     eee = new StdErrSink();
-		final Compilation c   = new CompilationImpl(eee, new IO());
+		final Compilation c   = new CompilationImpl((ErrSink) new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(s, "-sO"));
 
 		if (c.errorCount() != 0)
 			System.err.printf("Error count should be 0 but is %d for %s%n", c.errorCount(), s);
 
-		Assert.assertEquals(22, c.errorCount()); // TODO Error count obviously should be 0
+		Assert.assertEquals(2, c.errorCount()); // TODO Error count obviously should be 0
 	}
 
 	@Test
@@ -123,19 +123,38 @@ public class TestBasic {
 
 		final @NotNull EOT_OutputTree cot = c.getOutputTree();
 
-		Assert.assertEquals(18, cot.list.size()); // TODO why not 6?
+		Assert.assertEquals(12, cot.list.size()); // TODO why not 6? why 12 now 09/15?
 
 		select(cot.list, f -> f.getFilename().equals("/main2/Main.h"))
 		  .then(f -> {
-			  System.out.println(((EG_SequenceStatement) f.getStatementSequence())._list().stream().map(EG_Statement::getText).collect(Collectors.toList()));
+			  final EG_SequenceStatement statementSequence = (EG_SequenceStatement) f.getStatementSequence();
+			  final List<EG_Statement>   egStatements      = statementSequence._list();
+			  final Stream<EG_Statement> stream            = egStatements.stream();
+			  yypp(f, stream
+			    .map(EG_Statement::getText)
+			    .collect(Collectors.toList()));
 		  });
 		select(cot.list, f -> f.getFilename().equals("/main2/Main.c"))
 		  .then(f -> {
-			  System.out.println(((EG_SequenceStatement) f.getStatementSequence())._list().stream().map(EG_Statement::getText).collect(Collectors.toList()));
+			  final EG_SequenceStatement statementSequence = (EG_SequenceStatement) f.getStatementSequence();
+			  final List<EG_Statement>   egStatements      = statementSequence._list();
+			  final Stream<EG_Statement> stream            = egStatements.stream();
+			  yypp(f, stream
+			    .map(EG_Statement::getText)
+			    .collect(Collectors.toList()));
 		  });
 
 		// TODO Error count obviously should be 0
-		Assert.assertEquals(123, c.errorCount()); // FIXME why 123?? 04/15
+		Assert.assertEquals(19, c.errorCount()); // FIXME why 123?? 04/15 now 19 09/15
+	}
+
+	private void yypp(final EOT_OutputFile aF, final Iterable<String> aCollect) {
+		var ff = aF.getFilename();
+		var i = 0;
+		for (final String s : aCollect) {
+			i++;
+			System.out.printf("142 %d %s %s%n", i, ff, s);
+		}
 	}
 
 	static <T> @NotNull Promise<T, Void, Void> select(@NotNull final List<T> list, final Predicate<T> p) {

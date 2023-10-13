@@ -9,7 +9,6 @@
 package tripleo.elijah.stages.gen_c;
 
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -641,7 +640,7 @@ public class Generate_Code_For_Method {
 
 		final OS_Type x = vte.type.getAttached();
 		if (x == null && vte.potentialTypes().size() == 0) {
-			if (vte.vtt == VariableTableType.TEMP) {
+			if (vte.vtt() == VariableTableType.TEMP) {
 				LOG.err("8884 temp variable has no type " + vte + " " + gf);
 			} else {
 				LOG.err("8885 x is null (No typename specified) for " + vte.getName());
@@ -857,9 +856,9 @@ public class Generate_Code_For_Method {
 			final String rule = "gen_c:gcfm:Generate_Method_Header:find_args_statement";
 
 			// TODO EG_Statement, rule
-			final List<String> args_list = gf.vte_list
+			final List<String> args_list = gf.vte_list()
 			  .stream()
-			  .filter(input -> input.vtt == VariableTableType.ARG)
+			  .filter(input -> input.vtt() == VariableTableType.ARG)
 
 			  //rule=vte:args_at
 			  .map(input -> String.format("%s va%s", GenerateC.GetTypeName.forVTE(input), input.getName()))
@@ -943,7 +942,7 @@ public class Generate_Code_For_Method {
 			if (gf instanceof GeneratedConstructor) {
 				@Nullable final InstructionArgument result_index = gf.vte_lookup("self");
 				@NotNull final VariableTableEntry   vte          = ((IntegerIA) result_index).getEntry();
-				assert vte.vtt == VariableTableType.SELF;
+				assert vte.vtt() == VariableTableType.SELF;
 
 				// Get it from resolved
 				tte = gf.getTypeTableEntry(((IntegerIA) result_index).getIndex());
@@ -972,7 +971,7 @@ public class Generate_Code_For_Method {
 					result_index = gf.vte_lookup("Value");
 					// but Value might be passed in. If it is, discard value
 					@NotNull final VariableTableEntry vte = ((IntegerIA) result_index).getEntry();
-					if (vte.vtt != VariableTableType.RESULT)
+					if (vte.vtt() != VariableTableType.RESULT)
 						result_index = null;
 					if (result_index == null)
 						return "void"; // README Assuming Unit
@@ -999,7 +998,7 @@ public class Generate_Code_For_Method {
 					if (type instanceof final OS_GenericTypeNameType genericTypeNameType) {
 						final TypeName               tn                  = genericTypeNameType.getRealTypeName();
 
-						final @Nullable Map<TypeName, OS_Type> gp = gf.fi.getClassInvocation().genericPart;
+						final @Nullable Map<TypeName, OS_Type> gp = gf.fi().getClassInvocation().genericPart;
 
 						OS_Type realType = null;
 
@@ -1035,21 +1034,11 @@ public class Generate_Code_For_Method {
 					}
 				}));
 			} else {
-				final Collection<VariableTableEntry> x = Collections2.filter(gf.vte_list, new Predicate<VariableTableEntry>() {
-					@Override
-					public boolean apply(@org.jetbrains.annotations.Nullable final VariableTableEntry input) {
-						assert input != null;
-						return input.vtt == VariableTableType.ARG;
-					}
-				});
-				args = Helpers.String_join(", ", Collections2.transform(x, new Function<VariableTableEntry, String>() {
-					@org.jetbrains.annotations.Nullable
-					@Override
-					public String apply(@org.jetbrains.annotations.Nullable final VariableTableEntry input) {
-						assert input != null;
-						return String.format("%s va%s", gc.getTypeNameForVariableEntry(input), input.getName());
-					}
-				}));
+				args = Helpers.String_join(", ",
+				  gf.vte_list().stream()
+				    .filter(input -> input.vtt() == VariableTableType.ARG)
+				    .map(input -> String.format("%s va%s", gc.getTypeNameForVariableEntry(input), input.getName()))
+				    .collect(Collectors.toList()));
 			}
 			return args;
 		}
@@ -1077,7 +1066,7 @@ public class Generate_Code_For_Method {
 
 				@Nullable final InstructionArgument result_index = gf.vte_lookup("self");
 				@NotNull final VariableTableEntry   vte          = ((IntegerIA) result_index).getEntry();
-				assert vte.vtt == VariableTableType.SELF;
+				assert vte.vtt() == VariableTableType.SELF;
 
 				// Get it from resolved
 				tte = gf.getTypeTableEntry(((IntegerIA) result_index).getIndex());
@@ -1127,7 +1116,7 @@ public class Generate_Code_For_Method {
 					result_index = gf.vte_lookup("Value");
 					// but Value might be passed in. If it is, discard value
 					@NotNull final VariableTableEntry vte = ((IntegerIA) result_index).getEntry();
-					if (vte.vtt != VariableTableType.RESULT)
+					if (vte.vtt() != VariableTableType.RESULT)
 						result_index = null;
 					if (result_index == null)
 						return "void"; // README Assuming Unit

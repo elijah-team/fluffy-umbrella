@@ -84,7 +84,7 @@ class Implement_construct {
 				if (ia2 instanceof IntegerIA) {
 					@NotNull final VariableTableEntry vte = ((IntegerIA) ia2).getEntry();
 					// TODO will fail if we try to construct a tmp var, but we never try to do that
-					assert vte.vtt != VariableTableType.TEMP;
+					assert vte.vtt()!= VariableTableType.TEMP;
 					assert el3 != null;
 					assert i == 0;
 					ectx = deducePath.getContext(i);
@@ -99,7 +99,7 @@ class Implement_construct {
 						@NotNull final TypeName           tn = vs.typeName();
 						@NotNull final OS_Type            ty = new OS_UserType(tn);
 
-						if (idte2.type == null) {
+						if (idte2.getType() == null) {
 							// README Don't remember enough about the constructors to select a different one
 							@NotNull final TypeTableEntry tte = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, ty);
 							try {
@@ -110,7 +110,7 @@ class Implement_construct {
 								deduceTypes2.errSink.reportDiagnostic(aResolveError);
 							}
 
-							idte2.type = tte;
+							idte2.setType(tte);
 						}
 						// s is constructor name
 						implement_construct_type(idte2, ty, s);
@@ -191,7 +191,7 @@ class Implement_construct {
 		clsinv = deduceTypes2.phase.registerClassInvocation(clsinv);
 		if (co != null) {
 			if (co instanceof final @Nullable IdentTableEntry idte3) {
-				idte3.type.genTypeCI(clsinv);
+				idte3.getType().genTypeCI(clsinv);
 				clsinv.resolvePromise().then(new DoneCallback<GeneratedClass>() {
 					@Override
 					public void onDone(final GeneratedClass result) {

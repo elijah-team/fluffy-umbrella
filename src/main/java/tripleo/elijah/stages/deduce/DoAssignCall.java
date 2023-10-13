@@ -307,7 +307,7 @@ public class DoAssignCall {
 						errSink.reportError("Cant resolve " + text);
 					}
 				} else {
-					dc.implement_calls(generatedFunction, ctx.getParent(), instruction.getArg(1), pte, instructionIndex);
+					dc.implement_calls(generatedFunction, ctx.getParent(), instruction.getArg(1), pte, instruction);
 				}
 			} else {
 				final int y = 2;
@@ -547,13 +547,13 @@ public class DoAssignCall {
 					} else {
 						final IdentTableEntry idte = generatedFunction.getIdentTableEntryFor(vs.getNameToken());
 						assert idte != null;
-						if (idte.type == null) {
+						if (idte.getType() == null) {
 							final IdentIA identIA = new IdentIA(idte.getIndex(), generatedFunction);
 							dc.resolveIdentIA_(ctx, identIA, generatedFunction, new NullFoundElement());
 						}
 						@Nullable final OS_Type ty;
-						if (idte.type == null) ty = null;
-						else ty = idte.type.getAttached();
+						if (idte.getType() == null) ty = null;
+						else ty = idte.getType().getAttached();
 						idte.onType(dc.getPhase(), new OnType() {
 							@Override
 							public void typeDeduced(final @NotNull OS_Type ty) {
@@ -578,10 +578,10 @@ public class DoAssignCall {
 												public void typeDecided(final @NotNull GenType aType) {
 													assert fd == generatedFunction.getFD();
 													//
-													if (idte.type == null) {
+													if (idte.getType() == null) {
 														idte.makeType(generatedFunction, TypeTableEntry.Type.TRANSIENT, dc.gt(aType));  // TODO expression?
 													} else
-														idte.type.setAttached(dc.gt(aType));
+														idte.getType().setAttached(dc.gt(aType));
 												}
 											});
 										} else {
@@ -601,7 +601,7 @@ public class DoAssignCall {
 						if (ty == null) {
 							@NotNull final TypeTableEntry tte3 = generatedFunction.newTypeTableEntry(
 							  TypeTableEntry.Type.SPECIFIED, new OS_UserType(vs.typeName()), vs.getNameToken());
-							idte.type = tte3;
+							idte.setType(tte3);
 //							ty = idte.type.getAttached();
 						}
 					}

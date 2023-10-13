@@ -9,7 +9,7 @@ public class DefaultProgressSink implements IProgressSink {
 //		component.note(code, type, params);
 		if (component.isPrintErr(code, type)) {
 			final String s = component.printErr(code, type, params);
-			System.err.println(s);
+			System.err.println("DefaultProgressSink::note: "+s);
 		}
 	}
 }

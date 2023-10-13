@@ -13,26 +13,31 @@ import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeduceLocalVariable;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
+import tripleo.elijah.stages.deduce.nextgen.DN_Resolver2;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_VariableTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.deduce.post_bytecode.PostBC_Processor;
 import tripleo.elijah.stages.deduce.zero.VTE_Zero;
 import tripleo.elijah.stages.instructions.VariableTableType;
+import tripleo.elijah.util.NotImplementedException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created 9/10/20 4:51 PM
  */
 public class VariableTableEntry extends BaseTableEntry1 implements Constructable, TableEntryIV, DeduceTypes2.ExpectationBase {
-	public final          VariableTableType                          vtt;
+	private final         VariableTableType                          vtt;
 	public final @NotNull Map<Integer, TypeTableEntry>               potentialTypes        = new HashMap<Integer, TypeTableEntry>();
 	public final          DeduceLocalVariable                        dlv                   = new DeduceLocalVariable(this);
 	final                 DeferredObject<ProcTableEntry, Void, Void> constructableDeferred = new DeferredObject<>();
@@ -96,6 +101,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	}
 
 	public void addPotentialType(final int instructionIndex, final TypeTableEntry tte) {
+		// TODO 09/14 DR_PossibleType here
 		if (!typeDeferred.isPending()) {
 			tripleo.elijah.util.Stupidity.println_err2("62 addPotentialType while typeDeferred is already resolved " + this);//throw new AssertionError();
 			return;
@@ -107,6 +113,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 			final TypeTableEntry v = potentialTypes.get(instructionIndex);
 			if (v.getAttached() == null) {
 				v.setAttached(tte.getAttached());
+				// TODO 09/14 wrap all type and type.genType calls?
 				type.genType.copy(tte.genType); // README don't lose information
 			} else if (tte.lifetime == TypeTableEntry.Type.TRANSIENT && v.lifetime == TypeTableEntry.Type.SPECIFIED) {
 				//v.attached = v.attached; // leave it as is
@@ -244,6 +251,30 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 			genType = bGenType; // TODO who knows if this is necessary?
 		});
 
+	}
+
+	private final List<DN_Resolver2> resolvers = new ArrayList<>();
+
+	public DN_Resolver2 addResolver() {
+		var delegate = new DN_Resolver2() { // TODO ResolverRunner
+			@Override
+			public void resolve(final DN_Resolver2 aResolver2) {
+				throw new NotImplementedException();
+			}
+		};
+		resolvers.add(delegate);
+		return delegate;
+	}
+
+	@Override
+	public IExpression _expression() {
+		NotImplementedException.raise();
+		return null;
+		//this.getResolvedElement();
+	}
+
+	public VariableTableType vtt() {
+		return vtt;
 	}
 
 //	public Promise<GenType, Void, Void> typeResolvePromise() {

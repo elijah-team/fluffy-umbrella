@@ -22,6 +22,7 @@ import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeduceProcCall;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.deduce.ProcTableListener;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_ProcTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.deduce.zero.PTE_Zero;
@@ -39,6 +40,23 @@ import java.util.List;
 public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	public final  int                                             index;
 	public final  List<TypeTableEntry>                            args;
+
+	public int index() {
+		return index;
+	}
+
+	public IExpression expression() {
+		return expression;
+	}
+
+	public InstructionArgument expression_num() {
+		return expression_num;
+	}
+
+	public DeduceProcCall dpc() {
+		return dpc;
+	}
+
 	/**
 	 * Either a hint to the programmer-- The compiler should be able to work without this.
 	 * <br/>
@@ -47,13 +65,13 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	public final  IExpression                                     expression;
 	public final  InstructionArgument                             expression_num;
 	public final  DeduceProcCall                                  dpc                   = new DeduceProcCall(this);
-	private final DeferredObject<ProcTableEntry, Void, Void>      completeDeferred      = new DeferredObject<ProcTableEntry, Void, Void>();
-	private final DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<FunctionInvocation, Void, Void>();
-	private final DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
+	private final DeferredObject<ProcTableEntry, Void, Void>      completeDeferred      = new DeferredObject<>();
+	private final DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<>();
+	private final DeferredObject<GenType, Void, Void>             typeDeferred          = new DeferredObject<>();
 	private       ClassInvocation                                 classInvocation;
 	private       FunctionInvocation                              functionInvocation;
 	private       DeduceElement3_ProcTableEntry                   _de3;
-	private PTE_Zero _zero;
+	private       PTE_Zero                                        _zero;
 
 	public ProcTableEntry(final int aIndex, final IExpression aExpression, final InstructionArgument aExpressionNum, final List<TypeTableEntry> aArgs) {
 		index          = aIndex;
@@ -242,10 +260,21 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	}
 
 	public PTE_Zero zero() {
-		if (_zero == null)
+		if (_zero == null) {
 			_zero = new PTE_Zero(this);
+		}
 
 		return _zero;
+	}
+
+	@Override
+	public IExpression _expression() {
+		return expression;
+	}
+
+	public void resolveWith(final ProcTableListener.PTE_Resolution aReso) {
+		aReso.apply(this);
+//		throw new NotImplementedException();
 	}
 }
 

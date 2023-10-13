@@ -99,9 +99,9 @@ public class DeduceTypeResolve {
 								attached = ((VariableTableEntry) bte).type.getAttached();
 							else if (bte instanceof IdentTableEntry) {
 								final IdentTableEntry identTableEntry = (IdentTableEntry) DeduceTypeResolve.this.bte;
-								if (identTableEntry.type == null)
+								if (identTableEntry.getType() == null)
 									return;
-								attached = identTableEntry.type.getAttached();
+								attached = identTableEntry.getType().getAttached();
 							} else
 								throw new IllegalStateException("invalid entry (bte) " + bte);
 
@@ -197,8 +197,8 @@ public class DeduceTypeResolve {
 					identTableEntry.typeResolvePromise().done(new DoneCallback<GenType>() {
 						@Override
 						public void onDone(final GenType result) {
-							if (identTableEntry.type != null) // TODO addPotentialType
-								identTableEntry.type.setAttached(result);
+							if (identTableEntry.getType() != null) // TODO addPotentialType
+								identTableEntry.getType().setAttached(result);
 						}
 					});
 				} else if (backlink instanceof final VariableTableEntry variableTableEntry) {

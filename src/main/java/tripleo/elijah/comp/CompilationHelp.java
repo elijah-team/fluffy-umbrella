@@ -9,11 +9,11 @@
 package tripleo.elijah.comp;
 
 import com.google.common.base.Preconditions;
-import tripleo.vendor.mal.stepA_mal;
-import tripleo.vendor.mal.types;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.internal.ProcessRecord;
+import tripleo.vendor.mal.stepA_mal;
+import tripleo.vendor.mal.types;
 
 interface RuntimeProcess {
 	void run();
@@ -60,24 +60,34 @@ class RuntimeProcesses {
 		if (ca.getStage() == Stages.E) return;
 
 		// rt.prepare();
-		System.err.println("***** RuntimeProcess [prepare] named " + process);
+		logProgress("prepare", process);
 		process.prepare();
 
 		// rt.run();
-		System.err.println("***** RuntimeProcess [run    ] named " + process);
+		logProgress("run    ", process);
 		process.run();
 
 		// rt.postProcess(pr);
-		System.err.println("***** RuntimeProcess [postProcess] named " + process);
+		logProgress("postProcess", process);
 		process.postProcess();
 
-		System.err.println("***** RuntimeProcess^ [postProcess/writeLogs]");
+		logProgress2("postProcess/writeLogs", process);
 		pr.writeLogs(ca);
+	}
+
+	private void logProgress(final String aPrepare, final RuntimeProcess aProcess) {
+		final var compilation = ca.getCompilation();
+		compilation.reports()._RuntimeProcesses_logProgress(aPrepare, aProcess);
+	}
+
+	private void logProgress2(final String aS, final RuntimeProcess aProcess) {
+		final var compilation = ca.getCompilation();
+		compilation.reports()._RuntimeProcesses_logProgress2(aS, aProcess);
 	}
 }
 
 final class EmptyProcess implements RuntimeProcess {
-	public EmptyProcess(final ICompilationAccess aCompilationAccess, final ProcessRecord aPr) {
+	public EmptyProcess(final ICompilationAccess ignoredACompilationAccess, final ProcessRecord ignoredAPr) {
 	}
 
 	@Override
@@ -119,8 +129,8 @@ class DStageProcess implements RuntimeProcess {
 }
 
 class OStageProcess implements RuntimeProcess {
-	final         stepA_mal.MalEnv2  env;
-	private final ProcessRecord      pr;
+	final         stepA_mal.MalEnv2 env;
+	private final ProcessRecord     pr;
 	private final ICompilationAccess ca;
 
 	OStageProcess(final ICompilationAccess aCa, final ProcessRecord aPr) {
@@ -166,9 +176,6 @@ class OStageProcess implements RuntimeProcess {
 //		env.re("(def! GeneratePipeline 'native)");
 		env.re("(add-pipeline 'DeducePipeline)"); // FIXME note moved from ...
 
-//		ab.add(GeneratePipeline::new);
-//		ab.add(WritePipeline::new);
-//		ab.add(WriteMesonPipeline::new);
 		env.re("(add-pipeline 'GeneratePipeline)");
 		env.re("(add-pipeline 'WritePipeline)");
 		env.re("(add-pipeline 'WriteMesonPipeline)");
@@ -187,7 +194,7 @@ class OStageProcess implements RuntimeProcess {
 			ab = aAb;
 		}
 
-		public types.MalVal apply(final types.MalList args) throws types.MalThrowable {
+		public types.MalVal apply(final types.MalList args) {
 			final types.MalVal a0 = args.nth(0);
 
 			if (a0 instanceof final types.MalSymbol pipelineSymbol) {

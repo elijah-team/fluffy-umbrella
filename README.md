@@ -15,16 +15,10 @@ This is free software intended for on all systems, including GNU/Linux.
 
 1. To constantly drive the code toward an expression of the domain rather than an expression of the programming
    language-specific expression of that domain.
-2. [World domination](#world-domination)
 
-### World domination
-
-1. Linus Torvalds
-2. The Brain
+2. Mainly "not" to have to learn Kotlin.
 
 ### Goals (for Elijah)
-
-* Mainly not to have to learn Kotlin.
 
 * Integrate into current C and Java projects. Piecemeal replacement down to the function level.
 
@@ -34,9 +28,14 @@ This is free software intended for on all systems, including GNU/Linux.
 
 ## Status
 
-The repo is currently buildable from maven. You can also import into Eclipse and IDEA
-and get up and running. The tests need to run run from the root directory, which is
-done automatically in maven but not IDEA.
+`mainlinke-k` uses gradle for now.
+I believe it will import into Idea.
+
+```
+git clone https://github.com/elijah-team/fluffy-umbrella -b 2023-09-mainline-k
+cd fluffy-umbrella
+./gradlew test
+```
 
 Much work is needed.
 

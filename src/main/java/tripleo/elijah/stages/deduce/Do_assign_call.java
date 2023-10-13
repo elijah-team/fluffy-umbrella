@@ -229,7 +229,7 @@ class Do_assign_call {
 						deduceTypes2.errSink.reportError("Cant resolve " + text);
 					}
 				} else {
-					deduceTypes2.implement_calls(generatedFunction, ctx.getParent(), instruction.getArg(1), pte, instructionIndex);
+					deduceTypes2.implement_calls(generatedFunction, ctx.getParent(), instruction.getArg(1), pte, instruction);
 				}
 			} else {
 				final int y = 2;

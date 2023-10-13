@@ -442,13 +442,13 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 
 	static @NotNull String getRealTargetName(final BaseGeneratedFunction gf, final @NotNull VariableTableEntry varTableEntry) {
 		final String vte_name = varTableEntry.getName();
-		if (varTableEntry.vtt == VariableTableType.TEMP) {
+		if (varTableEntry.vtt() == VariableTableType.TEMP) {
 			if (varTableEntry.getName() == null) {
 				return "vt" + varTableEntry.tempNum;
 			} else {
 				return "vt" + varTableEntry.getName();
 			}
-		} else if (varTableEntry.vtt == VariableTableType.ARG) {
+		} else if (varTableEntry.vtt() == VariableTableType.ARG) {
 			return "va" + vte_name;
 		} else if (SpecialVariables.contains(vte_name)) {
 			return SpecialVariables.get(vte_name);
@@ -565,7 +565,7 @@ public class GenerateC implements CodeGenerator, GenerateFiles {
 					// which will have a container which will be either be a function,
 					// statement (semantic block, loop, match, etc) or a GeneratedContainerNC
 					final int           y  = 2;
-					final GeneratedNode er = identTableEntry.externalRef;
+					final GeneratedNode er = identTableEntry.getExternalRef();
 					if (er instanceof final GeneratedContainerNC nc) {
 						assert nc instanceof GeneratedNamespace;
 						final GeneratedNamespace ns = (GeneratedNamespace) nc;

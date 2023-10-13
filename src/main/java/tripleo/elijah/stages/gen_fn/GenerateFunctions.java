@@ -1803,7 +1803,6 @@ import org.jdeferred2.DoneCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.entrypoints.EntryPoint;
 import tripleo.elijah.entrypoints.EntryPointList;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_BuiltinType;
@@ -1857,15 +1856,6 @@ public class GenerateFunctions {
 		LOG    = new ElLog(module.getFileName(), aPhase.getVerbosity(), PHASE);
 		//
 		aPipelineLogic.addLog(LOG);
-	}
-
-	@Deprecated
-	public void generateFromEntryPoints(final List<EntryPoint> entryPoints, final DeducePhase dp) {
-		@NotNull final EntryPointList epl = new EntryPointList();
-
-		entryPoints.stream().forEach(epl::add);
-
-		generateFromEntryPoints(epl, dp);
 	}
 
 	public void generateFromEntryPoints(final EntryPointList epl, final DeducePhase deducePhase) {
@@ -2579,21 +2569,25 @@ public class GenerateFunctions {
 			final FnCallArgs fnCallArgs = new FnCallArgs(expression_to_call(pce, gf, cctx), gf);
 			final int ii2 = add_i(gf, InstructionName.AGN, List_of(new IntegerIA(vte, gf), fnCallArgs), cctx);
 			final VariableTableEntry vte_proccall = gf.getVarTableEntry(vte);
-			final InstructionArgument gg = fnCallArgs.expression_to_call.getArg(0);
+			final Instruction expressionToCall = fnCallArgs.expression_to_call;
+			if (expressionToCall.getName() == InstructionName.NOP) {}
+			else {
+				final InstructionArgument gg = expressionToCall.getArg(0);
 
-			@NotNull final TableEntryIV g;
-			if (gg instanceof IntegerIA) {
-				g = gf.getVarTableEntry(((IntegerIA) gg).getIndex());
-			} else if (gg instanceof IdentIA) {
-				g = gf.getIdentTableEntry(((IdentIA) gg).getIndex());
-			} else if (gg instanceof ProcIA) {
-				g = gf.getProcTableEntry(((ProcIA) gg).getIndex());
-			} else
-				throw new NotImplementedException();
+				@NotNull final TableEntryIV g;
+				if (gg instanceof IntegerIA) {
+					g = gf.getVarTableEntry(((IntegerIA) gg).getIndex());
+				} else if (gg instanceof IdentIA) {
+					g = gf.getIdentTableEntry(((IdentIA) gg).getIndex());
+				} else if (gg instanceof ProcIA) {
+					g = gf.getProcTableEntry(((ProcIA) gg).getIndex());
+				} else
+					throw new NotImplementedException();
 
-			final TypeTableEntry tte_proccall = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null, value, g);
-			fnCallArgs.setType(tte_proccall);
-			vte_proccall.addPotentialType(ii2, tte_proccall);
+				final TypeTableEntry tte_proccall = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, null, value, g);
+				fnCallArgs.setType(tte_proccall);
+				vte_proccall.addPotentialType(ii2, tte_proccall);
+			}
 			break;
 		case NUMERIC:
 			final int ci = addConstantTableEntry(null, value, value.getType(), gf);
@@ -2700,8 +2694,8 @@ public class GenerateFunctions {
 	}
 
 	public int addProcTableEntry(final IExpression expression, final InstructionArgument expression_num, final List<TypeTableEntry> args, final BaseGeneratedFunction gf) {
-		final ProcTableEntry pte = new ProcTableEntry(gf.prte_list.size(), expression, expression_num, args);
-		gf.prte_list.add(pte);
+		final ProcTableEntry pte = new ProcTableEntry(gf.prte_list().size(), expression, expression_num, args);
+		gf.addProcTableEntry(pte);
 		if (expression_num instanceof final IdentIA identIA) {
 			if (identIA.getEntry().getCallablePTE() == null)
 				identIA.getEntry().setCallablePTE(pte);
@@ -2768,7 +2762,7 @@ public class GenerateFunctions {
 					//
 					final int idte_index = gf.addIdentTableEntry((IdentExpression) arg, aContext);
 					tte                                    = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, arg);
-					gf.getIdentTableEntry(idte_index).type = tte;
+					gf.getIdentTableEntry(idte_index).setType(tte);
 				}
 				R.add(tte);
 			} else
@@ -2848,7 +2842,7 @@ public class GenerateFunctions {
 		final int                         vte_index = gf.addVariableTableEntry(theName, VariableTableType.TEMP, tte, el);
 		final @NotNull VariableTableEntry vte       = gf.getVarTableEntry(vte_index);
 		vte.tempNum = num;
-		gf.vte_list.add(vte);
+		gf.add_vte(vte);
 		return vte.getIndex();
 	}
 
@@ -2863,8 +2857,8 @@ public class GenerateFunctions {
 	 */
 	private int addConstantTableEntry(final String name, final IExpression initialValue, final OS_Type type, final @NotNull BaseGeneratedFunction gf) {
 		final TypeTableEntry     tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, initialValue);
-		final ConstantTableEntry cte = new ConstantTableEntry(gf.cte_list.size(), name, initialValue, tte);
-		gf.cte_list.add(cte);
+		final ConstantTableEntry cte = new ConstantTableEntry(gf.cte_list().size(), name, initialValue, tte);
+		gf.addConstantTableEntry(cte);
 		return cte.index;
 	}
 
@@ -2879,8 +2873,8 @@ public class GenerateFunctions {
 	 */
 	private int addConstantTableEntry2(final String name, final IExpression initialValue, final OS_Type type, final @NotNull BaseGeneratedFunction gf) {
 		final TypeTableEntry     tte = gf.newTypeTableEntry(TypeTableEntry.Type.TRANSIENT, type, initialValue);
-		final ConstantTableEntry cte = new ConstantTableEntry(gf.cte_list.size(), name, initialValue, tte);
-		gf.cte_list.add(cte);
+		final ConstantTableEntry cte = new ConstantTableEntry(gf.cte_list().size(), name, initialValue, tte); // TODO 09/16 make more complicated with builder
+		gf.addConstantTableEntry(cte);
 		return cte.index;
 	}
 
@@ -3218,8 +3212,8 @@ public class GenerateFunctions {
 						if (argument_type.getAttached() == null) {
 							// still dont know the argument types at this point, which creates a problem
 							// for resolving functions, so wait until later when more information is available
-							if (!gf.deferred_calls.contains(i))
-								gf.deferred_calls.add(i);
+							if (!gf.deferred_calls().contains(i))
+								gf.deferred_calls().add(i);
 							break;
 						}
 					}

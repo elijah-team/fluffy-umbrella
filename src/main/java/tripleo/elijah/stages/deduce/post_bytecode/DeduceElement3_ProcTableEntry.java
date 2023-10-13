@@ -148,7 +148,7 @@ public class DeduceElement3_ProcTableEntry implements IDeduceElement3 {
 									j.run(null);
 
 									final @NotNull IdentTableEntry ite      = ((IdentIA) principal.expression_num).getEntry();
-									final OS_Type                  attached = ite.type.getAttached();
+									final OS_Type                  attached = ite.getType().getAttached();
 
 									fi2.generatePromise().then(gf -> {
 										final int y4 = 4;
