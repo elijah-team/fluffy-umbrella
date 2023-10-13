@@ -1,3 +1,4 @@
+/* -*- Mode: Java; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
  *
@@ -8,15 +9,15 @@
  */
 package tripleo.elijah.lang;
 
+import tripleo.elijah.util.UnintendedUseException;
 
 /**
- * @author olu
+ * @author tripleo
  * <p>
  * Created 	Apr 16, 2020 at 8:42:54 AM
  */
 public class TypeCastExpression extends AbstractExpression implements IExpression {
-
-	TypeName tn;
+	private TypeName tn;
 
 	@Override
 	public boolean is_simple() {
@@ -30,7 +31,7 @@ public class TypeCastExpression extends AbstractExpression implements IExpressio
 
 	@Override
 	public void setType(final OS_Type deducedExpression) {
-
+		throw new UnintendedUseException();
 	}
 
 	public TypeName typeName() {
