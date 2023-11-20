@@ -18,24 +18,24 @@ import java.util.List;
  * Created 6/21/21 11:36 PM
  */
 public abstract class AbstractDependencyTracker implements DependencyTracker {
-	private List<FunctionInvocation> dependentFunctions = new ArrayList<FunctionInvocation>();
-	private List<GenType> dependentTypes = new ArrayList<GenType>();
+    private final List<FunctionInvocation> dependentFunctions = new ArrayList<FunctionInvocation>();
+    private final List<GenType> dependentTypes = new ArrayList<GenType>();
 
-	@Override
-	public List<GenType> dependentTypes() {
-		return dependentTypes;
-	}
+    @Override
+    public List<GenType> dependentTypes() {
+        return dependentTypes;
+    }
 
-	@Override
-	public List<FunctionInvocation> dependentFunctions() {
-		return dependentFunctions;
-	}
+    @Override
+    public List<FunctionInvocation> dependentFunctions() {
+        return dependentFunctions;
+    }
 
-	public void addDependentType(@NotNull GenType aType) {
+	public void addDependentType(@NotNull final GenType aType) {
 		dependentTypes.add(aType);
 	}
 
-	public void addDependentFunction(@NotNull FunctionInvocation aFunction) {
+	public void addDependentFunction(@NotNull final FunctionInvocation aFunction) {
 		dependentFunctions.add(aFunction);
 	}
 }

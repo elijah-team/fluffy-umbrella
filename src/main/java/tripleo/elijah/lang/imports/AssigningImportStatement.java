@@ -19,7 +19,7 @@ public class AssigningImportStatement extends _BaseImportStatement {
 		IdentExpression name;
 		Qualident value;
 
-		public Part(IdentExpression i1, Qualident q1) {
+		public Part(final IdentExpression i1, final Qualident q1) {
 			name = i1;
 			value = q1;
 		}

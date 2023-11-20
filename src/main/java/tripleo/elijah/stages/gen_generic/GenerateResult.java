@@ -8,11 +8,8 @@
  */
 package tripleo.elijah.stages.gen_generic;
 
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedClass;
-import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
-import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.stages.gen_fn.*;
 import tripleo.util.buffer.Buffer;
 
 import java.util.ArrayList;
@@ -26,7 +23,7 @@ public class GenerateResult {
 
 	final List<GenerateResultItem> res = new ArrayList<GenerateResultItem>();
 
-	public void add(Buffer b, GeneratedNode n, TY ty) {
+	public void add(final Buffer b, final GeneratedNode n, final TY ty) {
 		res.add(new GenerateResultItem(ty, b, n, ++bufferCounter));
 	}
 
@@ -34,11 +31,11 @@ public class GenerateResult {
 		return res;
 	}
 
-	public void addFunction(BaseGeneratedFunction aGeneratedFunction, Buffer aBuffer, TY aTY) {
+	public void addFunction(final BaseGeneratedFunction aGeneratedFunction, final Buffer aBuffer, final TY aTY) {
 		add(aBuffer, aGeneratedFunction, aTY);
 	}
 
-	public void addConstructor(GeneratedConstructor aGeneratedFunction, Buffer aBuffer, TY aTY) {
+	public void addConstructor(final GeneratedConstructor aGeneratedFunction, final Buffer aBuffer, final TY aTY) {
 		addFunction(aGeneratedFunction, aBuffer, aTY);
 	}
 
@@ -46,12 +43,16 @@ public class GenerateResult {
 		HEADER, IMPL, PRIVATE_HEADER
 	}
 
-	public void addClass(TY ty, GeneratedClass aClass, Buffer aBuf) {
+	public void addClass(final TY ty, final GeneratedClass aClass, final Buffer aBuf) {
 		add(aBuf, aClass, ty);
 	}
 
-	public void addNamespace(TY ty, GeneratedNamespace aNamespace, Buffer aBuf) {
+	public void addNamespace(final TY ty, final GeneratedNamespace aNamespace, final Buffer aBuf) {
 		add(aBuf, aNamespace, ty);
+	}
+
+	public void additional(@NotNull final GenerateResult aGgr) {
+		res.addAll(aGgr.results());
 	}
 
 }

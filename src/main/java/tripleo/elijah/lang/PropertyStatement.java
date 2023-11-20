@@ -28,21 +28,21 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 	private boolean _set_is_abstract;
 	private boolean _get_is_abstract;
 
-	public PropertyStatement(OS_Element parent, Context cur) {
+	public PropertyStatement(final OS_Element parent, final Context cur) {
 		this.parent = parent;
 		this.context = new PropertyStatementContext(cur, this);
 	}
 
 	@NotNull
 	private FunctionDef createSetFunction() {
-		FunctionDef functionDef = new FunctionDef(this, getContext());
+		final FunctionDef functionDef = new FunctionDef(this, getContext());
 		functionDef.setName(Helpers.string_to_ident(String.format("<prop_set %s>", prop_name)));
 		functionDef.setSpecies(FunctionDef.Species.PROP_SET);
-		FormalArgList fal = new FormalArgList();
-		FormalArgListItem fali = fal.next();
+		final FormalArgList fal = new FormalArgList();
+		final FormalArgListItem fali = fal.next();
 		fali.setName(Helpers.string_to_ident("Value"));
 		fali.setTypeName(this.typeName);
-		RegularTypeName unitType = new RegularTypeName();
+		final RegularTypeName unitType = new RegularTypeName();
 		unitType.setName(Helpers.string_to_qualident("Unit"));
 		functionDef.setReturnType(unitType/*BuiltInTypes.Unit*/);
 		functionDef.setFal(fal);
@@ -51,7 +51,7 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 
 	@NotNull
 	private FunctionDef createGetFunction() {
-		FunctionDef functionDef = new FunctionDef(this, getContext());
+		final FunctionDef functionDef = new FunctionDef(this, getContext());
 		functionDef.setName(Helpers.string_to_ident(String.format("<prop_get %s>", prop_name)));
 		functionDef.setSpecies(FunctionDef.Species.PROP_GET);
 		functionDef.setReturnType(typeName);
@@ -59,7 +59,7 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 	}
 
 	@Override // OS_Element
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(final ICodeGen visit) {
 		visit.visitPropertyStatement(this);
 	}
 
@@ -73,7 +73,7 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 		return context;
 	}
 
-	public void setName(IdentExpression prop_name) {
+	public void setName(final IdentExpression prop_name) {
 		this.prop_name = prop_name;
 	}
 
@@ -106,7 +106,7 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 		return prop_name.getText();
 	}
 
-	public void setTypeName(TypeName typeName) {
+	public void setTypeName(final TypeName typeName) {
 //		System.err.println("** setting TypeName in PropertyStatement to "+typeName);
 		this.typeName = typeName;
 		this.set_fn = createSetFunction();
@@ -126,11 +126,11 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 		_set_is_abstract = true;
 	}
 
-	public void get_scope(Scope3 sco) {
+	public void get_scope(final Scope3 sco) {
 		get_fn.scope(sco);
 	}
 
-	public void set_scope(Scope3 sco) {
+	public void set_scope(final Scope3 sco) {
 		set_fn.scope(sco);
 	}
 
@@ -140,12 +140,12 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 	private El_Category category;
 
 	@Override
-	public void setCategory(El_Category aCategory) {
+	public void setCategory(final El_Category aCategory) {
 		category = aCategory;
 	}
 
 	@Override
-	public void setAccess(AccessNotation aNotation) {
+	public void setAccess(final AccessNotation aNotation) {
 		access_note = aNotation;
 	}
 

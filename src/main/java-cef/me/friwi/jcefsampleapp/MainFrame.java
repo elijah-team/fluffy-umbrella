@@ -4,7 +4,10 @@
 
 package me.friwi.jcefsampleapp;
 
-import me.friwi.jcefmaven.*;
+import me.friwi.jcefmaven.CefAppBuilder;
+import me.friwi.jcefmaven.CefInitializationException;
+import me.friwi.jcefmaven.MavenCefAppHandlerAdapter;
+import me.friwi.jcefmaven.UnsupportedPlatformException;
 import org.cef.CefApp;
 import org.cef.CefApp.CefAppState;
 import org.cef.CefClient;
@@ -47,16 +50,16 @@ public class MainFrame extends JFrame {
      * But to be more verbose, this CTOR keeps an instance of each object on the
      * way to the browser UI.
      */
-    private MainFrame(String startURL, boolean useOSR, boolean isTransparent, String[] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
+    private MainFrame(final String startURL, final boolean useOSR, final boolean isTransparent, final String[] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
         // (0) Initialize CEF using the maven loader
-        CefAppBuilder builder = new CefAppBuilder();
+        final CefAppBuilder builder = new CefAppBuilder();
         // windowless_rendering_enabled must be set to false if not wanted. 
         builder.getCefSettings().windowless_rendering_enabled = useOSR;
         // USE builder.setAppHandler INSTEAD OF CefApp.addAppHandler!
         // Fixes compatibility issues with MacOSX
         builder.setAppHandler(new MavenCefAppHandlerAdapter() {
             @Override
-            public void stateHasChanged(org.cef.CefApp.CefAppState state) {
+            public void stateHasChanged(final org.cef.CefApp.CefAppState state) {
                 // Shutdown the app if the native CEF part is terminated
                 if (state == CefAppState.TERMINATED) System.exit(0);
             }
@@ -98,7 +101,7 @@ public class MainFrame extends JFrame {
         client_ = cefApp_.createClient();
 
         // (3) Create a simple message router to receive messages from CEF.
-        CefMessageRouter msgRouter = CefMessageRouter.create();
+        final CefMessageRouter msgRouter = CefMessageRouter.create();
         client_.addMessageRouter(msgRouter);
 
         // (4) One CefBrowser instance is responsible to control what you'll see on
@@ -126,7 +129,7 @@ public class MainFrame extends JFrame {
         address_ = new JTextField(startURL, 100);
         address_.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
                 browser_.loadURL(address_.getText());
             }
         });
@@ -134,7 +137,7 @@ public class MainFrame extends JFrame {
         // Update the address field when the browser URL changes.
         client_.addDisplayHandler(new CefDisplayHandlerAdapter() {
             @Override
-            public void onAddressChange(CefBrowser browser, CefFrame frame, String url) {
+            public void onAddressChange(final CefBrowser browser, final CefFrame frame, final String url) {
                 address_.setText(url);
             }
         });
@@ -142,7 +145,7 @@ public class MainFrame extends JFrame {
         // Clear focus from the browser when the address field gains focus.
         address_.addFocusListener(new FocusAdapter() {
             @Override
-            public void focusGained(FocusEvent e) {
+            public void focusGained(final FocusEvent e) {
                 if (!browserFocus_) return;
                 browserFocus_ = false;
                 KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();
@@ -153,7 +156,7 @@ public class MainFrame extends JFrame {
         // Clear focus from the address field when the browser gains focus.
         client_.addFocusHandler(new CefFocusHandlerAdapter() {
             @Override
-            public void onGotFocus(CefBrowser browser) {
+            public void onGotFocus(final CefBrowser browser) {
                 if (browserFocus_) return;
                 browserFocus_ = true;
                 KeyboardFocusManager.getCurrentKeyboardFocusManager().clearGlobalFocusOwner();
@@ -161,7 +164,7 @@ public class MainFrame extends JFrame {
             }
 
             @Override
-            public void onTakeFocus(CefBrowser browser, boolean next) {
+            public void onTakeFocus(final CefBrowser browser, final boolean next) {
                 browserFocus_ = false;
             }
         });
@@ -179,21 +182,21 @@ public class MainFrame extends JFrame {
         //     application will be closed. Otherwise you'll get asserts from CEF.
         addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e) {
+            public void windowClosing(final WindowEvent e) {
                 CefApp.getInstance().dispose();
                 dispose();
             }
         });
     }
 
-    public static void main(String[] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
+    public static void main(final String[] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
         //Print some info for the test reports. You can ignore this.
         TestReportGenerator.print(args);
         
         // The simple example application is created as anonymous class and points
         // to Google as the very first loaded page. Windowed rendering mode is used by
         // default. If you want to test OSR mode set |useOsr| to true and recompile.
-        boolean useOsr = false;
+        final boolean useOsr = false;
         new MainFrame("http://www.google.com", useOsr, false, args);
     }
 }

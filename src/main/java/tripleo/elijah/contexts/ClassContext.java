@@ -71,7 +71,7 @@ public class ClassContext extends Context {
 			}
 //			System.out.println("1003 "+name+" "+Result.results());
 		}
-		for (TypeName tn1 : carrier.getGenericPart()) {
+		for (final TypeName tn1 : carrier.getGenericPart()) {
 			if (tn1 instanceof NormalTypeName) {
 				final NormalTypeName tn = (NormalTypeName) tn1;
 				final String name1 = tn.getName(); // TODO this may return a string with DOTs in it.
@@ -100,18 +100,18 @@ public class ClassContext extends Context {
 	}
 
 	public class OS_TypeNameElement implements OS_Element {
-		private TypeName typeName;
+		private final TypeName typeName;
 
 		public TypeName getTypeName() {
 			return typeName;
 		}
 
-		public OS_TypeNameElement(TypeName aTypeName) {
+		public OS_TypeNameElement(final TypeName aTypeName) {
 			typeName = aTypeName;
 		}
 
 		@Override
-		public void visitGen(ICodeGen visit) {
+		public void visitGen(final ICodeGen visit) {
 			visit.visitTypeNameElement(this);
 		}
 

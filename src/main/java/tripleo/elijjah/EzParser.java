@@ -2,26 +2,14 @@
 
   package tripleo.elijjah;
 
-import antlr.TokenBuffer;
-import antlr.TokenStreamException;
-import antlr.TokenStreamIOException;
-import antlr.ANTLRException;
-import antlr.LLkParser;
-import antlr.Token;
-import antlr.TokenStream;
-import antlr.RecognitionException;
-import antlr.NoViableAltException;
-import antlr.MismatchedTokenException;
-import antlr.SemanticException;
-import antlr.ParserSharedInputState;
+import antlr.*;
 import antlr.collections.impl.BitSet;
-
-import tripleo.elijah.lang.*;
-import tripleo.elijah.contexts.*;
-import tripleo.elijah.ci.*;
+import tripleo.elijah.ci.CompilerInstructions;
+import tripleo.elijah.ci.GenerateStatement;
 import tripleo.elijah.ci.IndexingStatement;
-import tripleo.elijah.lang2.*;
-import tripleo.elijah.*;
+import tripleo.elijah.ci.LibraryStatementPart;
+import tripleo.elijah.lang.*;
+import tripleo.elijah.lang2.BuiltInTypes;
 
 public class EzParser extends antlr.LLkParser       implements EzTokenTypes
  {
@@ -30,25 +18,25 @@ IExpression expr;
 Context cur=null;
 public CompilerInstructions ci = new CompilerInstructions();
 
-protected EzParser(TokenBuffer tokenBuf, int k) {
+protected EzParser(final TokenBuffer tokenBuf, final int k) {
   super(tokenBuf,k);
   tokenNames = _tokenNames;
 }
 
-public EzParser(TokenBuffer tokenBuf) {
+public EzParser(final TokenBuffer tokenBuf) {
   this(tokenBuf,2);
 }
 
-protected EzParser(TokenStream lexer, int k) {
+protected EzParser(final TokenStream lexer, final int k) {
   super(lexer,k);
   tokenNames = _tokenNames;
 }
 
-public EzParser(TokenStream lexer) {
+public EzParser(final TokenStream lexer) {
   this(lexer,2);
 }
 
-public EzParser(ParserSharedInputState state) {
+public EzParser(final ParserSharedInputState state) {
   super(state,2);
   tokenNames = _tokenNames;
 }
@@ -114,7 +102,7 @@ public EzParser(ParserSharedInputState state) {
 			match(LITERAL_end);
 			match(Token.EOF_TYPE);
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_0);
@@ -125,7 +113,7 @@ public EzParser(ParserSharedInputState state) {
 	}
 	
 	public final void indexingStatement(
-		IndexingStatement idx
+            final IndexingStatement idx
 	) throws RecognitionException, TokenStreamException {
 		
 		Token  i1 = null;
@@ -155,7 +143,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_1);
@@ -204,7 +192,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_2);
@@ -215,7 +203,7 @@ public EzParser(ParserSharedInputState state) {
 	}
 	
 	public final GenerateStatement  generate_statement() throws RecognitionException, TokenStreamException {
-		GenerateStatement gen;
+		final GenerateStatement gen;
 		
 		Token  i1 = null;
 		gen=new GenerateStatement();
@@ -241,7 +229,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_3);
@@ -253,7 +241,7 @@ public EzParser(ParserSharedInputState state) {
 	}
 	
 	public final LibraryStatementPart  library_statement_part() throws RecognitionException, TokenStreamException {
-		LibraryStatementPart lsp;
+		final LibraryStatementPart lsp;
 		
 		Token  i1 = null;
 		Token  dirname = null;
@@ -327,7 +315,7 @@ public EzParser(ParserSharedInputState state) {
 			}
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_4);
@@ -346,7 +334,7 @@ public EzParser(ParserSharedInputState state) {
 		try {      // for error handling
 			ee=assignmentExpression();
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -358,7 +346,7 @@ public EzParser(ParserSharedInputState state) {
 	}
 	
 	public final ExpressionList  expressionList2() throws RecognitionException, TokenStreamException {
-		ExpressionList el;
+		final ExpressionList el;
 		
 		el = new ExpressionList();
 		
@@ -384,7 +372,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_6);
@@ -448,7 +436,7 @@ public EzParser(ParserSharedInputState state) {
 			}
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -460,7 +448,7 @@ public EzParser(ParserSharedInputState state) {
 	}
 	
 	public final Qualident  qualident() throws RecognitionException, TokenStreamException {
-		Qualident q;
+		final Qualident q;
 		
 		Token  d1 = null;
 		q=new Qualident();IdentExpression r1=null, r2=null;
@@ -488,7 +476,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_7);
@@ -512,7 +500,7 @@ public EzParser(ParserSharedInputState state) {
 				id=new IdentExpression(r1, cur);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_8);
@@ -524,7 +512,7 @@ public EzParser(ParserSharedInputState state) {
 	}
 	
 	public final void docstrings(
-		Documentable sc
+            final Documentable sc
 	) throws RecognitionException, TokenStreamException {
 		
 		Token  s1 = null;
@@ -565,7 +553,7 @@ public EzParser(ParserSharedInputState state) {
 			}
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_0);
@@ -597,7 +585,7 @@ public EzParser(ParserSharedInputState state) {
 			}
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_0);
@@ -608,7 +596,7 @@ public EzParser(ParserSharedInputState state) {
 	}
 	
 	public final void identList(
-		IdentList ail
+            final IdentList ail
 	) throws RecognitionException, TokenStreamException {
 		
 		IdentExpression s=null;
@@ -635,7 +623,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_0);
@@ -648,7 +636,9 @@ public EzParser(ParserSharedInputState state) {
 	public final IExpression  assignmentExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
 		
-		ee=null;IExpression e=null;IExpression e2;ExpressionKind ek=null;
+		ee=null;
+        final IExpression e=null;
+        final IExpression e2;ExpressionKind ek=null;
 		
 		try {      // for error handling
 			ee=conditionalExpression();
@@ -771,7 +761,7 @@ public EzParser(ParserSharedInputState state) {
 			
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -783,7 +773,7 @@ public EzParser(ParserSharedInputState state) {
 	}
 	
 	public final void qualidentList(
-		QualidentList qal
+            final QualidentList qal
 	) throws RecognitionException, TokenStreamException {
 		
 		Qualident qid;
@@ -810,7 +800,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_0);
@@ -890,7 +880,7 @@ public EzParser(ParserSharedInputState state) {
 				}
 				}
 				if ( inputState.guessing==0 ) {
-					ProcedureCallExpression pce=new ProcedureCallExpression();
+					final ProcedureCallExpression pce=new ProcedureCallExpression();
 					pce.identifier(ee);
 					pce.setArgs(el);
 					ee=pce;
@@ -905,7 +895,7 @@ public EzParser(ParserSharedInputState state) {
 			}
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_0);
@@ -924,7 +914,7 @@ public EzParser(ParserSharedInputState state) {
 		try {      // for error handling
 			ee=logicalOrExpression();
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -960,7 +950,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -995,7 +985,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -1030,7 +1020,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -1066,7 +1056,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -1102,7 +1092,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -1162,7 +1152,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -1179,7 +1169,7 @@ public EzParser(ParserSharedInputState state) {
 		ee=null;
 				ExpressionKind e2=null; // should never be null (below)
 				IExpression e3=null;
-				TypeName tn=null;
+				final TypeName tn=null;
 		
 		try {      // for error handling
 			ee=shiftExpression();
@@ -1242,7 +1232,7 @@ public EzParser(ParserSharedInputState state) {
 			}
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -1309,7 +1299,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -1368,7 +1358,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -1435,7 +1425,7 @@ public EzParser(ParserSharedInputState state) {
 			} while (true);
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -1450,7 +1440,7 @@ public EzParser(ParserSharedInputState state) {
 		IExpression ee;
 		
 		ee=null;
-				IExpression e3=null;
+				final IExpression e3=null;
 		
 		try {      // for error handling
 			switch ( LA(1)) {
@@ -1513,7 +1503,7 @@ public EzParser(ParserSharedInputState state) {
 			}
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -1528,7 +1518,7 @@ public EzParser(ParserSharedInputState state) {
 		IExpression ee;
 		
 		ee=null;
-				IExpression e3=null;
+				final IExpression e3=null;
 		
 		try {      // for error handling
 			switch ( LA(1)) {
@@ -1571,7 +1561,7 @@ public EzParser(ParserSharedInputState state) {
 			}
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -1590,8 +1580,10 @@ public EzParser(ParserSharedInputState state) {
 		Token  lp = null;
 		Token  in = null;
 		Token  de = null;
-		ee=null;TypeCastExpression tc=null;TypeName tn=null;
-				IExpression e3=null;ExpressionList el=null;
+		ee=null;
+        final TypeCastExpression tc=null;
+        final TypeName tn=null;
+				final IExpression e3=null;ExpressionList el=null;
 		
 		try {      // for error handling
 			ee=primaryExpression();
@@ -1666,7 +1658,7 @@ public EzParser(ParserSharedInputState state) {
 					}
 					}
 					if ( inputState.guessing==0 ) {
-						ProcedureCallExpression pce=new ProcedureCallExpression();
+						final ProcedureCallExpression pce=new ProcedureCallExpression();
 						pce.identifier(ee);
 						pce.setArgs(el);
 						ee=pce;
@@ -1702,7 +1694,7 @@ public EzParser(ParserSharedInputState state) {
 			
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -1716,7 +1708,8 @@ public EzParser(ParserSharedInputState state) {
 	public final IExpression  primaryExpression() throws RecognitionException, TokenStreamException {
 		IExpression ee;
 		
-		ee=null;FuncExpr ppc=null;IdentExpression e=null;ExpressionList el=null;
+		ee=null;
+        final FuncExpr ppc=null;IdentExpression e=null;ExpressionList el=null;
 		
 		try {      // for error handling
 			switch ( LA(1)) {
@@ -1785,7 +1778,7 @@ public EzParser(ParserSharedInputState state) {
 			}
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -1797,7 +1790,7 @@ public EzParser(ParserSharedInputState state) {
 	}
 	
 	public final IExpression  dot_expression_or_procedure_call(
-		IExpression e1
+            final IExpression e1
 	) throws RecognitionException, TokenStreamException {
 		IExpression ee;
 		
@@ -1847,7 +1840,7 @@ public EzParser(ParserSharedInputState state) {
 				}
 				}
 				if ( inputState.guessing==0 ) {
-					ProcedureCallExpression pce=new ProcedureCallExpression();
+					final ProcedureCallExpression pce=new ProcedureCallExpression();
 					pce.identifier(ee);
 					pce.setArgs(el);
 					ee=pce;
@@ -1862,7 +1855,7 @@ public EzParser(ParserSharedInputState state) {
 			
 			}
 		}
-		catch (RecognitionException ex) {
+		catch (final RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
 				recover(ex,_tokenSet_5);
@@ -1955,62 +1948,62 @@ public EzParser(ParserSharedInputState state) {
 	};
 	
 	private static final long[] mk_tokenSet_0() {
-		long[] data = { 2L, 0L};
+		final long[] data = { 2L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_0 = new BitSet(mk_tokenSet_0());
 	private static final long[] mk_tokenSet_1() {
-		long[] data = { 112L, 0L};
+		final long[] data = { 112L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_1 = new BitSet(mk_tokenSet_1());
 	private static final long[] mk_tokenSet_2() {
-		long[] data = { 32768L, 0L};
+		final long[] data = { 32768L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_2 = new BitSet(mk_tokenSet_2());
 	private static final long[] mk_tokenSet_3() {
-		long[] data = { 256L, 0L};
+		final long[] data = { 256L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_3 = new BitSet(mk_tokenSet_3());
 	private static final long[] mk_tokenSet_4() {
-		long[] data = { 36992L, 0L};
+		final long[] data = { 36992L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_4 = new BitSet(mk_tokenSet_4());
 	private static final long[] mk_tokenSet_5() {
-		long[] data = { 288230376148591088L, 0L};
+		final long[] data = { 288230376148591088L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_5 = new BitSet(mk_tokenSet_5());
 	private static final long[] mk_tokenSet_6() {
-		long[] data = { 16793840L, 0L};
+		final long[] data = { 16793840L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_6 = new BitSet(mk_tokenSet_6());
 	private static final long[] mk_tokenSet_7() {
-		long[] data = { 4194306L, 0L};
+		final long[] data = { 4194306L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_7 = new BitSet(mk_tokenSet_7());
 	private static final long[] mk_tokenSet_8() {
-		long[] data = { 288230376148591090L, 0L};
+		final long[] data = { 288230376148591090L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_8 = new BitSet(mk_tokenSet_8());
 	private static final long[] mk_tokenSet_9() {
-		long[] data = { -65302194587553664L, 0L};
+		final long[] data = { -65302194587553664L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_9 = new BitSet(mk_tokenSet_9());
 	private static final long[] mk_tokenSet_10() {
-		long[] data = { -2164238L, 0L};
+		final long[] data = { -2164238L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_10 = new BitSet(mk_tokenSet_10());
 	private static final long[] mk_tokenSet_11() {
-		long[] data = { -65302194570776448L, 0L};
+		final long[] data = { -65302194570776448L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_11 = new BitSet(mk_tokenSet_11());

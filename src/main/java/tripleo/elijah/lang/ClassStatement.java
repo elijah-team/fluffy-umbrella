@@ -124,7 +124,7 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 	public void postConstruct() {
 		assert nameToken != null;
 		int destructor_count = 0;
-		for (ClassItem item : items) {
+		for (final ClassItem item : items) {
 			if (item instanceof DestructorDef)
 				destructor_count++;
 		}
@@ -137,7 +137,7 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 		return nameToken;
 	}
 
-	public void setInheritance(ClassInheritance inh) {
+	public void setInheritance(final ClassInheritance inh) {
 		_inh = inh;
 	}
 
@@ -150,9 +150,9 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 	// region annotations
 
 	public Iterable<AnnotationPart> annotationIterable() {
-		List<AnnotationPart> aps = new ArrayList<AnnotationPart>();
+		final List<AnnotationPart> aps = new ArrayList<AnnotationPart>();
 		if (annotations == null) return aps;
-		for (AnnotationClause annotationClause : annotations) {
+		for (final AnnotationClause annotationClause : annotations) {
 			aps.addAll(annotationClause.aps);
 		}
 		return aps;
@@ -171,7 +171,7 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 	}
 
 	public PropertyStatement prop() {
-		PropertyStatement propertyStatement = new PropertyStatement(this, getContext());
+		final PropertyStatement propertyStatement = new PropertyStatement(this, getContext());
 		add(propertyStatement);
 		return propertyStatement;
 	}
@@ -197,7 +197,7 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 
 	// endregion
 
-	public void setGenericPart(TypeNameList genericPart) {
+	public void setGenericPart(final TypeNameList genericPart) {
 		this.genericPart = genericPart;
 	}
 
@@ -209,19 +209,23 @@ public class ClassStatement extends _CommonNC/*ProgramClosure*/ implements Class
 	}
 
 	public Collection<ConstructorDef> getConstructors() {
-		Collection<ClassItem> x = Collections2.filter(items, new Predicate<ClassItem>() {
+		final Collection<ClassItem> x = Collections2.filter(items, new Predicate<ClassItem>() {
 			@Override
-			public boolean apply(@Nullable ClassItem input) {
+			public boolean apply(@Nullable final ClassItem input) {
 				return input instanceof ConstructorDef;
 			}
 		});
 		return Collections2.transform(x, new Function<ClassItem, ConstructorDef>() {
 			@Nullable
 			@Override
-			public ConstructorDef apply(@Nullable ClassItem input) {
+			public ConstructorDef apply(@Nullable final ClassItem input) {
 				return (ConstructorDef) input;
 			}
 		});
+	}
+
+	public OS_Type getOS_Type() {
+		return new OS_Type(this); // TODO to cache or not to cache??
 	}
 }
 

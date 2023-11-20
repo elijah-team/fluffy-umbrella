@@ -16,7 +16,7 @@ public class LogEntry {
 	public Level level;
 	public String message;
 
-	public LogEntry(long aTime, Level aLevel, String aS) {
+	public LogEntry(final long aTime, final Level aLevel, final String aS) {
 		time = aTime;
 		level = aLevel;
 		message = aS;

@@ -44,7 +44,7 @@ public class ConstructorDef extends BaseFunctionDef {
 	}
 
 	@Override
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(final ICodeGen visit) {
 		visit.visitConstructorDef(this);
 	}
 

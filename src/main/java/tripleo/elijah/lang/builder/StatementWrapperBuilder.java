@@ -20,7 +20,7 @@ public class StatementWrapperBuilder extends ElBuilder {
 	private final IExpression expr;
 	private Context _context;
 
-	public StatementWrapperBuilder(IExpression expr) {
+	public StatementWrapperBuilder(final IExpression expr) {
 		this.expr = expr;
 	}
 
@@ -30,7 +30,7 @@ public class StatementWrapperBuilder extends ElBuilder {
 	}
 
 	@Override
-	protected void setContext(Context context) {
+	protected void setContext(final Context context) {
 		_context = context;
 	}
 }

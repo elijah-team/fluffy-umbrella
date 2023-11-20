@@ -1,6 +1,5 @@
 package me.friwi.jcefsampleapp;
 
-import me.friwi.jcefmaven.CefBuildInfo;
 import me.friwi.jcefmaven.EnumPlatform;
 import me.friwi.jcefmaven.UnsupportedPlatformException;
 
@@ -17,7 +16,7 @@ import java.util.Locale;
  * @author Fritz Windisch
  */
 public class TestReportGenerator {
-    public static void print(String[] args) throws IOException, UnsupportedPlatformException {
+    public static void print(final String[] args) throws IOException, UnsupportedPlatformException {
         System.out.println("Please consider reporting back whether this build worked on your platform or not.");
         System.out.println("To report back, follow these 3 (1/2) easy steps (it will take ~1 minute):");
         System.out.println("    1) Check if everything is working");
@@ -35,17 +34,17 @@ public class TestReportGenerator {
         System.out.println("**Version/Flavor (e.g. Ubuntu 20.04, Windows 10, Big Sur)**");
         if(EnumPlatform.getCurrentPlatform().getOs().isLinux()){
             try {
-                String version = (new BufferedReader(new InputStreamReader((new ProcessBuilder("lsb_release", "-ds")).start().getInputStream()))).readLine();
+                final String version = (new BufferedReader(new InputStreamReader((new ProcessBuilder("lsb_release", "-ds")).start().getInputStream()))).readLine();
                 System.out.println(version+" ("+System.getProperty("os.version")+")");
-            }catch (Exception e){
+            }catch (final Exception e){
                 System.out.println(System.getProperty("os.version"));
             }
         }else if(EnumPlatform.getCurrentPlatform().getOs().isMacOSX()){
             try {
-                String name = (new BufferedReader(new InputStreamReader((new ProcessBuilder("sw_vers", "-productName")).start().getInputStream()))).readLine();
-                String version = (new BufferedReader(new InputStreamReader((new ProcessBuilder("sw_vers", "-productVersion")).start().getInputStream()))).readLine();
+                final String name = (new BufferedReader(new InputStreamReader((new ProcessBuilder("sw_vers", "-productName")).start().getInputStream()))).readLine();
+                final String version = (new BufferedReader(new InputStreamReader((new ProcessBuilder("sw_vers", "-productVersion")).start().getInputStream()))).readLine();
                 System.out.println(name.trim()+" "+version.trim()+" ("+System.getProperty("os.version")+")");
-            }catch (Exception e){
+            }catch (final Exception e){
                 System.out.println(System.getProperty("os.version"));
             }
         }else{

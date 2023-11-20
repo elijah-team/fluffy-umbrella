@@ -13,11 +13,7 @@ import tripleo.util.io.CharSink;
 import tripleo.util.io.CharSource;
 import tripleo.util.io.FileCharSink;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -27,7 +23,7 @@ public class IO {
 
 	// exists, delete, isType ....
 
-	final List<File> recordedreads  = new ArrayList<File>();
+	public final List<File> recordedreads = new ArrayList<File>();
 	final List<File> recordedwrites = new ArrayList<File>();
 	
 	public boolean recordedRead(final File file) {

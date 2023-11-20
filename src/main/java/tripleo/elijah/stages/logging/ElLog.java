@@ -24,21 +24,21 @@ public class ElLog {
 		SILENT, VERBOSE
 	}
 
-	public ElLog(String aFileName, Verbosity aVerbose, String aPhase) {
+	public ElLog(final String aFileName, final Verbosity aVerbose, final String aPhase) {
 		fileName = aFileName;
 		verbose = aVerbose;
 		phase = aPhase;
 	}
 
-	public void err(String aMessage) {
-		long time = System.currentTimeMillis();
+	public void err(final String aMessage) {
+		final long time = System.currentTimeMillis();
 		entries.add(new LogEntry(time, LogEntry.Level.ERROR, aMessage));
 		if (verbose == Verbosity.VERBOSE)
 			System.err.println(aMessage);
 	}
 
-	public void info(String aMessage) {
-		long time = System.currentTimeMillis();
+	public void info(final String aMessage) {
+		final long time = System.currentTimeMillis();
 		entries.add(new LogEntry(time, LogEntry.Level.INFO, aMessage));
 		if (verbose == Verbosity.VERBOSE)
 			System.out.println(aMessage);

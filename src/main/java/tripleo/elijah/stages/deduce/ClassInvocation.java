@@ -31,12 +31,12 @@ public class ClassInvocation implements IInvocation {
 	private final String constructorName;
 	private final DeferredObject<GeneratedClass, Void, Void> resolvePromise = new DeferredObject<GeneratedClass, Void, Void>();
 
-	public ClassInvocation(@NotNull ClassStatement aClassStatement, String aConstructorName) {
+	public ClassInvocation(@NotNull final ClassStatement aClassStatement, final String aConstructorName) {
 		cls = aClassStatement;
 		final @NotNull List<TypeName> genericPart1 = aClassStatement.getGenericPart();
 		if (genericPart1.size() > 0) {
 			genericPart = new HashMap<TypeName, OS_Type>(genericPart1.size());
-			for (TypeName typeName : genericPart1) {
+			for (final TypeName typeName : genericPart1) {
 				genericPart.put(typeName, new OS_UnknownType(null));
 			}
 		} else {
@@ -49,7 +49,7 @@ public class ClassInvocation implements IInvocation {
 		return resolvePromise;
 	}
 
-	public void set(int aIndex, TypeName aTypeName, @NotNull OS_Type aType) {
+	public void set(final int aIndex, final TypeName aTypeName, @NotNull final OS_Type aType) {
 		assert aType.getType() == OS_Type.Type.USER_CLASS;
 		genericPart.put(aTypeName, aType);
 	}
@@ -71,7 +71,7 @@ public class ClassInvocation implements IInvocation {
 	}
 
 	@Override
-	public void setForFunctionInvocation(@NotNull FunctionInvocation aFunctionInvocation) {
+	public void setForFunctionInvocation(@NotNull final FunctionInvocation aFunctionInvocation) {
 		aFunctionInvocation.setClassInvocation(this);
 	}
 }

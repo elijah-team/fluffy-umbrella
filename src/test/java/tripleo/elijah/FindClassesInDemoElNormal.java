@@ -14,6 +14,7 @@ import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.util.Helpers;
@@ -30,7 +31,7 @@ public class FindClassesInDemoElNormal {
 	public final void testParseFile() {
 		final List<String> args = tripleo.elijah.util.Helpers.List_of("test/demo-el-normal", "test/demo-el-normal/main2", "-sE");
 		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final Compilation c = new CompilationImpl(eee, new IO());
 
 		c.feedCmdLine(args);
 
@@ -46,7 +47,7 @@ public class FindClassesInDemoElNormal {
 	public final void testListFolders() {
 		final List<String> args = Helpers.List_of("test/demo-el-normal/listfolders/", "-sE");
 		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final Compilation c = new CompilationImpl(eee, new IO());
 
 		c.feedCmdLine(args);
 

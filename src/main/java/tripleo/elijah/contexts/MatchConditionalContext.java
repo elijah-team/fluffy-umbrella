@@ -27,7 +27,7 @@ public class MatchConditionalContext extends Context {
 		alreadySearched.add(carrier.getContext());
 
 		if (carrier instanceof MatchConditional.MatchArm_TypeMatch) {
-			MatchConditional.MatchArm_TypeMatch carrier2 = (MatchConditional.MatchArm_TypeMatch) carrier;
+			final MatchConditional.MatchArm_TypeMatch carrier2 = (MatchConditional.MatchArm_TypeMatch) carrier;
 			if (name.equals(carrier2.getIdent().getText()))
 				Result.add(name, level, carrier2, this);
 		}

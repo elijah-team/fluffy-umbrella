@@ -22,8 +22,8 @@ public class FuncTypeName implements TypeName {
 	}
 
 	public void argList(final FormalArgList op) {
-		TypeNameList tnl = new TypeNameList();
-		for (FormalArgListItem fali : op.falis) {
+		final TypeNameList tnl = new TypeNameList();
+		for (final FormalArgListItem fali : op.falis) {
 			final TypeName tn = fali.typeName();
 			if (tn != null)
 				tnl.add(tn);

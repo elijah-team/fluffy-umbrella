@@ -12,6 +12,7 @@ import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationImpl;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
@@ -22,24 +23,24 @@ public class ClassInstantiationTest {
 
 	@Test
 	public void classInstantiation() {
-		String f = "test/basic1/class_instantiation/";
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+		final String f = "test/basic1/class_instantiation/";
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
 	}
 
 	@Test
 	public void classInstantiation2() {
-		String f = "test/basic1/class_instantiation2/";
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+		final String f = "test/basic1/class_instantiation2/";
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
 	}
 
 	@Test
 	public void classInstantiation3() {
-		String f = "test/basic1/class_instantiation3/";
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+		final String f = "test/basic1/class_instantiation3/";
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
 	}

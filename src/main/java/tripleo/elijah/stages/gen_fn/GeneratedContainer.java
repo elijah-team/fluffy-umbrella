@@ -9,6 +9,8 @@
 
 package tripleo.elijah.stages.gen_fn;
 
+import org.jdeferred2.DoneCallback;
+import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
@@ -30,9 +32,12 @@ public interface GeneratedContainer extends GeneratedNode {
         public final IdentExpression nameToken;
         public final IExpression initialValue;
         private final OS_Element parent;
-        TypeName typeName;
+        public DeferredObject<UpdatePotentialTypesCB, Void, Void> updatePotentialTypesCBPromise = new DeferredObject<>();
         public OS_Type varType;
+        public List<ConnectionPair> connectionPairs = new ArrayList<>();
+        TypeName typeName;
         List<TypeTableEntry> potentialTypes = new ArrayList<TypeTableEntry>();
+        UpdatePotentialTypesCB updatePotentialTypesCB;
         private GeneratedNode _resolvedType;
 
         public VarTableEntry(final VariableStatement aVs,
@@ -40,12 +45,12 @@ public interface GeneratedContainer extends GeneratedNode {
                              final IExpression aInitialValue,
                              final @NotNull TypeName aTypeName,
                              final @NotNull OS_Element aElement) {
-            vs              = aVs;
-            nameToken       = aNameToken;
-            initialValue    = aInitialValue;
-            typeName        = aTypeName;
-            varType         = new OS_Type(typeName);
-            parent          = aElement;
+            vs = aVs;
+            nameToken = aNameToken;
+            initialValue = aInitialValue;
+            typeName = aTypeName;
+            varType = new OS_Type(typeName);
+            parent = aElement;
         }
 
         public void addPotentialTypes(@NotNull Collection<TypeTableEntry> aPotentialTypes) {
@@ -53,6 +58,7 @@ public interface GeneratedContainer extends GeneratedNode {
         }
 
         public void resolve(@NotNull GeneratedNode aResolvedType) {
+            tripleo.elijah.util.Stupidity.println_out(String.format("** [GeneratedContainer 56] resolving VarTableEntry %s to %s", nameToken, aResolvedType.identityString()));
             _resolvedType = aResolvedType;
         }
 
@@ -68,7 +74,19 @@ public interface GeneratedContainer extends GeneratedNode {
             connectionPairs.add(new ConnectionPair(aVte, aConstructor));
         }
 
-        public List<ConnectionPair> connectionPairs = new ArrayList<>();
+        public void updatePotentialTypes(final @NotNull GeneratedContainer aGeneratedContainer) {
+//			assert aGeneratedContainer == GeneratedContainer.this;
+            updatePotentialTypesCBPromise.then(new DoneCallback<UpdatePotentialTypesCB>() {
+                @Override
+                public void onDone(final UpdatePotentialTypesCB result) {
+                    result.call(aGeneratedContainer);
+                }
+            });
+        }
+
+        public interface UpdatePotentialTypesCB {
+            void call(final @NotNull GeneratedContainer aGeneratedContainer);
+        }
 
         public static class ConnectionPair {
             public final VariableTableEntry vte;

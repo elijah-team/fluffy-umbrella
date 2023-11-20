@@ -17,7 +17,7 @@ public class AnnotationNode {
 	//Qualident name;
 	//ExpressionList arguments;
 
-	public AnnotationNode(AnnotationClause ac) {
+	public AnnotationNode(final AnnotationClause ac) {
 		this.ac = ac;
 	}
 

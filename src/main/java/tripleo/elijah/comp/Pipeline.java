@@ -17,13 +17,13 @@ import java.util.List;
 public class Pipeline {
 	List<PipelineMember> pls = new ArrayList<>();
 
-	public void add(PipelineMember aPipelineMember) {
+	public void add(final PipelineMember aPipelineMember) {
 		pls.add(aPipelineMember);
 	}
 
 
 	public void run() throws Exception {
-		for (PipelineMember pl : pls) {
+		for (final PipelineMember pl : pls) {
 			pl.run();
 		}
 	}

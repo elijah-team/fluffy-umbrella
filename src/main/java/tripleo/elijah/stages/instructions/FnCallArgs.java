@@ -76,7 +76,7 @@ public class FnCallArgs implements InstructionArgument {
 		return expression_to_call.args;
 	}
 
-	public void setType(TypeTableEntry tte2) {
+	public void setType(final TypeTableEntry tte2) {
 		_type = tte2;
 	}
 }

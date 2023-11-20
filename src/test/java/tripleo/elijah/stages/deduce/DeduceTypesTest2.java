@@ -10,10 +10,8 @@ package tripleo.elijah.stages.deduce;
 
 import org.junit.Assert;
 import org.junit.Test;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.contexts.ModuleContext;
 import tripleo.elijah.lang.*;
@@ -27,7 +25,7 @@ public class DeduceTypesTest2 {
 	@Test
 	public void testDeduceIdentExpression() throws ResolveError {
 		final OS_Module mod = new OS_Module();
-		final Compilation c = new Compilation(new StdErrSink(), new IO());
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 		mod.parent = c;
 		mod.prelude = mod.parent.findPrelude("c");
 		final ModuleContext mctx = new ModuleContext(mod);
@@ -36,7 +34,7 @@ public class DeduceTypesTest2 {
 		cs.setName(Helpers.string_to_ident("Test"));
 		final FunctionDef fd = cs.funcDef();
 		fd.setName((Helpers.string_to_ident("test")));
-		Scope3 scope3 = new Scope3(fd);
+		final Scope3 scope3 = new Scope3(fd);
 		final VariableSequence vss = scope3.varSeq();
 		final VariableStatement vs = vss.next();
 		vs.setName((Helpers.string_to_ident("x")));
@@ -56,10 +54,11 @@ public class DeduceTypesTest2 {
 		//
 		//
 		final ElLog.Verbosity verbosity1 = c.gitlabCIVerbosity();
-		final PipelineLogic pl = new PipelineLogic(verbosity1);
+		final AccessBus ab = new AccessBus(c);
+		final PipelineLogic pl = new PipelineLogic(ab);
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
-		DeducePhase dp = new DeducePhase(generatePhase, pl, verbosity1);
-		DeduceTypes2 d = dp.deduceModule(mod, verbosity1);
+		final DeducePhase dp = new DeducePhase(generatePhase, pl, verbosity1);
+		final DeduceTypes2 d = dp.deduceModule(mod, verbosity1);
 //		final DeduceTypes d = new DeduceTypes(mod);
 		final GenType x = DeduceLookupUtils.deduceExpression(d, x1, fc);
 		System.out.println(x);
@@ -76,7 +75,7 @@ public class DeduceTypesTest2 {
 //		Assert.assertEquals(new OS_Type(tn).toString(), x.toString());
 	}
 
-	private boolean genTypeEquals(GenType a, GenType b) {
+	private boolean genTypeEquals(final GenType a, final GenType b) {
 		// TODO hack
 		return a.typeName.equals(b.typeName) &&
 				a.resolved.equals(b.resolved);

@@ -23,17 +23,17 @@ public class DefaultProcessLogEntryBehavior implements ProcessLogEntryBehavior {
 	private String s1;
 
 	@Override
-	public void processLogEntry(LogEntry entry) {
+	public void processLogEntry(final LogEntry entry) {
 		final String logentry = String.format("[%s] [%tD %tT] %s %s", s1, entry.time, entry.time, entry.level, entry.message);
 		ps.println(logentry);
 	}
 
 	@Override
-	public void initialize(File aLogFile, String aElLogFileName, ErrSink aErrSink) {
+	public void initialize(final File aLogFile, final String aElLogFileName, final ErrSink aErrSink) {
 		try {
 			ps = new PrintStream(aLogFile);
 			s1 = aElLogFileName;
-		} catch (FileNotFoundException exception) {
+		} catch (final FileNotFoundException exception) {
 			aErrSink.exception(exception);
 		}
 	}
@@ -49,9 +49,9 @@ public class DefaultProcessLogEntryBehavior implements ProcessLogEntryBehavior {
 	}
 
 	@Override
-	public void processPhase(String aPhase) {
+	public void processPhase(final String aPhase) {
 		ps.println(aPhase);
-		StringBuilder sb = new StringBuilder(aPhase.length());
+		final StringBuilder sb = new StringBuilder(aPhase.length());
 		for (int i = 0; i < aPhase.length(); i++) {
 			sb.append('=');
 		}

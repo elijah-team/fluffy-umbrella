@@ -12,10 +12,9 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.comp.IO;
-import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.*;
+import tripleo.elijah.comp.internal.CompilationImpl;
+import tripleo.elijah.entrypoints.EntryPointList;
 import tripleo.elijah.entrypoints.MainClassEntryPoint;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
@@ -45,7 +44,7 @@ public class TestGenFunction {
 	@Test
 	public void testDemoElNormalFact1Elijah() throws Exception {
 		final StdErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final Compilation c = new CompilationImpl(eee, new IO());
 
 		final String f = "test/demo-el-normal/fact1.elijah";
 		final File file = new File(f);
@@ -58,19 +57,24 @@ public class TestGenFunction {
 		//
 		final ClassStatement main_class = (ClassStatement) m.findClass("Main");
 		assert main_class != null;
-		m.entryPoints = List_of(new MainClassEntryPoint(main_class));
+		final MainClassEntryPoint mainClassEntryPoint = new MainClassEntryPoint(main_class);
+		m.entryPoints = new EntryPointList();
+		m.entryPoints.add(mainClassEntryPoint);
 		//
 		//
 		//
 
-		List<FunctionMapHook> ran_hooks = new ArrayList<>();
+		final List<FunctionMapHook> ran_hooks = new ArrayList<>();
 
 
-		final ElLog.Verbosity verbosity1 = c.gitlabCIVerbosity();
-		c.pipelineLogic = new PipelineLogic(verbosity1);
-		final GeneratePhase generatePhase1 = c.pipelineLogic.generatePhase;//new GeneratePhase();
+		final AccessBus ab = new AccessBus(c);
+		ab.addPipelineLogic(PipelineLogic::new);
+
+		c.pipelineLogic = ab.__getPL();
+
+		final @NotNull GeneratePhase generatePhase1 = c.pipelineLogic.generatePhase;//new GeneratePhase();
 		final GenerateFunctions gfm = generatePhase1.getGenerateFunctions(m);
-		DeducePhase dp = c.pipelineLogic.dp;//new DeducePhase(generatePhase1);
+		final @NotNull DeducePhase dp = c.pipelineLogic.dp;//new DeducePhase(generatePhase1);
 		gfm.generateFromEntryPoints(m.entryPoints, dp);
 
 		final DeducePhase.@NotNull GeneratedClasses lgc = dp.generatedClasses; //new ArrayList<>();
@@ -88,20 +92,20 @@ public class TestGenFunction {
 
 //		Assert.assertEquals(2, lgf.size());
 
-		WorkManager wm = new WorkManager();
+		final WorkManager wm = new WorkManager();
 
 		c.addFunctionMapHook(new FunctionMapHook(){
 			@Override
-			public boolean matches(FunctionDef fd) {
+			public boolean matches(final FunctionDef fd) {
 				final boolean b = fd.name().equals("main") && fd.getParent() == main_class;
 				return b;
 			}
 
 			@Override
-			public void apply(Collection<GeneratedFunction> aGeneratedFunctions) {
+			public void apply(final Collection<GeneratedFunction> aGeneratedFunctions) {
 				assert aGeneratedFunctions.size() == 1;
 
-				GeneratedFunction gf = aGeneratedFunctions.iterator().next();
+				final GeneratedFunction gf = aGeneratedFunctions.iterator().next();
 
 				int pc = 0;
 				Assert.assertEquals(InstructionName.E, gf.getInstruction(pc++).getName());
@@ -118,16 +122,16 @@ public class TestGenFunction {
 
 		c.addFunctionMapHook(new FunctionMapHook(){
 			@Override
-			public boolean matches(FunctionDef fd) {
+			public boolean matches(final FunctionDef fd) {
 				final boolean b = fd.name().equals("factorial") && fd.getParent() == main_class;
 				return b;
 			}
 
 			@Override
-			public void apply(Collection<GeneratedFunction> aGeneratedFunctions) {
+			public void apply(final Collection<GeneratedFunction> aGeneratedFunctions) {
 				assert aGeneratedFunctions.size() == 1;
 
-				GeneratedFunction gf = aGeneratedFunctions.iterator().next();
+				final GeneratedFunction gf = aGeneratedFunctions.iterator().next();
 
 				int pc = 0;
 				Assert.assertEquals(InstructionName.E, gf.getInstruction(pc++).getName());
@@ -150,16 +154,16 @@ public class TestGenFunction {
 
 		c.addFunctionMapHook(new FunctionMapHook(){
 			@Override
-			public boolean matches(FunctionDef fd) {
+			public boolean matches(final FunctionDef fd) {
 				final boolean b = fd.name().equals("main") && fd.getParent() == main_class;
 				return b;
 			}
 
 			@Override
-			public void apply(Collection<GeneratedFunction> aGeneratedFunctions) {
+			public void apply(final Collection<GeneratedFunction> aGeneratedFunctions) {
 				assert aGeneratedFunctions.size() == 1;
 
-				GeneratedFunction gf = aGeneratedFunctions.iterator().next();
+				final GeneratedFunction gf = aGeneratedFunctions.iterator().next();
 
 				System.out.println("main\n====");
 				for (int i = 0; i < gf.vte_list.size(); i++) {
@@ -178,16 +182,16 @@ public class TestGenFunction {
 
 		c.addFunctionMapHook(new FunctionMapHook(){
 			@Override
-			public boolean matches(FunctionDef fd) {
+			public boolean matches(final FunctionDef fd) {
 				final boolean b = fd.name().equals("factorial") && fd.getParent() == main_class;
 				return b;
 			}
 
 			@Override
-			public void apply(Collection<GeneratedFunction> aGeneratedFunctions) {
+			public void apply(final Collection<GeneratedFunction> aGeneratedFunctions) {
 				assert aGeneratedFunctions.size() == 1;
 
-				GeneratedFunction gf = aGeneratedFunctions.iterator().next();
+				final GeneratedFunction gf = aGeneratedFunctions.iterator().next();
 
 				System.out.println("factorial\n=========");
 				for (int i = 0; i < gf.vte_list.size(); i++) {
@@ -205,7 +209,7 @@ public class TestGenFunction {
 		});
 
 		dp.deduceModule(m, lgc, false, c.gitlabCIVerbosity());
-		dp.finish();
+		dp.finish(dp.generatedClasses);
 
 		Assert.assertEquals("Not all hooks ran", 4, ran_hooks.size());
 		Assert.assertEquals(11, c.errorCount());
@@ -214,7 +218,7 @@ public class TestGenFunction {
 	@Test
 	public void testGenericA() throws Exception {
 		final StdErrSink errSink = new StdErrSink();
-		final Compilation c = new Compilation(errSink, new IO());
+		final Compilation c = new CompilationImpl(errSink, new IO());
 
 		final String f = "test/basic1/genericA/";
 
@@ -224,7 +228,7 @@ public class TestGenFunction {
 //	@Test // ignore because of generateAllTopLevelClasses
 	public void testBasic1Backlink1Elijah() throws Exception {
 		final StdErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final Compilation c = new CompilationImpl(eee, new IO());
 
 		final String f = "test/basic1/backlink1.elijah";
 		final File file = new File(f);
@@ -239,18 +243,19 @@ public class TestGenFunction {
 		}
 
 		final ElLog.Verbosity verbosity1 = c.gitlabCIVerbosity();
-		final PipelineLogic pl = new PipelineLogic(verbosity1);
+		final AccessBus ab = new AccessBus(c);
+		final PipelineLogic pl = new PipelineLogic(ab);
 		final GeneratePhase generatePhase = new GeneratePhase(verbosity1, pl);
 		final GenerateFunctions gfm = generatePhase.getGenerateFunctions(m);
 		final List<GeneratedNode> lgc = new ArrayList<>();
 		gfm.generateAllTopLevelClasses(lgc);
 
-		DeducePhase dp = new DeducePhase(generatePhase, pl, verbosity1);
+		final DeducePhase dp = new DeducePhase(generatePhase, pl, verbosity1);
 
-		WorkManager wm = new WorkManager();
+		final WorkManager wm = new WorkManager();
 
-		List<GeneratedNode> lgf = new ArrayList<>();
-		for (GeneratedNode generatedNode : lgc) {
+		final List<GeneratedNode> lgf = new ArrayList<>();
+		for (final GeneratedNode generatedNode : lgc) {
 			if (generatedNode instanceof GeneratedClass)
 				lgf.addAll(((GeneratedClass) generatedNode).functionMap.values());
 			if (generatedNode instanceof GeneratedNamespace)
@@ -260,7 +265,7 @@ public class TestGenFunction {
 
 		for (final GeneratedNode gn : lgf) {
 			if (gn instanceof GeneratedFunction) {
-				GeneratedFunction gf = (GeneratedFunction) gn;
+				final GeneratedFunction gf = (GeneratedFunction) gn;
 				for (final Instruction instruction : gf.instructions()) {
 					System.out.println("8100 " + instruction);
 				}
@@ -268,12 +273,12 @@ public class TestGenFunction {
 		}
 
 		dp.deduceModule(m, lgc, false, c.gitlabCIVerbosity());
-		dp.finish();
+		dp.finish(dp.generatedClasses);
 //		new DeduceTypes2(m).deduceFunctions(lgf);
 
 		for (final GeneratedNode gn : lgf) {
 			if (gn instanceof GeneratedFunction) {
-				GeneratedFunction gf = (GeneratedFunction) gn;
+				final GeneratedFunction gf = (GeneratedFunction) gn;
 				System.out.println("----------------------------------------------------------");
 				System.out.println(gf.name());
 				System.out.println("----------------------------------------------------------");
@@ -282,13 +287,12 @@ public class TestGenFunction {
 			}
 		}
 
-		PipelineLogic pipelineLogic = new PipelineLogic(Compilation.gitlabCIVerbosity());
-		GenerateC ggc = new GenerateC(m, eee, c.gitlabCIVerbosity(), pipelineLogic);
+		final GenerateC ggc = new GenerateC(m, eee, c.gitlabCIVerbosity(), pl);
 		ggc.generateCode(lgf, wm);
 
-		GenerateResult gr = new GenerateResult();
+		final GenerateResult gr = new GenerateResult();
 
-		for (GeneratedNode generatedNode : lgc) {
+		for (final GeneratedNode generatedNode : lgc) {
 			if (generatedNode instanceof GeneratedClass) {
 				ggc.generate_class((GeneratedClass) generatedNode, gr);
 			} else {
@@ -300,7 +304,7 @@ public class TestGenFunction {
 	@Test
 	public void testBasic1Backlink3Elijah() throws Exception {
 		final StdErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final Compilation c = new CompilationImpl(eee, new IO());
 
 		final String ff = "test/basic1/backlink3/";
 		c.feedCmdLine(List_of(ff));

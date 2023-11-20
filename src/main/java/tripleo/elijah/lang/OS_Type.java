@@ -24,7 +24,7 @@ import java.util.Objects;
  */
 public class OS_Type {
 
-	public OS_Type(Type t) {
+	public OS_Type(final Type t) {
 		type_of_type = t;
 	}
 

@@ -24,7 +24,7 @@ public class DefFunctionDef extends BaseFunctionDef {
 
 	private final OS_Element parent;
 
-	public DefFunctionDef(OS_Element aElement, Context aContext) {
+	public DefFunctionDef(final OS_Element aElement, final Context aContext) {
 		parent = aElement;
 		if (aElement instanceof OS_Container) {
 			((OS_Container) parent).add(this);
@@ -69,7 +69,7 @@ public class DefFunctionDef extends BaseFunctionDef {
 
 
 	@Override
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(final ICodeGen visit) {
 		visit.visitDefFunction(this);
 	}
 

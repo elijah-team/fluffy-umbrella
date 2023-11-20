@@ -22,13 +22,14 @@ import tripleo.elijah.Out;
 import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.comp.functionality.f202.F202;
+import tripleo.elijah.contexts.ModuleContext;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
 import tripleo.elijah.lang.Qualident;
+import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 import tripleo.elijah.stages.deduce.FunctionMapHook;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
-import tripleo.elijah.stages.logging.ElLog;
+import tripleo.elijah.stages.deduce.fluffy.i.FluffyComp;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijjah.ElijjahLexer;
@@ -39,19 +40,14 @@ import tripleo.elijjah.EzParser;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Pattern;
 
-public class Compilation {
+public abstract class Compilation {
 
 	private final int _compilationNumber;
 	private IO io;
-	private ErrSink eee;
+	private final ErrSink eee;
 	public final List<OS_Module> modules = new ArrayList<OS_Module>();
 	private final Map<String, OS_Module> fn2m = new HashMap<String, OS_Module>();
 	private final Map<String, CompilerInstructions> fn2ci = new HashMap<String, CompilerInstructions>();
@@ -63,7 +59,7 @@ public class Compilation {
 	//
 	//
 	public PipelineLogic pipelineLogic;
-	private Pipeline pipelines = new Pipeline();
+	final Pipeline pipelines = new Pipeline();
 	//
 	//
 	//
@@ -94,85 +90,94 @@ public class Compilation {
 
 	public void main(final List<String> args, final ErrSink errSink) {
 		boolean do_out = false, silent = false;
+
+		if (args.size() <= 0) {
+			System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
+			return;
+		}
+
 		try {
-			if (args.size() > 0) {
-				final Options options = new Options();
-				options.addOption("s", true, "stage: E: parse; O: output");
-				options.addOption("showtree", false, "show tree");
-				options.addOption("out", false, "make debug files");
-				options.addOption("silent", false, "suppress DeduceType output to console");
-				final CommandLineParser clp = new DefaultParser();
-				final CommandLine cmd = clp.parse(options, args.toArray(new String[args.size()]));
+			final Options options = new Options();
+			options.addOption("s", true, "stage: E: parse; O: output");
+			options.addOption("showtree", false, "show tree");
+			options.addOption("out", false, "make debug files");
+			options.addOption("silent", false, "suppress DeduceType output to console");
+			final CommandLineParser clp = new DefaultParser();
+			final CommandLine cmd = clp.parse(options, args.toArray(new String[args.size()]));
 
-				if (cmd.hasOption("s")) {
-					stage = cmd.getOptionValue('s');
-				}
-				if (cmd.hasOption("showtree")) {
-					showTree = true;
-				}
-				if (cmd.hasOption("out")) {
-					do_out = true;
-				}
-				if (isGitlab_ci() || cmd.hasOption("silent")) {
-					silent = true;
-				}
-
-				CompilerInstructions ez_file = null;
-				final String[] args2 = cmd.getArgs();
-
-				for (int i = 0; i < args2.length; i++) {
-					final String file_name = args2[i];
-					final File f = new File(file_name);
-					final boolean matches2 = Pattern.matches(".+\\.ez$", file_name);
-					if (matches2)
-						add_ci(parseEzFile(f, file_name, eee));
-					else {
-//						eee.reportError("9996 Not an .ez file "+file_name);
-						if (f.isDirectory()) {
-							final List<CompilerInstructions> ezs = searchEzFiles(f);
-							if (ezs.size() > 1) {
-//								eee.reportError("9998 Too many .ez files, using first.");
-								eee.reportError("9997 Too many .ez files, be specific.");
-//								add_ci(ezs.get(0));
-							} else if (ezs.size() == 0) {
-								eee.reportError("9999 No .ez files found.");
-							} else {
-								ez_file = ezs.get(0);
-								add_ci(ez_file);
-							}
-						} else
-							eee.reportError("9995 Not a directory "+f.getAbsolutePath());
-					}
-				}
-
-				System.err.println("130 GEN_LANG: "+cis.get(0).genLang());
-				findStdLib("c"); // TODO find a better place for this
-
-				for (final CompilerInstructions ci : cis) {
-					use(ci, do_out);
-				}
-
-				//
-				if (stage.equals("E")) {
-					// do nothing. job over
-				} else {
-					pipelineLogic = new PipelineLogic(silent ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE);
-					final DeducePipeline dpl = new DeducePipeline(this);
-					pipelines.add(dpl);
-					final GeneratePipeline gpl = new GeneratePipeline(this, dpl);
-					pipelines.add(gpl);
-					final WritePipeline wpl = new WritePipeline(this, pipelineLogic.gr);
-					pipelines.add(wpl);
-
-					pipelines.run();
-
-					writeLogs(silent, pipelineLogic.elLogs);
-				}
-			} else {
-				System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
+			if (cmd.hasOption("s")) {
+				stage = cmd.getOptionValue('s');
 			}
-		} catch (final Exception e) {
-			errSink.exception(e);
+			if (cmd.hasOption("showtree")) {
+				showTree = true;
+			}
+			if (cmd.hasOption("out")) {
+				do_out = true;
+			}
+			if (isGitlab_ci() || cmd.hasOption("silent")) {
+				silent = true;
+			}
+
+			CompilerInstructions ez_file = null;
+			final String[] args2 = cmd.getArgs();
+
+			for (int i = 0; i < args2.length; i++) {
+				final String file_name = args2[i];
+				final File f = new File(file_name);
+				final boolean matches2 = Pattern.matches(".+\\.ez$", file_name);
+				if (matches2)
+					add_ci(parseEzFile(f, file_name, eee));
+				else {
+//						eee.reportError("9996 Not an .ez file "+file_name);
+					if (f.isDirectory()) {
+						final List<CompilerInstructions> ezs = searchEzFiles(f);
+						if (ezs.size() > 1) {
+//								eee.reportError("9998 Too many .ez files, using first.");
+							eee.reportError("9997 Too many .ez files, be specific.");
+//								add_ci(ezs.get(0));
+						} else if (ezs.size() == 0) {
+							eee.reportError("9999 No .ez files found.");
+						} else {
+							ez_file = ezs.get(0);
+							add_ci(ez_file);
+						}
+					} else
+						eee.reportError("9995 Not a directory " + f.getAbsolutePath());
+				}
+			}
+
+			System.err.println("130 GEN_LANG: " + cis.get(0).genLang());
+			findStdLib("c"); // TODO find a better place for this
+
+			for (final CompilerInstructions ci : cis) {
+				use(ci, do_out);
+			}
+
+			final AccessBus ab = new AccessBus(this);
+
+			if (stage.equals("E")) {
+				// do nothing. job over
+			} else {
+				ab.addPipelineLogic(PipelineLogic::new);
+
+				pipelineLogic = ab.__getPL();
+
+				ab.add(DeducePipeline::new);
+				ab.add(GeneratePipeline::new);
+				ab.add(WritePipeline::new);
+
+
+				modules.stream().forEach(m -> pipelineLogic.addModule(m));
+
+
+				pipelines.run();
+
+				writeLogs(silent, pipelineLogic.elLogs);
+			}
+//		} catch (ParseException e) {
+//			errSink.exception(e);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -185,13 +190,13 @@ public class Compilation {
 		return System.getenv("GITLAB_CI") != null;
 	}
 
-	private void writeLogs(boolean aSilent, List<ElLog> aLogs) {
-		Multimap<String, ElLog> logMap = ArrayListMultimap.create();
+	private void writeLogs(final boolean aSilent, final List<ElLog> aLogs) {
+		final Multimap<String, ElLog> logMap = ArrayListMultimap.create();
 		if (true || aSilent) {
-			for (ElLog deduceLog : aLogs) {
+			for (final ElLog deduceLog : aLogs) {
 				logMap.put(deduceLog.getFileName(), deduceLog);
 			}
-			for (Map.Entry<String, Collection<ElLog>> stringCollectionEntry : logMap.asMap().entrySet()) {
+			for (final Map.Entry<String, Collection<ElLog>> stringCollectionEntry : logMap.asMap().entrySet()) {
 				final F202 f202 = new F202(getErrSink(), this);
 				f202.processLogs(stringCollectionEntry.getValue());
 			}
@@ -233,7 +238,7 @@ public class Compilation {
 		final File instruction_dir = new File(compilerInstructions.getFilename()).getParentFile();
 		for (final LibraryStatementPart lsp : compilerInstructions.lsps) {
 			final String dir_name = Helpers.remove_single_quotes_from_string(lsp.getDirName());
-			File dir;// = new File(dir_name);
+			final File dir;// = new File(dir_name);
 			if (dir_name.equals(".."))
 				dir = instruction_dir/*.getAbsoluteFile()*/.getParentFile();
 			else
@@ -247,7 +252,7 @@ public class Compilation {
 		use_internal(instruction_dir, do_out, lsp);
 	}
 
-	private void use_internal(final File dir, final boolean do_out, LibraryStatementPart lsp) throws Exception {
+	private void use_internal(final File dir, final boolean do_out, final LibraryStatementPart lsp) throws Exception {
 		if (!dir.isDirectory()) {
 			eee.reportError("9997 Not a directory " + dir.toString());
 			return;
@@ -290,7 +295,7 @@ public class Compilation {
 								  final String file_name,
 								  final ErrSink errSink,
 								  final boolean do_out,
-								  LibraryStatementPart lsp) throws Exception {
+								  final LibraryStatementPart lsp) throws Exception {
 		System.out.println((String.format("   %s", f.getAbsolutePath())));
 		if (f.exists()) {
 			final OS_Module m = realParseElijjahFile(file_name, f, do_out);
@@ -479,9 +484,72 @@ public class Compilation {
 		return eee;
 	}
 
-	public void addFunctionMapHook(FunctionMapHook aFunctionMapHook) {
+	public void addFunctionMapHook(final FunctionMapHook aFunctionMapHook) {
 		pipelineLogic.dp.addFunctionMapHook(aFunctionMapHook);
 	}
+
+	@NotNull
+	public abstract EOT_OutputTree getOutputTree();
+
+	public abstract @NotNull FluffyComp getFluffy();
+
+	public boolean getSilence() {
+		return true; // FIXME fill this in later. dont care now
+	}
+
+	public List<OS_Module> getModules() {
+		return modules;
+	}
+
+	public ModuleBuilder moduleBuilder() {
+		return new ModuleBuilder(this);
+	}
+
+	public static class ModuleBuilder {
+		// private final Compilation compilation;
+		private final OS_Module mod;
+		private boolean _addToCompilation = false;
+		private String _fn = null;
+
+		public ModuleBuilder(Compilation aCompilation) {
+//          compilation = aCompilation;
+			mod = new OS_Module();
+			mod.setParent(aCompilation);
+		}
+
+		public ModuleBuilder setContext() {
+			final ModuleContext mctx = new ModuleContext(mod);
+			mod.setContext(mctx);
+			return this;
+		}
+
+		public OS_Module build() {
+			if (_addToCompilation) {
+				if (_fn == null)
+					throw new IllegalStateException("Filename not set in ModuleBuilder");
+
+				mod.getCompilation().addModule(mod, _fn);
+			}
+			return mod;
+		}
+
+		public ModuleBuilder withPrelude(String aPrelude) {
+			mod.prelude = mod.getCompilation().findPrelude("c");
+			return this;
+		}
+
+		public ModuleBuilder withFileName(String aFn) {
+			_fn = aFn;
+			mod.setFileName(aFn);
+			return this;
+		}
+
+		public ModuleBuilder addToCompilation() {
+			_addToCompilation = true;
+			return this;
+		}
+	}
+
 }
 
 //

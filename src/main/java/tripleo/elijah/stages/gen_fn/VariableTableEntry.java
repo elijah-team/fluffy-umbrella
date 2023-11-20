@@ -8,7 +8,7 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
-import org.jdeferred2.*;
+import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.OS_Element;
@@ -67,7 +67,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		if (!potentialTypes.containsKey(instructionIndex))
 			potentialTypes.put(instructionIndex, tte);
 		else {
-			TypeTableEntry v = potentialTypes.get(instructionIndex);
+			final TypeTableEntry v = potentialTypes.get(instructionIndex);
 			if (v.getAttached() == null) {
 				v.setAttached(tte.getAttached());
 				type.genType.copy(tte.genType); // README don't lose information
@@ -105,7 +105,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 		return index;
 	}
 
-	private DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
+	private final DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
 
 	public Promise<GenType, Void, Void> typePromise() {
 		return typeDeferred.promise();
@@ -132,12 +132,12 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	}
 
 	@Override
-	public void setConstructable(ProcTableEntry aPte) {
+	public void setConstructable(final ProcTableEntry aPte) {
 		constructable_pte = aPte;
 	}
 
 	@Override
-	public void resolveTypeToClass(GeneratedNode aNode) {
+	public void resolveTypeToClass(final GeneratedNode aNode) {
 		_resolvedType = aNode;
 		genType.node = aNode;
 		type.resolve(aNode); // TODO maybe this obviates above
@@ -148,7 +148,7 @@ public class VariableTableEntry extends BaseTableEntry1 implements Constructable
 	}
 
 	@Override
-	public void setGenType(GenType aGenType) {
+	public void setGenType(final GenType aGenType) {
 		genType.copy(aGenType);
 		resolveType(aGenType);
 	}

@@ -18,7 +18,7 @@ public class QualifiedImportStatement extends _BaseImportStatement {
 		public Qualident base;
 		public IdentList idents;
 
-		public Part(Qualident q3, IdentList il) {
+		public Part(final Qualident q3, final IdentList il) {
 			base = q3;
 			idents = il;
 		}

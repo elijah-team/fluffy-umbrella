@@ -30,14 +30,14 @@ public class DotExpressionToStackTest {
 	public void test_dot_expression_to_stack() {
 //		DeduceTypes2 d = new DeduceTypes2(null);
 		//
-		IdentExpression c = Helpers.string_to_ident("c");
-		IdentExpression b = Helpers.string_to_ident("b");
-		IdentExpression a = Helpers.string_to_ident("a");
+		final IdentExpression c = Helpers.string_to_ident("c");
+		final IdentExpression b = Helpers.string_to_ident("b");
+		final IdentExpression a = Helpers.string_to_ident("a");
 		//
-		DotExpression de2 = new DotExpression(b, c);
-		DotExpression de = new DotExpression(a, de2);
+		final DotExpression de2 = new DotExpression(b, c);
+		final DotExpression de = new DotExpression(a, de2);
 		//
-		@NotNull Stack<IExpression> s = DeduceLookupUtils.dot_expression_to_stack(de);
+		@NotNull final Stack<IExpression> s = DeduceLookupUtils.dot_expression_to_stack(de);
 //		IExpression[] sa = (IExpression[]) s.toArray();
 		Assert.assertEquals(a, s.pop());
 		Assert.assertEquals(b, s.pop());
@@ -48,18 +48,18 @@ public class DotExpressionToStackTest {
 	public void test_dot_expression_to_stack2() {
 //		DeduceTypes2 dt2 = new DeduceTypes2(null);
 		//
-		IdentExpression e = Helpers.string_to_ident("e");
-		IdentExpression d = Helpers.string_to_ident("d");
-		IdentExpression c = Helpers.string_to_ident("c");
-		IdentExpression b = Helpers.string_to_ident("b");
-		IdentExpression a = Helpers.string_to_ident("a");
+		final IdentExpression e = Helpers.string_to_ident("e");
+		final IdentExpression d = Helpers.string_to_ident("d");
+		final IdentExpression c = Helpers.string_to_ident("c");
+		final IdentExpression b = Helpers.string_to_ident("b");
+		final IdentExpression a = Helpers.string_to_ident("a");
 		//
-		DotExpression de4 = new DotExpression(d, e);
-		DotExpression de3 = new DotExpression(c, de4);
-		DotExpression de2 = new DotExpression(b, de3);
-		DotExpression de = new DotExpression(a, de2);
+		final DotExpression de4 = new DotExpression(d, e);
+		final DotExpression de3 = new DotExpression(c, de4);
+		final DotExpression de2 = new DotExpression(b, de3);
+		final DotExpression de = new DotExpression(a, de2);
 		//
-		@NotNull Stack<IExpression> s = DeduceLookupUtils.dot_expression_to_stack(de);
+		@NotNull final Stack<IExpression> s = DeduceLookupUtils.dot_expression_to_stack(de);
 //		IExpression[] sa = (IExpression[]) s.toArray();
 		Assert.assertEquals(a, s.pop());
 		Assert.assertEquals(b, s.pop());

@@ -26,13 +26,13 @@ public class WorkManager {
 	}
 
 	@Nullable public WorkJob next() {
-		Iterator<WorkList> workListIterator = jobs.iterator();
+		final Iterator<WorkList> workListIterator = jobs.iterator();
 		while (true) {
 			if (workListIterator.hasNext()) {
-				WorkList workList = workListIterator.next();
+				final WorkList workList = workListIterator.next();
 //			for (WorkList workList :jobs) {
 				if (!workList.isDone()) {
-					for (WorkJob w : workList.jobs) {
+					for (final WorkJob w : workList.jobs) {
 						if (!w.isDone())
 							return w;
 					}
@@ -50,7 +50,7 @@ public class WorkManager {
 
 	public void drain() {
 		while (true) {
-			@Nullable WorkJob w = next();
+			@Nullable final WorkJob w = next();
 			if (w == null) break;
 			w.run(this);
 		}

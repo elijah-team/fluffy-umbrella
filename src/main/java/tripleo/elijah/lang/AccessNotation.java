@@ -39,7 +39,7 @@ public class AccessNotation implements OS_Element {
 	}
 
 	@Override
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(final ICodeGen visit) {
 		visit.visitAccessNotation(this);
 	}
 

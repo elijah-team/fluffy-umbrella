@@ -58,9 +58,9 @@ public class CompilerInstructions {
 
 	@Nullable
 	public String genLang() {
-		Collection<GenerateStatement.Directive> gens = Collections2.filter(gen.dirs, new Predicate<GenerateStatement.Directive>() {
+		final Collection<GenerateStatement.Directive> gens = Collections2.filter(gen.dirs, new Predicate<GenerateStatement.Directive>() {
 			@Override
-			public boolean apply(GenerateStatement.@Nullable Directive input) {
+			public boolean apply(final GenerateStatement.@Nullable Directive input) {
 				assert input != null;
 				if (input.getName().equals("gen")) {
 					return true;
@@ -68,9 +68,9 @@ public class CompilerInstructions {
 				return false;
 			}
 		});
-		Iterator<GenerateStatement.Directive> gi = gens.iterator();
+		final Iterator<GenerateStatement.Directive> gi = gens.iterator();
 		if (!gi.hasNext()) return null;
-		IExpression lang_raw = gi.next().getExpression();
+		final IExpression lang_raw = gi.next().getExpression();
 		assert lang_raw instanceof StringExpression;
 		return Helpers.remove_single_quotes_from_string(((StringExpression)lang_raw).getText());
 	}
@@ -79,11 +79,11 @@ public class CompilerInstructions {
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
-	public void setName(Token name) {
+	public void setName(final Token name) {
 		this.name = name.getText();
 	}
 }

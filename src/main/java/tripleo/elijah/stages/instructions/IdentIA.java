@@ -9,12 +9,7 @@
 package tripleo.elijah.stages.instructions;
 
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
-import tripleo.elijah.stages.gen_fn.Constructable;
-import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
-import tripleo.elijah.stages.gen_fn.IdentTableEntry;
-import tripleo.elijah.stages.gen_fn.ProcTableEntry;
+import tripleo.elijah.stages.gen_fn.*;
 
 /**
  * Created 10/2/20 2:36 PM
@@ -57,17 +52,17 @@ public class IdentIA implements InstructionArgument, Constructable {
 	}
 
 	@Override
-	public void setConstructable(ProcTableEntry aPte) {
+	public void setConstructable(final ProcTableEntry aPte) {
 		getEntry().setConstructable(aPte);
 	}
 
 	@Override
-	public void resolveTypeToClass(GeneratedNode aNode) {
+	public void resolveTypeToClass(final GeneratedNode aNode) {
 		getEntry().resolveTypeToClass(aNode);
 	}
 
 	@Override
-	public void setGenType(GenType aGenType) {
+	public void setGenType(final GenType aGenType) {
 		getEntry().setGenType(aGenType);
 	}
 }

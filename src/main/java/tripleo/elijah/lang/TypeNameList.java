@@ -25,7 +25,7 @@ public class TypeNameList {
 		p.add(tn);
 	}
 
-	public TypeName get(int index) {
+	public TypeName get(final int index) {
 		return p.get(index);
 	}
 
@@ -36,7 +36,7 @@ public class TypeNameList {
 		return Helpers.String_join(", ", Collections2.transform(p, new Function<TypeName, String>() {
 			@Nullable
 			@Override
-			public String apply(@Nullable TypeName input) {
+			public String apply(@Nullable final TypeName input) {
 				assert input != null;
 				return input.toString();
 			}

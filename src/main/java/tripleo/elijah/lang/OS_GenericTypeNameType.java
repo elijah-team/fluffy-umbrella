@@ -17,15 +17,19 @@ public class OS_GenericTypeNameType extends OS_Type {
 
 	private final ClassContext.OS_TypeNameElement genericTypename;
 
-	public OS_GenericTypeNameType(ClassContext.OS_TypeNameElement aGenericTypename) {
-		super(Type.GENERIC_TYPENAME);
-		genericTypename = aGenericTypename;
-	}
+    public OS_GenericTypeNameType(final ClassContext.OS_TypeNameElement aGenericTypename) {
+        super(Type.GENERIC_TYPENAME);
+        genericTypename = aGenericTypename;
+    }
 
-	@Override
-	public OS_Element getElement() {
-		return genericTypename;
-	}
+    @Override
+    public OS_Element getElement() {
+        return genericTypename;
+    }
+
+    public TypeName getRealTypeName() {
+        return genericTypename.getTypeName();
+    }
 }
 
 //

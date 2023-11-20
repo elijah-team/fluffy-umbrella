@@ -21,7 +21,7 @@ public class GenerateResultItem {
 	public final GeneratedNode node;
 	public String output;
 
-	public GenerateResultItem(GenerateResult.TY aTy, Buffer aBuffer, GeneratedNode aNode, int aCounter) {
+	public GenerateResultItem(final GenerateResult.TY aTy, final Buffer aBuffer, final GeneratedNode aNode, final int aCounter) {
 		ty = aTy;
 		buffer = aBuffer;
 		node = aNode;

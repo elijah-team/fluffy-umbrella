@@ -23,7 +23,7 @@ public class Scope3 implements Documentable {
 	private final List<OS_Element> _items = new ArrayList<OS_Element>();
 	private final List<Token> _docstrings = new ArrayList<Token>();
 
-	public Scope3(OS_Element aParent) {
+	public Scope3(final OS_Element aParent) {
 		parent = aParent;
 	}
 
@@ -36,11 +36,11 @@ public class Scope3 implements Documentable {
 	}
 
 	@Override
-	public void addDocString(Token aText) {
+	public void addDocString(final Token aText) {
 		_docstrings.add(aText);
 	}
 
-	public void add(OS_Element element) {
+	public void add(final OS_Element element) {
 		_items.add(element);
 	}
 
@@ -52,7 +52,7 @@ public class Scope3 implements Documentable {
 		return asc;
 	}
 
-	public void statementWrapper(IExpression expr) {
+	public void statementWrapper(final IExpression expr) {
 		add(new StatementWrapper(expr, parent.getContext(), parent)); // TODO is this right?
 	}
 
@@ -69,7 +69,7 @@ public class Scope3 implements Documentable {
 
 		@Override
 		public IfConditional ifConditional(final OS_Element aParent, final Context cur) {
-			IfConditional ifex = new IfConditional(aParent);
+			final IfConditional ifex = new IfConditional(aParent);
 			ifex.setContext(new IfConditionalContext(cur, ifex));
 			add(ifex);
 			return ifex;
@@ -77,28 +77,28 @@ public class Scope3 implements Documentable {
 
 		@Override
 		public BlockStatement blockClosure() {
-			BlockStatement bs = new BlockStatement(null);
+			final BlockStatement bs = new BlockStatement(null);
 //			add(bs);  // TODO make this an Element
 			return bs;
 		}
 
 		@Override
 		public Loop loop() {
-			Loop loop = new Loop(parent, parent.getContext());
+			final Loop loop = new Loop(parent, parent.getContext());
 			add(loop);
 			return loop;
 		}
 
 		@Override
 		public ProcedureCallExpression procedureCallExpression() {
-			ProcedureCallExpression pce = new ProcedureCallExpression();
+			final ProcedureCallExpression pce = new ProcedureCallExpression();
 			add(new StatementWrapper(pce, getParent().getContext(), getParent()));
 			return pce;
 		}
 
 		@Override
 		public VariableSequence varSeq(final Context ctx) {
-			VariableSequence vsq = new VariableSequence(ctx);
+			final VariableSequence vsq = new VariableSequence(ctx);
 			vsq.setParent(parent); // TODO look at this
 			assert ctx == parent.getContext();
 			vsq.setContext(ctx);

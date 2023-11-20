@@ -11,11 +11,7 @@ package tripleo.elijah.stages.gen_c;
 import tripleo.elijah.lang.ConstructorDef;
 import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.deduce.ClassInvocation;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
-import tripleo.elijah.stages.gen_fn.GeneratedContainerNC;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
-import tripleo.elijah.stages.gen_fn.IdentTableEntry;
-import tripleo.elijah.stages.gen_fn.VariableTableEntry;
+import tripleo.elijah.stages.gen_fn.*;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
@@ -38,15 +34,15 @@ public class CtorReference {
 	List<CReference.Reference> refs = new ArrayList<CReference.Reference>();
 	private GeneratedNode _resolved;
 
-	void addRef(String text, CReference.Ref type) {
+	void addRef(final String text, final CReference.Ref type) {
 		refs.add(new CReference.Reference(text, type));
 	}
 
-	public void getConstructorPath(InstructionArgument ia2, BaseGeneratedFunction gf) {
+	public void getConstructorPath(final InstructionArgument ia2, final BaseGeneratedFunction gf) {
 		final List<InstructionArgument> s = CReference._getIdentIAPathList(ia2);
 
 		for (int i = 0, sSize = s.size(); i < sSize; i++) {
-			InstructionArgument ia = s.get(i);
+			final InstructionArgument ia = s.get(i);
 			if (ia instanceof IntegerIA) {
 				// should only be the first element if at all
 				assert i == 0;
@@ -62,7 +58,7 @@ public class CtorReference {
 				addRef(vte.getName(), CReference.Ref.LOCAL);
 			} else if (ia instanceof IdentIA) {
 				final IdentTableEntry idte = gf.getIdentTableEntry(to_int(ia));
-				OS_Element resolved_element = idte.getResolvedElement();
+				final OS_Element resolved_element = idte.getResolvedElement();
 				if (idte.resolvedType() != null) {
 					_resolved = idte.resolvedType();
 					ctorName = ((ConstructorDef) resolved_element).name();
@@ -100,12 +96,12 @@ public class CtorReference {
 		}
 	}
 
-	public String build(ClassInvocation aClsinv) {
+	public String build(final ClassInvocation aClsinv) {
 		StringBuilder sb = new StringBuilder();
 		boolean open = false, needs_comma = false;
 //		List<String> sl = new ArrayList<String>();
 		String text = "";
-		for (CReference.Reference ref : refs) {
+		for (final CReference.Reference ref : refs) {
 			switch (ref.type) {
 				case LOCAL:
 					text = "vv" + ref.text;
@@ -157,7 +153,7 @@ public class CtorReference {
 		}
 		{
 			// Assuming constructor call
-			int code;
+			final int code;
 			if (_resolved != null) {
 				code = ((GeneratedContainerNC) _resolved).getCode();
 			} else {
@@ -166,7 +162,7 @@ public class CtorReference {
 			if (code == 0) {
 				System.err.println("** 32135 ClassStatement with 0 code " + aClsinv.getKlass());
 			}
-			String text2 = String.format("ZC%d%s", code, ctorName); // TODO what about named constructors
+			final String text2 = String.format("ZC%d%s", code, ctorName); // TODO what about named constructors
 			sb.append(" = ");
 			sb.append(text2);
 			sb.append("(");
@@ -190,7 +186,7 @@ public class CtorReference {
 	 *
 	 * @param sl3
 	 */
-	public void args(List<String> sl3) {
+	public void args(final List<String> sl3) {
 		args = sl3;
 	}
 }

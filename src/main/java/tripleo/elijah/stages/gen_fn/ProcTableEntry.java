@@ -13,7 +13,6 @@ import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.IExpression;
-import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
@@ -37,8 +36,8 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 	public final InstructionArgument expression_num;
 	private ClassInvocation classInvocation;
 	private FunctionInvocation functionInvocation;
-	private DeferredObject<ProcTableEntry, Void, Void> completeDeferred = new DeferredObject<ProcTableEntry, Void, Void>();
-	private DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<FunctionInvocation, Void, Void>();
+	private final DeferredObject<ProcTableEntry, Void, Void> completeDeferred = new DeferredObject<ProcTableEntry, Void, Void>();
+	private final DeferredObject2<FunctionInvocation, Void, Void> onFunctionInvocations = new DeferredObject2<FunctionInvocation, Void, Void>();
 
 	public ProcTableEntry(final int index, final IExpression aExpression, final InstructionArgument expression_num, final List<TypeTableEntry> args) {
 		this.index = index;
@@ -48,17 +47,17 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 
 		addStatusListener(new StatusListener() {
 			@Override
-			public void onChange(IElementHolder eh, Status newStatus) {
+			public void onChange(final IElementHolder eh, final Status newStatus) {
 				if (newStatus == Status.KNOWN) {
 					setResolvedElement(eh.getElement());
 				}
 			}
 		});
 
-		for (TypeTableEntry tte : args) {
+		for (final TypeTableEntry tte : args) {
 			tte.addSetAttached(new TypeTableEntry.OnSetAttached() {
 				@Override
-				public void onSetAttached(TypeTableEntry aTypeTableEntry) {
+				public void onSetAttached(final TypeTableEntry aTypeTableEntry) {
 					ProcTableEntry.this.onSetAttached();
 				}
 			});
@@ -79,7 +78,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		return args;
 	}
 
-	public void setArgType(int aIndex, OS_Type aType) {
+	public void setArgType(final int aIndex, final OS_Type aType) {
 		args.get(aIndex).setAttached(aType);
 	}
 
@@ -88,7 +87,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		if (args != null) {
 			final int ac = args.size();
 			int acx = 0;
-			for (TypeTableEntry tte : args) {
+			for (final TypeTableEntry tte : args) {
 				if (tte.getAttached() != null)
 					acx++;
 			}
@@ -120,7 +119,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		}
 	}
 
-	public void setClassInvocation(ClassInvocation aClassInvocation) {
+	public void setClassInvocation(final ClassInvocation aClassInvocation) {
 		classInvocation = aClassInvocation;
 	}
 
@@ -128,7 +127,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		return classInvocation;
 	}
 
-	public void setFunctionInvocation(FunctionInvocation aFunctionInvocation) {
+	public void setFunctionInvocation(final FunctionInvocation aFunctionInvocation) {
 		if (functionInvocation != aFunctionInvocation) {
 			functionInvocation = aFunctionInvocation;
 			onFunctionInvocations.reset();
@@ -148,7 +147,7 @@ public class ProcTableEntry extends BaseTableEntry implements TableEntryIV {
 		onFunctionInvocations.then(callback);
 	}
 
-	private DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
+	private final DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
 
 	public DeferredObject<GenType, Void, Void> typeDeferred() {
 		return typeDeferred;

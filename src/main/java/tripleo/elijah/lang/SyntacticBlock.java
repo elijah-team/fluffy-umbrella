@@ -50,8 +50,8 @@ public class SyntacticBlock implements OS_Element, OS_Container, FunctionItem, S
 	}
 
 	public List<FunctionItem> getItems() {
-		List<FunctionItem> collection = new ArrayList<FunctionItem>();
-		for (OS_Element element : scope3.items()) {
+		final List<FunctionItem> collection = new ArrayList<FunctionItem>();
+		for (final OS_Element element : scope3.items()) {
 			if (element instanceof FunctionItem)
 				collection.add((FunctionItem) element);
 		}
@@ -70,14 +70,14 @@ public class SyntacticBlock implements OS_Element, OS_Container, FunctionItem, S
 	public List<OS_Element2> items() {
 		final Collection<OS_Element> items = Collections2.filter(scope3.items(), new Predicate<OS_Element>() {
 				@Override
-				public boolean apply(@Nullable OS_Element input) {
+				public boolean apply(@Nullable final OS_Element input) {
 					return input instanceof OS_Element2;
 				}
 		});
-		Collection<OS_Element2> c = Collections2.transform(items, new Function<OS_Element, OS_Element2>() {
+		final Collection<OS_Element2> c = Collections2.transform(items, new Function<OS_Element, OS_Element2>() {
 			@Nullable
 			@Override
-			public OS_Element2 apply(@Nullable OS_Element input) {
+			public OS_Element2 apply(@Nullable final OS_Element input) {
 				return (OS_Element2) input;
 			}
 		});
@@ -92,11 +92,11 @@ public class SyntacticBlock implements OS_Element, OS_Container, FunctionItem, S
 	}
 
 	@Override
-	public void addDocString(Token s1) {
+	public void addDocString(final Token s1) {
 		scope3.addDocString(s1);
 	}
 
-	public void scope(Scope3 sco) {
+	public void scope(final Scope3 sco) {
 		scope3 = sco;
 	}
 

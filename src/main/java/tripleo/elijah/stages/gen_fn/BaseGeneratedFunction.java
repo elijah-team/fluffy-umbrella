@@ -8,22 +8,20 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import org.jdeferred2.DoneCallback;
 import org.jdeferred2.Promise;
 import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
-import tripleo.elijah.stages.deduce.DeduceTypes2;
-import tripleo.elijah.stages.deduce.FoundElement;
-import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.deduce.*;
 import tripleo.elijah.stages.instructions.*;
 import tripleo.elijah.util.Helpers;
+import tripleo.elijah.util.Holder;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.util.range.Range;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
 
@@ -47,34 +45,36 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 	private int _nextTemp = 0;
 	private GeneratedNode genClass;
 	private GeneratedContainerNC parent;
+	Map<OS_Element, DeduceElement> elements = new HashMap<OS_Element, DeduceElement>();
 	private DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();
-
-	public static void printTables(GeneratedFunction gf) {
-		System.out.println("VariableTable ");
-		for (VariableTableEntry variableTableEntry : gf.vte_list) {
-			System.out.println("\t"+variableTableEntry);
-		}
-		System.out.println("ConstantTable ");
-		for (ConstantTableEntry constantTableEntry : gf.cte_list) {
-			System.out.println("\t"+constantTableEntry);
-		}
-		System.out.println("ProcTable     ");
-		for (ProcTableEntry procTableEntry : gf.prte_list) {
-			System.out.println("\t"+procTableEntry);
-		}
-		System.out.println("TypeTable     ");
-		for (TypeTableEntry typeTableEntry : gf.tte_list) {
-			System.out.println("\t"+typeTableEntry);
-		}
-		System.out.println("IdentTable    ");
-		for (IdentTableEntry identTableEntry : gf.idte_list) {
-			System.out.println("\t"+identTableEntry);
-		}
-	}
+	private DeferredObject<GeneratedClass, Void, Void> _gcP = new DeferredObject<>();
 
 	//
 	// region Ident-IA
 	//
+
+	public static void printTables(GeneratedFunction gf) {
+		tripleo.elijah.util.Stupidity.println_out("VariableTable ");
+		for (VariableTableEntry variableTableEntry : gf.vte_list) {
+			tripleo.elijah.util.Stupidity.println_out("\t" + variableTableEntry);
+		}
+		tripleo.elijah.util.Stupidity.println_out("ConstantTable ");
+		for (ConstantTableEntry constantTableEntry : gf.cte_list) {
+			tripleo.elijah.util.Stupidity.println_out("\t" + constantTableEntry);
+		}
+		tripleo.elijah.util.Stupidity.println_out("ProcTable     ");
+		for (ProcTableEntry procTableEntry : gf.prte_list) {
+			tripleo.elijah.util.Stupidity.println_out("\t" + procTableEntry);
+		}
+		tripleo.elijah.util.Stupidity.println_out("TypeTable     ");
+		for (TypeTableEntry typeTableEntry : gf.tte_list) {
+			tripleo.elijah.util.Stupidity.println_out("\t" + typeTableEntry);
+		}
+		tripleo.elijah.util.Stupidity.println_out("IdentTable    ");
+		for (IdentTableEntry identTableEntry : gf.idte_list) {
+			tripleo.elijah.util.Stupidity.println_out("\t" + identTableEntry);
+		}
+	}
 
 	public static @NotNull List<InstructionArgument> _getIdentIAPathList(@NotNull InstructionArgument oo) {
 		LinkedList<InstructionArgument> s = new LinkedList<InstructionArgument>();
@@ -85,7 +85,7 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 			} else if (oo instanceof IdentIA) {
 				final IdentTableEntry ite1 = ((IdentIA) oo).getEntry();
 				s.addFirst(oo);
-				oo = ite1.backlink;
+				oo = ite1.getBacklink();
 			} else if (oo instanceof ProcIA) {
 				s.addFirst(oo);
 				oo = null;
@@ -93,42 +93,6 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 				throw new IllegalStateException("Invalid InstructionArgument");
 		}
 		return s;
-	}
-
-	/**
-	 * Returns a string that represents the path encoded by ia2.
-	 * Does not transform the string into target language (ie C).
-	 * Called from {@link DeduceTypes2#do_assign_call(BaseGeneratedFunction, Context, IdentTableEntry, FnCallArgs, int)}
-	 * or {@link DeduceTypes2#deduce_generated_function(GeneratedFunction)}
-	 * or {@link DeduceTypes2#resolveIdentIA_(Context, IdentIA, BaseGeneratedFunction, FoundElement)}
-	 *
-	 * @param ia2 the path
-	 * @return a string that represents the path encoded by ia2
-	 */
-	public String getIdentIAPathNormal(final IdentIA ia2) {
-		final List<InstructionArgument> s = _getIdentIAPathList(ia2);
-
-		//
-		// TODO NOT LOOKING UP THINGS, IE PROPERTIES, MEMBERS
-		//
-		List<String> sl = new ArrayList<String>();
-		for (final InstructionArgument ia : s) {
-			final String text;
-			if (ia instanceof IntegerIA) {
-				final VariableTableEntry vte = getVarTableEntry(to_int(ia));
-				text = vte.getName();
-			} else if (ia instanceof IdentIA) {
-				final IdentTableEntry idte = getIdentTableEntry(((IdentIA) ia).getIndex());
-				text = idte.getIdent().getText();
-			} else if (ia instanceof ProcIA) {
-				final ProcTableEntry prte = getProcTableEntry(to_int(ia));
-				assert prte.expression instanceof ProcedureCallExpression;
-				text = ((ProcedureCallExpression)prte.expression).printableString();
-			} else
-				throw new NotImplementedException();
-			sl.add(text);
-		}
-		return Helpers.String_join(".", sl);
 	}
 
 
@@ -211,7 +175,8 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return tte_list.get(index);
 	}
 
-	@NotNull public ProcTableEntry getProcTableEntry(final int index) {
+	@NotNull
+	public ProcTableEntry getProcTableEntry(final int index) {
 		return prte_list.get(index);
 	}
 
@@ -221,19 +186,48 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return newTypeTableEntry(type1, type, null, null);
 	}
 
-	public @NotNull TypeTableEntry newTypeTableEntry(final TypeTableEntry.Type type1, final OS_Type type, TableEntryIV aTableEntryIV) {
-		return newTypeTableEntry(type1, type, null, aTableEntryIV);
+	/**
+	 * Returns a string that represents the path encoded by ia2.
+	 * Does not transform the string into target language (ie C).
+	 * Called from {@link DeduceTypes2#do_assign_call(BaseGeneratedFunction, Context, IdentTableEntry, FnCallArgs, int)}
+	 * or {@link DeduceTypes2#deduce_generated_function(GeneratedFunction)}
+	 * or {@link DeduceTypes2#resolveIdentIA_(Context, IdentIA, BaseGeneratedFunction, FoundElement)}
+	 *
+	 * @param ia2 the path
+	 * @return a string that represents the path encoded by ia2
+	 */
+	public String getIdentIAPathNormal(final IdentIA ia2) {
+		final List<InstructionArgument> s = _getIdentIAPathList(ia2);
+
+		//
+		// TODO NOT LOOKING UP THINGS, IE PROPERTIES, MEMBERS
+		//
+		List<String> sl = new ArrayList<String>();
+		for (final InstructionArgument ia : s) {
+			final String text;
+			if (ia instanceof IntegerIA) {
+				final VariableTableEntry vte = getVarTableEntry(to_int(ia));
+				text = vte.getName();
+			} else if (ia instanceof IdentIA) {
+				final IdentTableEntry idte = getIdentTableEntry(((IdentIA) ia).getIndex());
+				text = idte.getIdent().getText();
+			} else if (ia instanceof ProcIA) {
+				final ProcTableEntry prte = getProcTableEntry(to_int(ia));
+				assert prte.expression instanceof ProcedureCallExpression;
+				text = ((ProcedureCallExpression) prte.expression).printableString();
+			} else
+				throw new NotImplementedException();
+			sl.add(text);
+		}
+		return Helpers.String_join(".", sl);
 	}
 
 	public @NotNull TypeTableEntry newTypeTableEntry(final TypeTableEntry.Type type1, final OS_Type type, final IExpression expression) {
 		return newTypeTableEntry(type1, type, expression, null);
 	}
 
-	public @NotNull TypeTableEntry newTypeTableEntry(final TypeTableEntry.Type type1, final OS_Type type, final IExpression expression, TableEntryIV aTableEntryIV) {
-		final TypeTableEntry typeTableEntry = new TypeTableEntry(tte_list.size(), type1, type, expression, aTableEntryIV);
-		typeTableEntry.setAttached(type); // README make sure tio call callback
-		tte_list.add(typeTableEntry);
-		return typeTableEntry;
+	public @NotNull TypeTableEntry newTypeTableEntry(final TypeTableEntry.Type type1, final OS_Type type, TableEntryIV aTableEntryIV) {
+		return newTypeTableEntry(type1, type, null, aTableEntryIV);
 	}
 
 	public void addContext(final Context context, final Range r) {
@@ -276,46 +270,11 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return null;
 	}
 
-	public @NotNull InstructionArgument get_assignment_path(@NotNull final IExpression expression,
-															@NotNull final GenerateFunctions generateFunctions,
-															Context context) {
-		switch (expression.getKind()) {
-		case DOT_EXP:
-		{
-			final DotExpression de = (DotExpression) expression;
-			final InstructionArgument left_part = get_assignment_path(de.getLeft(), generateFunctions, context);
-			return get_assignment_path(left_part, de.getRight(), generateFunctions, context);
-		}
-		case QIDENT:
-			throw new NotImplementedException();
-		case PROCEDURE_CALL:
-			{
-				ProcedureCallExpression pce = (ProcedureCallExpression) expression;
-				if (pce.getLeft() instanceof IdentExpression) {
-					final IdentExpression identExpression = (IdentExpression) pce.getLeft();
-					int idte_index = addIdentTableEntry(identExpression, identExpression.getContext());
-					final IdentIA identIA = new IdentIA(idte_index, this);
-					final List<TypeTableEntry> args_types = generateFunctions.get_args_types(pce.getArgs(), this, context);
-					int i = generateFunctions.addProcTableEntry(pce, identIA, args_types, this);
-					return new ProcIA(i, this);
-				}
-				return get_assignment_path(pce.getLeft(), generateFunctions, context); // TODO this looks wrong. what are we supposed to be doing here?
-			}
-		case GET_ITEM:
-			throw new NotImplementedException();
-		case IDENT:
-			{
-				final IdentExpression ie = (IdentExpression) expression;
-				final String text = ie.getText();
-				final InstructionArgument lookup = vte_lookup(text); // IntegerIA(variable) or ConstTableIA or null
-				if (lookup != null)
-					return lookup;
-				final int ite = addIdentTableEntry(ie, context);
-				return new IdentIA(ite, this);
-			}
-		default:
-			throw new IllegalStateException("Unexpected value: " + expression.getKind());
-		}
+	public @NotNull TypeTableEntry newTypeTableEntry(final TypeTableEntry.Type type1, final OS_Type type, final IExpression expression, TableEntryIV aTableEntryIV) {
+		final TypeTableEntry typeTableEntry = new TypeTableEntry(tte_list.size(), type1, type, expression, aTableEntryIV);
+		typeTableEntry.setAttached(type); // README make sure tio call callback
+		tte_list.add(typeTableEntry);
+		return typeTableEntry;
 	}
 
 	private @NotNull InstructionArgument get_assignment_path(@NotNull final InstructionArgument prev,
@@ -323,9 +282,8 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 															 @NotNull final GenerateFunctions generateFunctions,
 															 @NotNull final Context context) {
 		switch (expression.getKind()) {
-		case DOT_EXP:
-		{
-			final DotExpression de = (DotExpression) expression;
+			case DOT_EXP: {
+				final DotExpression de = (DotExpression) expression;
 			final InstructionArgument left_part = get_assignment_path(de.getLeft(), generateFunctions, context);
 			if (left_part instanceof IdentIA) {
 				((IdentIA)left_part).setPrev(prev);
@@ -368,21 +326,43 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 
 	public abstract VariableTableEntry getSelf();
 
-	/**
-	 * Returns first {@link IdentTableEntry} that matches expression
-	 * Only works for IdentExpressions
-	 *
-	 * @param expression {@link IdentExpression} to test for
-	 * @return IdentTableEntry or null
-	 */
-	public IdentTableEntry getIdentTableEntryFor(IExpression expression) {
-		for (IdentTableEntry identTableEntry : idte_list) {
-			// TODO make this work for Qualidents and DotExpressions
-			if (identTableEntry.getIdent().getText().equals(((IdentExpression) expression).getText()) && identTableEntry.backlink == null) {
-				return identTableEntry;
+	public @NotNull InstructionArgument get_assignment_path(@NotNull final IExpression expression,
+															@NotNull final GenerateFunctions generateFunctions,
+															Context context) {
+		switch (expression.getKind()) {
+			case DOT_EXP: {
+				final DotExpression de = (DotExpression) expression;
+				final InstructionArgument left_part = get_assignment_path(de.getLeft(), generateFunctions, context);
+				return get_assignment_path(left_part, de.getRight(), generateFunctions, context);
 			}
+			case QIDENT:
+				throw new NotImplementedException();
+			case PROCEDURE_CALL: {
+				ProcedureCallExpression pce = (ProcedureCallExpression) expression;
+				if (pce.getLeft() instanceof IdentExpression) {
+					final IdentExpression identExpression = (IdentExpression) pce.getLeft();
+					int idte_index = addIdentTableEntry(identExpression, identExpression.getContext());
+					final IdentIA identIA = new IdentIA(idte_index, this);
+					final List<TypeTableEntry> args_types = generateFunctions.get_args_types(pce.getArgs(), this, context);
+					int i = generateFunctions.addProcTableEntry(pce, identIA, args_types, this);
+					return new ProcIA(i, this);
+				}
+				return get_assignment_path(pce.getLeft(), generateFunctions, context); // TODO this looks wrong. what are we supposed to be doing here?
+			}
+			case GET_ITEM:
+				throw new NotImplementedException();
+			case IDENT: {
+				final IdentExpression ie = (IdentExpression) expression;
+				final String text = ie.getText();
+				final InstructionArgument lookup = vte_lookup(text); // IntegerIA(variable) or ConstTableIA or null
+				if (lookup != null)
+					return lookup;
+				final int ite = addIdentTableEntry(ie, context);
+				return new IdentIA(ite, this);
+			}
+			default:
+				throw new IllegalStateException("Unexpected value: " + expression.getKind());
 		}
-		return null;
 	}
 
 	public int addIdentTableEntry(final IdentExpression ident, final Context context) {
@@ -395,37 +375,48 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return idte.getIndex();
 	}
 
+	/**
+	 * Returns first {@link IdentTableEntry} that matches expression
+	 * Only works for IdentExpressions
+	 *
+	 * @param expression {@link IdentExpression} to test for
+	 * @return IdentTableEntry or null
+	 */
+	public IdentTableEntry getIdentTableEntryFor(IExpression expression) {
+		for (IdentTableEntry identTableEntry : idte_list) {
+			// TODO make this work for Qualidents and DotExpressions
+			if (identTableEntry.getIdent().getText().equals(((IdentExpression) expression).getText()) && identTableEntry.getBacklink() == null) {
+				return identTableEntry;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public OS_Module module() {
+		return getFD().getContext().module();
+	}
+
+	public int getCode() {
+		return code;
+	}
+
 	public int addVariableTableEntry(final String name, final VariableTableType vtt, final TypeTableEntry type, OS_Element el) {
 		final VariableTableEntry vte = new VariableTableEntry(vte_list.size(), vtt, name, type, el);
 		vte_list.add(vte);
 		return vte.getIndex();
 	}
 
-    @Override
-    public OS_Module module() {
-		throw new NotImplementedException();
-//        return fd.getContext().module();
-    }
-
-	public int getCode() {
-		return code;
-	}
-
 	public void setCode(int aCode) {
 		code = aCode;
-	}
-
-	public void setParent(GeneratedContainerNC aGeneratedContainerNC) {
-		parent = aGeneratedContainerNC;
 	}
 
 	public GeneratedContainerNC getParent() {
 		return parent;
 	}
 
-	public void setClass(@NotNull GeneratedNode aNode) {
-		assert aNode instanceof GeneratedClass || aNode instanceof GeneratedNamespace;
-		genClass = aNode;
+	public void setParent(GeneratedContainerNC aGeneratedContainerNC) {
+		parent = aGeneratedContainerNC;
 	}
 
 	public GeneratedNode getGenClass() {
@@ -447,7 +438,42 @@ public abstract class BaseGeneratedFunction extends AbstractDependencyTracker im
 		return toString();
 	}
 
+	public void setClass(@NotNull GeneratedNode aNode) {
+		assert aNode instanceof GeneratedClass || aNode instanceof GeneratedNamespace;
+		genClass = aNode;
 
+		if (aNode instanceof GeneratedClass) {
+			_gcP.resolve((GeneratedClass) aNode);
+		}
+//		else
+//			throw new RuntimeException("not implemented");
+	}
+
+	public void resolveTypeDeferred(final GenType aType) {
+		if (typeDeferred.isPending())
+			typeDeferred.resolve(aType);
+		else {
+			final Holder<GenType> holder = new Holder<GenType>();
+			typeDeferred.then(new DoneCallback<GenType>() {
+				@Override
+				public void onDone(final GenType result) {
+					holder.set(result);
+				}
+			});
+			tripleo.elijah.util.Stupidity.println_err(String.format("Trying to resolve function twice 1) %s 2) %s", holder.get().asString(), aType.asString()));
+		}
+	}
+
+	public void addElement(final OS_Element aElement, final DeduceElement aDeduceElement) {
+		elements.put(aElement, aDeduceElement);
+	}
+
+	/*
+	 * Hook in for GeneratedClass
+	 */
+	public void onGenClass(OnGenClass aOnGenClass) {
+		_gcP.then(aOnGenClass::accept);
+	}
 }
 
 //

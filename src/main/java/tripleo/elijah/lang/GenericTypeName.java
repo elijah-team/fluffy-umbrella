@@ -56,7 +56,7 @@ public class GenericTypeName implements TypeName {
 		return Type.GENERIC;
 	}
 
-	public void setConstraint(TypeName aConstraint) {
+	public void setConstraint(final TypeName aConstraint) {
 		constraint = aConstraint;
 	}
 

@@ -13,7 +13,6 @@ import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.deduce.IInvocation;
 import tripleo.elijah.stages.gen_fn.GenType;
@@ -29,7 +28,7 @@ public class DeferredMember {
 	private final DeferredObject<GenType, Diagnostic, Void> typePromise = new DeferredObject<GenType, Diagnostic, Void>();
 	private final DeferredObject<GeneratedNode, Void, Void> externalRef = new DeferredObject<GeneratedNode, Void, Void>();
 
-	public DeferredMember(OS_Element aParent, IInvocation aInvocation, VariableStatement aVariableStatement) {
+	public DeferredMember(final OS_Element aParent, final IInvocation aInvocation, final VariableStatement aVariableStatement) {
 		parent = aParent;
 		invocation = aInvocation;
 		variableStatement = aVariableStatement;

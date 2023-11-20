@@ -14,7 +14,7 @@ package tripleo.elijah.stages.gen_c;
 public class Emit {
 	public static boolean emitting = true;
 
-	public static String emit(String s) {
+	public static String emit(final String s) {
 		if (emitting)
 			return s;
 		else

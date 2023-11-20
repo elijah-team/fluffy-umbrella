@@ -2,11 +2,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>tripleo.elijah</groupId>
-    <artifactId>elijah-v1</artifactId>
+    <artifactId>elijah-v1-fluffy-umbrella</artifactId>
     <packaging>jar</packaging>
     <version>0.0.6</version>
-    <name>eljc-v1</name>
-    <url>http://gitlab.com/elijah-team/elijah-lang/</url>
+    <name>eljc-v1-fluffy-umbrella</name>
+    <url>http://github.com/elijah-team/fluffy-umbrella/</url>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -172,10 +172,6 @@
             <id>gitlab-maven</id>
             <url>https://gitlab.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
         </repository>
-        <snapshotRepository>
-            <id>gitlab-maven</id>
-            <url>https://gitlab.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
-        </snapshotRepository>
     </distributionManagement>
 
     <build>
@@ -204,6 +200,7 @@
             </plugin>
             -->
             <!-- Setup Javadoc jar -->
+<!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -232,6 +229,7 @@
                     </execution>
                 </executions>
             </plugin>
+-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -318,6 +316,7 @@
 
         </plugins>
 
+<!--
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -325,7 +324,7 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven-javadoc-plugin.version}</version>
                 </plugin>
-                <!-- Setup site with reflow maven skin -->
+                &lt;!&ndash; Setup site with reflow maven skin &ndash;&gt;
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
@@ -343,8 +342,9 @@
                 </plugin>
 
             </plugins>
-
         </pluginManagement>
+-->
+
     </build>
 
     <reporting>

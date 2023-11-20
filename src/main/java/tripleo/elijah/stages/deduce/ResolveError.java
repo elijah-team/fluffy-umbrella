@@ -32,13 +32,13 @@ public class ResolveError extends Exception implements Diagnostic {
 	private final LookupResultList lrl;
 	private final @org.jetbrains.annotations.Nullable IdentExpression ident;
 
-	public ResolveError(TypeName typeName, LookupResultList lrl) {
+	public ResolveError(final TypeName typeName, final LookupResultList lrl) {
 		this.typeName = typeName;
 		this.lrl = lrl;
 		this.ident = null;
 	}
 
-	public ResolveError(IdentExpression aIdent, LookupResultList aLrl) {
+	public ResolveError(final IdentExpression aIdent, final LookupResultList aLrl) {
 		ident = aIdent;
 		lrl = aLrl;
 		typeName = null;
@@ -64,10 +64,10 @@ public class ResolveError extends Exception implements Diagnostic {
 
 	@Override
 	public @NotNull List<Locatable> secondary() {
-		@NotNull Collection<Locatable> x = Collections2.transform(resultsList(), new Function<LookupResult, Locatable>() {
+		@NotNull final Collection<Locatable> x = Collections2.transform(resultsList(), new Function<LookupResult, Locatable>() {
 			@Nullable
 			@Override
-			public Locatable apply(@Nullable LookupResult input) {
+			public Locatable apply(@Nullable final LookupResult input) {
 				if (input.getElement() instanceof Locatable) {
 					return (Locatable) input.getElement();
 				}
@@ -78,10 +78,10 @@ public class ResolveError extends Exception implements Diagnostic {
 	}
 
 	@Override
-	public void report(@NotNull PrintStream stream) {
+	public void report(@NotNull final PrintStream stream) {
 		stream.println(String.format("---[%s]---: %s", code(), message()));
 		// linecache.print(primary);
-		for (Locatable sec : secondary()) {
+		for (final Locatable sec : secondary()) {
 			//linecache.print(sec)
 		}
 		stream.flush();

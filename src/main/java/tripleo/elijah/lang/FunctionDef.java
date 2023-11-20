@@ -13,14 +13,9 @@
  */
 package tripleo.elijah.lang;
 
-import antlr.Token;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.gen.ICodeGen;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 // TODO FunctionDef is not a Container is it?
 public class FunctionDef extends BaseFunctionDef implements Documentable, ClassItem, OS_Container, OS_Element2 {
@@ -35,7 +30,7 @@ public class FunctionDef extends BaseFunctionDef implements Documentable, ClassI
 
 	private final OS_Element parent;
 
-	public FunctionDef(OS_Element element, Context context) {
+	public FunctionDef(final OS_Element element, final Context context) {
 		parent = element;
 		if (element instanceof OS_Container) {
 			((OS_Container) parent).add(this);

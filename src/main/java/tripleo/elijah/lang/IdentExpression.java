@@ -28,8 +28,8 @@ import java.io.File;
  */
 public class IdentExpression implements IExpression, OS_Element, Resolvable, Locatable {
 
-	private Token text;
-	public  Attached _a;
+	private final Token text;
+    public Attached _a;
 	private OS_Element _resolvedElement;
 
 	public IdentExpression(final Token r1) {
@@ -172,7 +172,7 @@ public class IdentExpression implements IExpression, OS_Element, Resolvable, Loc
 
 	@Override
 	public File getFile() {
-		String filename = token().getFilename();
+		final String filename = token().getFilename();
 		if (filename == null)
 			return null;
 		return new File(filename);

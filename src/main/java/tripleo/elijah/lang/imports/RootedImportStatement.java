@@ -78,7 +78,7 @@ public class RootedImportStatement extends _BaseImportStatement {
 		_ctx = ctx;
 	}
 
-	public void setImportList(QualidentList qil) {
+	public void setImportList(final QualidentList qil) {
 		importList = qil;
 	}
 }

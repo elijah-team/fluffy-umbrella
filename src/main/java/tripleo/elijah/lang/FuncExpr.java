@@ -12,7 +12,6 @@ import tripleo.elijah.contexts.FuncExprContext;
 import tripleo.elijah.gen.ICodeGen;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -67,7 +66,7 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 		return mFal.falis;
 	}
 
-	public void setArgList(FormalArgList argList) {
+	public void setArgList(final FormalArgList argList) {
 		mFal = argList;
 	}
 

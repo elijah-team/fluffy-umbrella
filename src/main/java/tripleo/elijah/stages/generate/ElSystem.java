@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.stages.generate;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.stages.gen_fn.GeneratedClass;
 import tripleo.elijah.stages.gen_fn.GeneratedFunction;
@@ -28,30 +29,31 @@ public class ElSystem {
 	private final Map<GeneratedFunction, String> gfm_map = new HashMap<GeneratedFunction, String>();
 	public boolean verbose = true;
 
-	public void generateOutputs(GenerateResult gr) {
+	public void generateOutputs(@NotNull final GenerateResult gr) {
 		final OutputStrategyC outputStrategyC = new OutputStrategyC(this.outputStrategy);
 
-		for (GenerateResultItem ab : gr.results()) {
-			String s = generateOutputs_Internal(ab.node, ab.ty, outputStrategyC);
+		for (final GenerateResultItem ab : gr.results()) {
+			final String s = generateOutputs_Internal(ab.node, ab.ty, outputStrategyC);
 			assert s != null;
 			ab.output = s;
 		}
 
 		if (verbose) {
-			for (GenerateResultItem ab : gr.results()) {
+			for (final GenerateResultItem ab : gr.results()) {
 				if (ab.node instanceof GeneratedFunction) continue;
 				System.out.println("** "+ab.node+" "+ab.output);
 			}
 		}
 	}
 
-	String generateOutputs_Internal(GeneratedNode node, GenerateResult.TY ty, OutputStrategyC outputStrategyC) {
-		String s, ss;
+	String generateOutputs_Internal(final GeneratedNode node, final GenerateResult.TY ty, final OutputStrategyC outputStrategyC) {
+		final String s;
+		String ss;
 		if (node instanceof GeneratedNamespace) {
 			final GeneratedNamespace generatedNamespace = (GeneratedNamespace) node;
 			s = outputStrategyC.nameForNamespace(generatedNamespace, ty);
 //			System.out.println("41 "+generatedNamespace+" "+s);
-			for (GeneratedFunction gf : generatedNamespace.functionMap.values()) {
+			for (final GeneratedFunction gf : generatedNamespace.functionMap.values()) {
 				ss = generateOutputs_Internal(gf, ty, outputStrategyC);
 				gfm_map.put(gf, ss);
 			}
@@ -59,7 +61,7 @@ public class ElSystem {
 			final GeneratedClass generatedClass = (GeneratedClass) node;
 			s = outputStrategyC.nameForClass(generatedClass, ty);
 //			System.out.println("48 "+generatedClass+" "+s);
-			for (GeneratedFunction gf : generatedClass.functionMap.values()) {
+			for (final GeneratedFunction gf : generatedClass.functionMap.values()) {
 				ss = generateOutputs_Internal(gf, ty, outputStrategyC);
 				gfm_map.put(gf, ss);
 			}
@@ -72,11 +74,11 @@ public class ElSystem {
 		return s;
 	}
 
-	public void setOutputStrategy(OutputStrategy outputStrategy) {
+	public void setOutputStrategy(final OutputStrategy outputStrategy) {
 		this.outputStrategy = outputStrategy;
 	}
 
-	public void setCompilation(Compilation compilation) {
+	public void setCompilation(final Compilation compilation) {
 		this.compilation = compilation;
 	}
 }

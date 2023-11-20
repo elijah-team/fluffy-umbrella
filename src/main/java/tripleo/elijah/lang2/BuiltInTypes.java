@@ -30,7 +30,7 @@ public enum BuiltInTypes {
 		return _code;
 	}
 
-	public static boolean isBooleanText(String name) {
+	public static boolean isBooleanText(final String name) {
 		return name.equals("true") || name.equals("false")
 			|| name.equals("True") || name.equals("False");
 	}

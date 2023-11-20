@@ -8,19 +8,18 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.AccessNotation;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.VariableStatement;
+import tripleo.elijah.stages.deduce.FunctionMapDeferred;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
-import tripleo.elijah.stages.post_deduce.IPostDeduce;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created 3/16/21 10:45 AM
@@ -33,6 +32,8 @@ public abstract class GeneratedContainerNC extends AbstractDependencyTracker imp
 	public Map<ClassStatement, GeneratedClass> classMap = new HashMap<ClassStatement, GeneratedClass>();
 
 	public List<VarTableEntry> varTable = new ArrayList<VarTableEntry>();
+
+	Multimap<FunctionDef, FunctionMapDeferred> functionMapDeferreds = ArrayListMultimap.create();
 
 	public void addVarTableEntry(AccessNotation an, VariableStatement vs) {
 		// TODO dont ignore AccessNotation
@@ -55,32 +56,39 @@ public abstract class GeneratedContainerNC extends AbstractDependencyTracker imp
 
 	public void addFunction(FunctionDef functionDef, GeneratedFunction generatedFunction) {
 		if (functionMap.containsKey(functionDef))
-			throw new IllegalStateException("Function already generated"); // TODO do better than this
+			throw new IllegalStateException("Function already generated"); // TODO there can be overloads, although we don't handle that yet
 		functionMap.put(functionDef, generatedFunction);
-	}
-
-	/**
-	 * Get a {@link GeneratedFunction}
-	 *
-	 * @param fd the function searching for
-	 *
-	 * @return null if no such key exists
-	 */
-	public GeneratedFunction getFunction(FunctionDef fd) {
-		return functionMap.get(fd);
+		{
+			final Collection<FunctionMapDeferred> deferreds = functionMapDeferreds.get(functionDef);
+			for (FunctionMapDeferred deferred : deferreds) {
+				deferred.onNotify(generatedFunction);
+			}
+		}
 	}
 
 	public int getCode() {
 		return code;
 	}
 
-	public void setCode(int aCode) {
-		code = aCode;
+	/**
+	 * Get a {@link GeneratedFunction}
+	 *
+	 * @param fd the function searching for
+	 * @return null if no such key exists
+	 */
+	public GeneratedFunction getFunction(FunctionDef fd) {
+		return functionMap.get(fd);
 	}
 
 	public abstract void generateCode(CodeGenerator aGgc, GenerateResult aGr);
 
-	public abstract void analyzeNode(IPostDeduce aPostDeduce);
+	public void setCode(int aCode) {
+		code = aCode;
+	}
+
+	public void functionMapDeferred(final FunctionDef aFunctionDef, final FunctionMapDeferred aFunctionMapDeferred) {
+		functionMapDeferreds.put(aFunctionDef, aFunctionMapDeferred);
+	}
 }
 
 //

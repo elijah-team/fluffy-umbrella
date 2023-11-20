@@ -24,15 +24,15 @@ public class PropertyStatementBuilder extends ElBuilder {
 
 	@Override
 	protected OS_Element build() {
-		PropertyStatement ps = new PropertyStatement(_parent, _context);
+		final PropertyStatement ps = new PropertyStatement(_parent, _context);
 		ps.setName(this.prop_name);
 		ps.setTypeName(this.tn);
 		if (_get_scope != null) {
-			Scope3 scope3 = new Scope3(ps.get_fn);
-			for (ElBuilder gsi : _get_scope.items()) {
+			final Scope3 scope3 = new Scope3(ps.get_fn);
+			for (final ElBuilder gsi : _get_scope.items()) {
 				gsi.setParent(ps);
 				gsi.setContext(ps.getContext());
-				OS_Element built = gsi.build();
+				final OS_Element built = gsi.build();
 				scope3.add(built);
 			}
 			ps.get_fn.scope(scope3);
@@ -41,11 +41,11 @@ public class PropertyStatementBuilder extends ElBuilder {
 		} else
 			ps.get_fn = null;
 		if (_set_scope != null) {
-			Scope3 scope3 = new Scope3(ps.set_fn);
-			for (ElBuilder gsi : _set_scope.items()) {
+			final Scope3 scope3 = new Scope3(ps.set_fn);
+			for (final ElBuilder gsi : _set_scope.items()) {
 				gsi.setParent(ps);
 				gsi.setContext(ps.getContext());
-				OS_Element built = gsi.build();
+				final OS_Element built = gsi.build();
 				scope3.add(built);
 			}
 			ps.set_fn.scope(scope3);
@@ -57,15 +57,15 @@ public class PropertyStatementBuilder extends ElBuilder {
 	}
 
 	@Override
-	protected void setContext(Context context) {
+	protected void setContext(final Context context) {
 		_context = context;
 	}
 
-	public void setName(IdentExpression prop_name) {
+	public void setName(final IdentExpression prop_name) {
 		this.prop_name = prop_name;
 	}
 
-	public void setTypeName(TypeName tn) {
+	public void setTypeName(final TypeName tn) {
 		this.tn = tn;
 	}
 

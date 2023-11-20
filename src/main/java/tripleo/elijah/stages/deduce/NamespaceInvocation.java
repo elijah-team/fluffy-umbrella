@@ -21,7 +21,7 @@ public class NamespaceInvocation implements IInvocation {
 	private final DeferredObject<GeneratedNamespace, Void, Void> resolveDeferred = new DeferredObject<GeneratedNamespace, Void, Void>();
 	private final NamespaceStatement namespaceStatement;
 
-	public NamespaceInvocation(NamespaceStatement aNamespaceStatement) {
+	public NamespaceInvocation(final NamespaceStatement aNamespaceStatement) {
 		namespaceStatement = aNamespaceStatement;
 	}
 
@@ -34,7 +34,7 @@ public class NamespaceInvocation implements IInvocation {
 	}
 
 	@Override
-	public void setForFunctionInvocation(@NotNull FunctionInvocation aFunctionInvocation) {
+	public void setForFunctionInvocation(@NotNull final FunctionInvocation aFunctionInvocation) {
 		aFunctionInvocation.setNamespaceInvocation(this);
 	}
 }

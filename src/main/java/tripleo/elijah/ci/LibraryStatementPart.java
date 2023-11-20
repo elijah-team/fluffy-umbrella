@@ -50,7 +50,7 @@ public class LibraryStatementPart {
 		return ci;
 	}
 
-	public void setInstructions(CompilerInstructions instructions) {
+	public void setInstructions(final CompilerInstructions instructions) {
 		ci = instructions;
 	}
 
