@@ -18,7 +18,8 @@ import antlr.CommonToken;
 import antlr.Token;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.gen.CompilerContext;
@@ -233,7 +234,7 @@ public class ExpressionNodeBuilder {
 				sb.append(tripleo.elijah.util.Helpers.String_join(",", Collections2.transform(pce1.getArgs().expressions(), new Function<IExpression, String>() {
 					@Nullable
 					@Override
-					public String apply(@Nullable IExpression input) {
+					public String apply(@Nullable final IExpression input) {
 						@NotNull final IExpression arg = input;
 						final String s2;
 						if (arg instanceof VariableReference) {

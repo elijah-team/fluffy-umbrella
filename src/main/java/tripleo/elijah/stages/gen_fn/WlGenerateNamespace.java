@@ -15,39 +15,41 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.NamespaceStatement;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.NamespaceInvocation;
+import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkJob;
 import tripleo.elijah.work.WorkManager;
-
-import java.util.List;
 
 /**
  * Created 5/31/21 3:01 AM
  */
 public class WlGenerateNamespace implements WorkJob {
-	private final GenerateFunctions generateFunctions;
-	private final NamespaceStatement namespaceStatement;
-	private final NamespaceInvocation namespaceInvocation;
+	private final GenerateFunctions                      generateFunctions;
+	private final NamespaceStatement                     namespaceStatement;
+	private final NamespaceInvocation                    namespaceInvocation;
 	private final DeducePhase.@Nullable GeneratedClasses coll;
-	private boolean _isDone = false;
-	private GeneratedNamespace Result;
+	private final ICodeRegistrar                         codeRegistrar;
+	private       boolean                                _isDone = false;
+	private       GeneratedNamespace                     Result;
 
-	public WlGenerateNamespace(@NotNull GenerateFunctions aGenerateFunctions,
-							   @NotNull NamespaceInvocation aNamespaceInvocation,
-							   @Nullable DeducePhase.GeneratedClasses aColl) {
-		generateFunctions = aGenerateFunctions;
-		namespaceStatement = aNamespaceInvocation.getNamespace();
+	public WlGenerateNamespace(@NotNull final GenerateFunctions aGenerateFunctions,
+	                           @NotNull final NamespaceInvocation aNamespaceInvocation,
+	                           @Nullable final DeducePhase.GeneratedClasses aColl,
+	                           final ICodeRegistrar aCodeRegistrar) {
+		generateFunctions   = aGenerateFunctions;
+		namespaceStatement  = aNamespaceInvocation.getNamespace();
 		namespaceInvocation = aNamespaceInvocation;
-		coll = aColl;
+		coll                = aColl;
+		codeRegistrar       = aCodeRegistrar;
 	}
 
 	@Override
-	public void run(WorkManager aWorkManager) {
+	public void run(final WorkManager aWorkManager) {
 		final DeferredObject<GeneratedNamespace, Void, Void> resolvePromise = namespaceInvocation.resolveDeferred();
 		switch (resolvePromise.state()) {
 		case PENDING:
-			@NotNull GeneratedNamespace ns = generateFunctions.generateNamespace(namespaceStatement);
-			ns.setCode(generateFunctions.module.parent.nextClassCode());
+			@NotNull final GeneratedNamespace ns = generateFunctions.generateNamespace(namespaceStatement);
+			codeRegistrar.registerNamespace(ns);
 			if (coll != null)
 				coll.add(ns);
 
@@ -57,7 +59,7 @@ public class WlGenerateNamespace implements WorkJob {
 		case RESOLVED:
 			resolvePromise.then(new DoneCallback<GeneratedNamespace>() {
 				@Override
-				public void onDone(GeneratedNamespace result) {
+				public void onDone(final GeneratedNamespace result) {
 					Result = result;
 				}
 			});
@@ -66,12 +68,16 @@ public class WlGenerateNamespace implements WorkJob {
 			throw new NotImplementedException();
 		}
 		_isDone = true;
-//		System.out.println(String.format("** GenerateNamespace %s at %s", namespaceInvocation.getNamespace().getName(), this));
+//		tripleo.elijah.util.Stupidity.println2(String.format("** GenerateNamespace %s at %s", namespaceInvocation.getNamespace().getName(), this));
 	}
 
 	@Override
 	public boolean isDone() {
 		return _isDone;
+	}
+
+	public GeneratedNode getResult() {
+		return Result;
 	}
 }
 

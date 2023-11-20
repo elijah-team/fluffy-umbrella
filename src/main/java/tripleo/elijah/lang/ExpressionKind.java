@@ -38,7 +38,7 @@ public enum ExpressionKind {
 
 	STRING_LITERAL, CHAR_LITERAL,
 	NUMERIC, FLOAT,
-	
+
 	BAND, BXOR, BOR,
 	LAND, LOR,
 
@@ -48,7 +48,7 @@ public enum ExpressionKind {
 
 	DOT_EXP, /*INDEX_OF,*/ GET_ITEM, SET_ITEM, FUNC_EXPR, TO_EXPR,
 
-	CAST_TO, AS_CAST, IS_A
+	CAST_TO, AS_CAST, SUBEXPRESSION, IS_A
 
 }
 

@@ -18,29 +18,29 @@ import java.util.List;
  */
 public class FunctionDefScope extends BaseFunctionDefScope implements Documentable {
 
-	private List<Precondition> prec_list = new ArrayList<Precondition>();
-	private List<Postcondition> postc_list = new ArrayList<Postcondition>();
-	private boolean _isAbstract = false;
+    private final List<Precondition> prec_list = new ArrayList<Precondition>();
+    private final List<Postcondition> postc_list = new ArrayList<Postcondition>();
+    private boolean _isAbstract = false;
 
-	@Override
-	public void yield(IExpression expr) {
-		// TODO add Context and porent
+    @Override
+    public void yield(final IExpression expr) {
+        // TODO add Context and porent
 //		add(new StatementWrapper(new YieldExpression(expr), null,null));
-		add(new StatementWrapperBuilder(expr)); // TODO this says nothing about a YieldExpression, which is actually a Statement
-	}
+        add(new StatementWrapperBuilder(expr)); // TODO this says nothing about a YieldExpression, which is actually a Statement
+    }
 
-	// endregion
+    // endregion
 
-	public void addPreCondition(Precondition p) {
+	public void addPreCondition(final Precondition p) {
 		prec_list.add(p);
 	}
 
-	public void addPostCondition(Postcondition po) {
+	public void addPostCondition(final Postcondition po) {
 		postc_list.add(po);
 	}
 
 	@Override
-	public void statementWrapper(IExpression expr) {
+	public void statementWrapper(final IExpression expr) {
 		add(new StatementWrapperBuilder(expr));
 	}
 
@@ -53,7 +53,7 @@ public class FunctionDefScope extends BaseFunctionDefScope implements Documentab
 	}
 
 	@Override
-	public void constructExpression(Qualident q, ExpressionList o) {
+	public void constructExpression(final Qualident q, final ExpressionList o) {
 		add(new ConstructStatementBuilder(q, o));
 	}
 }

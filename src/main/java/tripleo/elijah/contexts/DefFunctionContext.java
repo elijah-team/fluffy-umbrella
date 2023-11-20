@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.contexts;
 
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.DefFunctionDef;
 import tripleo.elijah.lang.LookupResultList;
@@ -42,7 +43,7 @@ public class DefFunctionContext extends Context {
 	}
 
 	@Override
-	public Context getParent() {
+	public @Nullable Context getParent() {
 		return null;
 	}
 

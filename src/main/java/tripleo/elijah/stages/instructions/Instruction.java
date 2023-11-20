@@ -9,6 +9,7 @@
 package tripleo.elijah.stages.instructions;
 
 import tripleo.elijah.lang.Context;
+import tripleo.elijah.stages.deduce.DeduceElement;
 
 import java.util.List;
 
@@ -17,9 +18,10 @@ import java.util.List;
  */
 public class Instruction {
 	private InstructionName name;
-	private int index = -1;
+	private int             index = -1;
+	public  DeduceElement deduceElement;
 	List<InstructionArgument> args;
-	private Context context;
+	private Context       context;
 
 	public void setName(final InstructionName aName) {
 		name = aName;

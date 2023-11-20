@@ -23,11 +23,11 @@ public class El_Category {
 		final Token category = notation.getCategory();
 		if (category == null)
 			return null;
-		String x = category.getText();
+		final String x = category.getText();
 		return Helpers.remove_single_quotes_from_string(x);
 	}
 
-	public El_Category(AccessNotation aNotation) {
+	public El_Category(final AccessNotation aNotation) {
 		notation = aNotation;
 	}
 }

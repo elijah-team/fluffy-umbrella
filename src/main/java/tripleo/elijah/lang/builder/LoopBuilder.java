@@ -18,39 +18,39 @@ public class LoopBuilder extends ElBuilder {
 	private IExpression _frompart;
 	private IExpression _topart;
 	private IdentExpression _iterName;
-	private LoopScope _scope = new LoopScope();
-	private Context _context;
+    private final LoopScope _scope = new LoopScope();
+    private Context _context;
 	private IExpression expr;
 
-	public void type(LoopTypes type) {
+	public void type(final LoopTypes type) {
 		_type = type;
 	}
 
-	public void frompart(IExpression expr) {
+	public void frompart(final IExpression expr) {
 		_frompart = expr;
 	}
 
-	public void topart(IExpression expr) {
+	public void topart(final IExpression expr) {
 		_topart = expr;
 	}
 
-	public void iterName(IdentExpression i1) {
+	public void iterName(final IdentExpression i1) {
 		_iterName = i1;
 	}
 
 	@Override
 	public Loop build() {
-		Loop loop = new Loop(_parent);
+		final Loop loop = new Loop(_parent);
 		loop.type(_type);
 		loop.frompart(_frompart);
 		loop.topart(_topart);
 		loop.iterName(_iterName);
 		loop.expr(expr);
-		Scope3 scope = new Scope3(loop);
-		for (ElBuilder builder : _scope.items()) {
+		final Scope3 scope = new Scope3(loop);
+		for (final ElBuilder builder : _scope.items()) {
 			builder.setParent(loop);
 			builder.setContext(loop.getContext());
-			OS_Element built = builder.build();
+			final OS_Element built = builder.build();
 			scope.add(built);
 		}
 		loop.scope(scope);
@@ -58,7 +58,7 @@ public class LoopBuilder extends ElBuilder {
 	}
 
 	@Override
-	protected void setContext(Context context) {
+	protected void setContext(final Context context) {
 		_context = context;
 	}
 
@@ -66,7 +66,7 @@ public class LoopBuilder extends ElBuilder {
 		return _scope;
 	}
 
-	public void expr(IExpression expr) {
+	public void expr(final IExpression expr) {
 		this.expr = expr;
 	}
 }

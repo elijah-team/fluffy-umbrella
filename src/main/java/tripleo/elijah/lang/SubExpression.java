@@ -20,7 +20,12 @@ public class SubExpression extends AbstractExpression {
 	private final IExpression carrier;
 
 	public SubExpression(final IExpression ee) {
-		carrier=ee;
+		carrier = ee;
+	}
+
+	@Override
+	public ExpressionKind getKind() {
+		return ExpressionKind.SUBEXPRESSION;
 	}
 
 	@Override

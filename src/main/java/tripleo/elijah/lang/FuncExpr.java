@@ -9,28 +9,27 @@
 package tripleo.elijah.lang;
 
 import tripleo.elijah.contexts.FuncExprContext;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Tripleo
- *
+ * <p>
  * Created 	Mar 30, 2020 at 7:41:52 AM
  */
 public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element {
 
-//	private FormalArgList argList = new FormalArgList();
-	private TypeName _returnType;
-	private OS_Type _type;
+	//	private FormalArgList argList = new FormalArgList();
+	private TypeName        _returnType;
+	private OS_Type         _type;
 	private FuncExprContext _ctx;
 //	private Scope3 scope3;
 
 	public void type(final TypeModifiers modifier) {
 		assert modifier == TypeModifiers.FUNCTION ||
-				modifier == TypeModifiers.PROCEDURE;
+		  modifier == TypeModifiers.PROCEDURE;
 	}
 
 	public TypeName returnType() {
@@ -67,7 +66,7 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 		return mFal.falis;
 	}
 
-	public void setArgList(FormalArgList argList) {
+	public void setArgList(final FormalArgList argList) {
 		mFal = argList;
 	}
 
@@ -116,7 +115,7 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 	}
 
 	@Override
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitFuncExpr(this);
 	}
 

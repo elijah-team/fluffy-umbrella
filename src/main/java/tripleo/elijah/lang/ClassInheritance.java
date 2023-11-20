@@ -27,7 +27,7 @@ public class ClassInheritance {
 	public ClassInheritance() {
 	}
 
-	public List<TypeName> tns = new ArrayList<TypeName>();
+	public final List<TypeName> tns = new ArrayList<TypeName>();
 
 	public void add(final TypeName tn) {
 		tns.add(tn);

@@ -13,9 +13,9 @@ import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.BaseFunctionDef;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.ConstructorDef;
-import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.deduce.NamespaceInvocation;
 
 /**
  * Created 6/27/21 9:45 AM
@@ -27,12 +27,27 @@ public class GeneratedConstructor extends BaseGeneratedFunction {
 		cd = aConstructorDef;
 	}
 
-	public void setFunctionInvocation(FunctionInvocation fi) {
-		GenType genType = new GenType();
-		genType.ci = fi.getClassInvocation(); // TODO will fail on namespace constructors; next line too
-		genType.resolved = new OS_Type(((ClassInvocation) genType.ci).getKlass());
+	public void setFunctionInvocation(final FunctionInvocation fi) {
+		final GenType genType = new GenType();
+
+		// TODO will fail on namespace constructors; next line too
+		if (genType.ci instanceof ClassInvocation) {
+//			throw new IllegalStateException("34 Needs class invocation");
+
+			final ClassInvocation classInvocation = (ClassInvocation) genType.ci;
+
+			genType.ci       = classInvocation;
+			genType.resolved = classInvocation.getKlass().getOS_Type();
+		} else if (genType.ci instanceof NamespaceInvocation) {
+			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) genType.ci;
+
+			genType.ci       = namespaceInvocation;
+			genType.resolved = namespaceInvocation.getNamespace().getOS_Type();
+		}
+
 		genType.node = this;
-		typeDeferred().resolve(genType);
+
+		resolveTypeDeferred(genType);
 	}
 
 	//
@@ -70,7 +85,6 @@ public class GeneratedConstructor extends BaseGeneratedFunction {
 	public String identityString() {
 		return ""+cd;
 	}
-
 
 }
 

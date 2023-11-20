@@ -18,33 +18,33 @@ import java.util.List;
  * Created 12/23/20 2:38 AM
  */
 public class NamespaceStatementBuilder extends ElBuilder implements Documentable {
-	private List<AnnotationClause> annotations = new ArrayList<AnnotationClause>();
-	private NamespaceTypes _type;
+	private final List<AnnotationClause> annotations = new ArrayList<AnnotationClause>();
+    private NamespaceTypes _type;
 	private OS_Element _parent;
 	private Context _parent_context;
-	private IdentExpression _name;
-	private NamespaceScope _scope = new NamespaceScope();
-	private Context _context;
+    private IdentExpression _name;
+    private final NamespaceScope _scope = new NamespaceScope();
+    private Context _context;
 
-	public void setType(NamespaceTypes namespaceTypes) {
+	public void setType(final NamespaceTypes namespaceTypes) {
 		_type = namespaceTypes;
 	}
 
 	@Override
 	public NamespaceStatement build() {
-		NamespaceStatement cs = new NamespaceStatement(_parent, _parent_context);
+		final NamespaceStatement cs = new NamespaceStatement(_parent, _parent_context);
 		cs.setType(_type);
 		cs.setName(_name);
-		for (AnnotationClause annotation : annotations) {
+		for (final AnnotationClause annotation : annotations) {
 			cs.addAnnotation(annotation);
 		}
-		for (ElBuilder builder : _scope.items()) {
+		for (final ElBuilder builder : _scope.items()) {
 //			if (builder instanceof AccessNotation) {
 //				cs.addAccess((AccessNotation) builder);
 //			} else {
 //				cs.add(builder);
 //			}
-			OS_Element built;
+			final OS_Element built;
 			builder.setParent(cs);
 			builder.setContext(cs.getContext());
 			built = builder.build();
@@ -56,15 +56,15 @@ public class NamespaceStatementBuilder extends ElBuilder implements Documentable
 	}
 
 	@Override
-	protected void setContext(Context context) {
+	protected void setContext(final Context context) {
 		_context = context;
 	}
 
-	public void annotations(AnnotationClause a) {
+	public void annotations(final AnnotationClause a) {
 		annotations.add(a);
 	}
 
-	public void setName(IdentExpression identExpression) {
+	public void setName(final IdentExpression identExpression) {
 		_name = identExpression;
 	}
 
@@ -72,7 +72,7 @@ public class NamespaceStatementBuilder extends ElBuilder implements Documentable
 //		_parent = o;
 //	}
 
-	public void setParentContext(Context o) {
+	public void setParentContext(final Context o) {
 		_parent_context = o;
 	}
 
@@ -83,7 +83,7 @@ public class NamespaceStatementBuilder extends ElBuilder implements Documentable
 	private final List<Token> _docstrings = new ArrayList<Token>();
 
 	@Override
-	public void addDocString(Token s1) {
+	public void addDocString(final Token s1) {
 		_docstrings.add(s1);
 	}
 

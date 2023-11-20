@@ -9,11 +9,7 @@
 package tripleo.elijah.entrypoints;
 
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.lang.ClassItem;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.OS_Package;
-import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.lang.*;
 
 import java.util.Collection;
 
@@ -24,11 +20,11 @@ public class MainClassEntryPoint implements EntryPoint {
 	private FunctionDef main_function;
 	private final ClassStatement klass;
 
-	public MainClassEntryPoint(ClassStatement aKlass) {
+	public MainClassEntryPoint(final ClassStatement aKlass) {
 		final Collection<ClassItem> main = aKlass.findFunction("main");
-		for (ClassItem classItem : main) {
-			FunctionDef fd = (FunctionDef) classItem;
-			boolean return_type_is_null;
+		for (final ClassItem classItem : main) {
+			final FunctionDef fd = (FunctionDef) classItem;
+			final boolean return_type_is_null;
 			final TypeName typeName = fd.returnType();
 			if (typeName == null)
 				return_type_is_null = true;
@@ -43,12 +39,12 @@ public class MainClassEntryPoint implements EntryPoint {
 		klass = aKlass;
 	}
 
-	public static boolean isMainClass(@NotNull ClassStatement classStatement) {
+	public static boolean isMainClass(@NotNull final ClassStatement classStatement) {
 		// TODO what about Library (for windows dlls) etc?
 		return classStatement.getPackageName() == OS_Package.default_package && classStatement.name().equals("Main");
 	}
 
-	public static boolean is_main_function_with_no_args(@NotNull FunctionDef aFunctionDef) {
+	public static boolean is_main_function_with_no_args(@NotNull final FunctionDef aFunctionDef) {
 		switch (aFunctionDef.getSpecies()) {
 			case REG_FUN:
 			case DEF_FUN:

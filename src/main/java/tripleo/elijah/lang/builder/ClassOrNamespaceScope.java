@@ -20,7 +20,7 @@ import java.util.List;
  */
 public abstract class ClassOrNamespaceScope extends BaseScope {
 
-	public void addProp(PropertyStatementBuilder ps) {
+	public void addProp(final PropertyStatementBuilder ps) {
 		add(ps);
 	}
 
@@ -28,7 +28,7 @@ public abstract class ClassOrNamespaceScope extends BaseScope {
 		final IdentExpression ident;
 		final IExpression expr;
 
-		public IspPart(IdentExpression i1, IExpression expr) {
+		public IspPart(final IdentExpression i1, final IExpression expr) {
 			this.ident = i1;
 			this.expr = expr;
 		}
@@ -36,7 +36,7 @@ public abstract class ClassOrNamespaceScope extends BaseScope {
 
 	List<IspPart> isps = new ArrayList<IspPart>();
 
-	public void addInvariantStatementPart(IdentExpression i1, IExpression expr) {
+	public void addInvariantStatementPart(final IdentExpression i1, final IExpression expr) {
 		isps.add(new IspPart(i1, expr));
 	}
 

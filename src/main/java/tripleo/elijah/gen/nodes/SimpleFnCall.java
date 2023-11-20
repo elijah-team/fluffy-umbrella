@@ -3,10 +3,10 @@
  */
 package tripleo.elijah.gen.nodes;
 
-import java.util.List;
-
 import tripleo.elijah.comp.GenBuffer;
 import tripleo.elijah.gen.CompilerContext;
+
+import java.util.List;
 
 /**
  * @author Tripleo(sb)

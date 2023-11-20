@@ -3,9 +3,17 @@ package tripleo.elijah.stages.deduce;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.lang.*;
+import org.jetbrains.annotations.Nullable;
+import tripleo.elijah.lang.ClassItem;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.ConstructorDef;
+import tripleo.elijah.lang.ExpressionList;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.LookupResult;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Element2;
+import tripleo.elijah.lang.ProcedureCallExpression;
 import tripleo.elijah.util.NotImplementedException;
 
 import java.util.List;
@@ -65,7 +73,7 @@ public class DeduceUtils {
 
 //				return true; // TODO
 			}
-			System.out.println(o);
+			tripleo.elijah.util.Stupidity.println2("" + o);
 			return false;
 		}
 	}
@@ -80,7 +88,7 @@ public class DeduceUtils {
 		public boolean apply(final OS_Element o) {
 			assert o instanceof ClassItem;
 			//  TODO what about __call__ and __ctor__ for ClassStatement?
-//			System.out.println("2000 "+o);
+//			tripleo.elijah.util.Stupidity.println2("2000 "+o);
 			if (!(o instanceof FunctionDef)) return false;
 			//
 			final ExpressionList args = pce.getArgs();

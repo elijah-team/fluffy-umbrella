@@ -10,6 +10,7 @@ package tripleo.elijah.lang;
 
 import antlr.Token;
 
+
 public class VariableReference extends AbstractExpression implements OS_Expression {
 
 	String main;
@@ -32,13 +33,13 @@ public class VariableReference extends AbstractExpression implements OS_Expressi
 
 	public void setMain(final String s) {
 		main = s;
-		System.out.println(repr_());
+		tripleo.elijah.util.Stupidity.println2(repr_());
 	}
 
 	public void setMain(final Token t) {
 		final String s = t.getText();
 		main = s;
-		System.out.println(repr_());
+		tripleo.elijah.util.Stupidity.println2(repr_());
 	}
 
 	/**

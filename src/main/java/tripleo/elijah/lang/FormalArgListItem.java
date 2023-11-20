@@ -8,31 +8,31 @@
  */
 package tripleo.elijah.lang;
 
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
 
 public class FormalArgListItem implements OS_Element, OS_Element2 {
 
 	private IdentExpression name;
-	private TypeName tn=null;
+	private TypeName        tn = null;
 
-    @Override // OS_Element
-    public void visitGen(final ICodeGen visit) {
-        visit.visitFormalArgListItem(this);
-    }
+	@Override // OS_Element
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitFormalArgListItem(this);
+	}
 
-    @Override // OS_Element
-    public OS_Element getParent() {
-        throw new NotImplementedException();
-//        return null;
-    }
-
-    @Override // OS_Element
-    public Context getContext() {
+	@Override // OS_Element
+	public Context getContext() {
 //        throw new NotImplementedException();
 //        return null;
 		return name.getContext();
-    }
+	}
+
+	@Override // OS_Element
+	public OS_Element getParent() {
+		throw new NotImplementedException();
+//        return null;
+	}
 
 	@Override // OS_Element2
 	public String name() {

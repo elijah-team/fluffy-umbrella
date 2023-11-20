@@ -21,6 +21,7 @@ import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.stages.gen_fn.BaseTableEntry;
 import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.gen_fn.GenericElementHolder;
+import tripleo.elijah.stages.gen_fn.GenericElementHolderWithIntegerIA;
 import tripleo.elijah.stages.gen_fn.IdentTableEntry;
 import tripleo.elijah.stages.gen_fn.ProcTableEntry;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
@@ -42,7 +43,7 @@ public class DeducePath {
 	private final MemberContext @NotNull []           contexts;
 
 	@Contract(pure = true)
-	public DeducePath(IdentTableEntry aIdentTableEntry, @NotNull List<InstructionArgument> aX) {
+	public DeducePath(final IdentTableEntry aIdentTableEntry, @NotNull final List<InstructionArgument> aX) {
 		final int size = aX.size();
 		assert size > 0;
 
@@ -58,37 +59,42 @@ public class DeducePath {
 		return ias.size();
 	}
 
-	public InstructionArgument getIA(int index) {
+	public InstructionArgument getIA(final int index) {
 		return ias.get(index);
 	}
 
 	@Nullable
-	public OS_Element getElement(int aIndex) {
+	public OS_Element getElement(final int aIndex) {
 		if (elements[aIndex] == null) {
-			InstructionArgument ia2 = getIA(aIndex);
-			@Nullable OS_Element el;
+			final InstructionArgument ia2 = getIA(aIndex);
+			@Nullable final OS_Element el;
 			if (ia2 instanceof IntegerIA) {
-				@NotNull VariableTableEntry vte = ((IntegerIA) ia2).getEntry();
+				@NotNull final VariableTableEntry vte = ((IntegerIA) ia2).getEntry();
 				el = vte.getResolvedElement();
 				assert el != null;
 				// set this to set resolved_elements of remaining entries
-				vte.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(el));
+				vte.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolderWithIntegerIA(el, (IntegerIA) ias.get(aIndex)));
 			} else if (ia2 instanceof IdentIA) {
-				@NotNull IdentTableEntry identTableEntry = ((IdentIA) ia2).getEntry();
+				@NotNull final IdentTableEntry identTableEntry = ((IdentIA) ia2).getEntry();
 				el = identTableEntry.getResolvedElement();
 //				if (el == null) {
 //					if (aIndex == 0) throw new IllegalStateException();
 //					getEntry(aIndex-1).setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(getElement(aIndex-1)));
 //					el = identTableEntry.resolved_element;
 //				}
-				assert el != null;
+				System.err.println("=== 397-002 ===================================");
+//				assert el != null;
 				if (aIndex == 0)
-					identTableEntry.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(el)); // TODO why reset status to same value??
+					if (identTableEntry.getResolvedElement() != el)
+						identTableEntry.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(el));
 			} else if (ia2 instanceof ProcIA) {
 				final @NotNull ProcTableEntry procTableEntry = ((ProcIA) ia2).getEntry();
 				el = procTableEntry.getResolvedElement(); // .expression?
 				// TODO no setStatus here?
-				assert el != null;
+				if (el == null) {
+					final int y = 2; // TODO feb 20
+//					throw new AssertionError();
+				}
 			} else
 				el = null; // README shouldn't be calling for other subclasses
 			elements[aIndex] = el;
@@ -99,13 +105,13 @@ public class DeducePath {
 	}
 
 	@Nullable
-	public BaseTableEntry getEntry(int aIndex) {
-		InstructionArgument ia2 = getIA(aIndex);
+	public BaseTableEntry getEntry(final int aIndex) {
+		final InstructionArgument ia2 = getIA(aIndex);
 		if (ia2 instanceof IntegerIA) {
-			@NotNull VariableTableEntry vte = ((IntegerIA) ia2).getEntry();
+			@NotNull final VariableTableEntry vte = ((IntegerIA) ia2).getEntry();
 			return vte;
 		} else if (ia2 instanceof IdentIA) {
-			@NotNull IdentTableEntry identTableEntry = ((IdentIA) ia2).getEntry();
+			@NotNull final IdentTableEntry identTableEntry = ((IdentIA) ia2).getEntry();
 			return identTableEntry;
 		} else if (ia2 instanceof ProcIA) {
 			final @NotNull ProcTableEntry procTableEntry = ((ProcIA) ia2).getEntry();
@@ -114,7 +120,7 @@ public class DeducePath {
 		return null;
 	}
 
-	public @Nullable Context getContext(int aIndex) {
+	public @Nullable Context getContext(final int aIndex) {
 		if (contexts[aIndex] == null) {
 			final @Nullable MemberContext memberContext = new MemberContext(this, aIndex, getElement(aIndex));
 			contexts[aIndex] = memberContext;
@@ -124,7 +130,7 @@ public class DeducePath {
 
 	}
 
-	public void getElementPromise(int aIndex, DoneCallback<OS_Element> aOS_elementDoneCallback, FailCallback<Diagnostic> aDiagnosticFailCallback) {
+	public void getElementPromise(final int aIndex, final DoneCallback<OS_Element> aOS_elementDoneCallback, final FailCallback<Diagnostic> aDiagnosticFailCallback) {
 		getEntry(aIndex).elementPromise(aOS_elementDoneCallback, aDiagnosticFailCallback);
 	}
 
@@ -135,7 +141,7 @@ public class DeducePath {
 		private final OS_Element element;
 		private final @Nullable GenType type;
 
-		public MemberContext(DeducePath aDeducePath, int aIndex, OS_Element aElement) {
+		public MemberContext(final DeducePath aDeducePath, final int aIndex, final OS_Element aElement) {
 			assert aIndex >= 0;
 
 			deducePath = aDeducePath;
@@ -146,7 +152,7 @@ public class DeducePath {
 		}
 
 		@Override
-		public LookupResultList lookup(String name, int level, LookupResultList Result, List<Context> alreadySearched, boolean one) {
+		public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 //			if (index == 0)
 				return type.resolved.getElement().getContext().lookup(name, level, Result, alreadySearched, one);
 //			else
@@ -161,16 +167,16 @@ public class DeducePath {
 		}
 	}
 
-	public @Nullable GenType getType(int aIndex) {
+	public @Nullable GenType getType(final int aIndex) {
 		if (types[aIndex] == null) {
-			InstructionArgument ia2 = getIA(aIndex);
-			@Nullable GenType gt;
+			final InstructionArgument ia2 = getIA(aIndex);
+			@Nullable final GenType gt;
 			if (ia2 instanceof IntegerIA) {
-				@NotNull VariableTableEntry vte = ((IntegerIA) ia2).getEntry();
+				@NotNull final VariableTableEntry vte = ((IntegerIA) ia2).getEntry();
 				gt = vte.type.genType;
 				assert gt != null;
 			} else if (ia2 instanceof IdentIA) {
-				@NotNull IdentTableEntry identTableEntry = ((IdentIA) ia2).getEntry();
+				@NotNull final IdentTableEntry identTableEntry = ((IdentIA) ia2).getEntry();
 				if (identTableEntry.type != null) {
 					gt = identTableEntry.type.genType;
 					assert gt != null;

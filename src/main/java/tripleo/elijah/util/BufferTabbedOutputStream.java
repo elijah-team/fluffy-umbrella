@@ -15,17 +15,17 @@ import tripleo.util.buffer.TextBuffer;
 /**
  * Created 4/26/21 11:36 PM
  */
-public class BufferTabbedOutputStream  {
+public class BufferTabbedOutputStream {
 
 	int tabwidth = 0;
-	private boolean do_tabs = false;
-	TextBuffer b = new DefaultBuffer("");
-	private boolean _closed = false;
+	final   TextBuffer b       = new DefaultBuffer("");
+	private boolean    do_tabs = false;
+	private boolean    _closed = false;
 
 	public Buffer getBuffer() {
 		return b;
 	}
-	
+
 	public void put_string_ln(final String s) {
 		if (!is_connected())
 			throw new IllegalStateException("is_connected assertion failed");

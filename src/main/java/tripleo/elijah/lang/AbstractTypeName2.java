@@ -18,28 +18,28 @@ import java.util.LinkedHashSet;
  *
  */
 public abstract class AbstractTypeName2 implements NormalTypeName {
-	
-	protected Collection<TypeModifiers> _ltm = new LinkedHashSet<TypeModifiers>();
-	protected TypeModifiers tm;
-	protected Qualident typeName;
-	
+
+	protected final Collection<TypeModifiers> _ltm = new LinkedHashSet<TypeModifiers>();
+	protected       TypeModifiers             tm;
+	protected       Qualident                 typeName;
+
 	@Override
 	public boolean isNull() {
 		//return tm == null && (typeName == null /*|| typeName.isNull()*/);
 		if (typeName == null) return false;
 		return _ltm.isEmpty() && typeName == null; // TODO check for correctness
 	}
-	
+
 	@Override
 	public boolean getConstant() {
 		return _ltm.contains(TypeModifiers.CONST);
 	}
-	
+
 	@Override
 	public void setConstant(final boolean aFlag) {
 		_ltm.add(TypeModifiers.CONST);
 	}
-	
+
 	@Override
 	public boolean getReference() {
 		return _ltm.contains(TypeModifiers.REFPAR);

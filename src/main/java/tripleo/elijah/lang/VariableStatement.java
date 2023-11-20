@@ -9,8 +9,10 @@
 package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.diagnostic.Locatable;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
+import tripleo.elijah.stages.deduce.DeduceTypeWatcher;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,7 +23,8 @@ import java.util.List;
 
 public class VariableStatement implements OS_Element, @NotNull Locatable {
 
-	private final VariableSequence _parent;
+	private final VariableSequence  _parent;
+	public        DeduceTypeWatcher dtw;
 
 	private TypeName typeName = new VariableTypeName();
 	private IExpression initialValue = IExpression.UNASSIGNED;
@@ -68,14 +71,11 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 		return initialValue;
 	}
 
-	@Override
-	public void visitGen(final ICodeGen visit) {
-		visit.visitVariableStatement(this);
-	}
+	@Nullable List<AnnotationClause> annotations = null;
 
 	@Override
-	public OS_Element getParent() {
-		return _parent;
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitVariableStatement(this);
 	}
 
 	@Override
@@ -85,7 +85,10 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 
 	// region annotations
 
-	List<AnnotationClause> annotations = null;
+	@Override
+	public OS_Element getParent() {
+		return _parent;
+	}
 
 	public void addAnnotation(final AnnotationClause a) {
 		if (annotations == null)
@@ -93,17 +96,17 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 		annotations.add(a);
 	}
 
-	public void walkAnnotations(AnnotationWalker annotationWalker) {
+	public void walkAnnotations(final AnnotationWalker annotationWalker) {
 		if (_parent.annotations != null) {
-			for (AnnotationClause annotationClause : _parent.annotations) {
-				for (AnnotationPart annotationPart : annotationClause.aps) {
+			for (final AnnotationClause annotationClause : _parent.annotations) {
+				for (final AnnotationPart annotationPart : annotationClause.aps) {
 					annotationWalker.annotation(annotationPart);
 				}
 			}
 		}
 		if (annotations == null) return;
-		for (AnnotationClause annotationClause : annotations) {
-			for (AnnotationPart annotationPart : annotationClause.aps) {
+		for (final AnnotationClause annotationClause : annotations) {
+			for (final AnnotationPart annotationPart : annotationClause.aps) {
 				annotationWalker.annotation(annotationPart);
 			}
 		}

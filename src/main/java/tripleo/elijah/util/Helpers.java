@@ -10,7 +10,6 @@ package tripleo.elijah.util;
 
 import antlr.CommonToken;
 import antlr.Token;
-import com.thoughtworks.xstream.XStream;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,6 +26,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_256;
@@ -36,17 +36,18 @@ import static org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_256;
  */
 public class Helpers {
 	public static void printXML(final Object obj, @NotNull final TabbedOutputStream tos) {
+		tripleo.elijah.util.Stupidity.println_err2("** XStream support has been disabled");
+/*
 		final XStream x = new XStream();
 		//x.setMode(XStream.ID_REFERENCES);
 		x.toXML(obj, tos.getStream());
+*/
 	}
 
 	@NotNull
 	public static <E> List<E> List_of(@NotNull final E... e1) {
 		final List<E> r = new ArrayList<E>();
-		for (final E e : e1) {
-			r.add(e);
-		}
+		Collections.addAll(r, e1);
 		return r;
 	}
 
@@ -54,7 +55,7 @@ public class Helpers {
 		return qualidentToDotExpression2(q.parts(), 1);
 	}
 
-	public static IExpression qualidentToDotExpression2(@NotNull final List<IdentExpression> ts) {
+	public static @Nullable IExpression qualidentToDotExpression2(@NotNull final List<IdentExpression> ts) {
 		return qualidentToDotExpression2(ts, 1);
 	}
 
@@ -85,11 +86,12 @@ public class Helpers {
 	}
 
 	@NotNull
-	public static String remove_single_quotes_from_string(final String s) {
-		return s.substring(1, s.length()-1);
+	public static String remove_single_quotes_from_string(final @NotNull String s) {
+		assert s.length() >= 3;
+		return s.substring(1, s.length() - 1);
 	}
 
-	public static String String_join(String separator, Iterable<String> stringIterable) {
+	public static String String_join(final String separator, final Iterable<String> stringIterable) {
 		if (false) {
 			final StringBuilder sb = new StringBuilder();
 
@@ -97,33 +99,33 @@ public class Helpers {
 				sb.append(part);
 				sb.append(separator);
 			}
-			final String ss = sb.toString();
-			final String substring = separator.substring(0, ss.length() - separator.length());
+			final String          ss        = sb.toString();
+			final @NotNull String substring = separator.substring(0, ss.length() - separator.length());
 			return substring;
 		}
 		// since Java 1.8
 		return String.join(separator, stringIterable);
 	}
 
-	public static Qualident string_to_qualident(String x) {
-		Qualident q = new Qualident();
-		for (String xx : x.split("\\.")) {
+	public static Qualident string_to_qualident(final String x) {
+		final Qualident q = new Qualident();
+		for (final String xx : x.split("\\.")) {
 			q.append(string_to_ident(xx));
 		}
 		return q;
 	}
 
-	public static String getHash(byte[] aBytes) throws NoSuchAlgorithmException {
-		MessageDigest md = MessageDigest.getInstance("SHA-256");
+	public static String getHash(final byte[] aBytes) throws NoSuchAlgorithmException {
+		final MessageDigest md = MessageDigest.getInstance("SHA-256");
 
 //		String input;
 //		md.update(input.getBytes(StandardCharsets.UTF_8));
 		md.update(aBytes);
 
-		byte[] hashBytes = md.digest();
+		final byte[] hashBytes = md.digest();
 
-		StringBuilder sb = new StringBuilder();
-		for (byte b : hashBytes) {
+		final StringBuilder sb = new StringBuilder();
+		for (final byte b : hashBytes) {
 			sb.append(String.format("%02x", b));
 		}
 
@@ -131,24 +133,24 @@ public class Helpers {
 	}
 
 	public static String getHashForFilename(final String aFilename, final ErrSink aErrSink) throws IOException {
-		String hdigest = new DigestUtils(SHA_256).digestAsHex(new File(aFilename));
+		final String hdigest = new DigestUtils(SHA_256).digestAsHex(new File(aFilename));
 		return hdigest;
 	}
 
 	@Nullable
-	public static String getHashForFilenameJava(String aFilename, ErrSink aErrSink) throws IOException {
-		final File file = new File(aFilename);
-		long size = file.length();
-		byte[] ba = new byte[(int)size];  // README Counting on reasonable sizes here
-		FileInputStream bb = null;
+	public static String getHashForFilenameJava(final @NotNull String aFilename, final ErrSink aErrSink) throws IOException {
+		final File      file = new File(aFilename);
+		final long      size = file.length();
+		final byte[]    ba   = new byte[(int) size];  // README Counting on reasonable sizes here
+		FileInputStream bb   = null;
 		try {
 			bb = new FileInputStream(file);
 			bb.read(ba);
 
 			try {
-				String hh = getHash(ba);
+				final String hh = getHash(ba);
 				return hh;
-			} catch (NoSuchAlgorithmException aE) {
+			} catch (final NoSuchAlgorithmException aE) {
 				aErrSink.exception(aE);
 //				aE.printStackTrace();
 			}

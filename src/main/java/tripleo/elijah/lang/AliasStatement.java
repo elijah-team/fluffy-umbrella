@@ -9,7 +9,7 @@
 package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
 
 public class AliasStatement implements ModuleItem, ClassItem, FunctionItem, OS_Element2, Resolvable {
@@ -34,7 +34,7 @@ public class AliasStatement implements ModuleItem, ClassItem, FunctionItem, OS_E
 				    expr.getKind() != ExpressionKind.DOT_EXP) // TODO need DOT_EXP to QIDENT
 		{
 			throw new NotImplementedException();
-//			System.out.println(String.format("[AliasStatement#setExpression] %s %s", expr, expr.getKind()));
+//			tripleo.elijah.util.Stupidity.println2(String.format("[AliasStatement#setExpression] %s %s", expr, expr.getKind()));
 		}
 		this.expr = expr;
 	}
@@ -48,7 +48,7 @@ public class AliasStatement implements ModuleItem, ClassItem, FunctionItem, OS_E
 	}
 
 	@Override // OS_Element
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitAliasStatement(this);
 	}
 
@@ -88,12 +88,12 @@ public class AliasStatement implements ModuleItem, ClassItem, FunctionItem, OS_E
 	private El_Category category;
 
 	@Override
-	public void setCategory(El_Category aCategory) {
+	public void setCategory(final El_Category aCategory) {
 		category = aCategory;
 	}
 
 	@Override
-	public void setAccess(AccessNotation aNotation) {
+	public void setAccess(final AccessNotation aNotation) {
 		access_note = aNotation;
 	}
 

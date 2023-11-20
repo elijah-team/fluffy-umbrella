@@ -10,7 +10,7 @@ package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 
 /*
  * Created on Sep 1, 2005 6:47:16 PM
@@ -54,7 +54,7 @@ public class ConstructStatement implements FunctionItem, StatementItem, OS_Eleme
 //	}
 
 	@Override
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitConstructStatement(this);
 	}
 
@@ -72,7 +72,7 @@ public class ConstructStatement implements FunctionItem, StatementItem, OS_Eleme
 		return _expr;
 	}
 
-	public ExpressionList getArgs() {
+	public @Nullable ExpressionList getArgs() {
 		return _args;
 	}
 }

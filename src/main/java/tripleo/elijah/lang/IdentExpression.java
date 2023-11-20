@@ -16,7 +16,7 @@ import antlr.Token;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.diagnostic.Locatable;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 
@@ -28,18 +28,18 @@ import java.io.File;
  */
 public class IdentExpression implements IExpression, OS_Element, Resolvable, Locatable {
 
-	private Token text;
-	public  Attached _a;
-	private OS_Element _resolvedElement;
+	public final  Attached   _a;
+	private final Token      text;
+	private       OS_Element _resolvedElement;
 
 	public IdentExpression(final Token r1) {
 		this.text = r1;
-		this._a = new Attached();
+		this._a   = new Attached();
 	}
 
 	public IdentExpression(final Token r1, final Context cur) {
 		this.text = r1;
-		this._a = new Attached();
+		this._a   = new Attached();
 		setContext(cur);
 	}
 
@@ -59,7 +59,7 @@ public class IdentExpression implements IExpression, OS_Element, Resolvable, Loc
 	@Override
 	public void setKind(final ExpressionKind aIncrement) {
 		// log and ignore
-		System.err.println("Trying to set ExpressionType of IdentExpression to "+aIncrement.toString());
+		tripleo.elijah.util.Stupidity.println_err2("Trying to set ExpressionType of IdentExpression to " + aIncrement.toString());
 	}
 
 	@Override
@@ -68,12 +68,12 @@ public class IdentExpression implements IExpression, OS_Element, Resolvable, Loc
 	}
 
 	@Override
-	public void setLeft(final IExpression iexpression) {
+	public void setLeft(final @NotNull IExpression iexpression) {
 //		if (iexpression instanceof IdentExpression) {
 //			text = ((IdentExpression) iexpression).text;
 //		} else {
-//			// NOTE was System.err.println
-			throw new IllegalArgumentException("Trying to set left-side of IdentExpression to " + iexpression.toString());
+//			// NOTE was tripleo.elijah.util.Stupidity.println_err2
+		throw new IllegalArgumentException("Trying to set left-side of IdentExpression to " + iexpression);
 //		}
 	}
 
@@ -92,7 +92,7 @@ public class IdentExpression implements IExpression, OS_Element, Resolvable, Loc
 	}
 
 	@Override
-	public void visitGen(final ICodeGen visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitIdentExpression(this);
 	}
 
@@ -172,7 +172,7 @@ public class IdentExpression implements IExpression, OS_Element, Resolvable, Loc
 
 	@Override
 	public File getFile() {
-		String filename = token().getFilename();
+		final String filename = token().getFilename();
 		if (filename == null)
 			return null;
 		return new File(filename);

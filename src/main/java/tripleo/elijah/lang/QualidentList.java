@@ -17,8 +17,8 @@ public class QualidentList {
 		// TODO Auto-generated method stub
 		parts.add(qid);
 	}
-	
-	public List<Qualident> parts = new ArrayList<Qualident>();
+
+	public final List<Qualident> parts = new ArrayList<Qualident>();
 }
 
 //

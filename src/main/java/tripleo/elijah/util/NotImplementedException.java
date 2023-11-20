@@ -16,7 +16,6 @@ public NotImplementedException() {
 
 public static void raise() {
 	final int y=2;
-	
 }
 }
 

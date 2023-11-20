@@ -9,6 +9,7 @@
 
 package tripleo.elijah.lang;
 
+
 public class BasicBinaryExpression implements IBinaryExpression {
 
 	/* (non-Javadoc)

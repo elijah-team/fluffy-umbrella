@@ -8,42 +8,42 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
-import tripleo.elijah.stages.post_deduce.IPostDeduce;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 
 /**
  * Created 12/22/20 5:39 PM
  */
-public class GeneratedNamespace extends GeneratedContainerNC {
-	public GeneratedNamespace(NamespaceStatement namespace1, OS_Module module) {
+public class GeneratedNamespace extends GeneratedContainerNC implements GNCoded {
+	public GeneratedNamespace(final NamespaceStatement namespace1, final OS_Module module) {
 		this.namespaceStatement = namespace1;
-		this.module = module;
+		this.module             = module;
 	}
 
-	private final OS_Module module;
-	private final NamespaceStatement namespaceStatement;
+    private final OS_Module module;
+    private final NamespaceStatement namespaceStatement;
 
-	public void addAccessNotation(AccessNotation an) {
+	public void addAccessNotation(final AccessNotation an) {
 		throw new NotImplementedException();
 	}
 
 	public void createCtor0() {
 		// TODO implement me
-		FunctionDef fd = new FunctionDef(namespaceStatement, namespaceStatement.getContext());
+		final FunctionDef fd = new FunctionDef(namespaceStatement, namespaceStatement.getContext());
 		fd.setName(Helpers.string_to_ident("<ctor$0>"));
-		Scope3 scope3 = new Scope3(fd);
+		final Scope3 scope3 = new Scope3(fd);
 		fd.scope(scope3);
-		for (VarTableEntry varTableEntry : varTable) {
+		for (final VarTableEntry varTableEntry : varTable) {
 			if (varTableEntry.initialValue != IExpression.UNASSIGNED) {
-				IExpression left = varTableEntry.nameToken;
-				IExpression right = varTableEntry.initialValue;
+				final IExpression left  = varTableEntry.nameToken;
+				final IExpression right = varTableEntry.initialValue;
 
-				IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
+				final @NotNull IExpression e = ExpressionBuilder.build(left, ExpressionKind.ASSIGNMENT, right);
 				scope3.add(new StatementWrapper(e, fd.getContext(), fd));
 			} else {
 				if (getPragma("auto_construct")) {
@@ -53,7 +53,7 @@ public class GeneratedNamespace extends GeneratedContainerNC {
 		}
 	}
 
-	private boolean getPragma(String auto_construct) { // TODO this should be part of Context
+	private boolean getPragma(final String auto_construct) { // TODO this should be part of Context
 		return false;
 	}
 
@@ -65,25 +65,10 @@ public class GeneratedNamespace extends GeneratedContainerNC {
 		return this.namespaceStatement;
 	}
 
-    @Override
-    public String identityString() {
-        return ""+namespaceStatement;
-    }
-
-    @Override
-    public OS_Module module() {
-        return module;
-    }
-
-	@Override
-	public OS_Element getElement() {
-		return getNamespaceStatement();
-	}
-
 	@Override
 	@Nullable
-	public VarTableEntry getVariable(String aVarName) {
-		for (VarTableEntry varTableEntry : varTable) {
+	public VarTableEntry getVariable(final String aVarName) {
+		for (final VarTableEntry varTableEntry : varTable) {
 			if (varTableEntry.nameToken.getText().equals(aVarName))
 				return varTableEntry;
 		}
@@ -91,15 +76,29 @@ public class GeneratedNamespace extends GeneratedContainerNC {
 	}
 
 	@Override
-	public void generateCode(CodeGenerator aCodeGenerator, GenerateResult aGr) {
+	public void generateCode(final CodeGenerator aCodeGenerator, final GenerateResult aGr) {
 		aCodeGenerator.generate_namespace(this, aGr);
 	}
 
 	@Override
-	public void analyzeNode(IPostDeduce aPostDeduce) {
-		aPostDeduce.analyze_namespace(this);
+	public OS_Element getElement() {
+		return getNamespaceStatement();
 	}
 
+	@Override
+	public OS_Module module() {
+		return module;
+	}
+
+	@Override
+	public @NotNull String identityString() {
+		return "" + namespaceStatement;
+	}
+
+	@Override
+	public Role getRole() {
+		return Role.NAMESPACE;
+	}
 }
 
 //

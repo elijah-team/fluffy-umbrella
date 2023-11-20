@@ -27,7 +27,7 @@ public interface Diagnostic {
 
 	void report(PrintStream stream);
 
-	public enum Severity {
+	enum Severity {
 		INFO, LINT, WARN, ERROR
 	}
 }

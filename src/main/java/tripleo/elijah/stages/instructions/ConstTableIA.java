@@ -28,14 +28,18 @@ public class ConstTableIA implements InstructionArgument {
             return String.format("(ct %d) [%s]", index, constantTableEntry.initialValue);
     }
 
-    public ConstTableIA(final int index, final BaseGeneratedFunction generatedFunction) {
-        this.index = index;
-        this.gf = generatedFunction;
-    }
+	public ConstTableIA(final int index, final BaseGeneratedFunction generatedFunction) {
+		this.index = index;
+		this.gf    = generatedFunction;
+	}
 
-    public int getIndex() {
-        return index;
-    }
+	public int getIndex() {
+		return index;
+	}
+
+	public ConstantTableEntry getEntry() {
+		return gf.getConstTableEntry(index);
+	}
 }
 
 //

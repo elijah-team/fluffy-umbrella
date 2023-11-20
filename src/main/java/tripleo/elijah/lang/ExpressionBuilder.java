@@ -14,6 +14,7 @@
  */
 package tripleo.elijah.lang;
 
+
 public class ExpressionBuilder {
 
 	public static IBinaryExpression buildPartial(final IExpression left, final ExpressionKind aType) {

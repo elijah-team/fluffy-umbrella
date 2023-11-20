@@ -8,13 +8,9 @@
  */
 package tripleo.elijah.stages.instructions;
 
+import org.jdeferred2.Promise;
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
-import tripleo.elijah.stages.gen_fn.Constructable;
-import tripleo.elijah.stages.gen_fn.GenType;
-import tripleo.elijah.stages.gen_fn.GeneratedNode;
-import tripleo.elijah.stages.gen_fn.ProcTableEntry;
-import tripleo.elijah.stages.gen_fn.VariableTableEntry;
+import tripleo.elijah.stages.gen_fn.*;
 
 /**
  * Created 9/10/20 3:35 PM
@@ -32,7 +28,7 @@ public class IntegerIA implements InstructionArgument, Constructable {
 
 	private final int index;
 
-	public IntegerIA(final int anIndex, BaseGeneratedFunction aGeneratedFunction) {
+	public IntegerIA(final int anIndex, final BaseGeneratedFunction aGeneratedFunction) {
 		index = anIndex;
 		gf = aGeneratedFunction;
 	}
@@ -46,18 +42,23 @@ public class IntegerIA implements InstructionArgument, Constructable {
 	}
 
 	@Override
-	public void setConstructable(ProcTableEntry aPte) {
+	public void setConstructable(final ProcTableEntry aPte) {
 		getEntry().setConstructable(aPte);
 	}
 
 	@Override
-	public void resolveTypeToClass(GeneratedNode aNode) {
+	public void resolveTypeToClass(final GeneratedNode aNode) {
 		getEntry().resolveTypeToClass(aNode);
 	}
 
 	@Override
-	public void setGenType(GenType aGenType) {
+	public void setGenType(final GenType aGenType) {
 		getEntry().setGenType(aGenType);
+	}
+
+	@Override
+	public Promise<ProcTableEntry, Void, Void> constructablePromise() {
+		return getEntry().constructablePromise();
 	}
 }
 

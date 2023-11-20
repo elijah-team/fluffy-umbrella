@@ -19,11 +19,11 @@ import tripleo.elijah.util.NotImplementedException;
 
 public class FloatExpression implements IExpression {
 
-	float carrier;
+	final         float carrier;
 	private final Token n;
 
 	public FloatExpression(final Token n) {
-		this.n = n;
+		this.n  = n;
 		carrier = Float.parseFloat(n.getText());
 	}
 
@@ -50,7 +50,7 @@ public class FloatExpression implements IExpression {
 	@Override
 	public void setKind(final ExpressionKind aType) {
 		// log and ignore
-		System.err.println("Trying to set ExpressionType of FloatExpression to "+aType.toString());
+		tripleo.elijah.util.Stupidity.println_err2("Trying to set ExpressionType of FloatExpression to " + aType.toString());
 	}
 	
 	@Override

@@ -23,7 +23,7 @@ public class TypeAliasBuilder extends ElBuilder {
 		return newAlias;
 	}
 
-	public void setIdent(IdentExpression newAlias) {
+	public void setIdent(final IdentExpression newAlias) {
 		this.newAlias = newAlias;
 	}
 
@@ -31,19 +31,19 @@ public class TypeAliasBuilder extends ElBuilder {
 		return oldElement;
 	}
 
-	public void setBecomes(Qualident oldElement) {
+	public void setBecomes(final Qualident oldElement) {
 		this.oldElement = oldElement;
 	}
 
 	@Override
 	public TypeAliasStatement build() {
-		TypeAliasStatement typeAliasStatement = new TypeAliasStatement(_parent);
+		final TypeAliasStatement typeAliasStatement = new TypeAliasStatement(_parent);
 		typeAliasStatement.make(newAlias, oldElement);
 		return typeAliasStatement;
 	}
 
 	@Override
-	public void setContext(Context context) {
+	public void setContext(final Context context) {
 		_context = context;
 		// TODO this is a very important potential bug
 		//  where ident's may not be getting the right context

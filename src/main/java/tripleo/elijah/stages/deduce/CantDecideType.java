@@ -10,8 +10,9 @@ package tripleo.elijah.stages.deduce;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.lang.VariableStatement;
@@ -30,7 +31,7 @@ public class CantDecideType implements Diagnostic {
 	private final VariableTableEntry vte;
 	private final @NotNull Collection<TypeTableEntry> types;
 
-	public CantDecideType(VariableTableEntry aVte, @NotNull Collection<TypeTableEntry> aTypes) {
+	public CantDecideType(final VariableTableEntry aVte, @NotNull final Collection<TypeTableEntry> aTypes) {
 		vte = aVte;
 		types = aTypes;
 	}
@@ -47,17 +48,17 @@ public class CantDecideType implements Diagnostic {
 
 	@Override
 	public @NotNull Locatable primary() {
-		@NotNull VariableStatement vs = (VariableStatement) vte.getResolvedElement();
+		@NotNull final VariableStatement vs = (VariableStatement) vte.getResolvedElement();
 		return vs;
 	}
 
 	@Override
 	public @NotNull List<Locatable> secondary() {
-		@NotNull Collection<Locatable> c = Collections2.transform(types, new Function<TypeTableEntry, Locatable>() {
+		@NotNull final Collection<Locatable> c = Collections2.transform(types, new Function<TypeTableEntry, Locatable>() {
 
 			@Nullable
 			@Override
-			public Locatable apply(@Nullable TypeTableEntry input) {
+			public Locatable apply(@org.jetbrains.annotations.Nullable final TypeTableEntry input) {
 //				return input.attached.getElement(); // TODO All elements should be Locatable
 //				return (TypeName)input.attached.getTypename();
 				return null;
@@ -68,10 +69,10 @@ public class CantDecideType implements Diagnostic {
 	}
 
 	@Override
-	public void report(@NotNull PrintStream stream) {
+	public void report(@NotNull final PrintStream stream) {
 		stream.println(String.format("---[%s]---: %s", code(), message()));
 		// linecache.print(primary);
-		for (Locatable sec : secondary()) {
+		for (final Locatable sec : secondary()) {
 			//linecache.print(sec)
 		}
 		stream.flush();

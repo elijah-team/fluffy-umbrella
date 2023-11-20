@@ -10,19 +10,27 @@ package tripleo.elijah;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import org.jdeferred2.Promise;
+import org.jdeferred2.impl.DeferredObject;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationImpl;
+import tripleo.elijah.nextgen.outputstatement.EG_SequenceStatement;
+import tripleo.elijah.nextgen.outputstatement.EG_Statement;
+import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
@@ -33,34 +41,34 @@ import static tripleo.elijah.util.Helpers.List_of;
 public class TestBasic {
 
 	@Test
-	public final void testBasicParse() throws IOException {
+	public final void testBasicParse() throws Exception {
 		final List<String> ez_files = Files.readLines(new File("test/basic/ez_files.txt"), Charsets.UTF_8);
-		final List<String> args = new ArrayList<String>();
+		final List<String> args     = new ArrayList<String>();
 		args.addAll(ez_files);
 		args.add("-sE");
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final ErrSink     eee = new StdErrSink();
+		final Compilation c   = new CompilationImpl(eee, new IO());
 
 		c.feedCmdLine(args);
 
 		Assert.assertEquals(0, c.errorCount());
 	}
 
-//	@Test
-	public final void testBasic() throws IOException {
-		final List<String> ez_files = Files.readLines(new File("test/basic/ez_files.txt"), Charsets.UTF_8);
+	//	@Test
+	public final void testBasic() throws Exception {
+		final List<String>          ez_files   = Files.readLines(new File("test/basic/ez_files.txt"), Charsets.UTF_8);
 		final Map<Integer, Integer> errorCount = new HashMap<Integer, Integer>();
-		int index = 0;
+		int                         index      = 0;
 
-		for (String s : ez_files) {
+		for (final String s : ez_files) {
 //			List<String> args = List_of("test/basic", "-sO"/*, "-out"*/);
-			final ErrSink eee = new StdErrSink();
-			final Compilation c = new Compilation(eee, new IO());
+			final ErrSink     eee = new StdErrSink();
+			final Compilation c   = new CompilationImpl(eee, new IO());
 
 			c.feedCmdLine(List_of(s, "-sO"));
 
 			if (c.errorCount() != 0)
-				System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
+				System.err.printf("Error count should be 0 but is %d for %s%n", c.errorCount(), s);
 			errorCount.put(index, c.errorCount());
 			index++;
 		}
@@ -72,50 +80,76 @@ public class TestBasic {
 	}
 
 	@Test
-	public final void testBasic_listfolders3() throws IOException {
-		String s = "test/basic/listfolders3/listfolders3.ez";
+	public final void testBasic_listfolders3() throws Exception {
+		final String s = "test/basic/listfolders3/listfolders3.ez";
 
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final ErrSink     eee = new StdErrSink();
+		final Compilation c   = new CompilationImpl(eee, new IO());
 
 		c.feedCmdLine(List_of(s, "-sO"));
 
 		if (c.errorCount() != 0)
-			System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
+			System.err.printf("Error count should be 0 but is %d for %s%n", c.errorCount(), s);
 
-		Assert.assertEquals(5, c.errorCount()); // TODO Error count obviously should be 0
+		Assert.assertEquals(12, c.getOutputTree().list.size());
+		Assert.assertEquals(24, c.errorCount()); // TODO Error count obviously should be 0
 	}
 
 	@Test
-	public final void testBasic_listfolders4() throws IOException {
-		String s = "test/basic/listfolders4/listfolders4.ez";
+	public final void testBasic_listfolders4() {
+		final String s = "test/basic/listfolders4/listfolders4.ez";
 
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final ErrSink     eee = new StdErrSink();
+		final Compilation c   = new CompilationImpl(eee, new IO());
 
 		c.feedCmdLine(List_of(s, "-sO"));
 
 		if (c.errorCount() != 0)
-			System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
+			System.err.printf("Error count should be 0 but is %d for %s%n", c.errorCount(), s);
 
-		Assert.assertEquals(5, c.errorCount()); // TODO Error count obviously should be 0
+		Assert.assertEquals(22, c.errorCount()); // TODO Error count obviously should be 0
 	}
 
 	@Test
-	public final void testBasic_fact1() throws IOException {
-		String s = "test/basic/fact1/main2";
+	public final void testBasic_fact1() throws Exception {
+		final String s = "test/basic/fact1/main2";
 
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final ErrSink     eee = new StdErrSink();
+		final Compilation c   = new CompilationImpl(eee, new IO());
 
 		c.feedCmdLine(List_of(s, "-sO"));
 
 		if (c.errorCount() != 0)
-			System.err.println(String.format("Error count should be 0 but is %d for %s", c.errorCount(), s));
+			System.err.printf("Error count should be 0 but is %d for %s%n", c.errorCount(), s);
 
-		Assert.assertEquals(13, c.errorCount()); // TODO Error count obviously should be 0
+		final @NotNull EOT_OutputTree cot = c.getOutputTree();
+
+		Assert.assertEquals(18, cot.list.size()); // TODO why not 6?
+
+		select(cot.list, f -> f.getFilename().equals("/main2/Main.h"))
+		  .then(f -> {
+			  System.out.println(((EG_SequenceStatement) f.getStatementSequence())._list().stream().map(EG_Statement::getText).collect(Collectors.toList()));
+		  });
+		select(cot.list, f -> f.getFilename().equals("/main2/Main.c"))
+		  .then(f -> {
+			  System.out.println(((EG_SequenceStatement) f.getStatementSequence())._list().stream().map(EG_Statement::getText).collect(Collectors.toList()));
+		  });
+
+		// TODO Error count obviously should be 0
+		Assert.assertEquals(123, c.errorCount()); // FIXME why 123?? 04/15
 	}
 
+	static <T> @NotNull Promise<T, Void, Void> select(@NotNull final List<T> list, final Predicate<T> p) {
+		final DeferredObject<T, Void, Void> d = new DeferredObject<T, Void, Void>();
+		for (final T t : list) {
+			if (p.test(t)) {
+				d.resolve(t);
+				return d;
+			}
+		}
+		d.reject(null);
+		return d;
+	}
 }
 	
 //

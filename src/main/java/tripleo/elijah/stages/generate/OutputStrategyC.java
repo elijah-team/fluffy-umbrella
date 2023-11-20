@@ -20,6 +20,7 @@ import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Package;
 import tripleo.elijah.stages.gen_fn.GeneratedClass;
+import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
 import tripleo.elijah.stages.gen_fn.GeneratedFunction;
 import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
 import tripleo.elijah.stages.gen_fn.GeneratedNode;
@@ -33,14 +34,14 @@ import java.io.File;
 public class OutputStrategyC {
 	private final OutputStrategy outputStrategy;
 
-	public OutputStrategyC(OutputStrategy outputStrategy) {
+	public OutputStrategyC(final OutputStrategy outputStrategy) {
 		this.outputStrategy = outputStrategy;
 	}
 
-	public String nameForNamespace(GeneratedNamespace generatedNamespace, GenerateResult.TY aTy) {
+	public String nameForNamespace(final GeneratedNamespace generatedNamespace, final GenerateResult.TY aTy) {
 		if (generatedNamespace.module().isPrelude()) {
 			// We are dealing with the Prelude
-			StringBuilder sb = new StringBuilder();
+			final StringBuilder sb = new StringBuilder();
 			sb.append("/Prelude/");
 			sb.append("Prelude");
 			appendExtension(aTy, sb);
@@ -49,12 +50,12 @@ public class OutputStrategyC {
 		String filename;
 		if (generatedNamespace.getNamespaceStatement().getKind() == NamespaceTypes.MODULE) {
 			final String moduleFileName = generatedNamespace.module().getFileName();
-			File moduleFile = new File(moduleFileName);
+			final File moduleFile = new File(moduleFileName);
 			filename = moduleFile.getName();
 			filename = strip_elijah_extension(filename);
 		} else
 			filename = generatedNamespace.getName();
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		sb.append("/");
 		final LibraryStatementPart lsp = generatedNamespace.module().getLsp();
 		if (lsp == null)
@@ -80,7 +81,7 @@ public class OutputStrategyC {
 			if (e.getContext().getParent() == e.getContext())
 				e = null;
 			else {
-				@NotNull ElObjectType t = DecideElObjectType.getElObjectType(e);
+				@NotNull final ElObjectType t = DecideElObjectType.getElObjectType(e);
 				switch (t) {
 					case NAMESPACE:
 						if (((NamespaceStatement) e).getPackageName() != null)
@@ -110,7 +111,7 @@ public class OutputStrategyC {
 		return aFilename;
 	}
 
-	public String nameForFunction(GeneratedFunction generatedFunction, GenerateResult.TY aTy) {
+	public String nameForFunction(final @NotNull GeneratedFunction generatedFunction, final GenerateResult.TY aTy) {
 		GeneratedNode c = generatedFunction.getGenClass();
 		if (c == null) c = generatedFunction.getParent(); // TODO fixme
 		if (c instanceof GeneratedClass)
@@ -120,16 +121,16 @@ public class OutputStrategyC {
 		return null;
 	}
 
-	public String nameForClass(GeneratedClass generatedClass, GenerateResult.TY aTy) {
+	public @NotNull String nameForClass(final GeneratedClass generatedClass, final GenerateResult.TY aTy) {
 		if (generatedClass.module().isPrelude()) {
 			// We are dealing with the Prelude
-			StringBuilder sb = new StringBuilder();
+			final @NotNull StringBuilder sb = new StringBuilder();
 			sb.append("/Prelude/");
 			sb.append("Prelude");
 			appendExtension(aTy, sb);
 			return sb.toString();
 		}
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		sb.append("/");
 		final LibraryStatementPart lsp = generatedClass.module().getLsp();
 		if (lsp == null)
@@ -157,10 +158,10 @@ public class OutputStrategyC {
 		case PER_MODULE:
 			{
 //					mod = generatedClass.getKlass().getContext().module();
-				OS_Module mod = generatedClass.module();
-				File f = new File(mod.getFileName());
+				final OS_Module mod = generatedClass.module();
+				final File f = new File(mod.getFileName());
 				String ff = f.getName();
-				int y=2;
+				final int y=2;
 				ff = strip_elijah_extension(ff);
 				sb.append(ff);
 //					sb.append('/');
@@ -169,7 +170,7 @@ public class OutputStrategyC {
 		case PER_PACKAGE:
 			{
 				final OS_Package pkg2 = generatedClass.getKlass().getPackageName();
-				String pkgName;
+				final String pkgName;
 				if (pkg2 != OS_Package.default_package) {
 					pkgName = "$default_package";
 				} else
@@ -180,8 +181,8 @@ public class OutputStrategyC {
 			break;
 		case PER_PROGRAM:
 			{
-				CompilerInstructions xx = lsp.getInstructions();
-				String n = xx.getName();
+				final CompilerInstructions xx = lsp.getInstructions();
+				final String n = xx.getName();
 				sb.append(n);
 //					sb.append('/');
 			}
@@ -193,19 +194,28 @@ public class OutputStrategyC {
 		return sb.toString();
 	}
 
-	public void appendExtension(GenerateResult.TY aTy, StringBuilder aSb) {
+	public void appendExtension(final GenerateResult.TY aTy, final StringBuilder aSb) {
 		switch (aTy) {
-		case IMPL:
-			aSb.append(".c");
-			break;
-		case PRIVATE_HEADER:
-			aSb.append("_Priv.h");
-		case HEADER:
-			aSb.append(".h");
-			break;
+			case IMPL:
+				aSb.append(".c");
+				break;
+			case PRIVATE_HEADER:
+				aSb.append("_Priv.h");
+			case HEADER:
+				aSb.append(".h");
+				break;
 		}
 	}
 
+	public String nameForConstructor(final GeneratedConstructor generatedConstructor, final GenerateResult.@NotNull TY aTy) {
+		GeneratedNode c = generatedConstructor.getGenClass();
+		if (c == null) c = generatedConstructor.getParent(); // TODO fixme
+		if (c instanceof GeneratedClass)
+			return nameForClass((GeneratedClass) c, aTy);
+		else if (c instanceof GeneratedNamespace)
+			return nameForNamespace((GeneratedNamespace) c, aTy);
+		return null;
+	}
 }
 
 //

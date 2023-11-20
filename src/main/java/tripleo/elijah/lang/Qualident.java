@@ -11,8 +11,8 @@ package tripleo.elijah.lang;
 import antlr.Token;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.util.Helpers;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class Qualident  implements IExpression {
 		return Helpers.String_join(".", Collections2.transform(parts, new Function<IdentExpression, String>() {
 			@Nullable
 			@Override
-			public String apply(@Nullable IdentExpression input) {
+			public String apply(@Nullable final IdentExpression input) {
 				assert input != null;
 				return input.getText();
 			}
@@ -88,7 +88,7 @@ public class Qualident  implements IExpression {
 	
 	@Override
 	public String repr_() {
-		return String.format("Qualident (%s)", toString());
+		return String.format("Qualident (%s)", this);
 	}
 	
 	@Override

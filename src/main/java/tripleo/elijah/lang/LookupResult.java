@@ -3,23 +3,35 @@
  */
 package tripleo.elijah.lang;
 
+import tripleo.elijah.contexts.ContextInfo;
+
 /**
  * @author Tripleo
- *
+ * <p>
  * Created 	Mar 26, 2020 at 9:16:07 PM
  */
 public class LookupResult {
 
-	private final Context context;
-	private String name;
-	private OS_Element element;
-	private int level;
+	private final Context     context;
+	private final String      name;
+	private final OS_Element  element;
+	private final int         level;
+	private final ContextInfo importInfo;
+
+	public LookupResult(final String name, final OS_Element element, final int level, final Context aContext, final ContextInfo aImportInfo) {
+		this.name       = name;
+		this.element    = element;
+		this.level      = level;
+		this.context    = aContext;
+		this.importInfo = aImportInfo;
+	}
 
 	public LookupResult(final String name, final OS_Element element, final int level, final Context aContext) {
-		this.name = name;
-		this.element = element;
-		this.level = level;
-		this.context = aContext;
+		this.name       = name;
+		this.element    = element;
+		this.level      = level;
+		this.context    = aContext;
+		this.importInfo = null;
 	}
 
 	public Context getContext() {
@@ -33,12 +45,12 @@ public class LookupResult {
 		return name;
 	}
 
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(final String name) {
-		this.name = name;
-	}
+//	/**
+//	 * @param name the name to set
+//	 */
+//	public void setName(final String name) {
+//		this.name = name;
+//	}
 
 	/**
 	 * @return the element
@@ -47,12 +59,12 @@ public class LookupResult {
 		return element;
 	}
 
-	/**
-	 * @param element the element to set
-	 */
-	public void setElement(final OS_Element element) {
-		this.element = element;
-	}
+//	/**
+//	 * @param element the element to set
+//	 */
+//	public void setElement(final OS_Element element) {
+//		this.element = element;
+//	}
 
 	/**
 	 * @return the level
@@ -61,15 +73,19 @@ public class LookupResult {
 		return level;
 	}
 
-	/**
-	 * @param level the level to set
-	 */
-	public void setLevel(final int level) {
-		this.level = level;
-	}
+//	/**
+//	 * @param level the level to set
+//	 */
+//	public void setLevel(final int level) {
+//		this.level = level;
+//	}
 
 	@Override
 	public String toString() {
 		return String.format("<%s %s %d>", element, name, level);
+	}
+
+	public ContextInfo getImportInfo() {
+		return importInfo;
 	}
 }

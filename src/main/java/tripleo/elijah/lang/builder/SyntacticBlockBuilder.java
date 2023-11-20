@@ -17,18 +17,18 @@ import tripleo.elijah.lang.SyntacticBlock;
  */
 public class SyntacticBlockBuilder extends ElBuilder {
 	private Context _context;
-	private SyntacticBlockScope _scope = new SyntacticBlockScope();
+    private final SyntacticBlockScope _scope = new SyntacticBlockScope();
 
 	@Override
 	protected SyntacticBlock build() {
-		SyntacticBlock syntacticBlock = new SyntacticBlock(_parent);
-		for (ElBuilder builder : _scope.items()) {
+		final SyntacticBlock syntacticBlock = new SyntacticBlock(_parent);
+		for (final ElBuilder builder : _scope.items()) {
 //			if (builder instanceof AccessNotation) {
 //				cs.addAccess((AccessNotation) builder);
 //			} else {
 //				cs.add(builder);
 //			}
-			OS_Element built;
+			final OS_Element built;
 			builder.setParent(_parent);
 			builder.setContext(_context);
 			built = builder.build();
@@ -39,7 +39,7 @@ public class SyntacticBlockBuilder extends ElBuilder {
 	}
 
 	@Override
-	protected void setContext(Context context) {
+	protected void setContext(final Context context) {
 		_context = context;
 	}
 

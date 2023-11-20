@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.lang;
 
+import tripleo.elijah.lang.types.OS_BuiltinType;
 import tripleo.elijah.lang2.BuiltInTypes;
 
 /**
@@ -36,6 +37,6 @@ public class TypeCheckExpression extends AbstractExpression implements IExpressi
 
     @Override
     public OS_Type getType() {
-        return new OS_Type(BuiltInTypes.Boolean);
+	    return new OS_BuiltinType(BuiltInTypes.Boolean);
     }
 }

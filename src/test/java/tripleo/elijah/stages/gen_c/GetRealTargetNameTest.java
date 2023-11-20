@@ -13,9 +13,11 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import tripleo.elijah.comp.Compilation;
+import tripleo.elijah.comp.AccessBus;
+import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationImpl;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.lang.OS_Module;
@@ -23,6 +25,7 @@ import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.stages.gen_fn.GeneratedFunction;
 import tripleo.elijah.stages.gen_fn.TypeTableEntry;
+import tripleo.elijah.stages.gen_generic.OutputFileFactoryParams;
 import tripleo.elijah.stages.instructions.IdentIA;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.stages.instructions.VariableTableType;
@@ -39,32 +42,34 @@ public class GetRealTargetNameTest {
 	@Before
 	public void setUp() throws Exception {
 		mod = mock(OS_Module.class);
-		FunctionDef fd = mock(FunctionDef.class);
+		final FunctionDef fd = mock(FunctionDef.class);
 		gf = new GeneratedFunction(fd);
 	}
 
 	@Test
 	public void testManualXDotFoo() {
-		IdentExpression x_ident = Helpers.string_to_ident("x");
-		@NotNull IdentExpression foo_ident = Helpers.string_to_ident("foo");
+		final IdentExpression          x_ident   = Helpers.string_to_ident("x");
+		@NotNull final IdentExpression foo_ident = Helpers.string_to_ident("foo");
 		//
 		// create x.foo, where x is a VAR and foo is unknown
 		// neither has type information
 		// GenerateC#getRealTargetName doesn't use type information
 		// TODO but what if foo was a property instead of a member
 		//
-		OS_Type type = null;
-		TypeTableEntry tte = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, x_ident);
-		int int_index = gf.addVariableTableEntry("x", VariableTableType.VAR, tte, mock(VariableStatement.class));
-		int ite_index = gf.addIdentTableEntry(foo_ident, null);
-		IdentIA ident_ia = new IdentIA(ite_index, gf);
+		final OS_Type        type      = null;
+		final TypeTableEntry tte       = gf.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, type, x_ident);
+		final int            int_index = gf.addVariableTableEntry("x", VariableTableType.VAR, tte, mock(VariableStatement.class));
+		final int            ite_index = gf.addIdentTableEntry(foo_ident, null);
+		final IdentIA        ident_ia  = new IdentIA(ite_index, gf);
 		ident_ia.setPrev(new IntegerIA(int_index, gf));
 		//
-		PipelineLogic pipelineLogic = new PipelineLogic(Compilation.gitlabCIVerbosity());
-		GenerateC c = new GenerateC(mod, new StdErrSink(), ElLog.Verbosity.SILENT, pipelineLogic); // TODO do we want silent?
+		final AccessBus               ab = new AccessBus(new CompilationImpl(new StdErrSink(), new IO()));
+		final PipelineLogic           pl = new PipelineLogic(ab);
+		final OutputFileFactoryParams p  = new OutputFileFactoryParams(mod, new StdErrSink(), ElLog.Verbosity.SILENT, pl);  // TODO do we want silent?
+		final GenerateC               c  = new GenerateC(p);
 		//
 		Emit.emitting = false;
-		String x = c.getRealTargetName(gf, ident_ia);
+		final String x = c.getRealTargetName(gf, ident_ia, Generate_Code_For_Method.AOG.GET, null); // TODO is null correct?
 		Assert.assertEquals("vvx->vmfoo", x);
 	}
 }

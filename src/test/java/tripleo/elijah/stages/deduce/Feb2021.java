@@ -12,6 +12,7 @@ import org.junit.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationImpl;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
@@ -21,22 +22,22 @@ import static tripleo.elijah.util.Helpers.List_of;
 public class Feb2021 {
 
 	@Test
-	public void testProperty() {
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+	public void testProperty() throws Exception {
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/property/"));
 	}
 
 	@Test
-	public void testFunction() {
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+	public void testFunction() throws Exception {
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/function/"));
 	}
 
 	@Test
-	public void testHier() {
-		Compilation c = new Compilation(new StdErrSink(), new IO());
+	public void testHier() throws Exception {
+		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of("test/feb2021/hier/"));
 	}

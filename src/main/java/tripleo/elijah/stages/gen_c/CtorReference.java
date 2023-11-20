@@ -33,20 +33,20 @@ import static tripleo.elijah.stages.deduce.DeduceTypes2.to_int;
  */
 public class CtorReference {
 
-	private String ctorName = "";
-	private List<String> args;
-	List<CReference.Reference> refs = new ArrayList<CReference.Reference>();
-	private GeneratedNode _resolved;
+	final   List<CReference.Reference> refs     = new ArrayList<CReference.Reference>();
+	private String                     ctorName = "";
+	private List<String>               args;
+	private GeneratedNode              _resolved;
 
-	void addRef(String text, CReference.Ref type) {
+	void addRef(final String text, final CReference.Ref type) {
 		refs.add(new CReference.Reference(text, type));
 	}
 
-	public void getConstructorPath(InstructionArgument ia2, BaseGeneratedFunction gf) {
+	public void getConstructorPath(final InstructionArgument ia2, final BaseGeneratedFunction gf) {
 		final List<InstructionArgument> s = CReference._getIdentIAPathList(ia2);
 
 		for (int i = 0, sSize = s.size(); i < sSize; i++) {
-			InstructionArgument ia = s.get(i);
+			final InstructionArgument ia = s.get(i);
 			if (ia instanceof IntegerIA) {
 				// should only be the first element if at all
 				assert i == 0;
@@ -62,7 +62,7 @@ public class CtorReference {
 				addRef(vte.getName(), CReference.Ref.LOCAL);
 			} else if (ia instanceof IdentIA) {
 				final IdentTableEntry idte = gf.getIdentTableEntry(to_int(ia));
-				OS_Element resolved_element = idte.getResolvedElement();
+				final OS_Element resolved_element = idte.getResolvedElement();
 				if (idte.resolvedType() != null) {
 					_resolved = idte.resolvedType();
 					ctorName = ((ConstructorDef) resolved_element).name();
@@ -74,7 +74,7 @@ public class CtorReference {
 						assert i == sSize - 1; // Make sure we are ending with a constructor call
 						int code = ((ClassStatement) resolved_element.getParent())._a.getCode();
 						if (code == 0) {
-							System.err.println("** 31161 ClassStatement with 0 code " + resolved_element.getParent());
+							tripleo.elijah.util.Stupidity.println_err2("** 31161 ClassStatement with 0 code " + resolved_element.getParent());
 						}
 						// README Assuming this is for named constructors
 						String text = ((ConstructorDef) resolved_element).name();
@@ -100,12 +100,12 @@ public class CtorReference {
 		}
 	}
 
-	public String build(ClassInvocation aClsinv) {
+	public String build(final ClassInvocation aClsinv) {
 		StringBuilder sb = new StringBuilder();
 		boolean open = false, needs_comma = false;
 //		List<String> sl = new ArrayList<String>();
 		String text = "";
-		for (CReference.Reference ref : refs) {
+		for (final CReference.Reference ref : refs) {
 			switch (ref.type) {
 				case LOCAL:
 					text = "vv" + ref.text;
@@ -135,16 +135,16 @@ public class CtorReference {
 				case CONSTRUCTOR: {
 					final String s = sb.toString();
 					text = String.format("%s(%s", ref.text, s);
-					sb = new StringBuilder();
+					sb   = new StringBuilder();
 					open = true;
 					if (!s.equals("")) needs_comma = true;
 					sb.append(text);
 					break;
 				}
-				case PROPERTY: {
+				case PROPERTY_GET: {
 					final String s = sb.toString();
 					text = String.format("%s(%s", ref.text, s);
-					sb = new StringBuilder();
+					sb   = new StringBuilder();
 					open = true;
 					if (!s.equals("")) needs_comma = true;
 					sb.append(text);
@@ -157,20 +157,20 @@ public class CtorReference {
 		}
 		{
 			// Assuming constructor call
-			int code;
+			final int code;
 			if (_resolved != null) {
 				code = ((GeneratedContainerNC) _resolved).getCode();
 			} else {
 				code = aClsinv.getKlass()._a.getCode(); // TODO this will either always be 0 or irrelevant
 			}
 			if (code == 0) {
-				System.err.println("** 32135 ClassStatement with 0 code " + aClsinv.getKlass());
+				tripleo.elijah.util.Stupidity.println_err2("** 32135 ClassStatement with 0 code " + aClsinv.getKlass());
 			}
-			String text2 = String.format("ZC%d%s", code, ctorName); // TODO what about named constructors
+			final String text2 = String.format("ZC%d%s", code, ctorName); // TODO what about named constructors
 			sb.append(" = ");
 			sb.append(text2);
 			sb.append("(");
-			assert open == false;
+			assert !open;
 			open = true;
 		}
 //		return Helpers.String_join("->", sl);
@@ -190,7 +190,7 @@ public class CtorReference {
 	 *
 	 * @param sl3
 	 */
-	public void args(List<String> sl3) {
+	public void args(final List<String> sl3) {
 		args = sl3;
 	}
 }

@@ -17,6 +17,7 @@ package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.Contract;
 
+
 public interface IExpression {
 
 	static boolean isConstant(final IExpression expression) {

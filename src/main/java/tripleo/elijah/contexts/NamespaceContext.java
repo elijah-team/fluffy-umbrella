@@ -11,7 +11,17 @@
  */
 package tripleo.elijah.contexts;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.AliasStatement;
+import tripleo.elijah.lang.ClassItem;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.NamespaceStatement;
+import tripleo.elijah.lang.OS_Element2;
+import tripleo.elijah.lang.PropertyStatement;
+import tripleo.elijah.lang.VariableSequence;
+import tripleo.elijah.lang.VariableStatement;
 
 import java.util.List;
 
@@ -22,8 +32,8 @@ import java.util.List;
  */
 public class NamespaceContext extends Context {
 
-	private final Context _parent;
-	public NamespaceStatement carrier;
+	public final  NamespaceStatement carrier;
+	private final Context            _parent;
 
 //	public NamespaceContext(NamespaceStatement namespaceStatement) {
 //		carrier = namespaceStatement;
@@ -50,7 +60,7 @@ public class NamespaceContext extends Context {
 				}
 			}
 			if (item instanceof VariableSequence) {
-//				System.out.println("[NamespaceContext#lookup] VariableSequence "+item);
+				tripleo.elijah.util.Stupidity.println2("[NamespaceContext#lookup] VariableSequence " + item);
 				for (final VariableStatement vs : ((VariableSequence) item).items()) {
 					if (vs.getName().equals(name))
 						Result.add(name, level, vs, this);

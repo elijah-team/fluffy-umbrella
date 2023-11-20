@@ -23,7 +23,7 @@ import java.io.File;
 
 public class NumericExpression implements IExpression, Locatable {
 
-	int carrier;
+	final   int   carrier;
 	private Token n;
 
 	public NumericExpression(final int aCarrier) {
@@ -31,7 +31,7 @@ public class NumericExpression implements IExpression, Locatable {
 	}
 
 	public NumericExpression(final @NotNull Token n) {
-		this.n = n;
+		this.n  = n;
 		carrier = Integer.parseInt(n.getText());
 	}
 
@@ -55,7 +55,7 @@ public class NumericExpression implements IExpression, Locatable {
 	@Override  // IExpression
 	public void setKind(final ExpressionKind aType) {
 		// log and ignore
-		System.err.println("Trying to set ExpressionType of NumericExpression to "+aType.toString());
+		tripleo.elijah.util.Stupidity.println_err2("Trying to set ExpressionType of NumericExpression to " + aType.toString());
 	}
 
 	// endregion
@@ -136,7 +136,7 @@ public class NumericExpression implements IExpression, Locatable {
 	@Override
 	public File getFile() {
 		if (token() != null) {
-			String filename = token().getFilename();
+			final String filename = token().getFilename();
 			if (filename != null)
 				return new File(filename);
 		}

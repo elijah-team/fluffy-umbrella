@@ -24,18 +24,18 @@ import java.util.List;
 public class BaseScope implements Documentable {
 	protected final List<ElBuilder> bs = new ArrayList<ElBuilder>();
 
-	public void return_expression(IExpression expr) {
+	public void return_expression(final IExpression expr) {
 		throw new NotImplementedException();
 	}
 
-	public void add(ElBuilder b) {
+	public void add(final ElBuilder b) {
 		bs.add(b);
 	}
 
 	private final List<Token> _docstrings = new ArrayList<Token>();
 
 	@Override
-	public void addDocString(Token s1) {
+	public void addDocString(final Token s1) {
 		_docstrings.add(s1);
 	}
 
@@ -47,7 +47,7 @@ public class BaseScope implements Documentable {
 		throw new NotImplementedException();
 	}
 
-	public void statementWrapper(IExpression expr) {
+	public void statementWrapper(final IExpression expr) {
 		throw new NotImplementedException();
 	}
 
@@ -55,11 +55,11 @@ public class BaseScope implements Documentable {
 		return bs;
 	}
 
-	public void constructExpression(Qualident q, ExpressionList o) {
+	public void constructExpression(final Qualident q, final ExpressionList o) {
 		throw new NotImplementedException();
 	}
 
-	public void yield(IExpression expr) {
+	public void yield(final IExpression expr) {
 		throw new NotImplementedException();
 	}
 }

@@ -15,7 +15,7 @@ package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.FunctionContext;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class DefFunctionDef extends BaseFunctionDef {
 
 	private final OS_Element parent;
 
-	public DefFunctionDef(OS_Element aElement, Context aContext) {
+	public DefFunctionDef(final OS_Element aElement, final Context aContext) {
 		parent = aElement;
 		if (aElement instanceof OS_Container) {
 			((OS_Container) parent).add(this);
@@ -65,11 +65,11 @@ public class DefFunctionDef extends BaseFunctionDef {
 		_items.add(new StatementWrapper(_expr, getContext(), this));
 	}
 
-	List<FunctionItem> _items = new ArrayList<FunctionItem>();
+	final List<FunctionItem> _items = new ArrayList<FunctionItem>();
 
 
 	@Override
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitDefFunction(this);
 	}
 

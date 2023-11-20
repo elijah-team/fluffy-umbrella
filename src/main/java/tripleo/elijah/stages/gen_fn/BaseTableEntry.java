@@ -10,9 +10,12 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jdeferred2.DoneCallback;
 import org.jdeferred2.FailCallback;
+import org.jdeferred2.Promise;
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.stages.deduce.DeduceTypeResolve;
+import tripleo.elijah.stages.deduce.ResolveError;
 import tripleo.elijah.stages.deduce.ResolveUnknown;
 
 import java.util.ArrayList;
@@ -26,9 +29,9 @@ public abstract class BaseTableEntry {
 
 	protected OS_Element resolved_element;
 
-	private DeferredObject2<OS_Element, Diagnostic, Void> elementPromise = new DeferredObject2<OS_Element, Diagnostic, Void>();
+	private final DeferredObject2<OS_Element, Diagnostic, Void> elementPromise = new DeferredObject2<OS_Element, Diagnostic, Void>();
 
-	public void elementPromise(DoneCallback<OS_Element> dc, FailCallback<Diagnostic> fc) {
+	public void elementPromise(final DoneCallback<OS_Element> dc, final FailCallback<Diagnostic> fc) {
 		if (dc != null)
 			elementPromise.then(dc);
 		if (fc != null)
@@ -39,7 +42,7 @@ public abstract class BaseTableEntry {
 		return resolved_element;
 	}
 
-	public void setResolvedElement(OS_Element aResolved_element) {
+	public void setResolvedElement(final OS_Element aResolved_element) {
 		if (elementPromise.isResolved()) {
 			if (resolved_element instanceof AliasStatement) {
 				elementPromise.reset();
@@ -62,11 +65,11 @@ public abstract class BaseTableEntry {
 		return status;
 	}
 
-	public void setStatus(Status newStatus, IElementHolder eh) {
+	public void setStatus(final Status newStatus, final IElementHolder eh) {
 		status = newStatus;
 		if (newStatus == Status.KNOWN && eh.getElement() == null)
 			assert false;
-		for (StatusListener statusListener : statusListenerList) {
+		for (final StatusListener statusListener : statusListenerList) {
 			statusListener.onChange(eh, newStatus);
 		}
 		if (newStatus == Status.UNKNOWN)
@@ -74,7 +77,7 @@ public abstract class BaseTableEntry {
 				elementPromise.reject(new ResolveUnknown());
 	}
 
-	public void addStatusListener(StatusListener sl) {
+	public void addStatusListener(final StatusListener sl) {
 		statusListenerList.add(sl);
 	}
 
@@ -87,6 +90,16 @@ public abstract class BaseTableEntry {
 	}
 
 	// endregion status
+
+	DeduceTypeResolve typeResolve;
+
+	public Promise<GenType, ResolveError, Void> typeResolvePromise() {
+		return typeResolve.typeResolution();
+	}
+
+	protected void setupResolve() {
+		typeResolve = new DeduceTypeResolve(this);
+	}
 
 
 }

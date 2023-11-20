@@ -8,6 +8,7 @@
  */
 package tripleo.elijah.comp;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.gen.nodes.ImportNode;
 import tripleo.elijah.gen.nodes.LocalDeclAgnNode;
@@ -78,7 +79,7 @@ public class GenBuffer {
 			final String module = entry.getKey();
 			final TextBuffer build  = entry.getValue();
 			//
-			final FileOutputStream fileOutputStream;
+			final @NotNull FileOutputStream fileOutputStream;
 			fileOutputStream = new FileOutputStream(module + ".c", true); // append
 			final String buildText = build.getText();
 			fileOutputStream.write(buildText.getBytes());

@@ -20,17 +20,17 @@ import tripleo.elijah.comp.Compilation;
 public class ParserClosure extends ProgramClosure {
 
 	public ParserClosure(final String fn, @NotNull final Compilation compilation) {
-		module = new OS_Module();
-		module.setFileName(fn);
-		module.setParent(compilation); // TODO take a look at all this here
-		compilation.addModule(module, fn);
+		module = compilation.moduleBuilder()
+				.withFileName(fn)
+				.addToCompilation()
+				.build();
 	}
 
 	private OS_Module module() {
 		return module;
 	}
 
-	public OS_Package defaultPackageName(final Qualident aPackageName) {
+	public OS_Package defaultPackageName(final @NotNull Qualident aPackageName) {
 //		assert module.packageName == null;
 		module.pushPackageName(aPackageName);
 		return module.parent.makePackage(aPackageName);

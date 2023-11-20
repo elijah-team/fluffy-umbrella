@@ -19,7 +19,7 @@ public class ProcIA implements InstructionArgument {
 	private final int index;
 	private final BaseGeneratedFunction gf;
 
-	public ProcIA(int i, BaseGeneratedFunction generatedFunction) {
+	public ProcIA(final int i, final BaseGeneratedFunction generatedFunction) {
 		this.index = i;
 		this.gf = generatedFunction;
 	}

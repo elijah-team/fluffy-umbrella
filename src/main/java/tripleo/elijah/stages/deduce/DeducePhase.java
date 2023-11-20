@@ -13,18 +13,53 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import org.jdeferred2.DoneCallback;
+import org.jdeferred2.Promise;
+import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.PipelineLogic;
-import tripleo.elijah.entrypoints.EntryPoint;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.diagnostic.Diagnostic;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.NamespaceStatement;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.lang.OS_Type;
+import tripleo.elijah.lang.TypeName;
+import tripleo.elijah.lang.types.OS_UnknownType;
+import tripleo.elijah.nextgen.ClassDefinition;
+import tripleo.elijah.nextgen.diagnostic.CouldntGenerateClass;
 import tripleo.elijah.stages.deduce.declarations.DeferredMember;
-import tripleo.elijah.stages.gen_fn.*;
+import tripleo.elijah.stages.deduce.declarations.DeferredMemberFunction;
+import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
+import tripleo.elijah.stages.deduce.post_bytecode.State;
+import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
+import tripleo.elijah.stages.gen_fn.GenType;
+import tripleo.elijah.stages.gen_fn.GenerateFunctions;
+import tripleo.elijah.stages.gen_fn.GeneratePhase;
+import tripleo.elijah.stages.gen_fn.GeneratedClass;
+import tripleo.elijah.stages.gen_fn.GeneratedContainer;
+import tripleo.elijah.stages.gen_fn.GeneratedFunction;
+import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
+import tripleo.elijah.stages.gen_fn.GeneratedNode;
+import tripleo.elijah.stages.gen_fn.IdentTableEntry;
+import tripleo.elijah.stages.gen_fn.TypeTableEntry;
+import tripleo.elijah.stages.gen_fn.WlGenerateClass;
+import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijah.work.WorkList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static tripleo.elijah.util.Helpers.List_of;
@@ -34,105 +69,70 @@ import static tripleo.elijah.util.Helpers.List_of;
  */
 public class DeducePhase {
 
-	private final List<FoundElement> foundElements = new ArrayList<FoundElement>();
-	private final Map<IdentTableEntry, OnType> idte_type_callbacks = new HashMap<IdentTableEntry, OnType>();
-	public @NotNull GeneratedClasses generatedClasses = new GeneratedClasses();
-	public final GeneratePhase generatePhase;
+	public final    ICodeRegistrar               codeRegistrar;
+	public final    GeneratePhase                generatePhase;
+	private final   List<FoundElement>           foundElements       = new ArrayList<FoundElement>();
+	private final   Map<IdentTableEntry, OnType> idte_type_callbacks = new HashMap<IdentTableEntry, OnType>();
+	public @NotNull GeneratedClasses             generatedClasses    = new GeneratedClasses();
 
 	final PipelineLogic pipelineLogic;
 
 	private final @NotNull ElLog LOG;
 
-	public DeducePhase(GeneratePhase aGeneratePhase, PipelineLogic aPipelineLogic, ElLog.Verbosity verbosity) {
-		generatePhase = aGeneratePhase;
-		pipelineLogic = aPipelineLogic;
-		//
-		LOG = new ElLog("(DEDUCE_PHASE)", verbosity, "DeducePhase");
-		pipelineLogic.addLog(LOG);
-	}
+	private final List<State> registeredStates = new ArrayList<>();
+	private final Compilation _compilation;
 
-	public void addFunction(GeneratedFunction generatedFunction, FunctionDef fd) {
+	public void addFunction(final GeneratedFunction generatedFunction, final FunctionDef fd) {
 		functionMap.put(fd, generatedFunction);
 	}
 
-	public void registerFound(FoundElement foundElement) {
+	public void registerFound(final FoundElement foundElement) {
 		foundElements.add(foundElement);
 	}
 
-	public void onType(IdentTableEntry entry, OnType callback) {
+	public void onType(final IdentTableEntry entry, final OnType callback) {
 		idte_type_callbacks.put(entry, callback);
 	}
 
 	@NotNull Multimap<OS_Element, ResolvedVariables> resolved_variables = ArrayListMultimap.create();
 
-	public void registerResolvedVariable(IdentTableEntry identTableEntry, OS_Element parent, String varName) {
+	public void registerResolvedVariable(final IdentTableEntry identTableEntry, final OS_Element parent, final String varName) {
 		resolved_variables.put(parent, new ResolvedVariables(identTableEntry, parent, varName));
 	}
 
 	@NotNull Multimap<ClassStatement, OnClass> onclasses = ArrayListMultimap.create();
 
-	public void onClass(ClassStatement aClassStatement, OnClass callback) {
+	public void onClass(final ClassStatement aClassStatement, final OnClass callback) {
 		onclasses.put(aClassStatement, callback);
 	}
 
 //	Multimap<GeneratedClass, ClassInvocation> generatedClasses1 = ArrayListMultimap.create();
 @NotNull Multimap<ClassStatement, ClassInvocation> classInvocationMultimap = ArrayListMultimap.create();
 
-	public @Nullable ClassInvocation registerClassInvocation(@NotNull ClassInvocation aClassInvocation) {
-		boolean put = false;
-		@Nullable ClassInvocation Result = null;
-
-		// 1. select which to return
-		ClassStatement c = aClassInvocation.getKlass();
-		Collection<ClassInvocation> cis = classInvocationMultimap.get(c);
-		for (@NotNull ClassInvocation ci : cis) {
-			// don't lose information
-			if (ci.getConstructorName() != null)
-				if (!(ci.getConstructorName().equals(aClassInvocation.getConstructorName())))
-					continue;
-
-			boolean i = equivalentGenericPart(aClassInvocation, ci);
-			if (i) {
-				Result = ci;
-				break;
-			}
-		}
-
-		if (Result == null) {
-			put = true;
-			Result = aClassInvocation;
-		}
-
-		// 2. Check and see if already done
-		Collection<ClassInvocation> cls = classInvocationMultimap.get(Result.getKlass());
-		for (@NotNull ClassInvocation ci : cls) {
-			if (equivalentGenericPart(ci, Result)) {
-				return ci;
-			}
-		}
-
-		if (put) {
-			classInvocationMultimap.put(aClassInvocation.getKlass(), aClassInvocation);
-		}
-
-		// 3. Generate new GeneratedClass
-		final @NotNull WorkList wl = new WorkList();
-		final @NotNull OS_Module mod = Result.getKlass().getContext().module();
-		wl.addJob(new WlGenerateClass(generatePhase.getGenerateFunctions(mod), Result, generatedClasses)); // TODO why add now?
-		generatePhase.wm.addJobs(wl);
-		generatePhase.wm.drain(); // TODO find a better place to put this
-
-		// 4. Return it
-		return Result;
+	public DeducePhase(final GeneratePhase aGeneratePhase,
+	                   final PipelineLogic aPipelineLogic,
+	                   final ElLog.Verbosity verbosity,
+	                   final Compilation aCompilation) {
+		generatePhase = aGeneratePhase;
+		pipelineLogic = aPipelineLogic;
+		//
+		LOG = new ElLog("(DEDUCE_PHASE)", verbosity, "DeducePhase");
+		pipelineLogic.addLog(LOG);
+		//
+		codeRegistrar = new DefaultCodeRegistrar(aCompilation);
+		_compilation  = aCompilation;
+		//
+		IStateRunnable.ST.register(this);
+		DeduceElement3_IdentTableEntry.ST.register(this);
 	}
 
-	public boolean equivalentGenericPart(@NotNull ClassInvocation first, @NotNull ClassInvocation second) {
-		Map<TypeName, OS_Type> firstGenericPart = first.genericPart;
-		Map<TypeName, OS_Type> secondGenericPart = second.genericPart;
+	public boolean equivalentGenericPart(@NotNull final ClassInvocation first, @NotNull final ClassInvocation second) {
+		final Map<TypeName, OS_Type> firstGenericPart = first.genericPart;
+		final Map<TypeName, OS_Type> secondGenericPart = second.genericPart;
 		if (secondGenericPart == null && (firstGenericPart == null || firstGenericPart.size() == 0)) return true;
 		//
 		int i = secondGenericPart.entrySet().size();
-		for (Map.@NotNull Entry<TypeName, OS_Type> entry : secondGenericPart.entrySet()) {
+		for (final Map.@NotNull Entry<TypeName, OS_Type> entry : secondGenericPart.entrySet()) {
 			final OS_Type entry_type = firstGenericPart.get(entry.getKey());
 			assert !(entry_type instanceof OS_UnknownType);
 			if (entry_type.equals(entry.getValue()))
@@ -145,101 +145,208 @@ public class DeducePhase {
 
 	final Map<NamespaceStatement, NamespaceInvocation> namespaceInvocationMap = new HashMap<NamespaceStatement, NamespaceInvocation>();
 
-	public NamespaceInvocation registerNamespaceInvocation(NamespaceStatement aNamespaceStatement) {
+	public NamespaceInvocation registerNamespaceInvocation(final NamespaceStatement aNamespaceStatement) {
 		if (namespaceInvocationMap.containsKey(aNamespaceStatement))
 			return namespaceInvocationMap.get(aNamespaceStatement);
 
-		@NotNull NamespaceInvocation nsi = new NamespaceInvocation(aNamespaceStatement);
+		@NotNull final NamespaceInvocation nsi = new NamespaceInvocation(aNamespaceStatement);
 		namespaceInvocationMap.put(aNamespaceStatement, nsi);
 		return nsi;
 	}
 
-	@NotNull List<FunctionMapHook> functionMapHooks = new ArrayList<FunctionMapHook>();
+	@NotNull
+	public List<FunctionMapHook> functionMapHooks = new ArrayList<FunctionMapHook>();
 
-	public void addFunctionMapHook(FunctionMapHook aFunctionMapHook) {
+	public void addFunctionMapHook(final FunctionMapHook aFunctionMapHook) {
 		functionMapHooks.add(aFunctionMapHook);
 	}
 
 	@NotNull List<DeferredMember> deferredMembers = new ArrayList<DeferredMember>();
 
-	public void addDeferredMember(DeferredMember aDeferredMember) {
+	public void addDeferredMember(final DeferredMember aDeferredMember) {
 		deferredMembers.add(aDeferredMember);
 	}
 
+	private final ExecutorService              classGenerator          = Executors.newCachedThreadPool();
+	private final List<DeferredMemberFunction> deferredMemberFunctions = new ArrayList<>();
+
 //	public List<ElLog> deduceLogs = new ArrayList<ElLog>();
 
-	public void addLog(ElLog aLog) {
+	public void addLog(final ElLog aLog) {
 		//deduceLogs.add(aLog);
 		pipelineLogic.addLog(aLog);
 	}
 
 	// helper function. no generics!
-	public @Nullable ClassInvocation registerClassInvocation(ClassStatement aParent, String aO) {
-		@Nullable ClassInvocation ci = new ClassInvocation((ClassStatement) aParent, aO);
+	public @Nullable ClassInvocation registerClassInvocation(final ClassStatement aParent, final String aO) {
+		@Nullable ClassInvocation ci = new ClassInvocation(aParent, aO);
 		ci = registerClassInvocation(ci);
 		return ci;
 	}
 
-	static class ResolvedVariables {
-		final IdentTableEntry identTableEntry;
-		final OS_Element parent; // README tripleo.elijah.lang._CommonNC, but that's package-private
-		final String varName;
+	public void addDeferredMember(final DeferredMemberFunction aDeferredMemberFunction) {
+		deferredMemberFunctions.add(aDeferredMemberFunction);
+	}
 
-		public ResolvedVariables(IdentTableEntry aIdentTableEntry, OS_Element aParent, String aVarName) {
-			assert aParent instanceof ClassStatement || aParent instanceof NamespaceStatement;
+	public ClassInvocation registerClassInvocation(final ClassStatement aParent) {
+		@Nullable ClassInvocation ci = new ClassInvocation(aParent, null);
+		ci = registerClassInvocation(ci);
+		return ci;
+	}
 
-			identTableEntry = aIdentTableEntry;
-			parent = aParent;
-			varName = aVarName;
+	public @Nullable ClassInvocation registerClassInvocation(@NotNull final ClassInvocation aClassInvocation) {
+		boolean put = false;
+		@Nullable ClassInvocation Result = null;
+
+		// 1. select which to return
+		final ClassStatement c = aClassInvocation.getKlass();
+		final Collection<ClassInvocation> cis = classInvocationMultimap.get(c);
+		for (@NotNull final ClassInvocation ci : cis) {
+			// don't lose information
+			if (ci.getConstructorName() != null)
+				if (!(ci.getConstructorName().equals(aClassInvocation.getConstructorName())))
+					continue;
+
+			final boolean i = equivalentGenericPart(aClassInvocation, ci);
+			if (i) {
+				Result = ci;
+				break;
+			}
 		}
+
+		if (Result == null) {
+			put = true;
+			Result = aClassInvocation;
+		}
+
+		// 2. Check and see if already done
+		final Collection<ClassInvocation> cls = classInvocationMultimap.get(Result.getKlass());
+		for (@NotNull final ClassInvocation ci : cls) {
+			if (equivalentGenericPart(ci, Result)) {
+				return ci;
+			}
+		}
+
+		if (put) {
+			classInvocationMultimap.put(aClassInvocation.getKlass(), aClassInvocation);
+		}
+
+		// 3. Generate new GeneratedClass
+		final @NotNull WorkList wl = new WorkList();
+		final @NotNull OS_Module mod = Result.getKlass().getContext().module();
+		wl.addJob(new WlGenerateClass(generatePhase.getGenerateFunctions(mod), Result, generatedClasses, codeRegistrar)); // TODO why add now?
+		generatePhase.wm.addJobs(wl);
+		generatePhase.wm.drain(); // TODO find a better place to put this
+
+		// 4. Return it
+		return Result;
+	}
+
+	public @NotNull DeduceTypes2 deduceModule(@NotNull final OS_Module m, final ElLog.Verbosity verbosity) {
+		generatePhase.getGenerateFunctions(m)
+		             .generateFromEntryPoints(m.entryPoints, this);
+
+		final @NotNull List<GeneratedNode> lgf = new ArrayList<GeneratedNode>();
+		for (final GeneratedNode lgci : generatedClasses) {
+			if (lgci instanceof GeneratedClass) {
+				final List<GeneratedFunction> generatedFunctions = (((GeneratedClass) lgci).functionMap.values())
+				  .stream()
+				  .map((final GeneratedFunction generatedFunction) -> {
+					  generatedFunction.setClass(lgci);
+					  return generatedFunction;
+				  })
+				  .collect(Collectors.toList());
+				lgf.addAll(generatedFunctions);
+			} else if (lgci instanceof GeneratedNamespace) {
+				final List<GeneratedFunction> generatedFunctions = (((GeneratedNamespace) lgci).functionMap.values())
+				  .stream()
+				  .map((final GeneratedFunction generatedFunction) -> {
+					  generatedFunction.setClass(lgci);
+					  return generatedFunction;
+				  })
+				  .collect(Collectors.toList());
+				lgf.addAll(generatedFunctions);
+			}
+		}
+
+		return deduceModule(m, lgf, verbosity);
 	}
 
 	private final Multimap<FunctionDef, GeneratedFunction> functionMap = ArrayListMultimap.create();
 
-	public @NotNull DeduceTypes2 deduceModule(@NotNull OS_Module m, @NotNull Iterable<GeneratedNode> lgf, ElLog.Verbosity verbosity) {
+	public @NotNull DeduceTypes2 deduceModule(@NotNull final OS_Module m, @NotNull final Iterable<GeneratedNode> lgf, final ElLog.Verbosity verbosity) {
 		final @NotNull DeduceTypes2 deduceTypes2 = new DeduceTypes2(m, this, verbosity);
-//		LOG.err("196 DeduceTypes "+deduceTypes2.getFileName());
+		LOG.err("196 DeduceTypes " + deduceTypes2.getFileName());
 		{
 			final ArrayList<GeneratedNode> p = new ArrayList<GeneratedNode>();
 			Iterables.addAll(p, lgf);
 			LOG.info("197 lgf.size " + p.size());
 		}
+
 		deduceTypes2.deduceFunctions(lgf);
-		deduceTypes2.deduceClasses(generatedClasses.copy().stream()
-				.filter(c -> c.module() == m)
-				.collect(Collectors.toList()));
+
+		final List<GeneratedClass> matching_class_list = generatedClasses.filterClassesByModule(m);
+
+//		assert matching_class_list.size() == generatedClasses.size();
+
+		deduceTypes2.deduceClasses(matching_class_list);
+
 		return deduceTypes2;
 	}
 
-	public @NotNull DeduceTypes2 deduceModule(@NotNull OS_Module m, ElLog.Verbosity verbosity) {
-		final @NotNull GenerateFunctions gfm = generatePhase.getGenerateFunctions(m);
+	public @NotNull Promise<ClassDefinition, Diagnostic, Void> generateClass(final GenerateFunctions gf, final ClassInvocation ci) {
+		@Nullable final WlGenerateClass                         gen = new WlGenerateClass(gf, ci, generatedClasses, codeRegistrar);
+		final ClassDefinition[]                                 cds = new ClassDefinition[1];
+		final DeferredObject<ClassDefinition, Diagnostic, Void> ret = new DeferredObject<>();
 
-		@NotNull List<EntryPoint> epl = m.entryPoints;
-		gfm.generateFromEntryPoints(epl, this);
-
-		@NotNull GeneratedClasses lgc = generatedClasses;
-
-		final @NotNull List<GeneratedNode> lgf = new ArrayList<GeneratedNode>();
-		for (GeneratedNode lgci : lgc) {
-			if (lgci instanceof GeneratedClass) {
-				final @NotNull Collection<GeneratedFunction> generatedFunctions = ((GeneratedClass) lgci).functionMap.values();
-				for (@NotNull GeneratedFunction generatedFunction : generatedFunctions) {
-					generatedFunction.setClass(lgci);
+		classGenerator.submit(new Runnable() {
+			@Override
+			public void run() {
+				gen.run(null);
+				final ClassDefinition cd       = new ClassDefinition(ci);
+				final GeneratedClass  genclass = gen.getResult();
+				if (genclass != null) {
+					cd.setNode(genclass);
+					cds[0] = cd;
+					ret.resolve(cd);
+				} else {
+					ret.reject(new CouldntGenerateClass(cd, gf, ci));
 				}
-				lgf.addAll(generatedFunctions);
 			}
-			if (lgci instanceof GeneratedNamespace) {
-				final @NotNull Collection<GeneratedFunction> generatedFunctions = ((GeneratedNamespace) lgci).functionMap.values();
-				for (@NotNull GeneratedFunction generatedFunction : generatedFunctions) {
-					generatedFunction.setClass(lgci);
-				}
-				lgf.addAll(generatedFunctions);
-			}
+		});
+
+		return ret;
+	}
+
+	public State register(final State aState) {
+		if (!(registeredStates.contains(aState))) {
+			registeredStates.add(aState);
+
+			final int id = registeredStates.indexOf(aState);
+
+			aState.setIdentity(id);
+			return aState;
 		}
 
-//		generatedClasses = lgc;
+		return aState;
+	}
 
-		return deduceModule(m, lgf, verbosity);
+	public Compilation _compilation() {
+		return _compilation;
+	}
+
+	static class ResolvedVariables {
+		final IdentTableEntry identTableEntry;
+		final OS_Element      parent; // README tripleo.elijah.lang._CommonNC, but that's package-private
+		final String          varName;
+
+		public ResolvedVariables(final IdentTableEntry aIdentTableEntry, final OS_Element aParent, final String aVarName) {
+			assert aParent instanceof ClassStatement || aParent instanceof NamespaceStatement;
+
+			identTableEntry = aIdentTableEntry;
+			parent          = aParent;
+			varName         = aVarName;
+		}
 	}
 
 	/**
@@ -249,22 +356,22 @@ public class DeducePhase {
 	 * @param _unused is unused
 	 * @param verbosity
 	 */
-	public void deduceModule(@NotNull OS_Module m, @NotNull Iterable<GeneratedNode> lgc, boolean _unused, ElLog.Verbosity verbosity) {
+	public void deduceModule(@NotNull final OS_Module m, @NotNull final Iterable<GeneratedNode> lgc, final boolean _unused, final ElLog.Verbosity verbosity) {
 		final @NotNull List<GeneratedNode> lgf = new ArrayList<GeneratedNode>();
 
-		for (@NotNull GeneratedNode lgci : lgc) {
+		for (@NotNull final GeneratedNode lgci : lgc) {
 			if (lgci.module() != m) continue;
 
 			if (lgci instanceof GeneratedClass) {
 				final @NotNull Collection<GeneratedFunction> generatedFunctions = ((GeneratedClass) lgci).functionMap.values();
-				for (@NotNull GeneratedFunction generatedFunction : generatedFunctions) {
+				for (@NotNull final GeneratedFunction generatedFunction : generatedFunctions) {
 //					generatedFunction.setClass(lgci); // TODO delete when done
 					assert generatedFunction.getGenClass() == lgci;
 				}
 				lgf.addAll(generatedFunctions);
 			} else if (lgci instanceof GeneratedNamespace) {
 				final @NotNull Collection<GeneratedFunction> generatedFunctions = ((GeneratedNamespace) lgci).functionMap.values();
-				for (@NotNull GeneratedFunction generatedFunction : generatedFunctions) {
+				for (@NotNull final GeneratedFunction generatedFunction : generatedFunctions) {
 					generatedFunction.setClass(lgci);
 				}
 				lgf.addAll(generatedFunctions);
@@ -274,14 +381,14 @@ public class DeducePhase {
 		deduceModule(m, lgf, verbosity);
 	}
 
-	public void forFunction(DeduceTypes2 deduceTypes2, @NotNull FunctionInvocation fi, @NotNull ForFunction forFunction) {
+	public void forFunction(final DeduceTypes2 deduceTypes2, @NotNull final FunctionInvocation fi, @NotNull final ForFunction forFunction) {
 //		LOG.err("272 forFunction\n\t"+fi.getFunction()+"\n\t"+fi.pte);
 		fi.generateDeferred().promise().then(new DoneCallback<BaseGeneratedFunction>() {
 			@Override
-			public void onDone(@NotNull BaseGeneratedFunction result) {
-				result.typePromise().then(new DoneCallback<GenType>() {
+			public void onDone(@NotNull final BaseGeneratedFunction result) {
+				result.onType(new DoneCallback<GenType>() {
 					@Override
-					public void onDone(GenType result) {
+					public void onDone(final GenType result) {
 						forFunction.typeDecided(result);
 					}
 				});
@@ -291,24 +398,22 @@ public class DeducePhase {
 
 //	Map<GeneratedFunction, OS_Type> typeDecideds = new HashMap<GeneratedFunction, OS_Type>();
 
-	public void typeDecided(@NotNull GeneratedFunction gf, final GenType aType) {
-		gf.typeDeferred().resolve(aType);
+	public void typeDecided(@NotNull final GeneratedFunction gf, final GenType aType) {
+		gf.resolveTypeDeferred(aType);
 //		typeDecideds.put(gf, aType);
 	}
 
-	public void finish() {
+	public void finish(@NotNull final GeneratedClasses lgc22) {
 		// TODO all GeneratedFunction nodes have a genClass member
-		for (GeneratedNode generatedNode : generatedClasses) {
-			if (generatedNode instanceof GeneratedClass) {
-				final @NotNull GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-				@NotNull Collection<GeneratedFunction> functions = generatedClass.functionMap.values();
-				for (@NotNull GeneratedFunction generatedFunction : functions) {
+		for (final GeneratedNode generatedNode : lgc22) {
+			if (generatedNode instanceof final @NotNull GeneratedClass generatedClass) {
+				@NotNull final Collection<GeneratedFunction> functions = generatedClass.functionMap.values();
+				for (@NotNull final GeneratedFunction generatedFunction : functions) {
 					generatedFunction.setParent(generatedClass);
 				}
-			} else if (generatedNode instanceof GeneratedNamespace) {
-				final @NotNull GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
-				@NotNull Collection<GeneratedFunction> functions = generatedNamespace.functionMap.values();
-				for (@NotNull GeneratedFunction generatedFunction : functions) {
+			} else if (generatedNode instanceof final @NotNull GeneratedNamespace generatedNamespace) {
+				@NotNull final Collection<GeneratedFunction> functions = generatedNamespace.functionMap.values();
+				for (@NotNull final GeneratedFunction generatedFunction : functions) {
 					generatedFunction.setParent(generatedNamespace);
 				}
 			}
@@ -335,21 +440,20 @@ public class DeducePhase {
 		}
 */
 		// TODO rewrite with classInvocationMultimap
-		for (ClassStatement classStatement : onclasses.keySet()) {
-			for (GeneratedNode generatedNode : generatedClasses) {
-				if (generatedNode instanceof GeneratedClass) {
-					final @NotNull GeneratedClass generatedClass = (GeneratedClass) generatedNode;
+		for (final ClassStatement classStatement : onclasses.keySet()) {
+			for (final GeneratedNode generatedNode : lgc22) {
+				if (generatedNode instanceof final @NotNull GeneratedClass generatedClass) {
 					if (generatedClass.getKlass() == classStatement) {
-						Collection<OnClass> ks = onclasses.get(classStatement);
-						for (@NotNull OnClass k : ks) {
+						final Collection<OnClass> ks = onclasses.get(classStatement);
+						for (@NotNull final OnClass k : ks) {
 							k.classFound(generatedClass);
 						}
 					} else {
-						@NotNull Collection<GeneratedClass> cmv = generatedClass.classMap.values();
-						for (@NotNull GeneratedClass aClass : cmv) {
+						@NotNull final Collection<GeneratedClass> cmv = generatedClass.classMap.values();
+						for (@NotNull final GeneratedClass aClass : cmv) {
 							if (aClass.getKlass() == classStatement) {
-								Collection<OnClass> ks = onclasses.get(classStatement);
-								for (@NotNull OnClass k : ks) {
+								final Collection<OnClass> ks = onclasses.get(classStatement);
+								for (@NotNull final OnClass k : ks) {
 									k.classFound(generatedClass);
 								}
 							}
@@ -358,8 +462,8 @@ public class DeducePhase {
 				}
 			}
 		}
-		for (Map.@NotNull Entry<IdentTableEntry, OnType> entry : idte_type_callbacks.entrySet()) {
-			IdentTableEntry idte = entry.getKey();
+		for (final Map.@NotNull Entry<IdentTableEntry, OnType> entry : idte_type_callbacks.entrySet()) {
+			final IdentTableEntry idte = entry.getKey();
 			if (idte.type !=null && // TODO make a stage where this gets set (resolvePotentialTypes)
 					idte.type.getAttached() != null)
 				entry.getValue().typeDeduced(idte.type.getAttached());
@@ -386,7 +490,7 @@ public class DeducePhase {
 			}
 		}
 */
-		for (@NotNull FoundElement foundElement : foundElements) {
+		for (@NotNull final FoundElement foundElement : foundElements) {
 			// TODO As we are using this, didntFind will never fail because
 			//  we call doFoundElement manually in resolveIdentIA
 			//  As the code matures, maybe this will change and the interface
@@ -395,11 +499,10 @@ public class DeducePhase {
 				foundElement.doNoFoundElement();
 			}
 		}
-		for (GeneratedNode generatedNode : generatedClasses) {
-			if (generatedNode instanceof GeneratedContainer) {
-				final @NotNull GeneratedContainer generatedContainer = (GeneratedContainer) generatedNode;
-				Collection<ResolvedVariables> x = resolved_variables.get(generatedContainer.getElement());
-				for (@NotNull ResolvedVariables resolvedVariables : x) {
+		for (final GeneratedNode generatedNode : lgc22) {
+			if (generatedNode instanceof final @NotNull GeneratedContainer generatedContainer) {
+				final Collection<ResolvedVariables> x = resolved_variables.get(generatedContainer.getElement());
+				for (@NotNull final ResolvedVariables resolvedVariables : x) {
 					final GeneratedContainer.VarTableEntry variable = generatedContainer.getVariable(resolvedVariables.varName);
 					assert variable != null;
 					final TypeTableEntry type = resolvedVariables.identTableEntry.type;
@@ -409,29 +512,27 @@ public class DeducePhase {
 				}
 			}
 		}
-		@NotNull List<GeneratedClass> gcs = new ArrayList<GeneratedClass>();
+		@NotNull final List<GeneratedClass> gcs = new ArrayList<GeneratedClass>();
 		boolean all_resolve_var_table_entries = false;
 		while (!all_resolve_var_table_entries) {
-			if (generatedClasses.size() == 0) break;
-			for (GeneratedNode generatedNode : generatedClasses.copy()) {
-				if (generatedNode instanceof GeneratedClass) {
-					final @NotNull GeneratedClass generatedClass = (GeneratedClass) generatedNode;
+			if (lgc22.size() == 0) break;
+			for (final GeneratedNode generatedNode : lgc22.copy()) {
+				if (generatedNode instanceof final @NotNull GeneratedClass generatedClass) {
 					all_resolve_var_table_entries = generatedClass.resolve_var_table_entries(this); // TODO use a while loop to get all classes
 				}
 			}
 		}
-		for (@NotNull DeferredMember deferredMember : deferredMembers) {
-			if (deferredMember.getParent() instanceof NamespaceStatement) {
-				final @NotNull NamespaceStatement parent = (NamespaceStatement) deferredMember.getParent();
+		for (@NotNull final DeferredMember deferredMember : deferredMembers) {
+			if (deferredMember.getParent() instanceof final @NotNull NamespaceStatement parent) {
 				final NamespaceInvocation nsi = registerNamespaceInvocation(parent);
 				nsi.resolveDeferred()
 						.done(new DoneCallback<GeneratedNamespace>() {
 							@Override
-							public void onDone(@NotNull GeneratedNamespace result) {
-								GeneratedContainer.@Nullable VarTableEntry v = result.getVariable(deferredMember.getVariableStatement().getName());
+							public void onDone(@NotNull final GeneratedNamespace result) {
+								final GeneratedContainer.@Nullable VarTableEntry v = result.getVariable(deferredMember.getVariableStatement().getName());
 								assert v != null;
 								// TODO varType, potentialTypes and _resolved: which?
-								final OS_Type varType = v.varType;
+								final OS_Type          varType = v.varType;
 								final @NotNull GenType genType = new GenType();
 								genType.set(varType);
 
@@ -459,9 +560,8 @@ public class DeducePhase {
 */
 							}
 						});
-			} else if (deferredMember.getParent() instanceof ClassStatement) {
+			} else if (deferredMember.getParent() instanceof final ClassStatement parent) {
 				// TODO do something
-				final ClassStatement parent = (ClassStatement) deferredMember.getParent();
 				final String name = deferredMember.getVariableStatement().getName();
 
 				// because deferredMember.invocation is null, we must create one here
@@ -470,7 +570,7 @@ public class DeducePhase {
 					@Override
 					public void onDone(final GeneratedClass result) {
 						final List<GeneratedContainer.VarTableEntry> vt = result.varTable;
-						for (GeneratedContainer.VarTableEntry gc_vte : vt) {
+						for (final GeneratedContainer.VarTableEntry gc_vte : vt) {
 							if (gc_vte.nameToken.getText().equals(name)) {
 								// check connections
 								// unify pot. types (prol. shuld be done already -- we don't want to be reporting errors here)
@@ -491,8 +591,8 @@ public class DeducePhase {
 				throw new NotImplementedException();
 		}
 		sanityChecks();
-		for (Map.@NotNull Entry<FunctionDef, Collection<GeneratedFunction>> entry : functionMap.asMap().entrySet()) {
-			for (@NotNull FunctionMapHook functionMapHook : functionMapHooks) {
+		for (final Map.@NotNull Entry<FunctionDef, Collection<GeneratedFunction>> entry : functionMap.asMap().entrySet()) {
+			for (@NotNull final FunctionMapHook functionMapHook : functionMapHooks) {
 				if (functionMapHook.matches(entry.getKey())) {
 					functionMapHook.apply(entry.getValue());
 				}
@@ -501,22 +601,20 @@ public class DeducePhase {
 	}
 
 	private void sanityChecks() {
-		for (GeneratedNode generatedNode : generatedClasses) {
-			if (generatedNode instanceof GeneratedClass) {
-				final @NotNull GeneratedClass generatedClass = (GeneratedClass) generatedNode;
+		for (final GeneratedNode generatedNode : generatedClasses) {
+			if (generatedNode instanceof final @NotNull GeneratedClass generatedClass) {
 				sanityChecks(generatedClass.functionMap.values());
 //				sanityChecks(generatedClass.constructors.values()); // TODO reenable
-			} else if (generatedNode instanceof GeneratedNamespace) {
-				final @NotNull GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
+			} else if (generatedNode instanceof final @NotNull GeneratedNamespace generatedNamespace) {
 				sanityChecks(generatedNamespace.functionMap.values());
 //				sanityChecks(generatedNamespace.constructors.values());
 			}
 		}
 	}
 
-	private void sanityChecks(@NotNull Collection<GeneratedFunction> aGeneratedFunctions) {
-		for (@NotNull GeneratedFunction generatedFunction : aGeneratedFunctions) {
-			for (@NotNull IdentTableEntry identTableEntry : generatedFunction.idte_list) {
+	private void sanityChecks(@NotNull final Collection<GeneratedFunction> aGeneratedFunctions) {
+		for (@NotNull final GeneratedFunction generatedFunction : aGeneratedFunctions) {
+			for (@NotNull final IdentTableEntry identTableEntry : generatedFunction.idte_list) {
 				switch (identTableEntry.getStatus()) {
 					case UNKNOWN:
 						assert identTableEntry.getResolvedElement() == null;
@@ -532,7 +630,7 @@ public class DeducePhase {
 						LOG.err(String.format("255 UNCHECKED idte %s in %s", identTableEntry, generatedFunction));
 						break;
 				}
-				for (@NotNull TypeTableEntry pot_tte : identTableEntry.potentialTypes()) {
+				for (@NotNull final TypeTableEntry pot_tte : identTableEntry.potentialTypes()) {
 					if (pot_tte.getAttached() == null) {
 						LOG.err(String.format("267 null potential attached in %s in %s in %s", pot_tte, identTableEntry, generatedFunction));
 					}
@@ -542,9 +640,10 @@ public class DeducePhase {
 	}
 
 	public static class GeneratedClasses implements Iterable<GeneratedNode> {
-		@NotNull List<GeneratedNode> generatedClasses = new ArrayList<GeneratedNode>();
+		@NotNull
+		public List<GeneratedNode> generatedClasses = new ArrayList<GeneratedNode>();
 
-		public void add(GeneratedNode aClass) {
+		public void add(final GeneratedNode aClass) {
 			generatedClasses.add(aClass);
 		}
 
@@ -561,9 +660,27 @@ public class DeducePhase {
 			return new ArrayList<GeneratedNode>(generatedClasses);
 		}
 
-		public void addAll(List<GeneratedNode> lgc) {
+		public void addAll(final List<GeneratedNode> lgc) {
 			// TODO is this method really needed
 			generatedClasses.addAll(lgc);
+		}
+
+		public List<GeneratedClass> filterClasses(final Predicate<GeneratedClass> pgc) {
+			return generatedClasses
+					.stream()
+					.filter(x -> {
+						if (x instanceof GeneratedClass) {
+							return pgc.test((GeneratedClass) x);
+						} else {
+							return false;
+						}
+					})
+					.map(x -> (GeneratedClass) x)
+					.collect(Collectors.toList());
+		}
+
+		public List<GeneratedClass> filterClassesByModule(final OS_Module aModule) {
+			return filterClasses(c -> c.module() == aModule);
 		}
 	}
 }

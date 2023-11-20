@@ -15,7 +15,7 @@ import java.util.List;
 public class IdentList {
 
 //	List<OS_Ident> idents=new ArrayList<OS_Ident>();
-	List<IdentExpression> idents2=new ArrayList<IdentExpression>();
+final List<IdentExpression> idents2 = new ArrayList<IdentExpression>();
 	
 //	public void push(String aa){
 //		idents.add(new OS_Ident(aa));

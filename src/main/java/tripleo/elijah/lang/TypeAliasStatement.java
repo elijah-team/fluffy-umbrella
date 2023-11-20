@@ -12,7 +12,7 @@
  */
 package tripleo.elijah.lang;
 
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
 
 /**
@@ -21,29 +21,29 @@ import tripleo.elijah.util.NotImplementedException;
  */
 public class TypeAliasStatement implements OS_Element {
 
-	private final OS_Element parent;
-	private IdentExpression x;
-	private Qualident y;
+	private final OS_Element      parent;
+	private       IdentExpression x;
+	private       Qualident       y;
 
 	public TypeAliasStatement(final OS_Element aParent) {
 		this.parent = aParent;
 	}
 
-    public void make(final IdentExpression x, final Qualident y) {
-		this.x=x;
-		this.y=y;
+	public void make(final IdentExpression x, final Qualident y) {
+		this.x = x;
+		this.y = y;
 	}
-	
+
 	public void setIdent(final IdentExpression aToken) {
 		x = aToken;
 	}
-	
+
 	public void setBecomes(final Qualident qq) {
-		y=qq;
+		y = qq;
 	}
 
 	@Override
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitTypeAlias(this);
 	}
 
