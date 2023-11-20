@@ -1,0 +1,9 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Mon Jun 14 04:28:12 EDT 2021
+https\://gitlab.com/api/v4/projects/20346374/packages/maven/.lastUpdated=1623659289783
+https\://repo.maven.apache.org/maven2/.lastUpdated=1623659292014
+https\://gitlab.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven/.error=Could not transfer artifact commons-codec\:commons-codec\:jar\:1.15 from/to gitlab-maven (https\://gitlab.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven)\: Illegal character in path at index 36\: https\://gitlab.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven/commons-codec/commons-codec/1.15/commons-codec-1.15.jar
+https\://gitlab.com/api/v4/projects/21223510/packages/maven/.error=
+https\://gitlab.com/api/v4/projects/21223510/packages/maven/.lastUpdated=1623659290150
+https\://gitlab.com/api/v4/projects/20346374/packages/maven/.error=
+@default-gitlab-maven-https\://gitlab.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven/.lastUpdated=1623659289364
