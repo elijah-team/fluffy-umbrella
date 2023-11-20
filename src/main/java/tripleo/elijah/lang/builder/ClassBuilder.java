@@ -8,7 +8,14 @@
  */
 package tripleo.elijah.lang.builder;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.AnnotationClause;
+import tripleo.elijah.lang.ClassInheritance;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.ClassTypes;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.TypeNameList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,36 +24,36 @@ import java.util.List;
  * Created 12/22/20 7:59 PM
  */
 public class ClassBuilder {
-	private List<AnnotationClause> annotations = new ArrayList<AnnotationClause>();
-	private ClassTypes _type;
-	private OS_Element _parent;
-	private Context _parent_context;
-	private IdentExpression _name;
-	private final ClassScope _scope = new ClassScope();
-	private final ClassInheritance _inh = new ClassInheritance();
-	private TypeNameList genericPart;
+	private final List<AnnotationClause> annotations = new ArrayList<AnnotationClause>();
+	private final ClassScope             _scope      = new ClassScope();
+	private final ClassInheritance       _inh        = new ClassInheritance();
+	private       ClassTypes             _type;
+	private       OS_Element             _parent;
+	private       Context                _parent_context;
+	private       IdentExpression        _name;
+	private       TypeNameList           genericPart;
 
-	public void setType(ClassTypes classTypes) {
+	public void setType(final ClassTypes classTypes) {
 		_type = classTypes;
 	}
 
 	public ClassStatement build() {
-		ClassStatement cs = new ClassStatement(_parent, _parent_context);
+		final ClassStatement cs = new ClassStatement(_parent, _parent_context);
 		cs.setType(_type);
 		assert _name != null;
 		cs.setName(_name);
-		for (AnnotationClause annotation : annotations) {
+		for (final AnnotationClause annotation : annotations) {
 			cs.addAnnotation(annotation);
 		}
 		if (genericPart != null)
 			cs.setGenericPart(genericPart);
-		for (ElBuilder builder : _scope.items()) {
+		for (final ElBuilder builder : _scope.items()) {
 //			if (builder instanceof AccessNotation) {
 //				cs.addAccess((AccessNotation) builder);
 //			} else {
 //				cs.add(builder);
 //			}
-			OS_Element built;
+			final OS_Element built;
 			builder.setParent(cs);
 			builder.setContext(cs.getContext());
 			built = builder.build();
@@ -58,20 +65,15 @@ public class ClassBuilder {
 		return cs;
 	}
 
-	public void annotation_clause(AnnotationClause a) {
-		if (a == null) return;
-		annotations.add(a);
-	}
-
-	public void setName(IdentExpression identExpression) {
+	public void setName(final IdentExpression identExpression) {
 		_name = identExpression;
 	}
 
-	public void setParent(OS_Element o) {
+	public void setParent(final OS_Element o) {
 		_parent = o;
 	}
 
-	public void setParentContext(Context o) {
+	public void setParentContext(final Context o) {
 		_parent_context = o;
 	}
 
@@ -83,13 +85,18 @@ public class ClassBuilder {
 		return _inh;
 	}
 
-	public void annotations(List<AnnotationClause> as) {
-		for (AnnotationClause annotationClause : as) {
+	public void annotations(final List<AnnotationClause> as) {
+		for (final AnnotationClause annotationClause : as) {
 			annotation_clause(annotationClause);
 		}
 	}
 
-	public void setGenericPart(TypeNameList tnl) {
+	public void annotation_clause(final AnnotationClause a) {
+		if (a == null) return;
+		annotations.add(a);
+	}
+
+	public void setGenericPart(final TypeNameList tnl) {
 		genericPart = tnl;
 	}
 }

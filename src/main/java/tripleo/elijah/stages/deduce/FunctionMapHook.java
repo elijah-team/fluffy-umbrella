@@ -8,18 +8,13 @@
  */
 package tripleo.elijah.stages.deduce;
 
-import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.stages.gen_fn.GeneratedFunction;
-
-import java.util.Collection;
+import tripleo.elijah.testing.comp.IFunctionMapHook;
 
 /**
  * Created 6/8/21 1:31 AM
  */
-public interface FunctionMapHook {
-	boolean matches(FunctionDef aFunctionDef);
+public interface FunctionMapHook extends IFunctionMapHook {
 
-	void apply(Collection<GeneratedFunction> aGeneratedFunctions);
 }
 
 //

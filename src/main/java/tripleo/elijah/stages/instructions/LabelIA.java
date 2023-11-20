@@ -14,7 +14,7 @@ package tripleo.elijah.stages.instructions;
 public class LabelIA implements InstructionArgument {
 	public final Label label;
 
-	public LabelIA(Label label_next) {
+	public LabelIA(final Label label_next) {
 		this.label = label_next;
 	}
 }

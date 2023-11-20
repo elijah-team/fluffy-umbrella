@@ -21,12 +21,12 @@ public abstract class AbstractScope2 implements Scope {
 
 	private List<String> docstrings;
 
-	protected AbstractScope2(OS_Element aParent) {
+	protected AbstractScope2(final OS_Element aParent) {
 		_Parent = aParent;
 	}
 
 	@Override
-	public void statementWrapper(IExpression aExpr) {
+	public void statementWrapper(final IExpression aExpr) {
 		// TODO is getParent.getContext right?
 		add(new StatementWrapper(aExpr, getParent().getContext(), getParent()));
 	}
@@ -61,7 +61,7 @@ public abstract class AbstractScope2 implements Scope {
 	}
 
 	@Override
-	public void addDocString(Token s1) {
+	public void addDocString(final Token s1) {
 		if (docstrings == null)
 			docstrings = new ArrayList<String>();
 		docstrings.add(s1.getText());

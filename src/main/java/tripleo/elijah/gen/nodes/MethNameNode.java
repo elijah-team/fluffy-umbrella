@@ -7,7 +7,7 @@
  *
  */
 /**
- * 
+ *
  */
 package tripleo.elijah.gen.nodes;
 
@@ -18,14 +18,14 @@ package tripleo.elijah.gen.nodes;
 public class MethNameNode {
 
 	private final MethHdrNode _header;
-	private final String ident;
-	public String genName;
+	private final String      ident;
+	public        String      genName;
 
 	public MethNameNode(final String method_name, final MethHdrNode header) {
 		// TODO Auto-generated constructor stub
 		this.ident = method_name;
-		_header = header;
-		genName = String.format("z%d%s", _header.getParent().getCode(), method_name); // TODO still not implememting everything
+		_header    = header;
+		genName    = String.format("z%d%s", _header.getParent().getCode(), method_name); // TODO still not implememting everything
 		//"z__"+method_name/*.getText()*/; // TODO wrong
 	}
 

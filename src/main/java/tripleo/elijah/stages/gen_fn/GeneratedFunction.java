@@ -8,23 +8,19 @@
  */
 package tripleo.elijah.stages.gen_fn;
 
-import org.jdeferred2.Promise;
-import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.lang.BaseFunctionDef;
-import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.FunctionDef;
-import tripleo.elijah.lang.OS_Type;
 
 /**
  * Created 6/27/21 9:40 AM
  */
-public class GeneratedFunction extends BaseGeneratedFunction {
-	public final @Nullable FunctionDef fd;
+public class GeneratedFunction extends BaseGeneratedFunction_1 implements GNCoded {
+	public final GF_Delegate GF_Delegate;
 
 	public GeneratedFunction(final @Nullable FunctionDef functionDef) {
-		fd = functionDef;
+		GF_Delegate    = new GF_Delegate(this, functionDef);
 	}
 
 	//
@@ -32,37 +28,41 @@ public class GeneratedFunction extends BaseGeneratedFunction {
 	//
 
 	@Override
+	@NotNull
 	public String toString() {
-		return String.format("<GeneratedFunction %s>", fd);
+
+
+		// README if classInvocation or namespaceInvocation is resolved then use that to return string...
+
+		// ... otherwise use parsetree parent
+		return GF_Delegate.toString();
 	}
 
 	public String name() {
-		if (fd == null)
-			throw new IllegalArgumentException("null fd");
-		return fd.name();
+		return GF_Delegate.name();
 	}
 
 	// endregion
 
 	@Override
+	public String identityString() {
+		return GF_Delegate.identityString();
+	}
+
+	@Override
 	public @NotNull BaseFunctionDef getFD() {
-		if (fd != null) return fd;
-		throw new IllegalStateException("No function");
+		return GF_Delegate.getFD();
 	}
 
 	@Override
 	public VariableTableEntry getSelf() {
-		if (getFD().getParent() instanceof ClassStatement)
-			return getVarTableEntry(0);
-		else
-			return null;
+		return GF_Delegate.getSelf();
 	}
 
 	@Override
-	public String identityString() {
-		return ""+fd;
+	public Role getRole() {
+		return GF_Delegate.getRole();
 	}
-
 }
 
 //

@@ -7,7 +7,7 @@
  *
  */
 /**
- * 
+ *
  */
 package tripleo.elijah.gen.nodes;
 

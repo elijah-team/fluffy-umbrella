@@ -8,24 +8,28 @@
  */
 package tripleo.elijah.lang.builder;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.DestructorDef;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.Scope3;
 
 /**
  * Created 12/23/20 12:13 AM
  */
 public class DestructorDefBuilder extends BaseFunctionDefBuilder {
-	private Context _context;
-	private DestructorDefScope _scope = new DestructorDefScope();
+	private final DestructorDefScope _scope = new DestructorDefScope();
+	private       Context            _context;
 
 	@Override
 	public DestructorDef build() {
 		assert _parent instanceof ClassStatement;
 
-		DestructorDef destructorDef = new DestructorDef((ClassStatement) _parent, _context);
+		final DestructorDef destructorDef = new DestructorDef((ClassStatement) _parent, _context);
 		destructorDef.setFal(mFal);
-		Scope3 scope3 = new Scope3(destructorDef);
+		final Scope3 scope3 = new Scope3(destructorDef);
 		destructorDef.scope(scope3);
-		for (ElBuilder item : _scope.items()) {
+		for (final ElBuilder item : _scope.items()) {
 			item.setParent(destructorDef);
 			item.setContext(_context);
 			destructorDef.add(item.build());
@@ -37,7 +41,7 @@ public class DestructorDefBuilder extends BaseFunctionDefBuilder {
 	}
 
 	@Override
-	protected void setContext(Context context) {
+	protected void setContext(final Context context) {
 		_context = context;
 	}
 

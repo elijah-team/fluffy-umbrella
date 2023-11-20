@@ -9,6 +9,7 @@
 package tripleo.elijah.stages.instructions;
 
 import tripleo.elijah.lang.Context;
+import tripleo.elijah.stages.deduce.DeduceElement;
 
 import java.util.List;
 
@@ -16,18 +17,11 @@ import java.util.List;
  * Created 9/10/20 3:16 PM
  */
 public class Instruction {
-	private InstructionName name;
-	private int index = -1;
+	public  DeduceElement   deduceElement;
 	List<InstructionArgument> args;
+	private InstructionName name;
+	private int             index = -1;
 	private Context context;
-
-	public void setName(final InstructionName aName) {
-		name = aName;
-	}
-
-	public void setIndex(final int l) {
-		index = l;
-	}
 
 	public void setArgs(final List<InstructionArgument> args_) {
 		args = args_;
@@ -37,29 +31,37 @@ public class Instruction {
 		return name;
 	}
 
+	public void setName(final InstructionName aName) {
+		name = aName;
+	}
+
 	public int getIndex() {
 		return index;
+	}
+
+	public void setIndex(final int l) {
+		index = l;
 	}
 
 	@Override
 	public String toString() {
 		return "Instruction{" +
-				"name=" + name +
-				", index=" + index +
-				", args=" + args +
-				'}';
+		  "name=" + name +
+		  ", index=" + index +
+		  ", args=" + args +
+		  '}';
 	}
 
 	public InstructionArgument getArg(final int i) {
 		return args.get(i);
 	}
 
-	public void setContext(final Context context) {
-		this.context = context;
-	}
-
 	public Context getContext() {
 		return context;
+	}
+
+	public void setContext(final Context context) {
+		this.context = context;
 	}
 
 	public int getArgsSize() {

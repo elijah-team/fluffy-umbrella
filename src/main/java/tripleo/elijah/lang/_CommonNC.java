@@ -17,33 +17,27 @@ import java.util.List;
  * Created 3/29/21 5:11 PM
  */
 abstract class _CommonNC {
+	public final    Attached        _a    = new Attached();
 	protected final List<ClassItem> items = new ArrayList<ClassItem>();
-	private final List<String> mDocs = new ArrayList<String>();
-	public Attached _a = new Attached();
-	protected IdentExpression nameToken;
-	protected OS_Package _packageName;
+	private final   List<String>    mDocs = new ArrayList<String>();
+	private final List<AccessNotation> accesses = new ArrayList<AccessNotation>();
+	protected       IdentExpression nameToken;
+	protected       OS_Package      _packageName;
 	List<AnnotationClause> annotations = null;
-	private List<AccessNotation> accesses = new ArrayList<AccessNotation>();
-
-	public void setPackageName(final OS_Package aPackageName) {
-		_packageName = aPackageName;
-	}
+	// region ClassItem
+	private AccessNotation access_note;
+	private El_Category    category;
 
 	public OS_Package getPackageName() {
 		return _packageName;
 	}
 
+	public void setPackageName(final OS_Package aPackageName) {
+		_packageName = aPackageName;
+	}
+
 	public void addDocString(final Token aText) {
 		mDocs.add(aText.getText());
-	}
-
-	public List<ClassItem> getItems() {
-		return items ;
-	}
-
-	public String getName() {
-		if (nameToken == null) return "";
-		return nameToken.getText();
 	}
 
 	// OS_Container
@@ -56,13 +50,47 @@ abstract class _CommonNC {
 		return a;
 	}
 
+	public List<ClassItem> getItems() {
+		return items;
+	}
+
 	// OS_Element2
 	public String name() {
 		return getName();
 	}
 
+	public String getName() {
+		if (nameToken == null) return "";
+		return nameToken.getText();
+	}
+
 	public void setName(final IdentExpression i1) {
 		nameToken = i1;
+	}
+
+	public void addAccess(final AccessNotation acs) {
+		accesses.add(acs);
+	}
+
+	public void walkAnnotations(final AnnotationWalker annotationWalker) {
+		if (annotations == null) return;
+		for (final AnnotationClause annotationClause : annotations) {
+			for (final AnnotationPart annotationPart : annotationClause.aps) {
+				annotationWalker.annotation(annotationPart);
+			}
+		}
+	}
+
+	public boolean hasItem(final OS_Element element) {
+		if (!(element instanceof ClassItem)) return false;
+		return items.contains(element);
+	}
+
+	public void addAnnotations(final List<AnnotationClause> as) {
+		if (as == null) return;
+		for (final AnnotationClause annotationClause : as) {
+			addAnnotation(annotationClause);
+		}
 	}
 
 	public void addAnnotation(final AnnotationClause a) {
@@ -71,49 +99,20 @@ abstract class _CommonNC {
 		annotations.add(a);
 	}
 
-	public void addAccess(final AccessNotation acs) {
-		accesses.add(acs);
-	}
-
-	public void walkAnnotations(AnnotationWalker annotationWalker) {
-		if (annotations == null) return;
-		for (AnnotationClause annotationClause : annotations) {
-			for (AnnotationPart annotationPart : annotationClause.aps) {
-				annotationWalker.annotation(annotationPart);
-			}
-		}
-	}
-
-	public boolean hasItem(OS_Element element) {
-		if (!(element instanceof ClassItem)) return false;
-		return items.contains(element);
-	}
-
-	public void addAnnotations(List<AnnotationClause> as) {
-		if (as == null) return;
-		for (AnnotationClause annotationClause : as) {
-			addAnnotation(annotationClause);
-		}
-	}
-
-	// region ClassItem
-	private AccessNotation access_note;
-	private El_Category category;
-
-	public void setCategory(El_Category aCategory) {
-		category = aCategory;
-	}
-
-	public void setAccess(AccessNotation aNotation) {
-		access_note = aNotation;
-	}
-
 	public El_Category getCategory() {
 		return category;
 	}
 
+	public void setCategory(final El_Category aCategory) {
+		category = aCategory;
+	}
+
 	public AccessNotation getAccess() {
 		return access_note;
+	}
+
+	public void setAccess(final AccessNotation aNotation) {
+		access_note = aNotation;
 	}
 
 	// endregion

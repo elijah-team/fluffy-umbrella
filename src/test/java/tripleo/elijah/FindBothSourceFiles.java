@@ -14,6 +14,7 @@ import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
+import tripleo.elijah.comp.internal.CompilationImpl;
 
 import java.io.File;
 import java.util.List;
@@ -22,24 +23,25 @@ import static tripleo.elijah.util.Helpers.List_of;
 
 /**
  * @author Tripleo(sb)
- *
  */
 public class FindBothSourceFiles {
 
 	/**
 	 * Compiler should find both parse files
-	 * 
+	 * <p>
 	 * Test method for {@link tripleo.elijah.Main#parseFile(java.lang.String, java.io.InputStream)}.
+	 *
+	 * @throws Exception
 	 */
 	@Test
-	public final void compilerShouldFindBothParseFiles() {
+	public final void compilerShouldFindBothParseFiles() throws Exception {
 		final List<String> args = List_of("test/demo-el-normal", "test/demo-el-normal/main2", "-sE");
 //		ErrSink eee = JMock.of(ErrSink.class);
-		final ErrSink eee = new StdErrSink();
-		final Compilation c = new Compilation(eee, new IO());
+		final ErrSink     eee = new StdErrSink();
+		final Compilation c   = new CompilationImpl(eee, new IO());
 
 		c.feedCmdLine(args);
-		
+
 		//fail("Not yet implemented"); // TODO
 		Assert.assertTrue(c.getIO().recordedRead(new File(new File("test", "demo-el-normal"), "fact1.elijah")));
 		Assert.assertTrue(c.getIO().recordedRead(new File(new File(new File("test", "demo-el-normal"), "main2"), "main2.elijah")));
@@ -94,7 +96,7 @@ public class FindBothSourceFiles {
 */
 
 }
-	
+
 //
 //
 //

@@ -8,22 +8,26 @@
  */
 package tripleo.elijah.lang.builder;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.Qualident;
+import tripleo.elijah.lang.TypeAliasStatement;
 
 /**
  * Created 12/22/20 10:22 PM
  */
 public class TypeAliasBuilder extends ElBuilder {
-	private OS_Element _parent;
-	private Context _context;
-	private Qualident oldElement;
+	private OS_Element      _parent;
+	private Context         _context;
+	private Qualident       oldElement;
 	private IdentExpression newAlias;
 
 	public IdentExpression getIdent() {
 		return newAlias;
 	}
 
-	public void setIdent(IdentExpression newAlias) {
+	public void setIdent(final IdentExpression newAlias) {
 		this.newAlias = newAlias;
 	}
 
@@ -31,19 +35,19 @@ public class TypeAliasBuilder extends ElBuilder {
 		return oldElement;
 	}
 
-	public void setBecomes(Qualident oldElement) {
+	public void setBecomes(final Qualident oldElement) {
 		this.oldElement = oldElement;
 	}
 
 	@Override
 	public TypeAliasStatement build() {
-		TypeAliasStatement typeAliasStatement = new TypeAliasStatement(_parent);
+		final TypeAliasStatement typeAliasStatement = new TypeAliasStatement(_parent);
 		typeAliasStatement.make(newAlias, oldElement);
 		return typeAliasStatement;
 	}
 
 	@Override
-	public void setContext(Context context) {
+	public void setContext(final Context context) {
 		_context = context;
 		// TODO this is a very important potential bug
 		//  where ident's may not be getting the right context

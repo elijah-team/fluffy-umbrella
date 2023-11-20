@@ -8,14 +8,19 @@
  */
 package tripleo.elijah.lang.builder;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.AnnotationClause;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.ConstructorDef;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.Scope3;
 
 /**
  * Created 12/22/20 10:55 PM
  */
 public class ConstructorDefBuilder extends BaseFunctionDefBuilder {
-	private ConstructorDefScope _scope = new ConstructorDefScope();
-	private Context _context;
+	private final ConstructorDefScope _scope = new ConstructorDefScope();
+	private       Context             _context;
 
 	public ConstructorDefScope scope() {
 		return _scope;
@@ -25,15 +30,15 @@ public class ConstructorDefBuilder extends BaseFunctionDefBuilder {
 	public ConstructorDef build() {
 		assert _parent instanceof ClassStatement;
 		//
-		ConstructorDef cd = new ConstructorDef(_name, (ClassStatement) _parent, _context);
+		final ConstructorDef cd = new ConstructorDef(_name, (ClassStatement) _parent, _context);
 		cd.setName(_name);
 		cd.setFal(mFal);
-		for (AnnotationClause a : annotations) {
+		for (final AnnotationClause a : annotations) {
 			cd.addAnnotation(a);
 		}
-		Scope3 scope3 = new Scope3(cd);
+		final Scope3 scope3 = new Scope3(cd);
 		cd.scope(scope3);
-		for (ElBuilder item : _scope.items()) {
+		for (final ElBuilder item : _scope.items()) {
 			item.setParent(cd);
 			item.setContext(_context);
 			cd.add(item.build());
@@ -45,7 +50,7 @@ public class ConstructorDefBuilder extends BaseFunctionDefBuilder {
 	}
 
 	@Override
-	protected void setContext(Context context) {
+	protected void setContext(final Context context) {
 		_context = context;
 	}
 }

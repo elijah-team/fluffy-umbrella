@@ -18,27 +18,28 @@ public abstract class FoundElement {
 	private boolean _didntFind;
 	private boolean _called;
 
-	public FoundElement(@NotNull DeducePhase aPhase) {
+	public FoundElement(@NotNull final DeducePhase aPhase) {
 		aPhase.registerFound(this);
 	}
 
-	public void doFoundElement(OS_Element e) {
+	public void doFoundElement(final OS_Element e) {
 		if (_called) return;
 
 		_didntFind = false;
-		_called = true;
+		_called    = true;
 		foundElement(e);
 	}
+
+	public abstract void foundElement(OS_Element e);
 
 	public void doNoFoundElement() {
 		if (_called) return;
 
 		_didntFind = true;
-		_called = true;
+		_called    = true;
 		noFoundElement();
 	}
 
-	public abstract void foundElement(OS_Element e);
 	public abstract void noFoundElement();
 
 	public boolean didntFind() {

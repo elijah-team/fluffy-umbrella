@@ -9,7 +9,17 @@
 package tripleo.elijah.contexts;
 
 import tripleo.elijah.comp.Compilation;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.ImportStatement;
+import tripleo.elijah.lang.LookupResult;
+import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.NamespaceStatement;
+import tripleo.elijah.lang.NamespaceTypes;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Element2;
+import tripleo.elijah.lang.OS_Package;
+import tripleo.elijah.lang.Qualident;
 
 import java.util.List;
 
@@ -17,7 +27,7 @@ import java.util.List;
  * Created 8/15/20 7:09 PM
  */
 public class ImportContext extends Context {
-	private final Context _parent;
+	private final Context         _parent;
 	private final ImportStatement carrier;
 
 	public ImportContext(final Context aParent, final ImportStatement imp) {
@@ -28,22 +38,21 @@ public class ImportContext extends Context {
 	@Override
 	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(this);
-//		System.err.println("2002 "+importStatement.importList());
-		Compilation compilation = compilation();
+//		tripleo.elijah.util.Stupidity.println_err2("2002 " + this.carrier.importList());
+		final Compilation compilation = compilation();
 		for (final Qualident importStatementItem : carrier.parts()) {
-//			System.err.println("2005 "+importStatementItem);
+			tripleo.elijah.util.Stupidity.println_err2("2005 " + importStatementItem);
 			if (compilation.isPackage(importStatementItem.toString())) {
 				final OS_Package aPackage = compilation.getPackage(importStatementItem);
 //				LogEvent.logEvent(4003 , ""+aPackage.getElements());
 				for (final OS_Element element : aPackage.getElements()) {
-//					System.err.println("4002 "+element);
+					tripleo.elijah.util.Stupidity.println_err2("4002 " + element);
 					if (element instanceof NamespaceStatement && ((NamespaceStatement) element).getKind() == NamespaceTypes.MODULE) {
 //		                LogEvent.logEvent(4103, "");
 						final NamespaceContext namespaceContext = (NamespaceContext) element.getContext();
 						alreadySearched.add(namespaceContext);
 						namespaceContext.lookup(name, level, Result, alreadySearched, true);
-					} else if (element instanceof OS_Element2) {
-						final OS_Element2 element2 = (OS_Element2) element;
+					} else if (element instanceof final OS_Element2 element2) {
 						if (element2.name().equals(name)) {
 							Result.add(name, level, element, this);
 							break; // shortcut: should only have one in scope
@@ -52,10 +61,10 @@ public class ImportContext extends Context {
 				}
 			} else {
 				// find directly imported elements
-				List<IdentExpression> x = importStatementItem.parts();
-				final IdentExpression last = x.get(x.size() - 1);
+				final List<IdentExpression> x    = importStatementItem.parts();
+				final IdentExpression       last = x.get(x.size() - 1);
 				if (last.getText().equals(name)) {
-					Qualident cl = new Qualident();
+					final Qualident cl = new Qualident();
 					for (int i = 0; i < x.size() - 1; i++) {
 						cl.append(x.get(i));
 					}
@@ -64,13 +73,13 @@ public class ImportContext extends Context {
 						final OS_Package aPackage = compilation.getPackage(cl);
 //						LogEvent.logEvent(4003 , ""+aPackage.getElements());
 						for (final OS_Element element : aPackage.getElements()) {
-//							System.err.println("4002 "+element);
+							tripleo.elijah.util.Stupidity.println_err2("4002 " + element);
 							if (element instanceof NamespaceStatement && ((NamespaceStatement) element).getKind() == NamespaceTypes.MODULE) {
 //		                		LogEvent.logEvent(4103, "");
 								final NamespaceContext namespaceContext = (NamespaceContext) element.getContext();
 								alreadySearched.add(namespaceContext);
-								LookupResultList xxx = namespaceContext.lookup(name, level, Result, alreadySearched, true);
-								for (LookupResult result : xxx.results()) {
+								final LookupResultList xxx = namespaceContext.lookup(name, level, Result, alreadySearched, true);
+								for (final LookupResult result : xxx.results()) {
 									Result.add(result.getName(), result.getLevel(), result.getElement(), result.getContext());
 								}
 							} else {

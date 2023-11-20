@@ -21,14 +21,14 @@ import java.util.List;
  */
 public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Container, OS_Element2 {
 
-	public Attached _a = new Attached();
-	protected Species _species;
+	public final Attached _a = new Attached();
+	protected    Species  _species;
+	protected Scope3          scope3;
+	protected FormalArgList   mFal = new FormalArgList(); // remove final for FunctionDefBuilder
 	List<AnnotationClause> annotations = null;
-	protected Scope3 scope3;
-	protected FormalArgList mFal = new FormalArgList(); // remove final for FunctionDefBuilder
-	private IdentExpression funName;
-	private AccessNotation access_note;
-	private El_Category category;
+	private   IdentExpression funName;
+	private   AccessNotation  access_note;
+	private   El_Category     category;
 
 	// region arglist
 
@@ -36,7 +36,7 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 		return mFal;
 	}
 
-	public void setFal(FormalArgList fal) {
+	public void setFal(final FormalArgList fal) {
 		mFal = fal;
 	}
 
@@ -46,22 +46,19 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 
 	// endregion
 
-	public void scope(Scope3 sco) {
+	public void scope(final Scope3 sco) {
 		scope3 = sco;
 	}
 
-	@Override // OS_Element
-	public abstract OS_Element getParent();
-
-	// region items
-
-	public boolean hasItem(OS_Element element) {
+	public boolean hasItem(final OS_Element element) {
 		return scope3.items().contains(element);
 	}
 
+	// region items
+
 	public @NotNull List<FunctionItem> getItems() {
-		List<FunctionItem> collection = new ArrayList<FunctionItem>();
-		for (OS_Element element : scope3.items()) {
+		final List<FunctionItem> collection = new ArrayList<FunctionItem>();
+		for (final OS_Element element : scope3.items()) {
 			if (element instanceof FunctionItem)
 				collection.add((FunctionItem) element);
 		}
@@ -88,15 +85,16 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 			throw new IllegalStateException(String.format("Cant add %s to FunctionDef", anElement));
 	}
 
-	// endregion
-
-	// region name
-
 	public IdentExpression getNameNode() {
 		return funName;
 	}
 
-	@Override @NotNull // OS_Element2
+	// endregion
+
+	// region name
+
+	@Override
+	@NotNull // OS_Element2
 	public String name() {
 		if (funName == null)
 			return "";
@@ -107,17 +105,20 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 		funName = aText;
 	}
 
+	@Override // OS_Element
+	public Context getContext() {
+		return _a._context;
+	}
+
 	// endregion
 
 	// region context
 
+	@Override // OS_Element
+	public abstract OS_Element getParent();
+
 	public void setContext(final FunctionContext ctx) {
 		_a.setContext(ctx);
-	}
-
-	@Override // OS_Element
-	public Context getContext() {
-		return _a._context;
 	}
 
 	// endregion
@@ -132,20 +133,20 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 		annotations.add(a);
 	}
 
-	public void walkAnnotations(AnnotationWalker annotationWalker) {
+	public void walkAnnotations(final AnnotationWalker annotationWalker) {
 		if (annotations == null) return;
-		for (AnnotationClause annotationClause : annotations) {
-			for (AnnotationPart annotationPart : annotationClause.aps) {
+		for (final AnnotationClause annotationClause : annotations) {
+			for (final AnnotationPart annotationPart : annotationClause.aps) {
 				annotationWalker.annotation(annotationPart);
 			}
 		}
 	}
 
-	public Iterable<AnnotationPart> annotationIterable() {
-		List<AnnotationPart> aps = new ArrayList<AnnotationPart>();
+	public @NotNull Iterable<AnnotationPart> annotationIterable() {
+		final List<AnnotationPart> aps = new ArrayList<AnnotationPart>();
 		if (annotations == null) return aps;
-		for (AnnotationClause annotationClause : annotations) {
-			for (AnnotationPart annotationPart : annotationClause.aps) {
+		for (final AnnotationClause annotationClause : annotations) {
+			for (final AnnotationPart annotationPart : annotationClause.aps) {
 				aps.add(annotationPart);
 			}
 		}
@@ -179,7 +180,7 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 	}
 
 	@Override
-	public void setCategory(El_Category aCategory) {
+	public void setCategory(final El_Category aCategory) {
 		category = aCategory;
 	}
 
@@ -189,8 +190,16 @@ public abstract class BaseFunctionDef implements Documentable, ClassItem, OS_Con
 	}
 
 	@Override
-	public void setAccess(AccessNotation aNotation) {
+	public void setAccess(final AccessNotation aNotation) {
 		access_note = aNotation;
+	}
+
+	public OS_Module getModule() {
+		var m = getParent();
+		while (m != null && !(m instanceof OS_Module)) {
+			m = m.getParent();
+		}
+		return (OS_Module) m;
 	}
 
 	public enum Species {

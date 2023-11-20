@@ -1,10 +1,10 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 package tripleo.elijah.lang;
 
@@ -23,6 +23,7 @@ import java.util.List;
  */
 public class ListExpression extends AbstractExpression implements Locatable {
 
+	public final Syntax syntax = new Syntax();
 	ExpressionList contents;
 
 	public void setContents(final ExpressionList aList) {
@@ -35,37 +36,14 @@ public class ListExpression extends AbstractExpression implements Locatable {
 	}
 
 	@Override
-	public void setType(OS_Type deducedExpression) {
-
-	}
-
-	@Override
 	public OS_Type getType() {
 		return null;
 	}
 
-	// region Syntax
+	@Override
+	public void setType(final OS_Type deducedExpression) {
 
-	public class Syntax {
-		Token startToken;
-		Token endToken;
-		List<Token> commas = new ArrayList<Token>();
-
-		public void start_and_end(Token startToken, Token endToken) {
-			this.startToken = startToken;
-			this.endToken = endToken;
-		}
-
-		public void comma(Token t) {
-			commas.add(t);
-		}
 	}
-
-	public Syntax syntax = new Syntax();
-
-	// endregion
-
-	// region Locatable
 
 	@Override
 	public int getLine() {
@@ -73,6 +51,13 @@ public class ListExpression extends AbstractExpression implements Locatable {
 			return syntax.startToken.getLine();
 		return 0;
 	}
+
+	// region Syntax
+
+
+	// endregion
+
+	// region Locatable
 
 	@Override
 	public int getColumn() {
@@ -98,11 +83,26 @@ public class ListExpression extends AbstractExpression implements Locatable {
 	@Override
 	public File getFile() {
 		if (syntax.startToken != null) {
-			String filename = syntax.startToken.getFilename();
+			final String filename = syntax.startToken.getFilename();
 			if (filename != null)
 				return new File(filename);
 		}
 		return null;
+	}
+
+	public class Syntax {
+		final List<Token> commas = new ArrayList<Token>();
+		Token startToken;
+		Token endToken;
+
+		public void start_and_end(final Token startToken, final Token endToken) {
+			this.startToken = startToken;
+			this.endToken   = endToken;
+		}
+
+		public void comma(final Token t) {
+			commas.add(t);
+		}
 	}
 
 	// endregion

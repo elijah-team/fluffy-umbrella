@@ -8,7 +8,10 @@
  */
 package tripleo.elijah.stages.instructions;
 
+import org.jdeferred2.Promise;
 import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.stages.deduce.nextgen.DN_Resolver;
 import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
 import tripleo.elijah.stages.gen_fn.Constructable;
 import tripleo.elijah.stages.gen_fn.GenType;
@@ -20,8 +23,8 @@ import tripleo.elijah.stages.gen_fn.ProcTableEntry;
  * Created 10/2/20 2:36 PM
  */
 public class IdentIA implements InstructionArgument, Constructable {
-	private final int id;
-	public final BaseGeneratedFunction gf;
+	public final  BaseGeneratedFunction gf;
+	private final int                   id;
 //	private InstructionArgument prev;
 
 /*
@@ -37,38 +40,48 @@ public class IdentIA implements InstructionArgument, Constructable {
 	}
 
 	public void setPrev(final InstructionArgument ia) {
-		gf.getIdentTableEntry(id).backlink = ia;
+		gf.getIdentTableEntry(id).setBacklink(ia);
 	}
 
 	@Override
 	public String toString() {
-		return "IdentIA{" +
-				"id=" + id +
-//				", prev=" + prev +
-				'}';
-	}
-
-	public int getIndex() {
-		return id;
+		return String.valueOf(getEntry());
+//		return "IdentIA{" +
+//				"id=" + id +
+////				", prev=" + prev +
+//				'}';
 	}
 
 	public @NotNull IdentTableEntry getEntry() {
 		return gf.getIdentTableEntry(getIndex());
 	}
 
+	public int getIndex() {
+		return id;
+	}
+
 	@Override
-	public void setConstructable(ProcTableEntry aPte) {
+	public void setConstructable(final ProcTableEntry aPte) {
 		getEntry().setConstructable(aPte);
 	}
 
 	@Override
-	public void resolveTypeToClass(GeneratedNode aNode) {
+	public void resolveTypeToClass(final GeneratedNode aNode) {
 		getEntry().resolveTypeToClass(aNode);
 	}
 
 	@Override
-	public void setGenType(GenType aGenType) {
-		getEntry().setGenType(aGenType);
+	public void setGenType(final GenType aGenType) {
+		getEntry().setGenType(aGenType, gf);
+	}
+
+	@Override
+	public Promise<ProcTableEntry, Void, Void> constructablePromise() {
+		return getEntry().constructablePromise();
+	}
+
+	public DN_Resolver newResolver(final Context aCtx, final BaseGeneratedFunction aGeneratedFunction) {
+		return getEntry().newResolver(aCtx, aGeneratedFunction);
 	}
 }
 

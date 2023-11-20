@@ -11,12 +11,12 @@
  */
 package tripleo.elijah.gen;
 
-public class ModuleRef implements RefElemenet {
+public class ModuleRef implements tripleo.elijah.gen.RefElemenet {
 	private final String _path;
-	private final int _code;
-	
+	private final int    _code;
+
 	public ModuleRef(final String path, final int code) {
-		this._path=path;
-		this._code=code;
+		this._path = path;
+		this._code = code;
 	}
 }

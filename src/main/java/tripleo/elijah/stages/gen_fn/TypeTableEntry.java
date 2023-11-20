@@ -23,25 +23,23 @@ import java.util.List;
  * Created 9/12/20 10:26 PM
  */
 public class TypeTableEntry {
-	final int index;
-	public final Type lifetime;
-	public final TableEntryIV tableEntry;
+	@NotNull
+	public final  Type                lifetime;
 	@Nullable
-	private OS_Type attached;
-	public final GenType genType = new GenType();
-	public final IExpression expression;
-	private final List<OnSetAttached> osacbs = new ArrayList<OnSetAttached>();
-
-	public interface OnSetAttached {
-		void onSetAttached(TypeTableEntry aTypeTableEntry);
-	}
+	public final  TableEntryIV        tableEntry;
+	public final  GenType             genType = new GenType();
+	public final  IExpression         expression;
+	final         int                 index;
+	private final List<OnSetAttached> osacbs  = new ArrayList<OnSetAttached>();
+	@Nullable
+	private       OS_Type             attached;
 
 	public TypeTableEntry(final int index,
-						  final Type lifetime,
-						  @Nullable final OS_Type aAttached,
-						  final IExpression expression,
-						  TableEntryIV aTableEntryIV) {
-		this.index = index;
+	                      @NotNull final Type lifetime,
+	                      @Nullable final OS_Type aAttached,
+	                      final IExpression expression,
+	                      @Nullable final TableEntryIV aTableEntryIV) {
+		this.index    = index;
 		this.lifetime = lifetime;
 		if (aAttached == null || (aAttached.getType() == OS_Type.Type.USER && aAttached.getTypeName() == null)) {
 			attached = null;
@@ -54,7 +52,7 @@ public class TypeTableEntry {
 		this.tableEntry = aTableEntryIV;
 	}
 
-	private void _settingAttached(@NotNull OS_Type aAttached) {
+	private void _settingAttached(@NotNull final OS_Type aAttached) {
 		switch (aAttached.getType()) {
 		case USER:
 			if (genType.typeName != null) {
@@ -77,31 +75,36 @@ public class TypeTableEntry {
 				genType.typeName = aAttached;
 			break;
 		case FUNCTION:
-			assert genType.resolved == null || genType.resolved == aAttached;
+			assert genType.resolved == null || genType.resolved == aAttached || /*HACK*/ aAttached.getType() == OS_Type.Type.FUNCTION;
+			genType.resolved = aAttached;
+			break;
+		case FUNC_EXPR:
+			assert genType.resolved == null || genType.resolved == aAttached;// || /*HACK*/ aAttached.getType() == OS_Type.Type.FUNCTION;
 			genType.resolved = aAttached;
 			break;
 		default:
 //			throw new NotImplementedException();
-			System.err.println("73 "+aAttached);
+			tripleo.elijah.util.Stupidity.println_err2("73 " + aAttached);
 			break;
 		}
 	}
 
-	@Override @NotNull
+	@Override
+	@NotNull
 	public String toString() {
 		return "TypeTableEntry{" +
-				"index=" + index +
-				", lifetime=" + lifetime +
-				", attached=" + attached +
-				", expression=" + expression +
-				'}';
+		  "index=" + index +
+		  ", lifetime=" + lifetime +
+		  ", attached=" + attached +
+		  ", expression=" + expression +
+		  '}';
 	}
 
 	public int getIndex() {
 		return index;
 	}
 
-	public void resolve(GeneratedNode aResolved) {
+	public void resolve(final GeneratedNode aResolved) {
 		genType.node = aResolved;
 	}
 
@@ -117,18 +120,18 @@ public class TypeTableEntry {
 		return attached;
 	}
 
-	public void setAttached(OS_Type aAttached) {
+	public void setAttached(final OS_Type aAttached) {
 		attached = aAttached;
 		if (aAttached != null) {
 			_settingAttached(aAttached);
 
-			for (OnSetAttached cb : osacbs) {
+			for (final OnSetAttached cb : osacbs) {
 				cb.onSetAttached(this);
 			}
 		}
 	}
 
-	public void setAttached(GenType aGenType) {
+	public void setAttached(final GenType aGenType) {
 		genType.copy(aGenType);
 //		if (aGenType.resolved != null) genType.resolved = aGenType.resolved;
 //		if (aGenType.ci != null) genType.ci = aGenType.ci;
@@ -137,16 +140,20 @@ public class TypeTableEntry {
 		setAttached(genType.resolved);
 	}
 
-	public void addSetAttached(OnSetAttached osa) {
+	public void addSetAttached(final OnSetAttached osa) {
 		osacbs.add(osa);
 	}
 
-	public void genTypeCI(ClassInvocation aClsinv) {
+	public void genTypeCI(final ClassInvocation aClsinv) {
 		genType.ci = aClsinv;
 	}
 
 	public enum Type {
 		SPECIFIED, TRANSIENT
+	}
+
+	public interface OnSetAttached {
+		void onSetAttached(TypeTableEntry aTypeTableEntry);
 	}
 
 }

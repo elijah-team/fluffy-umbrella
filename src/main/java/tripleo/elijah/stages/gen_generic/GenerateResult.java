@@ -8,6 +8,8 @@
  */
 package tripleo.elijah.stages.gen_generic;
 
+import org.jetbrains.annotations.NotNull;
+import tripleo.elijah.ci.LibraryStatementPart;
 import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
 import tripleo.elijah.stages.gen_fn.GeneratedClass;
 import tripleo.elijah.stages.gen_fn.GeneratedConstructor;
@@ -22,36 +24,45 @@ import java.util.List;
  * Created 4/27/21 1:11 AM
  */
 public class GenerateResult {
+	private final List<GenerateResultItem> _res = new ArrayList<GenerateResultItem>();
 	private int bufferCounter = 0;
 
-	final List<GenerateResultItem> res = new ArrayList<GenerateResultItem>();
+//	public void add(final Buffer b, final GeneratedNode n, final TY ty) {
+//		_res.add(new GenerateResultItem(ty, b, n, null, null, ++bufferCounter)); // TODO remove nulls
+//	}
 
-	public void add(Buffer b, GeneratedNode n, TY ty) {
-		res.add(new GenerateResultItem(ty, b, n, ++bufferCounter));
+	public void addConstructor(final GeneratedConstructor aGeneratedConstructor, final Buffer aBuffer, final TY aTY, final LibraryStatementPart aLsp) {
+		addFunction(aGeneratedConstructor, aBuffer, aTY, aLsp);
+	}
+
+	public void addFunction(final BaseGeneratedFunction aGeneratedFunction, final Buffer aBuffer, final TY aTY, final @NotNull LibraryStatementPart aLsp) {
+		add(aBuffer, aGeneratedFunction, aTY, aLsp, aGeneratedFunction.getDependency());
+	}
+
+	public void add(final Buffer b, final GeneratedNode n, final TY ty, final LibraryStatementPart aLsp, @NotNull final Dependency d) {
+		final GenerateResultItem item = new GenerateResultItem(ty, b, n, aLsp, d, ++bufferCounter);
+		_res.add(item);
+//		items.onNext(item);
+	}
+
+	public void addClass(final TY ty, final GeneratedClass aClass, final Buffer aBuf, final LibraryStatementPart aLsp) {
+		add(aBuf, aClass, ty, aLsp, aClass.getDependency());
+	}
+
+	public void addNamespace(final TY ty, final GeneratedNamespace aNamespace, final Buffer aBuf, final LibraryStatementPart aLsp) {
+		add(aBuf, aNamespace, ty, aLsp, aNamespace.getDependency());
+	}
+
+	public void additional(@NotNull final GenerateResult aGgr) {
+		_res.addAll(aGgr.results());
 	}
 
 	public List<GenerateResultItem> results() {
-		return res;
-	}
-
-	public void addFunction(BaseGeneratedFunction aGeneratedFunction, Buffer aBuffer, TY aTY) {
-		add(aBuffer, aGeneratedFunction, aTY);
-	}
-
-	public void addConstructor(GeneratedConstructor aGeneratedFunction, Buffer aBuffer, TY aTY) {
-		addFunction(aGeneratedFunction, aBuffer, aTY);
+		return _res;
 	}
 
 	public enum TY {
 		HEADER, IMPL, PRIVATE_HEADER
-	}
-
-	public void addClass(TY ty, GeneratedClass aClass, Buffer aBuf) {
-		add(aBuf, aClass, ty);
-	}
-
-	public void addNamespace(TY ty, GeneratedNamespace aNamespace, Buffer aBuf) {
-		add(aBuf, aNamespace, ty);
 	}
 
 }
