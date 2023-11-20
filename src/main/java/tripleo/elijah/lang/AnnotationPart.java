@@ -12,15 +12,11 @@ package tripleo.elijah.lang;
  * Created 8/15/20 6:45 PM
  */
 public class AnnotationPart {
-	private Qualident _class;
+	private Qualident      _class;
 	private ExpressionList _exprs;
 
 	public void setClass(final Qualident q) {
 		_class = q;
-	}
-
-	public void setExprs(final ExpressionList el) {
-		_exprs = el;
 	}
 
 	public Qualident annoClass() {
@@ -29,6 +25,10 @@ public class AnnotationPart {
 
 	public ExpressionList getExprs() {
 		return _exprs;
+	}
+
+	public void setExprs(final ExpressionList el) {
+		_exprs = el;
 	}
 }
 

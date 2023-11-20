@@ -18,21 +18,22 @@ import java.util.List;
  * Created 4/26/21 4:22 AM
  */
 public class WorkManager {
-	List<WorkList> jobs = new ArrayList<WorkList>();
-	List<WorkList> doneWork = new ArrayList<WorkList>();
+	final List<WorkList> jobs     = new ArrayList<WorkList>();
+	final List<WorkList> doneWork = new ArrayList<WorkList>();
 
 	public void addJobs(final WorkList aList) {
 		jobs.add(aList);
 	}
 
-	@Nullable public WorkJob next() {
-		Iterator<WorkList> workListIterator = jobs.iterator();
+	@Nullable
+	public WorkJob next() {
+		final Iterator<WorkList> workListIterator = jobs.iterator();
 		while (true) {
 			if (workListIterator.hasNext()) {
-				WorkList workList = workListIterator.next();
+				final WorkList workList = workListIterator.next();
 //			for (WorkList workList :jobs) {
 				if (!workList.isDone()) {
-					for (WorkJob w : workList.jobs) {
+					for (final WorkJob w : workList.getJobs()) {
 						if (!w.isDone())
 							return w;
 					}
@@ -50,10 +51,51 @@ public class WorkManager {
 
 	public void drain() {
 		while (true) {
-			@Nullable WorkJob w = next();
+			@Nullable final WorkJob w = next();
 			if (w == null) break;
 			w.run(this);
 		}
+	}
+
+	public int totalSize() {
+//		final Integer x = jobs.stream().collect(new Collector<WorkList, List<Integer>, Integer>() {
+//			final List<Integer> li = new ArrayList<Integer>();
+//
+//			@Override
+//			public Supplier<List<Integer>> supplier() {
+//				return () -> li;
+//			}
+//
+//			@Override
+//			public BiConsumer<List<Integer>, WorkList> accumulator() {
+//				return (a, b) -> a.add(b.getJobs().size());
+//			}
+//
+//			@Override
+//			public BinaryOperator<List<Integer>> combiner() {
+//				return null;
+//			}
+//
+//			@Override
+//			public Function<List<Integer>, Integer> finisher() {
+//				return null;
+//			}
+//
+//			@Override
+//			public Set<Characteristics> characteristics() {
+//				return Set.of(Characteristics.UNORDERED);
+//			}
+//		});
+
+//		final int reduce = jobs.stream()
+//				.reduce(0, (Integer a, WorkList b) -> {
+//					return a + b.getJobs().size();
+//				});
+		int totalSize = 0;
+		for (final WorkList job : jobs) {
+			totalSize += job.getJobs().size();
+		}
+		return totalSize;
 	}
 }
 

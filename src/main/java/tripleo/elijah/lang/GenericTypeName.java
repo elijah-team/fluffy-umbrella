@@ -19,13 +19,13 @@ import java.io.File;
  * Created 8/16/20 7:42 AM
  */
 public class GenericTypeName implements TypeName {
-	private final Context _ctx;
-	private Qualident _typeName;
-	private TypeModifiers modifiers;
-	private TypeName constraint;
+	private final Context       _ctx;
+	private       Qualident     _typeName;
+	private       TypeModifiers modifiers;
+	private       TypeName      constraint;
 
 	public GenericTypeName(final Context cur) {
-		_ctx=cur;
+		_ctx = cur;
 	}
 
 	public void typeName(final Qualident xy) {
@@ -42,13 +42,13 @@ public class GenericTypeName implements TypeName {
 	}
 
 	@Override
-	public void setContext(final Context context) {
-		throw new NotImplementedException();
+	public Context getContext() {
+		return _ctx;
 	}
 
 	@Override
-	public Context getContext() {
-		return _ctx;
+	public void setContext(final Context context) {
+		throw new NotImplementedException();
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class GenericTypeName implements TypeName {
 		return Type.GENERIC;
 	}
 
-	public void setConstraint(TypeName aConstraint) {
+	public void setConstraint(final TypeName aConstraint) {
 		constraint = aConstraint;
 	}
 
@@ -74,12 +74,12 @@ public class GenericTypeName implements TypeName {
 
 	@Override
 	public int getLineEnd() {
-		return _typeName.parts().get(_typeName.parts().size()-1).getLineEnd();
+		return _typeName.parts().get(_typeName.parts().size() - 1).getLineEnd();
 	}
 
 	@Override
 	public int getColumnEnd() {
-		return _typeName.parts().get(_typeName.parts().size()-1).getColumnEnd();
+		return _typeName.parts().get(_typeName.parts().size() - 1).getColumnEnd();
 	}
 
 	@Override

@@ -20,7 +20,7 @@ import tripleo.elijah.gen.Node;
 public class CaseHdrNode implements Node {
 
 	private IExpressionNode expr;
-	
+
 	public CaseHdrNode(final VariableReferenceNode3 varref) {
 		this.expr = varref;
 	}
@@ -32,7 +32,7 @@ public class CaseHdrNode implements Node {
 	public void setExpr(final ExpressionNode expr) {
 		this.expr = expr;
 	}
-	
+
 	public @NotNull String simpleGenText() {
 		if (expr instanceof VariableReferenceNode3) {
 			return expr.genText();
@@ -46,7 +46,7 @@ public class CaseHdrNode implements Node {
 //		}
 		throw new IllegalStateException("no implementation");
 	}
-	
+
 	/**
 	 * do not call
 	 *

@@ -19,11 +19,11 @@ import java.util.List;
  */
 public class MatchContext extends Context {
 	private final MatchConditional carrier;
-	private final Context _parent;
+	private final Context          _parent;
 
 	public MatchContext(final Context aParent, final MatchConditional mc) {
-		this._parent=aParent;
-		this.carrier=mc;
+		this._parent = aParent;
+		this.carrier = mc;
 	}
 
 	@Override

@@ -1,12 +1,13 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 package tripleo.elijah.lang;
+
 
 // TODO is ExpressionList an IExpression?
 public class ProcedureCallExpression implements IExpression {
@@ -15,6 +16,12 @@ public class ProcedureCallExpression implements IExpression {
 //		throw new NotImplementedException();
 //	}
 
+	OS_Type _type;
+
+	// region right-side
+	private ExpressionList args = new ExpressionList();
+	private IExpression _left;
+
 	/**
 	 * Make sure you call {@link #identifier} or {@link #setLeft(IExpression)}
 	 * and {@link #setArgs(ExpressionList)}
@@ -22,18 +29,24 @@ public class ProcedureCallExpression implements IExpression {
 	public ProcedureCallExpression() {
 	}
 
-	// region right-side
-
-	private ExpressionList args=new ExpressionList();
-
 	/**
 	 * Get the argument list
-	 * 
+	 *
 	 * @return the argument list
 	 */
 	public ExpressionList exprList() {
 		return args;
 	}
+
+	// endregion
+
+//	@Override
+//	public void visitGen(ICodeGen visit) {
+//		// TODO Auto-generated method stub
+//		NotImplementedException.raise();
+//	}
+
+	// region kind
 
 	public ExpressionList getArgs() {
 		return args;
@@ -50,13 +63,7 @@ public class ProcedureCallExpression implements IExpression {
 
 	// endregion
 
-//	@Override
-//	public void visitGen(ICodeGen visit) {
-//		// TODO Auto-generated method stub
-//		NotImplementedException.raise();
-//	}
-
-	// region kind
+	// region left-side
 
 	@Override
 	public ExpressionKind getKind() {
@@ -68,33 +75,9 @@ public class ProcedureCallExpression implements IExpression {
 		throw new IllegalArgumentException();
 	}
 
-	// endregion
-
-	// region left-side
-
-	private IExpression _left;
-
 	@Override
 	public IExpression getLeft() {
 		return _left;
-	}
-
-	/**
-	 * Set  the left hand side of the procedure call expression, ie the method name
-	 *
-	 * @param xyz a method name in Qualident form (might come as DotExpression in future)
-	 */
-	public void identifier(final Qualident xyz) {
-		setLeft(xyz);
-	}
-
-	/**
-	 * Set  the left hand side of the procedure call expression, ie the method name
-	 *
-	 * @param xyz a method name might come as DotExpression or IdentExpression
-	 */
-	public void identifier(final IExpression xyz) {
-		setLeft(xyz);
 	}
 
 	/**
@@ -105,15 +88,21 @@ public class ProcedureCallExpression implements IExpression {
 		_left = iexpression;
 	}
 
-	// endregion
-
-	public String getReturnTypeString() {
-		return "int"; // TODO hardcoded
+	@Override
+	public String repr_() {
+		return toString();
 	}
+
+	// endregion
 
 	@Override
 	public boolean is_simple() {
 		return false; // TODO is this correct?
+	}
+
+	@Override
+	public OS_Type getType() {
+		return _type;
 	}
 
 /*
@@ -125,8 +114,8 @@ public class ProcedureCallExpression implements IExpression {
 	// region representation
 
 	@Override
-	public String repr_() {
-		return toString();
+	public void setType(final OS_Type deducedExpression) {
+		_type = deducedExpression;
 	}
 
 	@Override
@@ -134,24 +123,34 @@ public class ProcedureCallExpression implements IExpression {
 		return String.format("ProcedureCallExpression{%s %s}", getLeft(), args != null ? args.toString() : "()");
 	}
 
-	public String printableString() {
-		return String.format("%s%s", getLeft(), args != null ? args.toString() : "()");
+	/**
+	 * Set  the left hand side of the procedure call expression, ie the method name
+	 *
+	 * @param xyz a method name in Qualident form (might come as DotExpression in future)
+	 */
+	public void identifier(final Qualident xyz) {
+		setLeft(xyz);
 	}
 
 	// endregion
 
 	// region type (to remove)
 
-	OS_Type _type;
+	/**
+	 * Set  the left hand side of the procedure call expression, ie the method name
+	 *
+	 * @param xyz a method name might come as DotExpression or IdentExpression
+	 */
+	public void identifier(final IExpression xyz) {
+		setLeft(xyz);
+	}
 
-	@Override
-	public void setType(final OS_Type deducedExpression) {
-		_type = deducedExpression;
-    }
+	public String getReturnTypeString() {
+		return "int"; // TODO hardcoded
+	}
 
-	@Override
-	public OS_Type getType() {
-    	return _type;
+	public String printableString() {
+		return String.format("%s%s", getLeft(), args != null ? args.toString() : "()");
 	}
 
 	// endregion

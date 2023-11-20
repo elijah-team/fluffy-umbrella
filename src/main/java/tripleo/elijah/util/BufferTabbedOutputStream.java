@@ -15,17 +15,17 @@ import tripleo.util.buffer.TextBuffer;
 /**
  * Created 4/26/21 11:36 PM
  */
-public class BufferTabbedOutputStream  {
+public class BufferTabbedOutputStream {
 
+	final   TextBuffer b       = new DefaultBuffer("");
 	int tabwidth = 0;
-	private boolean do_tabs = false;
-	TextBuffer b = new DefaultBuffer("");
-	private boolean _closed = false;
+	private boolean    do_tabs = false;
+	private boolean    _closed = false;
 
 	public Buffer getBuffer() {
 		return b;
 	}
-	
+
 	public void put_string_ln(final String s) {
 		if (!is_connected())
 			throw new IllegalStateException("is_connected assertion failed");
@@ -36,6 +36,15 @@ public class BufferTabbedOutputStream  {
 		b.append("\n");
 //		doIndent();
 		do_tabs = true;
+	}
+
+	public boolean is_connected() {
+		return !_closed;
+	}
+
+	void doIndent() {
+		for (int i = 0; i < tabwidth; i++)
+		     b.append("\t");
 	}
 
 	public void put_string_ln_no_tabs(final String s) {
@@ -73,17 +82,8 @@ public class BufferTabbedOutputStream  {
 		doIndent();
 	}
 
-	void doIndent() {
-		for (int i = 0; i < tabwidth; i++)
-			b.append("\t");
-	}
-
 	public int t() {
 		return tabwidth;
-	}
-
-	public boolean is_connected() {
-		return !_closed;
 	}
 
 	public void quote_string(final String s) {

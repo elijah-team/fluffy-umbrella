@@ -9,80 +9,68 @@
 package tripleo.elijah.comp;
 
 import org.jetbrains.annotations.NotNull;
-import tripleo.elijah.entrypoints.EntryPoint;
 import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.nextgen.inputtree.EIT_ModuleList;
 import tripleo.elijah.stages.deduce.DeducePhase;
-import tripleo.elijah.stages.gen_c.GenerateC;
-import tripleo.elijah.stages.gen_fn.*;
+import tripleo.elijah.stages.gen_fn.GenerateFunctions;
+import tripleo.elijah.stages.gen_fn.GeneratePhase;
+import tripleo.elijah.stages.gen_fn.GeneratedClass;
+import tripleo.elijah.stages.gen_fn.GeneratedFunction;
+import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
+import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.stages.gen_generic.GenerateResultItem;
 import tripleo.elijah.stages.logging.ElLog;
-import tripleo.elijah.stages.post_deduce.PostDeduce;
-import tripleo.elijah.work.WorkManager;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Created 12/30/20 2:14 AM
  */
-public class PipelineLogic {
+public class PipelineLogic implements AccessBus.AB_ModuleListListener {
 	public final GeneratePhase generatePhase;
-	public final DeducePhase dp;
-
-	public GenerateResult gr = new GenerateResult();
-	public List<ElLog> elLogs = new LinkedList<ElLog>();
-	public boolean verbose = true;
+	public final DeducePhase   dp;
+	final        AccessBus     __ab;
 
 	private final ElLog.Verbosity verbosity;
 
-	final List<OS_Module> mods = new ArrayList<OS_Module>();
+	private final List<OS_Module> __mods_BACKING = new ArrayList<OS_Module>();
+	final         EIT_ModuleList  mods           = new EIT_ModuleList(__mods_BACKING);
 
-	public boolean postDeduceEnabled = false;
+	public PipelineLogic(final AccessBus iab) {
+		__ab = iab; // we're watching you
 
-	public PipelineLogic(ElLog.Verbosity aVerbosity) {
-		verbosity = aVerbosity;
-		generatePhase = new GeneratePhase(aVerbosity, this);
-		dp = new DeducePhase(generatePhase, this, verbosity);
+		final boolean sil = __ab.getCompilation().getSilence(); // ca.testSilence
+
+		verbosity     = sil ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
+		generatePhase = new GeneratePhase(verbosity, this, __ab.getCompilation());
+		dp            = new DeducePhase(generatePhase, this, verbosity, __ab.getCompilation());
+
+		// FIXME examine if this is necessary and possibly or actually elsewhere
+		//  and/or just another section
+		subscribeMods(this);
 	}
 
-	public void everythingBeforeGenerate(List<GeneratedNode> lgc) {
-		for (OS_Module mod : mods) {
-			run2(mod, mod.entryPoints);
-		}
-//		List<List<EntryPoint>> entryPoints = mods.stream().map(mod -> mod.entryPoints).collect(Collectors.toList());
-		dp.finish();
-
-		dp.generatedClasses.addAll(lgc);
-
-		if (postDeduceEnabled) {
-			for (OS_Module mod : mods) {
-				PostDeduce pd = new PostDeduce(mod.parent.getErrSink(), dp);
-				pd.analyze();
-			}
-		}
-
-//		elLogs = dp.deduceLogs;
+	public void subscribeMods(final AccessBus.AB_ModuleListListener l) {
+		__ab.subscribe_moduleList(l);
 	}
 
-	public void generate(List<GeneratedNode> lgc) {
+	/*
+	public void generate__new(List<GeneratedNode> lgc) {
 		final WorkManager wm = new WorkManager();
 		// README use any errSink, they should all be the same
-		for (OS_Module mod : mods) {
-			final GenerateC generateC = new GenerateC(mod, mod.parent.getErrSink(), verbosity, this);
-			final GenerateResult ggr = run3(mod, lgc, wm, generateC);
-			wm.drain();
-			gr.results().addAll(ggr.results());
+		for (OS_Module mod : mods.getMods()) {
+			__ab.doModule(lgc, wm, mod, this);
 		}
-	}
 
-	public static void debug_buffers(GenerateResult gr, PrintStream stream) {
-		for (GenerateResultItem ab : gr.results()) {
+		__ab.resolveGenerateResult(gr);
+	}
+*/
+
+	public static void debug_buffers(@NotNull final GenerateResult gr, final PrintStream stream) {
+		for (final GenerateResultItem ab : gr.results()) {
 			stream.println("---------------------------------------------------------------");
 			stream.println(ab.counter);
 			stream.println(ab.ty);
@@ -93,121 +81,7 @@ public class PipelineLogic {
 		}
 	}
 
-	protected void run2(OS_Module mod, @NotNull List<EntryPoint> epl) {
-		final GenerateFunctions gfm = getGenerateFunctions(mod);
-		gfm.generateFromEntryPoints(epl, dp);
-
-//		WorkManager wm = new WorkManager();
-//		WorkList wl = new WorkList();
-
-		DeducePhase.@NotNull GeneratedClasses lgc = dp.generatedClasses;
-		List<GeneratedNode> resolved_nodes = new ArrayList<GeneratedNode>();
-
-		for (final GeneratedNode generatedNode : lgc) {
-			if (generatedNode instanceof GeneratedFunction) {
-				GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
-				if (generatedFunction.getCode() == 0)
-					generatedFunction.setCode(mod.parent.nextFunctionCode());
-			} else if (generatedNode instanceof GeneratedClass) {
-				final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-//				if (generatedClass.getCode() == 0)
-//					generatedClass.setCode(mod.parent.nextClassCode());
-				for (GeneratedClass generatedClass2 : generatedClass.classMap.values()) {
-					generatedClass2.setCode(mod.parent.nextClassCode());
-				}
-				for (GeneratedFunction generatedFunction : generatedClass.functionMap.values()) {
-					for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
-						if (identTableEntry.isResolved()) {
-							GeneratedNode node = identTableEntry.resolvedType();
-							resolved_nodes.add(node);
-						}
-					}
-				}
-			} else if (generatedNode instanceof GeneratedNamespace) {
-				final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
-				if (generatedNamespace.getCode() == 0)
-					generatedNamespace.setCode(mod.parent.nextClassCode());
-				for (GeneratedClass generatedClass : generatedNamespace.classMap.values()) {
-					generatedClass.setCode(mod.parent.nextClassCode());
-				}
-				for (GeneratedFunction generatedFunction : generatedNamespace.functionMap.values()) {
-					for (IdentTableEntry identTableEntry : generatedFunction.idte_list) {
-						if (identTableEntry.isResolved()) {
-							GeneratedNode node = identTableEntry.resolvedType();
-							resolved_nodes.add(node);
-						}
-					}
-				}
-			}
-		}
-
-		for (final GeneratedNode generatedNode : resolved_nodes) {
-			if (generatedNode instanceof GeneratedFunction) {
-				GeneratedFunction generatedFunction = (GeneratedFunction) generatedNode;
-				if (generatedFunction.getCode() == 0)
-					generatedFunction.setCode(mod.parent.nextFunctionCode());
-			} else if (generatedNode instanceof GeneratedClass) {
-				final GeneratedClass generatedClass = (GeneratedClass) generatedNode;
-				if (generatedClass.getCode() == 0)
-					generatedClass.setCode(mod.parent.nextClassCode());
-			} else if (generatedNode instanceof GeneratedNamespace) {
-				final GeneratedNamespace generatedNamespace = (GeneratedNamespace) generatedNode;
-				if (generatedNamespace.getCode() == 0)
-					generatedNamespace.setCode(mod.parent.nextClassCode());
-			}
-		}
-
-		dp.deduceModule(mod, lgc, true, getVerbosity());
-
-		resolveCheck(lgc);
-
-//		for (final GeneratedNode gn : lgf) {
-//			if (gn instanceof GeneratedFunction) {
-//				GeneratedFunction gf = (GeneratedFunction) gn;
-//				System.out.println("----------------------------------------------------------");
-//				System.out.println(gf.name());
-//				System.out.println("----------------------------------------------------------");
-//				GeneratedFunction.printTables(gf);
-//				System.out.println("----------------------------------------------------------");
-//			}
-//		}
-
-	}
-
-	@NotNull
-	private GenerateFunctions getGenerateFunctions(OS_Module mod) {
-		return generatePhase.getGenerateFunctions(mod);
-	}
-
-	protected GenerateResult run3(OS_Module mod, List<GeneratedNode> lgc, WorkManager wm, GenerateC ggc) {
-		GenerateResult gr = new GenerateResult();
-
-		for (GeneratedNode generatedNode : lgc) {
-			if (generatedNode.module() != mod) continue; // README curious
-
-			if (generatedNode instanceof GeneratedContainerNC) {
-				final GeneratedContainerNC nc = (GeneratedContainerNC) generatedNode;
-
-				nc.generateCode(ggc, gr);
-				final @NotNull Collection<GeneratedNode> gn1 = ggc.functions_to_list_of_generated_nodes(nc.functionMap.values());
-				GenerateResult gr2 = ggc.generateCode(gn1, wm);
-				gr.results().addAll(gr2.results());
-				final @NotNull Collection<GeneratedNode> gn2 = ggc.classes_to_list_of_generated_nodes(nc.classMap.values());
-				GenerateResult gr3 = ggc.generateCode(gn2, wm);
-				gr.results().addAll(gr3.results());
-			} else {
-				System.out.println("2009 " + generatedNode.getClass().getName());
-			}
-		}
-
-		return gr;
-	}
-
-	public void addModule(OS_Module m) {
-		mods.add(m);
-	}
-
-	private void resolveCheck(DeducePhase.GeneratedClasses lgc) {
+	public static void resolveCheck(final DeducePhase.@NotNull GeneratedClasses lgc) {
 		for (final GeneratedNode generatedNode : lgc) {
 			if (generatedNode instanceof GeneratedFunction) {
 
@@ -220,11 +94,11 @@ public class PipelineLogic {
 //						if (identTableEntry/*.isResolved()*/.getStatus() == BaseTableEntry.Status.KNOWN) {
 ////							GeneratedNode node = identTableEntry.resolved();
 ////							resolved_nodes.add(node);
-//							System.out.println("91 Resolved IDENT "+ s);
+//							tripleo.elijah.util.Stupidity.println2("91 Resolved IDENT "+ s);
 //						} else {
 ////							assert identTableEntry.getStatus() == BaseTableEntry.Status.UNKNOWN;
 ////							identTableEntry.setStatus(BaseTableEntry.Status.UNKNOWN, null);
-//							System.out.println("92 Unresolved IDENT "+ s);
+//							tripleo.elijah.util.Stupidity.println2("92 Unresolved IDENT "+ s);
 //						}
 //					}
 //				}
@@ -243,14 +117,41 @@ public class PipelineLogic {
 		}
 	}
 
+	public void addModule(final OS_Module m) {
+		mods.add(m);
+	}
+
 	public ElLog.Verbosity getVerbosity() {
-		return verbose ? ElLog.Verbosity.VERBOSE : ElLog.Verbosity.SILENT;
+		return verbosity;
 	}
 
-	public void addLog(ElLog aLog) {
-		elLogs.add(aLog);
+	public void addLog(final ElLog aLog) {
+		__ab.getCompilation().elLogs.add(aLog);
 	}
 
+	@Override
+	public void mods_slot(final @NotNull EIT_ModuleList aModuleList) {
+		//
+//		__ab.subscribePipelineLogic((x) -> aModuleList._set_PL(x));
+
+		//
+		aModuleList.process__PL(this::getGenerateFunctions, this);
+
+		dp.finish(dp.generatedClasses);
+//		dp.generatedClasses.addAll(lgc);
+	}
+
+	@NotNull GenerateFunctions getGenerateFunctions(final OS_Module mod) {
+		return generatePhase.getGenerateFunctions(mod);
+	}
+
+	public GenerateResult getGR() {
+		return __ab.gr;
+	}
+
+	public List<GeneratedNode> generatedClassesCopy() {
+		return dp.generatedClasses.copy();
+	}
 }
 
 //

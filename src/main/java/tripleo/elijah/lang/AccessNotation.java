@@ -9,7 +9,7 @@
 package tripleo.elijah.lang;
 
 import antlr.Token;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
 import tripleo.elijjah.ElijjahTokenTypes;
 
@@ -18,15 +18,9 @@ import tripleo.elijjah.ElijjahTokenTypes;
  */
 // TODO Does this need to be Element?
 public class AccessNotation implements OS_Element {
-	private Token category;
-	private Token shorthand;
+	private Token        category;
+	private Token        shorthand;
 	private TypeNameList tnl;
-
-	public void setCategory(final Token category) {
-		if (category == null) return;
-		assert category.getType() == ElijjahTokenTypes.STRING_LITERAL;
-		this.category = category;
-	}
 
 	public void setShortHand(final Token shorthand) {
 		if (shorthand == null) return;
@@ -39,13 +33,8 @@ public class AccessNotation implements OS_Element {
 	}
 
 	@Override
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitAccessNotation(this);
-	}
-
-	@Override
-	public OS_Element getParent() {
-		throw new NotImplementedException();
 	}
 
 	@Override
@@ -53,8 +42,19 @@ public class AccessNotation implements OS_Element {
 		throw new NotImplementedException();
 	}
 
+	@Override
+	public OS_Element getParent() {
+		throw new NotImplementedException();
+	}
+
 	public Token getCategory() {
 		return category;
+	}
+
+	public void setCategory(final Token category) {
+		if (category == null) return;
+		assert category.getType() == ElijjahTokenTypes.STRING_LITERAL;
+		this.category = category;
 	}
 }
 

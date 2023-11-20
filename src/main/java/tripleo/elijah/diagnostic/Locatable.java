@@ -13,16 +13,20 @@ import java.io.File;
 
 /**
  * Locate a Token or Token range<br><br>
- *
+ * <p>
  * All methods return 0 or null for atrificial Tokens<br><br>
- *
+ * <p>
  * Created 12/26/20 5:32 AM
  */
 public interface Locatable {
 	int getLine();
+
 	int getColumn();
+
 	int getLineEnd();
+
 	int getColumnEnd();
+
 	File getFile();
 }
 

@@ -209,7 +209,7 @@ class
 //    True, False
 }
 alias SystemInteger = Integer64
-alias Integer = SystemInteger
+//alias Integer = SystemInteger
 
 namespace {
     val ExitSuccess = 0

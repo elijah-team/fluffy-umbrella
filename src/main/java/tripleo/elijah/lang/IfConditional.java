@@ -8,44 +8,40 @@
  */
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.IfConditionalContext;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 
-//	private final IfConditional sibling;
+	//	private final IfConditional sibling;
 	private final List<IfConditional> parts = new ArrayList<IfConditional>();
-	private IExpression expr;
-//	private final List<OS_Element> _items = new ArrayList<OS_Element>();
+	//	private final List<OS_Element> _items = new ArrayList<OS_Element>();
 //	final IfConditionalScope _scope = new IfConditionalScope(this);
-	private final OS_Element _parent;
-	private Context _ctx;
-	private Scope3 scope3;
+	private final OS_Element          _parent;
+	private       IExpression         expr;
+	private       Context             _ctx;
+	private       Scope3              scope3;
 
 	public IfConditional(final OS_Element _parent) {
 		this._parent = _parent;
-		this._ctx = null;
+		this._ctx    = null;
 //		this.sibling = null;
 	}
 
 	public IfConditional(final IfConditional ifExpression) {
 //		this.sibling = ifExpression;
 		//
-		this._ctx = new IfConditionalContext(ifExpression._ctx, this, true);
+		this._ctx    = new IfConditionalContext(ifExpression._ctx, this, true);
 		this._parent = ifExpression._parent;
-	}
-	
-	@Override
-	public void visitGen(final ICodeGen visit) {
-		visit.visitIfConditional(this);
 	}
 
 	@Override
-	public OS_Element getParent() {
-		return _parent;
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitIfConditional(this);
 	}
 
 	@Override
@@ -53,9 +49,18 @@ public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 		return _ctx;
 	}
 
+	@Override
+	public OS_Element getParent() {
+		return _parent;
+	}
+
+	public void setContext(final IfConditionalContext ifConditionalContext) {
+		_ctx = ifConditionalContext;
+	}
+
 	public IExpression getExpr() {
 		return expr;
-    }
+	}
 
 	public IfConditional else_() {
 		final IfConditional elsepart = new IfConditional(this);
@@ -64,7 +69,7 @@ public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 	}
 
 	public IfConditional elseif() {
-		final IfConditional elseifpart = new IfConditional(this);
+		final @NotNull IfConditional elseifpart = new IfConditional(this);
 		parts.add(elseifpart);
 		return elseifpart;
 	}
@@ -87,11 +92,7 @@ public class IfConditional implements StatementItem, FunctionItem, OS_Element {
 		return parts;
 	}
 
-	public void setContext(final IfConditionalContext ifConditionalContext) {
-		_ctx = ifConditionalContext;
-	}
-
-	public void scope(Scope3 sco) {
+	public void scope(final Scope3 sco) {
 		scope3 = sco;
 	}
 

@@ -10,7 +10,7 @@ package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.contexts.PropertyStatementContext;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.Helpers;
 
 /**
@@ -18,54 +18,26 @@ import tripleo.elijah.util.Helpers;
  */
 public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 
-	private final Context context;
+	private final Context    context;
 	private final OS_Element parent;
 
-	public FunctionDef set_fn;
-	public FunctionDef get_fn;
+	public  FunctionDef     set_fn;
+	public  FunctionDef     get_fn;
 	private IdentExpression prop_name;
-	private TypeName typeName;
-	private boolean _set_is_abstract;
-	private boolean _get_is_abstract;
+	private TypeName        typeName;
+	private boolean         _set_is_abstract;
+	private boolean         _get_is_abstract;
+	private AccessNotation access_note;
+	private El_Category    category;
 
-	public PropertyStatement(OS_Element parent, Context cur) {
-		this.parent = parent;
+	public PropertyStatement(final OS_Element parent, final Context cur) {
+		this.parent  = parent;
 		this.context = new PropertyStatementContext(cur, this);
 	}
 
-	@NotNull
-	private FunctionDef createSetFunction() {
-		FunctionDef functionDef = new FunctionDef(this, getContext());
-		functionDef.setName(Helpers.string_to_ident(String.format("<prop_set %s>", prop_name)));
-		functionDef.setSpecies(FunctionDef.Species.PROP_SET);
-		FormalArgList fal = new FormalArgList();
-		FormalArgListItem fali = fal.next();
-		fali.setName(Helpers.string_to_ident("Value"));
-		fali.setTypeName(this.typeName);
-		RegularTypeName unitType = new RegularTypeName();
-		unitType.setName(Helpers.string_to_qualident("Unit"));
-		functionDef.setReturnType(unitType/*BuiltInTypes.Unit*/);
-		functionDef.setFal(fal);
-		return functionDef;
-	}
-
-	@NotNull
-	private FunctionDef createGetFunction() {
-		FunctionDef functionDef = new FunctionDef(this, getContext());
-		functionDef.setName(Helpers.string_to_ident(String.format("<prop_get %s>", prop_name)));
-		functionDef.setSpecies(FunctionDef.Species.PROP_GET);
-		functionDef.setReturnType(typeName);
-		return functionDef;
-	}
-
 	@Override // OS_Element
-	public void visitGen(ICodeGen visit) {
+	public void visitGen(final ElElementVisitor visit) {
 		visit.visitPropertyStatement(this);
-	}
-
-	@Override // OS_Element
-	public OS_Element getParent() {
-		return parent;
 	}
 
 	@Override // OS_Element
@@ -73,7 +45,12 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 		return context;
 	}
 
-	public void setName(IdentExpression prop_name) {
+	@Override // OS_Element
+	public OS_Element getParent() {
+		return parent;
+	}
+
+	public void setName(final IdentExpression prop_name) {
 		this.prop_name = prop_name;
 	}
 
@@ -106,17 +83,41 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 		return prop_name.getText();
 	}
 
-	public void setTypeName(TypeName typeName) {
-//		System.err.println("** setting TypeName in PropertyStatement to "+typeName);
-		this.typeName = typeName;
-		this.set_fn = createSetFunction();
-		this.get_fn = createGetFunction();
-	}
-
 	public TypeName getTypeName() {
 		return typeName;
 	}
 
+	public void setTypeName(final TypeName typeName) {
+//		tripleo.elijah.util.Stupidity.println_err2("** setting TypeName in PropertyStatement to "+typeName);
+		this.typeName = typeName;
+		this.set_fn   = createSetFunction();
+		this.get_fn   = createGetFunction();
+	}
+
+	@NotNull
+	private FunctionDef createSetFunction() {
+		final FunctionDef functionDef = new FunctionDef(this, getContext());
+		functionDef.setName(Helpers.string_to_ident(String.format("<prop_set %s>", prop_name)));
+		functionDef.setSpecies(FunctionDef.Species.PROP_SET);
+		final @NotNull FormalArgList fal  = new FormalArgList();
+		final FormalArgListItem      fali = fal.next();
+		fali.setName(Helpers.string_to_ident("Value"));
+		fali.setTypeName(this.typeName);
+		final RegularTypeName unitType = new RegularTypeName();
+		unitType.setName(Helpers.string_to_qualident("Unit"));
+		functionDef.setReturnType(unitType/*BuiltInTypes.Unit*/);
+		functionDef.setFal(fal);
+		return functionDef;
+	}
+
+	@NotNull
+	private FunctionDef createGetFunction() {
+		final FunctionDef functionDef = new FunctionDef(this, getContext());
+		functionDef.setName(Helpers.string_to_ident(String.format("<prop_get %s>", prop_name)));
+		functionDef.setSpecies(FunctionDef.Species.PROP_GET);
+		functionDef.setReturnType(typeName);
+		return functionDef;
+	}
 
 	public void addGet() {
 		_get_is_abstract = true;
@@ -126,27 +127,14 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 		_set_is_abstract = true;
 	}
 
-	public void get_scope(Scope3 sco) {
+	// region ClassItem
+
+	public void get_scope(final Scope3 sco) {
 		get_fn.scope(sco);
 	}
 
-	public void set_scope(Scope3 sco) {
+	public void set_scope(final Scope3 sco) {
 		set_fn.scope(sco);
-	}
-
-	// region ClassItem
-
-	private AccessNotation access_note;
-	private El_Category category;
-
-	@Override
-	public void setCategory(El_Category aCategory) {
-		category = aCategory;
-	}
-
-	@Override
-	public void setAccess(AccessNotation aNotation) {
-		access_note = aNotation;
 	}
 
 	@Override
@@ -155,8 +143,18 @@ public class PropertyStatement implements OS_Element, OS_Element2, ClassItem {
 	}
 
 	@Override
+	public void setCategory(final El_Category aCategory) {
+		category = aCategory;
+	}
+
+	@Override
 	public AccessNotation getAccess() {
 		return access_note;
+	}
+
+	@Override
+	public void setAccess(final AccessNotation aNotation) {
+		access_note = aNotation;
 	}
 
 	// endregion

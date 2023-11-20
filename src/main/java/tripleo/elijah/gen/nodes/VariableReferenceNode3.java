@@ -16,36 +16,57 @@ import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.util.NotImplementedException;
 
 public class VariableReferenceNode3 implements IExpressionNode {
-	
-	private final String _name;
-	private final Node _container;
+
+	private final String  _name;
+	private final Node    _container;
 	private final TypeRef _typeRef;
-	
+
 	public VariableReferenceNode3(final String name, final Node container, final TypeRef typeRef) {
-		this._name = name;
-		_typeRef = typeRef;
+		this._name      = name;
+		_typeRef        = typeRef;
 		this._container = container;
 	}
-	
-	@Override
-	public TypeRef getType() {
-//		NotImplementedException.raise();
-		return _typeRef;
-	}
-	
+
 	public String getTypeName() {
 		NotImplementedException.raise();
 //		return _container.getName();
 		return null;
 	}
-	
-	
+
 	@Override
-	public String genText() {
-//		NotImplementedException.raise();
-		return String.format("v%c%s", a(), _name);
+	public IExpression getExpr() {
+		return null;
 	}
-	
+
+	@Override
+	public boolean is_const_expr() {
+		return false;
+	}
+
+	@Override
+	public boolean is_underscore() {
+		return _name.equals("_");
+	}
+
+	//
+	//
+	//
+
+	@Override
+	public boolean is_var_ref() {
+		return true;
+	}
+
+	@Override
+	public boolean is_simple() {
+		return true; //is_const_expr() || is_underscore(); // TODO only handles simple varrefs
+	}
+
+	@Override
+	public String genText(final CompilerContext cctx) {
+		return genText();
+	}
+
 	@Contract(pure = true)
 	private char a() {
 		if (_container == null) throw new IllegalStateException("null _container in VarRefNode3");
@@ -59,44 +80,22 @@ public class VariableReferenceNode3 implements IExpressionNode {
 		// TODO should not have this fallback
 		return 'v';
 	}
-	
-	//
-	//
-	//
-	
-	@Override
-	public IExpression getExpr() {
-		return null;
-	}
-	
-	@Override
-	public boolean is_const_expr() {
-		return false;
-	}
-	
-	@Override
-	public boolean is_underscore() {
-		return _name.equals("_");
-	}
-	
-	@Override
-	public boolean is_var_ref() {
-		return true;
-	}
-	
-	@Override
-	public boolean is_simple() {
-		return true; //is_const_expr() || is_underscore(); // TODO only handles simple varrefs
-	}
-	
-	@Override
-	public String genText(final CompilerContext cctx) {
-		return genText();
-	}
-	
+
 	@Override
 	public String genType() {
 		return _typeRef.genType();
+	}
+
+	@Override
+	public String genText() {
+//		NotImplementedException.raise();
+		return String.format("v%c%s", a(), _name);
+	}
+
+	@Override
+	public TypeRef getType() {
+//		NotImplementedException.raise();
+		return _typeRef;
 	}
 }
 

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package tripleo.elijah.gen.nodes;
 
@@ -18,12 +18,12 @@ public class IfNode {
 
 	public void BeginIfCtx(final CompilerContext cctx, final GenBuffer gbn) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void CloseIfCtx(final CompilerContext cctx, final GenBuffer gbn) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

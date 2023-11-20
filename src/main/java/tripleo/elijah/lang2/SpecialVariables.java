@@ -16,9 +16,8 @@ public class SpecialVariables {
 		if (name.equals("self")) return true;
 		if (name.equals("this")) return true;
 		if (name.equals("Value")) return true; // TODO only special sometimes
-		if (name.equals("Result")) return true;
-//		System.err.println("SpecialVariables: test: "+name);
-		return false;
+		return name.equals("Result");
+//		tripleo.elijah.util.Stupidity.println_err2("SpecialVariables: test: "+name);
 	}
 
 	public static String get(final String name) {
@@ -26,7 +25,7 @@ public class SpecialVariables {
 		if (name.equals("this")) return "vsc"; // TODO this should be this in Java and C++
 		if (name.equals("Value")) return "vsv"; // TODO only special sometimes
 		if (name.equals("Result")) return "vsr";
-//		System.err.println("SpecialVariables: test: "+name);
+//		tripleo.elijah.util.Stupidity.println_err2("SpecialVariables: test: "+name);
 		return "<Illegal SpecialValue>";
 	}
 }

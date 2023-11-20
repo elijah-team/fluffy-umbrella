@@ -40,10 +40,10 @@ public class ResolveUnknown implements Diagnostic {
 	}
 
 	@Override
-	public void report(@NotNull PrintStream stream) {
-		stream.println(String.format("---[%s]---: %s", code(), message()));
+	public void report(@NotNull final PrintStream stream) {
+		stream.printf("---[%s]---: %s%n", code(), message());
 		// linecache.print(primary);
-		for (Locatable sec : secondary()) {
+		for (final Locatable sec : secondary()) {
 			//linecache.print(sec)
 		}
 		stream.flush();

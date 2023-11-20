@@ -13,7 +13,7 @@ package tripleo.elijah.util;
  */
 public class LogEvent {
 	public static void logEvent(final int number, final String message) {
-		System.err.println(""+number+" "+message);
+		tripleo.elijah.util.Stupidity.println_err2(number + " " + message);
 	}
 }
 

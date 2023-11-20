@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class DecideElObjectType {
 	@NotNull
-	public static ElObjectType getElObjectType(/*@NotNull*/ OS_Element input) {
+	public static ElObjectType getElObjectType(/*@NotNull*/ final OS_Element input) {
 		if (input instanceof ClassStatement)
 			return ElObjectType.CLASS;
 		else if (input instanceof NamespaceStatement)
@@ -24,10 +24,14 @@ public class DecideElObjectType {
 			return ElObjectType.VAR_SEQ;
 		else if (input instanceof VariableStatement)
 			return ElObjectType.VAR;
+		else if (input instanceof ConstructorDef)
+			return ElObjectType.CONSTRUCTOR;
 		else if (input instanceof FunctionDef)
 			return ElObjectType.FUNCTION;
 		else if (input instanceof FormalArgListItem)
 			return ElObjectType.FORMAL_ARG_LIST_ITEM;
+		else if (input instanceof OS_Module)
+			return ElObjectType.MODULE;
 		return ElObjectType.UNKNOWN;
 	}
 

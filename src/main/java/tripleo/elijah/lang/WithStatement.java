@@ -10,7 +10,7 @@ package tripleo.elijah.lang;
 
 import antlr.Token;
 import tripleo.elijah.contexts.WithContext;
-import tripleo.elijah.gen.ICodeGen;
+import tripleo.elijah.lang2.ElElementVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,11 +20,16 @@ import java.util.List;
  * Created 8/30/20 1:51 PM
  */
 public class WithStatement implements OS_Element, OS_Container, FunctionItem, StatementItem {
-	private final OS_Element _parent;
-	private WithContext ctx;
+	private final OS_Element         _parent;
 	private final List<FunctionItem> _items = new ArrayList<FunctionItem>();
-//	private final List<String> mDocs = new ArrayList<String>();
-	private Scope3 scope3;
+	VariableSequence hidden_seq = new VariableSequence();
+	private       WithContext        ctx;
+	//	private final List<String> mDocs = new ArrayList<String>();
+	private       Scope3             scope3;
+
+	public WithStatement(final OS_Element aParent) {
+		_parent = aParent;
+	}
 
 	@Override
 	public void addDocString(final Token aText) {
@@ -32,13 +37,14 @@ public class WithStatement implements OS_Element, OS_Container, FunctionItem, St
 //		mDocs.add(aText.getText());
 	}
 
-	public WithStatement(final OS_Element aParent) {
-		_parent = aParent;
+	@Override
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitWithStatement(this);
 	}
 
 	@Override
-	public void visitGen(final ICodeGen visit) {
-		visit.visitWithStatement(this);
+	public Context getContext() {
+		return null;
 	}
 
 	@Override
@@ -46,9 +52,8 @@ public class WithStatement implements OS_Element, OS_Container, FunctionItem, St
 		return _parent;
 	}
 
-	@Override
-	public Context getContext() {
-		return null;
+	public void setContext(final WithContext ctx) {
+		this.ctx = ctx;
 	}
 
 	public List<FunctionItem> getItems() {
@@ -61,12 +66,6 @@ public class WithStatement implements OS_Element, OS_Container, FunctionItem, St
 
 	public VariableStatement nextVarStmt() {
 		return hidden_seq.next();
-	}
-
-	VariableSequence hidden_seq = new VariableSequence();
-
-	public void setContext(final WithContext ctx) {
-		this.ctx = ctx;
 	}
 
 	public void postConstruct() {
@@ -84,7 +83,7 @@ public class WithStatement implements OS_Element, OS_Container, FunctionItem, St
 		_items.add((FunctionItem) anElement);
 	}
 
-	public void scope(Scope3 sco) {
+	public void scope(final Scope3 sco) {
 		scope3 = sco;
 	}
 

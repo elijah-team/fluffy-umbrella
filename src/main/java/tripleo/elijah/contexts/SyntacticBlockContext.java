@@ -8,7 +8,16 @@
  */
 package tripleo.elijah.contexts;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.FunctionItem;
+import tripleo.elijah.lang.LookupResultList;
+import tripleo.elijah.lang.NamespaceStatement;
+import tripleo.elijah.lang.OS_Element2;
+import tripleo.elijah.lang.SyntacticBlock;
+import tripleo.elijah.lang.VariableSequence;
+import tripleo.elijah.lang.VariableStatement;
 
 import java.util.List;
 
@@ -18,28 +27,29 @@ import java.util.List;
 public class SyntacticBlockContext extends Context {
 
 	private final SyntacticBlock carrier;
-	private final Context _parent;
+	private final Context        _parent;
 
 	public SyntacticBlockContext(final SyntacticBlock carrier, final Context _parent) {
 		this.carrier = carrier;
 		this._parent = _parent;
 	}
 
-	@Override public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
+	@Override
+	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(carrier.getContext());
 
-		for (final FunctionItem item: carrier.getItems()) {
+		for (final FunctionItem item : carrier.getItems()) {
 			if (!(item instanceof ClassStatement) &&
-			    !(item instanceof NamespaceStatement) &&
-			    !(item instanceof FunctionDef) &&
-			    !(item instanceof VariableSequence)
+			  !(item instanceof NamespaceStatement) &&
+			  !(item instanceof FunctionDef) &&
+			  !(item instanceof VariableSequence)
 			) continue;
 			if (item instanceof OS_Element2) {
 				if (((OS_Element2) item).name().equals(name)) {
-					Result.add(name, level, (OS_Element) item, this);
+					Result.add(name, level, item, this);
 				}
 			} else if (item instanceof VariableSequence) {
-//				System.out.println("[FunctionContext#lookup] VariableSequence "+item);
+				tripleo.elijah.util.Stupidity.println2("[FunctionContext#lookup] VariableSequence " + item);
 				for (final VariableStatement vs : ((VariableSequence) item).items()) {
 					if (vs.getName().equals(name))
 						Result.add(name, level, vs, this);

@@ -1,3 +1,4 @@
+/* -*- Mode: Java; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
  *
@@ -8,6 +9,8 @@
  */
 package tripleo.elijah.work;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,8 +18,8 @@ import java.util.List;
  * Created 4/26/21 4:24 AM
  */
 public class WorkList {
-	List<WorkJob> jobs = new ArrayList<>();
-	private boolean _done;
+	private final List<WorkJob> jobs = new ArrayList<>();
+	private       boolean       _done;
 
 	public void addJob(final WorkJob aJob) {
 		jobs.add(aJob);
@@ -33,8 +36,11 @@ public class WorkList {
 	public boolean isEmpty() {
 		return jobs.size() == 0;
 	}
+
+	public ImmutableList<WorkJob> getJobs() {
+		return ImmutableList.copyOf(jobs);
+	}
 }
 
 //
-//
-//
+// vim:set shiftwidth=4 softtabstop=0 noexpandtab://

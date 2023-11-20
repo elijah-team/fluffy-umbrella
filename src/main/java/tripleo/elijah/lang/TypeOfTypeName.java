@@ -1,9 +1,9 @@
 package tripleo.elijah.lang;
 
+import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.stages.deduce.DeduceLookupUtils;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.ResolveError;
-import tripleo.elijah.util.NotImplementedException;
 
 import java.io.File;
 
@@ -11,25 +11,24 @@ import java.io.File;
  * Created 8/16/20 7:42 AM
  */
 public class TypeOfTypeName implements TypeName {
-	private final Context _ctx;
-	private Qualident _typeOf;
+	private Context       _ctx;
+	private Qualident     _typeOf;
 	private TypeModifiers modifiers;
 
 	public TypeOfTypeName(final Context cur) {
-		_ctx=cur;
+		_ctx = cur;
 	}
 
 	public void typeOf(final Qualident xy) {
-		_typeOf=xy;
+		_typeOf = xy;
+	}
+
+	public Qualident typeOf() {
+		return _typeOf;
 	}
 
 	public void set(final TypeModifiers modifiers_) {
 		modifiers = modifiers_;
-	}
-
-	@Override
-	public Type kindOfType() {
-		return Type.TYPE_OF;
 	}
 
 	@Override
@@ -38,19 +37,24 @@ public class TypeOfTypeName implements TypeName {
 	}
 
 	@Override
-	public void setContext(final Context context) {
-		throw new NotImplementedException();
-	}
-
-	@Override
 	public Context getContext() {
 		return _ctx;
 	}
 
-	public TypeName resolve(Context ctx, DeduceTypes2 deduceTypes2) throws ResolveError {
-//		System.out.println(_typeOf.toString());
-		LookupResultList lrl = DeduceLookupUtils.lookupExpression(_typeOf, ctx, deduceTypes2);
-		OS_Element best = lrl.chooseBest(null);
+	@Override
+	public void setContext(final Context context) {
+		_ctx = context;
+	}
+
+	@Override
+	public Type kindOfType() {
+		return Type.TYPE_OF;
+	}
+
+	public TypeName resolve(final @NotNull Context ctx, final DeduceTypes2 deduceTypes2) throws ResolveError {
+//		tripleo.elijah.util.Stupidity.println2(_typeOf.toString());
+		final LookupResultList lrl  = DeduceLookupUtils.lookupExpression(_typeOf, ctx, deduceTypes2);
+		final OS_Element       best = lrl.chooseBest(null);
 		if (best instanceof VariableStatement)
 			return ((VariableStatement) best).typeName();
 		return null;
@@ -60,14 +64,14 @@ public class TypeOfTypeName implements TypeName {
 
 	// TODO what about keyword
 	@Override
-	public int getColumn() {
-		return _typeOf.parts().get(0).getColumn();
+	public int getLine() {
+		return _typeOf.parts().get(0).getLine();
 	}
 
 	// TODO what about keyword
 	@Override
-	public int getLine() {
-		return _typeOf.parts().get(0).getLine();
+	public int getColumn() {
+		return _typeOf.parts().get(0).getColumn();
 	}
 
 	@Override

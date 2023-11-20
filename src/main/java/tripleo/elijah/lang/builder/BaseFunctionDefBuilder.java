@@ -21,23 +21,23 @@ import java.util.List;
  */
 public abstract class BaseFunctionDefBuilder extends ElBuilder {
 	protected List<AnnotationClause> annotations = new ArrayList<AnnotationClause>();
-	protected IdentExpression _name;
-	protected FormalArgList mFal;
-	protected FunctionDef.Species _species = null;
+	protected IdentExpression        _name;
+	protected FormalArgList          mFal;
+	protected FunctionDef.Species    _species    = null;
 
-	public void addAnnotation(AnnotationClause a) {
+	public void addAnnotation(final AnnotationClause a) {
 		annotations.add(a);
 	}
 
-	public void setName(IdentExpression i1) {
+	public void setName(final IdentExpression i1) {
 		_name = i1;
 	}
 
-	public void fal(FormalArgList fal) {
+	public void fal(final FormalArgList fal) {
 		mFal = fal;
 	}
 
-	public void setSpecies(FunctionDef.Species aSpecies) {
+	public void setSpecies(final FunctionDef.Species aSpecies) {
 		_species = aSpecies;
 	}
 

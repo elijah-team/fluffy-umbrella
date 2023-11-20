@@ -21,15 +21,15 @@ import java.util.Collection;
  * Created 6/14/21 7:28 AM
  */
 public class MainClassEntryPoint implements EntryPoint {
-	private FunctionDef main_function;
 	private final ClassStatement klass;
+	private       FunctionDef    main_function;
 
-	public MainClassEntryPoint(ClassStatement aKlass) {
+	public MainClassEntryPoint(final ClassStatement aKlass) {
 		final Collection<ClassItem> main = aKlass.findFunction("main");
-		for (ClassItem classItem : main) {
-			FunctionDef fd = (FunctionDef) classItem;
-			boolean return_type_is_null;
-			final TypeName typeName = fd.returnType();
+		for (final ClassItem classItem : main) {
+			final FunctionDef fd       = (FunctionDef) classItem;
+			final boolean     return_type_is_null;
+			final TypeName    typeName = fd.returnType();
 			if (typeName == null)
 				return_type_is_null = true;
 			else
@@ -43,19 +43,19 @@ public class MainClassEntryPoint implements EntryPoint {
 		klass = aKlass;
 	}
 
-	public static boolean isMainClass(@NotNull ClassStatement classStatement) {
+	public static boolean isMainClass(@NotNull final ClassStatement classStatement) {
 		// TODO what about Library (for windows dlls) etc?
 		return classStatement.getPackageName() == OS_Package.default_package && classStatement.name().equals("Main");
 	}
 
-	public static boolean is_main_function_with_no_args(@NotNull FunctionDef aFunctionDef) {
+	public static boolean is_main_function_with_no_args(@NotNull final FunctionDef aFunctionDef) {
 		switch (aFunctionDef.getSpecies()) {
-			case REG_FUN:
-			case DEF_FUN:
-				if (aFunctionDef.name().equals("main")) {
-					return !aFunctionDef.getArgs().iterator().hasNext();
-				}
-				break;
+		case REG_FUN:
+		case DEF_FUN:
+			if (aFunctionDef.name().equals("main")) {
+				return !aFunctionDef.getArgs().iterator().hasNext();
+			}
+			break;
 		}
 		return false;
 	}

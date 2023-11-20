@@ -1,41 +1,38 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 /*
  * Created on Aug 30, 2005 8:43:27 PM
- * 
+ *
  * $Id$
  */
 package tripleo.elijah.lang;
 
-import antlr.Token;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.FunctionContext;
-import tripleo.elijah.gen.ICodeGen;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import tripleo.elijah.lang.types.OS_FuncType;
+import tripleo.elijah.lang2.ElElementVisitor;
 
 // TODO FunctionDef is not a Container is it?
-public class FunctionDef extends BaseFunctionDef implements Documentable, ClassItem, OS_Container, OS_Element2 {
-
-	private TypeName _returnType = null;
-
-	public void setReturnType(final TypeName tn) {
-		this._returnType = tn;
-	}
-
-	// region constructor
+public class FunctionDef extends BaseFunctionDef implements Documentable, ClassItem, OS_Element2 {
 
 	private final OS_Element parent;
+	private TypeName _returnType = null;
+	// region constructor
+	private OS_FuncType osType;
+	private FunctionModifiers _mod;
 
-	public FunctionDef(OS_Element element, Context context) {
+	// endregion
+
+	// region modifiers
+	private boolean _isAbstract;
+
+	public FunctionDef(final OS_Element element, final Context context) {
 		parent = element;
 		if (element instanceof OS_Container) {
 			((OS_Container) parent).add(this);
@@ -49,9 +46,14 @@ public class FunctionDef extends BaseFunctionDef implements Documentable, ClassI
 
 	// endregion
 
-	// region modifiers
+	// region abstract
 
-	private FunctionModifiers _mod;
+	public void setAbstract(final boolean b) {
+		_isAbstract = b;
+		if (b) {
+			this.set(FunctionModifiers.ABSTRACT);
+		}
+	}
 
 	public void set(final FunctionModifiers mod) {
 		assert _mod == null;
@@ -60,20 +62,9 @@ public class FunctionDef extends BaseFunctionDef implements Documentable, ClassI
 
 	// endregion
 
-	// region abstract
-
-	private boolean _isAbstract;
-
-	public void setAbstract(final boolean b) {
-		_isAbstract = b;
-		if (b) {this.set(FunctionModifiers.ABSTRACT);}
-	}
-
-	// endregion
-
 	/**
 	 * Can be {@code null} under the following circumstances:<br/><br/>
-	 *
+	 * <p>
 	 * 1. The compiler(parser) didn't get a chance to set it yet<br/>
 	 * 2. The programmer did not specify a return value and the compiler must deduce it<br/>
 	 * 3. The function is a void-type and specification isn't required <br/>
@@ -84,14 +75,8 @@ public class FunctionDef extends BaseFunctionDef implements Documentable, ClassI
 		return _returnType;
 	}
 
-	@Override
-	public void visitGen(final ICodeGen visit) {
-		visit.visitFunctionDef(this);
-	}
-
-	@Override
-	public void postConstruct() { // TODO
-
+	public void setReturnType(final TypeName tn) {
+		this._returnType = tn;
 	}
 
 	@Override // OS_Element
@@ -100,8 +85,24 @@ public class FunctionDef extends BaseFunctionDef implements Documentable, ClassI
 	}
 
 	@Override
+	public void postConstruct() { // TODO
+
+	}
+
+	@Override
 	public String toString() {
 		return String.format("<Function %s %s %s>", parent, name(), getArgs());
+	}
+
+	@Override
+	public void visitGen(final ElElementVisitor visit) {
+		visit.visitFunctionDef(this);
+	}
+
+	public OS_FuncType getOS_Type() {
+		if (osType == null)
+			osType = new OS_FuncType(this);
+		return osType;
 	}
 
 }
