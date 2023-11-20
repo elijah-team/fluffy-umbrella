@@ -1,36 +1,42 @@
-Elijjah is a high-level language suitable for replacement Java and C++. It is meant to
-integrate into current C and Java projects. It will feature a REPL and a graphical environment as well, 
-along the lines Smalltalk/Tunes Slate.
+# Elijah programming language/system
 
-It is free software intended for use on all systems, including GNU/Linux.
+**Elijjah** is a high-level language suitable for replacement of C/C++ and Java.  (And of course any other
+language in existence or non-existence, except [FORTRAN](https://en.wikipedia.org/wiki/Karrueche_Tran)
+and [NULL](http://jdurrett.ba.ttu.edu/misc/Null-language.html).)
 
-Other Software Required:
-  * antlr (included)
-  * javassist (not used yet, but included)
-  * python (not yet)
-  * java-compiler (java8)
-  
-The repo is currently buildable from maven.  You can also import into Eclipse and IDEA
-and get up and running.  The tests need to run run from the root directory, which is 
+Just so you know, dear reader, most of the problems this problems tries (or is designed to solve) are
+already solved; and the rest are being worked on by people wearing much better smelling cologne than I.
+
+### Mandatory FSF blurb
+
+This is free software intended for on all systems, including GNU/Linux.
+
+### Goals (for fluffy-umbrella)
+
+1. To constantly drive the code toward an expression of the domain rather than an expression of the programming
+   language-specific expression of that domain.
+2. [World domination](#world-domination)
+
+### World domination
+
+1. Linus Torvalds
+2. The Brain
+
+### Goals (for Elijah)
+
+* Mainly not to have to learn Kotlin.
+
+* Integrate into current C and Java projects. Piecemeal replacement down to the function level.
+
+* Notebook/Code manager along the lines of Jupyter and Unison.
+
+* Some strange tribute as well to Glamarous Tooklit.
+
+## Status
+
+The repo is currently buildable from maven. You can also import into Eclipse and IDEA
+and get up and running. The tests need to run run from the root directory, which is
 done automatically in maven but not IDEA.
 
 Much work is needed.
 
-See [Language Overview](docs/language-overview.md) for more details on the language.
-
-All of this is a work in progress and your support would be appreciated.
-
-oluoluolu+elijah (at) gmail.com
-
-[google group](https://groups.google.com/forum/#!forum/elijjah)
-
-[Technical Wiki](https://gitlab.com/elijah-team/elijah-lang/-/wikis/home)
-
-[GitBook: The Elijjah Book](https://oluoluolu-gh.gitbook.io/elijjah-book/)
-
-[Elijjah by Example](https://elijjah-by-example.github.io)
-
-[GitBook: Elijjah by Example](https://oluoluolu-gh.gitbook.io/elijjah-by-example/)
-
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgitlab.com%2Felijah-team%2Felijah-lang.svg?type=large)](https://app.fossa.com/projects/git%2Bgitlab.com%2Felijah-team%2Felijah-lang?ref=badge_large)
