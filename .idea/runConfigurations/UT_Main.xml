@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="UT_Main" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="tripleo.elijah.ut.UT_Main" />
+    <module name="elijah-v1-fluffy-umbrella" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="tripleo.elijah.ut.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
