@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="codahale.metrics.core" type="repository">
+    <properties maven-id="com.codahale.metrics:metrics-core:3.0.2" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/Undertow/metrics-core-3.0.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/Undertow/slf4j-api-1.7.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/Undertow/metrics-core-3.0.2-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/Undertow/slf4j-api-1.7.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

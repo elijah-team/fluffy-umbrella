@@ -6,11 +6,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="fluffy-umbrella" />
+        <module name="elijah-v1-fluffy-umbrella" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="fluffy-umbrella" target="1.8" />
+      <module name="idea-mod-compiler-impl" target="17" />
+      <module name="idea-mod-deduce" target="17" />
+      <module name="idea-mod-generate" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

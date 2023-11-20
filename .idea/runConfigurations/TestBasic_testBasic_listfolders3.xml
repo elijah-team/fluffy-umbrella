@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="TestBasic.testBasic_listfolders3" type="JUnit" factoryName="JUnit" activateToolWindowBeforeRun="false" nameIsGenerated="true">
+    <module name="elijah-v1-fluffy-umbrella" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="tripleo.elijah.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="PACKAGE_NAME" value="tripleo.elijah" />
+    <option name="MAIN_CLASS_NAME" value="tripleo.elijah.TestBasic" />
+    <option name="METHOD_NAME" value="testBasic_listfolders3" />
+    <option name="TEST_OBJECT" value="method" />
+    <option name="TEST_SEARCH_SCOPE">
+      <value defaultName="wholeProject" />
+    </option>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
