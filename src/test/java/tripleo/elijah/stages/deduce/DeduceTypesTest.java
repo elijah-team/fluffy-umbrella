@@ -12,9 +12,9 @@ import org.jdeferred2.Promise;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.lang.OS_Module;
@@ -38,7 +38,7 @@ public class DeduceTypesTest {
 	private GenType                              x;
 	private Promise<GenType, ResolveError, Void> xx;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		final Boilerplate b = new Boilerplate();
 		b.get();
@@ -77,7 +77,7 @@ public class DeduceTypesTest {
 	 * TODO This test fails beacause we are comparing a BUILT_IN vs a USER OS_Type.
 	 *   It fails because Integer is an interface and not a BUILT_IN
 	 */
-	@Ignore
+	@Disabled
 	@Test
 	public void testDeduceIdentExpression1() {
 //		assert x == null;

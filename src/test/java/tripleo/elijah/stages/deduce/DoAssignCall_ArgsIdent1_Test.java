@@ -1,6 +1,6 @@
 package tripleo.elijah.stages.deduce;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.PipelineLogic;

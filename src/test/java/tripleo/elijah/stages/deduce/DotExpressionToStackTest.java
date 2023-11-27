@@ -11,8 +11,8 @@ package tripleo.elijah.stages.deduce;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tripleo.elijah.lang.DotExpression;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.IdentExpression;
@@ -22,7 +22,7 @@ import java.util.Stack;
 
 public class DotExpressionToStackTest {
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 	}
 

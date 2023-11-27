@@ -9,8 +9,8 @@
 package tripleo.elijah.lang;
 
 import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
@@ -27,7 +27,7 @@ import static org.easymock.EasyMock.*;
 
 public class TypeOfTypeNameTest {
 
-	@Ignore
+	@Disabled
 	@Test
 	public void typeOfSimpleQualident() throws ResolveError {
 		//

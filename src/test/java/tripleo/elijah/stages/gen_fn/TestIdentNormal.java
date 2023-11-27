@@ -9,8 +9,8 @@
 package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
@@ -101,7 +101,7 @@ public class TestIdentNormal {
 		});
 	}
 
-	@Ignore
+	@Disabled
 	@Test // TODO just a mess
 	public void test2() {
 		final Boilerplate b = new Boilerplate();

@@ -33,14 +33,17 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.13.1'
 
-    // https://mvnrepository.com/artifact/org.junit.vintage/junit-vintage-engine
-    testImplementation 'org.junit.vintage:junit-vintage-engine:5.10.0'
-    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
     // https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher
     testImplementation 'org.junit.platform:junit-platform-launcher:1.10.0'
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
+//    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.10.0'
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.10.0'
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.10.0'
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.10.0'
+    testImplementation("org.assertj:assertj-core:3.24.2")
 
 
     api 'com.squareup.okhttp3:okhttp:4.10.0'
@@ -73,7 +76,6 @@ dependencies {
     api 'commons-cli:commons-cli:1.4'
     api 'com.github.spotbugs:spotbugs-annotations:4.0.1'
 
-//    api 'com.google.guava:guava:30.0-jre'
     implementation 'com.google.guava:guava:32.1.1-jre'
 
     api 'tripleo.buffers:buffers-v1:0.0.3'
@@ -92,10 +94,17 @@ dependencies {
 
 }
 
+test {
+    useJUnitPlatform()
+}
+
 group = 'tripleo.elijah'
 version = '0.0.11'
 description = 'eljc-v1-fluffy-umbrella'
-java.sourceCompatibility = JavaVersion.VERSION_17
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 //kotlin.sourceCompatibility = JavaVersion.VERSION_17
 
 publishing {

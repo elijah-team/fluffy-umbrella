@@ -8,9 +8,9 @@
  */
 package tripleo.elijah.stages.deduce;
 
+import org.junit.jupiter.api.Test;
 import tripleo.elijah.TestCompilation;
 
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

@@ -1,7 +1,7 @@
 package tripleo.elijah;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
@@ -14,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 public class TestBasic_fact1_Verification2 {
 	private Compilation c;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		final String s = "test/basic/fact1/main2";
 		c = new CompilationImpl(new StdErrSink(), new IO());

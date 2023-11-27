@@ -10,8 +10,8 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tripleo.elijah.comp.AccessBus;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.PipelineLogic;
@@ -46,7 +46,7 @@ public class GetIdentIAPathTest_ForC {
 	GeneratedFunction gf;
 	OS_Module         mod;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		mod = mock(OS_Module.class);
 		final FunctionDef fd = mock(FunctionDef.class);
