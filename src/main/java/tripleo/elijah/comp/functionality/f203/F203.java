@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Contract;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.ErrSink;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.time.LocalDateTime;
 
 public class F203 {

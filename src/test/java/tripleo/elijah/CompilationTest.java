@@ -16,7 +16,7 @@ import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.util.List;
 
 import static tripleo.elijah.util.Helpers.List_of;

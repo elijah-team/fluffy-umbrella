@@ -33,7 +33,7 @@ import tripleo.util.io.CharSink;
 import tripleo.util.io.FileCharSink;
 
 import java.io.BufferedWriter;
-import java.io.File;
+import tripleo.wrap.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -115,7 +115,7 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 	public void write_buffers() throws FileNotFoundException {
 		file_prefix.mkdirs();
 
-		final PrintStream db_stream = new PrintStream(new File(file_prefix, "buffers.txt"));
+		final PrintStream db_stream = new PrintStream(new File(file_prefix, "buffers.txt").wrapped());
 		PipelineLogic.debug_buffers(gr, db_stream);
 	}
 
@@ -194,7 +194,7 @@ public class WritePipeline implements PipelineMember, AccessBus.AB_GenerateResul
 
 		final File   fn1 = new File(file_prefix, "inputs.txt");
 		final String s   = buf.getText();
-		try (final Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn1, true)))) {
+		try (final Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fn1.wrapped(), true)))) {
 			w.write(s);
 		}
 	}

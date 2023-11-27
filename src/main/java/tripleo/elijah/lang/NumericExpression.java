@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.io.File;
+import tripleo.wrap.File;
 
 public class NumericExpression implements IExpression, Locatable {
 

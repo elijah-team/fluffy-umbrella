@@ -9,7 +9,7 @@
 
 package tripleo.elijah.comp.functionality.f202;
 
-import java.io.File;
+import tripleo.wrap.File;
 
 /**
  * Created 8/11/21 5:48 AM

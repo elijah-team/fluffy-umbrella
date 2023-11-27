@@ -32,7 +32,7 @@ import tripleo.elijah.nextgen.outputtree.EOT_OutputTree;
 
 import tripleo.elijah.util.Helpers;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +52,7 @@ public class TestBasic {
 
 	@Test
 	public final void testBasicParse() throws Exception {
-		final List<String> ez_files = Files.readLines(new File("test/basic/ez_files.txt"), Charsets.UTF_8);
+		final List<String> ez_files = File.readLines("test/basic/ez_files.txt", Charsets.UTF_8);
 		final List<String> args     = new ArrayList<String>();
 		args.addAll(ez_files);
 		args.add("-sE");
@@ -66,7 +66,7 @@ public class TestBasic {
 
 	//	@Test
 	public final void testBasic() throws Exception {
-		final List<String>          ez_files   = Files.readLines(new File("test/basic/ez_files.txt"), Charsets.UTF_8);
+		final List<String>          ez_files   = File.readLines("test/basic/ez_files.txt", Charsets.UTF_8);
 		final Map<Integer, Integer> errorCount = new HashMap<Integer, Integer>();
 		int                         index      = 0;
 

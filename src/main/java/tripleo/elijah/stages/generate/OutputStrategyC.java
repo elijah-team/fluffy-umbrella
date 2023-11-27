@@ -26,7 +26,7 @@ import tripleo.elijah.stages.gen_fn.GeneratedNamespace;
 import tripleo.elijah.stages.gen_fn.GeneratedNode;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 
-import java.io.File;
+import tripleo.wrap.File;
 
 /**
  * Created 1/13/21 5:54 AM

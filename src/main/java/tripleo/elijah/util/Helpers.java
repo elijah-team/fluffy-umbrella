@@ -20,7 +20,7 @@ import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.lang.Qualident;
 import tripleo.elijjah.ElijjahTokenTypes;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -108,7 +108,7 @@ public class Helpers {
 	}
 
 	public static String getHashForFilename(final String aFilename, final ErrSink aErrSink) throws IOException {
-		final String hdigest = new DigestUtils(SHA_256).digestAsHex(new File(aFilename));
+		final String hdigest = new DigestUtils(SHA_256).digestAsHex(new File(aFilename).wrapped());
 		return hdigest;
 	}
 
@@ -119,7 +119,7 @@ public class Helpers {
 		final byte[]    ba   = new byte[(int) size];  // README Counting on reasonable sizes here
 		FileInputStream bb   = null;
 		try {
-			bb = new FileInputStream(file);
+			bb = file.getFileInputStream();
 			bb.read(ba);
 
 			try {

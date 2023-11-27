@@ -19,7 +19,7 @@ import tripleo.elijah.nextgen.query.Mode;
 import tripleo.elijah.nextgen.query.Operation2;
 import tripleo.elijah.util.Helpers;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;

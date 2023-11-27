@@ -12,7 +12,7 @@ package tripleo.elijah.comp.functionality.f202;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.stages.logging.LogEntry;
 
-import java.io.File;
+import tripleo.wrap.File;
 
 /**
  * Created 8/11/21 5:50 AM

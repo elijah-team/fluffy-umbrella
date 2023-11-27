@@ -5,7 +5,7 @@ import tripleo.elijah.stages.deduce.DeduceLookupUtils;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.ResolveError;
 
-import java.io.File;
+import tripleo.wrap.File;
 
 /**
  * Created 8/16/20 7:42 AM

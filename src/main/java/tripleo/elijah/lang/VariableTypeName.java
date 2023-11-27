@@ -16,7 +16,7 @@ package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;

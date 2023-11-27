@@ -7,7 +7,8 @@ import tripleo.elijah.nextgen.inputtree.*;
 import tripleo.elijah.nextgen.query.*;
 import tripleo.elijah.world.i.*;
 
-import java.io.*;
+import tripleo.wrap.File;
+
 import java.util.*;
 
 public interface CompFactory {

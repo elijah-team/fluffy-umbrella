@@ -13,7 +13,7 @@ package tripleo.elijah.lang;
 
 import tripleo.elijah.util.NotImplementedException;
 
-import java.io.File;
+import tripleo.wrap.File;
 
 /**
  * Created 8/16/20 7:42 AM

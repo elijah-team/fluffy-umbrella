@@ -13,8 +13,7 @@ import tripleo.util.io.CharSink;
 import tripleo.util.io.CharSource;
 import tripleo.util.io.FileCharSink;
 
-import java.io.File;
-import java.io.FileInputStream;
+import tripleo.wrap.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +46,19 @@ public class IO {
 		record(read, p.toFile());
 	}
 
+	private void record(final FileOption read, final java.io.File file) {
+		switch (read) {
+		case WRITE:
+			recordedwrites.add(File.wrap(file));
+			break;
+		case READ:
+			recordedreads.add(File.wrap(file));
+			break;
+		default:
+			throw new IllegalStateException("Cant be here");
+		}
+	}
+
 	private void record(@NotNull final FileOption read, @NotNull final File file) {
 		switch (read) {
 		case WRITE:
@@ -67,7 +79,8 @@ public class IO {
 
 	public InputStream readFile(final File f) throws FileNotFoundException {
 		record(FileOption.READ, f);
-		return new FileInputStream(f);
+//		return new FileInputStream(f);
+		return f.getFileInputStream();
 	}
 }
 

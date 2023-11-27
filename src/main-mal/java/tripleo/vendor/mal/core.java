@@ -16,7 +16,7 @@ import tripleo.vendor.mal.types.MalThrowable;
 import tripleo.vendor.mal.types.MalVal;
 import tripleo.vendor.mal.types.MalVector;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -193,7 +193,7 @@ public class core {
 			try {
 				// Scanner drops final newline, so add it back
 				return new MalString(
-				  new Scanner(new File(fname)).useDelimiter("\\Z").next()
+				  new Scanner(new File(fname).wrapped()).useDelimiter("\\Z").next()
 					+ "\n");
 			} catch (final FileNotFoundException e) {
 				throw new MalError(e.getMessage());

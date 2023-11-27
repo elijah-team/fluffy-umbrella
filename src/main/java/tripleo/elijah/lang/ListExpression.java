@@ -11,7 +11,7 @@ package tripleo.elijah.lang;
 import antlr.Token;
 import tripleo.elijah.diagnostic.Locatable;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.util.ArrayList;
 import java.util.List;
 

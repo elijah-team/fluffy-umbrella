@@ -14,7 +14,7 @@
  */
 package tripleo.elijah.lang;
 
-import java.io.File;
+import tripleo.wrap.File;
 
 public class RegularTypeName extends AbstractTypeName2 implements NormalTypeName {
 

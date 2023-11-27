@@ -11,7 +11,7 @@ package tripleo.elijah.comp.functionality.f202;
 import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.stages.logging.LogEntry;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
@@ -31,7 +31,7 @@ public class DefaultProcessLogEntryBehavior implements ProcessLogEntryBehavior {
 	@Override
 	public void initialize(final File aLogFile, final String aElLogFileName, final ErrSink aErrSink) {
 		try {
-			ps = new PrintStream(aLogFile);
+			ps = new PrintStream(aLogFile.wrapped());
 			s1 = aElLogFileName;
 		} catch (final FileNotFoundException exception) {
 			aErrSink.exception(exception);

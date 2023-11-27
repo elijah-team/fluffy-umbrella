@@ -1,6 +1,8 @@
 package tripleo.elijah.comp.specs;
 
-import java.io.*;
+import tripleo.wrap.File;
+
+import java.io.InputStream;
 
 public record EzSpec(String f, InputStream s, File file) {
 }

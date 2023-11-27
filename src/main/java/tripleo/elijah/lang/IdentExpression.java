@@ -4,29 +4,27 @@
  * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- *
- */
-/**
- * Created Apr 1, 2019 at 3:21:26 PM
  */
 package tripleo.elijah.lang;
 
 import antlr.Token;
+
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+
 import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
 
-import java.io.File;
+import tripleo.wrap.File;
 
 /**
+ * Created Apr 1, 2019 at 3:21:26 PM
+ * <p></p>
  * @author Tripleo(sb)
- *
  */
 public class IdentExpression implements IExpression, OS_Element, Resolvable, Locatable {
-
 	public final  Attached   _a;
 	private final Token      text;
 	OS_Type _type;

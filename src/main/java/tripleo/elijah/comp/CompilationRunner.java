@@ -17,7 +17,7 @@ import tripleo.elijah.nextgen.query.Mode;
 import tripleo.elijah.nextgen.query.Operation2;
 import tripleo.elijah.stages.deduce.post_bytecode.Maybe;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;

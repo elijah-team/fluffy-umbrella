@@ -39,7 +39,7 @@ import tripleo.elijah.world.i.WorldModule;
 import tripleo.elijah.world.impl.DefaultLivingRepo;
 import tripleo.elijah.world.impl.DefaultWorldModule;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

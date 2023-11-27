@@ -14,7 +14,7 @@ import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.stages.deduce.DeduceTypeWatcher;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.util.ArrayList;
 import java.util.List;
 

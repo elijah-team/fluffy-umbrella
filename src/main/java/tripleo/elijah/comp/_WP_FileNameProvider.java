@@ -3,7 +3,7 @@ package tripleo.elijah.comp;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.nextgen.outputtree.EOT_OutputFile;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 

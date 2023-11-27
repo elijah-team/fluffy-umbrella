@@ -27,7 +27,7 @@ import tripleo.elijah.stages.deduce.FunctionMapHook;
 import tripleo.elijah.stages.instructions.InstructionName;
 import tripleo.elijah.work.WorkManager;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

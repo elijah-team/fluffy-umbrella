@@ -6,7 +6,7 @@ import com.sun.jna.Native;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
+import tripleo.wrap.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -60,7 +60,7 @@ class readline {
 	public static void loadHistory(final String filename) {
 		final File file = new File(filename);
 		try {
-			final List<String> lines = Files.readLines(file,
+			final List<String> lines = Files.readLines(file.wrapped(),
 			  StandardCharsets.UTF_8);
 			for (final String line : lines) {
 				RLLibrary.INSTANCE.add_history(line);

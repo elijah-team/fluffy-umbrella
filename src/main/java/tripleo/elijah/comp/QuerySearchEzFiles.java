@@ -5,7 +5,10 @@ import tripleo.elijah.ci.*;
 import tripleo.elijah.comp.specs.*;
 import tripleo.elijah.nextgen.query.*;
 
-import java.io.*;
+import tripleo.wrap.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.regex.*;
 
@@ -24,14 +27,14 @@ class QuerySearchEzFiles {
 
 	final FilenameFilter ez_files_filter = new FilenameFilter() {
 		@Override
-		public boolean accept(final File file, final String s) {
+		public boolean accept(final java.io.File file, final String s) {
 			final boolean matches2 = Pattern.matches(".+\\.ez$", s);
 			return matches2;
 		}
 	};
 
 	// TODO list of operations, not operation of list
-	public Operation2<List<CompilerInstructions>> process(final File directory) {
+	public Operation2<List<CompilerInstructions>> process(final tripleo.wrap.@NotNull File directory) {
 		final List<CompilerInstructions> R    = new ArrayList<>();
 		final String[]                   list = directory.list(ez_files_filter);
 
@@ -65,7 +68,7 @@ class QuerySearchEzFiles {
 		final File                      file = new File(file_name);
 		final EzSpec                    spec;
 
-		try (final InputStream s = io.readFile(file)) {
+		try (final InputStream s = file.readFile(io)) {
 			spec   = new EzSpec(file_name, s, file);
 			result = cr.realParseEzFile(spec, cr.ezCache());
 		} catch (final IOException aE) {

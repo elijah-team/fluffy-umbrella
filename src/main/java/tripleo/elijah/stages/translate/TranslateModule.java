@@ -4,7 +4,7 @@ import tripleo.elijah.lang.*;
 import tripleo.elijah.lang2.BuiltInTypes;
 import tripleo.elijah.util.TabbedOutputStream;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -104,7 +104,7 @@ public class TranslateModule {
 		final File dir = new File("output", packageDirName);
 		dir.mkdirs();
 		final File               file = new File(dir, name + ".java");
-		final FileOutputStream   os   = new FileOutputStream(file);
+		final FileOutputStream   os   = new FileOutputStream(file.wrapped());
 		final TabbedOutputStream R    = new TabbedOutputStream(os);
 		return R;
 	}

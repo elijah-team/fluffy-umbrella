@@ -9,7 +9,7 @@
 
 package tripleo.elijah.diagnostic;
 
-import java.io.File;
+import tripleo.wrap.File;
 
 /**
  * Locate a Token or Token range<br><br>

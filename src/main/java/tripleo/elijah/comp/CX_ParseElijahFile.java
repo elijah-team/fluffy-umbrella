@@ -39,7 +39,7 @@ public class CX_ParseElijahFile {
 		final boolean   do_out = spec.do_out();
 		final OS_Module R;
 
-		try (final InputStream s = io.readFile(file)) {
+		try (final InputStream s = io.readFile(tripleo.wrap.File.wrap(file))) {
 			final String absolutePath = file.getCanonicalPath();
 
 			final Operation<OS_Module> om = parseElijahFile(f, s, do_out, c, absolutePath);

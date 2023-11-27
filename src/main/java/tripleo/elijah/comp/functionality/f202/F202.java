@@ -13,7 +13,7 @@ import tripleo.elijah.comp.ErrSink;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.stages.logging.LogEntry;
 
-import java.io.File;
+import tripleo.wrap.File;
 import java.util.Collection;
 
 /**

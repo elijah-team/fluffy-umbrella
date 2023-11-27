@@ -11,7 +11,7 @@ package tripleo.elijah.comp.functionality.f202;
 import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.functionality.f203.F203;
 
-import java.io.File;
+import tripleo.wrap.File;
 
 /**
  * Created 8/11/21 5:55 AM
