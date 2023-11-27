@@ -1,9 +1,4 @@
-/errors
-/bin/
-/fact.elijah.h
-/doc/
-/eljc*out
-out/
+/out/
 target/
 /output/
 /target-/
@@ -11,6 +6,5 @@ target/
 /.idea/workspace.xml
 /.idea/gitlab-quickmr.xml
 /ll.c
-/pom.xml-
 /build/**
 /.gradle/**
