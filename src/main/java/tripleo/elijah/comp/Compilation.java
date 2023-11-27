@@ -43,6 +43,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -99,8 +100,8 @@ public abstract class Compilation {
 	private final Finally      _f;
 	private final Finally.Flow _flow;
 
-	private CompilationEnclosure getCompilationEnclosure() {
-		throw new NotImplementedException();
+	public CompilationEnclosure getCompilationEnclosure() {
+		return new CompilationEnclosure(this);
 	}
 
 
@@ -169,7 +170,7 @@ public abstract class Compilation {
 
 	public List<ClassStatement> findClass(final String string) {
 		final List<ClassStatement> l = new ArrayList<ClassStatement>();
-		for (final OS_Module module : mod.modules) {
+		for (final OS_Module module : mod) {
 			if (module.hasClass(string)) {
 				l.add((ClassStatement) module.findClass(string));
 			}
@@ -314,26 +315,32 @@ public abstract class Compilation {
 		return _flow;
 	}
 
-	static class MOD {
-		final         List<OS_Module>        modules = new ArrayList<OS_Module>();
+	public DefaultLivingRepo world() {
+		return this._repo;
+	}
+
+	static class MOD implements Iterable<OS_Module> {
+		private final         List<OS_Module>        modules = new ArrayList<OS_Module>();
 		private final Map<String, OS_Module> fn2m    = new HashMap<String, OS_Module>();
-//		private final Compilation            c;
+		private final Compilation            c;
 
 		public MOD(final Compilation aCompilation) {
-//			c = aCompilation;
+			c = aCompilation;
 		}
 
 		public void addModule(final OS_Module module, final String fn) {
 			modules.add(module);
 			fn2m.put(fn, module);
+			c.world().__addModule(module, c.getCompilationEnclosure());
 		}
 
 		public int size() {
 			return modules.size();
 		}
 
-		public List<OS_Module> modules() {
-			return modules;
+		@Override
+		public Iterator<OS_Module> iterator() {
+			return modules.iterator();
 		}
 	}
 

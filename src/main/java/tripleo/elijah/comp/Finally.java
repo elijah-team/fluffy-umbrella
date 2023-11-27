@@ -82,6 +82,14 @@ public class Finally {
 		return _flow;
 	}
 
+	public int codeOutputSize() {
+		return outputs.size();
+	}
+
+	public int codeInputSize() {
+		return inputs.size();
+	}
+
 	public enum Outs {Out_6262, Out_727, Out_350, Out_364, Out_252, Out_2121, Out_486, Out_5757, Out_1069, Out_141, Out_EVTE_159, Out_401b}
 
 	public enum Out2 {
