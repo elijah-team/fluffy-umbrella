@@ -4,8 +4,8 @@ on:
   pull_request:
     branches: ["2023-11-fluffy-ekko"]
 #    branches: [ 'main' ]
-#  push:
-#    branches: [ "mainline-k" ]
+  push:
+    branches: ["2023-11-fluffy-ekko"]
 
 jobs:
   gradle:
