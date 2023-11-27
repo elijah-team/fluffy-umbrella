@@ -9,15 +9,15 @@ public class Stupidity {
 //		System.out.println(aS);
 	}
 
-	public static void println2(final Object aS) {
+	public static void println2(final String aS) {
 //		System.out.println(""+aS);
 	}
 
-	public static void println_err2(final Object aS) {
+	public static void println_err2(final String aS) {
 //		System.err.println(""+aS);
 	}
 
-	public static void println_err3(final Object aS) {
-		System.err.println("Stupidity::println_err3: "+aS);
+	public static void println_err3(final String aS) {
+//		System.err.println("Stupidity::println_err3: "+aS);
 	}
 }
