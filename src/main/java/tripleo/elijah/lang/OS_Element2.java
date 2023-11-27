@@ -21,6 +21,9 @@ public interface OS_Element2 {
 	@Contract(pure = true)
 	String name();
 
+	default boolean sameName(String aClassName) {
+		return aClassName.equals(name());
+	}
 }
 
 //

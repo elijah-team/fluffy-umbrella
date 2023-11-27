@@ -35,14 +35,6 @@ import static org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_256;
  * Created 9/10/20 3:44 PM
  */
 public class Helpers {
-	public static void printXML(final Object obj, @NotNull final TabbedOutputStream tos) {
-		tripleo.elijah.util.Stupidity.println_err2("** XStream support has been disabled");
-/*
-		final XStream x = new XStream();
-		//x.setMode(XStream.ID_REFERENCES);
-		x.toXML(obj, tos.getStream());
-*/
-	}
 
 	@NotNull
 	public static <E> List<E> List_of(@NotNull final E... e1) {
@@ -159,6 +151,10 @@ public class Helpers {
 		}
 
 		return sb.toString();
+	}
+
+	public static boolean String_equals(final String aName, final String aString) {
+		return aName.equals(aString);
 	}
 }
 
