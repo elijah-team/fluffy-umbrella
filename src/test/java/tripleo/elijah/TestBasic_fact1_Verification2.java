@@ -39,11 +39,11 @@ public class TestBasic_fact1_Verification2 {
 
 	@Test
 	public void testOutputs_code_prelude_Prelude_Arguments_c() {
-		assertTrue(c.reports().containsCodeOutput("/prelude/Prelude/Arguments[].c"));
+		assertTrue(c.reports().containsCodeOutput("/prelude/Prelude/Arguments.c"));
 	}
 	@Test
 	public void testOutputs_code_prelude_Prelude_Arguments_h() {
-		assertTrue(c.reports().containsCodeOutput("/prelude/Prelude/Arguments[].h"));
+		assertTrue(c.reports().containsCodeOutput("/prelude/Prelude/Arguments.h"));
 	}
 	@Test
 	public void testOutputs_main2_Main_h() {

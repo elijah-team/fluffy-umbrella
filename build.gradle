@@ -7,6 +7,14 @@ plugins {
     id 'maven-publish'
 
 //    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
+
+//    id 'tripleo.elijah.java-conventions'
+////    id 'org.openjfx.javafxplugin' version '0.0.13'
+//
+//    id "io.freefair.lombok" version "8.3"
+    id "io.ktor.plugin" version "2.3.4"
+
+//    id "org.xtext.xtend" version "4.0.0"
 }
 
 repositories {
@@ -115,3 +123,13 @@ sourceSets {
 //    main.resources.srcDirs = ['src/resources']
 }
 
+
+application {
+    mainClass.set("tripleo.elijah.Main")
+}
+
+ktor {
+    fatJar {
+        archiveFileName.set("fat.jar")
+    }
+}
