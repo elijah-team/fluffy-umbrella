@@ -73,9 +73,11 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 		return getCompilation().cfg.stage;
 	}
 
+	boolean x;
+
 	private void writeLogs(final boolean aSilent, final List<ElLog> aLogs) {
 		final Multimap<String, ElLog> logMap = ArrayListMultimap.create();
-		if (true) {
+		if (!x) {
 			for (final ElLog deduceLog : aLogs) {
 				logMap.put(deduceLog.getFileName(), deduceLog);
 			}
@@ -83,6 +85,7 @@ public class DefaultCompilationAccess implements ICompilationAccess {
 				final F202 f202 = new F202(compilation.getErrSink(), compilation);
 				f202.processLogs(stringCollectionEntry.getValue());
 			}
-		}
+			x=true;
+		} else throw new Error();
 	}
 }
