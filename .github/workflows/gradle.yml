@@ -2,7 +2,7 @@ name: Run Gradle on PRs
 
 on:
   pull_request:
-    branches: ["2023-09-mainline-k"]
+    branches: ["2023-11-fluffy-ekko"]
 #    branches: [ 'main' ]
 #  push:
 #    branches: [ "mainline-k" ]

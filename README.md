@@ -32,7 +32,7 @@ This is free software intended for on all systems, including GNU/Linux.
 I believe it will import into Idea.
 
 ```
-git clone https://github.com/elijah-team/fluffy-umbrella -b 2023-09-mainline-k
+git clone https://github.com/elijah-team/fluffy-umbrella -b 2023-11-fluffy-ekko
 cd fluffy-umbrella
 ./gradlew test
 ```
