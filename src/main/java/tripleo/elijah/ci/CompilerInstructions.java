@@ -10,7 +10,7 @@ public interface CompilerInstructions {
 
 	void add(GenerateStatement generateStatement);
 
-	void add(LibraryStatementPartImpl libraryStatementPart);
+	void add(LibraryStatementPart libraryStatementPart);
 
 	String getFilename();
 

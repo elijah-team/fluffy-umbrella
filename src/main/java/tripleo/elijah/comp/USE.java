@@ -3,10 +3,10 @@ package tripleo.elijah.comp;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.ci.CompilerInstructionsImpl;
 import tripleo.elijah.ci.GenerateStatement;
 import tripleo.elijah.ci.LibraryStatementPart;
-import tripleo.elijah.ci.LibraryStatementPartImpl;
+import tripleo.elijah.ci_impl.CompilerInstructionsImpl;
+import tripleo.elijah.ci_impl.LibraryStatementPartImpl;
 import tripleo.elijah.comp.caches.DefaultElijahCache;
 import tripleo.elijah.comp.diagnostic.ExceptionDiagnostic;
 import tripleo.elijah.comp.diagnostic.FileNotFoundDiagnostic;
@@ -18,8 +18,8 @@ import tripleo.elijah.lang.StringExpression;
 import tripleo.elijah.nextgen.query.Mode;
 import tripleo.elijah.nextgen.query.Operation2;
 import tripleo.elijah.util.Helpers;
-
 import tripleo.wrap.File;
+
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;

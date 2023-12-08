@@ -11,10 +11,9 @@ import antlr.TokenStream;
 import antlr.TokenStreamException;
 import antlr.collections.impl.BitSet;
 import tripleo.elijah.ci.CompilerInstructions;
-import tripleo.elijah.ci.CompilerInstructionsImpl;
 import tripleo.elijah.ci.GenerateStatement;
 import tripleo.elijah.ci.IndexingStatement;
-import tripleo.elijah.ci.LibraryStatementPartImpl;
+import tripleo.elijah.ci_impl.LibraryStatementPartImpl;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_BuiltinType;
 import tripleo.elijah.lang2.BuiltInTypes;
@@ -112,7 +111,8 @@ public class EzParser extends antlr.LLkParser implements EzTokenTypes {
 	public static final BitSet _tokenSet_9 = new BitSet(mk_tokenSet_9());
 	public static final BitSet _tokenSet_10 = new BitSet(mk_tokenSet_10());
 	public static final BitSet _tokenSet_11 = new BitSet(mk_tokenSet_11());
-	public CompilerInstructions ci = new CompilerInstructionsImpl();
+
+	public CompilerInstructions ci;
 	IExpression expr;
 	Context     cur = null;
 
