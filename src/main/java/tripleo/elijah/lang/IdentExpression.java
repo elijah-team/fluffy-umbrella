@@ -27,18 +27,28 @@ import tripleo.wrap.File;
 public class IdentExpression implements IExpression, OS_Element, Resolvable, Locatable {
 	public final  Attached   _a;
 	private final Token      text;
+	private final String _filename;
 	OS_Type _type;
 	private       OS_Element _resolvedElement;
 
 	public IdentExpression(final Token r1) {
 		this.text = r1;
 		this._a   = new Attached();
+		_filename = "<<unspecified>>";
 	}
 
 	public IdentExpression(final Token r1, final Context cur) {
 		this.text = r1;
 		this._a   = new Attached();
+		_filename = "<<unspecified>>"; // ??!!
 		setContext(cur);
+	}
+
+	public IdentExpression(final Token aR1, final String aFilename, final Context aCur) {
+		this.text = aR1;
+		this._a = new Attached();
+		this._filename = aFilename;
+		setContext(aCur);
 	}
 
 	@Contract("_ -> new")

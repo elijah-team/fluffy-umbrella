@@ -40,7 +40,7 @@ class CX_ParseEzFile {
 		final EzParser parser = new EzParser(lexer);
 		parser.setFilename(aAbsolutePath);
 		parser.pcon = new PCon();
-		parser.ci = pcon.new _
+		parser.ci = parser.pcon.new_CompilerInstructionsImpl();
 		try {
 			parser.program();
 		} catch (final RecognitionException | TokenStreamException aE) {

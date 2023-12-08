@@ -2,9 +2,8 @@ package tripleo.elijah.comp.internal;
 
 import antlr.Token;
 import tripleo.elijah.ci.*;
-//import tripleo.elijah.ci_.*;
-//import tripleo.elijah.lang.i.*;
-//import tripleo.elijah.lang..*;
+import tripleo.elijah.ci_impl.CiExpressionListImpl;
+import tripleo.elijah.ci_impl.CiProcedureCallExpressionImpl;
 import tripleo.elijah.ci_impl.CompilerInstructionsImpl;
 import tripleo.elijah.ci_impl.LibraryStatementPartImpl;
 import tripleo.elijah.lang.*;
@@ -90,15 +89,19 @@ public class PCon {
 	}
 
 	public CiExpressionList newCiExpressionList() {
-		return new CiExpressionList();
+		return new CiExpressionListImpl();
 	}
 
 	public CiProcedureCallExpression newCiProcedureCallExpression() {
-		return new CiProcedureCallExpression();
+		return new CiProcedureCallExpressionImpl();
 	}
 
 	public IExpression ExpressionBuilder_build(final IExpression aEe, final ExpressionKind aE2, final IExpression aE3, final OS_Type aT) {
 		// TODO 10/15 look at me
 		return ExpressionBuilder_build(aEe, aE2, aE3);
+	}
+
+	public CompilerInstructions new_CompilerInstructionsImpl() {
+		return new CompilerInstructionsImpl();
 	}
 }

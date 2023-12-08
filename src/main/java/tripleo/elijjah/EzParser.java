@@ -14,6 +14,7 @@ import tripleo.elijah.ci.CompilerInstructions;
 import tripleo.elijah.ci.GenerateStatement;
 import tripleo.elijah.ci.IndexingStatement;
 import tripleo.elijah.ci_impl.LibraryStatementPartImpl;
+import tripleo.elijah.comp.internal.PCon;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.lang.types.OS_BuiltinType;
 import tripleo.elijah.lang2.BuiltInTypes;
@@ -113,6 +114,7 @@ public class EzParser extends antlr.LLkParser implements EzTokenTypes {
 	public static final BitSet _tokenSet_11 = new BitSet(mk_tokenSet_11());
 
 	public CompilerInstructions ci;
+	public PCon pcon;
 	IExpression expr;
 	Context     cur = null;
 
