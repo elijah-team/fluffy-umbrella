@@ -99,4 +99,9 @@ public class File {
 		}
 		return R;
 	}
+
+	@Override
+	public String toString() {
+		return wrap.toString();
+	}
 }
