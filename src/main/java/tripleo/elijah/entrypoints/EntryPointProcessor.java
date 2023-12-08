@@ -15,10 +15,9 @@ import tripleo.elijah.stages.gen_fn.WlGenerateClass;
 import tripleo.elijah.stages.gen_fn.WlGenerateFunction;
 import tripleo.elijah.stages.gen_generic.ICodeRegistrar;
 import tripleo.elijah.work.WorkList;
+import tripleo.elijah.world.i.LivingRepo;
 
 public interface EntryPointProcessor {
-	void process();
-
 	static @NotNull EntryPointProcessor dispatch(final EntryPoint ep, final DeducePhase aDeducePhase, final WorkList aWl, final GenerateFunctions aGenerateFunctions) {
 		if (ep instanceof MainClassEntryPoint) {
 			return new EPP_MCEP((MainClassEntryPoint) ep, aDeducePhase, aWl, aGenerateFunctions);
@@ -29,16 +28,18 @@ public interface EntryPointProcessor {
 		throw new IllegalStateException();
 	}
 
+	void process();
+
 	class EPP_MCEP implements EntryPointProcessor {
 		private final MainClassEntryPoint mcep;
-		private final DeducePhase deducePhase;
-		private final WorkList wl;
-		private final GenerateFunctions generateFunctions;
+		private final DeducePhase         deducePhase;
+		private final WorkList            wl;
+		private final GenerateFunctions   generateFunctions;
 
 		public EPP_MCEP(final MainClassEntryPoint aEp, final DeducePhase aDeducePhase, final WorkList aWl, final GenerateFunctions aGenerateFunctions) {
-			mcep = aEp;
-			deducePhase = aDeducePhase;
-			wl = aWl;
+			mcep              = aEp;
+			deducePhase       = aDeducePhase;
+			wl                = aWl;
 			generateFunctions = aGenerateFunctions;
 		}
 
@@ -55,36 +56,30 @@ public interface EntryPointProcessor {
 
 				@Override
 				public void registerNamespace(final GeneratedNamespace aNamespace) {
-					assert false;
+					compilation._repo.addNamespace(aNamespace, LivingRepo.Add.NONE);
 				}
 
 				@Override
 				public void registerClass(final GeneratedClass aClass) {
-					if (MainClassEntryPoint.isMainClass(aClass.getKlass())) {
-						aClass.setCode(100);
-						//compilation.notifyClass(code, aClass);
-					} else
-						aClass.setCode(compilation.nextClassCode());
+					compilation._repo.addClass(aClass, LivingRepo.Add.MAIN_CLASS);
 				}
 
 				@Override
 				public void registerFunction(final BaseGeneratedFunction aFunction) {
-					if (aFunction.getFD() instanceof FunctionDef &&
-					  MainClassEntryPoint.is_main_function_with_no_args((FunctionDef) aFunction.getFD())) {
-						aFunction.setCode(1000);
-						//compilation.notifyFunction(code, aFunction);
-					} else
-						aFunction.setCode(compilation.nextClassCode());
+					compilation._repo.addFunction(aFunction, LivingRepo.Add.MAIN_FUNCTION);
 				}
 			};
 
 
-			final @NotNull WlGenerateClass job = new WlGenerateClass(generateFunctions, ci, deducePhase.generatedClasses, deducePhase.codeRegistrar);
+//			final ICodeRegistrar           cr = deducePhase.codeRegistrar;
+			final ICodeRegistrar cr = codeRegistrar;
+
+			final @NotNull WlGenerateClass job = new WlGenerateClass(generateFunctions, ci, deducePhase.generatedClasses, cr);
 			wl.addJob(job);
 
 			final @NotNull FunctionInvocation fi = new FunctionInvocation(f, null, ci, deducePhase.generatePhase);
 //				fi.setPhase(phase);
-			final @NotNull WlGenerateFunction job1 = new WlGenerateFunction(generateFunctions, fi, deducePhase.codeRegistrar);
+			final @NotNull WlGenerateFunction job1 = new WlGenerateFunction(generateFunctions, fi, cr);
 			wl.addJob(job1);
 		}
 	}
@@ -92,14 +87,14 @@ public interface EntryPointProcessor {
 	class EPP_AFEP implements EntryPointProcessor {
 
 		private final ArbitraryFunctionEntryPoint afep;
-		private final DeducePhase deducePhase;
-		private final WorkList wl;
-		private final GenerateFunctions generateFunctions;
+		private final DeducePhase                 deducePhase;
+		private final WorkList                    wl;
+		private final GenerateFunctions           generateFunctions;
 
 		public EPP_AFEP(final ArbitraryFunctionEntryPoint aEp, final DeducePhase aDeducePhase, final WorkList aWl, final GenerateFunctions aGenerateFunctions) {
-			afep = aEp;
-			deducePhase = aDeducePhase;
-			wl = aWl;
+			afep              = aEp;
+			deducePhase       = aDeducePhase;
+			wl                = aWl;
 			generateFunctions = aGenerateFunctions;
 		}
 

@@ -68,11 +68,8 @@ public class S1_Constructor {
 	}
 
 	public void parseArgs() {
-		final ConstructorDef     aConstructorDef     = source;
-		final FunctionInvocation aFunctionInvocation = this.invocation;
-
-		final List<FormalArgListItem> fali_args = aConstructorDef.fal().falis;
-		final List<TypeTableEntry>    fi_args   = aFunctionInvocation.getArgs();
+		final List<FormalArgListItem> fali_args = source.fal().falis;
+		final List<TypeTableEntry>    fi_args   = invocation.getArgs();
 
 		for (int i = 0; i < fali_args.size(); i++) {
 			final FormalArgListItem fali = fali_args.get(i);
@@ -107,6 +104,11 @@ public class S1_Constructor {
 		return gf;
 	}
 
+	public void process(final S1toG_GC_Processor aProcessor, final boolean aB) {
+		process(aProcessor);
+		gf.fi = invocation;
+	}
+
 	public void process(final S1toG_GC_Processor p) {
 		final Context cctx = source.getContext();
 		final int     e1   = p.add_i(gf, InstructionName.E, null, cctx);
@@ -124,10 +126,5 @@ public class S1_Constructor {
 //			LOG.info(instruction);
 //		}
 //		GeneratedFunction.printTables(gf);
-	}
-
-	public void process(final S1toG_GC_Processor aProcessor, final boolean aB) {
-		process(aProcessor);
-		gf.fi = invocation;
 	}
 }

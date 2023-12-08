@@ -23,7 +23,6 @@ import static tripleo.elijah.util.Helpers.List_of;
 
 /**
  * @author Tripleo(envy)
- *
  */
 public class CompilationTest {
 
@@ -43,7 +42,7 @@ public class CompilationTest {
 	}
 
 }
-	
+
 //
 //
 //

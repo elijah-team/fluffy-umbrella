@@ -32,11 +32,9 @@ class DTR_VariableStatement {
 	public void run(final IElementHolder eh, final GenType genType) {
 		final TypeName typeName1 = variableStatement.typeName();
 
-		if (!(typeName1 instanceof NormalTypeName)) {
+		if (!(typeName1 instanceof final NormalTypeName normalTypeName)) {
 			throw new IllegalStateException();
 		}
-
-		final NormalTypeName normalTypeName = (NormalTypeName) typeName1;
 
 		if (normalTypeName.getGenericPart() != null) {
 			normalTypeName_notGeneric(eh, genType, normalTypeName);
@@ -49,8 +47,7 @@ class DTR_VariableStatement {
 
 	private void normalTypeName_notGeneric(final IElementHolder eh, final GenType genType, final @NotNull NormalTypeName normalTypeName) {
 		final TypeNameList genericPart = normalTypeName.getGenericPart();
-		if (eh instanceof GenericElementHolderWithType) {
-			final GenericElementHolderWithType eh1  = (GenericElementHolderWithType) eh;
+		if (eh instanceof final GenericElementHolderWithType eh1) {
 			final DeduceTypes2                 dt2  = eh1.getDeduceTypes2();
 			final OS_Type                      type = eh1.getType();
 
@@ -60,8 +57,7 @@ class DTR_VariableStatement {
 	}
 
 	private void normalTypeName_generic_butNotNull(final IElementHolder eh, final @NotNull GenType genType, final NormalTypeName normalTypeName) {
-		if (eh instanceof GenericElementHolderWithType) {
-			final GenericElementHolderWithType eh1  = (GenericElementHolderWithType) eh;
+		if (eh instanceof final GenericElementHolderWithType eh1) {
 			final DeduceTypes2                 dt2  = eh1.getDeduceTypes2();
 			final OS_Type                      type = eh1.getType();
 

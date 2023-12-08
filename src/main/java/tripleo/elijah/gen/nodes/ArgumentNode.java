@@ -7,7 +7,7 @@
  *
  */
 /**
- * 
+ *
  */
 package tripleo.elijah.gen.nodes;
 
@@ -19,48 +19,48 @@ import tripleo.elijah.lang.IdentExpression;
  *
  */
 public class ArgumentNode {
-	
-	private final TypeRef typeRef;
-	private IdentExpression ident;
-	private String genType;
-	private String varName;
+
+	private final TypeRef         typeRef;
+	private       IdentExpression ident;
+	private       String          genType;
+	private       String          varName;
 
 	public ArgumentNode(final String varName, final TypeRef typeRef) {
 		this.varName = varName;
 		this.typeRef = typeRef;
 	}
-	
+
 	public TypeRef getTypeRef() {
 		return typeRef;
 	}
-	
+
 	public IdentExpression getIdent() {
 		return ident;
 	}
-	
+
 	public void setIdent(final IdentExpression ident) {
 		this.ident = ident;
 	}
-	
+
 	public String getGenType() {
 		// return typeRef.genGenType(); // TODO ??
 		return typeRef.genType();
 	}
-	
+
 	public void setGenType(final String genType) {
 		this.genType = genType;
 	}
-	
+
+	public String getGenName() {
+		return String.format("va%s", getVarName());
+	}
+
 	public String getVarName() {
 		return varName;
 	}
-	
+
 	public void setVarName(final String _varName) {
 		this.varName = _varName;
-	}
-	
-	public String getGenName() {
-		return String.format("va%s", getVarName());
 	}
 }
 

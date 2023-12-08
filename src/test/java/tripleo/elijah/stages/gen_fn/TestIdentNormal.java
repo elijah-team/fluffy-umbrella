@@ -37,7 +37,7 @@ import static org.easymock.EasyMock.*;
  */
 public class TestIdentNormal {
 
-//	@Test(expected = IllegalStateException.class) // TODO proves nothing
+	//	@Test(expected = IllegalStateException.class) // TODO proves nothing
 	public void test() {
 		final Boilerplate b = new Boilerplate();
 		b.get();
@@ -56,15 +56,15 @@ public class TestIdentNormal {
 //		GenerateFunctions generateFunctions = new GenerateFunctions(generatePhase, mod, pl);
 		final GenerateFunctions generateFunctions = generatePhase.getGenerateFunctions(mod);
 		final GeneratedFunction generatedFunction = new GeneratedFunction(fd);
-		final VariableSequence seq = new VariableSequence(ctx1);
-		final VariableStatement vs = new VariableStatement(seq);
-		final IdentExpression x = IdentExpression.forString("x");
+		final VariableSequence  seq               = new VariableSequence(ctx1);
+		final VariableStatement vs                = new VariableStatement(seq);
+		final IdentExpression   x                 = IdentExpression.forString("x");
 		vs.setName(x);
-		final IdentExpression foo = IdentExpression.forString("foo");
+		final IdentExpression         foo = IdentExpression.forString("foo");
 		final ProcedureCallExpression pce = new ProcedureCallExpression();
 		pce.setLeft(new DotExpression(x, foo));
 
-		final InstructionArgument s = generateFunctions.simplify_expression(pce, generatedFunction, ctx2);
+		final InstructionArgument                s = generateFunctions.simplify_expression(pce, generatedFunction, ctx2);
 		@NotNull final List<InstructionArgument> l = BaseGeneratedFunction._getIdentIAPathList(s);
 		System.out.println(l);
 //      System.out.println(generatedFunction.getIdentIAPathNormal());
@@ -127,8 +127,8 @@ public class TestIdentNormal {
 		final ClassStatement  cs       = new ClassStatement(mod, mod.getContext());
 		final IdentExpression capitalX = IdentExpression.forString("X");
 		cs.setName(capitalX);
-		final FunctionDef fd = new FunctionDef(cs, cs.getContext());
-		final Context ctx1 = fd.getContext();
+		final FunctionDef fd   = new FunctionDef(cs, cs.getContext());
+		final Context     ctx1 = fd.getContext();
 		fd.setName(IdentExpression.forString("main"));
 		final FunctionDef fd2 = new FunctionDef(cs, cs.getContext());
 		fd2.setName(IdentExpression.forString("foo"));
@@ -141,16 +141,16 @@ public class TestIdentNormal {
 		//
 		//
 
-		final VariableSequence seq = new VariableSequence(ctx1);
-		final VariableStatement vs = seq.next();
-		final IdentExpression x = IdentExpression.forString("x");
+		final VariableSequence  seq = new VariableSequence(ctx1);
+		final VariableStatement vs  = seq.next();
+		final IdentExpression   x   = IdentExpression.forString("x");
 		vs.setName(x);
 		final ProcedureCallExpression pce2 = new ProcedureCallExpression();
 		pce2.setLeft(capitalX);
 		vs.initial(pce2);
 		final IBinaryExpression e = ExpressionBuilder.build(x, ExpressionKind.ASSIGNMENT, pce2);
 
-		final IdentExpression foo = IdentExpression.forString("foo");
+		final IdentExpression         foo = IdentExpression.forString("foo");
 		final ProcedureCallExpression pce = new ProcedureCallExpression();
 		pce.setLeft(new DotExpression(x, foo));
 
@@ -162,8 +162,8 @@ public class TestIdentNormal {
 
 		ClassInvocation ci = new ClassInvocation(cs, null);
 		ci = phase.registerClassInvocation(ci);
-		final ProcTableEntry pte2 = null;
-		final FunctionInvocation fi = new FunctionInvocation(fd, pte2, ci, generatePhase);
+		final ProcTableEntry     pte2 = null;
+		final FunctionInvocation fi   = new FunctionInvocation(fd, pte2, ci, generatePhase);
 //		expect(fd.returnType()).andReturn(null);
 		final FormalArgList formalArgList = new FormalArgList();
 //		expect(fd.fal()).andReturn(formalArgList);
@@ -198,9 +198,9 @@ public class TestIdentNormal {
 
 		ClassInvocation invocation2 = new ClassInvocation(cs, null);
 		invocation2 = phase.registerClassInvocation(invocation2);
-		final ProcTableEntry pte3 = null;
-		final FunctionInvocation fi2 = new FunctionInvocation(fd2, pte3, invocation2, generatePhase);
-		final GeneratedFunction generatedFunction2 = generateFunctions.generateFunction(fd2, fd2.getParent(), fi2);//new GeneratedFunction(fd2);
+		final ProcTableEntry     pte3               = null;
+		final FunctionInvocation fi2                = new FunctionInvocation(fd2, pte3, invocation2, generatePhase);
+		final GeneratedFunction  generatedFunction2 = generateFunctions.generateFunction(fd2, fd2.getParent(), fi2);//new GeneratedFunction(fd2);
 //		generatedFunction2.addVariableTableEntry("self", VariableTableType.SELF, null, null);
 //		final TypeTableEntry type = null;
 //		int res = generatedFunction2.addVariableTableEntry("Result", VariableTableType.RESULT, type, null);

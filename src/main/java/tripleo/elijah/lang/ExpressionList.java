@@ -1,10 +1,10 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 package tripleo.elijah.lang;
 
@@ -21,15 +21,20 @@ import java.util.List;
  */
 public class ExpressionList implements Iterable<IExpression> {
 
+	private final List<IExpression> exprs = new ArrayList<IExpression>();
+
 	public IExpression next(final IExpression aExpr) {
 //		assert aExpr != null;
 		if (aExpr == null) throw new IllegalArgumentException("expression cannot be null");
 		//
-		/*exprs.*/add(aExpr);
+		/*exprs.*/
+		add(aExpr);
 		return aExpr;
 	}
 
-	private final List<IExpression> exprs = new ArrayList<IExpression>();
+	public void add(final IExpression aExpr) {
+		exprs.add(aExpr);
+	}
 
 	@Override
 	public String toString() {
@@ -43,10 +48,6 @@ public class ExpressionList implements Iterable<IExpression> {
 	@Override
 	public @NotNull Iterator<IExpression> iterator() {
 		return exprs.iterator();
-	}
-
-	public void add(final IExpression aExpr) {
-		exprs.add(aExpr);
 	}
 
 	public int size() {

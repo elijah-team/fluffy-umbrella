@@ -16,4 +16,9 @@ public class EX_SingleElementExplanation implements EX_Explanation {
 	public @NotNull OS_Element getElement() {
 		return _element;
 	}
+
+	@Override
+	public String getText() {
+		return "EX_SingleElementExplanation{"+ _element +"}";
+	}
 }

@@ -1,42 +1,84 @@
 # Elijah programming language/system
+## `mainline-k`
 
-**Elijjah** is a high-level language suitable for replacement of C/C++ and Java.  (And of course any other
+**Elijah** is a high-level language suitable for replacement of C/C++ and Java.  (And of course any other
 language in existence or non-existence, except [FORTRAN](https://en.wikipedia.org/wiki/Karrueche_Tran)
 and [NULL](http://jdurrett.ba.ttu.edu/misc/Null-language.html).)
 
-Just so you know, dear reader, most of the problems this problems tries (or is designed to solve) are
-already solved; and the rest are being worked on by people wearing much better smelling cologne than I.
+<details>
+<summary>Just so you know, dear reader, most of the problems this project tries (or is intended to solve) are
+already solved; and the rest are being worked on by people wearing much better smelling cologne than I.</summary>
+
+&lt;tmi&gt;
+I don't recall any specific compliments about my cologne, but I don't do it for other people. *I* like it.
+&lt;/tmi&gt;
+
+</details>
 
 ### Mandatory FSF blurb
 
 This is free software intended for on all systems, including GNU/Linux.
 
+### Goals (for `mainline-k`)
+
+1. Provide a safe space to test `UT_Controller` and friends. (This is the 'k' I think.  Don't ask.)
+
 ### Goals (for fluffy-umbrella)
 
 1. To constantly drive the code toward an expression of the domain rather than an expression of the programming
    language-specific expression of that domain.
-2. [World domination](#world-domination)
 
-### World domination
+### Goals (for Elijah Language)
 
-1. Linus Torvalds
-2. The Brain
+1. Integrate into current C and Java projects. Piecemeal replacement down to the function level.
 
-### Goals (for Elijah)
+2. Don't interrupt current workflows too much. (It's like it's not even there, but things are better...)
 
-* Mainly not to have to learn Kotlin.
+3. Mainly "not" to have to learn Kotlin.
 
-* Integrate into current C and Java projects. Piecemeal replacement down to the function level.
+### Goals (for Elijah Programming System)
 
-* Notebook/Code manager along the lines of Jupyter and Unison.
+1. Sharable, live, interactive notebooks along the lines of Jupyter.
 
-* Some strange tribute as well to Glamarous Tooklit.
+<!--
+2. Code manager along the lines of Unison. (Not too sure about this one yet)
+-->
+
+2. Cool incremental/instant compilation.
+
+3. A pretty development environment a la [Glamorous Toolkit](https://gtoolkit.com/), especially the custom views.
 
 ## Status
 
-The repo is currently buildable from maven. You can also import into Eclipse and IDEA
-and get up and running. The tests need to run run from the root directory, which is
-done automatically in maven but not IDEA.
+<details>
+<summary>`mainline-k` uses gradle for now.</summary>
 
-Much work is needed.
+Maven fails sometimes.
 
+Gradle fails sometimes.
+
+Kotlin fails sometimes.
+
+Eclipse fails sometimes.
+
+Idea was great when it didn't try to be so pretty.  It does look nice though...
+
+Annotation processing fails all the time.
+
+Personal projects keep going.
+
+</details>
+
+Idea should "always" give you a good experience.  `dev` branches will contain work in progress, things that don't work
+because the gods are angry, etc.
+
+```
+git clone https://github.com/elijah-team/fluffy-umbrella -b mainline-k
+cd fluffy-umbrella
+./gradlew test
+# or:
+nix-shell -p gradle jdk17 --pure
+gradle test
+```
+
+Much work is needed, same as always.

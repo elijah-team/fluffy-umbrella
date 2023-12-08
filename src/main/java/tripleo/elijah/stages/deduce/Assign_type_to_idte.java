@@ -59,19 +59,19 @@ class Assign_type_to_idte {
 		public void foundElement(final OS_Element x) {
 			if (ite.getResolvedElement() != x)
 				ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(x));
-			if (ite.type != null && ite.type.getAttached() != null) {
-				switch (ite.type.getAttached().getType()) {
-					case USER:
-						__foundElement_USER_type();
-						break;
-					case USER_CLASS:
-						use_user_class(ite.type.getAttached(), ite);
-						break;
-					case FUNCTION:
-						__foundElement__FUNCTION_type();
-						break;
-					default:
-						throw new IllegalStateException("Unexpected value: " + ite.type.getAttached().getType());
+			if (ite.getType() != null && ite.getType().getAttached() != null) {
+				switch (ite.getType().getAttached().getType()) {
+				case USER:
+					__foundElement_USER_type();
+					break;
+				case USER_CLASS:
+					use_user_class(ite.getType().getAttached(), ite);
+					break;
+				case FUNCTION:
+					__foundElement__FUNCTION_type();
+					break;
+				default:
+					throw new IllegalStateException("Unexpected value: " + ite.getType().getAttached().getType());
 				}
 			} else {
 				NotImplementedException.raise();
@@ -79,39 +79,45 @@ class Assign_type_to_idte {
 			}
 		}
 
-        private void __foundElement_USER_type() {
-            try {
-                @NotNull final GenType xx = aDeduceTypes2.resolve_type(ite.type.getAttached(), aFunctionContext);
-                ite.type.setAttached(xx);
-            } catch (final ResolveError resolveError) {
-                aDeduceTypes2.LOG.info("192 Can't attach type to " + path);
-                aDeduceTypes2.errSink.reportDiagnostic(resolveError);
-            }
-            if (ite.type.getAttached().getType() == OS_Type.Type.USER_CLASS) {
-                use_user_class(ite.type.getAttached(), ite);
-            }
-        }
+		private void __foundElement_USER_type() {
+			try {
+				@NotNull final GenType xx = aDeduceTypes2.resolve_type(ite.getType().getAttached(), aFunctionContext);
+				ite.getType().setAttached(xx);
+			} catch (final ResolveError resolveError) {
+				aDeduceTypes2.LOG.info("192 Can't attach type to " + path);
+				aDeduceTypes2.errSink.reportDiagnostic(resolveError);
+			}
+			if (ite.getType().getAttached().getType() == OS_Type.Type.USER_CLASS) {
+				use_user_class(ite.getType().getAttached(), ite);
+			}
+		}
 
-        private void __foundElement__FUNCTION_type() {
-            // TODO All this for nothing
-            //  the ite points to a function, not a function call,
-            //  so there is no point in resolving it
-            if (ite.type.tableEntry instanceof ProcTableEntry) {
-                final @NotNull ProcTableEntry pte = (ProcTableEntry) ite.type.tableEntry;
+		private void use_user_class(@NotNull final OS_Type aType, @NotNull final IdentTableEntry aEntry) {
+			final ClassStatement cs = aType.getClassOf();
+			if (aEntry.getConstructable_pte() != null) {
+				final int yyy = 3;
+				tripleo.elijah.util.Stupidity.println2("use_user_class: " + cs);
+			}
+		}
 
-            } else if (ite.type.tableEntry instanceof IdentTableEntry) {
-                final @NotNull IdentTableEntry identTableEntry = (IdentTableEntry) ite.type.tableEntry;
-                if (identTableEntry.getCallablePTE() != null) {
-                    @Nullable final ProcTableEntry cpte = identTableEntry.getCallablePTE();
-                    cpte.typePromise().then(new DoneCallback<GenType>() {
-                        @Override
-                        public void onDone(@NotNull final GenType result) {
-                            tripleo.elijah.util.Stupidity.println2("1483 " + result.resolved + " " + result.node);
-                        }
-                    });
-                }
-            }
-        }
+		private void __foundElement__FUNCTION_type() {
+			// TODO All this for nothing
+			//  the ite points to a function, not a function call,
+			//  so there is no point in resolving it
+			if (ite.getType().tableEntry instanceof final @NotNull ProcTableEntry pte) {
+
+			} else if (ite.getType().tableEntry instanceof final @NotNull IdentTableEntry identTableEntry) {
+				if (identTableEntry.getCallablePTE() != null) {
+					@Nullable final ProcTableEntry cpte = identTableEntry.getCallablePTE();
+					cpte.typePromise().then(new DoneCallback<GenType>() {
+						@Override
+						public void onDone(@NotNull final GenType result) {
+							tripleo.elijah.util.Stupidity.println2("1483 " + result.resolved + " " + result.node);
+						}
+					});
+				}
+			}
+		}
 
 		private void __ite_has_type(final OS_Element x) {
 			if (ite.hasResolvedElement())
@@ -128,14 +134,14 @@ class Assign_type_to_idte {
 					ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(x));
 
 					// TODO this is checked above, so is below redundant??
-					assert ite.type != null;
-					assert ite.type.getAttached() != null;
+					assert ite.getType() != null;
+					assert ite.getType().getAttached() != null;
 
-					if (ite.type != null && ite.type.getAttached() != null) {
-						if (Objects.requireNonNull(ite.type.getAttached().getType()) == OS_Type.Type.USER) {
+					if (ite.getType() != null && ite.getType().getAttached() != null) {
+						if (Objects.requireNonNull(ite.getType().getAttached().getType()) == OS_Type.Type.USER) {
 							try {
-								@NotNull final GenType xx = aDeduceTypes2.resolve_type(ite.type.getAttached(), aFunctionContext);
-								ite.type.setAttached(xx);
+								@NotNull final GenType xx = aDeduceTypes2.resolve_type(ite.getType().getAttached(), aFunctionContext);
+								ite.getType().setAttached(xx);
 							} catch (final ResolveError resolveError) { // TODO double catch
 								aDeduceTypes2.LOG.info("210 Can't attach type to " + iteIdent);
 								aDeduceTypes2.errSink.reportDiagnostic(resolveError);
@@ -143,34 +149,26 @@ class Assign_type_to_idte {
 						}
 					}
 				} else {
-                    aDeduceTypes2.LOG.err("184 Couldn't resolve " + iteIdent);
-                }
-            } catch (final ResolveError aResolveError) {
-                aDeduceTypes2.LOG.err("184-506 Couldn't resolve " + iteIdent);
+					aDeduceTypes2.LOG.err("184 Couldn't resolve " + iteIdent);
+				}
+			} catch (final ResolveError aResolveError) {
+				aDeduceTypes2.LOG.err("184-506 Couldn't resolve " + iteIdent);
 //						aResolveError.printStackTrace();
-                aDeduceTypes2.errSink.reportDiagnostic(aResolveError);
-            }
+				aDeduceTypes2.errSink.reportDiagnostic(aResolveError);
+			}
 
-            assert ite.type != null;
-            assert ite.type.getAttached() != null;
+			assert ite.getType() != null;
+			assert ite.getType().getAttached() != null;
 
-            if (ite.type.getAttached().getType() == OS_Type.Type.USER_CLASS) {
-                use_user_class(ite.type.getAttached(), ite);
-            }
-        }
+			if (ite.getType().getAttached().getType() == OS_Type.Type.USER_CLASS) {
+				use_user_class(ite.getType().getAttached(), ite);
+			}
+		}
 
-        private void use_user_class(@NotNull final OS_Type aType, @NotNull final IdentTableEntry aEntry) {
-            final ClassStatement cs = aType.getClassOf();
-            if (aEntry.constructable_pte != null) {
-                final int yyy = 3;
-	            tripleo.elijah.util.Stupidity.println2("use_user_class: " + cs);
-            }
-        }
-
-        @Override
-        public void noFoundElement() {
-            ite.setStatus(BaseTableEntry.Status.UNKNOWN, null);
-            aDeduceTypes2.errSink.reportError("165 Can't resolve " + path);
-        }
-    }
+		@Override
+		public void noFoundElement() {
+			ite.setStatus(BaseTableEntry.Status.UNKNOWN, null);
+			aDeduceTypes2.errSink.reportError("165 Can't resolve " + path);
+		}
+	}
 }

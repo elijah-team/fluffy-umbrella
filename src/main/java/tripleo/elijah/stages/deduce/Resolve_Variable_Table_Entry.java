@@ -62,7 +62,7 @@ class Resolve_Variable_Table_Entry {
 	}
 
 	public void action(final @NotNull VariableTableEntry vte, final @NotNull DeduceTypes2.IVariableConnector aConnector) {
-		switch (vte.vtt) {
+		switch (vte.vtt()) {
 		case ARG:
 			action_ARG(vte);
 			break;
@@ -90,10 +90,13 @@ class Resolve_Variable_Table_Entry {
 
 	public void action_VAR_potsize_1_other(@NotNull final VariableTableEntry vte, @NotNull final TypeTableEntry aPot) {
 		try {
-			if (aPot.tableEntry instanceof ProcTableEntry) {
-				final @NotNull ProcTableEntry pte1 = (ProcTableEntry) aPot.tableEntry;
+			if (aPot.tableEntry instanceof final @NotNull ProcTableEntry pte1) {
 				@Nullable final OS_Element    e    = DeduceLookupUtils.lookup(pte1.expression, ctx, deduceTypes2);
-				assert e != null;
+				if (e == null) {
+					System.err.println("** 97: " + pte1.expression);
+					return;
+					//throw new AssertionError();
+				}
 				if (e instanceof FunctionDef) {
 //						final FunctionDef fd = (FunctionDef) e;
 					@NotNull final IdentTableEntry ite1 = ((IdentIA) pte1.expression_num).getEntry();
@@ -129,8 +132,7 @@ class Resolve_Variable_Table_Entry {
 				final int y = 2;
 			} else if (aPot.tableEntry == null) {
 				final OS_Element el = vte.getResolvedElement();
-				if (el instanceof VariableStatement) {
-					final VariableStatement variableStatement = (VariableStatement) el;
+				if (el instanceof final VariableStatement variableStatement) {
 					action_VAR_pot_1_tableEntry_null(variableStatement);
 				}
 			} else
@@ -143,18 +145,16 @@ class Resolve_Variable_Table_Entry {
 	public void action_VAR_pot_1_tableEntry_null(final VariableStatement aVariableStatement) {
 		final @NotNull IExpression iv = aVariableStatement.initialValue();
 		if (iv != IExpression.UNASSIGNED) {
-			if (iv instanceof ProcedureCallExpression) {
-				final ProcedureCallExpression procedureCallExpression = (ProcedureCallExpression) iv;
-				final IExpression name_exp = procedureCallExpression.getLeft();
+			if (iv instanceof final ProcedureCallExpression procedureCallExpression) {
+				final IExpression             name_exp                = procedureCallExpression.getLeft();
 				assert name_exp instanceof IdentExpression;
 
-				final IdentExpression name2 = (IdentExpression) name_exp;
-				final LookupResultList lrl2 = ((IdentExpression) name_exp).getContext().lookup(name2.getText());
-				final @Nullable OS_Element el2 = lrl2.chooseBest(null);
+				final IdentExpression      name2 = (IdentExpression) name_exp;
+				final LookupResultList     lrl2  = ((IdentExpression) name_exp).getContext().lookup(name2.getText());
+				final @Nullable OS_Element el2   = lrl2.chooseBest(null);
 
 				if (el2 != null) {
-					if (el2 instanceof ClassStatement) {
-						final ClassStatement classStatement = (ClassStatement) el2;
+					if (el2 instanceof final ClassStatement classStatement) {
 						final GenType        genType        = new GenType(classStatement);
 						//deferredMember.typeResolved().resolve(genType);
 						genCIForGenType2(genType);
@@ -167,47 +167,44 @@ class Resolve_Variable_Table_Entry {
 	}
 
 	public void setup_GenType(final OS_Element element, @NotNull final GenType aGt) {
-		if (element instanceof NamespaceStatement) {
-			final @NotNull NamespaceStatement namespaceStatement = (NamespaceStatement) element;
+		if (element instanceof final @NotNull NamespaceStatement namespaceStatement) {
 			aGt.resolvedn = (NamespaceStatement) element;
 			final NamespaceInvocation nsi = phase.registerNamespaceInvocation(namespaceStatement);
 //			pte.setNamespaceInvocation(nsi);
 			aGt.ci = nsi;
 //			fi = newFunctionInvocation(fd, pte, nsi, phase);
-		} else if (element instanceof ClassStatement) {
-			final @NotNull ClassStatement classStatement = (ClassStatement) element;
+		} else if (element instanceof final @NotNull ClassStatement classStatement) {
 			aGt.resolved = ((ClassStatement) element).getOS_Type();
 			// TODO genCI ??
 			@Nullable ClassInvocation ci = new ClassInvocation(classStatement, null);
-			ci = phase.registerClassInvocation(ci);
+			ci     = phase.registerClassInvocation(ci);
 			aGt.ci = ci;
 //			pte.setClassInvocation(ci);
 //			fi = newFunctionInvocation(fd, pte, ci, phase);
-		} else if (element instanceof FunctionDef) {
+		} else if (element instanceof final @NotNull FunctionDef functionDef) {
 			// TODO this seems to be an elaborate copy of the above with no differentiation for functionDef
-			final @NotNull FunctionDef  functionDef = (FunctionDef) element;
 			final OS_Element            parent      = functionDef.getParent();
 			@Nullable final IInvocation inv;
 			switch (DecideElObjectType.getElObjectType(parent)) {
-				case CLASS:
-					aGt.resolved = ((ClassStatement) parent).getOS_Type();
-					inv = phase.registerClassInvocation((ClassStatement) parent, null);
-					((ClassInvocation) inv).resolveDeferred().then(new DoneCallback<GeneratedClass>() {
-						@Override
-						public void onDone(final GeneratedClass result) {
-							result.functionMapDeferred(functionDef, new FunctionMapDeferred() {
-								@Override
-								public void onNotify(final GeneratedFunction aGeneratedFunction) {
-									aGt.node = aGeneratedFunction;
-								}
-							});
-						}
+			case CLASS:
+				aGt.resolved = ((ClassStatement) parent).getOS_Type();
+				inv = phase.registerClassInvocation((ClassStatement) parent, null);
+				((ClassInvocation) inv).resolveDeferred().then(new DoneCallback<GeneratedClass>() {
+					@Override
+					public void onDone(final GeneratedClass result) {
+						result.functionMapDeferred(functionDef, new FunctionMapDeferred() {
+							@Override
+							public void onNotify(final GeneratedFunction aGeneratedFunction) {
+								aGt.node = aGeneratedFunction;
+							}
+						});
+					}
 				});
 				break;
 			case NAMESPACE:
 				aGt.resolvedn = (NamespaceStatement) parent;
 				inv = phase.registerNamespaceInvocation((NamespaceStatement) parent);
-				((NamespaceInvocation)inv).resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
+				((NamespaceInvocation) inv).resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
 					@Override
 					public void onDone(final GeneratedNamespace result) {
 						result.functionMapDeferred(functionDef, new FunctionMapDeferred() {
@@ -295,7 +292,7 @@ class Resolve_Variable_Table_Entry {
 	}
 
 	private @Nullable ProcTableEntry findProcTableEntry(@NotNull final BaseGeneratedFunction aGeneratedFunction, final IExpression aExpression) {
-		for (@NotNull final ProcTableEntry procTableEntry : aGeneratedFunction.prte_list) {
+		for (@NotNull final ProcTableEntry procTableEntry : aGeneratedFunction.prte_list()) {
 			if (procTableEntry.expression == aExpression)
 				return procTableEntry;
 		}
@@ -331,30 +328,35 @@ class Resolve_Variable_Table_Entry {
 		final OS_Type        attached = tte.getAttached();
 		if (attached != null) {
 			switch (attached.getType()) {
-				case USER:
-					if (tte.genType.typeName == null)
-						tte.genType.typeName = attached;
-					try {
-						tte.genType.copy(deduceTypes2.resolve_type(attached, ctx));
-						tte.setAttached(tte.genType.resolved); // TODO probably not necessary, but let's leave it for now
-					} catch (final ResolveError aResolveError) {
-						errSink.reportDiagnostic(aResolveError);
-						LOG.err("Can't resolve argument type " + attached);
-						return;
-					}
-					if (generatedFunction.fi.getClassInvocation() != null)
-						genNodeForGenType(tte.genType, generatedFunction.fi.getClassInvocation());
-					else
-						genCIForGenType(tte.genType);
-					vte.resolveType(tte.genType);
-					break;
-				case USER_CLASS:
-					if (tte.genType.resolved == null)
-						tte.genType.resolved = attached;
-					// TODO genCI and all that -- Incremental?? (.increment())
-					vte.resolveType(tte.genType);
-					genCIForGenType2(tte.genType);
-					break;
+			case USER:
+				if (tte.genType.typeName == null)
+					tte.genType.typeName = attached;
+				try {
+					tte.genType.copy(deduceTypes2.resolve_type(attached, ctx));
+					tte.setAttached(tte.genType.resolved); // TODO probably not necessary, but let's leave it for now
+				} catch (final ResolveError aResolveError) {
+					errSink.reportDiagnostic(aResolveError);
+					LOG.err("Can't resolve argument type " + attached);
+					return;
+				}
+			{
+				final ClassInvocation classInvocation = generatedFunction.fi().getClassInvocation();
+
+				if (classInvocation != null) {
+					genNodeForGenType(tte.genType, classInvocation);
+				} else {
+					genCIForGenType(tte.genType);
+				}
+			}
+			vte.resolveType(tte.genType);
+				break;
+			case USER_CLASS:
+				if (tte.genType.resolved == null)
+					tte.genType.resolved = attached;
+				// TODO genCI and all that -- Incremental?? (.increment())
+				vte.resolveType(tte.genType);
+				genCIForGenType2(tte.genType);
+				break;
 			}
 		} else {
 			final int y = 2;
@@ -371,16 +373,14 @@ class Resolve_Variable_Table_Entry {
 
 		aGenType.genCI(aGenType.nonGenericTypeName, deduceTypes2, deduceTypes2.errSink, deduceTypes2.phase);
 		final IInvocation invocation = aGenType.ci;
-		if (invocation instanceof NamespaceInvocation) {
-			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
+		if (invocation instanceof final NamespaceInvocation namespaceInvocation) {
 			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
 				@Override
 				public void onDone(final GeneratedNamespace result) {
 					aGenType.node = result;
 				}
 			});
-		} else if (invocation instanceof ClassInvocation) {
-			final ClassInvocation classInvocation = (ClassInvocation) invocation;
+		} else if (invocation instanceof final ClassInvocation classInvocation) {
 			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
 				@Override
 				public void onDone(final GeneratedClass result) {
@@ -402,16 +402,14 @@ class Resolve_Variable_Table_Entry {
 //		final IInvocation invocation = aGenType.ci;
 		assert aGenType.ci == null || aGenType.ci == invocation;
 		aGenType.ci = invocation;
-		if (invocation instanceof NamespaceInvocation) {
-			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
+		if (invocation instanceof final NamespaceInvocation namespaceInvocation) {
 			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
 				@Override
 				public void onDone(final GeneratedNamespace result) {
 					aGenType.node = result;
 				}
 			});
-		} else if (invocation instanceof ClassInvocation) {
-			final ClassInvocation classInvocation = (ClassInvocation) invocation;
+		} else if (invocation instanceof final ClassInvocation classInvocation) {
 			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
 				@Override
 				public void onDone(final GeneratedClass result) {
@@ -430,16 +428,14 @@ class Resolve_Variable_Table_Entry {
 	public void genCIForGenType2(final GenType aGenType) {
 		aGenType.genCI(aGenType.nonGenericTypeName, deduceTypes2, deduceTypes2.errSink, deduceTypes2.phase);
 		final IInvocation invocation = aGenType.ci;
-		if (invocation instanceof NamespaceInvocation) {
-			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) invocation;
+		if (invocation instanceof final NamespaceInvocation namespaceInvocation) {
 			namespaceInvocation.resolveDeferred().then(new DoneCallback<GeneratedNamespace>() {
 				@Override
 				public void onDone(final GeneratedNamespace result) {
 					aGenType.node = result;
 				}
 			});
-		} else if (invocation instanceof ClassInvocation) {
-			final ClassInvocation classInvocation = (ClassInvocation) invocation;
+		} else if (invocation instanceof final ClassInvocation classInvocation) {
 			classInvocation.resolvePromise().then(new DoneCallback<GeneratedClass>() {
 				@Override
 				public void onDone(final GeneratedClass result) {

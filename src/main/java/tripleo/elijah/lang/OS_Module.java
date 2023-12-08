@@ -37,7 +37,7 @@ public class OS_Module implements OS_Element, OS_Container {
 
 	public final @NotNull                      List<ModuleItem>     items          = new ArrayList<ModuleItem>();
 	public final @NotNull                      Attached             _a             = new Attached();
-	public final @NotNull                      EntryPointList       entryPoints    = new EntryPointList();
+	public final @NotNull                      EntryPointList       entryPoints    = new EntryPointList(this);
 	private final                              Stack<Qualident>     packageNames_q = new Stack<Qualident>();
 	public @org.jetbrains.annotations.Nullable OS_Module            prelude;
 	public                                     Compilation          parent;
@@ -67,10 +67,6 @@ public class OS_Module implements OS_Element, OS_Container {
 		this._fileName = fileName;
 	}
 
-	public @NotNull Collection<ModuleItem> getItems() {
-		return items;
-	}
-
 	public boolean hasClass(final String className) {
 		for (final ModuleItem item : items) {
 			if (item instanceof ClassStatement) {
@@ -97,11 +93,15 @@ public class OS_Module implements OS_Element, OS_Container {
 		return a;
 	}
 
+	public @NotNull Collection<ModuleItem> getItems() {
+		return items;
+	}
+
 	@Override
 	public void add(final OS_Element anElement) {
 		if (!(anElement instanceof ModuleItem)) {
 			parent.getErrSink().info(String.format(
-					"[Module#add] not adding %s to OS_Module", anElement.getClass().getName()));
+			  "[Module#add] not adding %s to OS_Module", anElement.getClass().getName()));
 			return; // TODO FalseAddDiagnostic
 		}
 		items.add((ModuleItem) anElement);
@@ -137,6 +137,12 @@ public class OS_Module implements OS_Element, OS_Container {
 	 *
 	 * @return null
 	 */
+
+	@Override
+	public Context getContext() {
+		return _a._context;
+	}
+
 	/**
 	 * @ ensures \result == null
 	 */
@@ -149,9 +155,8 @@ public class OS_Module implements OS_Element, OS_Container {
 		this.parent = parent;
 	}
 
-	@Override
-	public Context getContext() {
-		return _a._context;
+	public void setContext(final ModuleContext mctx) {
+		_a.setContext(mctx);
 	}
 
 	/**
@@ -159,7 +164,8 @@ public class OS_Module implements OS_Element, OS_Container {
 	 *
 	 * @return a new OS_Package instance or default_package
 	 */
-	@NotNull public OS_Package pullPackageName() {
+	@NotNull
+	public OS_Package pullPackageName() {
 		if (packageNames_q.empty())
 			return OS_Package.default_package;
 		return parent.makePackage(packageNames_q.peek());
@@ -195,8 +201,8 @@ public class OS_Module implements OS_Element, OS_Container {
 		fm.find_all_entry_points();
 	}
 
-	public void setContext(final ModuleContext mctx) {
-		_a.setContext(mctx);
+	public Compilation getCompilation() {
+		return parent;
 	}
 
 	@Override
@@ -222,10 +228,6 @@ public class OS_Module implements OS_Element, OS_Container {
 
 	public void setLsp(final @NotNull LibraryStatementPart aLsp) {
 		lsp = aLsp;
-	}
-
-	public Compilation getCompilation() {
-		return parent;
 	}
 }
 

@@ -1,10 +1,10 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 package tripleo.elijah.lang;
 
@@ -12,12 +12,31 @@ import java.util.Objects;
 
 public abstract class AbstractTypeName implements NormalTypeName {
 
+	protected TypeModifiers tm;
+	protected boolean   pr_constant;
+	protected boolean   pr_reference;
+	protected boolean   pr_out;
+	protected boolean   pr_in;
+	protected Qualident pr_name;
 	private boolean isNullable = false;
 
 	@Override
 	public boolean isNull() {
 		return !pr_constant && !pr_reference && !pr_out && !pr_in
-				&& (pr_name == null);
+		  && (pr_name == null);
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) return true;
+		if (!(o instanceof final NormalTypeName that)) return false;
+		return getConstant() == that.getConstant() &&
+		  getReference() == that.getReference() &&
+		  getOut() == that.getOut() &&
+		  getIn() == that.getIn() &&
+//				type == that.type &&
+		  getModifiers().containsAll(that.getModifiers()) &&
+		  getName().equals(that.getName());
 	}
 
 	@Override
@@ -69,32 +88,10 @@ public abstract class AbstractTypeName implements NormalTypeName {
 	public void setName(final Qualident s) {
 		pr_name = s;
 	}
-	
+
 	@Override
 	public void setNullable() {
 		this.isNullable = true;
-	}
-
-	protected TypeModifiers tm;
-	
-	protected boolean pr_constant;
-	protected boolean pr_reference;
-	protected boolean pr_out;
-	protected boolean pr_in;
-	protected Qualident pr_name;
-
-	@Override
-	public boolean equals(final Object o) {
-		if (this == o) return true;
-		if (!(o instanceof NormalTypeName)) return false;
-		final NormalTypeName that = (NormalTypeName) o;
-		return getConstant() == that.getConstant() &&
-				getReference() == that.getReference() &&
-				getOut() == that.getOut() &&
-				getIn() == that.getIn() &&
-//				type == that.type &&
-				getModifiers().containsAll(that.getModifiers()) &&
-				getName().equals(that.getName());
 	}
 
 	@Override

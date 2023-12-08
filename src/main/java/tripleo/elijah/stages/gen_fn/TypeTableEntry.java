@@ -34,10 +34,6 @@ public class TypeTableEntry {
 	@Nullable
 	private       OS_Type             attached;
 
-	public interface OnSetAttached {
-		void onSetAttached(TypeTableEntry aTypeTableEntry);
-	}
-
 	public TypeTableEntry(final int index,
 	                      @NotNull final Type lifetime,
 	                      @Nullable final OS_Type aAttached,
@@ -58,49 +54,50 @@ public class TypeTableEntry {
 
 	private void _settingAttached(@NotNull final OS_Type aAttached) {
 		switch (aAttached.getType()) {
-			case USER:
-				if (genType.typeName != null) {
-					final TypeName typeName = aAttached.getTypeName();
-					if (!(typeName instanceof GenericTypeName))
-						genType.nonGenericTypeName = typeName;
-				} else
-					genType.typeName = aAttached/*.getTypeName()*/;
-				break;
-			case USER_CLASS:
+		case USER:
+			if (genType.typeName != null) {
+				final TypeName typeName = aAttached.getTypeName();
+				if (!(typeName instanceof GenericTypeName))
+					genType.nonGenericTypeName = typeName;
+			} else
+				genType.typeName = aAttached/*.getTypeName()*/;
+			break;
+		case USER_CLASS:
 //			ClassStatement c = attached.getClassOf();
-				genType.resolved = aAttached/*attached*/; // c
-				break;
-			case UNIT_TYPE:
+			genType.resolved = aAttached/*attached*/; // c
+			break;
+		case UNIT_TYPE:
+			genType.resolved = aAttached;
+		case BUILT_IN:
+			if (genType.typeName != null)
 				genType.resolved = aAttached;
-			case BUILT_IN:
-				if (genType.typeName != null)
-					genType.resolved = aAttached;
-				else
-					genType.typeName = aAttached;
-				break;
-			case FUNCTION:
-				assert genType.resolved == null || genType.resolved == aAttached || /*HACK*/ aAttached.getType() == OS_Type.Type.FUNCTION;
-				genType.resolved = aAttached;
-				break;
-			case FUNC_EXPR:
-				assert genType.resolved == null || genType.resolved == aAttached;// || /*HACK*/ aAttached.getType() == OS_Type.Type.FUNCTION;
-				genType.resolved = aAttached;
-				break;
-			default:
+			else
+				genType.typeName = aAttached;
+			break;
+		case FUNCTION:
+			assert genType.resolved == null || genType.resolved == aAttached || /*HACK*/ aAttached.getType() == OS_Type.Type.FUNCTION;
+			genType.resolved = aAttached;
+			break;
+		case FUNC_EXPR:
+			assert genType.resolved == null || genType.resolved == aAttached;// || /*HACK*/ aAttached.getType() == OS_Type.Type.FUNCTION;
+			genType.resolved = aAttached;
+			break;
+		default:
 //			throw new NotImplementedException();
-				tripleo.elijah.util.Stupidity.println_err2("73 " + aAttached);
-				break;
+			tripleo.elijah.util.Stupidity.println_err2("73 " + aAttached);
+			break;
 		}
 	}
 
-	@Override @NotNull
+	@Override
+	@NotNull
 	public String toString() {
 		return "TypeTableEntry{" +
-				"index=" + index +
-				", lifetime=" + lifetime +
-				", attached=" + attached +
-				", expression=" + expression +
-				'}';
+		  "index=" + index +
+		  ", lifetime=" + lifetime +
+		  ", attached=" + attached +
+		  ", expression=" + expression +
+		  '}';
 	}
 
 	public int getIndex() {
@@ -153,6 +150,10 @@ public class TypeTableEntry {
 
 	public enum Type {
 		SPECIFIED, TRANSIENT
+	}
+
+	public interface OnSetAttached {
+		void onSetAttached(TypeTableEntry aTypeTableEntry);
 	}
 
 }

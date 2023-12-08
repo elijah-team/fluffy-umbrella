@@ -8,7 +8,14 @@
  */
 package tripleo.elijah.lang.builder;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.AnnotationClause;
+import tripleo.elijah.lang.ClassInheritance;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.ClassTypes;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.TypeNameList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +25,13 @@ import java.util.List;
  */
 public class ClassBuilder {
 	private final List<AnnotationClause> annotations = new ArrayList<AnnotationClause>();
-    private ClassTypes _type;
-	private OS_Element _parent;
-	private Context _parent_context;
-	private IdentExpression _name;
-	private final ClassScope _scope = new ClassScope();
-	private final ClassInheritance _inh = new ClassInheritance();
-	private TypeNameList genericPart;
+	private final ClassScope             _scope      = new ClassScope();
+	private final ClassInheritance       _inh        = new ClassInheritance();
+	private       ClassTypes             _type;
+	private       OS_Element             _parent;
+	private       Context                _parent_context;
+	private       IdentExpression        _name;
+	private       TypeNameList           genericPart;
 
 	public void setType(final ClassTypes classTypes) {
 		_type = classTypes;
@@ -58,11 +65,6 @@ public class ClassBuilder {
 		return cs;
 	}
 
-	public void annotation_clause(final AnnotationClause a) {
-		if (a == null) return;
-		annotations.add(a);
-	}
-
 	public void setName(final IdentExpression identExpression) {
 		_name = identExpression;
 	}
@@ -87,6 +89,11 @@ public class ClassBuilder {
 		for (final AnnotationClause annotationClause : as) {
 			annotation_clause(annotationClause);
 		}
+	}
+
+	public void annotation_clause(final AnnotationClause a) {
+		if (a == null) return;
+		annotations.add(a);
 	}
 
 	public void setGenericPart(final TypeNameList tnl) {

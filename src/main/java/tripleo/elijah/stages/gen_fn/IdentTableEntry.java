@@ -25,6 +25,9 @@ import tripleo.elijah.stages.deduce.DeducePath;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.OnType;
+import tripleo.elijah.stages.deduce.nextgen.DN_Resolver;
+import tripleo.elijah.stages.deduce.nextgen.DN_ResolverRejection;
+import tripleo.elijah.stages.deduce.nextgen.DN_ResolverResolution;
 import tripleo.elijah.stages.deduce.post_bytecode.DeduceElement3_IdentTableEntry;
 import tripleo.elijah.stages.deduce.post_bytecode.IDeduceElement3;
 import tripleo.elijah.stages.deduce.zero.ITE_Zero;
@@ -33,6 +36,7 @@ import tripleo.elijah.stages.instructions.InstructionArgument;
 import tripleo.elijah.stages.instructions.IntegerIA;
 import tripleo.elijah.util.Holder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -42,19 +46,20 @@ import java.util.Map;
  * Created 9/12/20 10:27 PM
  */
 public class IdentTableEntry extends BaseTableEntry1 implements Constructable, TableEntryIV, DeduceTypes2.ExpectationBase {
-	public final @NotNull Map<Integer, TypeTableEntry>                    potentialTypes        = new HashMap<Integer, TypeTableEntry>();
-	protected final       DeferredObject<InstructionArgument, Void, Void> backlinkSet           = new DeferredObject<InstructionArgument, Void, Void>();
+	private final @NotNull Map<Integer, TypeTableEntry>                    potentialTypes = new HashMap<>();
+	protected final        DeferredObject<InstructionArgument, Void, Void> backlinkSet    = new DeferredObject<>();
 	final                 DeferredObject<ProcTableEntry, Void, Void>      constructableDeferred = new DeferredObject<>();
 	private final         int                                             index;
 	private final         IdentExpression                                 ident;
 	private final         Context                                         pc;
 	private final         DeduceElementIdent                              dei                   = new DeduceElementIdent(this);
-	public                boolean                                         preUpdateStatusListenerAdded;
-	public                TypeTableEntry                                  type;
-	public                GeneratedNode                                   externalRef;
-	public                boolean                                         fefi                  = false;
-	public                ProcTableEntry                                  constructable_pte;
-	public                DeduceTypes2.PromiseExpectation<String>         resolveExpectation;
+	private final          DeferredObject<GenType, Void, Void>             fefiDone       = new DeferredObject<>();
+	private                boolean                                         preUpdateStatusListenerAdded;
+	private                TypeTableEntry                                  type;
+	private                GeneratedNode                                   externalRef;
+	private                boolean                                         fefi           = false;
+	private                ProcTableEntry                                  constructable_pte;
+	private                DeduceTypes2.PromiseExpectation<String>         resolveExpectation;
 	InstructionArgument backlink;
 	boolean             insideGetResolvedElement = false;
 	private GeneratedNode                  resolvedType;
@@ -75,8 +80,6 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		});
 		setupResolve();
 	}
-
-	private final DeferredObject<GenType, Void, Void> fefiDone = new DeferredObject<GenType, Void, Void>();
 
 	@Override
 	public OS_Element getResolvedElement() {
@@ -109,17 +112,6 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		  '}';
 	}
 
-	public IdentExpression getIdent() {
-		return ident;
-	}
-
-	@Override
-	public void resolveTypeToClass(final GeneratedNode gn) {
-		resolvedType = gn;
-		if (type != null) // TODO maybe find a more robust solution to this, like another Promise? or just setType? or onPossiblesResolve?
-			type.resolve(gn); // TODO maybe this obviates the above?
-	}
-
 	public boolean isResolved() {
 		return resolvedType != null;
 	}
@@ -144,8 +136,6 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		phase.onType(this, callback);
 	}
 
-	// region constructable
-
 	//	@SuppressFBWarnings("NP_NONNULL_RETURN_VIOLATION")
 	public @NotNull Collection<TypeTableEntry> potentialTypes() {
 		return potentialTypes.values();
@@ -157,16 +147,19 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		if (constructableDeferred.isPending())
 			constructableDeferred.resolve(constructable_pte);
 		else {
-			final Holder<ProcTableEntry> holder = new Holder<ProcTableEntry>();
-			constructableDeferred.then(new DoneCallback<ProcTableEntry>() {
-				@Override
-				public void onDone(final ProcTableEntry result) {
-					holder.set(result);
-				}
-			});
+			final Holder<ProcTableEntry> holder = new Holder<>();
+			constructableDeferred.then(holder::set);
 			System.err.printf("Setting constructable_pte twice 1) %s and 2) %s%n", holder.get(), aPte);
 		}
+	}
 
+	// region constructable
+
+	@Override
+	public void resolveTypeToClass(final GeneratedNode gn) {
+		resolvedType = gn;
+		if (type != null) // TODO maybe find a more robust solution to this, like another Promise? or just setType? or onPossiblesResolve?
+			type.resolve(gn); // TODO maybe this obviates the above?
 	}
 
 	@Override
@@ -179,6 +172,11 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		}
 	}
 
+	@Override
+	public Promise<ProcTableEntry, Void, Void> constructablePromise() {
+		return constructableDeferred.promise();
+	}
+
 	public void setGenType(final GenType genType, final BaseGeneratedFunction gf) {
 		if (type == null) {
 			makeType(gf, TypeTableEntry.Type.SPECIFIED, genType.resolved);
@@ -189,13 +187,16 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 
 	// endregion constructable
 
-	public void setDeduceTypes2(final @NotNull DeduceTypes2 aDeduceTypes2, final Context aContext, final @NotNull BaseGeneratedFunction aGeneratedFunction) {
-		dei.setDeduceTypes2(aDeduceTypes2, aContext, aGeneratedFunction);
+	public void makeType(final BaseGeneratedFunction aGeneratedFunction, final TypeTableEntry.Type aType, final OS_Type aOS_Type) {
+		type = aGeneratedFunction.newTypeTableEntry(aType, aOS_Type, getIdent(), this);
 	}
 
-	@Override
-	public Promise<ProcTableEntry, Void, Void> constructablePromise() {
-		return constructableDeferred.promise();
+	public IdentExpression getIdent() {
+		return ident;
+	}
+
+	public void setDeduceTypes2(final @NotNull DeduceTypes2 aDeduceTypes2, final Context aContext, final @NotNull BaseGeneratedFunction aGeneratedFunction) {
+		dei.setDeduceTypes2(aDeduceTypes2, aContext, aGeneratedFunction);
 	}
 
 	public DeducePath buildDeducePath(final BaseGeneratedFunction generatedFunction) {
@@ -221,7 +222,6 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 		return backlinkSet.promise();
 	}
 
-
 	public void onFefiDone(final DoneCallback<GenType> aCallback) {
 		fefiDone.then(aCallback);
 	}
@@ -237,10 +237,6 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 	public void setBacklink(final InstructionArgument aBacklink) {
 		backlink = aBacklink;
 		backlinkSet.resolve(backlink);
-	}
-
-	public void makeType(final BaseGeneratedFunction aGeneratedFunction, final TypeTableEntry.Type aType, final OS_Type aOS_Type) {
-		type = aGeneratedFunction.newTypeTableEntry(aType, aOS_Type, getIdent(), this);
 	}
 
 	public void makeType(final BaseGeneratedFunction aGeneratedFunction, final TypeTableEntry.Type aType, final IExpression aExpression) {
@@ -261,6 +257,93 @@ public class IdentTableEntry extends BaseTableEntry1 implements Constructable, T
 			_zero = new ITE_Zero(this);
 		}
 		return _zero;
+	}
+
+	private final List<DN_Resolver> resolvers = new ArrayList<>();
+
+	public DN_Resolver newResolver(final Context aCtx, final BaseGeneratedFunction aGeneratedFunction) {
+		ITE_DefaultResolver x = new ITE_DefaultResolver(aCtx, aGeneratedFunction);
+		resolvers.add(x);
+		return x;
+	}
+
+	@Override
+	public IExpression _expression() {
+		return this.ident;
+	}
+
+	public Map<Integer, TypeTableEntry> getPotentialTypes() {
+		return potentialTypes;
+	}
+
+	public boolean isPreUpdateStatusListenerAdded() {
+		return preUpdateStatusListenerAdded;
+	}
+
+	public void setPreUpdateStatusListenerAdded(boolean aPreUpdateStatusListenerAdded) {
+		preUpdateStatusListenerAdded = aPreUpdateStatusListenerAdded;
+	}
+
+	public TypeTableEntry getType() {
+		return type;
+	}
+
+	public void setType(TypeTableEntry aType) {
+		type = aType;
+	}
+
+	public GeneratedNode getExternalRef() {
+		return externalRef;
+	}
+
+	public void setExternalRef(GeneratedNode aExternalRef) {
+		externalRef = aExternalRef;
+	}
+
+	public boolean isFefi() {
+		return fefi;
+	}
+
+	public void setFefi(boolean aFefi) {
+		fefi = aFefi;
+	}
+
+	public ProcTableEntry getConstructable_pte() {
+		return constructable_pte;
+	}
+
+	public void setConstructable_pte(ProcTableEntry aConstructable_pte) {
+		constructable_pte = aConstructable_pte;
+	}
+
+	public DeduceTypes2.PromiseExpectation<String> getResolveExpectation() {
+		return resolveExpectation;
+	}
+
+	public void setResolveExpectation(DeduceTypes2.PromiseExpectation<String> aResolveExpectation) {
+		resolveExpectation = aResolveExpectation;
+	}
+
+	class ITE_DefaultResolver implements DN_Resolver {
+
+		private final Context ctx;
+		private final BaseGeneratedFunction generatedFunction;
+
+		public ITE_DefaultResolver(final Context aCtx, final BaseGeneratedFunction aGeneratedFunction) {
+			ctx = aCtx;
+			generatedFunction = aGeneratedFunction;
+		}
+
+		@Override
+		public void resolve(final DN_ResolverResolution aResolution) {
+			aResolution.apply();
+//			throw new NotImplementedException();
+		}
+
+		@Override
+		public void reject(final DN_ResolverRejection aRejection) {
+			aRejection.print_message(this, IdentTableEntry.this);
+		}
 	}
 
 //	private final DeferredObject<GenType, Void, Void> typeDeferred = new DeferredObject<GenType, Void, Void>();

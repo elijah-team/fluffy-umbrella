@@ -1,5 +1,5 @@
-//package tripleo.elijah.gen.java;
-//
+package tripleo.elijah.gen.java;
+
 //import javassist.ClassPool;
 //import javassist.CtClass;
 //import tripleo.elijah.gen.ICodeGen;
@@ -9,7 +9,7 @@
 //import java.util.ArrayList;
 //import java.util.List;
 //
-//public class JavaCodeGen implements ICodeGen {
+public class JavaCodeGen /*implements ICodeGen*/ {
 //
 //	final ClassPool cp = new ClassPool();
 //
@@ -157,4 +157,4 @@
 //		}
 //	}
 //
-//}
+}

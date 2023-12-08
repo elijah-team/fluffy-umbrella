@@ -9,7 +9,12 @@
 package tripleo.elijah.lang.builder;
 
 import tripleo.elijah.contexts.ImportContext;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.IdentExpression;
+import tripleo.elijah.lang.IdentList;
+import tripleo.elijah.lang.ImportStatement;
+import tripleo.elijah.lang.Qualident;
+import tripleo.elijah.lang.QualidentList;
 import tripleo.elijah.lang.imports.AssigningImportStatement;
 import tripleo.elijah.lang.imports.NormalImportStatement;
 import tripleo.elijah.lang.imports.QualifiedImportStatement;
@@ -22,21 +27,17 @@ import java.util.List;
  * Created 12/23/20 2:59 AM
  */
 public class ImportStatementBuilder extends ElBuilder {
-	private Context _context;
-	private State state;
-
-	// ROOTED
-	private Qualident xy;
-	private QualidentList qil;
-
 	// ASSIGNING
 	List<AssigningImportStatement.Part> aparts = new ArrayList<AssigningImportStatement.Part>();
-
 	// SELECTIVE/QUALIFIED
 	List<QualifiedImportStatement.Part> sparts = new ArrayList<QualifiedImportStatement.Part>();
-
 	// NORMAL
 	List<Qualident> nparts = new ArrayList<Qualident>();
+	private Context _context;
+	private State   state;
+	// ROOTED
+	private Qualident     xy;
+	private QualidentList qil;
 
 	//
 	//
@@ -55,10 +56,6 @@ public class ImportStatementBuilder extends ElBuilder {
 	public void addNormalPart(final Qualident q2) {
 		nparts.add(q2);
 		this.state = State.NORMAL;
-	}
-
-	enum State {
-		ASSIGNING, SELECTIVE, NORMAL, ROOTED
 	}
 
 	@Override
@@ -98,9 +95,13 @@ public class ImportStatementBuilder extends ElBuilder {
 	}
 
 	public void rooted(final Qualident xy, final QualidentList qil) {
-		this.xy = xy;
-		this.qil = qil;
+		this.xy    = xy;
+		this.qil   = qil;
 		this.state = State.ROOTED;
+	}
+
+	enum State {
+		ASSIGNING, SELECTIVE, NORMAL, ROOTED
 	}
 }
 

@@ -1,10 +1,10 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 package tripleo.elijah.lang;
 
@@ -25,11 +25,11 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 
 	private final VariableSequence  _parent;
 	public        DeduceTypeWatcher dtw;
-
-	private TypeName typeName = new VariableTypeName();
-	private IExpression initialValue = IExpression.UNASSIGNED;
+	@Nullable List<AnnotationClause> annotations = null;
+	private TypeName        typeName     = new VariableTypeName();
+	private IExpression     initialValue = IExpression.UNASSIGNED;
 	private IdentExpression name;
-	private TypeModifiers typeModifiers;
+	private TypeModifiers   typeModifiers;
 
 	public VariableStatement(final VariableSequence aSequence) {
 		_parent = aSequence;
@@ -39,16 +39,16 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 		return name.getText();
 	}
 
-	public IdentExpression getNameToken() {
-		return name;
-	}
-
 	public void setName(final IdentExpression s) {
 		name = s;
 	}
 
+	public IdentExpression getNameToken() {
+		return name;
+	}
+
 	public void initial(@NotNull final IExpression aExpr) {
-		initialValue=aExpr;
+		initialValue = aExpr;
 	}
 
 	public void set(final TypeModifiers y) {
@@ -59,7 +59,8 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 		return typeModifiers;
 	}
 
-	@NotNull public TypeName typeName() {
+	@NotNull
+	public TypeName typeName() {
 		return typeName;
 	}
 
@@ -67,11 +68,10 @@ public class VariableStatement implements OS_Element, @NotNull Locatable {
 		typeName = tn;
 	}
 
-	@NotNull public IExpression initialValue() {
+	@NotNull
+	public IExpression initialValue() {
 		return initialValue;
 	}
-
-	@Nullable List<AnnotationClause> annotations = null;
 
 	@Override
 	public void visitGen(final ElElementVisitor visit) {

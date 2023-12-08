@@ -24,9 +24,8 @@ import java.util.List;
  * Created 4/27/21 1:11 AM
  */
 public class GenerateResult {
-	private int bufferCounter = 0;
-
 	private final List<GenerateResultItem> _res = new ArrayList<GenerateResultItem>();
+	private int bufferCounter = 0;
 
 //	public void add(final Buffer b, final GeneratedNode n, final TY ty) {
 //		_res.add(new GenerateResultItem(ty, b, n, null, null, ++bufferCounter)); // TODO remove nulls
@@ -58,12 +57,12 @@ public class GenerateResult {
 		_res.addAll(aGgr.results());
 	}
 
-	public enum TY {
-		HEADER, IMPL, PRIVATE_HEADER
-	}
-
 	public List<GenerateResultItem> results() {
 		return _res;
+	}
+
+	public enum TY {
+		HEADER, IMPL, PRIVATE_HEADER
 	}
 
 }

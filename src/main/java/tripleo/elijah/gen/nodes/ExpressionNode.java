@@ -11,34 +11,40 @@ package tripleo.elijah.gen.nodes;
 import org.eclipse.jdt.annotation.NonNull;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.gen.TypeRef;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.BasicBinaryExpression;
+import tripleo.elijah.lang.ExpressionKind;
+import tripleo.elijah.lang.IExpression;
+import tripleo.elijah.lang.NumericExpression;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.ProcedureCallExpression;
+import tripleo.elijah.lang.StringExpression;
+import tripleo.elijah.lang.VariableReference;
 import tripleo.elijah.util.NotImplementedException;
 
 /**
  * @author Tripleo(acer)
- *
  */
 public class ExpressionNode implements IExpressionNode {
 
 	public String genName;  // TODO since when does expression have a name?
 	public String genText;
 	public String genType;
-    
-	public boolean _is_const_expr;
+
+	public boolean    _is_const_expr;
 	public OS_Element ref_;
-	
+
 	private IExpression iex;
-	
+
 	/**
 	 * For {@link VariableReferenceNode2}
 	 */
 	public ExpressionNode() {
-		genName = null;
-		genText = null;
-		genType = null;
+		genName        = null;
+		genText        = null;
+		genType        = null;
 		_is_const_expr = false;
-		ref_ = null;
-		iex = null;
+		ref_           = null;
+		iex            = null;
 	}
 	/*
 	public ExpressionNode(@NonNull  OS_Integer expr1) {
@@ -49,21 +55,16 @@ public class ExpressionNode implements IExpressionNode {
 		iex = expr1;
 	}
 	*/
-	
+
 	public ExpressionNode(@NonNull final IExpression expr1) {
 		// TODO Auto-generated constructor stub
 		if (expr1 != null) {
-			genName=expr1.toString(); // TODO likely wrong
-			genText=expr1.toString(); // TODO likely wrong
-			_is_const_expr = expr1.getLeft()  instanceof StringExpression
-							|| expr1.getLeft()  instanceof NumericExpression; // TODO more
-			iex = expr1;
+			genName        = expr1.toString(); // TODO likely wrong
+			genText        = expr1.toString(); // TODO likely wrong
+			_is_const_expr = expr1.getLeft() instanceof StringExpression
+			  || expr1.getLeft() instanceof NumericExpression; // TODO more
+			iex            = expr1;
 		}
-	}
-
-	static String getStringPCE(final ProcedureCallExpression expr) {
-		final int code = 1000; // TODO hardcoded
-		return Helpers.getFunctionName(code, expr.getLeft().toString(), expr.exprList());
 	}
 
 	@Override
@@ -79,25 +80,25 @@ public class ExpressionNode implements IExpressionNode {
 	@Override
 	public boolean is_underscore() {
 		// TODO Auto-generated method stub
-		if (iex !=null && iex instanceof VariableReference) {
+		if (iex != null && iex instanceof VariableReference) {
 			return ((VariableReference) iex).getName().equals("_");
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean is_var_ref() {
-		return (iex !=null && iex instanceof VariableReference);
+		return (iex != null && iex instanceof VariableReference);
 	}
-	
+
 	@Override
 	public boolean is_simple() {
-		if (iex !=null && iex instanceof VariableReference) {
+		if (iex != null && iex instanceof VariableReference) {
 			return iex.is_simple();
 		}
 		return is_const_expr() || is_underscore();
 	}
-	
+
 	@Override
 	public String genText(final CompilerContext cctx) {
 //		if (iex instanceof OS_Integer) {
@@ -111,25 +112,25 @@ public class ExpressionNode implements IExpressionNode {
 		if (iex instanceof BasicBinaryExpression) {
 			if (iex.getLeft() instanceof VariableReference) {
 
-				final String left_side = ((VariableReference) this.iex.getLeft()).getName();
-				String right_side = null;
-				
+				final String left_side  = ((VariableReference) this.iex.getLeft()).getName();
+				String       right_side = null;
+
 				final BasicBinaryExpression abe = (BasicBinaryExpression) this.iex;
 //				if (abe.getRight() instanceof OS_Integer) {
 //					right_side = ""+((OS_Integer) abe.getRight()).getValue();
 //				}
 				if (abe.getRight() instanceof NumericExpression) {
-					right_side = ""+((NumericExpression) abe.getRight()).getValue();
+					right_side = String.valueOf(((NumericExpression) abe.getRight()).getValue());
 				}
 				if (abe._kind == ExpressionKind.SUBTRACTION) {
-					final String s = String.format("%s - %s", left_side,	right_side);
+					final String s = String.format("%s - %s", left_side, right_side);
 					return s;
 				}
 				if (abe._kind == ExpressionKind.MULTIPLY) {
 					final String s = String.format("%s * %s", left_side, right_side);
 					return s;
 				}
-				
+
 				return "---------------2";
 			}
 		}
@@ -148,17 +149,22 @@ public class ExpressionNode implements IExpressionNode {
 		NotImplementedException.raise();
 		return "vai"; // TODO hardcoded
 	}
-	
+
 	@Override
 	public String genType() {
 		return "u64";  // TODO harcoded
 	}
-	
+
 	@Override
 	public String genText() {
 		return genText(null);
 	}
-	
+
+	static String getStringPCE(final ProcedureCallExpression expr) {
+		final int code = 1000; // TODO hardcoded
+		return Helpers.getFunctionName(code, expr.getLeft().toString(), expr.exprList());
+	}
+
 	@Override
 	public TypeRef getType() {
 		return null;

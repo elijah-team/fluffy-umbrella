@@ -18,12 +18,13 @@ import java.util.List;
 
 
 //
+
 /**
  * Created 12/22/20 11:26 PM
  */
 public class ConstructorDefScope extends BaseFunctionDefScope implements Documentable /*extends FunctionDefScope*/ {
-//	private List<ElBuilder> _items = new ArrayList<ElBuilder>();
-private final List<Token> docstrings = new ArrayList<Token>();
+	//	private List<ElBuilder> _items = new ArrayList<ElBuilder>();
+	private final List<Token> docstrings = new ArrayList<Token>();
 
 //	@Override
 //	public Iterable<ElBuilder> items() {

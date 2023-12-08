@@ -38,10 +38,6 @@ public class CtorReference {
 	private List<String>               args;
 	private GeneratedNode              _resolved;
 
-	void addRef(final String text, final CReference.Ref type) {
-		refs.add(new CReference.Reference(text, type));
-	}
-
 	public void getConstructorPath(final InstructionArgument ia2, final BaseGeneratedFunction gf) {
 		final List<InstructionArgument> s = CReference._getIdentIAPathList(ia2);
 
@@ -61,11 +57,11 @@ public class CtorReference {
 				}
 				addRef(vte.getName(), CReference.Ref.LOCAL);
 			} else if (ia instanceof IdentIA) {
-				final IdentTableEntry idte = gf.getIdentTableEntry(to_int(ia));
-				final OS_Element resolved_element = idte.getResolvedElement();
+				final IdentTableEntry idte             = gf.getIdentTableEntry(to_int(ia));
+				final OS_Element      resolved_element = idte.getResolvedElement();
 				if (idte.resolvedType() != null) {
 					_resolved = idte.resolvedType();
-					ctorName = ((ConstructorDef) resolved_element).name();
+					ctorName  = ((ConstructorDef) resolved_element).name();
 				} /*else if (resolved_element != null) {
 					assert false;
 					if (resolved_element instanceof VariableStatement) {
@@ -100,58 +96,62 @@ public class CtorReference {
 		}
 	}
 
+	void addRef(final String text, final CReference.Ref type) {
+		refs.add(new CReference.Reference(text, type));
+	}
+
 	public String build(final ClassInvocation aClsinv) {
-		StringBuilder sb = new StringBuilder();
-		boolean open = false, needs_comma = false;
+		StringBuilder sb   = new StringBuilder();
+		boolean       open = false, needs_comma = false;
 //		List<String> sl = new ArrayList<String>();
 		String text = "";
 		for (final CReference.Reference ref : refs) {
 			switch (ref.type) {
-				case LOCAL:
-					text = "vv" + ref.text;
-					sb.append(text);
-					break;
-				case MEMBER:
-					text = "->vm" + ref.text;
-					sb.append(text);
-					break;
-				case INLINE_MEMBER:
-					text = Emit.emit("/*219*/")+".vm" + ref.text;
-					sb.append(text);
-					break;
-				case DIRECT_MEMBER:
-					text = Emit.emit("/*124*/")+"vsc->vm" + ref.text;
-					sb.append(text);
-					break;
-				case FUNCTION: {
-					final String s = sb.toString();
-					text = String.format("%s(%s", ref.text, s);
-					sb = new StringBuilder();
-					open = true;
-					if (!s.equals("")) needs_comma = true;
-					sb.append(text);
-					break;
-				}
-				case CONSTRUCTOR: {
-					final String s = sb.toString();
-					text = String.format("%s(%s", ref.text, s);
-					sb   = new StringBuilder();
-					open = true;
-					if (!s.equals("")) needs_comma = true;
-					sb.append(text);
-					break;
-				}
-				case PROPERTY_GET: {
-					final String s = sb.toString();
-					text = String.format("%s(%s", ref.text, s);
-					sb   = new StringBuilder();
-					open = true;
-					if (!s.equals("")) needs_comma = true;
-					sb.append(text);
-					break;
-				}
-				default:
-					throw new IllegalStateException("Unexpected value: " + ref.type);
+			case LOCAL:
+				text = "vv" + ref.text;
+				sb.append(text);
+				break;
+			case MEMBER:
+				text = "->vm" + ref.text;
+				sb.append(text);
+				break;
+			case INLINE_MEMBER:
+				text = Emit.emit("/*219*/") + ".vm" + ref.text;
+				sb.append(text);
+				break;
+			case DIRECT_MEMBER:
+				text = Emit.emit("/*124*/") + "vsc->vm" + ref.text;
+				sb.append(text);
+				break;
+			case FUNCTION: {
+				final String s = sb.toString();
+				text = String.format("%s(%s", ref.text, s);
+				sb   = new StringBuilder();
+				open = true;
+				if (!s.equals("")) needs_comma = true;
+				sb.append(text);
+				break;
+			}
+			case CONSTRUCTOR: {
+				final String s = sb.toString();
+				text = String.format("%s(%s", ref.text, s);
+				sb   = new StringBuilder();
+				open = true;
+				if (!s.equals("")) needs_comma = true;
+				sb.append(text);
+				break;
+			}
+			case PROPERTY_GET: {
+				final String s = sb.toString();
+				text = String.format("%s(%s", ref.text, s);
+				sb   = new StringBuilder();
+				open = true;
+				if (!s.equals("")) needs_comma = true;
+				sb.append(text);
+				break;
+			}
+			default:
+				throw new IllegalStateException("Unexpected value: " + ref.type);
 			}
 //			sl.add(text);
 		}

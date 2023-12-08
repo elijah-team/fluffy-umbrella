@@ -1,10 +1,10 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 package tripleo.elijah.lang;
 
@@ -15,18 +15,17 @@ import tripleo.elijah.util.NotImplementedException;
 
 /**
  * @author Tripleo(sb)
- *
+ * <p>
  * Created Apr 2, 2019 at 11:08:12 AM
  */
 public class NamespaceStatement extends _CommonNC implements Documentable, ModuleItem, ClassItem, StatementItem, FunctionItem, OS_Container, OS_Element2 {
 
-	private final OS_Element parent;
-	private NamespaceTypes _kind;
+	private final OS_Element     parent;
+	private       NamespaceTypes _kind;
 
 	public NamespaceStatement(final OS_Element aElement, final Context context) {
 		parent = aElement; // setParent
-		if (aElement instanceof  OS_Module) {
-			final OS_Module module = (OS_Module) aElement;
+		if (aElement instanceof final OS_Module module) {
 			//
 			this.setPackageName(module.pullPackageName());
 			_packageName.addElement(this);
@@ -39,10 +38,6 @@ public class NamespaceStatement extends _CommonNC implements Documentable, Modul
 		setContext(new NamespaceContext(context, this));
 	}
 
-	public void setContext(final NamespaceContext ctx) {
-		_a.setContext(ctx);
-	}
-
 	public StatementClosure statementClosure() {
 		return new AbstractStatementClosure(new AbstractScope2(this) {
 			@Override
@@ -51,17 +46,25 @@ public class NamespaceStatement extends _CommonNC implements Documentable, Modul
 			}
 
 			@Override
+			public void add(final StatementItem aItem) {
+				NamespaceStatement.this.add((OS_Element) aItem);
+			}
+
+			@Override
 			public StatementClosure statementClosure() {
 				throw new NotImplementedException();
 //				return null;
 			}
 
-			@Override
-			public void add(final StatementItem aItem) {
-				NamespaceStatement.this.add((OS_Element) aItem);
-			}
-
 		});
+	}
+
+	@Override // OS_Container
+	public void add(final OS_Element anElement) {
+		if (anElement instanceof ClassItem)
+			items.add((ClassItem) anElement);
+		else
+			System.err.printf("[NamespaceStatement#add] not a ClassItem: %s%n", anElement);
 	}
 
 	public TypeAliasStatement typeAlias() {
@@ -87,32 +90,26 @@ public class NamespaceStatement extends _CommonNC implements Documentable, Modul
 	}
 
 	@Override // OS_Element
-	public OS_Element getParent() {
-		return parent;
-	}
-
-	@Override // OS_Element
 	public Context getContext() {
 		return _a.getContext();
 	}
 
-	public void setType(final NamespaceTypes aType) {
-		_kind = aType;
+	public void setContext(final NamespaceContext ctx) {
+		_a.setContext(ctx);
 	}
 
-	public NamespaceTypes getKind() { return _kind; }
+	@Override // OS_Element
+	public OS_Element getParent() {
+		return parent;
+	}
+
+	public NamespaceTypes getKind() {
+		return _kind;
+	}
 
 	@Override
 	public String toString() {
 		return String.format("<Namespace %d %s `%s'>", _a.getCode(), getPackageName()._name, getName());
-	}
-
-	@Override // OS_Container
-	public void add(final OS_Element anElement) {
-		if (anElement instanceof ClassItem)
-			items.add((ClassItem) anElement);
-		else
-			System.err.printf("[NamespaceStatement#add] not a ClassItem: %s%n", anElement);
 	}
 
 	public void postConstruct() {
@@ -125,6 +122,10 @@ public class NamespaceStatement extends _CommonNC implements Documentable, Modul
 		} else {
 			setType(NamespaceTypes.NAMED);
 		}
+	}
+
+	public void setType(final NamespaceTypes aType) {
+		_kind = aType;
 	}
 
 	public OS_Type getOS_Type() {

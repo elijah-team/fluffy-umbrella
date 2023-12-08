@@ -40,8 +40,8 @@ import static tripleo.elijah.contexts.ClassInfo.ClassInfoType.INHERITED;
  */
 public class ClassContext extends Context {
 
-	private final ClassStatement                carrier;
 	public final  Map<TypeName, ClassStatement> _inheritance = new HashMap<>();
+	private final ClassStatement                carrier;
 	private final Context                       _parent;
 	private       boolean                       _didInheritance;
 
@@ -85,8 +85,7 @@ public class ClassContext extends Context {
 		}
 
 		for (final TypeName tn1 : carrier.getGenericPart()) {
-			if (tn1 instanceof NormalTypeName) {
-				final NormalTypeName tn    = (NormalTypeName) tn1;
+			if (tn1 instanceof final NormalTypeName tn) {
 				final String         name1 = tn.getName(); // TODO this may return a string with DOTs in it.
 				if (name1.equals(name)) {
 //					LookupResultList lrl = tn.getContext().lookup(name);
@@ -116,7 +115,7 @@ public class ClassContext extends Context {
 	public Map<TypeName, ClassStatement> inheritance() {
 		if (!_didInheritance) {
 			for (final TypeName tn1 : carrier.classInheritance().tns) {
-				tripleo.elijah.util.Stupidity.println2("1001 " + tn);
+				tripleo.elijah.util.Stupidity.println2("1001 " + tn1);
 				final NormalTypeName       tn  = (NormalTypeName) tn1;
 				final @Nullable OS_Element best;
 				final LookupResultList     tnl = tn.getContext().lookup(tn.getName());
@@ -146,12 +145,12 @@ public class ClassContext extends Context {
 	public class OS_TypeNameElement implements OS_Element {
 		private final TypeName typeName;
 
-		public TypeName getTypeName() {
-			return typeName;
-		}
-
 		public OS_TypeNameElement(final TypeName aTypeName) {
 			typeName = aTypeName;
+		}
+
+		public TypeName getTypeName() {
+			return typeName;
 		}
 
 		@Override
@@ -160,13 +159,13 @@ public class ClassContext extends Context {
 		}
 
 		@Override
-		public OS_Element getParent() {
-			return carrier;
+		public Context getContext() {
+			return ClassContext.this;
 		}
 
 		@Override
-		public Context getContext() {
-			return ClassContext.this;
+		public OS_Element getParent() {
+			return carrier;
 		}
 	}
 }

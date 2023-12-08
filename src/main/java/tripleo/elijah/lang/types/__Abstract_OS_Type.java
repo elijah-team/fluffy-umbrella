@@ -30,8 +30,7 @@ abstract class __Abstract_OS_Type implements OS_Type {
 
 				r    = ctx.lookup("SystemInteger");
 				best = r.chooseBest(null);
-				while (best instanceof AliasStatement) {
-					final AliasStatement   aliasStatement = (AliasStatement) best;
+				while (best instanceof final AliasStatement aliasStatement) {
 					final LookupResultList lrl            = aliasStatement.getContext().lookup(aliasStatement.getExpression().toString());
 					best = lrl.chooseBest(null);
 				}
@@ -87,5 +86,15 @@ abstract class __Abstract_OS_Type implements OS_Type {
 	public TypeName getTypeName() {
 		return null;
 	}
+
+	@Override
+	public boolean isEqual(final OS_Type aType) {
+		if (aType.getType() != getType()) return false;
+
+		return _isEqual(aType);
+	}
+
+	protected abstract boolean _isEqual(final OS_Type aType);
+
 }
 

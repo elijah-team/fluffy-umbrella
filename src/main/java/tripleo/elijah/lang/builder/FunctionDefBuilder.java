@@ -8,7 +8,14 @@
  */
 package tripleo.elijah.lang.builder;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.AnnotationClause;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.FormalArgList;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.FunctionModifiers;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.Scope3;
+import tripleo.elijah.lang.TypeName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,18 +25,18 @@ import java.util.List;
  */
 public class FunctionDefBuilder extends BaseFunctionDefBuilder {
 
-    private final FunctionDefScope _scope = new FunctionDefScope();
-    private final List<FunctionModifiers> _mods = new ArrayList<FunctionModifiers>();
-    private TypeName _returnType;
-    private Context _context;
+	private final FunctionDefScope        _scope = new FunctionDefScope();
+	private final List<FunctionModifiers> _mods  = new ArrayList<FunctionModifiers>();
+	private       TypeName                _returnType;
+	private       Context                 _context;
 
-    public FunctionDefScope scope() {
-        return _scope;
-    }
+	public FunctionDefScope scope() {
+		return _scope;
+	}
 
-    public void set(final FunctionModifiers aFunctionModifiers) {
-        _mods.add(aFunctionModifiers);
-    }
+	public void set(final FunctionModifiers aFunctionModifiers) {
+		_mods.add(aFunctionModifiers);
+	}
 
 	public void setReturnType(final TypeName tn) {
 		_returnType = tn;

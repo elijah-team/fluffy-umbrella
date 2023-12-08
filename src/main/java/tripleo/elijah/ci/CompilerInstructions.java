@@ -1,3 +1,4 @@
+/* -*- Mode: Java; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
  *
@@ -9,78 +10,29 @@
 package tripleo.elijah.ci;
 
 import antlr.Token;
-import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.IExpression;
-import tripleo.elijah.lang.StringExpression;
-import tripleo.elijah.util.Helpers;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-/**
- * Created 9/6/20 11:20 AM
- */
-public class CompilerInstructions {
-	private IndexingStatement _idx;
-	private GenerateStatement gen;
-	public List<LibraryStatementPart> lsps = new ArrayList<LibraryStatementPart>();
-	private String filename;
-	private String name;
+public interface CompilerInstructions {
 
-	public IndexingStatement indexingStatement() {
-		if (_idx == null)
-			_idx = new IndexingStatement(this);
+	IndexingStatement indexingStatement();
 
-		return _idx;
-	}
+	void add(GenerateStatement generateStatement);
 
-	public void add(final GenerateStatement generateStatement) {
-		assert gen == null;
-		gen = generateStatement;
-	}
+	void add(LibraryStatementPart libraryStatementPart);
 
-	public void add(final LibraryStatementPart libraryStatementPart) {
-		libraryStatementPart.setInstructions(this);
-		lsps.add(libraryStatementPart);
-	}
+	String getFilename();
 
-	public void setFilename(final String filename) {
-		this.filename = filename;
-	}
+	void setFilename(String filename);
 
-	public String getFilename() {
-		return filename;
-	}
+	String genLang();
 
-	@Nullable
-	public String genLang() {
-		final List<GenerateStatement.Directive> gens = gen.dirs.stream()
-		                                                       .filter((final GenerateStatement.Directive input) -> input.getName().equals("gen"))
-		                                                       .collect(Collectors.toList());
-		if (gens.size() == 0) return null;
-		final IExpression lang_raw = gens.get(0).getExpression();
-		assert lang_raw instanceof StringExpression;
-		final String text = ((StringExpression) lang_raw).getText();
-		if (text.charAt(0) == '\"') // TODO ugly
-			return Helpers.remove_single_quotes_from_string(text);
-		else
-			return text;
-	}
+	String getName();
 
-	public String getName() {
-		return name;
-	}
+	void setName(String name);
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+	void setName(Token name);
 
-	public void setName(final Token name) {
-		this.name = name.getText();
-	}
+	List<LibraryStatementPart> getLibraryStatementParts();
+
 }
-
-//
-//
-//

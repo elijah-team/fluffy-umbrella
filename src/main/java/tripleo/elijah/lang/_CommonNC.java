@@ -17,33 +17,27 @@ import java.util.List;
  * Created 3/29/21 5:11 PM
  */
 abstract class _CommonNC {
-	protected final List<ClassItem> items = new ArrayList<ClassItem>();
 	public final    Attached        _a    = new Attached();
+	protected final List<ClassItem> items = new ArrayList<ClassItem>();
 	private final   List<String>    mDocs = new ArrayList<String>();
+	private final List<AccessNotation> accesses = new ArrayList<AccessNotation>();
 	protected       IdentExpression nameToken;
 	protected       OS_Package      _packageName;
 	List<AnnotationClause> annotations = null;
-	private final List<AccessNotation> accesses = new ArrayList<AccessNotation>();
-
-	public void setPackageName(final OS_Package aPackageName) {
-		_packageName = aPackageName;
-	}
+	// region ClassItem
+	private AccessNotation access_note;
+	private El_Category    category;
 
 	public OS_Package getPackageName() {
 		return _packageName;
 	}
 
+	public void setPackageName(final OS_Package aPackageName) {
+		_packageName = aPackageName;
+	}
+
 	public void addDocString(final Token aText) {
 		mDocs.add(aText.getText());
-	}
-
-	public List<ClassItem> getItems() {
-		return items;
-	}
-
-	public String getName() {
-		if (nameToken == null) return "";
-		return nameToken.getText();
 	}
 
 	// OS_Container
@@ -56,19 +50,22 @@ abstract class _CommonNC {
 		return a;
 	}
 
+	public List<ClassItem> getItems() {
+		return items;
+	}
+
 	// OS_Element2
 	public String name() {
 		return getName();
 	}
 
-	public void setName(final IdentExpression i1) {
-		nameToken = i1;
+	public String getName() {
+		if (nameToken == null) return "";
+		return nameToken.getText();
 	}
 
-	public void addAnnotation(final AnnotationClause a) {
-		if (annotations == null)
-			annotations = new ArrayList<AnnotationClause>();
-		annotations.add(a);
+	public void setName(final IdentExpression i1) {
+		nameToken = i1;
 	}
 
 	public void addAccess(final AccessNotation acs) {
@@ -96,24 +93,26 @@ abstract class _CommonNC {
 		}
 	}
 
-	// region ClassItem
-	private AccessNotation access_note;
-	private El_Category category;
-
-	public void setCategory(final El_Category aCategory) {
-		category = aCategory;
-	}
-
-	public void setAccess(final AccessNotation aNotation) {
-		access_note = aNotation;
+	public void addAnnotation(final AnnotationClause a) {
+		if (annotations == null)
+			annotations = new ArrayList<AnnotationClause>();
+		annotations.add(a);
 	}
 
 	public El_Category getCategory() {
 		return category;
 	}
 
+	public void setCategory(final El_Category aCategory) {
+		category = aCategory;
+	}
+
 	public AccessNotation getAccess() {
 		return access_note;
+	}
+
+	public void setAccess(final AccessNotation aNotation) {
+		access_note = aNotation;
 	}
 
 	// endregion

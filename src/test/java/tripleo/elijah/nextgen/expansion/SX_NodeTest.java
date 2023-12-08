@@ -2,6 +2,7 @@ package tripleo.elijah.nextgen.expansion;
 
 import junit.framework.TestCase;
 import tripleo.elijah.comp.AccessBus;
+import tripleo.elijah.comp.Compilation.CompilationAlways;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.PipelineLogic;
 import tripleo.elijah.comp.StdErrSink;
@@ -12,8 +13,8 @@ import tripleo.elijah.nextgen.model.SM_ClassDeclaration;
 import tripleo.elijah.nextgen.model.SM_ClassInheritance;
 import tripleo.elijah.nextgen.model.SM_ClassSubtype;
 import tripleo.elijah.nextgen.model.SM_Name;
-import tripleo.elijah.stages.gen_c.GenerateC;
 import tripleo.elijah.stages.gen_generic.GenerateFiles;
+import tripleo.elijah.stages.gen_generic.OutputFileFactory;
 import tripleo.elijah.stages.gen_generic.OutputFileFactoryParams;
 import tripleo.elijah.stages.logging.ElLog;
 
@@ -34,7 +35,7 @@ public class SX_NodeTest extends TestCase {
 		                          .addToCompilation()
 		                          .build();
 		final OutputFileFactoryParams p    = new OutputFileFactoryParams(mod, errSink, ElLog.Verbosity.SILENT, pipelineLogic);
-		final GenerateFiles           fgen = new GenerateC(p);
+		final GenerateFiles           fgen = OutputFileFactory.create(CompilationAlways.defaultPrelude(), p);
 
 		final SM_ClassDeclaration node = new SM_ClassDeclaration() {
 			@Override

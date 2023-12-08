@@ -106,13 +106,13 @@ public class WlGenerateDefaultCtor implements WorkJob {
 		_isDone = true;
 	}
 
-	private boolean getPragma(final String aAuto_construct) {
-		return false;
-	}
-
 	@Override
 	public boolean isDone() {
 		return _isDone;
+	}
+
+	private boolean getPragma(final String aAuto_construct) {
+		return false;
 	}
 
 	public BaseGeneratedFunction getResult() {

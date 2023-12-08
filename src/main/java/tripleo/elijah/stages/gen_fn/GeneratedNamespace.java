@@ -10,7 +10,17 @@ package tripleo.elijah.stages.gen_fn;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.AccessNotation;
+import tripleo.elijah.lang.ConstructStatement;
+import tripleo.elijah.lang.ExpressionBuilder;
+import tripleo.elijah.lang.ExpressionKind;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.IExpression;
+import tripleo.elijah.lang.NamespaceStatement;
+import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Module;
+import tripleo.elijah.lang.Scope3;
+import tripleo.elijah.lang.StatementWrapper;
 import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.util.Helpers;
@@ -20,13 +30,12 @@ import tripleo.elijah.util.NotImplementedException;
  * Created 12/22/20 5:39 PM
  */
 public class GeneratedNamespace extends GeneratedContainerNC implements GNCoded {
+	private final OS_Module          module;
+	private final NamespaceStatement namespaceStatement;
 	public GeneratedNamespace(final NamespaceStatement namespace1, final OS_Module module) {
 		this.namespaceStatement = namespace1;
 		this.module             = module;
 	}
-
-    private final OS_Module module;
-    private final NamespaceStatement namespaceStatement;
 
 	public void addAccessNotation(final AccessNotation an) {
 		throw new NotImplementedException();
@@ -61,6 +70,11 @@ public class GeneratedNamespace extends GeneratedContainerNC implements GNCoded 
 		return namespaceStatement.getName();
 	}
 
+	@Override
+	public OS_Element getElement() {
+		return getNamespaceStatement();
+	}
+
 	public NamespaceStatement getNamespaceStatement() {
 		return this.namespaceStatement;
 	}
@@ -81,18 +95,13 @@ public class GeneratedNamespace extends GeneratedContainerNC implements GNCoded 
 	}
 
 	@Override
-	public OS_Element getElement() {
-		return getNamespaceStatement();
+	public @NotNull String identityString() {
+		return String.valueOf(namespaceStatement);
 	}
 
 	@Override
 	public OS_Module module() {
 		return module;
-	}
-
-	@Override
-	public @NotNull String identityString() {
-		return "" + namespaceStatement;
 	}
 
 	@Override

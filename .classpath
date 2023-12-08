@@ -1,15 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/semeru-17.0.5">
+	<classpathentry kind="src" output="target/classes" path="src/main-mal/mal">
 		<attributes>
-			<attribute name="module" value="true"/>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" path="src/main/java-cef"/>
-	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry kind="src" path="idea-mod-compiler-interface/src"/>
-	<classpathentry kind="src" path="idea-mod-base/src"/>
+	<classpathentry kind="src" output="target/classes" path="src/main-undertow/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="src/main-cef/java"/>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-16">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Maven: io.reactivex.rxjava3:rxjava:3.1.0"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Maven: me.friwi:jcefmaven:105.3.36"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Maven: me.friwi:jcef-api:jcef-0cdd84c+cef-105.3.36+g88e0038+chromium-105.0.5195.102"/>
@@ -61,5 +82,16 @@
 	<classpathentry kind="lib" path="lib/org.easymock/easymock-4.2.jar"/>
 	<classpathentry kind="lib" path="lib/org.slf4j/slf4j-api/2.0.0/slf4j-api-2.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/org.slf4j/slf4j-simple/2.0.0/slf4j-simple-2.0.0.jar"/>
+	<classpathentry kind="src" output="target/classes" path="src/main/java-compiler-gen">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

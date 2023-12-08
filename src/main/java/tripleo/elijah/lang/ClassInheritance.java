@@ -8,7 +8,7 @@
  * 
  */
 /* Created on Aug 30, 2005 9:01:37 PM
- * 
+ *
  * $Id$
  *
  */
@@ -20,14 +20,14 @@ import java.util.List;
 
 public class ClassInheritance {
 
+	public final List<TypeName> tns = new ArrayList<TypeName>();
+
 	/**
 	 * Do nothing and wait for addAll or add.
 	 * Used by ClassBuilder
 	 */
 	public ClassInheritance() {
 	}
-
-	public final List<TypeName> tns = new ArrayList<TypeName>();
 
 	public void add(final TypeName tn) {
 		tns.add(tn);

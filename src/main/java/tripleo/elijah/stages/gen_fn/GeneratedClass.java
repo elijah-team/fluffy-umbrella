@@ -20,6 +20,7 @@ import tripleo.elijah.stages.gen_generic.CodeGenerator;
 import tripleo.elijah.stages.gen_generic.GenerateResult;
 import tripleo.elijah.util.Helpers;
 import tripleo.elijah.util.NotImplementedException;
+import tripleo.elijah.world.i.LivingClass;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 	private final OS_Module                                 module;
 	private final ClassStatement                            klass;
 	public        ClassInvocation                           ci;
+	public        LivingClass                               _living;
 	private       boolean                                   resolve_var_table_entries_already = false;
 
 	public GeneratedClass(final ClassStatement klass, final OS_Module module) {
@@ -76,47 +78,9 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 		return false;
 	}
 
-	@NotNull
-	public String getName() {
-		final StringBuilder sb = new StringBuilder();
-		sb.append(klass.getName());
-		if (ci.genericPart != null) {
-			sb.append("[");
-			final String joined = getNameHelper(ci.genericPart);
-			sb.append(joined);
-			sb.append("]");
-		}
-		return sb.toString();
-	}
-
-	@NotNull
-	private String getNameHelper(final Map<TypeName, OS_Type> aGenericPart) {
-		final List<String> ls = new ArrayList<String>();
-		for (final Map.Entry<TypeName, OS_Type> entry : aGenericPart.entrySet()) { // TODO Is this guaranteed to be in order?
-			final OS_Type value = entry.getValue(); // This can be another ClassInvocation using GenType
-			final String  name  = value.getClassOf().getName();
-			ls.add(name); // TODO Could be nested generics
-		}
-		return Helpers.String_join(", ", ls);
-	}
-
 	public void addConstructor(final ConstructorDef aConstructorDef, @NotNull final GeneratedConstructor aGeneratedFunction) {
 		constructors.put(aConstructorDef, aGeneratedFunction);
 	}
-
-	public ClassStatement getKlass() {
-		return this.klass;
-	}
-
-    @Override
-    public String identityString() {
-        return ""+klass;
-    }
-
-    @Override
-    public OS_Module module() {
-        return module;
-    }
 
 	public boolean resolve_var_table_entries(final @NotNull DeducePhase aDeducePhase) {
 		boolean Result = false;
@@ -127,8 +91,7 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 			if (varTableEntry.potentialTypes.size() == 0 && (varTableEntry.varType == null || varTableEntry.typeName.isNull())) {
 				final TypeName tn = varTableEntry.typeName;
 				if (tn != null) {
-					if (tn instanceof NormalTypeName) {
-						final NormalTypeName tn2 = (NormalTypeName) tn;
+					if (tn instanceof final NormalTypeName tn2) {
 						if (!tn.isNull()) {
 							final LookupResultList lrl  = tn.getContext().lookup(tn2.getName());
 							OS_Element             best = lrl.chooseBest(null);
@@ -208,9 +171,23 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 		return getKlass();
 	}
 
+	public ClassStatement getKlass() {
+		return this.klass;
+	}
+
 	@Override
 	public void generateCode(final CodeGenerator aCodeGenerator, final GenerateResult aGr) {
 		aCodeGenerator.generate_class(this, aGr);
+	}
+
+	@Override
+	public String identityString() {
+		return String.valueOf(klass);
+	}
+
+	@Override
+	public OS_Module module() {
+		return module;
 	}
 
 	@NotNull
@@ -326,6 +303,30 @@ public class GeneratedClass extends GeneratedContainerNC implements GNCoded {
 
 	public String toString() {
 		return String.format("<GeneratedClass %d %s>", getCode(), getName()); // TODO package, full-name
+	}
+
+	@NotNull
+	public String getName() {
+		final StringBuilder sb = new StringBuilder();
+		sb.append(klass.getName());
+		if (ci.genericPart != null) {
+			sb.append("[");
+			final String joined = getNameHelper(ci.genericPart);
+			sb.append(joined);
+			sb.append("]");
+		}
+		return sb.toString();
+	}
+
+	@NotNull
+	private String getNameHelper(final Map<TypeName, OS_Type> aGenericPart) {
+		final List<String> ls = new ArrayList<String>();
+		for (final Map.Entry<TypeName, OS_Type> entry : aGenericPart.entrySet()) { // TODO Is this guaranteed to be in order?
+			final OS_Type value = entry.getValue(); // This can be another ClassInvocation using GenType
+			final String  name  = value.getClassOf().getName();
+			ls.add(name); // TODO Could be nested generics
+		}
+		return Helpers.String_join(", ", ls);
 	}
 }
 

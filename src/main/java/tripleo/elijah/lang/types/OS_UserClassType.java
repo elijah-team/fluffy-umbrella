@@ -1,23 +1,18 @@
 package tripleo.elijah.lang.types;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import tripleo.elijah.comp.ErrSink;
-import tripleo.elijah.lang.ClassStatement;
-import tripleo.elijah.lang.NormalTypeName;
-import tripleo.elijah.lang.OS_Element;
-import tripleo.elijah.lang.TypeName;
-import tripleo.elijah.stages.deduce.ClassInvocation;
-import tripleo.elijah.stages.deduce.DeducePhase;
-import tripleo.elijah.stages.deduce.DeduceTypes2;
-import tripleo.elijah.stages.gen_fn.GenType;
+import org.jetbrains.annotations.*;
+import tripleo.elijah.comp.*;
+import tripleo.elijah.lang.*;
+import tripleo.elijah.stages.deduce.*;
+import tripleo.elijah.stages.gen_fn.*;
 
-import java.util.List;
+import java.text.*;
+import java.util.*;
 
 public class OS_UserClassType extends __Abstract_OS_Type {
-	private final ClassStatement _classStatement;
+	private final @NotNull ClassStatement _classStatement;
 
-	public OS_UserClassType(final ClassStatement aClassStatement) {
+	public OS_UserClassType(final @NotNull ClassStatement aClassStatement) {
 		_classStatement = aClassStatement;
 	}
 
@@ -29,6 +24,11 @@ public class OS_UserClassType extends __Abstract_OS_Type {
 	@Override
 	public Type getType() {
 		return Type.USER_CLASS;
+	}
+
+	@Override
+	public String asString() {
+		return MessageFormat.format("<OS_UserClassType {0}>", _classStatement);
 	}
 
 	@NotNull
@@ -51,5 +51,9 @@ public class OS_UserClassType extends __Abstract_OS_Type {
 	@Override
 	public ClassStatement getClassOf() {
 		return _classStatement;
+	}
+
+	protected boolean _isEqual(final OS_Type aType) {
+		return aType.getType() == Type.USER_CLASS && _classStatement.equals(((OS_UserClassType) aType)._classStatement);
 	}
 }

@@ -13,7 +13,9 @@ import tripleo.elijah.comp.Compilation;
 import tripleo.elijah.comp.IO;
 import tripleo.elijah.comp.StdErrSink;
 import tripleo.elijah.comp.internal.CompilationImpl;
+import tripleo.elijah.factory.comp.CompilationFactory;
 
+import static org.junit.Assert.assertEquals;
 import static tripleo.elijah.util.Helpers.List_of;
 
 /**
@@ -22,27 +24,33 @@ import static tripleo.elijah.util.Helpers.List_of;
 public class ClassInstantiationTest {
 
 	@Test
-	public void classInstantiation() throws Exception {
+	public void classInstantiation() {
 		final String      f = "test/basic1/class_instantiation/";
 		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
+
+		assertEquals(1, c.errorCount());
 	}
 
 	@Test
-	public void classInstantiation2() throws Exception {
+	public void classInstantiation2() {
 		final String      f = "test/basic1/class_instantiation2/";
 		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
+
+		assertEquals(0, c.errorCount());
 	}
 
 	@Test
-	public void classInstantiation3() throws Exception {
+	public void classInstantiation3() {
 		final String      f = "test/basic1/class_instantiation3/";
-		final Compilation c = new CompilationImpl(new StdErrSink(), new IO());
+		final Compilation c = CompilationFactory.mkCompilation(new StdErrSink(), new IO());
 
 		c.feedCmdLine(List_of(f));
+
+		assertEquals(1, c.errorCount());
 	}
 }
 

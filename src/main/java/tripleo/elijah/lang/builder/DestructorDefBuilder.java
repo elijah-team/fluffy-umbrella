@@ -8,14 +8,18 @@
  */
 package tripleo.elijah.lang.builder;
 
-import tripleo.elijah.lang.*;
+import tripleo.elijah.lang.ClassStatement;
+import tripleo.elijah.lang.Context;
+import tripleo.elijah.lang.DestructorDef;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.Scope3;
 
 /**
  * Created 12/23/20 12:13 AM
  */
 public class DestructorDefBuilder extends BaseFunctionDefBuilder {
-	private Context _context;
-    private final DestructorDefScope _scope = new DestructorDefScope();
+	private final DestructorDefScope _scope = new DestructorDefScope();
+	private       Context            _context;
 
 	@Override
 	public DestructorDef build() {

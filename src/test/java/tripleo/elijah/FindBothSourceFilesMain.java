@@ -7,7 +7,7 @@
  *
  */
 /**
- * 
+ *
  */
 package tripleo.elijah;
 
@@ -23,16 +23,16 @@ import java.io.IOException;
 public class FindBothSourceFilesMain {
 
 	public static void main(final String[] args) {
-		final FindBothSourceFiles f=new FindBothSourceFiles(/*"xx"*/);
+		final FindBothSourceFiles f = new FindBothSourceFiles(/*"xx"*/);
 		try {
 			f.compilerShouldFindBothParseFiles();
 		} catch (final Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		final GenBuffer gbn = new GenBuffer();
+		final GenBuffer       gbn  = new GenBuffer();
 		final CompilerContext cctx = new CompilerContext("fact.elijah");
-		new FactorialR().factorial_r(cctx , gbn);
+		new FactorialR().factorial_r(cctx, gbn);
 		try {
 			gbn.writeBuffers();
 		} catch (final IOException e) {

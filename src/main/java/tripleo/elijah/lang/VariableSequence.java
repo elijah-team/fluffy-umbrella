@@ -1,10 +1,10 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 package tripleo.elijah.lang;
 
@@ -21,11 +21,21 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 	@Nullable List<AnnotationClause>  annotations = null;
 	private   Context                 _ctx;
 
-	private OS_Element parent;
+	private OS_Element     parent;
 	private AccessNotation access_note;
 
 	private TypeModifiers def;
-	private El_Category    category;
+	private El_Category   category;
+
+	@Deprecated
+	public VariableSequence() {
+		stmts = new ArrayList<VariableStatement>();
+	}
+
+	public VariableSequence(final Context aContext) {
+		stmts = new ArrayList<VariableStatement>();
+		_ctx  = aContext;
+	}
 
 	public VariableStatement next() {
 		final VariableStatement st = new VariableStatement(this);
@@ -36,29 +46,6 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 
 	public Collection<VariableStatement> items() {
 		return stmts;
-	}
-
-	@Deprecated
-	public VariableSequence() {
-		stmts = new ArrayList<VariableStatement>();
-	}
-
-	@Override
-	public OS_Element getParent() {
-		return this.parent;
-	}
-
-	public void setParent(final OS_Element parent) {
-		this.parent = parent;
-	}
-
-	@Override
-	public Context getContext() {
-		return _ctx;
-	}
-
-	public void setContext(final Context ctx) {
-		_ctx = ctx;
 	}
 
 	@Override
@@ -76,31 +63,34 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 		visit.visitVariableSequence(this);
 	}
 
+	@Override
+	public Context getContext() {
+		return _ctx;
+	}
+
+	@Override
+	public OS_Element getParent() {
+		return this.parent;
+	}
+
+	public void setParent(final OS_Element parent) {
+		this.parent = parent;
+	}
+
+	public void setContext(final Context ctx) {
+		_ctx = ctx;
+	}
+
+	// region ClassItem
+
 	public void addAnnotation(final AnnotationClause a) {
 		if (annotations == null)
 			annotations = new ArrayList<AnnotationClause>();
 		annotations.add(a);
 	}
 
-	// region ClassItem
-
-	public VariableSequence(final Context aContext) {
-		stmts = new ArrayList<VariableStatement>();
-		_ctx  = aContext;
-	}
-
 	public void defaultModifiers(final TypeModifiers aModifiers) {
 		def = aModifiers;
-	}
-
-	@Override
-	public void setCategory(final El_Category aCategory) {
-		category = aCategory;
-	}
-
-	@Override
-	public void setAccess(final AccessNotation aNotation) {
-		access_note = aNotation;
 	}
 
 	@Override
@@ -109,8 +99,18 @@ public class VariableSequence implements StatementItem, FunctionItem, ClassItem 
 	}
 
 	@Override
+	public void setCategory(final El_Category aCategory) {
+		category = aCategory;
+	}
+
+	@Override
 	public AccessNotation getAccess() {
 		return access_note;
+	}
+
+	@Override
+	public void setAccess(final AccessNotation aNotation) {
+		access_note = aNotation;
 	}
 
 	// endregion

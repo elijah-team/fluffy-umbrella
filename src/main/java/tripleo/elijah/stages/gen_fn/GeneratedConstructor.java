@@ -20,7 +20,7 @@ import tripleo.elijah.stages.deduce.NamespaceInvocation;
 /**
  * Created 6/27/21 9:45 AM
  */
-public class GeneratedConstructor extends BaseGeneratedFunction {
+public class GeneratedConstructor extends BaseGeneratedFunction_1 {
 	public final @Nullable ConstructorDef cd;
 
 	public GeneratedConstructor(final @Nullable ConstructorDef aConstructorDef) {
@@ -31,15 +31,12 @@ public class GeneratedConstructor extends BaseGeneratedFunction {
 		final GenType genType = new GenType();
 
 		// TODO will fail on namespace constructors; next line too
-		if (genType.ci instanceof ClassInvocation) {
+		if (genType.ci instanceof final ClassInvocation classInvocation) {
 //			throw new IllegalStateException("34 Needs class invocation");
-
-			final ClassInvocation classInvocation = (ClassInvocation) genType.ci;
 
 			genType.ci       = classInvocation;
 			genType.resolved = classInvocation.getKlass().getOS_Type();
-		} else if (genType.ci instanceof NamespaceInvocation) {
-			final NamespaceInvocation namespaceInvocation = (NamespaceInvocation) genType.ci;
+		} else if (genType.ci instanceof final NamespaceInvocation namespaceInvocation) {
 
 			genType.ci       = namespaceInvocation;
 			genType.resolved = namespaceInvocation.getNamespace().getOS_Type();
@@ -68,6 +65,11 @@ public class GeneratedConstructor extends BaseGeneratedFunction {
 	// endregion
 
 	@Override
+	public String identityString() {
+		return String.valueOf(cd);
+	}
+
+	@Override
 	public @NotNull BaseFunctionDef getFD() {
 		if (cd == null) throw new IllegalStateException("No function");
 		return cd;
@@ -79,11 +81,6 @@ public class GeneratedConstructor extends BaseGeneratedFunction {
 			return getVarTableEntry(0);
 		else
 			return null;
-	}
-
-	@Override
-	public String identityString() {
-		return ""+cd;
 	}
 
 }

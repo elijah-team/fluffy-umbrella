@@ -76,8 +76,8 @@ public class DeduceTypesTest2 {
 		System.out.println(x);
 //		Assert.assertEquals(new OS_Type(BuiltInTypes.SystemInteger).getBType(), x.getBType());
 //		final RegularTypeName tn = new RegularTypeName();
-		final VariableTypeName tn = new VariableTypeName();
-		final Qualident tnq = new Qualident();
+		final VariableTypeName tn  = new VariableTypeName();
+		final Qualident        tnq = new Qualident();
 		tnq.append(Helpers.string_to_ident("SystemInteger"));
 		tn.setName(tnq);
 		tn.setContext(fd.getContext());
@@ -89,7 +89,7 @@ public class DeduceTypesTest2 {
 
 	private boolean genTypeEquals(final GenType a, final GenType b) {
 		// TODO hack
-		return a.typeName.equals(b.typeName) &&
-				a.resolved.equals(b.resolved);
+		return a.typeName.isEqual(b.typeName) &&
+		  a.resolved.isEqual(b.resolved);
 	}
 }

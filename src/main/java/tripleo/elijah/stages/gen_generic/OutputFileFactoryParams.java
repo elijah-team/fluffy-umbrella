@@ -39,11 +39,11 @@ public class OutputFileFactoryParams {
 		return verbosity;
 	}
 
-	public PipelineLogic getPipelineLogic() {
-		return pipelineLogic;
-	}
-
 	public void addLog(final ElLog aLOG) {
 		getPipelineLogic().addLog(aLOG);
+	}
+
+	public PipelineLogic getPipelineLogic() {
+		return pipelineLogic;
 	}
 }

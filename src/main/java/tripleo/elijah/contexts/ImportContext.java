@@ -27,7 +27,7 @@ import java.util.List;
  * Created 8/15/20 7:09 PM
  */
 public class ImportContext extends Context {
-	private final Context _parent;
+	private final Context         _parent;
 	private final ImportStatement carrier;
 
 	public ImportContext(final Context aParent, final ImportStatement imp) {
@@ -38,7 +38,7 @@ public class ImportContext extends Context {
 	@Override
 	public LookupResultList lookup(final String name, final int level, final LookupResultList Result, final List<Context> alreadySearched, final boolean one) {
 		alreadySearched.add(this);
-		tripleo.elijah.util.Stupidity.println_err2("2002 " + importStatement.importList());
+//		tripleo.elijah.util.Stupidity.println_err2("2002 " + this.carrier.importList());
 		final Compilation compilation = compilation();
 		for (final Qualident importStatementItem : carrier.parts()) {
 			tripleo.elijah.util.Stupidity.println_err2("2005 " + importStatementItem);
@@ -52,8 +52,7 @@ public class ImportContext extends Context {
 						final NamespaceContext namespaceContext = (NamespaceContext) element.getContext();
 						alreadySearched.add(namespaceContext);
 						namespaceContext.lookup(name, level, Result, alreadySearched, true);
-					} else if (element instanceof OS_Element2) {
-						final OS_Element2 element2 = (OS_Element2) element;
+					} else if (element instanceof final OS_Element2 element2) {
 						if (element2.name().equals(name)) {
 							Result.add(name, level, element, this);
 							break; // shortcut: should only have one in scope
@@ -62,8 +61,8 @@ public class ImportContext extends Context {
 				}
 			} else {
 				// find directly imported elements
-				final List<IdentExpression> x = importStatementItem.parts();
-				final IdentExpression last = x.get(x.size() - 1);
+				final List<IdentExpression> x    = importStatementItem.parts();
+				final IdentExpression       last = x.get(x.size() - 1);
 				if (last.getText().equals(name)) {
 					final Qualident cl = new Qualident();
 					for (int i = 0; i < x.size() - 1; i++) {

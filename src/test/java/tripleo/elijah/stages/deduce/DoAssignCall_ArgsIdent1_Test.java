@@ -12,7 +12,6 @@ import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.FunctionDef;
 import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.lang.LookupResultList;
-import tripleo.elijah.lang.OS_Element;
 import tripleo.elijah.lang.OS_Module;
 import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang.VariableSequence;
@@ -29,10 +28,11 @@ import tripleo.elijah.stages.instructions.VariableTableType;
 import tripleo.elijah.stages.logging.ElLog;
 import tripleo.elijah.util.Helpers;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import static org.easymock.EasyMock.*;
 import static tripleo.elijah.stages.logging.ElLog.Verbosity.VERBOSE;
+import static tripleo.elijah.util.Helpers.List_of;
 
 public class DoAssignCall_ArgsIdent1_Test {
 	/*
@@ -43,33 +43,29 @@ public class DoAssignCall_ArgsIdent1_Test {
 
 	@Test
 	public void f1_eq_factorial_b1() {
-		final CompilationImpl c             = new CompilationImpl(new StdErrSink(), new IO());
-		final OS_Module       mod           = mock(OS_Module.class);
-		final PipelineLogic   pipelineLogic = new PipelineLogic(new AccessBus(c));
-		final GeneratePhase   generatePhase = new GeneratePhase(VERBOSE, pipelineLogic, c);
-		final DeducePhase     phase         = new DeducePhase(generatePhase, pipelineLogic, ElLog.Verbosity.VERBOSE, c);
+		final CompilationImpl c = new CompilationImpl(new StdErrSink(), new IO());
 
-		expect(mod.getCompilation()).andReturn(c);
-		expect(mod.getFileName()).andReturn("foo.elijah");
-//		expect(mod.getCompilation()).andReturn(c);
-//		expect(mod.getCompilation()).andReturn(c);
-//		expect(mod.getCompilation()).andReturn(c);
+		final OS_Module mod = new OS_Module();
+		mod.setParent(c);
+		mod.setFileName("foo.elijah");
 
-		replay(mod);
+		final PipelineLogic pipelineLogic = new PipelineLogic(new AccessBus(c));
+		final GeneratePhase generatePhase = new GeneratePhase(VERBOSE, pipelineLogic, c);
+		final DeducePhase   phase         = new DeducePhase(generatePhase, pipelineLogic, ElLog.Verbosity.VERBOSE, c);
 
 		final DeduceTypes2 d = new DeduceTypes2(mod, phase);
 
-		final FunctionDef fd = mock(FunctionDef.class);
-//		final GeneratedFunction generatedFunction = mock(GeneratedFunction.class);
+		final FunctionDef fd = new FunctionDef(mod, new FunctionContext(null, null));
+		fd.setName(Helpers.string_to_ident("no_function_name"));
+
 		final GeneratedFunction generatedFunction = new GeneratedFunction(fd);
-		final TypeTableEntry    self_type         = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, new OS_UserClassType(mock(ClassStatement.class)));
-		final int               index_self        = generatedFunction.addVariableTableEntry("self", VariableTableType.SELF, self_type, null);
-		final TypeTableEntry    result_type       = null;
-		final int               index_result      = generatedFunction.addVariableTableEntry("Result", VariableTableType.RESULT, result_type, null);
-		final OS_Type           sts_int           = new OS_BuiltinType(BuiltInTypes.SystemInteger);
-		final TypeTableEntry    b1_type           = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, sts_int);
-		final OS_Type           b1_attached       = sts_int;
-		b1_type.setAttached(sts_int);
+
+		final TypeTableEntry self_type    = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, new OS_UserClassType(mock(ClassStatement.class)));
+		final int            index_self   = generatedFunction.addVariableTableEntry("self", VariableTableType.SELF, self_type, null);
+		final TypeTableEntry result_type  = null;
+		final int            index_result = generatedFunction.addVariableTableEntry("Result", VariableTableType.RESULT, result_type, null);
+		final OS_Type        b1_attached  = new OS_BuiltinType(BuiltInTypes.SystemInteger);
+		final TypeTableEntry b1_type      = generatedFunction.newTypeTableEntry(TypeTableEntry.Type.SPECIFIED, b1_attached);
 		final int             index_b1 = generatedFunction.addVariableTableEntry("b1", VariableTableType.VAR, b1_type, null);
 		final FunctionContext ctx      = mock(FunctionContext.class);
 
@@ -82,23 +78,24 @@ public class DoAssignCall_ArgsIdent1_Test {
 
 		expect(ctx.lookup("b1")).andReturn(lrl_b1);
 
-		replay(fd, /*generatedFunction,*/ ctx, b1_ctx);
+		replay(ctx, b1_ctx);
 
-		final TypeTableEntry vte_tte = null;
-		final OS_Element     el      = null;
+//		final TypeTableEntry vte_tte = null;
+//		final OS_Element     el      = null;
 
-		final VariableTableEntry vte              = generatedFunction.getVarTableEntry(index_self);
-		final int                instructionIndex = -1;
-		final ProcTableEntry pte              = new ProcTableEntry(-2, null, null, new ArrayList()/*List_of()*/);
-		final int            i                = 0;
-		final TypeTableEntry tte = new TypeTableEntry(-3, TypeTableEntry.Type.SPECIFIED, null, null, null);
-		final IdentExpression identExpression = Helpers.string_to_ident("b1"); // TODO ctx
+		final VariableTableEntry   vte              = generatedFunction.getVarTableEntry(index_self);
+		final int                  instructionIndex = -1;
+		final List<TypeTableEntry> objects          = List_of();
+		final ProcTableEntry       pte              = new ProcTableEntry(-2, null, null, objects);
+		final int                  i                = 0;
+		final TypeTableEntry       tte              = new TypeTableEntry(-3, TypeTableEntry.Type.SPECIFIED, null, null, null);
+		final IdentExpression      identExpression  = Helpers.string_to_ident("b1"); // TODO ctx
 
 		d.do_assign_call_args_ident(generatedFunction, ctx, vte, instructionIndex, pte, i, tte, identExpression);
 
 		d.onExitFunction(generatedFunction, ctx, ctx);
 
-		verify(mod, fd, /*generatedFunction,*/ ctx);
+		verify(ctx, b1_ctx);
 	}
 
 }

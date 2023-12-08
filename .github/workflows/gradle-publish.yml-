@@ -1,0 +1,32 @@
+name: Gradle Release
+
+on:
+  release:
+    types: [ created ]
+
+jobs:
+  gradle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17 Temruin
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+        settings-path: ${{ github.workspace }} # location for the settings.xml file
+
+#      - name: Set up JDK 16 Zulu
+#        uses: actions/setup-java@v3
+#        with:
+#          java-version: '16'
+#          distribution: 'zulu'
+#          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+#          settings-path: ${{ github.workspace }} # location for the settings.xml file
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Execute Gradle build
+        run: ./gradlew build

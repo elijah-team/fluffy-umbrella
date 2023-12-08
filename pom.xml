@@ -3,20 +3,22 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>tripleo.elijah</groupId>
     <artifactId>elijah-v1-fluffy-umbrella</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>idea-mod-deduce</module>
-        <module>idea-mod-generate</module>
-    </modules>
-    <version>0.0.9-flum-main-230119-001-rel</version>
+    <packaging>jar</packaging>
+    <!--    <modules>
+            <module>idea-mod-deduce</module>
+            <module>idea-mod-generate</module>
+            <module>idea-mod-compiler-impl</module>
+        </modules>
+    -->
+    <version>0.0.9-flum-mainline-230416-SNAPSHOT</version>
     <name>eljc-v1-fluffy-umbrella</name>
     <url>http://github.com/elijah-team/fluffy-umbrella/</url>
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>16</maven.compiler.source>
+        <maven.compiler.target>16</maven.compiler.target>
         <jacoco.version>0.8.6</jacoco.version>
         <downloadSources>true</downloadSources>
-        <guava.version>29.0-jre</guava.version>
+        <guava.version>30.0-jre</guava.version>
         <buffers.version>0.0.3</buffers.version>
         <range.version>0.0.3b</range.version>
         <maven-site-plugin.version>3.7.1</maven-site-plugin.version>
@@ -25,6 +27,75 @@
     </properties>
 
     <dependencies>
+
+        <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.10.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.codahale.metrics/metrics-healthchecks -->
+        <dependency>
+            <groupId>com.codahale.metrics</groupId>
+            <artifactId>metrics-healthchecks</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.codahale.metrics/metrics-core -->
+        <dependency>
+            <groupId>com.codahale.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.jooq/jool -->
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jool</artifactId>
+            <version>0.9.14</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.hashids/hashids -->
+        <dependency>
+            <groupId>org.hashids</groupId>
+            <artifactId>hashids</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.typesafe/config -->
+        <dependency>
+            <groupId>com.typesafe</groupId>
+            <artifactId>config</artifactId>
+            <version>1.4.2</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.14.2</version>
+        </dependency>
+        
+
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-servlet</artifactId>
+            <version>2.3.4.Final</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
 
         <!-- https://search.maven.org/artifact/io.reactivex.rxjava3/rxjava/3.1.0/jar -->
         <dependency>
@@ -93,7 +164,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
 
@@ -163,6 +234,19 @@
             <artifactId>range-v1</artifactId>
             <version>${range.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-core</artifactId>
+            <version>2.2.22.Final</version>
+        </dependency>
+<!--
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>7.1.0</version>
+            <scope>test</scope>
+        </dependency>
+-->
 
     </dependencies>
 
@@ -200,23 +284,45 @@
 -->
 
     <build>
-        <!--
         <plugins>
-        <plugin>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-maven-plugin</artifactId>
-            <version>4.7.1</version>
-            <executions>
-                <execution>
-                    <goals>
-                        <goal>antlr4</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
-        </plugins>
-        -->
-        <plugins>
+            <!--
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>4.7.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.2.0</version>
+
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/java-compiler-gen/</source>
+                                <source>src/main-mal/</source>
+                                <source>src/main-undertow/java/</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -225,36 +331,35 @@
             </plugin>
             -->
             <!-- Setup Javadoc jar -->
-<!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <groups>
-                        <group>
-                            <title>User packages</title>
-                            <packages>tripleo.elijah:tripleo.elijah.diagnostic:tripleo.elijah.lang2:tripleo.elijah.util</packages>
-                        </group>
-                        <group>
-                            <title>Implementation packages</title>
-                            <packages>tripleo.elijah.ci:tripleo.elijah.comp:tripleo.elijah.contexts:tripleo.elijah.gen:tripleo.elijah.lang:
-                                tripleo.elijah.stages.deduce:tripleo.elijah.stages.expand:tripleo.elijah.stages.gen_c:tripleo.elijah.stages.gen_fn:
-                                tripleo.elijah.stages.generate:tripleo.elijah.stages.instructions:tripleo.elijah.stages.translate
-                            </packages>
-                        </group>
-                    </groups>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
--->
+            <!--
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-javadoc-plugin</artifactId>
+                            <configuration>
+                                <groups>
+                                    <group>
+                                        <title>User packages</title>
+                                        <packages>tripleo.elijah:tripleo.elijah.diagnostic:tripleo.elijah.lang2:tripleo.elijah.util</packages>
+                                    </group>
+                                    <group>
+                                        <title>Implementation packages</title>
+                                        <packages>tripleo.elijah.ci:tripleo.elijah.comp:tripleo.elijah.contexts:tripleo.elijah.gen:tripleo.elijah.lang:
+                                            tripleo.elijah.stages.deduce:tripleo.elijah.stages.expand:tripleo.elijah.stages.gen_c:tripleo.elijah.stages.gen_fn:
+                                            tripleo.elijah.stages.generate:tripleo.elijah.stages.instructions:tripleo.elijah.stages.translate
+                                        </packages>
+                                    </group>
+                                </groups>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <id>attach-javadocs</id>
+                                    <phase>package</phase>
+                                    <goals>
+                                        <goal>jar</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -266,8 +371,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M5</version>
             </plugin>
+            -->
 
             <!-- To use the plugin goals in your POM or parent POM -->
+<!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
@@ -279,10 +386,10 @@
                 <artifactId>maven-source-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
-                    <!--
+                    &lt;!&ndash;
                                         <outputDirectory>/absolute/path/to/the/output/directory</outputDirectory>
                                         <finalName>filename-of-generated-jar-file</finalName>
-                    -->
+                    &ndash;&gt;
                     <attach>true</attach>
                 </configuration>
                 <executions>
@@ -294,6 +401,7 @@
                     </execution>
                 </executions>
             </plugin>
+-->
 
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -313,35 +421,43 @@
                         </goals>
                     </execution>
                     <!--
-                                        <execution>
-                                            <id>jacoco-check</id>
-                                            <goals>
-                                                <goal>check</goal>
-                                            </goals>
-                                            <configuration>
-                                                <rules>
-                                                    <rule>
-                                                        <element>PACKAGE</element>
-                                                        <limits>
-                                                            <limit>
-                                                                <counter>LINE</counter>
-                                                                <value>COVEREDRATIO</value>
-                                                                <minimum>0.4</minimum>
-                                                            </limit>
-                                                        </limits>
-                                                    </rule>
-                                                </rules>
-                                            </configuration>
-                                        </execution>
+                    <execution>
+                        <id>jacoco-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>PACKAGE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.4</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
                     -->
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>16</source>
+                    <target>16</target>
+                </configuration>
             </plugin>
 
         </plugins>
 
-<!--
         <pluginManagement>
             <plugins>
+                <!--
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
@@ -363,11 +479,9 @@
                         </dependency>
                     </dependencies>
                 </plugin>
-
+                -->
             </plugins>
         </pluginManagement>
--->
-
     </build>
 
     <!--
@@ -392,7 +506,6 @@
                 </plugin>
             </plugins>
         </reporting>
-
     -->
 
 </project>

@@ -115,7 +115,7 @@ public class DeduceTypesTest {
 
 	@Contract(value = "null, _ -> false", pure = true)
 	private boolean genTypeTypenameEquals(final OS_Type aType, final @NotNull GenType genType) {
-		return genType.typeName.equals(aType);
+		return genType.typeName.isEqual(aType); // minikanren 04/15
 	}
 
 	@Test
@@ -142,7 +142,7 @@ public class DeduceTypesTest {
 
 		Assert.assertEquals(new OS_UserType(tn).getTypeName(), x.typeName.getTypeName());
 		Assert.assertTrue(genTypeTypenameEquals(new OS_UserType(tn), x));
-		Assert.assertEquals(new OS_UserType(tn).toString(), x.typeName.toString());
+		Assert.assertEquals(new OS_UserType(tn).asString(), x.typeName.asString());
 	}
 
 }

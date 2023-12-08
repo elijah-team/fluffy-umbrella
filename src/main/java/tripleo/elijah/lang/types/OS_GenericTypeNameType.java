@@ -10,7 +10,10 @@ package tripleo.elijah.lang.types;
 
 import tripleo.elijah.contexts.ClassContext;
 import tripleo.elijah.lang.OS_Element;
+import tripleo.elijah.lang.OS_Type;
 import tripleo.elijah.lang.TypeName;
+
+import java.text.MessageFormat;
 
 
 /**
@@ -34,10 +37,20 @@ public class OS_GenericTypeNameType extends __Abstract_OS_Type {
 		return Type.GENERIC_TYPENAME;
 	}
 
+	@Override
+	public String asString() {
+		return MessageFormat.format("<OS_GenericTypeNameType {0}>", genericTypename);
+	}
+
 	public TypeName getRealTypeName() {
 		return genericTypename.getTypeName();
 	}
+
+	protected boolean _isEqual(final OS_Type aType) {
+		return aType.getType() == Type.GENERIC_TYPENAME && genericTypename.equals(((OS_GenericTypeNameType) aType).genericTypename);
+	}
 }
+
 
 //
 //

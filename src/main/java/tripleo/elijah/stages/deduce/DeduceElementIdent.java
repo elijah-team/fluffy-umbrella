@@ -69,7 +69,9 @@ public class DeduceElementIdent {
 				}
 			});
 		} catch (final ResolveError aE) {
-			_resolvedElementPromise.reject(aE);
+			System.err.println("** 72 ResolveError: " + identTableEntry.getIdent().getText());
+			if (_resolvedElementPromise.isPending())
+				_resolvedElementPromise.reject(aE); // TODO feb 20
 		}
 	}
 

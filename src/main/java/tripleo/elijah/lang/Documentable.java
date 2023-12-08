@@ -12,7 +12,7 @@ import antlr.Token;
 
 /**
  * @author Tripleo
- *
+ * <p>
  * Created 	Mar 23, 2020 at 3:51:43 AM
  */
 public interface Documentable {

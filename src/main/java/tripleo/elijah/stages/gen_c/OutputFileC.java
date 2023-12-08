@@ -88,7 +88,7 @@ public class OutputFileC implements IOutputFile {
 		sb.append('\n');
 
 		for (final Dependency dependency : wnd) {
-			final String resolvedString = "" + dependency.resolved;
+			final String resolvedString = String.valueOf(dependency.resolved);
 			final String output         = String.format("//#include \"%s\" // for %s\n", "nothing.h", resolvedString);
 			sb.append(output);
 		}

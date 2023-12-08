@@ -50,27 +50,38 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 ////		return items;
 //	}
 
+	@Override
+	public List<FormalArgListItem> getArgs() {
+		return mFal.falis;
+	}
+
+	@Override
+	public OS_Element getParent() {
+//		throw new NotImplementedException();
+		return null; // getContext().getParent().carrier() except if it is an Expression; but Expression is not an Element
+	}
+
+	// region arglist
+
+	@Override
+	public Context getContext() {
+		return _ctx;
+	}
+
 	public void setContext(final FuncExprContext ctx) {
 		_ctx = ctx;
 	}
+
+	// endregion
 
 	@Override
 	public void postConstruct() {
 		// nop
 	}
 
-	// region arglist
-
-	@Override
-	public List<FormalArgListItem> getArgs() {
-		return mFal.falis;
-	}
-
 	public void setArgList(final FormalArgList argList) {
 		mFal = argList;
 	}
-
-	// endregion
 
 	/****** FOR IEXPRESSION ******/
 	@Override
@@ -96,20 +107,16 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 	@Override
 	public String repr_() {
 		return null;
-	}
-
-	@Override
-	public boolean is_simple() {
-		return false;
-	}
-
-	/************* FOR THE OTHER ONE ******************/
+	}	/************* FOR THE OTHER ONE ******************/
 	@Override
 	public void setType(final OS_Type deducedExpression) {
 		_type = deducedExpression;
 	}
 
 	@Override
+	public boolean is_simple() {
+		return false;
+	}	@Override
 	public OS_Type getType() {
 		return _type;
 	}
@@ -119,25 +126,18 @@ public class FuncExpr extends BaseFunctionDef implements IExpression, OS_Element
 		visit.visitFuncExpr(this);
 	}
 
-	@Override
-	public OS_Element getParent() {
-//		throw new NotImplementedException();
-		return null; // getContext().getParent().carrier() except if it is an Expression; but Expression is not an Element
+	public Scope3 getScope() {
+		return scope3;
 	}
 
-	@Override
-	public Context getContext() {
-		return _ctx;
-	}
+
 
 //	@Override
 //	public void scope(Scope3 sco) {
 //		scope3 = sco;
 //	}
 
-	public Scope3 getScope() {
-		return scope3;
-	}
+
 }
 
 //

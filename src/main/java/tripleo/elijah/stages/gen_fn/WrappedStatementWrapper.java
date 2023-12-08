@@ -22,12 +22,12 @@ import tripleo.elijah.lang.VariableStatement;
  * Created 9/18/21 4:03 AM
  */
 public class WrappedStatementWrapper extends StatementWrapper {
-	private final Wrapped wrapped;
+	private final Wrapped           wrapped;
 	private final VariableStatement vs;
 
 	public WrappedStatementWrapper(final IExpression aExpression, final Context aContext, final OS_Element aParent, final VariableStatement aVs) {
 		super(aExpression, aContext, aParent);
-		vs = aVs;
+		vs      = aVs;
 		wrapped = new Wrapped(aVs, aExpression);
 	}
 
@@ -42,11 +42,11 @@ public class WrappedStatementWrapper extends StatementWrapper {
 	class Wrapped extends AbstractExpression {
 
 		private final VariableStatement variableStatement;
-		private final IExpression expression;
+		private final IExpression       expression;
 
 		public Wrapped(final VariableStatement aVariableStatement, final IExpression aExpression) {
 			variableStatement = aVariableStatement;
-			expression = aExpression;
+			expression        = aExpression;
 		}
 
 		@Override
@@ -55,13 +55,13 @@ public class WrappedStatementWrapper extends StatementWrapper {
 		}
 
 		@Override
-		public void setType(final OS_Type deducedExpression) {
-
+		public OS_Type getType() {
+			return null;
 		}
 
 		@Override
-		public OS_Type getType() {
-			return null;
+		public void setType(final OS_Type deducedExpression) {
+
 		}
 	}
 }

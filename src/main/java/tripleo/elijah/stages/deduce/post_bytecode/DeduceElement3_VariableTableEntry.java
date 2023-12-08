@@ -2,7 +2,10 @@ package tripleo.elijah.stages.deduce.post_bytecode;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jdeferred2.Promise;
+import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,6 +16,8 @@ import tripleo.elijah.lang.AliasStatement;
 import tripleo.elijah.lang.ClassStatement;
 import tripleo.elijah.lang.Context;
 import tripleo.elijah.lang.FormalArgListItem;
+import tripleo.elijah.lang.FunctionDef;
+import tripleo.elijah.lang.IdentExpression;
 import tripleo.elijah.lang.LookupResultList;
 import tripleo.elijah.lang.NormalTypeName;
 import tripleo.elijah.lang.OS_Element;
@@ -21,10 +26,13 @@ import tripleo.elijah.lang.TypeName;
 import tripleo.elijah.lang.VariableStatement;
 import tripleo.elijah.lang.types.OS_UserType;
 import tripleo.elijah.nextgen.query.Operation2;
+import tripleo.elijah.stages.deduce.ClassInvocation;
 import tripleo.elijah.stages.deduce.DeduceLookupUtils;
 import tripleo.elijah.stages.deduce.DeducePhase;
 import tripleo.elijah.stages.deduce.DeduceTypes2;
 import tripleo.elijah.stages.deduce.FoundElement;
+import tripleo.elijah.stages.deduce.FunctionInvocation;
+import tripleo.elijah.stages.deduce.IInvocation;
 import tripleo.elijah.stages.deduce.ResolveError;
 import tripleo.elijah.stages.deduce.post_bytecode.DED.DED_VTE;
 import tripleo.elijah.stages.gen_fn.BaseGeneratedFunction;
@@ -32,6 +40,8 @@ import tripleo.elijah.stages.gen_fn.BaseTableEntry;
 import tripleo.elijah.stages.gen_fn.GenType;
 import tripleo.elijah.stages.gen_fn.GeneratedFunction;
 import tripleo.elijah.stages.gen_fn.GenericElementHolder;
+import tripleo.elijah.stages.gen_fn.IdentTableEntry;
+import tripleo.elijah.stages.gen_fn.ProcTableEntry;
 import tripleo.elijah.stages.gen_fn.TypeTableEntry;
 import tripleo.elijah.stages.gen_fn.VariableTableEntry;
 import tripleo.elijah.stages.instructions.IdentIA;
@@ -66,6 +76,16 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
 	}
 
+	@NotNull
+	private static ArrayList<TypeTableEntry> getPotentialTypesVte(@NotNull final GeneratedFunction generatedFunction, @NotNull final InstructionArgument vte_index) {
+		return getPotentialTypesVte(generatedFunction.getVarTableEntry(to_int(vte_index)));
+	}
+
+	@NotNull
+	static ArrayList<TypeTableEntry> getPotentialTypesVte(@NotNull final VariableTableEntry vte) {
+		return new ArrayList<TypeTableEntry>(vte.potentialTypes());
+	}
+
 	@Override
 	public void resolve(final IdentIA aIdentIA, final Context aContext, final FoundElement aFoundElement) {
 		throw new UnsupportedOperationException("Should not be reached");
@@ -78,7 +98,7 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 
 	@Override
 	public OS_Element getPrincipal() {
-		return principal.getDeduceElement3().getPrincipal();
+		return principal.getResolvedElement();
 	}
 
 	@Override
@@ -112,7 +132,7 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 		final OS_Type x = vte.type.getAttached();
 		if (x == null && vte.potentialTypes().size() == 0) {
 			final Diagnostic diag;
-			if (vte.vtt == VariableTableType.TEMP) {
+			if (vte.vtt()== VariableTableType.TEMP) {
 				diag = new Diagnostic_8884(vte, gf);
 			} else {
 				diag = new Diagnostic_8885(vte);
@@ -162,16 +182,6 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 		generatedFunction = aGeneratedFunction;
 	}
 
-	@NotNull
-	private static ArrayList<TypeTableEntry> getPotentialTypesVte(@NotNull final GeneratedFunction generatedFunction, @NotNull final InstructionArgument vte_index) {
-		return getPotentialTypesVte(generatedFunction.getVarTableEntry(to_int(vte_index)));
-	}
-
-	@NotNull
-	static ArrayList<TypeTableEntry> getPotentialTypesVte(@NotNull final VariableTableEntry vte) {
-		return new ArrayList<TypeTableEntry>(vte.potentialTypes());
-	}
-
 	public void potentialTypesRunnableDo(final @Nullable InstructionArgument vte_ia, final @NotNull ElLog aLOG, final @NotNull VariableTableEntry aVte1, final ErrSink errSink, final Context ctx, final String aE_text, final @NotNull VariableTableEntry aVte) {
 		final @NotNull List<TypeTableEntry> ll = getPotentialTypesVte((GeneratedFunction) generatedFunction, vte_ia);
 		doLogic(ll, aVte1.typePromise(), aLOG, aVte1, errSink, ctx, aE_text, aVte);
@@ -211,9 +221,8 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 			}
 			final LookupResultList lrl = ctx.lookup(e_text);
 			@Nullable final OS_Element best = lrl.chooseBest(null);
-			if (best instanceof FormalArgListItem) {
-				@NotNull final FormalArgListItem fali   = (FormalArgListItem) best;
-				final @NotNull OS_Type           osType = new OS_UserType(fali.typeName());
+			if (best instanceof @NotNull final FormalArgListItem fali) {
+				final @NotNull OS_Type osType = new OS_UserType(fali.typeName());
 				if (!osType.equals(vte.type.getAttached())) {
 					@NotNull final TypeTableEntry tte1 = generatedFunction.newTypeTableEntry(
 					  TypeTableEntry.Type.SPECIFIED, osType, fali.getNameToken(), vte1);
@@ -240,8 +249,7 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 //								vte.type = tte1;
 //								tte.attached = tte1.attached;
 //								vte.setStatus(BaseTableEntry.Status.KNOWN, best);
-			} else if (best instanceof VariableStatement) {
-				final @NotNull VariableStatement vs = (VariableStatement) best;
+			} else if (best instanceof final @NotNull VariableStatement vs) {
 				//
 				assert vs.getName().equals(e_text);
 				//
@@ -284,6 +292,98 @@ public class DeduceElement3_VariableTableEntry extends DefaultStateful implement
 		}
 	}
 
+	public void _action_002_no_resolved_element(final ErrSink errSink, final ProcTableEntry pte, final IdentTableEntry ite, final DeduceTypes2.@NotNull DeduceClient3 dc, final @NotNull DeducePhase phase) {
+		final DeferredObject<Context, Void, Void> d = new DeferredObject<Context, Void, Void>();
+		d.then(context -> {
+			try {
+//				final Context context = resolvedElement.getContext();
+				final LookupResultList     lrl2 = dc.lookupExpression(ite.getIdent(), context);
+				@Nullable final OS_Element best = lrl2.chooseBest(null);
+				assert best != null;
+				ite.setStatus(BaseTableEntry.Status.KNOWN, new GenericElementHolder(best));
+				action_002_1(pte, ite, false, dc, phase);
+			} catch (final ResolveError aResolveError) {
+				errSink.reportDiagnostic(aResolveError);
+				assert false;
+			}
+		});
+
+		final VariableTableEntry backlink = principal;
+
+		final OS_Element resolvedElement = backlink.getResolvedElement();
+		assert resolvedElement != null;
+
+		if (resolvedElement instanceof IdentExpression) {
+			backlink.typePromise().then(result -> {
+				final Context context = result.resolved.getClassOf().getContext();
+				d.resolve(context);
+			});
+		} else {
+			final Context context = resolvedElement.getContext();
+			d.resolve(context);
+		}
+
+	}
+
+	private void action_002_1(@NotNull final ProcTableEntry pte, @NotNull final IdentTableEntry ite, final boolean setClassInvocation, final DeduceTypes2.DeduceClient3 dc, final DeducePhase phase) {
+		final OS_Element resolvedElement = ite.getResolvedElement();
+
+		assert resolvedElement != null;
+
+		action_002_1_001(pte, setClassInvocation, dc, phase, resolvedElement);
+	}
+
+	private void action_002_1_001(final @NotNull ProcTableEntry pte,
+	                              final boolean setClassInvocation,
+	                              final DeduceTypes2.DeduceClient3 dc,
+	                              final DeducePhase phase,
+	                              final OS_Element resolvedElement) {
+		if (pte.getFunctionInvocation() != null) return;
+
+		final Pair<ClassInvocation, FunctionInvocation> p = action_002_1_002_1(pte, dc, phase, resolvedElement);
+		if (p == null)
+			throw new IllegalStateException();
+		final ClassInvocation    ci = p.getLeft();
+		final FunctionInvocation fi = p.getRight();
+
+		if (setClassInvocation) {
+			if (ci != null) {
+				pte.setClassInvocation(ci);
+			} else
+				tripleo.elijah.util.Stupidity.println_err2("542 Null ClassInvocation");
+		}
+
+		pte.setFunctionInvocation(fi);
+	}
+
+	private @Nullable Pair<ClassInvocation, FunctionInvocation> action_002_1_002_1(final @NotNull ProcTableEntry pte, final DeduceTypes2.DeduceClient3 dc, final DeducePhase phase, final @NotNull OS_Element resolvedElement) {
+		final Pair<ClassInvocation, FunctionInvocation> p;
+		final FunctionInvocation                        fi;
+		ClassInvocation                                 ci;
+
+		if (resolvedElement instanceof ClassStatement) {
+			// assuming no constructor name or generic parameters based on function syntax
+			ci = new ClassInvocation((ClassStatement) resolvedElement, null);
+			ci = phase.registerClassInvocation(ci);
+			fi = new FunctionInvocation(null, pte, ci, phase.generatePhase);
+			p  = new ImmutablePair<ClassInvocation, FunctionInvocation>(ci, fi);
+		} else if (resolvedElement instanceof final FunctionDef functionDef) {
+			final IInvocation invocation = dc.getInvocation((GeneratedFunction) generatedFunction);
+			fi = new FunctionInvocation(functionDef, pte, invocation, phase.generatePhase);
+			if (functionDef.getParent() instanceof ClassStatement) {
+				final ClassStatement classStatement = (ClassStatement) fi.getFunction().getParent();
+				ci = new ClassInvocation(classStatement, null); // TODO generics
+				ci = phase.registerClassInvocation(ci);
+			} else {
+				ci = null;
+			}
+			p = new ImmutablePair<ClassInvocation, FunctionInvocation>(ci, fi);
+		} else {
+			p = null;
+		}
+
+		return p;
+	}
 
 	public static class ST {
 		public static State EXIT_RESOLVE;

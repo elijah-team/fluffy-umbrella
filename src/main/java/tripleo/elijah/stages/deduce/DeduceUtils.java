@@ -35,7 +35,7 @@ public class DeduceUtils {
 		public boolean apply(@Nullable final OS_Element2 input) {
 			if (!(input instanceof FunctionDef)) return false;
 			//
-			if (args == null && ((FunctionDef)input).fal().falis.size() == 0)
+			if (args == null && ((FunctionDef) input).fal().falis.size() == 0)
 				return true;
 			else {
 				NotImplementedException.raise();
@@ -62,21 +62,21 @@ public class DeduceUtils {
 		public boolean test(final @NotNull Object o) {
 			final ExpressionList args = pce.getArgs();
 			// See if candidate matches args
-			if (((LookupResult)o).getElement() instanceof ClassStatement) {
+			if (((LookupResult) o).getElement() instanceof final @NotNull ClassStatement klass) {
 				//o filter isCtor each (each args isCompat)
-				final @NotNull ClassStatement klass = (ClassStatement) ((LookupResult)o).getElement();
 
-				final @NotNull Iterable<ClassItem> ctors = Iterables.filter(klass.getItems(), new IsConstructor());
+				final @NotNull Iterable<ClassItem> ctors  = Iterables.filter(klass.getItems(), new IsConstructor());
 				final @NotNull Iterable<ClassItem> ctors2 = Iterables.filter(ctors, new MatchFunctionArgs(pce));
 //				return ctors.iterator().hasNext();
 				return Lists.newArrayList(ctors2).size() > 0;
 
 //				return true; // TODO
 			}
-			tripleo.elijah.util.Stupidity.println2("" + o);
+			tripleo.elijah.util.Stupidity.println2(String.valueOf(o));
 			return false;
 		}
 	}
+
 	static class MatchFunctionArgs implements com.google.common.base.Predicate<OS_Element> {
 		private final ProcedureCallExpression pce;
 
@@ -93,13 +93,14 @@ public class DeduceUtils {
 			//
 			final ExpressionList args = pce.getArgs();
 			// See if candidate matches args
-			/*if (((LookupResult)o).getElement() instanceof FunctionDef)*/ {
+			/*if (((LookupResult)o).getElement() instanceof FunctionDef)*/
+			{
 				//o filter isCtor each (each args isCompat)
 				final @NotNull FunctionDef fd = (FunctionDef) (/*(LookupResult)*/o)/*.getElement()*/;
 				final List<OS_Element2> matching_functions = fd.items()
-						                                       .stream()
-						                                       .filter(new MatchArgs(pce.getArgs()))
-						                                       .collect(Collectors.toList());
+				                                               .stream()
+				                                               .filter(new MatchArgs(pce.getArgs()))
+				                                               .collect(Collectors.toList());
 				return matching_functions.size() > 0;
 			}
 //			return false;

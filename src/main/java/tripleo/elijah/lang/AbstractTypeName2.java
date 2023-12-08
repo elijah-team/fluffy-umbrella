@@ -31,6 +31,19 @@ public abstract class AbstractTypeName2 implements NormalTypeName {
 	}
 
 	@Override
+	public boolean equals(final Object o) {
+		if (this == o) return true;
+		if (!(o instanceof final NormalTypeName that)) return false;
+		return getConstant() == that.getConstant() &&
+		  getReference() == that.getReference() &&
+		  getOut() == that.getOut() &&
+		  getIn() == that.getIn() &&
+//				type == that.type &&
+		  getModifiers().containsAll(that.getModifiers()) &&
+		  getName().equals(that.getName());
+	}
+
+	@Override
 	public boolean getConstant() {
 		return _ltm.contains(TypeModifiers.CONST);
 	}
@@ -44,27 +57,27 @@ public abstract class AbstractTypeName2 implements NormalTypeName {
 	public boolean getReference() {
 		return _ltm.contains(TypeModifiers.REFPAR);
 	}
-	
+
 	@Override
 	public void setReference(final boolean aFlag) {
 		_ltm.add(TypeModifiers.REFPAR);
 	}
-	
+
 	@Override
 	public boolean getOut() {
 		return _ltm.contains(TypeModifiers.OUTPAR);
 	}
-	
+
 	@Override
 	public void setOut(final boolean aFlag) {
 		_ltm.add(TypeModifiers.OUTPAR);
 	}
-	
+
 	@Override
 	public boolean getIn() {
 		return _ltm.contains(TypeModifiers.INPAR);
 	}
-	
+
 	@Override
 	public void setIn(final boolean aFlag) {
 		_ltm.add(TypeModifiers.INPAR);
@@ -78,20 +91,6 @@ public abstract class AbstractTypeName2 implements NormalTypeName {
 	@Override
 	public Collection<TypeModifiers> getModifiers() {
 		return _ltm;
-	}
-
-	@Override
-	public boolean equals(final Object o) {
-		if (this == o) return true;
-		if (!(o instanceof NormalTypeName)) return false;
-		final NormalTypeName that = (NormalTypeName) o;
-		return getConstant() == that.getConstant() &&
-				getReference() == that.getReference() &&
-				getOut() == that.getOut() &&
-				getIn() == that.getIn() &&
-//				type == that.type &&
-				getModifiers().containsAll(that.getModifiers()) &&
-				getName().equals(that.getName());
 	}
 }
 

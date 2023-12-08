@@ -1,10 +1,10 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 package tripleo.elijah.lang;
 
@@ -24,13 +24,13 @@ public class YieldExpression /*extends BasicBinaryExpression*/ implements OS_Ele
 	}
 
 	@Override
-	public OS_Element getParent() {
+	public Context getContext() {
 		throw new NotImplementedException();
 //		return null;
 	}
 
 	@Override
-	public Context getContext() {
+	public OS_Element getParent() {
 		throw new NotImplementedException();
 //		return null;
 	}

@@ -78,12 +78,6 @@ class CReference_getIdentIAPath_IdentIAHelper {
 		return b;
 	}
 
-	private void _act_FormalArgListItem(final @NotNull CReference aCReference, final @NotNull FormalArgListItem fali) {
-		final int    y     = 2;
-		final String text2 = "va" + fali.getNameToken().getText();
-		aCReference.addRef(text2, CReference.Ref.LOCAL); // TODO
-	}
-
 	@Contract(pure = true)
 	public OS_Element getResolved_element() {
 		return resolved_element;
@@ -150,8 +144,7 @@ class CReference_getIdentIAPath_IdentIAHelper {
 		final GeneratedNode resolved_node = getResolved();
 
 		if (resolved_node != null) {
-			if (resolved_node instanceof BaseGeneratedFunction) {
-				final BaseGeneratedFunction resolvedFunction = (BaseGeneratedFunction) resolved_node;
+			if (resolved_node instanceof final BaseGeneratedFunction resolvedFunction) {
 
 				resolvedFunction.onGenClass(gc -> {
 //						GeneratedNode gc = rf.getGenClass();
@@ -161,18 +154,16 @@ class CReference_getIdentIAPath_IdentIAHelper {
 						this.code = -2;
 				});
 
-				if (resolvedFunction.getGenClass() instanceof GeneratedNamespace) {
+				if (resolvedFunction.getGenClass() instanceof final GeneratedNamespace generatedNamespace) {
 					// FIXME sometimes genClass is not called so above wont work,
 					//  so check if a code was set and use it here
-					final GeneratedNamespace generatedNamespace = (GeneratedNamespace) resolvedFunction.getGenClass();
 					final int                cc                 = generatedNamespace.getCode();
 					if (cc > 0) {
 						this.code = cc;
 					}
 				}
 
-			} else if (resolved_node instanceof GeneratedClass) {
-				final GeneratedClass generatedClass = (GeneratedClass) resolved_node;
+			} else if (resolved_node instanceof final GeneratedClass generatedClass) {
 				this.code = generatedClass.getCode();
 			}
 		}
@@ -269,6 +260,12 @@ class CReference_getIdentIAPath_IdentIAHelper {
 		NotImplementedException.raise();
 		//			text = Emit.emit("/*167*/")+((AliasStatement)resolved_element).name();
 		//			return _getIdentIAPath_IdentIAHelper(text, sl, i, sSize, _res)
+	}
+
+	private void _act_FormalArgListItem(final @NotNull CReference aCReference, final @NotNull FormalArgListItem fali) {
+		final int    y     = 2;
+		final String text2 = "va" + fali.getNameToken().getText();
+		aCReference.addRef(text2, CReference.Ref.LOCAL); // TODO
 	}
 
 	@Contract(pure = true)

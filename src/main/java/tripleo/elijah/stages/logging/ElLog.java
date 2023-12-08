@@ -11,37 +11,36 @@ package tripleo.elijah.stages.logging;
 import java.util.ArrayList;
 import java.util.List;
 
+import static tripleo.elijah.util.Stupidity.println2;
+import static tripleo.elijah.util.Stupidity.println_err3;
+
 /**
  * Created 8/3/21 3:46 AM
  */
 public class ElLog {
-	private final String fileName;
-	private final Verbosity verbose;
-	private final String phase;
+	private final String         fileName;
+	private final Verbosity      verbose;
+	private final String         phase;
 	private final List<LogEntry> entries = new ArrayList<>();
-
-	public enum Verbosity {
-		SILENT, VERBOSE
-	}
 
 	public ElLog(final String aFileName, final Verbosity aVerbose, final String aPhase) {
 		fileName = aFileName;
-		verbose = aVerbose;
-		phase = aPhase;
+		verbose  = aVerbose;
+		phase    = aPhase;
 	}
 
 	public void err(final String aMessage) {
 		final long time = System.currentTimeMillis();
 		entries.add(new LogEntry(time, LogEntry.Level.ERROR, aMessage));
 		if (verbose == Verbosity.VERBOSE)
-			tripleo.elijah.util.Stupidity.println_err2(aMessage);
+			println_err3(aMessage);
 	}
 
 	public void info(final String aMessage) {
 		final long time = System.currentTimeMillis();
 		entries.add(new LogEntry(time, LogEntry.Level.INFO, aMessage));
 		if (verbose == Verbosity.VERBOSE)
-			tripleo.elijah.util.Stupidity.println2(aMessage);
+			println2(aMessage);
 	}
 
 	public String getFileName() {
@@ -54,6 +53,10 @@ public class ElLog {
 
 	public String getPhase() {
 		return phase;
+	}
+
+	public enum Verbosity {
+		SILENT, VERBOSE
 	}
 }
 

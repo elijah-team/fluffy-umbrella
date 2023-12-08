@@ -12,7 +12,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import tripleo.elijah.diagnostic.Diagnostic;
 import tripleo.elijah.diagnostic.Locatable;
 import tripleo.elijah.lang.VariableStatement;
@@ -28,11 +27,11 @@ import java.util.List;
  * Created 4/13/21 5:46 AM
  */
 public class CantDecideType implements Diagnostic {
-	private final VariableTableEntry vte;
+	private final          VariableTableEntry         vte;
 	private final @NotNull Collection<TypeTableEntry> types;
 
 	public CantDecideType(final VariableTableEntry aVte, @NotNull final Collection<TypeTableEntry> aTypes) {
-		vte = aVte;
+		vte   = aVte;
 		types = aTypes;
 	}
 
@@ -70,7 +69,7 @@ public class CantDecideType implements Diagnostic {
 
 	@Override
 	public void report(@NotNull final PrintStream stream) {
-		stream.println(String.format("---[%s]---: %s", code(), message()));
+		stream.printf("---[%s]---: %s%n", code(), message());
 		// linecache.print(primary);
 		for (final Locatable sec : secondary()) {
 			//linecache.print(sec)

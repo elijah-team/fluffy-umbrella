@@ -37,7 +37,7 @@ import static org.easymock.EasyMock.mock;
 public class GetRealTargetNameTest {
 
 	GeneratedFunction gf;
-	OS_Module mod;
+	OS_Module         mod;
 
 	@Before
 	public void setUp() throws Exception {
