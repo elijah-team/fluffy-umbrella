@@ -57,6 +57,11 @@ public class StdErrSink implements ErrSink {
 			_errorCount++;
 		diagnostic.report(System.err);
 	}
+
+	@Override
+	public void reportError(final int code, final String message) {
+		reportError(""+code+" "+message);
+	}
 }
 
 //

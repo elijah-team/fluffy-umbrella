@@ -1,10 +1,10 @@
 /*
  * Elijjah compiler, copyright Tripleo <oluoluolu+elijah@gmail.com>
- * 
- * The contents of this library are released under the LGPL licence v3, 
+ *
+ * The contents of this library are released under the LGPL licence v3,
  * the GNU Lesser General Public License text was downloaded from
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
- * 
+ *
  */
 package tripleo.elijah.comp;
 
@@ -17,6 +17,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
+import org.jdeferred2.impl.DeferredObject;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.Out;
 import tripleo.elijah.ci.CompilerInstructions;
@@ -41,44 +42,54 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class Compilation {
-
-	private final int _compilationNumber;
-	private IO io;
-	private ErrSink eee;
-	public final List<OS_Module> modules = new ArrayList<OS_Module>();
-	private final Map<String, OS_Module> fn2m = new HashMap<String, OS_Module>();
-	private final Map<String, CompilerInstructions> fn2ci = new HashMap<String, CompilerInstructions>();
-	private final Map<String, OS_Package> _packages = new HashMap<String, OS_Package>();
-	private int _packageCode = 1;
-	public final List<CompilerInstructions> cis = new ArrayList<CompilerInstructions>();
-
-	//
-	//
-	//
-	public PipelineLogic pipelineLogic;
+	public final  List<OS_Module>                   modules   = new ArrayList<OS_Module>();
+	public final  List<CompilerInstructions>        cis       = new ArrayList<CompilerInstructions>();
+	private final int                               _compilationNumber;
+	private final Map<String, OS_Module>            fn2m      = new HashMap<String, OS_Module>();
+	private final Map<String, CompilerInstructions> fn2ci     = new HashMap<String, CompilerInstructions>();
+	private final Map<String, OS_Package>           _packages = new HashMap<String, OS_Package>();
+	public        PipelineLogic                     pipelineLogic;
+	public        String                            stage     = "O"; // Output
 	Pipeline pipelines = new Pipeline();
-	//
-	//
-	//
+	boolean  showTree  = false;
+	private IO                                    io;
+	private ErrSink                               errSink;
+	private int                                   _packageCode  = 1;
+	private DeferredObject<AccessBus, Void, Void> _p_AccessBus  = new DeferredObject();
+	private boolean                               silent        = false;
+	private int                                   _classCode    = 101;
+	private int                                   _functionCode = 1001;
+	private Finally                               _finally;
 
-	public Compilation(final ErrSink eee, final IO io) {
-		this.eee = eee;
-		this.io  = io;
-		this._compilationNumber = new Random().nextInt(Integer.MAX_VALUE);
+	public Compilation(final ErrSink aErrSink, final IO aIO) {
+		if (aErrSink != null) {
+			errSink = aErrSink;
+		} else {
+			errSink = new StdErrSink();
+		}
+		io                 = aIO;
+		_compilationNumber = new Random().nextInt(Integer.MAX_VALUE);
+	}
+
+	public static ElLog.Verbosity gitlabCIVerbosity() {
+		final boolean gitlab_ci = isGitlab_ci();
+		return gitlab_ci ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
+	}
+
+	public static boolean isGitlab_ci() {
+		return System.getenv("GITLAB_CI") != null;
 	}
 
 	public void feedCmdLine(final List<String> args) throws Exception {
-		final ErrSink errSink = eee == null ? new StdErrSink() : eee;
-		boolean do_out = false /*, silent = false*/;
 		try {
-			if (args.size() > 0) {
+			if (!args.isEmpty()) {
 				final Options options = new Options();
 				options.addOption("s", true, "stage: E: parse; O: output");
 				options.addOption("showtree", false, "show tree");
 				options.addOption("out", false, "make debug files");
 				options.addOption("silent", false, "suppress DeduceType output to console");
 				final CommandLineParser clp = new DefaultParser();
-				final CommandLine cmd = clp.parse(options, args.toArray(new String[args.size()]));
+				final CommandLine       cmd = clp.parse(options, args.toArray(new String[args.size()]));
 
 				if (cmd.hasOption("s")) {
 					stage = cmd.getOptionValue('s');
@@ -87,90 +98,57 @@ public class Compilation {
 					showTree = true;
 				}
 				if (cmd.hasOption("out")) {
-					do_out = true;
 				}
 				if (isGitlab_ci() || cmd.hasOption("silent")) {
 					silent = true;
 				}
 
 				CompilerInstructions ez_file = null;
-				final String[] args2 = cmd.getArgs();
+				final String[]       args2   = cmd.getArgs();
 
 				for (int i = 0; i < args2.length; i++) {
-					final String file_name = args2[i];
-					final File f = new File(file_name);
-					final boolean matches2 = Pattern.matches(".+\\.ez$", file_name);
+					final String  file_name = args2[i];
+					final File    f         = new File(file_name);
+					final boolean matches2  = Pattern.matches(".+\\.ez$", file_name);
 					if (matches2)
-						add_ci(parseEzFile(f, file_name, eee));
+						add_ci(parseEzFile(f, file_name, this.errSink));
 					else {
 //						eee.reportError("9996 Not an .ez file "+file_name);
 						if (f.isDirectory()) {
 							final List<CompilerInstructions> ezs = searchEzFiles(f);
 							if (ezs.size() > 1) {
 //								eee.reportError("9998 Too many .ez files, using first.");
-								eee.reportError("9997 Too many .ez files, be specific.");
+								this.errSink.reportError(9997,  "Too many .ez files, be specific.");
 //								add_ci(ezs.get(0));
 							} else if (ezs.size() == 0) {
-								eee.reportError("9999 No .ez files found.");
+								this.errSink.reportError("9999 No .ez files found.");
 							} else {
 								ez_file = ezs.get(0);
 								add_ci(ez_file);
 							}
 						} else
-							eee.reportError("9995 Not a directory "+f.getAbsolutePath());
+							this.errSink.reportError("9995 Not a directory " + f.getAbsolutePath());
 					}
 				}
 
-				System.err.println("130 GEN_LANG: "+cis.get(0).genLang());
+				System.err.println("130 GEN_LANG: " + cis.get(0).genLang());
 				findStdLib("c"); // TODO find a better place for this
 
 				for (final CompilerInstructions ci : cis) {
-					use(ci, do_out);
+					use(ci, false);
 				}
 
-				final AccessBus ab = new AccessBus(this);
+				final AccessBus ab1 = new AccessBus(this);
+				_p_AccessBus.resolve(ab1);
 
 				if (stage.equals("E")) {
 					// do nothing. job over
 				} else {
-/*
-					ab.addPipelineLogic(PipelineLogic::new);
+					_p_AccessBus.then(ab -> {
+						pipelineLogic = new PipelineLogic(ab);
 
-//					pipelineLogic = new PipelineLogic(silent ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE);
-//					ab.resolvePipelineLogic(pipelineLogic);
-
-					ab.add(DeducePipeline::new);
-					ab.add(GeneratePipeline::new);
-					ab.add(WritePipeline::new);
-//					ab.add(WriteMesonPipeline::new);
-
-//					final DeducePipeline dpl = new DeducePipeline(ab);                      pipelines.add(dpl);
-//					final GeneratePipeline gpl = new GeneratePipeline(this, dpl);   		pipelines.add(gpl);
-//					final WritePipeline wpl = new WritePipeline(this, pipelineLogic.gr);	pipelines.add(wpl);
-*/
-
-					pipelineLogic = new PipelineLogic(ab);
-
-					ab.addPipelineLogic((bus) -> pipelineLogic);
-
-					final DeducePipeline dpl = new DeducePipeline(ab);
-					pipelines.add(dpl);
-					final GeneratePipeline gpl = new GeneratePipeline(ab);
-					pipelines.add(gpl);
-					final WritePipeline wpl = new WritePipeline(ab);
-					pipelines.add(wpl);
-
-					pipelines.run();
-
-					final PipelineLogic[] pl = new PipelineLogic[1];
-
-					ab.subscribePipelineLogic(xx -> pl[0]=xx);
-
-					final PipelineLogic pipelineLogic1  = pl[0];
-
-					assert pipelineLogic1 == pipelineLogic;
-
-					writeLogs(silent, pipelineLogic1.elLogs);
+						_doRun(ab, errSink, pipelineLogic);
+					});
 				}
 			} else {
 				System.err.println("Usage: eljc [--showtree] [-sE|O] <directory or .ez file names>");
@@ -181,30 +159,38 @@ public class Compilation {
 		}
 	}
 
+	private void _doRun(final AccessBus ab, final ErrSink errSink, final PipelineLogic pipelineLogic) {
+		ab.addPipelineLogic((bus) -> pipelineLogic);
+
+		final DeducePipeline dpl = new DeducePipeline(ab);
+		pipelines.add(dpl);
+		final GeneratePipeline gpl = new GeneratePipeline(ab);
+		pipelines.add(gpl);
+		final WritePipeline wpl = new WritePipeline(ab);
+		pipelines.add(wpl);
+
+		try {
+			pipelines.run();
+
+			ab.subscribe_PipelineLogic((PipelineLogic pipelineLogic1) -> {
+				if (pipelineLogic1 != pipelineLogic) {
+					throw new AssertionError("Questioning the meaning of this statement a year and a half later");
+				}
+				writeLogs(silent, pipelineLogic1.elLogs);
+			});
+		} catch (Exception e) {
+			errSink.exception(e);
+		}
+
+		ab.checkFinishEventuals__Fake();
+	}
+
 	public IO getIO() {
 		return io;
 	}
 
 	public void setIO(final IO io) {
 		this.io = io;
-	}
-
-	//
-	//
-	//
-
-	public String stage = "O"; // Output
-
-	private boolean silent = false;
-
-
-	public static ElLog.Verbosity gitlabCIVerbosity() {
-		final boolean gitlab_ci = isGitlab_ci();
-		return gitlab_ci ? ElLog.Verbosity.SILENT : ElLog.Verbosity.VERBOSE;
-	}
-
-	public static boolean isGitlab_ci() {
-		return System.getenv("GITLAB_CI") != null;
 	}
 
 	private void writeLogs(boolean aSilent, List<ElLog> aLogs) {
@@ -233,14 +219,14 @@ public class Compilation {
 		if (list != null) {
 			for (final String file_name : list) {
 				try {
-					final File file = new File(directory, file_name);
-					final CompilerInstructions ezFile = parseEzFile(file, file.toString(), eee);
+					final File                 file   = new File(directory, file_name);
+					final CompilerInstructions ezFile = parseEzFile(file, file.toString(), errSink);
 					if (ezFile != null)
 						R.add(ezFile);
 					else
-						eee.reportError("9995 ezFile is null "+file.toString());
+						errSink.reportError("9995 ezFile is null " + file.toString());
 				} catch (final Exception e) {
-					eee.exception(e);
+					errSink.exception(e);
 				}
 			}
 		}
@@ -255,7 +241,7 @@ public class Compilation {
 		final File instruction_dir = new File(compilerInstructions.getFilename()).getParentFile();
 		for (final LibraryStatementPart lsp : compilerInstructions.lsps) {
 			final String dir_name = Helpers.remove_single_quotes_from_string(lsp.getDirName());
-			File dir;// = new File(dir_name);
+			File         dir;// = new File(dir_name);
 			if (dir_name.equals(".."))
 				dir = instruction_dir/*.getAbsoluteFile()*/.getParentFile();
 			else
@@ -271,7 +257,7 @@ public class Compilation {
 
 	private void use_internal(final File dir, final boolean do_out, LibraryStatementPart lsp) throws Exception {
 		if (!dir.isDirectory()) {
-			eee.reportError("9997 Not a directory " + dir.toString());
+			errSink.reportError("9997 Not a directory " + dir.toString());
 			return;
 		}
 		//
@@ -279,23 +265,25 @@ public class Compilation {
 			@Override
 			public boolean accept(final File directory, final String file_name) {
 				final boolean matches = Pattern.matches(".+\\.elijah$", file_name)
-						             || Pattern.matches(".+\\.elijjah$", file_name);
+						|| Pattern.matches(".+\\.elijjah$", file_name);
 				return matches;
 			}
 		};
 		final File[] files = dir.listFiles(accept_source_files);
 		if (files != null) {
 			for (final File file : files) {
-				parseElijjahFile(file, file.toString(), eee, do_out, lsp);
+				parseElijjahFile(file, file.toString(), errSink, do_out, lsp);
 			}
 		}
 	}
 
 	private CompilerInstructions parseEzFile(final File f, final String file_name, final ErrSink errSink) throws Exception {
-		System.out.println((String.format("   %s", f.getAbsolutePath())));
+		final String absolutePath = f.getAbsolutePath();
+
+		System.out.println((String.format("   %s", absolutePath)));
 		if (!f.exists()) {
 			errSink.reportError(
-					"File doesn't exist " + f.getAbsolutePath());
+					"File doesn't exist " + absolutePath);
 			return null;
 		}
 
@@ -309,10 +297,10 @@ public class Compilation {
 	}
 
 	private void parseElijjahFile(@NotNull final File f,
-								  final String file_name,
-								  final ErrSink errSink,
-								  final boolean do_out,
-								  LibraryStatementPart lsp) throws Exception {
+	                              final String file_name,
+	                              final ErrSink errSink,
+	                              final boolean do_out,
+	                              LibraryStatementPart lsp) throws Exception {
 		System.out.println((String.format("   %s", f.getAbsolutePath())));
 		if (f.exists()) {
 			final OS_Module m = realParseElijjahFile(file_name, f, do_out);
@@ -384,8 +372,6 @@ public class Compilation {
 		return instructions;
 	}
 
-	boolean showTree = false;
-
 	public List<ClassStatement> findClass(final String aClassName) {
 		final List<ClassStatement> l = new ArrayList<ClassStatement>();
 		for (final OS_Module module : modules) {
@@ -397,16 +383,20 @@ public class Compilation {
 	}
 
 	public int errorCount() {
-		return eee.errorCount();
+		return errSink.errorCount();
 	}
 
+	//
+	// region MODULE STUFF
+	//
+
 	public OS_Module findPrelude(final String prelude_name) {
-		final File local_prelude = new File("lib_elijjah/lib-"+prelude_name+"/Prelude.elijjah");
+		final File local_prelude = new File("lib_elijjah/lib-" + prelude_name + "/Prelude.elijjah");
 		if (local_prelude.exists()) {
 			try {
 				return realParseElijjahFile(local_prelude.getName(), local_prelude, false);
 			} catch (final Exception e) {
-				eee.exception(e);
+				errSink.exception(e);
 				return null;
 			}
 		}
@@ -414,21 +404,23 @@ public class Compilation {
 	}
 
 	public boolean findStdLib(final String prelude_name) {
-		final File local_stdlib = new File("lib_elijjah/lib-"+prelude_name+"/stdlib.ez");
+		final File local_stdlib = new File("lib_elijjah/lib-" + prelude_name + "/stdlib.ez");
 		if (local_stdlib.exists()) {
 			try {
 				final CompilerInstructions ci = realParseEzFile(local_stdlib.getName(), io.readFile(local_stdlib), local_stdlib);
 				add_ci(ci);
 				return true;
 			} catch (final Exception e) {
-				eee.exception(e);
+				errSink.exception(e);
 			}
 		}
 		return false;
 	}
 
+	// endregion
+
 	//
-	// region MODULE STUFF
+	// region CLASS AND FUNCTION CODES
 	//
 
 	public void addModule(final OS_Module module, final String fn) {
@@ -436,21 +428,12 @@ public class Compilation {
 		fn2m.put(fn, module);
 	}
 
-    public OS_Module fileNameToModule(final String fileName) {
-        if (fn2m.containsKey(fileName)) {
-            return fn2m.get(fileName);
-        }
-        return null;
-    }
-
-	// endregion
-
-    //
-	// region CLASS AND FUNCTION CODES
-	//
-
-	private int _classCode = 101;
-	private int _functionCode = 1001;
+	public OS_Module fileNameToModule(final String fileName) {
+		if (fn2m.containsKey(fileName)) {
+			return fn2m.get(fileName);
+		}
+		return null;
+	}
 
 	public int nextClassCode() {
 		return _classCode++;
@@ -498,7 +481,7 @@ public class Compilation {
 	}
 
 	public ErrSink getErrSink() {
-		return eee;
+		return errSink;
 	}
 
 	public void addFunctionMapHook(FunctionMapHook aFunctionMapHook) {
@@ -508,6 +491,72 @@ public class Compilation {
 	public boolean getSilence() {
 		return silent;
 	}
+
+	public void spi(final Object aObject) {
+		if (aObject instanceof AccessBus.AB_LgcListener) {
+			AccessBus.AB_LgcListener abl = (AccessBus.AB_LgcListener) aObject;
+			_p_AccessBus.then(ab1 -> ab1.subscribe_lgc(abl));
+		}
+		if (aObject instanceof AccessBus.AB_ModuleListListener) {
+			AccessBus.AB_ModuleListListener abm = (AccessBus.AB_ModuleListListener) aObject;
+			_p_AccessBus.then(ab1 -> ab1.subscribe_moduleList(abm));
+		}
+		if (aObject instanceof AccessBus.AB_PipelineLogicListener) {
+			AccessBus.AB_PipelineLogicListener abpl = (AccessBus.AB_PipelineLogicListener) aObject;
+			_p_AccessBus.then(ab1 -> ab1.subscribe_PipelineLogic(abpl));
+		}
+		if (aObject instanceof AccessBus.AB_GenerateResultListener) {
+			AccessBus.AB_GenerateResultListener abg = (AccessBus.AB_GenerateResultListener) aObject;
+			_p_AccessBus.then(ab1 -> ab1.subscribe_GenerateResult(abg));
+		}
+	}
+
+	public PipelineAdder getPipelineAdder() {
+		final Compilation _c = this;
+		return new PipelineAdder() {
+			@Override
+			public void addPipeline(final PipelineMember aPipeline) {
+				_c.pipelines.add(aPipeline);
+			}
+		};
+	}
+
+	public Finally reports() {
+		if (_finally == null) {
+//			_finally = new PartialEscapeClosure.Final()
+			_finally = new Finally();
+		}
+		return _finally;
+	}
+
+	public interface PipelineAdder {
+		void addPipeline(PipelineMember aPipeline);
+	}
+
+	/**
+	 * Created 8/21/21 10:09 PM
+	 */
+	public class Pipeline {
+		List<PipelineMember> pls = new ArrayList<>();
+
+		public void add(PipelineMember aPipelineMember) {
+			pls.add(aPipelineMember);
+		}
+
+
+		public void run() throws Exception {
+			for (PipelineMember pl : pls) {
+				pl.run();
+			}
+		}
+	}
+
+	public class Finally {
+		public int moduleSize() {
+			return modules.size();
+		}
+	}
+
 }
 
 //

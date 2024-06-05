@@ -17,17 +17,20 @@ import java.util.List;
 /**
  * Created 8/21/21 10:16 PM
  */
-public class GeneratePipeline implements PipelineMember, AccessBus.AB_LgcListener {
-//	private final Compilation c;
+public class GeneratePipeline implements PipelineMember,
+		AccessBus.AB_LgcListener,
+		AccessBus.AB_PipelineLogicListener
+{
 //	private final DeducePipeline dpl;
 	private PipelineLogic pipelineLogic;
 	private List<GeneratedNode> lgc;
 
 	public GeneratePipeline(@NotNull AccessBus ab) {
-//		c = ab.getCompilation();
+//		ab.subscribe_PipelineLogic(pll -> pipelineLogic = pll);
+//		ab.subscribe_lgc(this);
 
-		ab.subscribePipelineLogic(pll -> pipelineLogic = pll);
-		ab.subscribe_lgc(this);
+		@NotNull final Compilation c = ab.getCompilation();
+		c.spi(this);
 	}
 
 	@Override
@@ -39,8 +42,13 @@ public class GeneratePipeline implements PipelineMember, AccessBus.AB_LgcListene
 	}
 
 	@Override
-	public void lgc_slot(List<GeneratedNode> aX) {
-		lgc = aX;
+	public void lgc_slot(List<GeneratedNode> injected) {
+		lgc = injected;
+	}
+
+	@Override
+	public void pl_slot(final PipelineLogic injected) {
+		pipelineLogic = injected;
 	}
 }
 

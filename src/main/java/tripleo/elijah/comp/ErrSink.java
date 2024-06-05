@@ -25,6 +25,8 @@ public interface ErrSink {
 
 	void reportDiagnostic(Diagnostic diagnostic);
 
+	void reportError(int coed, String massage);
+
 	enum Errors {
         ERROR, WARNING, INFO
     }
