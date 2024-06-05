@@ -1,12 +1,9 @@
-/**
- * 
- */
 package tripleo.elijah.lang;
 
 import org.jetbrains.annotations.Contract;
 
 /**
- * @author Tripleo
+ * 
  *
  * Created 	Mar 23, 2020 at 12:40:27 AM
  */

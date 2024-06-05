@@ -6,15 +6,8 @@
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
  *
  */
-/**
- * 
- */
 package tripleo.elijah.gen.nodes;
 
-/**
- * @author Tripleo(acer)
- *
- */
 public class MethNameNode {
 
 	private final MethHdrNode _header;

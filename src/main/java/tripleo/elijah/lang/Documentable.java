@@ -11,7 +11,7 @@ package tripleo.elijah.lang;
 import antlr.Token;
 
 /**
- * @author Tripleo
+ * 
  *
  * Created 	Mar 23, 2020 at 3:51:43 AM
  */

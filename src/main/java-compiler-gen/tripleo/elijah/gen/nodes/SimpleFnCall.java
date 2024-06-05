@@ -1,6 +1,3 @@
-/**
- * 
- */
 package tripleo.elijah.gen.nodes;
 
 import java.util.List;
@@ -8,10 +5,6 @@ import java.util.List;
 import tripleo.elijah.comp.GenBuffer;
 import tripleo.elijah.gen.CompilerContext;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public class SimpleFnCall {
 
 	public SimpleFnCall(final String string, final List<String> list_of) {

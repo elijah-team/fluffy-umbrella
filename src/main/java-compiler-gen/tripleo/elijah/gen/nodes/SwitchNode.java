@@ -6,17 +6,10 @@
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
  *
  */
-/**
- * 
- */
 package tripleo.elijah.gen.nodes;
 
 import tripleo.elijah.lang.IExpression;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public class SwitchNode {
 
 	public IExpression expr;

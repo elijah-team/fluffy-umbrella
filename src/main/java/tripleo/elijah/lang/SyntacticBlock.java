@@ -12,7 +12,7 @@ import antlr.Token;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.contexts.SyntacticBlockContext;
 import tripleo.elijah.lang2.ElElementVisitor;
 

@@ -18,9 +18,6 @@ import java.util.Objects;
  * This class represents all the different type of types in the system possible
  *
  * Created on Sep 1, 2005 8:16:32 PM
- *
- * @author Tripleo(sb)
- *
  */
 public class OS_Type {
 

@@ -13,7 +13,7 @@ import tripleo.elijah.lang.*;
 import java.util.List;
 
 /**
- * @author Tripleo
+ * 
  *
  * Created 	Mar 26, 2020 at 6:33:31 AM
  */

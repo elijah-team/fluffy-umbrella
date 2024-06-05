@@ -20,10 +20,6 @@ import java.util.List;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public class FindBothSourceFiles {
 
 	/**

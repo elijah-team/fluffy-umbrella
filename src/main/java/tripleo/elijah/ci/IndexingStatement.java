@@ -12,7 +12,7 @@ import antlr.Token;
 import tripleo.elijah.lang.ExpressionList;
 
 /**
- * @author Tripleo
+ * 
  *
  * Created 	Apr 15, 2020 at 4:59:21 AM
  * Created 1/8/21 7:19 AM

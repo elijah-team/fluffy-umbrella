@@ -1,6 +1,3 @@
-/**
- * 
- */
 package tripleo.elijah.gen.nodes;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -11,10 +8,6 @@ import tripleo.elijah.util.NotImplementedException;
 
 import java.util.List;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public class ClassDeclNode {
 
 	public ClassDeclNode(final String string, final List modifiers, final List<Inherited> inheritance) {

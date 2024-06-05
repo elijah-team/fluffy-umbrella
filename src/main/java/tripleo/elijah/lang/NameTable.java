@@ -1,13 +1,10 @@
-/**
- * 
- */
 package tripleo.elijah.lang;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Tripleo
+ * 
  *
  * Created 	Mar 29, 2020 at 7:00:10 PM
  */

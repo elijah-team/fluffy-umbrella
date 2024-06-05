@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 /**
- * @author Tripleo(sb)
+ * 
  *
  * Created 	Dec 9, 2019 at 3:30:44 PM
  */

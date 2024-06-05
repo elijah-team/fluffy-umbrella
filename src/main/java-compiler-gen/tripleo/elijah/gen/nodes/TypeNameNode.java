@@ -1,15 +1,8 @@
-/**
- * 
- */
 package tripleo.elijah.gen.nodes;
 
 import org.eclipse.jdt.annotation.NonNull;
 import tripleo.elijah.lang.IdentExpression;
 
-/**
- * @author Tripleo(acer)
- *
- */
 public class TypeNameNode {
 
 	public TypeNameNode(@NonNull final IdentExpression return_type) {

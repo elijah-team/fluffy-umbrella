@@ -20,7 +20,7 @@ import static tripleo.elijah.contexts.ClassInfo.ClassInfoType.INHERITED;
 
 
 /**
- * @author Tripleo
+ * 
  *
  * Created 	Mar 26, 2020 at 6:04:02 AM
  */

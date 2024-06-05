@@ -10,10 +10,6 @@ package tripleo.elijah.gen.nodes;
 
 import tripleo.elijah.lang.NumericExpression;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public class ReturnAgnSimpleIntNode {
 
 	private final NumericExpression integer;

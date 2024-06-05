@@ -14,10 +14,6 @@ package tripleo.elijah.lang;
 
 import antlr.Token;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public class IndexingItem {
 
 	private final IExpression expr;

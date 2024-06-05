@@ -1,13 +1,10 @@
-/**
- * 
- */
 package tripleo.util.io;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * @author Tripleo(sb)
+ * 
  *
  * Created 	Dec 9, 2019 at 3:23:57 PM
  */

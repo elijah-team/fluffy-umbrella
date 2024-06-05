@@ -6,9 +6,6 @@
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
  *
  */
-/**
- * 
- */
 package tripleo.elijah.contexts;
 
 import tripleo.elijah.lang.*;
@@ -16,7 +13,7 @@ import tripleo.elijah.lang.*;
 import java.util.List;
 
 /**
- * @author Tripleo
+ * 
  *
  * Created 	Mar 26, 2020 at 9:40:43 PM
  */

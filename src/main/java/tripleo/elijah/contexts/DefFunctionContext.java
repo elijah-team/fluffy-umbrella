@@ -15,7 +15,7 @@ import tripleo.elijah.lang.LookupResultList;
 import java.util.List;
 
 /**
- * @author Tripleo
+ * 
  *
  * Created 	Mar 26, 2020 at 9:24:44 PM
  */

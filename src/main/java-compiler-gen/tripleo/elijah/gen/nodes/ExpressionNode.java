@@ -14,10 +14,6 @@ import tripleo.elijah.gen.TypeRef;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.util.NotImplementedException;
 
-/**
- * @author Tripleo(acer)
- *
- */
 public class ExpressionNode implements IExpressionNode {
 
 	public String genName;  // TODO since when does expression have a name?

@@ -15,10 +15,6 @@ package tripleo.elijah.lang;
 import antlr.Token;
 import tripleo.elijah.util.Helpers;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public class CharLitExpression implements IExpression {
 
 	private final Token char_lit_raw;

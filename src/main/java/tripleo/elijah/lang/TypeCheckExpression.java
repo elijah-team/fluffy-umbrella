@@ -11,7 +11,7 @@ package tripleo.elijah.lang;
 import tripleo.elijah.lang2.BuiltInTypes;
 
 /**
- * @author Tripleo
+ * 
  *
  * Created 	Apr 18, 2020 at 2:43:00 AM
  */

@@ -15,10 +15,6 @@ package tripleo.elijah.lang;
 import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public class TypeAliasStatement implements OS_Element {
 
 	private final OS_Element parent;

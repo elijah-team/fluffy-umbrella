@@ -6,9 +6,6 @@
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
  *
  */
-/**
- * 
- */
 package tripleo.elijah.gen.nodes;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -23,10 +20,6 @@ import tripleo.elijah.util.NotImplementedException;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public class MethHdrNode implements Node {
 	
 	private final TypeRef returnType2;

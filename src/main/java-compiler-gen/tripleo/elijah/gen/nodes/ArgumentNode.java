@@ -6,18 +6,11 @@
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
  *
  */
-/**
- * 
- */
 package tripleo.elijah.gen.nodes;
 
 import tripleo.elijah.gen.TypeRef;
 import tripleo.elijah.lang.IdentExpression;
 
-/**
- * @author Tripleo(acer)
- *
- */
 public class ArgumentNode {
 	
 	private final TypeRef typeRef;

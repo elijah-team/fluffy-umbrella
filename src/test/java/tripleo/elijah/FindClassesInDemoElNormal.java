@@ -20,10 +20,6 @@ import tripleo.elijah.util.Helpers;
 
 import java.util.List;
 
-/**
- * @author Tripleo
- *
- */
 public class FindClassesInDemoElNormal {
 
 	@Test

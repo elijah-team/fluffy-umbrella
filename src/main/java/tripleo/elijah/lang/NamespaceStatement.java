@@ -13,7 +13,7 @@ import tripleo.elijah.lang2.ElElementVisitor;
 import tripleo.elijah.util.NotImplementedException;
 
 /**
- * @author Tripleo(sb)
+ * 
  *
  * Created Apr 2, 2019 at 11:08:12 AM
  */

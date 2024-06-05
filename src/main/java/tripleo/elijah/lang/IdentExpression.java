@@ -22,10 +22,6 @@ import tripleo.elijah.util.NotImplementedException;
 
 import java.io.File;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public class IdentExpression implements IExpression, OS_Element, Resolvable, Locatable {
 
 	private Token text;

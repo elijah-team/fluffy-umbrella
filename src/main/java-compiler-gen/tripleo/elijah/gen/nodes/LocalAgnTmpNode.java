@@ -10,10 +10,6 @@ package tripleo.elijah.gen.nodes;
 
 import tripleo.elijah.util.NotImplementedException;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public class LocalAgnTmpNode {
 
 //	private IExpression expr;

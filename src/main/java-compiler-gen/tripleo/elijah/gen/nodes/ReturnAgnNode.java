@@ -15,10 +15,6 @@ package tripleo.elijah.gen.nodes;
 
 import tripleo.elijah.lang.IExpression;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public class ReturnAgnNode {
 	
 	private LocalAgnTmpNode _latn;

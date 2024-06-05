@@ -12,7 +12,7 @@ import tripleo.elijah.contexts.FunctionContext;
 import tripleo.elijah.lang2.ElElementVisitor;
 
 /**
- * @author Tripleo
+ * 
  *
  * Created 	Apr 16, 2020 at 7:35:50 AM
  */

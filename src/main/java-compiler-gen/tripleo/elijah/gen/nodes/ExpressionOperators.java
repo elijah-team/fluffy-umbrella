@@ -14,10 +14,6 @@ package tripleo.elijah.gen.nodes;
 
 import org.jetbrains.annotations.NotNull;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public enum ExpressionOperators {
 	OP_MINUS, OP_MULT;
 	

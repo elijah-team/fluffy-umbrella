@@ -6,20 +6,12 @@
  * http://www.gnu.org/licenses/lgpl.html from `Version 3, 29 June 2007'
  * 
  */
-/**
- * 
- */
 package tripleo.elijah.gen.nodes;
 
-import tripleo.elijah.comp.GenBuffer;
 import tripleo.elijah.gen.CompilerContext;
 import tripleo.elijah.lang.IExpression;
 import tripleo.elijah.lang.ProcedureCallExpression;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public class TmpSSACtxNode {
 	
 	public LocalAgnTmpNode _tmp = null;

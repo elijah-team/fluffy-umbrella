@@ -11,7 +11,7 @@ package tripleo.elijah.lang;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.util.Helpers;
 
 import java.util.ArrayList;

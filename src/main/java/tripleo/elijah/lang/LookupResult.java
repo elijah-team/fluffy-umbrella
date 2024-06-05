@@ -6,7 +6,7 @@ package tripleo.elijah.lang;
 import tripleo.elijah.contexts.ContextInfo;
 
 /**
- * @author Tripleo
+ * 
  *
  * Created 	Mar 26, 2020 at 9:16:07 PM
  */

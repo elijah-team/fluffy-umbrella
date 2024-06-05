@@ -12,10 +12,6 @@
  */
 package tripleo.elijah.gen.nodes;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public enum ChoiceOptions {
 	BREAK, FALLTHROUGH
 

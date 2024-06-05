@@ -13,7 +13,7 @@ import tripleo.elijah.lang.ExpressionList;
 import tripleo.elijah.lang.OS_Module;
 
 /**
- * @author Tripleo
+ * 
  *
  * Created 	Apr 15, 2020 at 4:59:21 AM
  */

@@ -25,10 +25,6 @@ import java.util.List;
 
 import static tripleo.elijah.util.Helpers.List_of;
 
-/**
- * @author Tripleo(sb)
- *
- */
 public class FactorialR /* extends TestCase */ {
 
 	public FactorialR(/*String name*/) {

@@ -3,7 +3,7 @@ package tripleo.elijah.stages.deduce;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.lang.*;
 import tripleo.elijah.util.NotImplementedException;
