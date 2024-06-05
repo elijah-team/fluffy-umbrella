@@ -552,7 +552,7 @@ public class Compilation {
 	}
 
 	public class Finally {
-		public int moduleSize() {
+		public int moduleCount() {
 			return modules.size();
 		}
 	}
