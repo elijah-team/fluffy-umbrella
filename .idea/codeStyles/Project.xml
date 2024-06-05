@@ -9,6 +9,9 @@
       <option name="PARAMETER_NAME_PREFIX" value="a" />
       <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="10" />
     </JavaCodeStyleSettings>
+    <ScalaCodeStyleSettings>
+      <option name="MULTILINE_STRING_CLOSING_QUOTES_ON_NEW_LINE" value="true" />
+    </ScalaCodeStyleSettings>
     <codeStyleSettings language="JAVA">
       <indentOptions>
         <option name="USE_TAB_CHARACTER" value="true" />
