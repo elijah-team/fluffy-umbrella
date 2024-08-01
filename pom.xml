@@ -60,9 +60,9 @@
 		<dependency>
 			<groupId>com.github.elijah-team</groupId>
 			<artifactId>dlog</artifactId>
-			<version>29e219da548ce1f22382ceff9b6810ed9221b3c1</version>
+			<version>29e219da54</version>
 		</dependency>
-
+		
 		<!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->
 		<dependency>
 			<groupId>javax.annotation</groupId>
