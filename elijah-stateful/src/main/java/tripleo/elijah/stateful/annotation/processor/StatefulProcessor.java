@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @SupportedAnnotationTypes("tripleo.elijah.stateful.annotation.processor.StatefulProperty")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@AutoService(Processor.class)
+@AutoService(StatefulProcessor.class)
 public class StatefulProcessor extends AbstractProcessor {
 
 	@Override
