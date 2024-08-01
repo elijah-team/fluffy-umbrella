@@ -57,9 +57,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.github.dritter-hd</groupId>
+			<groupId>com.github.elijah-team</groupId>
 			<artifactId>dlog</artifactId>
-			<version>1.0.0</version>
+			<version>29e219da548ce1f22382ceff9b6810ed9221b3c1</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->
