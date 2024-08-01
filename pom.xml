@@ -130,60 +130,34 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.gitlab.tripleo1</groupId>
+			<artifactId>buffers</artifactId>
+			<version>3038ff102c</version>
+			<!--
 			<groupId>tripleo.buffers</groupId>
 			<artifactId>buffers-v1</artifactId>
-			<version>${buffers.version}</version>
+			<version>0.0.3</version>
+			-->
 		</dependency>
 
 		<dependency>
+			<!--
 			<groupId>tripleo.util.range</groupId>
 			<artifactId>range-v1</artifactId>
 			<version>${range.version}</version>
+			-->
+			<groupId>com.gitlab.Tripleo</groupId>
+			<artifactId>range</artifactId>
+			<version>v0.0.3b</version>
 		</dependency>
 	</dependencies>
 
 	<repositories>
-		<!--
-				<repository>
-					<id>ossrh</id>
-					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-				</repository>
-		-->
 		<repository>
-			<id>gitlab-maven-elijah</id>
-			<url>https://gitlab.com/api/v4/projects/10309690/packages/maven</url>
 		</repository>
 		<repository>
-			<id>gitlab-maven-buffers</id>
-			<url>https://gitlab.com/api/v4/projects/20346374/packages/maven</url>
-		</repository>
-		<repository>
-			<id>gitlab-maven-range</id>
-			<url>https://gitlab.com/api/v4/projects/21223510/packages/maven</url>
 		</repository>
 	</repositories>
-
-	<distributionManagement>
-		<!--
-			<snapshotRepository>
-				<id>ossrh</id>
-				<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			</snapshotRepository>
-			<repository>
-				<id>ossrh</id>
-				<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-			</repository>
-		-->
-
-		<repository>
-			<id>gitlab-maven</id>
-			<url>https://gitlab.com/api/v4/projects/10309690/packages/maven</url>
-		</repository>
-		<snapshotRepository>
-			<id>gitlab-maven</id>
-			<url>https://gitlab.com/api/v4/projects/10309690/packages/maven</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<build>
 		<plugins>
