@@ -1,0 +1,18 @@
+{
+    "recommendations": [
+        "redhat.java",
+        "esbenp.prettier-vscode",
+        "vscjava.vscode-java-debug",
+        "vscjava.vscode-java-pack",
+        "eamodio.gitlens",
+        "vscjava.vscode-gradle",
+        "richardwillis.vscode-gradle",
+        "fwcd.kotlin",
+        "mathiasfrohlich.kotlin",
+        "vscjava.vscode-java-dependency",
+        "jeanp413.test-java-extension-pack",
+        "vscjava.vscode-java-test",
+        "dotjoshjohnson.xml",
+        "grammarcraft.xtend-lang"
+    ]
+}

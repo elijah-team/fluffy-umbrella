@@ -1,6 +1,5 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>tripleo.elijah</groupId>
@@ -38,7 +37,7 @@
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
-			<version>1.15</version> <!-- Use 1.6 for java 1.5 -->
+			<version>1.15</version>			<!-- Use 1.6 for java 1.5 -->
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/antlr/antlr -->
@@ -70,7 +69,6 @@
 			<artifactId>kotlin-stdlib-jdk8</artifactId>
 			<version>${kotlin.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.google.auto.service</groupId>
 			<artifactId>auto-service</artifactId>
@@ -122,19 +120,19 @@
 						<configuration>
 							<sourceDirs>
 
-								<sourceDir>src/main/java</sourceDir>
+								<!-- <sourceDir>src/main/java</sourceDir>
 								<sourceDir>src-damar/elijah-good-api/src/main/java</sourceDir>
 								<sourceDir>src-damar/elijah-sourcemodel-api/src/main/java</sourceDir>
 								<sourceDir>src-damar/elijah-sourcemodel-impl/src/main/java</sourceDir>
 								<sourceDir>src-bnxn/elijah-nextgen-outputstatement/src/main/java</sourceDir>
 								<sourceDir>src-bnxn/elijah-stateful/src/main/java</sourceDir>
 								<sourceDir>src-bnxn/tripleo-reactive/src/main/java</sourceDir>
-								<sourceDir>src-bnxn/tripleo-small/src/main/java</sourceDir>
+								<sourceDir>src-bnxn/tripleo-small/src/main/java</sourceDir> -->
 
 
 
 								<sourceDir>src/main/lombok</sourceDir>
-								<sourceDir>target/generated-sources/delombok</sourceDir>
+								<!-- <sourceDir>target/generated-sources/delombok</sourceDir> -->
 
 								<sourceDir>target/generated-sources/annotations</sourceDir>
 								<sourceDir>target/generated-sources/kapt</sourceDir>
@@ -164,7 +162,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version>
+				<version>${maven-compiler-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>default-compile</id>

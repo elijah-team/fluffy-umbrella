@@ -1,5 +1,8 @@
 package tripleo.elijah_congenial_durable.model.source2;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.jetbrains.annotations.Nullable;
 import tripleo.elijah.nextgen.model.SM_Node;
 import tripleo.elijah.util.UnintendedUseException;
@@ -14,24 +17,16 @@ public record SM2_AccessNotation(
 ) implements SM_Node {
 	@Override
 	public @Nullable String jsonString() {
-/*
-		JsonAdapter<SM2_AccessNotation> jsonAdapter = getJsonAdapter();
-		String                          json        = jsonAdapter.toJson(this);
-		return json;
-*/
-		throw new UnintendedUseException();
+		final Gson gson = new GsonBuilder()
+				//.registerTypeAdapter(_JsonLog.class, new _JsonLog_TypeAdapter())
+				.enableComplexMapKeySerialization()
+				//.serializeNulls()
+				//.setDateFormat(DateFormat.LONG)
+				.setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
+				.setPrettyPrinting()
+				.setVersion(1.0)
+				.create();
+		final String jsonString = gson.toJson(this);
+		return jsonString;
 	}
-
-/*
-	static JsonAdapter<SM2_AccessNotation> jsonAdapter;
-
-	//@Once
-	private static JsonAdapter<SM2_AccessNotation> getJsonAdapter() {
-		if (jsonAdapter == null) {
-			Moshi moshi = new Moshi.Builder().build();
-			jsonAdapter = moshi.adapter(SM2_AccessNotation.class);
-		}
-		return jsonAdapter;
-	}
-*/
 }

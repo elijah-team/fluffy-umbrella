@@ -1,5 +1,8 @@
 package tripleo.elijah_durable_congenial.stages.gen_java;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 import tripleo.elijah.util.UnintendedUseException;
@@ -16,12 +19,16 @@ public class JavaDependencyRef implements DependencyRef {
 
 	@Override
 	public @NotNull String jsonString() {
-/*
-		Moshi                          moshi       = new Moshi.Builder().build();
-		JsonAdapter<JavaDependencyRef> jsonAdapter = moshi.adapter(JavaDependencyRef.class);
-		String json = jsonAdapter.toJson(this);
-		return json;
-*/
-		throw new UnintendedUseException();
+		final Gson gson = new GsonBuilder()
+				//.registerTypeAdapter(_JsonLog.class, new _JsonLog_TypeAdapter())
+				.enableComplexMapKeySerialization()
+				//.serializeNulls()
+				//.setDateFormat(DateFormat.LONG)
+				.setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
+				.setPrettyPrinting()
+				.setVersion(1.0)
+				.create();
+		final String jsonString = gson.toJson(this);
+		return jsonString;
 	}
 }
