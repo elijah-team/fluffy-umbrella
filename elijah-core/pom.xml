@@ -128,6 +128,7 @@
 							<goal>compile</goal>
 							<goal>testCompile</goal>
 						</goals>
+						<phase>generate-sources</phase>
 						<configuration>
 							<outputDirectory>${project.build.directory}/xtend-gen/main</outputDirectory>
 							<testOutputDirectory>${project.build.directory}/xtend-gen/test</testOutputDirectory>
