@@ -1,0 +1,17 @@
+/bin/**
+/out/
+target
+/output/
+/.idea/workspace.xml
+/.idea/gitlab-quickmr.xml
+/.gradle
+/build
+/lib/**
+/.idea/**
+/.bsp/
+
+/*/bin/**
+/*/COMP/
+/*/COMP/**
+/*/build/
+/*/build/**
