@@ -22,7 +22,7 @@
 		<downloadSources>true</downloadSources>
 
 		<jacoco.version>0.8.9</jacoco.version>
-		<guava.version>33.3.0-jre</guava.version>
+		<guava.version>33.3.1-jre</guava.version>
 
 		<buffers.version>0.0.3</buffers.version>
 		<range.version>0.0.3b</range.version>
