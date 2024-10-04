@@ -16,7 +16,7 @@
     <properties>
         <maven.compiler.source>16</maven.compiler.source>
         <maven.compiler.target>16</maven.compiler.target>
-        <jacoco.version>0.8.6</jacoco.version>
+        <jacoco.version>0.8.12</jacoco.version>
         <downloadSources>true</downloadSources>
         <guava.version>30.0-jre</guava.version>
         <buffers.version>0.0.3</buffers.version>
