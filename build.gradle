@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
 
     // https://mvnrepository.com/artifact/org.junit.vintage/junit-vintage-engine
     testImplementation 'org.junit.vintage:junit-vintage-engine:5.10.0'
