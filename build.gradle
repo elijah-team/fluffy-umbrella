@@ -36,7 +36,7 @@ dependencies {
     api 'org.hashids:hashids:1.0.3'
     api 'com.typesafe:config:1.4.2'
     api 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
-    api 'io.undertow:undertow-servlet:2.3.7.Final'
+    api 'io.undertow:undertow-servlet:2.3.17.Final'
     api 'io.undertow:undertow-core:2.3.7.Final'
 
     api 'net.java.dev.jna:jna:4.0.0'
