@@ -2,10 +2,8 @@ name: Run Gradle on PRs of mainline-k
 
 on:
   pull_request:
-    branches: ["mainline-k"]
-#    branches: [ 'main' ]
+#    branches: ["mainline-k"]
 #  push:
-#    branches: [ "mainline-k" ]
 
 jobs:
   gradle:
