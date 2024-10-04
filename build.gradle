@@ -42,7 +42,7 @@ dependencies {
     api 'net.java.dev.jna:jna:4.0.0'
     api 'me.friwi:jcefmaven:105.3.36'
 
-    api 'io.reactivex.rxjava3:rxjava:3.1.0'
+    api 'io.reactivex.rxjava3:rxjava:3.1.9'
     api 'org.reactivestreams:reactive-streams:1.0.3'
 
     api 'org.apache.commons:commons-lang3:3.3'
