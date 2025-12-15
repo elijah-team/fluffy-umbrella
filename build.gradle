@@ -63,7 +63,7 @@ dependencies {
     implementation 'com.google.guava:guava:32.1.1-jre'
 
     api 'tripleo.buffers:buffers-v1:0.0.3'
-    api 'tripleo.util.range:range-v1:0.0.3b'
+    api 'tripleo.util.range:range-v1:0.0.3'
 
     testImplementation 'org.easymock:easymock:5.1.0'
 
