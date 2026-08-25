@@ -18,19 +18,4 @@ Much work is needed.
 
 See [Language Overview](docs/language-overview.md) for more details on the language.
 
-All of this is a work in progress and your support would be appreciated.
-
-oluoluolu+elijah (at) gmail.com
-
-[google group](https://groups.google.com/forum/#!forum/elijjah)
-
-[Technical Wiki](https://gitlab.com/elijah-team/elijah-lang/-/wikis/home)
-
-[GitBook: The Elijjah Book](https://oluoluolu-gh.gitbook.io/elijjah-book/)
-
-[Elijjah by Example](https://elijjah-by-example.github.io)
-
-[GitBook: Elijjah by Example](https://oluoluolu-gh.gitbook.io/elijjah-by-example/)
-
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgitlab.com%2Felijah-team%2Felijah-lang.svg?type=large)](https://app.fossa.com/projects/git%2Bgitlab.com%2Felijah-team%2Felijah-lang?ref=badge_large)
+All of this is a work in progress and your support is appreciated.
