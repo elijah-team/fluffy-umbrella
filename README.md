@@ -34,7 +34,7 @@ This is free software intended for on all systems, including GNU/Linux.
 
 2. Don't interrupt current workflows too much. (It's like it's not even there, but things are better...)
 
-3. Mainly "not" to have to learn Kotlin.
+3. Mainly not to have to learn Kotlin.
 
 ### Goals (for Elijah Programming System)
 
@@ -46,38 +46,25 @@ This is free software intended for on all systems, including GNU/Linux.
 
 2. Cool incremental/instant compilation.
 
+<!--
 3. A pretty development environment a la [Glamorous Toolkit](https://gtoolkit.com/), especially the custom views.
+-->
 
 ## Status
 
-<details>
-<summary>`mainline-k` uses gradle for now.</summary>
-
-Maven fails sometimes.
-
-Gradle fails sometimes.
-
-Kotlin fails sometimes.
-
-Eclipse fails sometimes.
-
-Idea was great when it didn't try to be so pretty.  It does look nice though...
+`mainline-k` uses gradle to build.
 
 Annotation processing fails all the time.
 
 Personal projects keep going.
 
-</details>
-
-Idea should "always" give you a good experience.  `dev` branches will contain work in progress, things that don't work
-because the gods are angry, etc.
 
 ```
 git clone https://github.com/elijah-team/fluffy-umbrella -b mainline-k
 cd fluffy-umbrella
 ./gradlew test
 # or:
-nix-shell -p gradle jdk17 --pure
+nix shell nixpkgs#gradle nixpkgs#jdk17 # as if this will work
 gradle test
 ```
 
